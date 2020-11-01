@@ -1,0 +1,11 @@
+// published copy struct string
+// {
+//     public let bytes: const Raw_Array[byte];
+
+//     public new(.bytes) { }
+
+//     published implicit operator "_"(value: const Raw_Array[byte]) -> string
+//     {
+//         return new string(value);
+//     }
+// }

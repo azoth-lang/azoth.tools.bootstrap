@@ -13,7 +13,6 @@ using Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Tests.Conformance.Helpers;
-using Azoth.Tools.Bootstrap.Tests.Unit.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -56,8 +55,8 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
             var references = new Dictionary<Name, PackageIL>();
 
             // Reference Standard Library
-            var stdLibPackage = CompileStdLib(compiler);
-            references.Add("azoth.stdlib", stdLibPackage);
+            var supportPackage = CompileSupportPackage(compiler);
+            references.Add(TestsSupportPackage.Name, supportPackage);
 
             try
             {
@@ -80,7 +79,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
 
                 // Emit Code
                 var codePath = Path.ChangeExtension(testCase.FullCodePath, "c");
-                EmitCode(package, stdLibPackage, codePath);
+                EmitCode(package, supportPackage, codePath);
 
                 // Compile Code to Executable
                 var exePath = CompileToExecutable(codePath);
@@ -106,29 +105,27 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
             }
         }
 
-        private PackageIL CompileStdLib(AzothCompiler compiler)
+        private PackageIL CompileSupportPackage(AzothCompiler compiler)
         {
             try
             {
-                var sourceDir = Path.Combine(SolutionDirectory.Get(), @"stdlib\src");
-                var sourcePaths =
-                    Directory.EnumerateFiles(sourceDir, "*.ad", SearchOption.AllDirectories);
+                var sourceDir = TestsSupportPackage.GetDirectory();
+                var sourcePaths = CodeFiles.GetIn(sourceDir);
                 var rootNamespace = FixedList<string>.Empty;
-                var codeFiles = sourcePaths.Select(p => LoadCode(p, sourceDir, rootNamespace))
-                    .ToList();
-                return compiler.CompilePackage("azoth.stdlib", codeFiles,
+                var codeFiles = sourcePaths.Select(p => LoadCode(p, sourceDir, rootNamespace)).ToList();
+                return compiler.CompilePackage(TestsSupportPackage.Name, codeFiles,
                     FixedDictionary<Name, PackageIL>.Empty);
             }
             catch (FatalCompilationErrorException ex)
             {
-                testOutput.WriteLine("Std Lib Compiler Errors:");
+                testOutput.WriteLine("Test Support Package Compiler Errors:");
                 foreach (var diagnostic in ex.Diagnostics)
                 {
                     testOutput.WriteLine(
                         $"{diagnostic.File.Reference}:{diagnostic.StartPosition.Line}:{diagnostic.StartPosition.Column} {diagnostic.Level} {diagnostic.ErrorCode}");
                     testOutput.WriteLine(diagnostic.Message);
                 }
-                Assert.True(false, "Compilation errors in standard library");
+                Assert.True(false, "Compilation Errors in Test Support Package");
                 throw new UnreachableCodeException();
             }
         }
@@ -268,10 +265,9 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
         public static TheoryData<TestCase> GetConformanceTestCases()
         {
             var testCases = new TheoryData<TestCase>();
-            var testsDirectory = Path.Combine(SolutionDirectory.Get(), "tests");
-            var adFiles = Directory.EnumerateFiles(testsDirectory, "*.ad", SearchOption.AllDirectories);
-            var azFiles = Directory.EnumerateFiles(testsDirectory, "*.az", SearchOption.AllDirectories);
-            foreach (var fullPath in adFiles.Concat(azFiles))
+            var testsDirectory = TestsDirectory.Get();
+            var azFiles = CodeFiles.GetIn(testsDirectory);
+            foreach (var fullPath in TestsDirectory.GetCodeFiles())
             {
                 var relativePath = Path.GetRelativePath(testsDirectory, fullPath);
                 testCases.Add(new TestCase(fullPath, relativePath));

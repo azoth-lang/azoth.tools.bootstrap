@@ -1,0 +1,8 @@
+published trait TestOutput
+{
+    published fn write(mut self, value: string);
+
+    published fn write_line(mut self, line: string);
+
+    published fn write_line(mut self);
+}

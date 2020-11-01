@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Emit.C;
-using Azoth.Tools.Bootstrap.Tests.Unit.Helpers;
 
 namespace Azoth.Tools.Bootstrap.Tests.Conformance.Helpers
 {
@@ -20,7 +19,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance.Helpers
 
         public static string GetRuntimeDirectory()
         {
-            return Path.Combine(SolutionDirectory.Get(), "tests", "runtime");
+            return Path.Combine(TestsDirectory.Get(), "runtime");
         }
         public static string GetRuntimeLibraryPath()
         {
