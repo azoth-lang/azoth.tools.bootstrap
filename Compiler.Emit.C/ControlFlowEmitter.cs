@@ -190,10 +190,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Emit.C
                 case LoadStringInstruction ins:
                 {
                     var constantLength = StringConstant.GetByteLength(ins.Value);
-                    const string selfArgument = "(String){&String___vtable, malloc(sizeof(String___Self))}";
+                    const string selfArgument = "(string){&string___vtable, malloc(sizeof(string___Self))}";
                     var sizeArgument = $"(_size){{{constantLength}}}";
                     var bytesArgument = $"(_size){{(uintptr_t)u8\"{ins.Value.Escape()}\"}}";
-                    code.EndLine($"String___new__3({selfArgument}, {sizeArgument}, {bytesArgument});");
+                    code.EndLine($"string___new__3({selfArgument}, {sizeArgument}, {bytesArgument});");
                 }
                 break;
                 case LoadNoneInstruction ins:

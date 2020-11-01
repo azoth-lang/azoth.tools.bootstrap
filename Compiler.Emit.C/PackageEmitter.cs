@@ -70,6 +70,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Emit.C
                 else if (parameterType.ContainingNamespace == SystemConsole
                          && parameterType.Name == "Arguments")
                     throw new NotImplementedException();
+                else if (parameterType.ContainingNamespace == NamespaceName.Global
+                         && parameterType.Name == "TestOutput")
+                {
+                    code.Definitions.AppendLine(
+                        "TestOutput testOutput = { &TestOutput___vtable, malloc(sizeof(TestOutput___Self)) };");
+                    arguments.Add("TestOutput___new__1(testOutput)");
+                }
                 else
                     throw new Exception($"Unexpected type for parameter to main: {parameterType}");
             }

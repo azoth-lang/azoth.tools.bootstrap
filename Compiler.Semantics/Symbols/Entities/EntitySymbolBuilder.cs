@@ -77,27 +77,27 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities
             method.Symbol.BeginFulfilling();
             var declaringClassSymbol = method.DeclaringClass.Symbol.Result;
             var resolver = new TypeResolver(method.File, diagnostics);
-            var selfParameterType = ResolveSelfParameterType(method.SelfParameter, method.DeclaringClass);
+            var selfParameterType = ResolveMethodSelfParameterType(method.SelfParameter, method.DeclaringClass);
             var parameterTypes = ResolveParameterTypes(resolver, method.Parameters, method.DeclaringClass);
             var returnType = ResolveReturnType(method.ReturnType, resolver);
             var symbol = new MethodSymbol(declaringClassSymbol, method.Name, selfParameterType, parameterTypes, returnType);
             method.Symbol.Fulfill(symbol);
             symbolTree.Add(symbol);
-            BuildSelParameterSymbol(symbol, method.SelfParameter, selfParameterType);
+            BuildSelfParameterSymbol(symbol, method.SelfParameter, selfParameterType);
             BuildParameterSymbols(symbol, method.Parameters, parameterTypes);
         }
 
         private void BuildConstructorSymbol(IConstructorDeclarationSyntax constructor)
         {
             constructor.Symbol.BeginFulfilling();
-            var selfParameterType = ResolveSelfParameterType(constructor.ImplicitSelfParameter, constructor.DeclaringClass);
+            var selfParameterType = ResolveConstructorSelfParameterType(constructor.ImplicitSelfParameter, constructor.DeclaringClass);
             var resolver = new TypeResolver(constructor.File, diagnostics);
             var parameterTypes = ResolveParameterTypes(resolver, constructor.Parameters, constructor.DeclaringClass);
             var declaringClassSymbol = constructor.DeclaringClass.Symbol.Result;
             var symbol = new ConstructorSymbol(declaringClassSymbol, constructor.Name, parameterTypes);
             constructor.Symbol.Fulfill(symbol);
             symbolTree.Add(symbol);
-            BuildSelParameterSymbol(symbol, constructor.ImplicitSelfParameter, selfParameterType);
+            BuildSelfParameterSymbol(symbol, constructor.ImplicitSelfParameter, selfParameterType);
             BuildParameterSymbols(symbol, constructor.Parameters, parameterTypes);
         }
 
@@ -228,7 +228,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities
             }
         }
 
-        private static ObjectType ResolveSelfParameterType(
+        private static ObjectType ResolveConstructorSelfParameterType(
             ISelfParameterSyntax selfParameter,
             IClassDeclarationSyntax declaringClass)
         {
@@ -238,7 +238,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities
             return selfType;
         }
 
-        private void BuildSelParameterSymbol(
+        private static ObjectType ResolveMethodSelfParameterType(
+            ISelfParameterSyntax selfParameter,
+            IClassDeclarationSyntax declaringClass)
+        {
+            var selfType = declaringClass.Symbol.Result.DeclaresDataType;
+            selfType = selfType.To(selfParameter.MutableSelf ? ReferenceCapability.LentMutable : ReferenceCapability.Lent);
+            return selfType;
+        }
+
+        private void BuildSelfParameterSymbol(
             InvocableSymbol containingSymbol,
             ISelfParameterSyntax param,
             DataType type)
