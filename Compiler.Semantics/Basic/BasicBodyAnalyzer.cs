@@ -96,7 +96,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 CheckType(ref variableDeclaration.Initializer, type);
             }
             else if (variableDeclaration.Initializer != null)
-                type = InferDeclarationType(ref variableDeclaration.Initializer, variableDeclaration.InferMutableType);
+                type = InferDeclarationType(ref variableDeclaration.Initializer, variableDeclaration.Capability);
             else
             {
                 diagnostics.Add(TypeError.NotImplemented(file, variableDeclaration.NameSpan,
@@ -121,7 +121,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         /// <summary>
         /// Infer the type of a variable declaration from an expression
         /// </summary>
-        private DataType InferDeclarationType([NotNull] ref IExpressionSyntax expression, bool inferMutableType)
+        private DataType InferDeclarationType([NotNull] ref IExpressionSyntax expression, IReferenceCapabilitySyntax? inferCapability)
         {
             var type = InferType(ref expression);
             if (!type.IsKnown) return DataType.Unknown;
@@ -145,7 +145,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 default:
                 {
                     // We assume immutability on variables unless explicitly stated
-                    if (!inferMutableType) return type.ToReadOnly();
+                    if (inferCapability is null) return type.ToReadOnly();
                     if (type is ReferenceType referenceType)
                     {
                         if (!referenceType.IsMutable)

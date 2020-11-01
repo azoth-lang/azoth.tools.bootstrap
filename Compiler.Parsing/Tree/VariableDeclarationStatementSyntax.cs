@@ -18,7 +18,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
         IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
         public TextSpan NameSpan { [DebuggerStepThrough] get; }
         public ITypeSyntax? Type { [DebuggerStepThrough] get; }
-        public bool InferMutableType { [DebuggerStepThrough] get; }
+        public IReferenceCapabilitySyntax? Capability { [DebuggerStepThrough] get; }
         [SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification =
             "Can't be readonly because a reference to it is exposed")]
         private IExpressionSyntax? initializer;
@@ -35,7 +35,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             Name name,
             TextSpan nameSpan,
             ITypeSyntax? typeSyntax,
-            bool inferMutableType,
+            IReferenceCapabilitySyntax? capability,
             IExpressionSyntax? initializer)
             : base(span)
         {
@@ -43,7 +43,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             Name = name;
             NameSpan = nameSpan;
             Type = typeSyntax;
-            InferMutableType = inferMutableType;
+            Capability = capability;
             this.initializer = initializer;
         }
 

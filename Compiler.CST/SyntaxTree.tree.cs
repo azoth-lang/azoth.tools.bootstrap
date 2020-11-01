@@ -22,6 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         typeof(IParameterSyntax),
         typeof(IArgumentSyntax),
         typeof(ITypeSyntax),
+        typeof(IReferenceCapabilitySyntax),
         typeof(IStatementSyntax),
         typeof(IExpressionSyntax))]
     public partial interface ISyntax
@@ -298,8 +299,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
 
     public partial interface ICapabilityTypeSyntax : ITypeSyntax
     {
+        IReferenceCapabilitySyntax Capability { get; }
         ITypeSyntax ReferentType { get; }
-        ReferenceCapability Capability { get; }
+    }
+
+    public partial interface IReferenceCapabilitySyntax : ISyntax
+    {
+        FixedList<ICapabilityToken> Tokens { get; }
+        DeclaredReferenceCapability Declared { get; }
     }
 
     [Closed(
@@ -327,7 +334,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         Name Name { get; }
         Promise<int?> DeclarationNumber { get; }
         ITypeSyntax? Type { get; }
-        bool InferMutableType { get; }
+        IReferenceCapabilitySyntax? Capability { get; }
         new Promise<VariableSymbol> Symbol { get; }
         [DisallowNull] ref IExpressionSyntax? Initializer { get; }
     }

@@ -73,13 +73,14 @@ Body: BodyOrBlock = Statements:BodyStatement*;
 Type;
 TypeName: Type, 'IHasContainingLexicalScope' = Name:'TypeName' ReferencedSymbol:'Promise<TypeSymbol?>';
 OptionalType: Type = Referent:Type;
-CapabilityType: Type = ReferentType:Type Capability:'ReferenceCapability';
+CapabilityType: Type = Capability:ReferenceCapability ReferentType:Type;
+ReferenceCapability = Tokens:'ICapabilityToken'* Declared:'DeclaredReferenceCapability';
 
 // ---------- Statements
 Statement;
 ResultStatement: Statement, BlockOrResult = &Expression;
 BodyStatement: Statement;
-VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Name:'Name' DeclarationNumber:'Promise<int?>' Type? InferMutableType:'bool' Symbol:'Promise<VariableSymbol>' &Initializer:Expression?;
+VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Name:'Name' DeclarationNumber:'Promise<int?>' Type? Capability:ReferenceCapability? Symbol:'Promise<VariableSymbol>' &Initializer:Expression?;
 ExpressionStatement: BodyStatement = &Expression;
 
 // ---------- Expressions

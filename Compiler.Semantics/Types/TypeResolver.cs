@@ -62,7 +62,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
                     if (type == DataType.Unknown)
                         return DataType.Unknown;
                     if (type is ReferenceType referenceType)
-                        referenceCapability.NamedType = referenceType.To(referenceCapability.Capability);
+                        referenceCapability.NamedType = Evaluate(referenceType, referenceCapability.Capability);
                     else
                         referenceCapability.NamedType = DataType.Unknown;
                     break;
@@ -75,6 +75,29 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
             }
 
             return typeSyntax.NamedType ?? throw new InvalidOperationException();
+        }
+
+        private static DataType Evaluate(ReferenceType referenceType, IReferenceCapabilitySyntax capability)
+        {
+            var referenceCapability = capability.Declared switch
+            {
+                DeclaredReferenceCapability.Isolated => ReferenceCapability.Isolated,
+                DeclaredReferenceCapability.LentIsolated => ReferenceCapability.LentIsolated,
+                DeclaredReferenceCapability.Transition => ReferenceCapability.Transition,
+                DeclaredReferenceCapability.LentTransition => ReferenceCapability.LentTransition,
+                DeclaredReferenceCapability.SharedMutable => ReferenceCapability.SharedMutable,
+                DeclaredReferenceCapability.LentMutable => ReferenceCapability.LentMutable,
+                DeclaredReferenceCapability.Const => ReferenceCapability.Const,
+                DeclaredReferenceCapability.LentConst => ReferenceCapability.LentConst,
+                DeclaredReferenceCapability.Shared => ReferenceCapability.Shared,
+                DeclaredReferenceCapability.Lent => ReferenceCapability.Lent,
+                DeclaredReferenceCapability.Identity => ReferenceCapability.Identity,
+
+                DeclaredReferenceCapability.Mutable => throw new NotImplementedException("Evaluate DeclaredReferenceCapability.Mutable"),
+                DeclaredReferenceCapability.Readable => throw new NotImplementedException("Evaluate DeclaredReferenceCapability.Readable"),
+                _ => throw ExhaustiveMatch.Failed(capability.Declared),
+            };
+            return referenceType.To(referenceCapability);
         }
     }
 }

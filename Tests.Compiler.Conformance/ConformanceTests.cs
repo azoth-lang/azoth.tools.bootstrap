@@ -266,8 +266,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
         {
             var testCases = new TheoryData<TestCase>();
             var testsDirectory = TestsDirectory.Get();
-            var azFiles = CodeFiles.GetIn(testsDirectory);
-            foreach (var fullPath in TestsDirectory.GetCodeFiles())
+            foreach (var fullPath in CodeFiles.GetIn(testsDirectory))
             {
                 var relativePath = Path.GetRelativePath(testsDirectory, fullPath);
                 testCases.Add(new TestCase(fullPath, relativePath));

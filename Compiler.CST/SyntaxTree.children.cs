@@ -97,7 +97,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
                     yield return n.Referent;
                     yield break;
                 case ICapabilityTypeSyntax n:
+                    yield return n.Capability;
                     yield return n.ReferentType;
+                    yield break;
+                case IReferenceCapabilitySyntax n:
                     yield break;
                 case IResultStatementSyntax n:
                     yield return n.Expression;
@@ -105,6 +108,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
                 case IVariableDeclarationStatementSyntax n:
                     if(!(n.Type is null))
                         yield return n.Type;
+                    if(!(n.Capability is null))
+                        yield return n.Capability;
                     if(!(n.Initializer is null))
                         yield return n.Initializer;
                     yield break;

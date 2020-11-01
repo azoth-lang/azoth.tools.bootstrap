@@ -408,7 +408,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
             var variableName = identifier.Value;
             ITypeSyntax? type = null;
             if (Tokens.Accept<IColonToken>())
-                type = ParseType(false);
+                type = ParseType(null);
             Tokens.Expect<IInKeywordToken>();
             var expression = ParseExpression();
             var block = ParseBlock();

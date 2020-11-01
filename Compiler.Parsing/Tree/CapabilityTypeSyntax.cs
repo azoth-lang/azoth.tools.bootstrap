@@ -1,16 +1,15 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
 {
     internal class CapabilityTypeSyntax : TypeSyntax, ICapabilityTypeSyntax
     {
+        public IReferenceCapabilitySyntax Capability { get; }
         public ITypeSyntax ReferentType { get; }
-        public ReferenceCapability Capability { get; }
 
         public CapabilityTypeSyntax(
-            ReferenceCapability referenceCapability,
+            IReferenceCapabilitySyntax referenceCapability,
             ITypeSyntax referentType,
             TextSpan span)
             : base(span)

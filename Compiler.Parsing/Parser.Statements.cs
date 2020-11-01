@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -59,9 +59,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
             var identifier = Tokens.RequiredToken<IIdentifierToken>();
             var name = identifier.Value;
             ITypeSyntax? type = null;
-            bool inferMutableType = false;
+            IReferenceCapabilitySyntax? capability = null;
             if (Tokens.Accept<IColonToken>())
-                (type, inferMutableType) = ParseVariableDeclarationType();
+                (type, capability) = ParseVariableDeclarationType();
 
             IExpressionSyntax? initializer = null;
             if (Tokens.Accept<IEqualsToken>())
@@ -70,24 +70,24 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
             var semicolon = Tokens.Expect<ISemicolonToken>();
             var span = TextSpan.Covering(binding, semicolon);
             return new VariableDeclarationStatementSyntax(span,
-                mutableBinding, name, identifier.Span, type, inferMutableType, initializer);
+                mutableBinding, name, identifier.Span, type, capability, initializer);
         }
 
-        private (ITypeSyntax? Type, bool InferMutableType) ParseVariableDeclarationType()
+        private (ITypeSyntax? Type, IReferenceCapabilitySyntax? Capability) ParseVariableDeclarationType()
         {
-            throw new NotImplementedException(nameof(ParseVariableDeclarationType));
-            //var mutableKeyword = Tokens.AcceptToken<IMutableKeywordToken>();
-            //if (mutableKeyword is null)
-            //    return (ParseType(false), false);
+            var capability = ParseReferenceCapability(null);
 
-            //switch (Tokens.Current)
-            //{
-            //    case IEqualsToken _:
-            //    case ISemicolonToken _:
-            //        return (null, true);
-            //    default:
-            //        return (ParseMutableType(mutableKeyword), false);
-            //}
+            switch (Tokens.Current)
+            {
+                case IEqualsToken _:
+                case ISemicolonToken _:
+                    // TODO this is strange that  let x := ...; is valid
+                    capability ??= new ReferenceCapabilitySyntax(Tokens.Current.Span.AtStart(),
+                        Enumerable.Empty<ICapabilityToken>(), DeclaredReferenceCapability.Readable);
+                    return (null, capability);
+                default:
+                    return (ParseTypeWithCapability(capability), null);
+            }
         }
 
         private IExpressionStatementSyntax ParseUnsafeStatement()
