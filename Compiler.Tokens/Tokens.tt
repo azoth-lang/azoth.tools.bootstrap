@@ -1,0 +1,88 @@
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+    var tokens = new List<string>()
+    {
+        "EndOfFile",
+        "OpenBrace", // `{` U+007B
+        "CloseBrace", // `}` U+007D
+        "OpenParen", // `(` U+0028
+        "CloseParen", // `)` U+0029
+        //"OpenBracket", // `[` U+005B
+        //"CloseBracket", // `]` U+005D
+        "Semicolon", // `;` U+003B
+        "Comma", // `",` U+002C
+        //"Pipe", // `|` U+007C
+        "Colon", // `:` U+003A
+        "RightArrow", // `→` U+2192, `->` U+002D, U+003E
+        //"Hash", // `#` U+0023
+        //"HashHash", // `##` U+0023, U+0023
+        "Dot", // `.` U+002E
+        "ColonColonDot", // `::.` U+003A, U+003A, U+002E
+        "DotDot", // `..` U+002E, U+002E
+        "LessThanDotDot", // `<..` U+003C, U+002E, U+002E
+        "DotDotLessThan", // `..<` U+002E, U+002E, U+003C
+        "LessThanDotDotLessThan", // `<..<` U+002E, U+002E, U+003C
+        //"AtSign", // `@` U+0040 (named at sign to distinguish it from the word "at")
+        //"Caret", // `^` U+005E
+        //"CaretDot", // `^.` U+005E, U+002E
+        "Plus", // `+` U+002B
+        "Minus", // `-` U+002D
+        "Asterisk", // `*` U+002A
+        "Slash", // `/` U+002F
+        "Equals", // `=` U+003D
+        "EqualsEquals", // `==` U+003D", U+003D
+        "NotEqual", // `≠` U+2260, `=/=` U+003D, U+002F, U+003D
+        "GreaterThan", // `>` U+003E
+        "GreaterThanOrEqual", // `≥` U+2265", `>=` U+003E", U+003D
+        "LessThan", // `<` U+003C
+        "LessThanOrEqual", // `≤` U+2264", `<=` U+003C", U+003D
+        "PlusEquals", // `+=` U+002B", U+003D
+        "MinusEquals", // `-=` U+002D", U+003D
+        "AsteriskEquals", // `*=` U+002A", U+003D
+        "SlashEquals", // `/=` U+002F", U+003D
+        "Question", // `?` U+003F
+        "QuestionQuestion", // `??` U+003F, U+003F
+        "QuestionDot", // `?.` U+003F, U+002E
+        "LessThanColon" , // `<:` U+003C, U+003A
+        "RightDoubleArrow", // `⇒` U+21D2, `=>` U+003D, U+003E
+    }.AsReadOnly();
+#>
+using Azoth.Tools.Bootstrap.Compiler.Core;
+using ExhaustiveMatching;
+
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens
+{
+    public static partial class TokenFactory
+    {
+<# foreach(var token in tokens) {#>
+        public static I<#=token#>Token <#=token#>(TextSpan span)
+        {
+            return new <#=token#>Token(span);
+        }
+
+<#}#>
+    }
+
+    [Closed(
+<# for (int i = 0; i < tokens.Count; i++) {#>
+        typeof(I<#=tokens[i]#>Token)<# if(i == tokens.Count-1) {#>)]<#} else {#>,<#}#>
+
+<#}#>    public partial interface IEssentialToken { }
+
+<# foreach(var token in tokens) {#>
+
+    public partial interface I<#=token#>Token : IEssentialToken { }
+    internal partial class <#=token#>Token : Token, I<#=token#>Token
+    {
+        public <#=token#>Token(TextSpan span)
+            : base(span)
+        {
+        }
+    }
+<#}#>
+}

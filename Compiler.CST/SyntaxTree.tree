@@ -1,0 +1,133 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.CST;
+◊walkers_namespace Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
+◊base 'ISyntax';
+◊prefix I;
+◊suffix Syntax;
+◊list FixedList;
+◊using System.Numerics;
+◊using Azoth.Tools.Bootstrap.Compiler.Core;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
+◊using Azoth.Tools.Bootstrap.Compiler.Names;
+◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
+◊using Azoth.Tools.Bootstrap.Compiler.Tokens;
+◊using Azoth.Tools.Bootstrap.Compiler.Types;
+◊using Azoth.Tools.Bootstrap.Framework;
+
+'ISyntax' = Span:'TextSpan';
+// Note: by declaring the AllEntityDeclarations property type with quotes, it avoids the system assuming it must represent a direct child syntax node
+CompilationUnit = File:'CodeFile' ImplicitNamespaceName:'NamespaceName' UsingDirectives:UsingDirective* Declarations:NonMemberDeclaration* Diagnostics:'Diagnostic'*;
+UsingDirective = Name:'NamespaceName';
+
+// ---------- Special Parts
+BodyOrBlock = Statements:Statement*;
+ElseClause;
+BlockOrResult: ElseClause;
+
+// ---------- Bindings
+Binding = IsMutableBinding:'bool' Symbol:'IPromise<BindingSymbol>';
+LocalBinding: Binding = Symbol:'IPromise<NamedBindingSymbol>';
+
+// ---------- Declarations
+Declaration: 'ISyntax', 'IHasContainingLexicalScope' = File:'CodeFile' Name:'Name'? NameSpan:'TextSpan' Symbol:'IPromise<Symbol>';
+EntityDeclaration: Declaration = AccessModifier:'IAccessModifierToken'?;
+InvocableDeclaration: EntityDeclaration = Parameters:ConstructorParameter* Symbol:'IPromise<InvocableSymbol>';
+ConcreteInvocableDeclaration: InvocableDeclaration = Body;
+
+// ---------- Non-Member Declarations
+NonMemberDeclaration: Declaration = ContainingNamespaceName:'NamespaceName' Name:'Name';
+// TODO if a compound namespace declaration was actually mutiple declarations, it would simplify other things
+NamespaceDeclaration: NonMemberDeclaration = IsGlobalQualified:'bool' DeclaredNames:'NamespaceName' FullName:'NamespaceName' Symbol:'Promise<NamespaceOrPackageSymbol>' UsingDirectives:UsingDirective* Declarations:NonMemberDeclaration*;
+
+// ---------- Non-Member Entity Declarations
+NonMemberEntityDeclaration: EntityDeclaration, NonMemberDeclaration = Name:'Name';
+ClassDeclaration: NonMemberEntityDeclaration = MutableModifier:'IMutableKeywordToken'? Name:'Name' Symbol:'AcyclicPromise<ObjectTypeSymbol>' Members:MemberDeclaration* DefaultConstructorSymbol:'ConstructorSymbol'?;
+FunctionDeclaration: NonMemberEntityDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* ReturnType:Type? Body Symbol:'AcyclicPromise<FunctionSymbol>';
+
+// ---------- Member Declarations
+// Note: by declaring the DeclaringClass property type with quotes, it avoids the system assuming it must represent a child syntax node
+MemberDeclaration: EntityDeclaration = DeclaringClass:'IClassDeclarationSyntax';
+MethodDeclaration: MemberDeclaration, InvocableDeclaration = Name:'Name' SelfParameter Parameters:NamedParameter* ReturnType:Type? Symbol:'AcyclicPromise<MethodSymbol>';
+AbstractMethodDeclaration: MethodDeclaration = SelfParameter Parameters:NamedParameter* ReturnType:Type?;
+ConcreteMethodDeclaration: MethodDeclaration, ConcreteInvocableDeclaration = SelfParameter Parameters:NamedParameter* ReturnType:Type? Body;
+ConstructorDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = ImplicitSelfParameter:SelfParameter Parameters:ConstructorParameter* Body Symbol:'AcyclicPromise<ConstructorSymbol>';
+FieldDeclaration: MemberDeclaration, Binding = Name:'Name' Type Symbol:'AcyclicPromise<FieldSymbol>' &Initializer:Expression?;
+AssociatedFunctionDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* ReturnType:Type? Body Symbol:'AcyclicPromise<FunctionSymbol>';
+
+// ---------- Parameters --------------
+Parameter = Name:'Name'? DataType:'IPromise<DataType>' Unused:'bool';
+/// A parameter that can be declared in a constructor
+ConstructorParameter: Parameter;
+/// A parameter that creates a binding, i.e. a named or self parameter
+BindingParameter: Parameter, Binding;
+NamedParameter: Parameter, ConstructorParameter, BindingParameter, LocalBinding = Name:'Name' DeclarationNumber:'Promise<int?>' Type Symbol:'Promise<VariableSymbol>' DefaultValue:Expression?;
+SelfParameter: Parameter, BindingParameter = MutableSelf:'bool' Symbol:'Promise<SelfParameterSymbol>';
+FieldParameter: Parameter, ConstructorParameter = ReferencedSymbol:'Promise<FieldSymbol?>' DefaultValue:Expression?;
+
+
+// ---------- Function Parts
+Argument = &Expression;
+Body: BodyOrBlock = Statements:BodyStatement*;
+
+// ---------- Types
+Type;
+TypeName: Type, 'IHasContainingLexicalScope' = Name:'TypeName' ReferencedSymbol:'Promise<TypeSymbol?>';
+OptionalType: Type = Referent:Type;
+CapabilityType: Type = ReferentType:Type Capability:'ReferenceCapability';
+
+// ---------- Statements
+Statement;
+ResultStatement: Statement, BlockOrResult = &Expression;
+BodyStatement: Statement;
+VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Name:'Name' DeclarationNumber:'Promise<int?>' Type? InferMutableType:'bool' Symbol:'Promise<VariableSymbol>' &Initializer:Expression?;
+ExpressionStatement: BodyStatement = &Expression;
+
+// ---------- Expressions
+Expression;
+AssignableExpression: Expression;
+BlockExpression: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
+NewObjectExpression: Expression = Type:TypeName ConstructorName:'Name'? ConstructorNameSpan:'TextSpan'? Arguments:Argument* ReferencedSymbol:'Promise<ConstructorSymbol?>';
+UnsafeExpression: Expression = &Expression;
+
+// ---------- Literal Expressions
+LiteralExpression: Expression;
+BoolLiteralExpression: LiteralExpression = Value:'bool';
+IntegerLiteralExpression: LiteralExpression = Value:'BigInteger';
+NoneLiteralExpression: LiteralExpression;
+StringLiteralExpression: LiteralExpression = Value:'string';
+
+// ---------- Operator Expressions
+AssignmentExpression: Expression = &LeftOperand:AssignableExpression Operator:'AssignmentOperator' &RightOperand:Expression;
+BinaryOperatorExpression: Expression = &LeftOperand:Expression Operator:'BinaryOperator' &RightOperand:Expression;
+UnaryOperatorExpression: Expression = Fixity:'UnaryOperatorFixity' Operator:'UnaryOperator' &Operand:Expression;
+
+// ---------- Control Flow Expressions
+IfExpression: Expression, ElseClause = &Condition:Expression ThenBlock:BlockOrResult ElseClause?;
+LoopExpression: Expression = Block:BlockExpression;
+WhileExpression: Expression = &Condition:Expression Block:BlockExpression;
+ForeachExpression: Expression, LocalBinding = VariableName:'Name' DeclarationNumber:'Promise<int?>' &InExpression:Expression Type? Symbol:'Promise<VariableSymbol>' Block:BlockExpression;
+BreakExpression: Expression = &Value:Expression?;
+NextExpression: Expression;
+ReturnExpression: Expression = &Value:Expression?;
+
+// ---------- Implicit Conversion Expressions
+ImplicitConversionExpression: Expression = Expression DataType:'DataType';
+ImplicitImmutabilityConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'ObjectType';
+ImplicitNoneConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'OptionalType';
+ImplicitNumericConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'NumericType';
+ImplicitOptionalConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'OptionalType';
+
+// ---------- Invocation Expressions
+InvocationExpression: Expression = InvokedName:'Name' InvokedNameSpan:'TextSpan' Arguments:Argument* ReferencedSymbol:'IPromise<InvocableSymbol?>';
+UnqualifiedInvocationExpression: InvocationExpression, 'IHasContainingLexicalScope' = Namespace:'NamespaceName' Arguments:Argument* ReferencedSymbol:'Promise<FunctionSymbol?>';
+// TODO in the CST, we don't know that this is a method invocation, it is just a qualified invocation (not even member because namespaces don't have members)
+// TODO remove IHasContainingLexicalScope when not needed because of conversion to FunctionInvocationExpression
+QualifiedInvocationExpression: InvocationExpression, 'IHasContainingLexicalScope' = &Context:Expression Arguments:Argument* ReferencedSymbol:'Promise<MethodSymbol?>';
+
+// ---------- Variable Expressions
+NameExpression: AssignableExpression, 'IHasContainingLexicalScope' = Name:'Name'? ReferencedSymbol:'Promise<NamedBindingSymbol?>';
+SelfExpression: Expression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfParameterSymbol?>';
+QualifiedNameExpression: AssignableExpression = &Context:Expression AccessOperator:'AccessOperator' Field:NameExpression ReferencedSymbol:'IPromise<FieldSymbol?>';
+MutateExpression: Expression = &Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
+MoveExpression: Expression = &Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
+ShareExpression: Expression = &Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';

@@ -1,0 +1,27 @@
+namespace azoth.tools.compiler.runtime;
+
+/// String is a good example where treating the pseudo reference lifetime as just
+/// $self wouldn't make sense. For example, a string literal would have a "static"
+/// lifetime even though the struct referencing it would have a shorter lifetime.
+/// Thus the lifetime needs to be a separate lifetime parameter. Thus the new
+/// syntax of `ref struct` and the lifetime `$ref`.
+public ref struct String
+{
+    public let count: size;
+    protected let data: @byte;
+
+    // Unsafe because it can violate the invariants that `data` point to a buffer
+    // of at least `count` bytes and that those bytes be valid UTF-8
+    public unsafe init(count: size, data: @byte)
+    {
+        self.count = count;
+        self.data = data;
+    }
+
+    // TODO the string needs to delete the memory if it is owned, but we don't
+    // have the allocate/free functions in the runtime?
+    // public safe delete()
+    // {
+
+    // }
+}

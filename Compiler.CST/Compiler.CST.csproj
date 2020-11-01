@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <AssemblyName>Azoth.Tools.Bootstrap.Compiler.CST</AssemblyName>
+    <RootNamespace>Azoth.Tools.Bootstrap.Compiler.CST</RootNamespace>
+    <Nullable>enable</Nullable>
+    <DisableFastUpToDateCheck>True</DisableFastUpToDateCheck>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ExhaustiveMatching.Analyzer" Version="0.5.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Compiler.Core\Compiler.Core.csproj" />
+    <ProjectReference Include="..\Framework\Framework.csproj" />
+    <ProjectReference Include="..\Compiler.IntermediateLanguage\Compiler.IntermediateLanguage.csproj" />
+    <ProjectReference Include="..\Compiler.LexicalScopes\Compiler.LexicalScopes.csproj" />
+    <ProjectReference Include="..\Compiler.Names\Compiler.Names.csproj" />
+    <ProjectReference Include="..\Compiler.Primitives\Compiler.Primitives.csproj" />
+    <ProjectReference Include="..\Compiler.Symbols\Compiler.Symbols.csproj" />
+    <ProjectReference Include="..\Compiler.Tokens\Compiler.Tokens.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="SyntaxTree.tree.cs">
+      <DependentUpon>SyntaxTree.tree</DependentUpon>
+    </Compile>
+        <Compile Update="SyntaxTree.children.cs">
+      <DependentUpon>SyntaxTree.tree</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SyntaxTree.tree&quot;" />
+  </Target>
+
+</Project>

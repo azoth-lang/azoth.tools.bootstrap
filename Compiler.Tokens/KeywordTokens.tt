@@ -1,0 +1,137 @@
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+    var keywords = new List<string>()
+    {
+        "Published",
+        "Public",
+        //"Protected",
+        "Let",
+        "Var",
+        "Void",
+        "Int",
+        //"Int8",
+        //"Int16",
+        //"Int64",
+        "UInt",
+        //"UInt16",
+        //"UInt64",
+        "Byte",
+        "Size",
+        "Offset",
+        "Bool",
+        "Never",
+        "Return",
+        "Class",
+        "Function",
+        "New",
+        //"Init",
+        "Isolated",
+        "Transition",
+        "Shared",
+        "Const",
+        "Id",
+        "Lent",
+        "Namespace",
+        "Using",
+        "Foreach",
+        "In",
+        "If",
+        "Else",
+        //"Struct",
+        //"Enum",
+        "Unsafe",
+        "Safe",
+        "Self",
+        //"SelfType",
+        //"Base",
+        //"Type",
+        "Mutable",
+        //"Params",
+        //"May",
+        //"No",
+        //"Throw",
+        //"Ref",
+        //"Abstract",
+        //"Get",
+        //"Set",
+        //"Requires",
+        //"Ensures",
+        //"Invariant",
+        //"Where",
+        //"Uninitialized",
+        "None",
+        //"Operator",
+        //"Implicit",
+        //"Explicit",
+        "Move",
+        "Copy",
+        //"Match",
+        "Loop",
+        "While",
+        "Break",
+        "Next",
+        //"Override",
+        "Any",
+        "True",
+        "False",
+        "As",
+        "And",
+        "Or",
+        "Not",
+        //"Trait",
+        //"Float32",
+        //"Float64",
+        //"Underscore",
+        //"External",
+    }.AsReadOnly();
+#>
+using System;
+using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Core;
+using ExhaustiveMatching;
+
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens
+{
+    public static partial class TokenTypes
+    {
+        private static readonly IReadOnlyList<Type> Keyword = new List<Type>()
+        {
+<# foreach(var keyword in keywords) {#>
+            typeof(<#=keyword#>KeywordToken),
+<#}#>
+        }.AsReadOnly();
+    }
+
+    public static partial class TokenFactory
+    {
+<# foreach(var keyword in keywords) {#>
+        public static I<#=keyword#>KeywordToken <#=keyword#>Keyword(TextSpan span)
+        {
+            return new <#=keyword#>KeywordToken(span);
+        }
+<#}#>
+    }
+
+    [Closed(
+<# for (int i = 0; i < keywords.Count; i++) {#>
+        typeof(I<#=keywords[i]#>KeywordToken)<# if(i == keywords.Count-1) {#>)]<#} else {#>,<#}#>
+
+<#}#>    public partial interface IKeywordToken : IToken { }
+
+<# foreach(var keyword in keywords) {#>
+
+    public partial interface I<#=keyword#>KeywordToken : IKeywordToken { }
+    internal partial class <#=keyword#>KeywordToken : Token, I<#=keyword#>KeywordToken
+    {
+        public <#=keyword#>KeywordToken(TextSpan span)
+            : base(span)
+        {
+        }
+    }
+<#}#>
+}

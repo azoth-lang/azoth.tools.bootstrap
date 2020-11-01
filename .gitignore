@@ -1,0 +1,12 @@
+# VS Files
+.vs/
+bin/
+obj/
+*.user
+launchSettings.json
+
+# VS Code Files
+.vscode/
+
+# OSX Files
+.DS_Store

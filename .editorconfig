@@ -1,0 +1,42 @@
+# http://editorconfig.org
+
+# top-most EditorConfig file
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{c,h,rsrc,ail}]
+end_of_line = lf
+
+[*.{xml,csproj}]
+indent_size = 2
+
+[*.{bat,cs,sln,csproj}]
+end_of_line = crlf
+
+# .NET formatting settings:
+[*.cs]
+dotnet_sort_system_directives_first = true
+
+# CA1062: Validate arguments of public methods
+dotnet_diagnostic.CA1062.severity = silent
+
+# CA1715: Identifiers should have correct prefix
+dotnet_diagnostic.CA1715.severity = silent
+
+# CA1710: Identifiers should have correct suffix
+dotnet_diagnostic.CA1710.severity = silent
+
+# CA1032: Implement standard exception constructors
+dotnet_diagnostic.CA1032.severity = silent
+
+# CA1303: Do not pass literals as localized parameters
+dotnet_diagnostic.CA1303.severity = silent
+
+# CA1716: Identifiers should not match keywords
+dotnet_diagnostic.CA1716.severity = silent

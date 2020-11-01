@@ -1,0 +1,3 @@
+[submodule "azoth.language.tests"]
+	path = azoth.language.tests
+	url = https://github.com/azoth-lang/azoth.language.tests.git
