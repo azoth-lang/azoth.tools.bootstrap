@@ -9,6 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
     internal class SelfParameterSyntax : ParameterSyntax, ISelfParameterSyntax
     {
         public bool IsMutableBinding => false;
+        // TODO replace with a reference capability
         public bool MutableSelf { get; }
         public Promise<SelfParameterSymbol> Symbol { get; } = new Promise<SelfParameterSymbol>();
         IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;

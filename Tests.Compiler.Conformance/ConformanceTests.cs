@@ -113,21 +113,30 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
                 var sourcePaths = CodeFiles.GetIn(sourceDir);
                 var rootNamespace = FixedList<string>.Empty;
                 var codeFiles = sourcePaths.Select(p => LoadCode(p, sourceDir, rootNamespace)).ToList();
-                return compiler.CompilePackage(TestsSupportPackage.Name, codeFiles,
+                var package = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles,
                     FixedDictionary<Name, PackageIL>.Empty);
+                if (package.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
+                    ReportSupportCompilationErrors(package.Diagnostics);
+                return package;
             }
             catch (FatalCompilationErrorException ex)
             {
-                testOutput.WriteLine("Test Support Package Compiler Errors:");
-                foreach (var diagnostic in ex.Diagnostics)
-                {
-                    testOutput.WriteLine(
-                        $"{diagnostic.File.Reference}:{diagnostic.StartPosition.Line}:{diagnostic.StartPosition.Column} {diagnostic.Level} {diagnostic.ErrorCode}");
-                    testOutput.WriteLine(diagnostic.Message);
-                }
-                Assert.True(false, "Compilation Errors in Test Support Package");
+                ReportSupportCompilationErrors(ex.Diagnostics);
                 throw new UnreachableCodeException();
             }
+        }
+
+        private void ReportSupportCompilationErrors(FixedList<Diagnostic> diagnostics)
+        {
+            testOutput.WriteLine("Test Support Package Compiler Errors:");
+            foreach (var diagnostic in diagnostics)
+            {
+                testOutput.WriteLine(
+                    $"{diagnostic.File.Reference}:{diagnostic.StartPosition.Line}:{diagnostic.StartPosition.Column} {diagnostic.Level} {diagnostic.ErrorCode}");
+                testOutput.WriteLine(diagnostic.Message);
+            }
+
+            Assert.True(false, "Compilation Errors in Test Support Package");
         }
 
         private static CodeFile LoadCode(

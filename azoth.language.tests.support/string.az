@@ -9,3 +9,74 @@
 //         return new string(value);
 //     }
 // }
+
+published class String
+{
+    published let byte_count: size; // TODO this should just be the count of the byte array i.e. `bytes.count`
+    public let bytes: size; // raw pointer hidden as a size
+
+    // Constructor is private because it uses low level pointer functionality
+    // The language will bypass access rules to call it for string constants,
+    // but give them a type of `String$forever`
+    /* unsafe */ new(byte_count: size, bytes: size)
+    {
+        self.byte_count = byte_count;
+        self.bytes = bytes;
+    }
+
+    // Once it is supported, this should be a copy constructor
+    // published safe new(other: String)
+    // {
+    //     self.byte_count = other.byte_count;
+    //     self.bytes = mem_allocate(self.byte_count);
+    //     unsafe(mem_copy(other.bytes, self.bytes, self.byte_count));
+    // }
+
+    /// Concatenate two strings producing a new one
+    // published /* safe */ fn concat(self, other: String) -> owned String
+    // {
+    //     let new_byte_count = self.byte_count + other.byte_count;
+    //     let new_bytes = mem_allocate(new_byte_count);
+    //     unsafe
+    //     {
+    //         mem_copy(self.bytes, new_bytes, self.byte_count);
+    //         mem_copy(other.bytes, new_bytes + self.byte_count, other.byte_count);
+    //         return new String(new_byte_count, new_bytes);
+    //     }
+    // }
+
+    // published safe fn equals(self, other: String) -> bool
+    // {
+    //     if self.byte_count =/= other.byte_count => return false;
+
+    //     foreach i: size in 0..<other.byte_count
+    //     {
+    //         if mem_get_byte(self.bytes+i) =/= mem_get_byte(other.bytes+i)
+    //         {
+    //             return false;
+    //         }
+    //     }
+
+    //     return true;
+    // }
+
+    // Pad this string out to a given length using the supplied string
+    // Currently only works correctly if the string is comprised only of ASCII
+    // characters and `with` is only a single character
+    // published safe fn pad_left(self, total_length: size, pad_with: String) -> String$owned
+    // {
+    //     if self.bytes >= total_length => return new String(self);
+
+    //     let new_bytes = mem_allocate(total_length);
+    //     let padding = total_length - self.byte_count;
+    //     unsafe
+    //     {
+    //         mem_copy(self.bytes, new_bytes + padding, self.byte_count);
+    //         // foreach i: size in 0..<padding
+    //         // {
+    //         //     mem_copy(pad_with.bytes, new_bytes+i, 1);
+    //         // }
+    //         return new String(total_length, new_bytes);
+    //     }
+    // }
+}

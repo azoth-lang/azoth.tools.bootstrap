@@ -47,13 +47,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         }
 
         /// <summary>
-        /// Make a mutable version of this type regardless of whether it was declared
-        /// mutable for use as the constructor parameter.
+        /// Make a lent isolated version of this type  for use as the constructor parameter. One issue it
+        /// that it should be mutable even if the underlying type is declared immutable.
         /// </summary>
         public ObjectType ToConstructorSelf()
         {
-            //return new ObjectType(ContainingNamespace, Name, DeclaredMutable, ReferenceCapability.Borrowed);
-            throw new NotImplementedException();
+            // TODO handle the case where the type is not declared mutable but the constructor arg allows mutate
+            return new ObjectType(ContainingNamespace, Name, DeclaredMutable, ReferenceCapability.LentIsolated);
         }
 
         public ObjectType ToConstructorReturn()
