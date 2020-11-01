@@ -9,7 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.ImplicitOperations
 {
-    internal class ImplicitShareExpressionSyntax : ImplicitExpressionSyntax, IShareExpressionSyntax
+    internal class ImplicitReadExpressionSyntax : ImplicitExpressionSyntax, IShareExpressionSyntax
     {
         [SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification =
             "Can't be readonly because a reference to it is exposed")]
@@ -21,7 +21,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.ImplicitOperations
         }
         public Promise<BindingSymbol?> ReferencedSymbol { get; }
 
-        public ImplicitShareExpressionSyntax(IExpressionSyntax referent, DataType type, BindingSymbol? referencedSymbol)
+        public ImplicitReadExpressionSyntax(IExpressionSyntax referent, DataType type, BindingSymbol? referencedSymbol)
             : base(type, referent.Span, ExpressionSemantics.Share)
         {
             this.referent = referent;
@@ -30,7 +30,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.ImplicitOperations
 
         public override string ToString()
         {
-            return $"⟦share⟧ {Referent}";
+            return $"⟦read⟧ {Referent}";
         }
 
         public string ToGroupedString(OperatorPrecedence surroundingPrecedence)

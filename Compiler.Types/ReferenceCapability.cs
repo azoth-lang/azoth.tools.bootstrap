@@ -1,3 +1,5 @@
+using System;
+
 namespace Azoth.Tools.Bootstrap.Compiler.Types
 {
     public class ReferenceCapability
@@ -105,6 +107,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             if (!AllowsReadAliases && from.AllowsReadAliases) return false;
 
             return true;
+        }
+
+        public ReferenceCapability ToMutable()
+        {
+            if (!AllowsWrite) throw new InvalidOperationException($"Can't convert '{this}' to mutable because it does not allow write.");
+            return IsLent ? LentMutable : SharedMutable;
         }
 
         public override string ToString()

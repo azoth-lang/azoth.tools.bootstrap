@@ -306,7 +306,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         InferType(ref exp.Value, false);
                         // If we return ownership, there can be an implicit move
                         // otherwise there could be an implicit share or borrow
-                        InsertImplicitActionIfNeeded(ref exp.Value, expectedReturnType, implicitBorrowAllowed: false);
+                        InsertImplicitActionIfNeeded(ref exp.Value, expectedReturnType, implicitMutateAllowed: false);
                         var actualType = InsertImplicitConversionIfNeeded(ref exp.Value, expectedReturnType);
                         if (!expectedReturnType.IsAssignableFrom(actualType))
                             diagnostics.Add(TypeError.CannotConvert(file, exp.Value, actualType, expectedReturnType));
@@ -383,7 +383,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     var type = InferNameType(exp);
                     // In many contexts, variable names are implicitly shared
                     if (implicitShare)
-                        type = InsertImplicitShareIfNeeded(ref expression, type);
+                        type = InsertImplicitReadIfNeeded(ref expression, type);
 
                     // TODO do a more complete generation of expression semantics
                     if (exp.Semantics is null)
@@ -560,7 +560,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                                                   .Where(s => s.Name == member.Name).ToFixedList();
                     var type = AssignReferencedSymbolAndType(member, memberSymbols);
                     // In many contexts, variable names are implicitly shared
-                    if (implicitShare) type = InsertImplicitShareIfNeeded(ref expression, type);
+                    if (implicitShare) type = InsertImplicitReadIfNeeded(ref expression, type);
 
                     if (exp.Semantics is null)
                         switch (type.Semantics)
@@ -595,7 +595,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 {
                     var type = InferSelfType(exp);
                     if (implicitShare)
-                        type = InsertImplicitShareIfNeeded(ref expression, type);
+                        type = InsertImplicitReadIfNeeded(ref expression, type);
 
                     if (exp.Semantics is null)
                     {
@@ -616,7 +616,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             }
         }
 
-        private static DataType InsertImplicitShareIfNeeded([NotNull] ref IExpressionSyntax expression, DataType type)
+        private static DataType InsertImplicitReadIfNeeded([NotNull] ref IExpressionSyntax expression, DataType type)
         {
             // Value types aren't shared
             if (!(type is ReferenceType referenceType)) return type;
@@ -643,7 +643,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
             type = referenceType.To(ReferenceCapability.Shared);
 
-            expression = new ImplicitShareExpressionSyntax(expression, type, referencedSymbol);
+            expression = new ImplicitReadExpressionSyntax(expression, type, referencedSymbol);
 
             return type;
         }
@@ -664,14 +664,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     referencedSymbol = exp.ReferencedSymbol.Result;
                     break;
                 default:
-                    // implicit borrow isn't needed around other expressions
+                    // implicit mutate isn't needed around other expressions
                     return;
             }
 
-            throw new NotImplementedException("Implicit mutate reference capability");
-            //type = referenceType.To(ReferenceCapability.Borrowed);
+            type = referenceType.ToMutable();
 
-            //expression = new ImplicitMutateExpressionSyntax(expression, type, referencedSymbol);
+            expression = new ImplicitMutateExpressionSyntax(expression, type, referencedSymbol);
         }
 
         private static void InsertImplicitMoveIfNeeded([NotNull] ref IExpressionSyntax expression, DataType type)
@@ -692,7 +691,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             expression.Semantics = ExpressionSemantics.Acquire;
         }
 
-        private static void InsertImplicitActionIfNeeded([NotNull] ref IExpressionSyntax expression, DataType toType, bool implicitBorrowAllowed)
+        private static void InsertImplicitActionIfNeeded([NotNull] ref IExpressionSyntax expression, DataType toType, bool implicitMutateAllowed)
         {
             var fromType = expression.DataType.Assigned();
             if (!(fromType is ReferenceType from) || !(toType is ReferenceType to)) return;
@@ -700,8 +699,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             if (@from.IsMovable && to.IsMovable)
                 InsertImplicitMoveIfNeeded(ref expression, to);
             else if (@from.IsReadOnly || to.IsReadOnly)
-                InsertImplicitShareIfNeeded(ref expression, to.ToReadOnly());
-            else if (implicitBorrowAllowed)
+                InsertImplicitReadIfNeeded(ref expression, to.ToReadOnly());
+            else if (implicitMutateAllowed)
                 InsertImplicitMutateIfNeeded(ref expression, to);
         }
 
@@ -792,7 +791,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     qualifiedInvocation.ReferencedSymbol.Fulfill(methodSymbol);
 
                     var selfParamType = methodSymbol.SelfDataType;
-                    InsertImplicitActionIfNeeded(ref qualifiedInvocation.Context, selfParamType, implicitBorrowAllowed: true);
+                    InsertImplicitActionIfNeeded(ref qualifiedInvocation.Context, selfParamType, implicitMutateAllowed: true);
 
                     InsertImplicitConversionIfNeeded(ref qualifiedInvocation.Context, selfParamType);
                     CheckArgumentTypeCompatibility(selfParamType, qualifiedInvocation.Context);

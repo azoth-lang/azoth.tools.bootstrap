@@ -10,5 +10,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         {
             return type.To_ReturnsSelf(referenceCapability).Cast<T>();
         }
+
+        public static T ToMutable<T>(this T type)
+            where T : ReferenceType
+        {
+            return type.ToMutable_ReturnsSelf().Cast<T>();
+        }
     }
 }

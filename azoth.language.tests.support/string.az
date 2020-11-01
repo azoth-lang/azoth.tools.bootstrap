@@ -10,7 +10,7 @@
 //     }
 // }
 
-published class String
+published class string
 {
     published let byte_count: size; // TODO this should just be the count of the byte array i.e. `bytes.count`
     public let bytes: size; // raw pointer hidden as a size

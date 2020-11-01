@@ -49,28 +49,28 @@ EXTERN_INTEGER_OPERATIONS(_offset)
 // conversion functions
 extern inline _int _convert___byte___int(_byte value);
 
-// Forward declare String that is in std lib for use by intrinsics
-typedef struct String___Self String___Self;
-typedef struct String___VTable String___VTable;
-struct String
+// Forward declare string that is in std lib for use by intrinsics
+typedef struct string___Self string___Self;
+typedef struct string___VTable string___VTable;
+struct string
 {
-    String___VTable const* restrict _vtable;
-    String___Self* restrict _self;
+    string___VTable const* restrict _vtable;
+    string___Self* restrict _self;
 };
-extern String___VTable String___vtable;
+extern string___VTable string___vtable;
 
-String String___new__3(String _self, _size byte_count, _size bytes);
+string string___new__3(string _self, _size byte_count, _size bytes);
 
 // Intrinsic Functions
-String _uint__to_display_string__1(_uint value)
+string _uint__to_display_string__1(_uint value)
 {
     int length = snprintf(NULL, 0, "%u", value._value);
     char* str = malloc(length + 1);
     snprintf(str, length + 1, "%u", value._value);
-    String instance = (String){&String___vtable, malloc(sizeof(String))};
+    string instance = (string){&string___vtable, malloc(sizeof(string))};
     _size byte_count = (_size) { length };
     _size bytes = (_size) { (uintptr_t)str };
-    return String___new__3(instance, byte_count, bytes);
+    return string___new__3(instance, byte_count, bytes);
 }
 _size intrinsics__mem_allocate__1(_size length)
 {

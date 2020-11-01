@@ -31,6 +31,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             DeclaredMutable = declaredMutable;
         }
 
+        [SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores",
+            Justification = "Returns self idiom")]
+        protected internal Self ToMutable_ReturnsSelf()
+        {
+            if (!DeclaredMutable) throw new InvalidOperationException("Can't convert type declared immutable to mutable reference");
+            return To_ReturnsSelf(ReferenceCapability.ToMutable());
+        }
+
         protected internal sealed override Self ToReadOnly_ReturnsSelf()
         {
             //return To_ReturnsSelf(ReferenceCapability.ToReadOnly());

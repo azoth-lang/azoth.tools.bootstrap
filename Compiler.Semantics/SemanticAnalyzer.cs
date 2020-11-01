@@ -80,7 +80,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics
             var stringSymbol = packageSyntax.SymbolTrees
                                             .GlobalSymbols
                                             .OfType<ObjectTypeSymbol>()
-                                            .SingleOrDefault(s => s.Name == "String");
+                                            .SingleOrDefault(s => s.Name == "string");
 
             // Basic Analysis includes: Name Binding, Type Checking, Constant Folding
             BasicAnalyzer.Check(packageSyntax, stringSymbol);

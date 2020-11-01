@@ -39,12 +39,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// <summary>
         /// Use this type as a mutable type. Only allowed if the type is declared mutable
         /// </summary>
-        public ObjectType ToMutable()
-        {
+        //public ObjectType ToMutable()
+        //{
             //Requires.That(nameof(DeclaredMutable), DeclaredMutable, "must be declared as a mutable type to use mutably");
             //return new ObjectType(ContainingNamespace, Name, DeclaredMutable, ReferenceCapability.ToMutable());
-            throw new NotImplementedException();
-        }
+        //    throw new NotImplementedException();
+        //}
 
         /// <summary>
         /// Make a lent isolated version of this type  for use as the constructor parameter. One issue it
