@@ -104,11 +104,11 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit
             ReferenceCapability? referenceCapability = null)
         {
             var finalName = Name(name) ?? DefaultName("DataType");
-            return new ObjectType(
+            return ObjectType.Create(
                 containingNamespace ?? NamespaceName.Global,
                 finalName.Text,
                 declaredMutable ?? false,
-                referenceCapability ?? ReferenceCapability.Isolated);
+                referenceCapability ?? ReferenceCapability.Const);
         }
 
         protected ObjectTypeSymbol Type(

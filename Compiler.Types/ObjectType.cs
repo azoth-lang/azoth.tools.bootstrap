@@ -24,8 +24,36 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public TypeName Name { get; }
         public override bool IsKnown { [DebuggerStepThrough] get => true; }
 
-        // TODO referenceCapability needs to match declared mutable?
-        public ObjectType(
+        /// <summary>
+        /// Create a object type for a given class or trait
+        /// </summary>
+        public static ObjectType Create(
+            NamespaceName containingNamespace,
+            TypeName name,
+            bool declaredMutable)
+        {
+            // The "root" of the reference capability tree for this type
+            var capability = declaredMutable ? ReferenceCapability.Isolated : ReferenceCapability.Const;
+            return new ObjectType(containingNamespace, name, declaredMutable, capability);
+        }
+
+        /// <summary>
+        /// Create an object type with the given reference capability, enforcing that it be consistent
+        /// with the whether the type was declared mutable
+        /// </summary>
+        /// <returns></returns>
+        internal static ObjectType Create(
+            NamespaceName containingNamespace,
+            TypeName name,
+            bool declaredMutable,
+            ReferenceCapability referenceCapability)
+        {
+            if (!declaredMutable && referenceCapability.AllowsWrite)
+                throw new ArgumentException($"Capability {referenceCapability} not supported for types not declared mutable");
+            return new ObjectType(containingNamespace, name, declaredMutable, referenceCapability);
+        }
+
+        private ObjectType(
             NamespaceName containingNamespace,
             TypeName name,
             bool declaredMutable,
@@ -47,7 +75,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         //}
 
         /// <summary>
-        /// Make a lent isolated version of this type  for use as the constructor parameter. One issue it
+        /// Make a lent isolated version of this type  for use as the constructor parameter. One issue is
         /// that it should be mutable even if the underlying type is declared immutable.
         /// </summary>
         public ObjectType ToConstructorSelf()

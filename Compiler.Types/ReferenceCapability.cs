@@ -7,7 +7,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// <summary>
         /// A reference that owns the object and there are *no* references from
         /// the subtree out to other non-constant objects. Isolated references
-        /// are implicitly mutable if the type is mutable.
+        /// are always mutable. If the type is declared not mutable, then the
+        /// reference capability must not be mutable (except for `self` in a
+        /// constructor).
         /// </summary>
         public static readonly ReferenceCapability Isolated
             = new ReferenceCapability("iso", allowsWrite: true);
@@ -56,6 +58,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public static readonly ReferenceCapability Identity
             = new ReferenceCapability("id", allowsWriteAliases: true, allowsReadAliases: true, allowsRead: false);
 
+        public static readonly ReferenceCapability LentIdentity = new ReferenceCapability("id", allowsWriteAliases: true,
+            allowsReadAliases: true, allowsRead: false, isLent: true);
+
         private readonly string value;
         /// <summary>
         /// Whether this kind of reference allows mutating the referenced object through this reference
@@ -94,13 +99,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 
         public bool IsAssignableFrom(ReferenceCapability from)
         {
-            // Everything can be assigned to `id` (needed because lent <: id)
-            if (this == Identity) return true;
-
             // Can't go from lent to non-lent
             if (!IsLent && from.IsLent) return false;
 
-            // Can gain permissions
+            // Can't gain permissions
             if (AllowsWrite && !from.AllowsWrite) return false;
             if (!AllowsWriteAliases && from.AllowsWriteAliases) return false;
             if (AllowsRead && !from.AllowsRead) return false;

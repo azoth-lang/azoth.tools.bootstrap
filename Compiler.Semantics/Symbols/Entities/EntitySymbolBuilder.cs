@@ -145,8 +145,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities
             if (!@class.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
             bool mutable = !(@class.MutableModifier is null);
-            var classType = new ObjectType(@class.ContainingNamespaceName, @class.Name, mutable,
-                ReferenceCapability.Shared);
+
+            var classType = ObjectType.Create(@class.ContainingNamespaceName, @class.Name, mutable);
 
             var symbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol!, classType);
             @class.Symbol.Fulfill(symbol);

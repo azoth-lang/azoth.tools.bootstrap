@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Primitives
         {
             var tree = new SymbolTreeBuilder();
 
-            var stringType = new ObjectType(NamespaceName.Global, "string", false, ReferenceCapability.Shared);
+            var stringType = ObjectType.Create(NamespaceName.Global, "string", false);
 
             // Simple Types
             BuildBoolSymbol(tree);

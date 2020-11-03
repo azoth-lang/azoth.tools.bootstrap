@@ -25,6 +25,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
                 new ReferenceCapabilityAssignmentTestCase(SharedMutable, LentMutable, true),
                 new ReferenceCapabilityAssignmentTestCase(Const, LentConst, true),
                 new ReferenceCapabilityAssignmentTestCase(Shared, Lent, true),
+                new ReferenceCapabilityAssignmentTestCase(Identity, LentIdentity, true),
 
                 // Up the standard hierarchy
                 new ReferenceCapabilityAssignmentTestCase(Isolated, Transition, true),
@@ -40,7 +41,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
                 new ReferenceCapabilityAssignmentTestCase(LentTransition, LentConst, true),
                 new ReferenceCapabilityAssignmentTestCase(LentMutable, Lent, true),
                 new ReferenceCapabilityAssignmentTestCase(LentConst, Lent, true),
-                new ReferenceCapabilityAssignmentTestCase(Lent, Identity, true),
+                new ReferenceCapabilityAssignmentTestCase(Lent, LentIdentity, true),
             };
             // All all transitive conversions?
             return data;
