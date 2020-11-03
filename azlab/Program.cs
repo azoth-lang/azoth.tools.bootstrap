@@ -5,6 +5,9 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace Azoth.Tools.Bootstrap.Lab
 {
+    /// <summary>
+    /// The azoth build and package tool
+    /// </summary>
     public static class Program
     {
 #if DEBUG

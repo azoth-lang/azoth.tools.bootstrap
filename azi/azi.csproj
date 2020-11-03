@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <AssemblyName>Azoth.Tools.Bootstrap.Interpreter</AssemblyName>
-    <RootNamespace>Azoth.Tools.Bootstrap.Interpreter</RootNamespace>
+    <RootNamespace>Azoth.Tools.Bootstrap.Interpreter.CLI</RootNamespace>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="ExhaustiveMatching.Analyzer" Version="0.5.0" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

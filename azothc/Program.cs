@@ -3,11 +3,18 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CLI
 {
+    /// <summary>
+    /// The azoth compiler
+    /// </summary>
     public static class Program
     {
         public static int Main(string[] args)
         {
-            using var app = new CommandLineApplication();
+            using var app = new CommandLineApplication()
+            {
+                Name = "azothc",
+                Description = "The azoth compiler"
+            };
 
             app.HelpOption();
 

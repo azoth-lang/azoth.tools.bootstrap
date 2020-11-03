@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <AssemblyName>Azoth.Tools.Bootstrap.Interpreter</AssemblyName>
-    <RootNamespace>Azoth.Tools.Bootstrap.Interpreter</RootNamespace>
+    <AssemblyName>Azoth.Tools.Bootstrap.Compiler.Emit.IL</AssemblyName>
+    <RootNamespace>Azoth.Tools.Bootstrap.Compiler.Emit.IL</RootNamespace>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
