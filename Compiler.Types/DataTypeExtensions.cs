@@ -10,10 +10,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// Returns the same type except with any mutability removed
         /// </summary>
         [DebuggerHidden]
-        public static T ToReadOnly<T>(this T type)
+        public static T ToReadable<T>(this T type)
             where T : DataType
         {
-            return type.ToReadOnly_ReturnsSelf().Cast<T>();
+            return type.ToReadable_ReturnsSelf().Cast<T>();
         }
 
         /// <summary>

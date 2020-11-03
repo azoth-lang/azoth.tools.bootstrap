@@ -97,7 +97,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 
         [SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores",
             Justification = "Returns self idiom")]
-        protected internal virtual Self ToReadOnly_ReturnsSelf()
+        protected internal virtual Self ToReadable_ReturnsSelf()
         {
             return this;
         }

@@ -60,7 +60,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         {
             var type = NeverType.Instance;
 
-            var @readonly = type.ToReadOnly();
+            var @readonly = type.ToReadable();
 
             Assert.Equal(type, @readonly);
         }

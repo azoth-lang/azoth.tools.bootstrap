@@ -115,6 +115,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             return IsLent ? LentMutable : SharedMutable;
         }
 
+        public ReferenceCapability ToReadable()
+        {
+            if (!AllowsRead) throw new InvalidOperationException($"Can't convert '{this}' to readable because it does not allow read.");
+            // Already readable. Just return this. That will preserve the correct other attributes
+            if (!AllowsWrite) return this;
+            return IsLent ? Lent : Shared;
+        }
+
         public override string ToString()
         {
             return value;

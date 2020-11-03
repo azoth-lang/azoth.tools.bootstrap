@@ -145,7 +145,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 default:
                 {
                     // We assume immutability on variables unless explicitly stated
-                    if (inferCapability is null) return type.ToReadOnly();
+                    if (inferCapability is null) return type.ToReadable();
                     if (type is ReferenceType referenceType)
                     {
                         if (!referenceType.IsMutable)
@@ -209,7 +209,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 case (ObjectType targetType, ObjectType expressionType)
                         when targetType.IsReadOnly && expressionType.IsMutable:
                     // TODO if source type is explicitly mutable, issue warning about using `mut` in immutable context
-                    expression = new ImplicitImmutabilityConversionExpression(expression, expressionType.ToReadOnly());
+                    expression = new ImplicitImmutabilityConversionExpression(expression, expressionType.ToReadable());
                     break;
             }
 
@@ -699,7 +699,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             if (@from.IsMovable && to.IsMovable)
                 InsertImplicitMoveIfNeeded(ref expression, to);
             else if (@from.IsReadOnly || to.IsReadOnly)
-                InsertImplicitReadIfNeeded(ref expression, to.ToReadOnly());
+                InsertImplicitReadIfNeeded(ref expression, to.ToReadable());
             else if (implicitMutateAllowed)
                 InsertImplicitMutateIfNeeded(ref expression, to);
         }

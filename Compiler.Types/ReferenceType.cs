@@ -39,10 +39,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             return To_ReturnsSelf(ReferenceCapability.ToMutable());
         }
 
-        protected internal sealed override Self ToReadOnly_ReturnsSelf()
+        protected internal sealed override Self ToReadable_ReturnsSelf()
         {
-            //return To_ReturnsSelf(ReferenceCapability.ToReadOnly());
-            throw new NotImplementedException();
+            return To_ReturnsSelf(ReferenceCapability.ToReadable());
         }
 
         [SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores",
