@@ -14,16 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
         public ITypeSyntax ParseType(bool? inferLent)
         {
             var capability = ParseReferenceCapability(inferLent);
-            var typeSyntax = ParseTypeWithCapability(capability);
-
-            IQuestionToken? question;
-            while ((question = Tokens.AcceptToken<IQuestionToken>()) != null)
-            {
-                var span = TextSpan.Covering(typeSyntax.Span, question.Span);
-                return new OptionalTypeSyntax(span, typeSyntax);
-            }
-
-            return typeSyntax;
+            return ParseTypeWithCapability(capability);
         }
 
         public IReferenceCapabilitySyntax? ParseReferenceCapability(bool? inferLent)
@@ -123,11 +114,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
 
         public ITypeSyntax ParseTypeWithCapability(IReferenceCapabilitySyntax? capability)
         {
-            if (capability is null) return ParseBareType();
+            var type = ParseBareType();
+            if (capability != null)
+            {
+                var span = TextSpan.Covering(capability.Span, type.Span);
+                type = new CapabilityTypeSyntax(capability!, type, span);
+            }
 
-            var referent = ParseBareType();
-            var span = TextSpan.Covering(capability.Span, referent.Span);
-            return new CapabilityTypeSyntax(capability!, referent, span);
+            IQuestionToken? question;
+            while ((question = Tokens.AcceptToken<IQuestionToken>()) != null)
+            {
+                var span = TextSpan.Covering(type.Span, question.Span);
+                type = new OptionalTypeSyntax(span, type);
+            }
+
+            return type;
         }
 
         private ITypeSyntax ParseBareType()

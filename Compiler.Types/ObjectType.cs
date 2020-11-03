@@ -41,8 +41,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// </summary>
         //public ObjectType ToMutable()
         //{
-            //Requires.That(nameof(DeclaredMutable), DeclaredMutable, "must be declared as a mutable type to use mutably");
-            //return new ObjectType(ContainingNamespace, Name, DeclaredMutable, ReferenceCapability.ToMutable());
+        //Requires.That(nameof(DeclaredMutable), DeclaredMutable, "must be declared as a mutable type to use mutably");
+        //return new ObjectType(ContainingNamespace, Name, DeclaredMutable, ReferenceCapability.ToMutable());
         //    throw new NotImplementedException();
         //}
 
@@ -58,9 +58,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 
         public ObjectType ToConstructorReturn()
         {
-            var constructedType = this.To(ReferenceCapability.Isolated);
-            if (constructedType.DeclaredMutable) constructedType = constructedType.ToMutable();
-            return constructedType;
+            return this.To(DeclaredMutable ? ReferenceCapability.Isolated : ReferenceCapability.Const);
         }
 
         public override string ToSourceCodeString()

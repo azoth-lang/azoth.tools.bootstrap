@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
     public abstract class ReferenceType : DataType
     {
         public ReferenceCapability ReferenceCapability { get; }
-        public bool IsReadOnly => !DeclaredMutable && !ReferenceCapability.AllowsWrite;
+        public bool IsReadOnly => !DeclaredMutable || !ReferenceCapability.AllowsWrite;
         public bool IsMutable => DeclaredMutable && ReferenceCapability.AllowsWrite;
         public bool IsMovable => ReferenceCapability.IsMovable;
 

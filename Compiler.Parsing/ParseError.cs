@@ -38,7 +38,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
 
         public static Diagnostic MissingToken(CodeFile file, Type expected, IToken found)
         {
-            return new Diagnostic(file, found.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing, 2003, $"Expected `{expected.GetFriendlyName()}` found `{found.Text(file.Code)}`");
+            return new Diagnostic(file, found.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing, 2003,
+                $"Expected `{expected.GetFriendlyName()}` found `{found.Text(file.Code)}`");
         }
 
         public static Diagnostic DeclarationNotAllowedInExternal(CodeFile file, TextSpan span)

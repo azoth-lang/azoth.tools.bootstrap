@@ -280,9 +280,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                                         type = DataType.Unknown;
                                     }
                                     else
-                                        throw new NotImplementedException("Mutate expression reference capability");
-                                    //type = referenceType.To(ReferenceCapability.Borrowed);
-
+                                        type = referenceType.ToMutable();
                                     break;
                                 default:
                                     throw new NotImplementedException("Non-mutable type can't be borrowed mutably");
@@ -476,7 +474,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                             constructedType = classType.ToConstructorReturn();
                             break;
                     }
-
 
                     return exp.DataType = constructedType;
                 }
