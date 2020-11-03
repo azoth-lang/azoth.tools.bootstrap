@@ -892,14 +892,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     break;
                 case TypeSemantics.Reference:
                     var referenceType = (ReferenceType)type;
-                    throw new NotImplementedException("AssignInvocationSemantics for reference types");
-                    //if (referenceType.ReferenceCapability.CanBeAcquired())
-                    //    invocationExpression.Semantics = ExpressionSemantics.Acquire;
-                    //else if (referenceType.IsMutable)
-                    //    invocationExpression.Semantics = ExpressionSemantics.Borrow;
-                    //else
-                    //    invocationExpression.Semantics = ExpressionSemantics.Share;
-                    //break;
+                    if (referenceType.ReferenceCapability.CanBeAcquired())
+                        invocationExpression.Semantics = ExpressionSemantics.Acquire;
+                    else if (referenceType.IsMutable)
+                        invocationExpression.Semantics = ExpressionSemantics.Borrow;
+                    else
+                        invocationExpression.Semantics = ExpressionSemantics.Share;
+                    break;
             }
         }
 

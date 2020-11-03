@@ -123,6 +123,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             return IsLent ? Lent : Shared;
         }
 
+        // TODO this should be can be moved?
+        public bool CanBeAcquired()
+        {
+            return !AllowsWriteAliases;
+        }
+
         public override string ToString()
         {
             return value;
