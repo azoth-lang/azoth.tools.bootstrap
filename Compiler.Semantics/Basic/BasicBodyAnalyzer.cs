@@ -209,7 +209,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 case (ObjectType targetType, ObjectType expressionType)
                         when targetType.IsReadOnly && expressionType.IsMutable:
                     // TODO if source type is explicitly mutable, issue warning about using `mut` in immutable context
-                    expression = new ImplicitImmutabilityConversionExpression(expression, expressionType.ToReadable());
+                    var capability = targetType.ReferenceCapability == ReferenceCapability.Const
+                        ? expressionType.To(ReferenceCapability.Const)
+                        : expressionType.ToReadable();
+                    expression = new ImplicitImmutabilityConversionExpression(expression, capability);
                     break;
             }
 

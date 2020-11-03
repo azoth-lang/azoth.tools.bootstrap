@@ -63,6 +63,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 
         private protected DataType() { }
 
+        /// <summary>
+        /// Convert types for literal constants to their corresponding types
+        /// </summary>
         public virtual DataType ToNonConstantType()
         {
             return this;

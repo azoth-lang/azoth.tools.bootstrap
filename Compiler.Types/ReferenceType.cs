@@ -11,6 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
     public abstract class ReferenceType : DataType
     {
         public ReferenceCapability ReferenceCapability { get; }
+        // TODO not sure if !DeclaredMutable should be here. Constructor self is mutable even though not declared mutable
         public bool IsReadOnly => !DeclaredMutable || !ReferenceCapability.AllowsWrite;
         public bool IsMutable => DeclaredMutable && ReferenceCapability.AllowsWrite;
         public bool IsMovable => ReferenceCapability.IsMovable;
