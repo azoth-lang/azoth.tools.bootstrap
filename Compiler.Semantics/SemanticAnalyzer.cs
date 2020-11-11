@@ -30,13 +30,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics
         /// Whether to store the liveness analysis for each function and method.
         /// Default Value: false
         /// </summary>
-        public bool SaveLivenessAnalysis { get; set; } = false;
+        public bool SaveLivenessAnalysis { get; set; }
 
         /// <summary>
         /// Whether to store the reachability graphs for each function and method.
         /// Default Value: false
         /// </summary>
-        public bool SaveReachabilityGraphs { get; set; } = false;
+        public bool SaveReachabilityGraphs { get; set; }
 
         [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
         public PackageIL Check(PackageSyntax packageSyntax)

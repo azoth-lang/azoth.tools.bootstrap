@@ -203,7 +203,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Emit.C
                     builder.Append("_new");
                     if (!(sym.Name is null))
                     {
-                        builder.Append("_");
+                        builder.Append('_');
                         Mangle(sym.Name, builder);
                     }
                     builder.Append(Separator);

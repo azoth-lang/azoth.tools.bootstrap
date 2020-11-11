@@ -1,8 +1,11 @@
-﻿using System.Runtime.InteropServices;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 namespace Azoth.Tools.Bootstrap.Interpreter.MemoryLayout
 {
     [StructLayout(LayoutKind.Explicit)]
+    [SuppressMessage("Performance", "CA1815:Override equals and operator equals on value types",
+        Justification = "Not possible to compare equality because union type is unknown")]
     public struct AzothValue
     {
         [FieldOffset(0)] public int I32;

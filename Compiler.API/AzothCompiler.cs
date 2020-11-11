@@ -20,13 +20,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.API
         /// Whether to store the liveness analysis for each function and method.
         /// Default Value: false
         /// </summary>
-        public bool SaveLivenessAnalysis { get; set; } = false;
+        public bool SaveLivenessAnalysis { get; set; }
 
         /// <summary>
         /// Whether to store the borrow checker claims for each function and method.
         /// Default Value: false
         /// </summary>
-        public bool SaveReachabilityGraphs { get; set; } = false;
+        public bool SaveReachabilityGraphs { get; set; }
 
         public Task<PackageIL> CompilePackageAsync(
             Name name,

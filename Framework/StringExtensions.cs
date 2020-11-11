@@ -70,7 +70,7 @@ namespace Azoth.Tools.Bootstrap.Framework
                         {
                             escaped.Append(@"\u(");
                             escaped.Append(((ushort)c).ToString("x", CultureInfo.InvariantCulture));
-                            escaped.Append(@")");
+                            escaped.Append(')');
                         }
 
                         break;

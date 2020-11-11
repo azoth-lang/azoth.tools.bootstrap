@@ -93,7 +93,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             if (variableDeclaration.Type != null)
             {
                 type = typeResolver.Evaluate(variableDeclaration.Type);
-                CheckType(ref variableDeclaration.Initializer, type);
+                CheckType(ref variableDeclaration.Initializer!, type);
             }
             else if (variableDeclaration.Initializer != null)
                 type = InferDeclarationType(ref variableDeclaration.Initializer, variableDeclaration.Capability);
@@ -159,7 +159,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             }
         }
 
-        public void CheckType([NotNull] ref IExpressionSyntax? expression, DataType expectedType)
+        public void CheckType(
+            [NotNullIfNotNull("expression")] ref IExpressionSyntax? expression,
+            DataType expectedType)
         {
             if (expression is null) return;
             InferType(ref expression);
