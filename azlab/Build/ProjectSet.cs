@@ -3,11 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Emit.C;
 using Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
@@ -124,14 +122,11 @@ namespace Azoth.Tools.Bootstrap.Lab.Build
                     return package;
 
                 var cacheDir = PrepareCacheDir(project);
-                var codePath = EmitCode(project, package, cacheDir);
-                var success = CompileCode(project, cacheDir, codePath, consoleLock);
+                var codePath = EmitIL(project, package, cacheDir);
 
                 lock (consoleLock)
                 {
-                    Console.WriteLine(success
-                        ? $"Build SUCCEEDED {project.Name} ({project.Path})"
-                        : $"Build FAILED {project.Name} ({project.Path})");
+                    Console.WriteLine($"Build SUCCEEDED {project.Name} ({project.Path})");
                 }
 
                 return package;
@@ -199,75 +194,46 @@ namespace Azoth.Tools.Bootstrap.Lab.Build
             return true;
         }
 
-        private static string EmitCode(Project project, PackageIL package, string cacheDir)
+        private static string EmitIL(Project project, PackageIL package, string cacheDir)
         {
-            var emittedPackages = new HashSet<PackageIL>();
-            var packagesToEmit = new Queue<PackageIL>();
-            packagesToEmit.Enqueue(package);
+            throw new NotImplementedException();
+            //var emittedPackages = new HashSet<PackageIL>();
+            //var packagesToEmit = new Queue<PackageIL>();
+            //packagesToEmit.Enqueue(package);
 
-            var codeEmitter = new CodeEmitter();
-            while (packagesToEmit.TryDequeue(out var currentPackage))
-            {
-                if (!emittedPackages.Contains(currentPackage))
-                {
-                    codeEmitter.Emit(currentPackage);
-                    emittedPackages.Add(currentPackage);
-                    packagesToEmit.EnqueueRange(currentPackage.References);
-                }
-            }
+            //string outputPath;
+            //switch (project.Template)
+            //{
+            //    case ProjectTemplate.App:
+            //    {
+            //        outputPath = Path.Combine(cacheDir, "program.azx");
+            //    }
+            //    break;
+            //    case ProjectTemplate.Lib:
+            //    {
+            //        outputPath = Path.Combine(cacheDir, "lib.azil");
+            //    }
+            //    break;
+            //    default:
+            //        throw ExhaustiveMatch.Failed(project.Template);
+            //}
 
-            string outputPath;
-            switch (project.Template)
-            {
-                case ProjectTemplate.App:
-                {
-                    outputPath = Path.Combine(cacheDir, "program.c");
-                }
-                break;
-                case ProjectTemplate.Lib:
-                {
-                    outputPath = Path.Combine(cacheDir, "lib.c");
-                }
-                break;
-                default:
-                    throw ExhaustiveMatch.Failed(project.Template);
-            }
+            //var codeEmitter = new ILEmitter();
+            //while (packagesToEmit.TryDequeue(out var currentPackage))
+            //{
+            //    if (!emittedPackages.Contains(currentPackage))
+            //    {
+            //        codeEmitter.Emit(currentPackage);
+            //        emittedPackages.Add(currentPackage);
+            //        packagesToEmit.EnqueueRange(currentPackage.References);
+            //    }
+            //}
 
-            File.WriteAllText(outputPath, codeEmitter.GetEmittedCode(), Encoding.UTF8);
 
-            return outputPath;
-        }
 
-        private static bool CompileCode(
-            Project project,
-            string cacheDir,
-            string codePath,
-            object consoleLock)
-        {
-            var compiler = new CLangCompiler();
+            //File.WriteAllText(outputPath, codeEmitter.GetEmittedCode(), Encoding.UTF8);
 
-            var runtimeLibrarySourcePath = System.IO.Path.Combine(cacheDir, CodeEmitter.RuntimeLibraryCodeFileName);
-            File.WriteAllText(runtimeLibrarySourcePath, CodeEmitter.RuntimeLibraryCode, Encoding.UTF8);
-            var runtimeLibraryHeaderPath = System.IO.Path.Combine(cacheDir, CodeEmitter.RuntimeLibraryHeaderFileName);
-            File.WriteAllText(runtimeLibraryHeaderPath, CodeEmitter.RuntimeLibraryHeader, Encoding.UTF8);
-
-            var sourceFiles = new[] { codePath, runtimeLibrarySourcePath };
-            var headerSearchPaths = new[] { cacheDir };
-            string outputPath = project.Template switch
-            {
-                ProjectTemplate.App => Path.ChangeExtension(codePath, "exe"),
-                ProjectTemplate.Lib => Path.ChangeExtension(codePath, "dll"),
-                _ => throw ExhaustiveMatch.Failed(project.Template)
-            };
-
-            lock (consoleLock)
-            {
-                Console.WriteLine($"CLang Compiling {project.Name} ({project.Path})...");
-                var exitCode = compiler.Compile(ConsoleCompilerOutput.Instance, sourceFiles,
-                    headerSearchPaths, outputPath);
-
-                return exitCode == 0;
-            }
+            //return outputPath;
         }
 
         private List<Project> TopologicalSort()
