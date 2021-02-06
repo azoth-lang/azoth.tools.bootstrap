@@ -126,7 +126,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics
             return declarationBuilder.AllDeclarations.ToFixedList();
         }
 
-        private static FunctionIL DetermineEntryPoint(
+        private static FunctionIL? DetermineEntryPoint(
             FixedList<DeclarationIL> declarations,
             Diagnostics diagnostics)
         {

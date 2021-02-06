@@ -2,19 +2,12 @@
 
 *.vson      text eol=lf encoding=UTF-8
 *.json      text eol=lf encoding=UTF-8
-*.ad        text encoding=UTF-8
-*.md        text
+*.az        text eol=lf encoding=UTF-8
+*.md        text eol=lf encoding=UTF-8
 *.bat       text eol=crlf
-*.c         text eol=lf
-*.h         text eol=lf
-*.rsrc      text eol=lf
 *.sh        text eol=lf
 *.yml       text eol=lf
 
 *.cs        text eol=crlf
 *.sln       text eol=crlf
 *.csproj    text eol=crlf
-
-# These files must be UTF-8 w/ BOM to work, so treat them as binary
-RuntimeLibrary.c binary
-RuntimeLibrary.h binary

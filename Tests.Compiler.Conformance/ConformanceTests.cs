@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Emit.C;
+using Azoth.Tools.Bootstrap.Compiler.Emit.IL;
 using Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
+using Azoth.Tools.Bootstrap.Interpreter;
 using Azoth.Tools.Bootstrap.Tests.Conformance.Helpers;
 using Xunit;
 using Xunit.Abstractions;
@@ -19,7 +18,7 @@ using Xunit.Abstractions;
 namespace Azoth.Tools.Bootstrap.Tests.Conformance
 {
     [Trait("Category", "Conformance")]
-    public class ConformanceTests : IClassFixture<RuntimeLibraryFixture>
+    public class ConformanceTests
     {
         private readonly ITestOutputHelper testOutput;
 
@@ -78,14 +77,10 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
                     return;
 
                 // Emit Code
-                var codePath = Path.ChangeExtension(testCase.FullCodePath, "c");
-                EmitCode(package, supportPackage, codePath);
-
-                // Compile Code to Executable
-                var exePath = CompileToExecutable(codePath);
+                var (packageIL, stdLibIL) = EmitIL(package, supportPackage);
 
                 // Execute and check results
-                var process = Execute(exePath);
+                var process = Execute(packageIL, stdLibIL);
 
                 process.WaitForExit();
                 var stdout = process.StandardOutput.ReadToEnd();
@@ -212,37 +207,22 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
                 .ToList();
         }
 
-        private static void EmitCode(PackageIL package, PackageIL stdLibPackage, string path)
+        private static (MemoryStream PackageIL, MemoryStream StdLibIL) EmitIL(PackageIL package, PackageIL stdLibPackage)
         {
-            var codeEmitter = new CodeEmitter();
-            codeEmitter.Emit(package);
-            codeEmitter.Emit(stdLibPackage);
-            File.WriteAllText(path, codeEmitter.GetEmittedCode(), Encoding.UTF8);
+            var ilEmitter = new ILEmitter();
+            var packageIL = new MemoryStream();
+            ilEmitter.Emit(package, packageIL);
+            var stdLibIL = new MemoryStream();
+            ilEmitter.Emit(stdLibPackage, stdLibIL);
+            return (packageIL, stdLibIL);
         }
 
-        private string CompileToExecutable(string codePath)
+        private static InterpreterProcess Execute(MemoryStream packageIL, MemoryStream stdLibIL)
         {
-            var compiler = new CLangCompiler();
-            var sourceFiles = new[] { codePath, RuntimeLibraryFixture.GetRuntimeLibraryPath() };
-            var headerSearchPaths = new[] { RuntimeLibraryFixture.GetRuntimeDirectory() };
-            var outputPath = Path.ChangeExtension(codePath, "exe");
-            var exitCode = compiler.Compile(new CompilerOutputAdapter(testOutput), sourceFiles, headerSearchPaths, outputPath);
-            Assert.True(exitCode == 0, $"clang exited with {exitCode}");
-            return outputPath;
-        }
-
-        private static Process Execute(string executable)
-        {
-            var startInfo = new ProcessStartInfo(executable)
-            {
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true,
-                UseShellExecute = false,
-            };
-
-            return Process.Start(startInfo);
+            var interpreter = new AzothInterpreter();
+            interpreter.LoadPackage(stdLibIL);
+            interpreter.LoadPackage(packageIL);
+            return interpreter.Execute();
         }
 
         private static int ExpectedExitCode(string code)

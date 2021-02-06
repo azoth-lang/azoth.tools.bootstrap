@@ -24,4 +24,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Compiler.IntermediateLanguage\Compiler.IntermediateLanguage.csproj" />
+    <ProjectReference Include="..\IL\IL.csproj" />
+  </ItemGroup>
+
 </Project>

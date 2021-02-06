@@ -49,7 +49,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Emit.C
             code.Definitions.AppendLine("// Definitions");
         }
 
-        public void EmitEntryPointAdapter(FunctionIL entryPoint, Code code)
+        public void EmitEntryPointAdapter(FunctionIL? entryPoint, Code code)
         {
             if (entryPoint is null) return;
 

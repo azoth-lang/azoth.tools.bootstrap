@@ -18,14 +18,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage
         /// <remarks>No longer need aliases. All references are now explicit.</remarks>
         public FixedSet<PackageIL> References { get; }
         public FixedSet<DeclarationIL> Declarations { get; }
-        public FunctionIL EntryPoint { get; internal set; }
+        public FunctionIL? EntryPoint { get; internal set; }
 
         public PackageIL(
             FixedSymbolTree symbolTree,
             FixedList<Diagnostic> diagnostics,
             FixedSet<PackageIL> references,
             IEnumerable<DeclarationIL> declarations,
-            FunctionIL entryPoint)
+            FunctionIL? entryPoint)
         {
             Symbol = symbolTree.Package;
             SymbolTree = symbolTree;

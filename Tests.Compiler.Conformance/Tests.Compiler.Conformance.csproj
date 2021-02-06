@@ -47,7 +47,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Compiler.API\Compiler.API.csproj" />
-    <ProjectReference Include="..\Compiler.Emit.C\Compiler.Emit.C.csproj" />
+    <ProjectReference Include="..\Compiler.Emit.IL\Compiler.Emit.IL.csproj" />
+    <ProjectReference Include="..\Interpreter\Interpreter.csproj" />
     <ProjectReference Include="..\Tests.Unit\Tests.Unit.csproj" />
   </ItemGroup>
 
