@@ -58,7 +58,7 @@ namespace Azoth.Tools.Bootstrap.Lab.Build
             return GetEnumerator();
         }
 
-        public async Task Build(TaskScheduler taskScheduler, bool verbose)
+        public async Task BuildAsync(TaskScheduler taskScheduler, bool verbose)
         {
             _ = verbose; // verbose parameter will be needed in the future
             var taskFactory = new TaskFactory(taskScheduler);
@@ -75,7 +75,7 @@ namespace Azoth.Tools.Bootstrap.Lab.Build
             {
 #pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler (created with task factory built with task scheduler)
                 var buildTask = taskFactory.StartNew(() =>
-                    Build(compiler, project, projectBuildsTask, consoleLock))
+                    BuildAsync(compiler, project, projectBuildsTask, consoleLock))
 #pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
                     .Unwrap(); // Needed because StartNew doesn't work intuitively with Async methods
                 if (!projectBuilds.TryAdd(project, buildTask))
@@ -86,7 +86,7 @@ namespace Azoth.Tools.Bootstrap.Lab.Build
             await Task.WhenAll(projectBuilds.Values).ConfigureAwait(false);
         }
 
-        private static async Task<PackageIL?> Build(
+        private static async Task<PackageIL?> BuildAsync(
             AzothCompiler compiler,
             Project project,
             Task<FixedDictionary<Project, Task<PackageIL?>>> projectBuildsTask,

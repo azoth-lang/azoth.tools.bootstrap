@@ -72,7 +72,7 @@ namespace Azoth.Tools.Bootstrap.Lab
             var taskScheduler = NewTaskScheduler(
                 allowParallel,
                 maxConcurrency);
-            return projectSet.Build(taskScheduler, verbose);
+            return projectSet.BuildAsync(taskScheduler, verbose);
         }
 
         private static TaskScheduler NewTaskScheduler(bool allowParallel, int? maxConcurrency)
