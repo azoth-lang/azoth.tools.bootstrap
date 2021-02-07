@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Azoth.Tools.Bootstrap.Compiler.Semantics</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Compiler.Semantics</RootNamespace>
     <LangVersion>8.0</LangVersion>

@@ -1,6 +1,6 @@
 using System;
 
-namespace Azoth.Tools.Bootstrap.IL
+namespace Azoth.Tools.Bootstrap.IL.Instructions
 {
     public readonly struct Instruction : IEquatable<Instruction>
     {
