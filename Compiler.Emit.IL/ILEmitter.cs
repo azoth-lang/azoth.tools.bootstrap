@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage;
 using Azoth.Tools.Bootstrap.IL;
+using PackageIL = Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage.PackageIL;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Emit.IL
 {
