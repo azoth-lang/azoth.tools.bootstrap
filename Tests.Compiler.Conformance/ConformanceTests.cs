@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Emit.IL;
 using Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
+using Azoth.Tools.Bootstrap.IL.IO;
 using Azoth.Tools.Bootstrap.Interpreter;
 using Azoth.Tools.Bootstrap.Tests.Conformance.Helpers;
 using Xunit;
@@ -209,14 +209,15 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
 
         private static (MemoryStream PackageIL, MemoryStream StdLibIL) EmitIL(PackageIL package, PackageIL stdLibPackage)
         {
-            var ilEmitter = new ILEmitter();
+            var writer = new ILWriter();
             var packageIL = new MemoryStream();
-            ilEmitter.Emit(package, packageIL);
+            //writer.Write(package, packageIL);
             packageIL.Position = 0;
             var stdLibIL = new MemoryStream();
-            ilEmitter.Emit(stdLibPackage, stdLibIL);
+            //writer.Write(stdLibPackage, stdLibIL);
             stdLibIL.Position = 0;
-            return (packageIL, stdLibIL);
+            //return (packageIL, stdLibIL);
+            throw new NotImplementedException();
         }
 
         private static InterpreterProcess Execute(MemoryStream packageIL, MemoryStream stdLibIL)

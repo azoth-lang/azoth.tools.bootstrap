@@ -32,7 +32,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Compiler.API\Compiler.API.csproj" />
-    <ProjectReference Include="..\Compiler.Emit.IL\Compiler.Emit.IL.csproj" />
   </ItemGroup>
 
 </Project>
