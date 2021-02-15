@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage.CFG.Instructions;
 using Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage.CFG.TerminatorInstructions;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ILGen
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.OldILGen
 {
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     internal class BlockBuilder

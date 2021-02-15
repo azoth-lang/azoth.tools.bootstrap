@@ -16,7 +16,7 @@ using static Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage.CFG.Instruction
 using static Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage.CFG.Instructions.CompareInstructionOperator;
 using static Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage.CFG.Instructions.NumericInstructionOperator;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ILGen
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.OldILGen
 {
     /// <summary>
     /// The fabrication of a single control flow graph from a single callable AST node

@@ -9,7 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ILGen
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.OldILGen
 {
     public class DeclarationBuilder
     {

@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage.CFG;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ILGen
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.OldILGen
 {
     public class ILFactory
     {

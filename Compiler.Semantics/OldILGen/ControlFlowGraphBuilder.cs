@@ -9,7 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ILGen
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.OldILGen
 {
     /// <summary>
     /// Builder pattern for control flow graphs used during control flow graph fabrication
