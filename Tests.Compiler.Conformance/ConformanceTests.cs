@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.IR;
@@ -42,7 +43,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
 
         [Theory]
         [MemberData(nameof(GetConformanceTestCases))]
-        public void Test_cases(TestCase testCase)
+        public async Task Test_cases(TestCase testCase)
         {
             // Setup
             var codeFile = CodeFile.Load(testCase.FullCodePath);
@@ -79,16 +80,17 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
                 // Disassemble
                 var ilAssembler = new Disassembler();
                 testOutput.WriteLine(ilAssembler.Disassemble(packageIL));
+                packageIL.Position = 0;
 
                 // Execute and check results
                 var process = Execute(packageIL, stdLibIL);
 
-                process.WaitForExit();
-                var stdout = process.StandardOutput.ReadToEnd();
+                await process.WaitForExitAsync();
+                var stdout = await process.StandardOutput.ReadToEndAsync();
                 testOutput.WriteLine("stdout:");
                 testOutput.WriteLine(stdout);
                 Assert.Equal(ExpectedOutput(code, "stdout", testCase.FullCodePath), stdout);
-                var stderr = process.StandardError.ReadToEnd();
+                var stderr = await process.StandardError.ReadToEndAsync();
                 testOutput.WriteLine("stderr:");
                 testOutput.WriteLine(stderr);
                 Assert.Equal(ExpectedOutput(code, "stderr", testCase.FullCodePath), stderr);
@@ -212,13 +214,12 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
         {
             var writer = new ILWriter();
             var packageIL = new MemoryStream();
-            //writer.Write(package, packageIL);
+            writer.Write(package.ToIL(), packageIL);
             packageIL.Position = 0;
             var stdLibIL = new MemoryStream();
-            //writer.Write(stdLibPackage, stdLibIL);
+            writer.Write(stdLibPackage.ToIL(), stdLibIL);
             stdLibIL.Position = 0;
-            //return (packageIL, stdLibIL);
-            throw new NotImplementedException();
+            return (packageIL, stdLibIL);
         }
 
         private static InterpreterProcess Execute(MemoryStream packageIL, MemoryStream stdLibIL)

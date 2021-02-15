@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Azoth.Tools.Bootstrap.IL;
@@ -20,7 +19,7 @@ namespace Azoth.Tools.Bootstrap.Interpreter
 
         public InterpreterProcess Execute()
         {
-            throw new NotImplementedException();
+            return new InterpreterProcess();
         }
     }
 }

@@ -14,7 +14,8 @@ namespace Azoth.Tools.Bootstrap.IL.Assembly
 
         public string Disassemble(PackageIL package)
         {
-            throw new System.NotImplementedException();
+            // TODO actually implement
+            return "";
         }
     }
 }

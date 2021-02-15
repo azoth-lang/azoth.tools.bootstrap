@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.IL
@@ -11,13 +11,15 @@ namespace Azoth.Tools.Bootstrap.IL
         public FixedList<ClassIL> Classes { get; }
         public FixedList<FunctionIL> Functions { get; }
         public FixedList<DataType> Types { get; }
+        public FunctionIL? EntryPoint { get; }
         public PackageIL(
+            FixedList<PackageReferenceIL> packageReferences,
             FixedList<string> stringConstants,
             FixedList<string> symbolConstants,
             FixedList<ClassIL> classes,
             FixedList<FunctionIL> functions,
             FixedList<DataType> types,
-            FixedList<PackageReferenceIL> packageReferences)
+            FunctionIL? entryPoint)
         {
             StringConstants = stringConstants;
             SymbolConstants = symbolConstants;
@@ -25,6 +27,7 @@ namespace Azoth.Tools.Bootstrap.IL
             Functions = functions;
             Types = types;
             PackageReferences = packageReferences;
+            EntryPoint = entryPoint;
         }
     }
 }

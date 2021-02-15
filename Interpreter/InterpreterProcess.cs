@@ -1,23 +1,25 @@
-using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Azoth.Tools.Bootstrap.Interpreter
 {
     public class InterpreterProcess
     {
-        public void WaitForExit()
+        public Task WaitForExitAsync()
         {
-            throw new NotImplementedException();
+            // TODO
+            //throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
 #pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
-        public TextReader StandardOutput => throw new NotImplementedException();
+        public TextReader StandardOutput => TextReader.Null;
 #pragma warning restore CA1065 // Do not raise exceptions in unexpected locations
 #pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
-        public TextReader StandardError => throw new NotImplementedException();
+        public TextReader StandardError => TextReader.Null;
 #pragma warning restore CA1065 // Do not raise exceptions in unexpected locations
 #pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
-        public int ExitCode => throw new NotImplementedException();
+        public int ExitCode => 0;
 #pragma warning restore CA1065 // Do not raise exceptions in unexpected locations
     }
 }

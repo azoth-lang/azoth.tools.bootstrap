@@ -1,4 +1,6 @@
 using System;
+using System.ComponentModel;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.IL.Instructions
 {
@@ -10,16 +12,35 @@ namespace Azoth.Tools.Bootstrap.IL.Instructions
         private const uint Segment3Mask = 0x00000FFF;
         private const uint MaxOperandValue = 0x00000FFF;
         private const uint ValueMask = 0x00FFFFFF;
+        private const uint MaxUnsignedValue = 0x00FFFFFF;
 
         private readonly uint value;
 
         public Instruction(ShortOpcode shortOpcode, ushort operand1, ushort operand2)
         {
+            if (!shortOpcode.IsDefined())
+                throw new InvalidEnumArgumentException(nameof(shortOpcode), (int)shortOpcode, typeof(ShortOpcode));
             if (operand1 > MaxOperandValue)
                 throw new ArgumentException("Invalid operand value", nameof(operand1));
             if (operand2 > MaxOperandValue)
                 throw new ArgumentException("Invalid operand value", nameof(operand2));
             value = (uint)shortOpcode << Segment1Offset | (uint)operand1 << Segment2Offset | operand2;
+        }
+
+        public Instruction(ShortOpcode shortOpcode, uint value)
+        {
+            if (!shortOpcode.IsDefined())
+                throw new InvalidEnumArgumentException(nameof(shortOpcode), (int)shortOpcode, typeof(ShortOpcode));
+            if (value > MaxUnsignedValue)
+                throw new ArgumentException("Invalid operand value", nameof(value));
+            this.value = (uint)shortOpcode << Segment1Offset | value;
+        }
+
+        public Instruction(NullaryOpcode opcode)
+        {
+            if (!opcode.IsDefined())
+                throw new InvalidEnumArgumentException(nameof(opcode), (int)opcode, typeof(NullaryOpcode));
+            value = (uint)opcode;
         }
 
         public ShortOpcode ShortOpcode => (ShortOpcode)(value >> Segment1Offset);

@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.IL.IO
         {
             using var writer = new BinaryWriter(outputStream, ILFile.StringEncoding, true);
 
-            //EmitFileSignature(writer, package.EntryPoint != null);
+            EmitFileSignature(writer, package.EntryPoint != null);
         }
 
         public static void EmitFileSignature(BinaryWriter writer, bool isExecutable)

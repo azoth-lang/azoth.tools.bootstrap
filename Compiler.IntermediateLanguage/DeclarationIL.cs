@@ -23,7 +23,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage
 
         public override string ToString()
         {
-            return Symbol.ToString();
+            return Symbol.ToILString();
         }
     }
 }

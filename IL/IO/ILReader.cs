@@ -1,6 +1,7 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.IL.IO
 {
@@ -10,10 +11,17 @@ namespace Azoth.Tools.Bootstrap.IL.IO
             Justification = "OO")]
         public PackageIL Read(Stream inputStream)
         {
-            using var reader = new BinaryReader(inputStream, ILFile.StringEncoding);
+            using var reader = new BinaryReader(inputStream, ILFile.StringEncoding, leaveOpen: true);
             var isExecutable = ReadSignature(reader);
 
-            throw new NotImplementedException();
+            return new PackageIL(
+                FixedList<PackageReferenceIL>.Empty,
+                FixedList<string>.Empty,
+                FixedList<string>.Empty,
+                FixedList<ClassIL>.Empty,
+                FixedList<FunctionIL>.Empty,
+                FixedList<DataType>.Empty,
+                null);
         }
 
         private static bool ReadSignature(BinaryReader reader)

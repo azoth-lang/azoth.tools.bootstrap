@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.IRGen
             var builder = new IRBuilder();
             builder.Add(package.AllDeclarations);
             builder.DetermineEntryPoint(diagnostics);
-            return builder.BuildPackage();
+            return builder.BuildPackage(package);
         }
     }
 }

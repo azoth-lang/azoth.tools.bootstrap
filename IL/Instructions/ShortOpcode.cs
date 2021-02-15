@@ -7,5 +7,6 @@ namespace Azoth.Tools.Bootstrap.IL.Instructions
     public enum ShortOpcode : byte
     {
         None = 0,
+        Param = 0x52,
     }
 }
