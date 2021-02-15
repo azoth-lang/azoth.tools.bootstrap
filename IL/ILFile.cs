@@ -5,6 +5,7 @@ namespace Azoth.Tools.Bootstrap.IL
 {
     public static class ILFile
     {
+        public const int SignatureLength = 8;
         public const string PackageSignature = "AzothILP";
         public static readonly ReadOnlyMemory<byte> PackageSignatureBytes
             = Encoding.ASCII.GetBytes(PackageSignature);

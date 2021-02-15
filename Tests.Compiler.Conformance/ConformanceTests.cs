@@ -212,8 +212,10 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
             var ilEmitter = new ILEmitter();
             var packageIL = new MemoryStream();
             ilEmitter.Emit(package, packageIL);
+            packageIL.Position = 0;
             var stdLibIL = new MemoryStream();
             ilEmitter.Emit(stdLibPackage, stdLibIL);
+            stdLibIL.Position = 0;
             return (packageIL, stdLibIL);
         }
 
