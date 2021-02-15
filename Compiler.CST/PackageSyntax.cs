@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage;
+using Azoth.Tools.Bootstrap.Compiler.IR;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -26,14 +26,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public FixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
         public FixedSet<IEntityDeclarationSyntax> AllEntityDeclarations { get; }
-        public FixedDictionary<Name, PackageIL> References { get; }
-        public IEnumerable<PackageIL> ReferencedPackages => References.Values;
+        public FixedDictionary<Name, PackageIR> References { get; }
+        public IEnumerable<PackageIR> ReferencedPackages => References.Values;
         public Diagnostics Diagnostics { get; }
 
         public PackageSyntax(
             Name name,
             FixedSet<ICompilationUnitSyntax> compilationUnits,
-            FixedDictionary<Name, PackageIL> references)
+            FixedDictionary<Name, PackageIR> references)
         {
             Symbol = new PackageSymbol(name);
             SymbolTree = new SymbolTreeBuilder(Symbol);

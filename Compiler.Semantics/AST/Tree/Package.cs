@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage;
+using Azoth.Tools.Bootstrap.Compiler.IR;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
@@ -17,14 +17,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
         public FixedSymbolTree SymbolTree { get; }
         public SymbolForest SymbolTrees { get; }
         public Diagnostics Diagnostics { get; }
-        public FixedDictionary<Name, PackageIL> References { get; }
-        public IEnumerable<PackageIL> ReferencedPackages => References.Values;
+        public FixedDictionary<Name, PackageIR> References { get; }
+        public IEnumerable<PackageIR> ReferencedPackages => References.Values;
 
         public Package(
             FixedList<INonMemberDeclaration> nonMemberDeclarations,
             FixedSymbolTree symbolTree,
             Diagnostics diagnostics,
-            FixedDictionary<Name, PackageIL> references)
+            FixedDictionary<Name, PackageIR> references)
         {
             AllDeclarations = GetAllDeclarations(nonMemberDeclarations).ToFixedList();
             NonMemberDeclarations = nonMemberDeclarations;

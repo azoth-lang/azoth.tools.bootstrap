@@ -6,9 +6,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage;
+using Azoth.Tools.Bootstrap.Compiler.IR;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
+using Azoth.Tools.Bootstrap.IL.Assembly;
 using Azoth.Tools.Bootstrap.IL.IO;
 using Azoth.Tools.Bootstrap.Interpreter;
 using Azoth.Tools.Bootstrap.Tests.Conformance.Helpers;
@@ -51,7 +52,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
                 SaveLivenessAnalysis = true,
                 SaveReachabilityGraphs = true,
             };
-            var references = new Dictionary<Name, PackageIL>();
+            var references = new Dictionary<Name, PackageIR>();
 
             // Reference Standard Library
             var supportPackage = CompileSupportPackage(compiler);
@@ -68,16 +69,16 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
                 var diagnostics = package.Diagnostics;
                 var errorDiagnostics = CheckErrorsExpected(testCase, codeFile, code, diagnostics);
 
-                // Disassemble
-                var ilAssembler = new ILAssembler();
-                testOutput.WriteLine(ilAssembler.Disassemble(package));
-
                 // We got only expected errors, but need to not go on to emit code
                 if (errorDiagnostics.Any())
                     return;
 
                 // Emit Code
                 var (packageIL, stdLibIL) = EmitIL(package, supportPackage);
+
+                // Disassemble
+                var ilAssembler = new Disassembler();
+                testOutput.WriteLine(ilAssembler.Disassemble(packageIL));
 
                 // Execute and check results
                 var process = Execute(packageIL, stdLibIL);
@@ -100,7 +101,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
             }
         }
 
-        private PackageIL CompileSupportPackage(AzothCompiler compiler)
+        private PackageIR CompileSupportPackage(AzothCompiler compiler)
         {
             try
             {
@@ -109,7 +110,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
                 var rootNamespace = FixedList<string>.Empty;
                 var codeFiles = sourcePaths.Select(p => LoadCode(p, sourceDir, rootNamespace)).ToList();
                 var package = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles,
-                    FixedDictionary<Name, PackageIL>.Empty);
+                    FixedDictionary<Name, PackageIR>.Empty);
                 if (package.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
                     ReportSupportCompilationErrors(package.Diagnostics);
                 return package;
@@ -207,7 +208,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
                 .ToList();
         }
 
-        private static (MemoryStream PackageIL, MemoryStream StdLibIL) EmitIL(PackageIL package, PackageIL stdLibPackage)
+        private static (MemoryStream PackageIL, MemoryStream StdLibIL) EmitIL(PackageIR package, PackageIR stdLibPackage)
         {
             var writer = new ILWriter();
             var packageIL = new MemoryStream();

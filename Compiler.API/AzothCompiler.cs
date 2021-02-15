@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage;
+using Azoth.Tools.Bootstrap.Compiler.IR;
 using Azoth.Tools.Bootstrap.Compiler.Lexing;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Parsing;
@@ -28,18 +28,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.API
         /// </summary>
         public bool SaveReachabilityGraphs { get; set; }
 
-        public Task<PackageIL> CompilePackageAsync(
+        public Task<PackageIR> CompilePackageAsync(
             Name name,
             IEnumerable<ICodeFileSource> files,
-            FixedDictionary<Name, Task<PackageIL>> referenceTasks)
+            FixedDictionary<Name, Task<PackageIR>> referenceTasks)
         {
             return CompilePackageAsync(name, files, referenceTasks, TaskScheduler.Default);
         }
 
-        public async Task<PackageIL> CompilePackageAsync(
+        public async Task<PackageIR> CompilePackageAsync(
             Name name,
             IEnumerable<ICodeFileSource> fileSources,
-            FixedDictionary<Name, Task<PackageIL>> referenceTasks,
+            FixedDictionary<Name, Task<PackageIR>> referenceTasks,
             TaskScheduler taskScheduler)
         {
             var lexer = new Lexer();
@@ -85,18 +85,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.API
             return analyzer.Check(packageSyntax);
         }
 
-        public PackageIL CompilePackage(
+        public PackageIR CompilePackage(
             string name,
             IEnumerable<ICodeFileSource> fileSources,
-            FixedDictionary<Name, PackageIL> references)
+            FixedDictionary<Name, PackageIR> references)
         {
             return CompilePackage(name, fileSources.Select(s => s.Load()), references);
         }
 
-        public PackageIL CompilePackage(
+        public PackageIR CompilePackage(
             string name,
             IEnumerable<CodeFile> files,
-            FixedDictionary<Name, PackageIL> references)
+            FixedDictionary<Name, PackageIR> references)
         {
             var lexer = new Lexer();
             var parser = new CompilationUnitParser();

@@ -1,7 +1,6 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.API
+namespace Azoth.Tools.Bootstrap.IL.Assembly
 {
     public class AssemblyBuilder : CodeBuilder
     {

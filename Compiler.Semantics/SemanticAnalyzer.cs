@@ -1,17 +1,16 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage;
+using Azoth.Tools.Bootstrap.Compiler.IR;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.AST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.IRGen;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Liveness;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.OldILGen;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
@@ -39,7 +38,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics
         public bool SaveReachabilityGraphs { get; set; }
 
         [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-        public PackageIL Check(PackageSyntax packageSyntax)
+        public PackageIR Check(PackageSyntax packageSyntax)
         {
             // If there are errors from the lex and parse phase, don't continue on
             packageSyntax.Diagnostics.ThrowIfFatalErrors();
@@ -55,19 +54,22 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics
             // If there are errors from the semantics phase, don't continue on
             packageAbstractSyntax.Diagnostics.ThrowIfFatalErrors();
 
-            // --------------------------------------------------
-            // This is where the representation transitions to IR
-            var declarationsIL = BuildIL(packageAbstractSyntax);
-            // --------------------------------------------------
+            // Convert to IR
+            var irFactory = new IRFactory();
+            var packageIR = irFactory.CreatePackage(packageAbstractSyntax, packageAbstractSyntax.Diagnostics);
 
             // If there are errors from the previous phase, don't continue on
-            // TODO can the BuildIL() step introduce errors?
             packageAbstractSyntax.Diagnostics.ThrowIfFatalErrors();
 
-            var entryPointIL = DetermineEntryPoint(declarationsIL, packageAbstractSyntax.Diagnostics);
+            return packageIR;
 
-            var references = packageSyntax.ReferencedPackages.ToFixedSet();
-            return new PackageIL(packageAbstractSyntax.SymbolTree, packageAbstractSyntax.Diagnostics.Build(), references, declarationsIL, entryPointIL);
+            // Old IL Build
+            //var declarationsIL = BuildIL(packageAbstractSyntax);
+
+            //var entryPointIL = DetermineEntryPoint(declarationsIL, packageAbstractSyntax.Diagnostics);
+
+            //var references = packageSyntax.ReferencedPackages.ToFixedSet();
+            //return new PackageIL(packageAbstractSyntax.SymbolTree, packageAbstractSyntax.Diagnostics.Build(), references, declarationsIL, entryPointIL);
         }
 
         private static Package CheckSemantics(PackageSyntax packageSyntax)
@@ -118,27 +120,27 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics
             return package;
         }
 
-        private static FixedList<DeclarationIL> BuildIL(Package package)
-        {
-            var ilFactory = new ILFactory();
-            var declarationBuilder = new DeclarationBuilder(ilFactory);
-            declarationBuilder.Build(package.AllDeclarations, package.SymbolTree);
-            return declarationBuilder.AllDeclarations.ToFixedList();
-        }
+        //private static FixedList<DeclarationIL> BuildIL(Package package)
+        //{
+        //    var ilFactory = new ILFactory();
+        //    var declarationBuilder = new DeclarationBuilder(ilFactory);
+        //    declarationBuilder.Build(package.AllDeclarations, package.SymbolTree);
+        //    return declarationBuilder.AllDeclarations.ToFixedList();
+        //}
 
-        private static FunctionIL? DetermineEntryPoint(
-            FixedList<DeclarationIL> declarations,
-            Diagnostics diagnostics)
-        {
-            var mainFunctions = declarations.OfType<FunctionIL>()
-                .Where(f => f.Symbol.Name == "main")
-                .ToList();
+        //private static FunctionIL? DetermineEntryPoint(
+        //    FixedList<DeclarationIL> declarations,
+        //    Diagnostics diagnostics)
+        //{
+        //    var mainFunctions = declarations.OfType<FunctionIL>()
+        //        .Where(f => f.Symbol.Name == "main")
+        //        .ToList();
 
-            // TODO warn on and remove main functions that don't have correct parameters or types
-            _ = diagnostics;
-            // TODO compiler error on multiple main functions
+        //    // TODO warn on and remove main functions that don't have correct parameters or types
+        //    _ = diagnostics;
+        //    // TODO compiler error on multiple main functions
 
-            return mainFunctions.SingleOrDefault();
-        }
+        //    return mainFunctions.SingleOrDefault();
+        //}
     }
 }

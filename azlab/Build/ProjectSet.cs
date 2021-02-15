@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage;
+using Azoth.Tools.Bootstrap.Compiler.IR;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Lab.Config;
@@ -62,9 +62,9 @@ namespace Azoth.Tools.Bootstrap.Lab.Build
         {
             _ = verbose; // verbose parameter will be needed in the future
             var taskFactory = new TaskFactory(taskScheduler);
-            var projectBuilds = new Dictionary<Project, Task<PackageIL?>>();
+            var projectBuilds = new Dictionary<Project, Task<PackageIR?>>();
 
-            var projectBuildsSource = new TaskCompletionSource<FixedDictionary<Project, Task<PackageIL?>>>();
+            var projectBuildsSource = new TaskCompletionSource<FixedDictionary<Project, Task<PackageIR?>>>();
             var projectBuildsTask = projectBuildsSource.Task;
 
             // Sort projects to detect cycles and so we can assume the tasks already exist
@@ -86,10 +86,10 @@ namespace Azoth.Tools.Bootstrap.Lab.Build
             await Task.WhenAll(projectBuilds.Values).ConfigureAwait(false);
         }
 
-        private static async Task<PackageIL?> BuildAsync(
+        private static async Task<PackageIR?> BuildAsync(
             AzothCompiler compiler,
             Project project,
-            Task<FixedDictionary<Project, Task<PackageIL?>>> projectBuildsTask,
+            Task<FixedDictionary<Project, Task<PackageIR?>>> projectBuildsTask,
             object consoleLock)
         {
             var projectBuilds = await projectBuildsTask.ConfigureAwait(false);
@@ -97,7 +97,7 @@ namespace Azoth.Tools.Bootstrap.Lab.Build
             var sourcePaths = Directory.EnumerateFiles(sourceDir, "*.az", SearchOption.AllDirectories);
             // Wait for the references, unfortunately, this requires an ugly loop.
             var referenceTasks = project.References.ToDictionary(r => r.Name, r => projectBuilds[r.Project]);
-            var references = new Dictionary<Name, PackageIL>();
+            var references = new Dictionary<Name, PackageIR>();
             foreach (var referenceTask in referenceTasks)
             {
                 var package = await referenceTask.Value.ConfigureAwait(false);
@@ -194,7 +194,7 @@ namespace Azoth.Tools.Bootstrap.Lab.Build
             return true;
         }
 
-        private static string EmitIL(Project project, PackageIL package, string cacheDir)
+        private static string EmitIL(Project project, PackageIR package, string cacheDir)
         {
             throw new NotImplementedException();
             //var emittedPackages = new HashSet<PackageIL>();

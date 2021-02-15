@@ -32,6 +32,7 @@
     <ProjectReference Include="..\Compiler.AST\Compiler.AST.csproj" />
     <ProjectReference Include="..\Compiler.CST\Compiler.CST.csproj" />
     <ProjectReference Include="..\Compiler.Core\Compiler.Core.csproj" />
+    <ProjectReference Include="..\Compiler.IR\Compiler.IR.csproj" />
     <ProjectReference Include="..\Framework\Framework.csproj" />
     <ProjectReference Include="..\Compiler.IntermediateLanguage\Compiler.IntermediateLanguage.csproj" />
     <ProjectReference Include="..\Compiler.LexicalScopes\Compiler.LexicalScopes.csproj" />

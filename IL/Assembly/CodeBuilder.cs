@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Core
+namespace Azoth.Tools.Bootstrap.IL.Assembly
 {
     public abstract class CodeBuilder
     {
