@@ -24,6 +24,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.IRGen
         private readonly Table<FieldIR> fields = new Table<FieldIR>();
         private readonly Table<ConstructorIR> constructors = new Table<ConstructorIR>();
         private readonly Table<DataType> types = new Table<DataType>();
+        private FunctionIR? entryPoint;
 
         public IRBuilder()
         {
@@ -111,7 +112,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.IRGen
             return new NamedParameterIR(parameter.Symbol);
         }
 
-        private SelfParameterIR BuildParameter(ISelfParameter selfParameter)
+        private static SelfParameterIR BuildParameter(ISelfParameter selfParameter)
         {
             return new SelfParameterIR(selfParameter.Symbol);
         }
@@ -177,13 +178,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.IRGen
 
         public void DetermineEntryPoint(Diagnostics diagnostics)
         {
-            //var mainFunctions = declarations.OfType<FunctionIL>().Where(f => f.Symbol.Name == "main").ToList();
-            //return mainFunctions.SingleOrDefault();
+            var mainFunctions = functions.Where(f => f.Symbol.Name == "main").ToList();
 
             // TODO warn on and remove main functions that don't have correct parameters or types
             // TODO compiler error on multiple main functions
 
-            //throw new NotImplementedException();
+            entryPoint = mainFunctions.SingleOrDefault();
         }
 
         public PackageIR BuildPackage(Package package)

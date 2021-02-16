@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Azoth.Tools.Bootstrap.Compiler.IR.Declarations;
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.IR
@@ -8,11 +8,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.IR
     /// <summary>
     /// A table of entities as used in IR
     /// </summary>
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
+    [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     public class Table<T> : IEnumerable<T>
         where T : notnull
     {
         private readonly List<T> values = new List<T>();
         private readonly Dictionary<T, uint> lookup = new Dictionary<T, uint>();
+
+        public int Count => values.Count;
 
         public uint this[T value] => lookup[value];
 

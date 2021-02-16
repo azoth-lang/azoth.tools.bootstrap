@@ -13,9 +13,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.IR.CFG
             Instructions = instructions.AsReadOnly();
         }
 
-        public void Add(Instruction instruction)
+        public ushort Add(Instruction instruction)
         {
+            var index = (ushort)instructions.Count;
             instructions.Add(instruction);
+            return index;
         }
     }
 }

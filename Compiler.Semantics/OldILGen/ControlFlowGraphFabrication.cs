@@ -111,15 +111,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.OldILGen
     //            }
     //        }
     //        break;
-    //        case IExpressionStatement expressionStatement:
-    //        {
-    //            var expression = expressionStatement.Expression;
-    //            if (!expression.DataType.Assigned().IsKnown)
-    //                throw new ArgumentException("Expression must have a known type", nameof(statement));
-
-    //            Convert(expression);
-    //        }
-    //        break;
     //        case IResultStatement resultStatement:
     //        {
     //            var expression = resultStatement.Expression;
@@ -185,9 +176,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.OldILGen
     //            break;
     //        case IMoveExpression exp:
     //            Convert(exp.Referent);
-    //            break;
-    //        case IImplicitNumericConversionExpression exp:
-    //            Convert(exp.Expression);
     //            break;
     //        case IImplicitOptionalConversionExpression exp:
     //            Convert(exp.Expression);
@@ -400,21 +388,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.OldILGen
     //            var args = exp.Arguments.Select(ConvertToOperand).ToFixedList();
     //            currentBlock!.Add(CallInstruction.ForFunction(functionName, args, exp.Span, CurrentScope));
     //        }
-    //        break;
-    //        case IReturnExpression exp:
-    //        {
-    //            if (exp.Value is null)
-    //                currentBlock!.End(new ReturnVoidInstruction(exp.Span, CurrentScope));
-    //            else
-    //            {
-    //                var returnValue = ConvertToOperand(exp.Value);
-    //                currentBlock!.End(new ReturnValueInstruction(returnValue, exp.Span, CurrentScope));
-    //            }
-
-    //            There is no exit from a return block, hence null for exit block
-
-    //           currentBlock = null;
-    //            }
     //        break;
     //        case INameExpression _:
     //        case IBinaryOperatorExpression _:
@@ -638,21 +611,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.OldILGen
     //        case IBoolLiteralExpression exp:
     //            currentBlock!.Add(new LoadBoolInstruction(resultPlace, exp.Value, exp.Span, CurrentScope));
     //            break;
-    //        case IImplicitNumericConversionExpression exp:
-    //        {
-    //            if (exp.Expression.DataType.Assigned().Known() is IntegerConstantType constantType)
-    //                currentBlock!.Add(new LoadIntegerInstruction(resultPlace, constantType.Value,
-    //                    (IntegerType)exp.DataType.Assigned().Known(),
-    //                    exp.Span, CurrentScope));
-    //            else
-    //                currentBlock!.Add(new ConvertInstruction(resultPlace, ConvertToOperand(exp.Expression),
-    //                    (NumericType)exp.Expression.DataType.Assigned().Known(), exp.ConvertToType,
-    //                    exp.Span, CurrentScope));
-    //        }
-    //        break;
-    //        case IIntegerLiteralExpression exp:
-    //            throw new InvalidOperationException(
-    //                "Integer literals should have an implicit conversion around them");
     //        case IImplicitNoneConversionExpression exp:
     //            currentBlock!.Add(new LoadNoneInstruction(resultPlace, exp.ConvertToType, exp.Span, CurrentScope));
     //            break;

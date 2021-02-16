@@ -91,8 +91,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// </summary>
         public abstract string ToILString();
 
-        [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates",
-            Justification = "Return self idiom")]
         public static implicit operator Self(DataType type)
         {
             return new Self(type);

@@ -13,27 +13,46 @@ namespace Azoth.Tools.Bootstrap.IL.Instructions
         private const uint MaxOperandValue = 0x00000FFF;
         private const uint ValueMask = 0x00FFFFFF;
         private const uint MaxUnsignedValue = 0x00FFFFFF;
+        private const int MaxSignedValue = 8_388_607;
+        private const int MinSignedValue = -8_388_608;
 
         private readonly uint value;
 
-        public Instruction(ShortOpcode shortOpcode, ushort operand1, ushort operand2)
+        public Instruction(ShortOpcode opcode, ushort operand1, ushort operand2)
         {
-            if (!shortOpcode.IsDefined())
-                throw new InvalidEnumArgumentException(nameof(shortOpcode), (int)shortOpcode, typeof(ShortOpcode));
+            if (!opcode.IsDefined())
+                throw new InvalidEnumArgumentException(nameof(opcode), (int)opcode, typeof(ShortOpcode));
             if (operand1 > MaxOperandValue)
                 throw new ArgumentException("Invalid operand value", nameof(operand1));
             if (operand2 > MaxOperandValue)
                 throw new ArgumentException("Invalid operand value", nameof(operand2));
-            value = (uint)shortOpcode << Segment1Offset | (uint)operand1 << Segment2Offset | operand2;
+            value = (uint)opcode << Segment1Offset | (uint)operand1 << Segment2Offset | operand2;
         }
 
-        public Instruction(ShortOpcode shortOpcode, uint value)
+        public Instruction(ShortOpcode opcode, uint value)
         {
-            if (!shortOpcode.IsDefined())
-                throw new InvalidEnumArgumentException(nameof(shortOpcode), (int)shortOpcode, typeof(ShortOpcode));
+            if (!opcode.IsDefined())
+                throw new InvalidEnumArgumentException(nameof(opcode), (int)opcode, typeof(ShortOpcode));
             if (value > MaxUnsignedValue)
                 throw new ArgumentException("Invalid operand value", nameof(value));
-            this.value = (uint)shortOpcode << Segment1Offset | value;
+            this.value = (uint)opcode << Segment1Offset | value;
+        }
+
+        public Instruction(ShortOpcode opcode, int value)
+        {
+            if (!opcode.IsDefined())
+                throw new InvalidEnumArgumentException(nameof(opcode), (int)opcode, typeof(ShortOpcode));
+            if (value > MaxSignedValue || value < MinSignedValue) throw new ArgumentException("Invalid operand value", nameof(value));
+            this.value = (uint)opcode << Segment1Offset | (uint)(value & ValueMask);
+        }
+
+        public Instruction(UnaryOpcode opcode, ushort operand)
+        {
+            if (!opcode.IsDefined())
+                throw new InvalidEnumArgumentException(nameof(opcode), (int)opcode, typeof(UnaryOpcode));
+            if (operand > MaxOperandValue)
+                throw new ArgumentException("Invalid operand value", nameof(operand));
+            value = (uint)opcode << Segment2Offset | operand;
         }
 
         public Instruction(NullaryOpcode opcode)

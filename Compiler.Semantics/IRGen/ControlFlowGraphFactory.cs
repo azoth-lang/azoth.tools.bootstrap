@@ -1,10 +1,13 @@
 using System;
+using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.IR.CFG;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.IL.Instructions;
 using ExhaustiveMatching;
 using static Azoth.Tools.Bootstrap.IL.Instructions.NullaryOpcode;
+using static Azoth.Tools.Bootstrap.IL.Instructions.ShortOpcode;
+using static Azoth.Tools.Bootstrap.IL.Instructions.UnaryOpcode;
 using Block = Azoth.Tools.Bootstrap.Compiler.IR.CFG.Block;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.IRGen
@@ -20,9 +23,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.IRGen
 
         public ControlFlowGraph CreateGraph(IConcreteInvocableDeclaration invocable)
         {
+            var graph = new ControlFlowGraph();
+
+            // TODO remove hack for skipping functions other than main
+            if (invocable.Symbol.Name != "main") return graph;
+
             var (selfType, returnType) = GetSelfAndReturnTypes(invocable);
 
-            var graph = new ControlFlowGraph();
+
             var entryBlock = graph.AddBlock();
             if (selfType != null) AddParameter(entryBlock, selfType);
             foreach (var parameter in invocable.Parameters)
@@ -30,9 +38,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.IRGen
 
             // TODO initialize any fields
 
-            var currentBlock = entryBlock;
+            Block? currentBlock = entryBlock;
             foreach (var statement in invocable.Body.Statements)
-                currentBlock = Convert(statement, graph, currentBlock);
+                Build(statement, graph, ref currentBlock);
 
             // Generate the implicit return statement
             //if (currentBlock != null && !currentBlock.IsTerminated)
@@ -70,7 +78,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.IRGen
                 PointerSizedIntegerType t => new Instruction(t.IsSigned ? ParamOffset : ParamSize),
                 EmptyType _ => throw new InvalidOperationException("Parameter with empty type"),
                 UnknownType _ => throw new InvalidOperationException("Parameter with unknown type"),
-                ReferenceType t => new Instruction(ShortOpcode.Param, irBuilder.Add(t)),
+                ReferenceType t => new Instruction(Param, irBuilder.Add(t)),
                 _ => throw new NotImplementedException($"Type: {type}")//throw ExhaustiveMatch.Failed(type)
             };
 
@@ -92,15 +100,138 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.IRGen
             }
         }
 
-        private Block Convert(IBodyStatement statement, ControlFlowGraph graph, Block currentBlock)
+        private static void Build(IBodyStatement statement, ControlFlowGraph graph, ref Block? currentBlock)
         {
-            //switch (statement)
-            //{
-            //    default:
-            //        throw new NotImplementedException($"Statement Type: {statement.GetType().Name}");
-            //        //throw ExhaustiveMatch.Failed(statement);
-            //}
-            return currentBlock;
+            switch (statement)
+            {
+                default:
+                    throw new NotImplementedException($"Statement Type: {statement.GetType().Name}");
+                //throw ExhaustiveMatch.Failed(statement);
+                case IExpressionStatement expressionStatement:
+                {
+                    var expression = expressionStatement.Expression;
+                    if (!expression.DataType.Assigned().IsKnown)
+                        throw new ArgumentException("Expression must have a known type", nameof(statement));
+
+                    Build(expression, ref currentBlock);
+                }
+                break;
+            }
+        }
+
+        private static ushort Build(IExpression expression, ref Block? currentBlock)
+        {
+            ushort index;
+            switch (expression)
+            {
+                default:
+                    throw new NotImplementedException($"Convert({expression.GetType().Name})");
+                //throw ExhaustiveMatch.Failed(expression);
+                case IImplicitNumericConversionExpression exp:
+                {
+                    if (exp.Expression.DataType.Assigned().Known() is IntegerConstantType constantType)
+                        index = BuildIntegerLiteral(constantType.Value, exp.ConvertToType, currentBlock!);
+                    else
+                        throw new NotImplementedException();
+                    //currentBlock!.Add(new ConvertInstruction(resultPlace, ConvertToOperand(exp.Expression),
+                    //    (NumericType)exp.Expression.DataType.Assigned().Known(), exp.ConvertToType,
+                    //    exp.Span, CurrentScope));
+                }
+                break;
+                case IIntegerLiteralExpression exp:
+                    throw new InvalidOperationException(
+                        "Integer literals should have an implicit conversion around them");
+                case IReturnExpression exp:
+                {
+
+                    if (exp.Value is null)
+                        index = currentBlock!.Add(new Instruction(ReturnVoid));
+                    else
+                    {
+                        var returnValue = Build(exp.Value, ref currentBlock);
+                        index = currentBlock!.Add(new Instruction(Return, returnValue));
+                    }
+
+                    // There is no exit from a return block, hence null for exit block
+                    currentBlock = null;
+                }
+                break;
+            }
+
+            return index;
+        }
+
+        private static ushort BuildIntegerLiteral(
+            BigInteger value,
+            NumericType type,
+            Block currentBlock)
+        {
+            ushort index;
+            switch (type)
+            {
+                default:
+                    throw ExhaustiveMatch.Failed(type);
+                case FixedSizeIntegerType t:
+                {
+                    index = BuildIntegerLiteral(value, t.IsSigned, t.Bits, currentBlock);
+                    if (t.Bits > 32)
+                    {
+                        var opcode = t.Bits switch
+                        {
+                            64 => ConvertToI64,
+                            128 => ConvertToI128,
+                            _ => throw new InvalidOperationException($"Can't convert to {t.Bits} bits")
+                        };
+                        index = currentBlock.Add(new Instruction(opcode, index));
+                    }
+                }
+                break;
+                case PointerSizedIntegerType t:
+                {
+                    index = BuildIntegerLiteral(value, t.IsSigned, 8, currentBlock);
+                    var opcode = t.IsSigned ? ConvertToOffset : ConvertToSize;
+                    index = currentBlock.Add(new Instruction(opcode, index));
+                }
+                break;
+                case IntegerConstantType _:
+                    throw new InvalidOperationException("Integer constant must be emitted as a specific type");
+            }
+
+            return index;
+        }
+
+        private static ushort BuildIntegerLiteral(BigInteger value, bool isSigned, int minSize, Block currentBlock)
+        {
+            if (isSigned && value <= 8388607 && value >= -8388607)
+            {
+                minSize = Math.Max(minSize, value.GetByteCount() * 8);
+                var operand = (int)value;
+                var opcode = minSize switch
+                {
+                    8 => ConstI8,
+                    16 => ConstI16,
+                    32 => ConstI32,
+                    _ => throw new InvalidOperationException($"Invalid bit size {minSize}")
+                };
+
+                return currentBlock.Add(new Instruction(opcode, operand));
+            }
+
+            if (!isSigned && value< 0x00FFFFFF)
+            {
+                minSize = Math.Max(minSize, value.GetByteCount(isUnsigned: true) * 8);
+                var operand = (uint)value;
+                var opcode = minSize switch
+                {
+                    8 => ConstU8,
+                    16 => ConstU16,
+                    32 => ConstU32,
+                    _ => throw new InvalidOperationException($"Invalid bit size {minSize}")
+                };
+                return currentBlock.Add(new Instruction(opcode, operand));
+            }
+
+            throw new NotImplementedException("Integer constant too large for inline");
         }
     }
 }
