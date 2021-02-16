@@ -11,7 +11,10 @@ namespace Azoth.Tools.Bootstrap.IL
         public FixedList<ClassIL> Classes { get; }
         public FixedList<FunctionIL> Functions { get; }
         public FixedList<DataType> Types { get; }
-        public FunctionIL? EntryPoint { get; }
+        public uint? EntryPointFunctionID { get; }
+        public FunctionIL? EntryPoint => EntryPointFunctionID is null
+            ? null : Functions[(int)EntryPointFunctionID.Value];
+
         public PackageIL(
             FixedList<PackageReferenceIL> packageReferences,
             FixedList<string> stringConstants,
@@ -19,7 +22,7 @@ namespace Azoth.Tools.Bootstrap.IL
             FixedList<ClassIL> classes,
             FixedList<FunctionIL> functions,
             FixedList<DataType> types,
-            FunctionIL? entryPoint)
+            uint? entryPointId)
         {
             StringConstants = stringConstants;
             SymbolConstants = symbolConstants;
@@ -27,7 +30,7 @@ namespace Azoth.Tools.Bootstrap.IL
             Functions = functions;
             Types = types;
             PackageReferences = packageReferences;
-            EntryPoint = entryPoint;
+            EntryPointFunctionID = entryPointId;
         }
     }
 }

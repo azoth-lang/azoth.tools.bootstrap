@@ -44,6 +44,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.IR
         public PackageIL ToIL()
         {
             var ilBuilder = new ILBuilder();
+            uint? entryPointID = EntryPoint is null ? default(uint?) : Functions[EntryPoint];
             return new PackageIL(
                 References.Select(r => r.ToReferenceIL()).ToFixedList(),
                 FixedList<string>.Empty,
@@ -51,7 +52,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.IR
                 Classes.Select(ilBuilder.Build).ToFixedList(),
                 Functions.Select(c => c.ToIL()).ToFixedList(),
                 Types.ToFixedList(),
-                ilBuilder.Lookup(EntryPoint));
+                entryPointID);
         }
 
         private PackageReferenceIL ToReferenceIL()
