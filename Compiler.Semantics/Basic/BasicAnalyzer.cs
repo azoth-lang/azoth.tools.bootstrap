@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -42,7 +43,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             this.diagnostics = diagnostics;
         }
 
-        public static void Check(PackageSyntax package, ObjectTypeSymbol? stringSymbol)
+        public static void Check(PackageSyntax<Package> package, ObjectTypeSymbol? stringSymbol)
         {
             var analyzer = new BasicAnalyzer(package.SymbolTree, package.SymbolTrees, stringSymbol, package.Diagnostics);
             analyzer.Check(package.AllEntityDeclarations);

@@ -5,8 +5,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols.Trees
     /// <summary>
     /// A symbol tree is a immutable collection of symbols that answers the question:
     /// For any given symbol, what are its child symbols.
-    ///
-    /// Each symbol tree 
     /// </summary>
     public interface ISymbolTree
     {

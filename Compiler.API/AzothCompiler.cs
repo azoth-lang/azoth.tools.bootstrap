@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.IR;
 using Azoth.Tools.Bootstrap.Compiler.Lexing;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Parsing;
@@ -28,18 +28,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.API
         /// </summary>
         public bool SaveReachabilityGraphs { get; set; }
 
-        public Task<PackageIR> CompilePackageAsync(
+        public Task<Package> CompilePackageAsync(
             Name name,
             IEnumerable<ICodeFileSource> files,
-            FixedDictionary<Name, Task<PackageIR>> referenceTasks)
+            FixedDictionary<Name, Task<Package>> referenceTasks)
         {
             return CompilePackageAsync(name, files, referenceTasks, TaskScheduler.Default);
         }
 
-        public async Task<PackageIR> CompilePackageAsync(
+        public async Task<Package> CompilePackageAsync(
             Name name,
             IEnumerable<ICodeFileSource> fileSources,
-            FixedDictionary<Name, Task<PackageIR>> referenceTasks,
+            FixedDictionary<Name, Task<Package>> referenceTasks,
             TaskScheduler taskScheduler)
         {
             var lexer = new Lexer();
@@ -74,7 +74,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.API
             var references = referencePairs.ToFixedDictionary(r => r.alias, r => r.package);
 
             // TODO add the references to the package syntax
-            var packageSyntax = new PackageSyntax(name, compilationUnits.ToFixedSet(), references);
+            var packageSyntax = new PackageSyntax<Package>(name, compilationUnits.ToFixedSet(), references);
 
             var analyzer = new SemanticAnalyzer()
             {
@@ -85,18 +85,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.API
             return analyzer.Check(packageSyntax);
         }
 
-        public PackageIR CompilePackage(
+        public Package CompilePackage(
             string name,
             IEnumerable<ICodeFileSource> fileSources,
-            FixedDictionary<Name, PackageIR> references)
+            FixedDictionary<Name, Package> references)
         {
             return CompilePackage(name, fileSources.Select(s => s.Load()), references);
         }
 
-        public PackageIR CompilePackage(
+        public Package CompilePackage(
             string name,
             IEnumerable<CodeFile> files,
-            FixedDictionary<Name, PackageIR> references)
+            FixedDictionary<Name, Package> references)
         {
             var lexer = new Lexer();
             var parser = new CompilationUnitParser();
@@ -108,7 +108,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.API
                     return parser.Parse(tokens);
                 })
                 .ToFixedSet();
-            var packageSyntax = new PackageSyntax(name, compilationUnits, references);
+            var packageSyntax = new PackageSyntax<Package>(name, compilationUnits, references);
 
             var analyzer = new SemanticAnalyzer()
             {

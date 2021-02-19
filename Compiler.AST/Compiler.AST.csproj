@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Compiler.Core\Compiler.Core.csproj" />
+    <ProjectReference Include="..\Compiler.Primitives\Compiler.Primitives.csproj" />
     <ProjectReference Include="..\Compiler.Symbols\Compiler.Symbols.csproj" />
     <ProjectReference Include="..\Compiler.Types\Compiler.Types.csproj" />
   </ItemGroup>

@@ -2,13 +2,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.IR;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.AST;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.IRGen;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Liveness;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
@@ -38,7 +35,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics
         public bool SaveReachabilityGraphs { get; set; }
 
         [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-        public PackageIR Check(PackageSyntax packageSyntax)
+        public Package Check(PackageSyntax<Package> packageSyntax)
         {
             // If there are errors from the lex and parse phase, don't continue on
             packageSyntax.Diagnostics.ThrowIfFatalErrors();
@@ -55,13 +52,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics
             packageAbstractSyntax.Diagnostics.ThrowIfFatalErrors();
 
             // Convert to IR
-            var irFactory = new IRFactory();
-            var packageIR = irFactory.CreatePackage(packageAbstractSyntax, packageAbstractSyntax.Diagnostics);
+            //var irFactory = new IRFactory();
+            //var packageIR = irFactory.CreatePackage(packageAbstractSyntax, packageAbstractSyntax.Diagnostics);
 
             // If there are errors from the previous phase, don't continue on
             packageAbstractSyntax.Diagnostics.ThrowIfFatalErrors();
 
-            return packageIR;
+            // TODO determine entry point
+
+            return packageAbstractSyntax.Build();
 
             // Old IL Build
             //var declarationsIL = BuildIL(packageAbstractSyntax);
@@ -72,7 +71,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics
             //return new PackageIL(packageAbstractSyntax.SymbolTree, packageAbstractSyntax.Diagnostics.Build(), references, declarationsIL, entryPointIL);
         }
 
-        private static Package CheckSemantics(PackageSyntax packageSyntax)
+        private static PackageBuilder CheckSemantics(PackageSyntax<Package> packageSyntax)
         {
             DeclarationNumberAssigner.AssignIn(packageSyntax.AllEntityDeclarations);
 

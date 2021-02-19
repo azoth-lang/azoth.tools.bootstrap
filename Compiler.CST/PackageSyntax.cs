@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.IR;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -16,8 +15,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
     /// Represents an entire package worth of syntax
     /// </summary>
     /// <remarks>Doesn't inherit from <see cref="ISyntax"/> because it is never
-    /// matched as part of syntax. It is always treated as the singular root.</remarks>
-    public class PackageSyntax
+    /// matched as part of syntax. It is always treated as the singular root.
+    ///
+    /// Currently, references are stored as ASTs. To avoid referencing the AST
+    /// project from the CST project, a generic type is used.
+    /// </remarks>
+    public class PackageSyntax<TReference>
+        where TReference : IHasSymbolTree
     {
         public PackageSymbol Symbol { get; }
         public SymbolTreeBuilder SymbolTree { get; }
@@ -26,14 +30,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public FixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
         public FixedSet<IEntityDeclarationSyntax> AllEntityDeclarations { get; }
-        public FixedDictionary<Name, PackageIR> References { get; }
-        public IEnumerable<PackageIR> ReferencedPackages => References.Values;
+        public FixedDictionary<Name, TReference> References { get; }
+        public IEnumerable<TReference> ReferencedPackages => References.Values;
         public Diagnostics Diagnostics { get; }
 
         public PackageSyntax(
             Name name,
             FixedSet<ICompilationUnitSyntax> compilationUnits,
-            FixedDictionary<Name, PackageIR> references)
+            FixedDictionary<Name, TReference> references)
         {
             Symbol = new PackageSymbol(name);
             SymbolTree = new SymbolTreeBuilder(Symbol);

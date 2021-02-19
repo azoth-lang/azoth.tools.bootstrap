@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
+using Azoth.Tools.Bootstrap.Compiler.AST;
+using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.IR;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
-using Azoth.Tools.Bootstrap.IL.Assembly;
 using Azoth.Tools.Bootstrap.IL.IO;
-using Azoth.Tools.Bootstrap.Interpreter;
 using Azoth.Tools.Bootstrap.Tests.Conformance.Helpers;
 using Xunit;
 using Xunit.Abstractions;
@@ -53,7 +53,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
                 SaveLivenessAnalysis = true,
                 SaveReachabilityGraphs = true,
             };
-            var references = new Dictionary<Name, PackageIR>();
+            var references = new Dictionary<Name, Package>();
 
             // Reference Standard Library
             var supportPackage = CompileSupportPackage(compiler);
@@ -75,15 +75,16 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
                     return;
 
                 // Emit Code
-                var (packageIL, stdLibIL) = EmitIL(package, supportPackage);
+                //var (packageIL, stdLibIL) = EmitIL(package, supportPackage);
 
                 // Disassemble
-                var ilAssembler = new Disassembler();
-                testOutput.WriteLine(ilAssembler.Disassemble(packageIL));
-                packageIL.Position = 0;
+                //var ilAssembler = new Disassembler();
+                //testOutput.WriteLine(ilAssembler.Disassemble(packageIL));
+                //packageIL.Position = 0;
 
                 // Execute and check results
-                var process = Execute(packageIL, stdLibIL);
+                var process = Execute(package);
+                //var process = Execute(packageIL, stdLibIL);
 
                 await process.WaitForExitAsync();
                 var stdout = await process.StandardOutput.ReadToEndAsync();
@@ -103,7 +104,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
             }
         }
 
-        private PackageIR CompileSupportPackage(AzothCompiler compiler)
+        private Package CompileSupportPackage(AzothCompiler compiler)
         {
             try
             {
@@ -112,7 +113,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
                 var rootNamespace = FixedList<string>.Empty;
                 var codeFiles = sourcePaths.Select(p => LoadCode(p, sourceDir, rootNamespace)).ToList();
                 var package = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles,
-                    FixedDictionary<Name, PackageIR>.Empty);
+                    FixedDictionary<Name, Package>.Empty);
                 if (package.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
                     ReportSupportCompilationErrors(package.Diagnostics);
                 return package;
@@ -222,13 +223,19 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
             return (packageIL, stdLibIL);
         }
 
-        private static InterpreterProcess Execute(MemoryStream packageIL, MemoryStream stdLibIL)
+        private static InterpreterProcess Execute(Package package)
         {
-            var interpreter = new AzothInterpreter();
-            interpreter.LoadPackage(stdLibIL);
-            interpreter.LoadPackage(packageIL);
-            return interpreter.Execute();
+            var interpreter = new AzothTreeInterpreter();
+            return interpreter.Execute(package);
         }
+
+        //private static InterpreterProcess Execute(MemoryStream packageIL, MemoryStream stdLibIL)
+        //{
+        //    var interpreter = new AzothInterpreter();
+        //    interpreter.LoadPackage(stdLibIL);
+        //    interpreter.LoadPackage(packageIL);
+        //    return interpreter.Execute();
+        //}
 
         private static int ExpectedExitCode(string code)
         {

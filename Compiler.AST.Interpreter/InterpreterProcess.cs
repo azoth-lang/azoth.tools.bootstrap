@@ -1,7 +1,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Azoth.Tools.Bootstrap.Interpreter
+namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
 {
     public class InterpreterProcess
     {

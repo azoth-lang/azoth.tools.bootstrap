@@ -1,4 +1,5 @@
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -16,7 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces
             this.treeBuilder = treeBuilder;
         }
 
-        public static void BuildNamespaceSymbols(PackageSyntax package)
+        public static void BuildNamespaceSymbols(PackageSyntax<Package> package)
         {
             var builder = new NamespaceSymbolBuilder(package.SymbolTree);
             foreach (var compilationUnit in package.CompilationUnits)

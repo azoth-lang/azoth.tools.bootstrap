@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.IR;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;

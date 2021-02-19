@@ -16,14 +16,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
     {
         // ReSharper disable once UnusedMember.Global
         [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-        public Package BuildPackage(PackageSyntax packageSyntax)
+        public PackageBuilder BuildPackage(PackageSyntax<Package> packageSyntax)
         {
             var nonMemberDeclarations = packageSyntax.AllEntityDeclarations
                                         .OfType<INonMemberEntityDeclarationSyntax>()
                                         .Select(BuildNonMemberDeclaration).ToFixedList();
 
             var symbolTree = packageSyntax.SymbolTree.Build();
-            return new Package(nonMemberDeclarations, symbolTree, packageSyntax.Diagnostics, packageSyntax.References);
+            return new PackageBuilder(nonMemberDeclarations, symbolTree, packageSyntax.Diagnostics, packageSyntax.References);
         }
 
         private static INonMemberDeclaration BuildNonMemberDeclaration(INonMemberEntityDeclarationSyntax entity)

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
@@ -15,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes
     {
         [SuppressMessage("Performance", "CA1822:Mark members as static",
             Justification = "OO")]
-        public void BuildFor(PackageSyntax package)
+        public void BuildFor(PackageSyntax<Package> package)
         {
             var declarationSymbols = GetAllNonMemberDeclarationSymbols(package);
             var namespaces = BuildNamespaces(declarationSymbols);
@@ -29,7 +30,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes
             }
         }
 
-        private static FixedList<NonMemberSymbol> GetAllNonMemberDeclarationSymbols(PackageSyntax package)
+        private static FixedList<NonMemberSymbol> GetAllNonMemberDeclarationSymbols(PackageSyntax<Package> package)
         {
             var primitiveSymbols = Primitive.SymbolTree.Symbols
                                             .Where(s => s.ContainingSymbol is null)
@@ -76,7 +77,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes
 
             return nsSymbols.ToFixedDictionary(ns => ns.Name);
         }
-        private static PackagesScope BuildPackagesScope(PackageSyntax package)
+        private static PackagesScope BuildPackagesScope(PackageSyntax<Package> package)
         {
             var packageAliases = package.References
                                   .ToDictionary(p => p.Key, p => p.Value.Symbol)

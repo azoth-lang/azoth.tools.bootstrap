@@ -1,37 +1,33 @@
 using System.Collections.Generic;
-using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.IR;
-using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Primitives;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
+namespace Azoth.Tools.Bootstrap.Compiler.AST
 {
-    internal class Package
+    public class Package : IHasSymbolTree
     {
         public FixedList<IDeclaration> AllDeclarations { get; }
         public FixedList<INonMemberDeclaration> NonMemberDeclarations { get; }
+        public PackageSymbol Symbol { get; }
         public FixedSymbolTree SymbolTree { get; }
-        public SymbolForest SymbolTrees { get; }
-        public Diagnostics Diagnostics { get; }
-        public FixedDictionary<Name, PackageIR> References { get; }
-        public IEnumerable<PackageIR> ReferencedPackages => References.Values;
+        public FixedList<Diagnostic> Diagnostics { get; }
+        public FixedSet<Package> References { get; }
+        public IFunctionDeclaration? EntryPoint { get; internal set; }
 
         public Package(
             FixedList<INonMemberDeclaration> nonMemberDeclarations,
             FixedSymbolTree symbolTree,
-            Diagnostics diagnostics,
-            FixedDictionary<Name, PackageIR> references)
+            FixedList<Diagnostic> diagnostics,
+            FixedSet<Package> references)
         {
             AllDeclarations = GetAllDeclarations(nonMemberDeclarations).ToFixedList();
             NonMemberDeclarations = nonMemberDeclarations;
+            Symbol = symbolTree.Package;
             SymbolTree = symbolTree;
             Diagnostics = diagnostics;
             References = references;
-            SymbolTrees = new SymbolForest(Primitive.SymbolTree, ReferencedPackages.Select(p => p.SymbolTree).Append(SymbolTree));
         }
 
         private static IEnumerable<IDeclaration> GetAllDeclarations(

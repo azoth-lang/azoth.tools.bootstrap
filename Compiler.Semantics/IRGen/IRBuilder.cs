@@ -6,7 +6,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.IR;
 using Azoth.Tools.Bootstrap.Compiler.IR.Declarations;
 using Azoth.Tools.Bootstrap.Compiler.IR.Parameters;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -188,14 +187,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.IRGen
 
         public PackageIR BuildPackage(Package package)
         {
+            throw new NotImplementedException();
             // TODO maybe the parts of the package should be taken in the constructor instead of here as the package
-            return new PackageIR(
-                package.SymbolTree,
-                package.Diagnostics.Build(),
-                package.ReferencedPackages.ToFixedSet(),
-                classes,
-                functions,
-                types);
+            //return new PackageIR(
+            //    package.SymbolTree,
+            //    package.Diagnostics.Build(),
+            //    package.ReferencedPackages.ToFixedSet(),
+            //    classes,
+            //    functions,
+            //    types);
         }
 
         public uint Add(ReferenceType referenceType)

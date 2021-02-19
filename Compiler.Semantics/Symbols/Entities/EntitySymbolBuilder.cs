@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
@@ -24,7 +25,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities
             this.symbolTree = symbolTree;
         }
 
-        public static void BuildFor(PackageSyntax package)
+        public static void BuildFor(PackageSyntax<Package> package)
         {
             var builder = new EntitySymbolBuilder(package.Diagnostics, package.SymbolTree);
             builder.Build(package.AllEntityDeclarations);
