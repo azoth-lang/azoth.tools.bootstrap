@@ -88,7 +88,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "azi", "azi\azi.csproj", "{4
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "azm", "azm\azm.csproj", "{6D5E28E3-0986-4741-8F50-3B0D53DB0F5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler.IR", "Compiler.IR\Compiler.IR.csproj", "{92376CB9-13C6-4E3B-89A8-3B41BCF2FF29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.IR", "Compiler.IR\Compiler.IR.csproj", "{92376CB9-13C6-4E3B-89A8-3B41BCF2FF29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler.AST.Interpreter", "Compiler.AST.Interpreter\Compiler.AST.Interpreter.csproj", "{A0F93255-B6DB-468C-A4BA-8A26F607993D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -228,6 +230,10 @@ Global
 		{92376CB9-13C6-4E3B-89A8-3B41BCF2FF29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92376CB9-13C6-4E3B-89A8-3B41BCF2FF29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92376CB9-13C6-4E3B-89A8-3B41BCF2FF29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0F93255-B6DB-468C-A4BA-8A26F607993D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0F93255-B6DB-468C-A4BA-8A26F607993D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0F93255-B6DB-468C-A4BA-8A26F607993D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0F93255-B6DB-468C-A4BA-8A26F607993D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
