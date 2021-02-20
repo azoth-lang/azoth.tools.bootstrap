@@ -139,7 +139,36 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     {
                         for (; ; )
                         {
-                            await ExecuteAsync(exp.Block, variables).ConfigureAwait(false);
+                            try
+                            {
+                                await ExecuteAsync(exp.Block, variables).ConfigureAwait(false);
+                            }
+                            catch (Next)
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                    catch (Break @break)
+                    {
+                        return @break.Value;
+                    }
+                case IWhileExpression exp:
+                    try
+                    {
+                        for (; ; )
+                        {
+                            var condition = await ExecuteAsync(exp.Condition, variables).ConfigureAwait(false);
+                            if (!condition.BoolValue)
+                                return AzothValue.None;
+                            try
+                            {
+                                await ExecuteAsync(exp.Block, variables).ConfigureAwait(false);
+                            }
+                            catch (Next)
+                            {
+                                continue;
+                            }
                         }
                     }
                     catch (Break @break)
@@ -149,6 +178,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 case IBreakExpression exp:
                     if (exp.Value is null) throw new Break();
                     throw new Break(await ExecuteAsync(exp.Value, variables).ConfigureAwait(false));
+                case INextExpression exp:
+                    throw new Next();
                 case IAssignmentExpression exp:
                 {
                     var value = await ExecuteAsync(exp.RightOperand, variables).ConfigureAwait(false);
@@ -156,7 +187,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     return value;
                 }
                 case IBinaryOperatorExpression exp:
-                {
                     switch (exp.Operator)
                     {
                         default:
@@ -164,23 +194,32 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                         case BinaryOperator.Plus:
                             return await AddAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false);
                         case BinaryOperator.Minus:
-                            return await SubtractAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false);
+                            return await SubtractAsync(exp.LeftOperand, exp.RightOperand, variables)
+                                .ConfigureAwait(false);
                         case BinaryOperator.Asterisk:
-                            return await MultiplyAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false);
+                            return await MultiplyAsync(exp.LeftOperand, exp.RightOperand, variables)
+                                .ConfigureAwait(false);
                         case BinaryOperator.Slash:
-                            return await DivideAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false);
+                            return await DivideAsync(exp.LeftOperand, exp.RightOperand, variables)
+                                .ConfigureAwait(false);
                         case BinaryOperator.EqualsEquals:
-                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false) == 0);
+                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables)
+                                .ConfigureAwait(false) == 0);
                         case BinaryOperator.NotEqual:
-                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false) != 0);
+                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables)
+                                .ConfigureAwait(false) != 0);
                         case BinaryOperator.LessThan:
-                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false) < 0);
+                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables)
+                                .ConfigureAwait(false) < 0);
                         case BinaryOperator.LessThanOrEqual:
-                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false) <= 0);
+                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables)
+                                .ConfigureAwait(false) <= 0);
                         case BinaryOperator.GreaterThan:
-                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false) > 0);
+                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables)
+                                .ConfigureAwait(false) > 0);
                         case BinaryOperator.GreaterThanOrEqual:
-                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false) >= 0);
+                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables)
+                                .ConfigureAwait(false) >= 0);
                         case BinaryOperator.And:
                         {
                             var left = await ExecuteAsync(exp.LeftOperand, variables).ConfigureAwait(false);
@@ -199,7 +238,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                         case BinaryOperator.LessThanDotDotLessThan:
                             throw new NotImplementedException($"Operator {exp.Operator}");
                     }
-                }
+                case IUnaryOperatorExpression exp:
+                    return exp.Operator switch
+                    {
+                        UnaryOperator.Not => AzothValue.Bool(
+                            !(await ExecuteAsync(exp.Operand, variables).ConfigureAwait(false)).BoolValue),
+                        UnaryOperator.Minus => await NegateAsync(exp.Operand, variables).ConfigureAwait(false),
+                        UnaryOperator.Plus => await ExecuteAsync(exp.Operand, variables).ConfigureAwait(false),
+                        _ => throw ExhaustiveMatch.Failed(exp.Operator)
+                    };
             }
         }
 
@@ -213,7 +260,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             var dataType = leftExp.DataType;
             if (dataType == DataType.Byte)
                 return AzothValue.Byte((byte)(left.ByteValue + right.ByteValue));
-
+            if (dataType == DataType.Int32)
+                return AzothValue.I32(left.I32Value + right.I32Value);
+            if (dataType == DataType.UInt32)
+                return AzothValue.U32(left.U32Value + right.U32Value);
+            if (dataType == DataType.Offset)
+                return AzothValue.Offset(left.OffsetValue + right.OffsetValue);
+            if (dataType == DataType.Size)
+                return AzothValue.Size(left.SizeValue * right.SizeValue);
             throw new NotImplementedException($"Add {dataType}");
         }
 
@@ -225,6 +279,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
             var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
             var dataType = leftExp.DataType;
+            if (dataType == DataType.Byte)
+                return AzothValue.Byte((byte)(left.ByteValue - right.ByteValue));
+            if (dataType == DataType.Int32)
+                return AzothValue.I32(left.I32Value - right.I32Value);
+            if (dataType == DataType.UInt32)
+                return AzothValue.U32(left.U32Value - right.U32Value);
+            if (dataType == DataType.Offset)
+                return AzothValue.Offset(left.OffsetValue - right.OffsetValue);
+            if (dataType == DataType.Size)
+                return AzothValue.Size(left.SizeValue - right.SizeValue);
             throw new NotImplementedException($"Subtract {dataType}");
         }
 
@@ -236,6 +300,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
             var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
             var dataType = leftExp.DataType;
+            if (dataType == DataType.Byte)
+                return AzothValue.Byte((byte)(left.ByteValue * right.ByteValue));
+            if (dataType == DataType.Int32)
+                return AzothValue.I32(left.I32Value * right.I32Value);
+            if (dataType == DataType.UInt32)
+                return AzothValue.U32(left.U32Value * right.U32Value);
+            if (dataType == DataType.Offset)
+                return AzothValue.Offset(left.OffsetValue * right.OffsetValue);
+            if (dataType == DataType.Size)
+                return AzothValue.Size(left.SizeValue * right.SizeValue);
             throw new NotImplementedException($"Multiply {dataType}");
         }
 
@@ -247,6 +321,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
             var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
             var dataType = leftExp.DataType;
+            if (dataType == DataType.Byte)
+                return AzothValue.Byte((byte)(left.ByteValue / right.ByteValue));
+            if (dataType == DataType.Int32)
+                return AzothValue.I32(left.I32Value / right.I32Value);
+            if (dataType == DataType.UInt32)
+                return AzothValue.U32(left.U32Value / right.U32Value);
+            if (dataType == DataType.Offset)
+                return AzothValue.Offset(left.OffsetValue / right.OffsetValue);
+            if (dataType == DataType.Size)
+                return AzothValue.Size(left.SizeValue / right.SizeValue);
             throw new NotImplementedException($"Divide {dataType}");
         }
 
@@ -261,6 +345,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             if (dataType == DataType.Byte)
                 return left.ByteValue.CompareTo(right.ByteValue);
             throw new NotImplementedException($"Compare {dataType}");
+        }
+
+        private async ValueTask<AzothValue> NegateAsync(IExpression expression, LocalVariableScope variables)
+        {
+            var value = await ExecuteAsync(expression, variables).ConfigureAwait(false);
+            var dataType = expression.DataType;
+            if (dataType == DataType.Int32)
+                return AzothValue.I32(-value.I32Value);
+            throw new NotImplementedException($"Negate {dataType}");
         }
 
         private async ValueTask<AzothValue> ExecuteBlockOrResultAsync(

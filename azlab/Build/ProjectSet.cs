@@ -35,7 +35,7 @@ namespace Azoth.Tools.Bootstrap.Lab.Build
 
             // Add a placeholder to prevent cycles (safe because we will replace it below
             projects.Add(projectDir, null!);
-            var dependencies = config.Dependencies.Select(d =>
+            var dependencies = config.Dependencies!.Select(d =>
             {
                 var (name, config) = d;
                 var dependencyConfig = configs[name];

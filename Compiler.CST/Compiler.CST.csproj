@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>Azoth.Tools.Bootstrap.Compiler.CST</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Compiler.CST</RootNamespace>
     <Nullable>enable</Nullable>

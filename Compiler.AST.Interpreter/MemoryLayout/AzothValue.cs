@@ -15,6 +15,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
         public byte ByteValue => value.Simple.ByteValue;
         public int I32Value => value.Simple.I32Value;
         public uint U32Value => value.Simple.U32Value;
+        public nint OffsetValue => value.Simple.OffsetValue;
+        public nuint SizeValue => value.Simple.SizeValue;
 
         #region Static Factory Methods/Properties
         public static readonly AzothValue None;
@@ -23,23 +25,27 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
         {
             return new AzothValue(value);
         }
-
         public static AzothValue Bool(bool value)
         {
             return new AzothValue(value);
         }
-
         public static AzothValue Byte(byte value)
         {
             return new AzothValue(value);
         }
-
         public static AzothValue I32(int value)
         {
             return new AzothValue(value);
         }
-
         public static AzothValue U32(uint value)
+        {
+            return new AzothValue(value);
+        }
+        public static AzothValue Offset(nint value)
+        {
+            return new AzothValue(value);
+        }
+        public static AzothValue Size(nuint value)
         {
             return new AzothValue(value);
         }
@@ -71,6 +77,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
             this.value.Struct = NotStruct;
             this.value.Simple.U32Value = value;
         }
+        private AzothValue(nint value) : this()
+        {
+            this.value.Struct = NotStruct;
+            this.value.Simple.OffsetValue = value;
+        }
+        private AzothValue(nuint value) : this()
+        {
+            this.value.Struct = NotStruct;
+            this.value.Simple.SizeValue = value;
+        }
         #endregion
 
         [StructLayout(LayoutKind.Explicit)]
@@ -84,6 +100,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
             //[FieldOffset(0)] public ulong U64Value;
             //[FieldOffset(0)] public float F32Value;
             //[FieldOffset(0)] public double F64Value;
+            [FieldOffset(0)] public nint OffsetValue;
+            [FieldOffset(0)] public nuint SizeValue;
         }
 
         private struct ValueType

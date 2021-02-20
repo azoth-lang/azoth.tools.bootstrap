@@ -71,7 +71,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
             where T : IToken
         {
             var spanParam = Expression.Parameter(typeof(TextSpan), "span");
-            var newExpression = Expression.New(tokenType.GetConstructor(new[] { typeof(TextSpan) }), spanParam);
+            var newExpression = Expression.New(tokenType.GetConstructor(new[] { typeof(TextSpan) })!, spanParam);
             var factory =
                 Expression.Lambda<Func<TextSpan, T>>(
                     newExpression, spanParam);
