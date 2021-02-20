@@ -50,9 +50,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
         {
             try
             {
-                // TODO use the arguments
+                var variables = new LocalVariableScope();
+                foreach (var (arg, symbol) in arguments.Zip(function.Parameters.Select(p => p.Symbol)))
+                    variables.Add(symbol, arg);
+
                 foreach (var statement in function.Body.Statements)
-                    await ExecuteAsync(statement).ConfigureAwait(false);
+                    await ExecuteAsync(statement, variables).ConfigureAwait(false);
                 return default;
             }
             catch (Return @return)
@@ -61,19 +64,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             }
         }
 
-        private async ValueTask ExecuteAsync(IStatement statement)
+        private async ValueTask ExecuteAsync(IStatement statement, LocalVariableScope variables)
         {
             switch (statement)
             {
                 default:
                     throw new NotImplementedException($"Can't interpret {statement.GetType().Name}");
                 case IExpressionStatement s:
-                    await ExecuteAsync(s.Expression).ConfigureAwait(false);
+                    await ExecuteAsync(s.Expression, variables).ConfigureAwait(false);
                     break;
             }
         }
 
-        private async ValueTask<AzothValue> ExecuteAsync(IExpression expression)
+        private async ValueTask<AzothValue> ExecuteAsync(IExpression expression, LocalVariableScope variables)
         {
             switch (expression)
             {
@@ -81,10 +84,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     throw new NotImplementedException($"Can't interpret {expression.GetType().Name}");
                 case IReturnExpression exp:
                     if (exp.Value is null) throw new Return();
-                    throw new Return(await ExecuteAsync(exp.Value).ConfigureAwait(false));
+                    throw new Return(await ExecuteAsync(exp.Value, variables).ConfigureAwait(false));
                 case IImplicitNumericConversionExpression exp:
                 {
-                    var value = await ExecuteAsync(exp.Expression).ConfigureAwait(false);
+                    var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
                     return value.Convert(exp.Expression.DataType, exp.ConvertToType);
                 }
                 case IIntegerLiteralExpression exp:
@@ -94,7 +97,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     var arguments = new List<AzothValue>(exp.Arguments.Count);
                     // Execute arguments in order
                     foreach (var argument in exp.Arguments)
-                        arguments.Add(await ExecuteAsync(argument).ConfigureAwait(false));
+                        arguments.Add(await ExecuteAsync(argument, variables).ConfigureAwait(false));
 
                     return await CallFunctionAsync(functions[exp.ReferencedSymbol], arguments).ConfigureAwait(false);
                 }
@@ -102,32 +105,49 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     return AzothValue.Bool(exp.Value);
                 case IIfExpression exp:
                 {
-                    var condition = await ExecuteAsync(exp.Condition).ConfigureAwait(false);
+                    var condition = await ExecuteAsync(exp.Condition, variables).ConfigureAwait(false);
                     if (condition.BoolValue)
-                        return await ExecuteBlockOrResultAsync(exp.ThenBlock).ConfigureAwait(false);
+                        return await ExecuteBlockOrResultAsync(exp.ThenBlock, variables).ConfigureAwait(false);
                     if (exp.ElseClause != null)
-                        return await ExecuteElseAsync(exp.ElseClause).ConfigureAwait(false);
+                        return await ExecuteElseAsync(exp.ElseClause, variables).ConfigureAwait(false);
+                    return AzothValue.None;
+                }
+                case INameExpression exp:
+                    return variables[exp.ReferencedSymbol];
+                case IBlockExpression block:
+                {
+                    var blockVariables = new LocalVariableScope(variables);
+                    foreach (var statement in block.Statements)
+                    {
+                        if (statement is IResultStatement resultStatement)
+                            return await ExecuteAsync(resultStatement.Expression, blockVariables).ConfigureAwait(false);
+                        await ExecuteAsync(statement, blockVariables).ConfigureAwait(false);
+                    }
                     return AzothValue.None;
                 }
             }
         }
 
-        private async ValueTask<AzothValue> ExecuteBlockOrResultAsync(IBlockOrResult statement)
+        private async ValueTask<AzothValue> ExecuteBlockOrResultAsync(
+            IBlockOrResult statement,
+            LocalVariableScope variables)
         {
             return statement switch
             {
-                IBlockExpression b => await ExecuteAsync(b).ConfigureAwait(false),
-                IResultStatement s => await ExecuteAsync(s.Expression).ConfigureAwait(false),
+                IBlockExpression b => await ExecuteAsync(b, variables).ConfigureAwait(false),
+                IResultStatement s => await ExecuteAsync(s.Expression, variables).ConfigureAwait(false),
                 _ => throw ExhaustiveMatch.Failed(statement)
             };
         }
 
-        private async ValueTask<AzothValue> ExecuteElseAsync(IElseClause elseClause)
+        private async ValueTask<AzothValue> ExecuteElseAsync(
+            IElseClause elseClause,
+            LocalVariableScope variables)
         {
             return elseClause switch
             {
-                IBlockOrResult exp => await ExecuteBlockOrResultAsync(exp).ConfigureAwait(false),
-                IIfExpression exp => await ExecuteAsync(exp).ConfigureAwait(false),
+                IBlockOrResult exp => await ExecuteBlockOrResultAsync(exp, variables).ConfigureAwait(false),
+                IIfExpression exp => await ExecuteAsync(exp, variables).ConfigureAwait(false),
                 _ => throw ExhaustiveMatch.Failed(elseClause)
             };
         }
