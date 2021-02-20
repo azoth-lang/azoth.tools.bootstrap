@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
 {
@@ -50,19 +51,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             try
             {
                 // TODO use the arguments
-                await ExecuteAsync(function.Body).ConfigureAwait(false);
+                foreach (var statement in function.Body.Statements)
+                    await ExecuteAsync(statement).ConfigureAwait(false);
                 return default;
             }
             catch (Return @return)
             {
                 return @return.Value;
             }
-        }
-
-        private async ValueTask ExecuteAsync(IBodyOrBlock block)
-        {
-            foreach (var statement in block.Statements)
-                await ExecuteAsync(statement).ConfigureAwait(false);
         }
 
         private async ValueTask ExecuteAsync(IStatement statement)
@@ -104,7 +100,36 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 }
                 case IBoolLiteralExpression exp:
                     return AzothValue.Bool(exp.Value);
+                case IIfExpression exp:
+                {
+                    var condition = await ExecuteAsync(exp.Condition).ConfigureAwait(false);
+                    if (condition.BoolValue)
+                        return await ExecuteBlockOrResultAsync(exp.ThenBlock).ConfigureAwait(false);
+                    if (exp.ElseClause != null)
+                        return await ExecuteElseAsync(exp.ElseClause).ConfigureAwait(false);
+                    return AzothValue.None;
+                }
             }
+        }
+
+        private async ValueTask<AzothValue> ExecuteBlockOrResultAsync(IBlockOrResult statement)
+        {
+            return statement switch
+            {
+                IBlockExpression b => await ExecuteAsync(b).ConfigureAwait(false),
+                IResultStatement s => await ExecuteAsync(s.Expression).ConfigureAwait(false),
+                _ => throw ExhaustiveMatch.Failed(statement)
+            };
+        }
+
+        private async ValueTask<AzothValue> ExecuteElseAsync(IElseClause elseClause)
+        {
+            return elseClause switch
+            {
+                IBlockOrResult exp => await ExecuteBlockOrResultAsync(exp).ConfigureAwait(false),
+                IIfExpression exp => await ExecuteAsync(exp).ConfigureAwait(false),
+                _ => throw ExhaustiveMatch.Failed(elseClause)
+            };
         }
 
         public Task WaitForExitAsync()
