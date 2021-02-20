@@ -91,13 +91,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST
     }
 
     [Closed(
-        typeof(IFunctionDeclaration),
+        typeof(IConcreteFunctionInvocableDeclaration),
         typeof(IConcreteMethodDeclaration),
-        typeof(IConstructorDeclaration),
-        typeof(IAssociatedFunctionDeclaration))]
+        typeof(IConstructorDeclaration))]
     public partial interface IConcreteInvocableDeclaration : IInvocableDeclaration, IExecutableDeclaration
     {
         IBody Body { get; }
+    }
+
+    [Closed(
+        typeof(IFunctionDeclaration),
+        typeof(IAssociatedFunctionDeclaration))]
+    public partial interface IConcreteFunctionInvocableDeclaration : IConcreteInvocableDeclaration
+    {
+        new FunctionSymbol Symbol { get; }
+        new FixedList<INamedParameter> Parameters { get; }
     }
 
     [Closed(
@@ -114,10 +122,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST
         ConstructorSymbol? DefaultConstructorSymbol { get; }
     }
 
-    public partial interface IFunctionDeclaration : INonMemberDeclaration, IConcreteInvocableDeclaration
+    public partial interface IFunctionDeclaration : INonMemberDeclaration, IConcreteFunctionInvocableDeclaration
     {
         new FunctionSymbol Symbol { get; }
-        new FixedList<INamedParameter> Parameters { get; }
     }
 
     [Closed(
@@ -161,10 +168,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST
         new FieldSymbol Symbol { get; }
     }
 
-    public partial interface IAssociatedFunctionDeclaration : IMemberDeclaration, IConcreteInvocableDeclaration
+    public partial interface IAssociatedFunctionDeclaration : IMemberDeclaration, IConcreteFunctionInvocableDeclaration
     {
         new FunctionSymbol Symbol { get; }
-        new FixedList<INamedParameter> Parameters { get; }
     }
 
     [Closed(

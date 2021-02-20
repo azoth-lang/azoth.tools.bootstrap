@@ -17,7 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
     {
         private readonly Package package;
         private readonly Task executionTask;
-        private readonly FixedDictionary<FunctionSymbol, IFunctionDeclaration> functions;
+        private readonly FixedDictionary<FunctionSymbol, IConcreteFunctionInvocableDeclaration> functions;
         private byte? exitCode;
 
 
@@ -25,8 +25,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
         {
             if (package.EntryPoint is null) throw new ArgumentException("Package must have an entry point");
             this.package = package;
-            functions = package.NonMemberDeclarations
-                               .OfType<IFunctionDeclaration>()
+            functions = package.AllDeclarations
+                               .OfType<IConcreteFunctionInvocableDeclaration>()
                                .ToFixedDictionary(f => f.Symbol);
             executionTask = Task.Run(CallEntryPointAsync);
 
@@ -47,7 +47,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 throw new InvalidOperationException($"Main function cannot have return type {returnType}");
         }
 
-        private async Task<AzothValue> CallFunctionAsync(IFunctionDeclaration function, IEnumerable<AzothValue> arguments)
+        private async Task<AzothValue> CallFunctionAsync(IConcreteFunctionInvocableDeclaration function, IEnumerable<AzothValue> arguments)
         {
             try
             {
