@@ -40,7 +40,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             if (returnType == DataType.Void)
                 exitCode = 0;
             else if (returnType == DataType.Byte)
-                exitCode = returnValue.Byte;
+                exitCode = returnValue.ByteValue;
             else
                 throw new InvalidOperationException($"Main function cannot have return type {returnType}");
         }
@@ -92,7 +92,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     return value.Convert(exp.Expression.DataType, exp.ConvertToType);
                 }
                 case IIntegerLiteralExpression exp:
-                    return new AzothValue(exp.Value);
+                    return AzothValue.Int(exp.Value);
                 case IFunctionInvocationExpression exp:
                 {
                     var arguments = new List<AzothValue>(exp.Arguments.Count);
@@ -102,6 +102,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
 
                     return await CallFunctionAsync(functions[exp.ReferencedSymbol], arguments).ConfigureAwait(false);
                 }
+                case IBoolLiteralExpression exp:
+                    return AzothValue.Bool(exp.Value);
             }
         }
 

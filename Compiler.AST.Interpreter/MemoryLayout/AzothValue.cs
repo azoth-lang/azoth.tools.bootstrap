@@ -6,47 +6,84 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
     [StructLayout(LayoutKind.Explicit)]
     internal readonly struct AzothValue
     {
-        public static readonly AzothValue None;
-
-        [FieldOffset(0)] public readonly Reference Reference;
-        [FieldOffset(0)] public readonly BigInteger Int;
+        [FieldOffset(0)] public readonly Reference ReferenceValue;
+        [FieldOffset(0)] public readonly BigInteger IntValue;
         [FieldOffset(0)] private readonly ValueType value;
 
         public bool IsNone => value.Struct is null;
-        public byte Byte => value.Simple.Byte;
-        public int I32 => value.Simple.I32;
-        public uint U32 => value.Simple.U32;
-        public long I64 => value.Simple.I64;
-        public ulong U64 => value.Simple.U64;
-        public float F32 => value.Simple.F32;
-        public double F64 => value.Simple.F64;
+        public bool BoolValue => value.Simple.BoolValue;
+        public byte ByteValue => value.Simple.ByteValue;
+        public int I32Value => value.Simple.I32Value;
+        public uint U32Value => value.Simple.U32Value;
 
-        public AzothValue(BigInteger value) : this()
+        #region Static Factory Methods/Properties
+        public static readonly AzothValue None;
+
+        public static AzothValue Int(BigInteger value)
         {
-            Int = value;
+            return new AzothValue(value);
         }
 
-        public AzothValue(int value) : this()
+        public static AzothValue Bool(bool value)
         {
-            this.value.Simple.I32 = value;
+            return new AzothValue(value);
         }
 
-        public AzothValue(object value) : this()
+        public static AzothValue Byte(byte value)
         {
-            // TODO handle this better
-            this.value.Struct = value;
+            return new AzothValue(value);
         }
+
+        public static AzothValue I32(int value)
+        {
+            return new AzothValue(value);
+        }
+
+        public static AzothValue U32(uint value)
+        {
+            return new AzothValue(value);
+        }
+        #endregion
+
+        #region Private Constructors
+        private AzothValue(BigInteger value) : this()
+        {
+            IntValue = value;
+        }
+        private AzothValue(bool value) : this()
+        {
+            this.value.Struct = NotStruct;
+            this.value.Simple.BoolValue = value;
+        }
+
+        private AzothValue(byte value) : this()
+        {
+            this.value.Struct = NotStruct;
+            this.value.Simple.ByteValue = value;
+        }
+        private AzothValue(int value) : this()
+        {
+            this.value.Struct = NotStruct;
+            this.value.Simple.I32Value = value;
+        }
+        private AzothValue(uint value) : this()
+        {
+            this.value.Struct = NotStruct;
+            this.value.Simple.U32Value = value;
+        }
+        #endregion
 
         [StructLayout(LayoutKind.Explicit)]
         private struct SimpleValue
         {
-            [FieldOffset(0)] public byte Byte;
-            [FieldOffset(0)] public int I32;
-            [FieldOffset(0)] public uint U32;
-            [FieldOffset(0)] public long I64;
-            [FieldOffset(0)] public ulong U64;
-            [FieldOffset(0)] public float F32;
-            [FieldOffset(0)] public double F64;
+            [FieldOffset(0)] public bool BoolValue;
+            [FieldOffset(0)] public byte ByteValue;
+            [FieldOffset(0)] public int I32Value;
+            [FieldOffset(0)] public uint U32Value;
+            //[FieldOffset(0)] public long I64Value;
+            //[FieldOffset(0)] public ulong U64Value;
+            //[FieldOffset(0)] public float F32Value;
+            //[FieldOffset(0)] public double F64Value;
         }
 
         private struct ValueType
@@ -55,6 +92,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
             public SimpleValue Simple;
         }
 
-        private static readonly object NotNone = new object();
+        private static readonly object NotStruct = new object();
     }
 }

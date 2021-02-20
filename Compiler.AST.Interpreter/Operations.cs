@@ -10,9 +10,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
         {
             if (from is IntegerConstantType)
             {
-                if (to == DataType.Byte) return new AzothValue((byte)value.Int);
-                if (to == DataType.Int32) return new AzothValue((int)value.Int);
-                if (to == DataType.UInt32) return new AzothValue((uint)value.Int);
+                if (to == DataType.Byte) return AzothValue.Byte((byte)value.IntValue);
+                if (to == DataType.Int32) return AzothValue.I32((int)value.IntValue);
+                if (to == DataType.UInt32) return AzothValue.U32((uint)value.IntValue);
             }
 
             throw new NotImplementedException($"Conversion from {from} to {to}");
