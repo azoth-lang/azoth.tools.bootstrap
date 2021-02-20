@@ -125,6 +125,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     }
                     return AzothValue.None;
                 }
+                case ILoopExpression exp:
+                    try
+                    {
+                        for (; ; )
+                        {
+                            await ExecuteAsync(exp.Block, variables).ConfigureAwait(false);
+                        }
+                    }
+                    catch (Break @break)
+                    {
+                        return @break.Value;
+                    }
+                case IBreakExpression exp:
+                    if (exp.Value is null) throw new Break();
+                    throw new Break(await ExecuteAsync(exp.Value, variables).ConfigureAwait(false));
             }
         }
 
