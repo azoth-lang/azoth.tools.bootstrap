@@ -136,7 +136,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 case IMutateExpressionSyntax _:
                 {
                     // If we are explicitly borrowing or moving then take the actual type
-                    if (!(type is ReferenceType referenceType))
+                    if (!(type is ReferenceType))
                         throw new NotImplementedException("Compile error: can't borrow non reference type");
 
                     throw new NotImplementedException("Mutate expression declaration type");

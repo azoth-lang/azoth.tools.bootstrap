@@ -73,10 +73,8 @@ namespace Azoth.Tools.Bootstrap.Lab.Build
             var consoleLock = new object();
             foreach (var project in sortedProjects)
             {
-#pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler (created with task factory built with task scheduler)
                 var buildTask = taskFactory.StartNew(() =>
                     BuildAsync(compiler, project, projectBuildsTask, consoleLock))
-#pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
                     .Unwrap(); // Needed because StartNew doesn't work intuitively with Async methods
                 if (!projectBuilds.TryAdd(project, buildTask))
                     throw new Exception("Project added to build set twice");

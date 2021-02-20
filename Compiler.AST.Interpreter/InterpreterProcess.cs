@@ -178,7 +178,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 case IBreakExpression exp:
                     if (exp.Value is null) throw new Break();
                     throw new Break(await ExecuteAsync(exp.Value, variables).ConfigureAwait(false));
-                case INextExpression exp:
+                case INextExpression:
                     throw new Next();
                 case IAssignmentExpression exp:
                 {
@@ -380,7 +380,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             };
         }
 
-        private ValueTask ExecuteAssignmentAsync(
+        private static ValueTask ExecuteAssignmentAsync(
             IAssignableExpression expression,
             AzothValue value,
             LocalVariableScope variables)

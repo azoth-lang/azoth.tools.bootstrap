@@ -24,43 +24,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
 
             foreach (var tokenType in Keyword)
             {
-                string keyword;
                 var tokenTypeName = tokenType.Name;
-                switch (tokenTypeName)
+                string keyword = tokenTypeName switch
                 {
                     // Some exceptions to the normal rule
-                    case "FunctionKeywordToken":
-                        keyword = "fn";
-                        break;
-                    case "SelfTypeKeywordToken":
-                        keyword = "Self";
-                        break;
-                    case "IsolatedKeywordToken":
-                        keyword = "iso";
-                        break;
-                    case "TransitionKeywordToken":
-                        keyword = "trn";
-                        break;
-                    case "MutableKeywordToken":
-                        keyword = "mut";
-                        break;
-                    case "AnyKeywordToken":
-                        keyword = "Any";
-                        break;
-                    case "TypeKeywordToken":
-                        keyword = "Type";
-                        break;
-                    case "UnderscoreKeywordToken":
-                        keyword = "_";
-                        break;
-                    default:
-#pragma warning disable CA1308 // Normalize strings to uppercase. Reason: this is not a normalization
-                        keyword = tokenTypeName
-                            .Substring(0, tokenTypeName.Length - KeywordTokenLength)
-                            .ToLower(CultureInfo.InvariantCulture);
-#pragma warning restore CA1308 // Normalize strings to uppercase
-                        break;
-                }
+                    "FunctionKeywordToken" => "fn",
+                    "SelfTypeKeywordToken" => "Self",
+                    "IsolatedKeywordToken" => "iso",
+                    "TransitionKeywordToken" => "trn",
+                    "MutableKeywordToken" => "mut",
+                    "AnyKeywordToken" => "Any",
+                    "TypeKeywordToken" => "Type",
+                    "UnderscoreKeywordToken" => "_",
+                    _ => tokenTypeName.Substring(0, tokenTypeName.Length - KeywordTokenLength)
+                                      .ToLower(CultureInfo.InvariantCulture)
+                };
                 var factory = CompileFactory<IKeywordToken>(tokenType);
                 factories.Add(keyword, factory);
             }
