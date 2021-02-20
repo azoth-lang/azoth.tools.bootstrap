@@ -25,7 +25,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Int_has_copy_semantics()
         {
-            var type = FixedSizeIntegerType.Int;
+            var type = FixedSizeIntegerType.Int32;
 
             Assert.Equal(TypeSemantics.Copy, type.Semantics);
         }
@@ -33,12 +33,12 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Types_equal_to_themselves_and_not_others()
         {
-            Assert.Equal(FixedSizeIntegerType.Int, FixedSizeIntegerType.Int);
-            Assert.Equal(FixedSizeIntegerType.UInt, FixedSizeIntegerType.UInt);
+            Assert.Equal(FixedSizeIntegerType.Int32, FixedSizeIntegerType.Int32);
+            Assert.Equal(FixedSizeIntegerType.UInt32, FixedSizeIntegerType.UInt32);
             Assert.Equal(FixedSizeIntegerType.Byte, FixedSizeIntegerType.Byte);
 
-            Assert.NotEqual(FixedSizeIntegerType.Int, FixedSizeIntegerType.UInt);
-            Assert.NotEqual(FixedSizeIntegerType.Int, FixedSizeIntegerType.Byte);
+            Assert.NotEqual(FixedSizeIntegerType.Int32, FixedSizeIntegerType.UInt32);
+            Assert.NotEqual(FixedSizeIntegerType.Int32, FixedSizeIntegerType.Byte);
         }
     }
 }

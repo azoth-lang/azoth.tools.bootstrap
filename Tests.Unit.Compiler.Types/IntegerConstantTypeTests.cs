@@ -72,7 +72,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
 
             var nonConstant = type.ToNonConstantType();
 
-            Assert.Same(DataType.Int, nonConstant);
+            Assert.Same(DataType.Int32, nonConstant);
         }
 
         [Theory]

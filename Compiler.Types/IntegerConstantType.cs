@@ -22,7 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 
         public override DataType ToNonConstantType()
         {
-            return Int;
+            return Int32;
         }
 
         public override bool Equals(DataType? other)

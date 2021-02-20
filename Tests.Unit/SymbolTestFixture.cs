@@ -34,7 +34,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit
 
         protected FixedList<DataType> Params(int? count = null)
         {
-            return Enumerable.Range(1, count ?? ++unique).Select(n => Compiler.Types.DataType.Int).ToFixedList<DataType>();
+            return Enumerable.Range(1, count ?? ++unique).Select(n => Compiler.Types.DataType.Int32).ToFixedList<DataType>();
         }
 
         protected static FixedList<DataType> Params(DataType param, params DataType[] @params)

@@ -20,8 +20,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Primitives
             BuildBoolSymbol(tree);
 
             BuildIntegerTypeSymbol(tree, DataType.Byte, stringType);
-            BuildIntegerTypeSymbol(tree, DataType.Int, stringType);
-            BuildIntegerTypeSymbol(tree, DataType.UInt, stringType);
+            BuildIntegerTypeSymbol(tree, DataType.Int32, stringType);
+            BuildIntegerTypeSymbol(tree, DataType.UInt32, stringType);
 
             BuildIntegerTypeSymbol(tree, DataType.Size, stringType);
             BuildIntegerTypeSymbol(tree, DataType.Offset, stringType);

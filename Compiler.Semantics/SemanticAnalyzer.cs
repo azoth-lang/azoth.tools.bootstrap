@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Liveness;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Startup;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
@@ -46,21 +47,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics
             new LexicalScopesBuilder().BuildFor(packageSyntax);
 
             // Check the semantics of the package
-            var packageAbstractSyntax = CheckSemantics(packageSyntax);
+            var packageBuilder = CheckSemantics(packageSyntax);
 
             // If there are errors from the semantics phase, don't continue on
-            packageAbstractSyntax.Diagnostics.ThrowIfFatalErrors();
+            packageBuilder.Diagnostics.ThrowIfFatalErrors();
 
             // Convert to IR
             //var irFactory = new IRFactory();
             //var packageIR = irFactory.CreatePackage(packageAbstractSyntax, packageAbstractSyntax.Diagnostics);
 
+            EntryPoint.Determine(packageBuilder);
+
             // If there are errors from the previous phase, don't continue on
-            packageAbstractSyntax.Diagnostics.ThrowIfFatalErrors();
+            packageBuilder.Diagnostics.ThrowIfFatalErrors();
 
-            // TODO determine entry point
-
-            return packageAbstractSyntax.Build();
+            return packageBuilder.Build();
 
             // Old IL Build
             //var declarationsIL = BuildIL(packageAbstractSyntax);
@@ -96,27 +97,27 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics
             new ExpressionSemanticsValidator().Validate(packageSyntax.AllEntityDeclarations);
 #endif
 
-            var package = new ASTBuilder().BuildPackage(packageSyntax);
+            var packageBuilder = new ASTBuilder().BuildPackage(packageSyntax);
 
             // From this point forward, analysis focuses on executable declarations (i.e. invocables and field initializers)
-            var executableDeclarations = package.AllDeclarations.OfType<IExecutableDeclaration>().ToFixedSet();
+            var executableDeclarations = packageBuilder.AllDeclarations.OfType<IExecutableDeclaration>().ToFixedSet();
 
-            ShadowChecker.Check(executableDeclarations, package.Diagnostics);
+            ShadowChecker.Check(executableDeclarations, packageBuilder.Diagnostics);
 
-            DataFlowAnalysis.Check(DefiniteAssignmentAnalyzer.Instance, executableDeclarations, package.SymbolTree, package.Diagnostics);
+            DataFlowAnalysis.Check(DefiniteAssignmentAnalyzer.Instance, executableDeclarations, packageBuilder.SymbolTree, packageBuilder.Diagnostics);
 
-            DataFlowAnalysis.Check(BindingMutabilityAnalyzer.Instance, executableDeclarations, package.SymbolTree, package.Diagnostics);
+            DataFlowAnalysis.Check(BindingMutabilityAnalyzer.Instance, executableDeclarations, packageBuilder.SymbolTree, packageBuilder.Diagnostics);
 
-            DataFlowAnalysis.Check(UseOfMovedValueAnalyzer.Instance, executableDeclarations, package.SymbolTree, package.Diagnostics);
+            DataFlowAnalysis.Check(UseOfMovedValueAnalyzer.Instance, executableDeclarations, packageBuilder.SymbolTree, packageBuilder.Diagnostics);
 
             // TODO use DataFlowAnalysis to check for unused variables and report use of variables starting with `_`
 
             // Compute variable liveness needed by reachability analyzer
-            DataFlowAnalysis.Check(LivenessAnalyzer.Instance, executableDeclarations, package.SymbolTree, package.Diagnostics);
+            DataFlowAnalysis.Check(LivenessAnalyzer.Instance, executableDeclarations, packageBuilder.SymbolTree, packageBuilder.Diagnostics);
 
             // TODO remove live variables if SaveLivenessAnalysis is false
 
-            return package;
+            return packageBuilder;
         }
 
         //private static FixedList<DeclarationIL> BuildIL(Package package)

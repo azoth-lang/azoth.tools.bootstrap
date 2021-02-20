@@ -14,13 +14,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST
         public FixedSymbolTree SymbolTree { get; }
         public FixedList<Diagnostic> Diagnostics { get; }
         public FixedSet<Package> References { get; }
-        public IFunctionDeclaration? EntryPoint { get; internal set; }
+        public IFunctionDeclaration? EntryPoint { get; }
 
         public Package(
             FixedList<INonMemberDeclaration> nonMemberDeclarations,
             FixedSymbolTree symbolTree,
             FixedList<Diagnostic> diagnostics,
-            FixedSet<Package> references)
+            FixedSet<Package> references,
+            IFunctionDeclaration? entryPoint)
         {
             AllDeclarations = GetAllDeclarations(nonMemberDeclarations).ToFixedList();
             NonMemberDeclarations = nonMemberDeclarations;
@@ -28,6 +29,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST
             SymbolTree = symbolTree;
             Diagnostics = diagnostics;
             References = references;
+            EntryPoint = entryPoint;
         }
 
         private static IEnumerable<IDeclaration> GetAllDeclarations(

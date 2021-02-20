@@ -18,6 +18,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
         public Diagnostics Diagnostics { get; }
         public FixedDictionary<Name, Package> References { get; }
         public IEnumerable<Package> ReferencedPackages => References.Values;
+        public IFunctionDeclaration? EntryPoint { get; set; }
 
         public PackageBuilder(
             FixedList<INonMemberDeclaration> nonMemberDeclarations,
@@ -49,7 +50,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
         public Package Build()
         {
             return new Package(NonMemberDeclarations, SymbolTree,
-                Diagnostics.ToFixedList(), References.Values.ToFixedSet());
+                Diagnostics.ToFixedList(), References.Values.ToFixedSet(),
+                EntryPoint);
         }
     }
 }

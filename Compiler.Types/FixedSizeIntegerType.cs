@@ -10,8 +10,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         //internal new static readonly FixedSizeIntegerType Int16 = new FixedSizeIntegerType("int16", -16);
         //internal new static readonly FixedSizeIntegerType UInt16 = new FixedSizeIntegerType("uint16", 16);
 #pragma warning disable CA1720
-        internal new static readonly FixedSizeIntegerType Int = new FixedSizeIntegerType(SpecialTypeName.Int, -32);
-        internal new static readonly FixedSizeIntegerType UInt = new FixedSizeIntegerType(SpecialTypeName.UInt, 32);
+        internal new static readonly FixedSizeIntegerType Int32 = new FixedSizeIntegerType(SpecialTypeName.Int, -32);
+        internal new static readonly FixedSizeIntegerType UInt32 = new FixedSizeIntegerType(SpecialTypeName.UInt, 32);
 #pragma warning restore CA1720
         //internal new static readonly FixedSizeIntegerType Int64 = new FixedSizeIntegerType("int64", -64);
         //internal new static readonly FixedSizeIntegerType UInt64 = new FixedSizeIntegerType("uint64", 64);

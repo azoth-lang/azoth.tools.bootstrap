@@ -32,7 +32,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         {
             var constType = new IntegerConstantType(value);
 
-            var assignable = DataType.Int.IsAssignableFrom(constType);
+            var assignable = DataType.Int32.IsAssignableFrom(constType);
 
             Assert.False(assignable);
         }
@@ -71,7 +71,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void No_underlying_reference_type_for_value_type()
         {
-            var valueType = DataType.Int;
+            var valueType = DataType.Int32;
 
             var underlyingType = valueType.UnderlyingReferenceType();
 

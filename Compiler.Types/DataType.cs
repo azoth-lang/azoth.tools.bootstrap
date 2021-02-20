@@ -27,8 +27,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public static readonly BoolConstantType False = BoolConstantType.False;
         public static readonly FixedSizeIntegerType Byte = FixedSizeIntegerType.Byte;
 #pragma warning disable CA1720
-        public static readonly FixedSizeIntegerType Int = FixedSizeIntegerType.Int;
-        public static readonly FixedSizeIntegerType UInt = FixedSizeIntegerType.UInt;
+        public static readonly FixedSizeIntegerType Int32 = FixedSizeIntegerType.Int32;
+        public static readonly FixedSizeIntegerType UInt32 = FixedSizeIntegerType.UInt32;
 #pragma warning restore CA1720
         public static readonly PointerSizedIntegerType Size = PointerSizedIntegerType.Size;
         public static readonly PointerSizedIntegerType Offset = PointerSizedIntegerType.Offset;
