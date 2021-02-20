@@ -2,7 +2,6 @@ using System;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.AST.Walkers;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow
@@ -63,9 +62,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow
                     WalkNonNull(exp.Context, isLValue);
                     // Don't walk the field name, it shouldn't be treated as a variable
                     return;
-                case ITypeSyntax _:
+                case IFieldDeclaration _:
+                    // TODO handle field declarations
                     return;
-                case IDeclarationSyntax _:
+                case IDeclaration _:
                     throw new InvalidOperationException($"Analyze data flow of declaration of type {syntax.GetType().Name}");
             }
             WalkChildrenInReverse(syntax, isLValue);
