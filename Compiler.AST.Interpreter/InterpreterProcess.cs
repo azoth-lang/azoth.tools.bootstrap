@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
+using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
@@ -73,6 +74,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 case IExpressionStatement s:
                     await ExecuteAsync(s.Expression, variables).ConfigureAwait(false);
                     break;
+                case IVariableDeclarationStatement d:
+                {
+                    var initialValue = d.Initializer is null
+                        ? AzothValue.None
+                        : await ExecuteAsync(d.Initializer, variables).ConfigureAwait(false);
+                    variables.Add(d.Symbol, initialValue);
+                }
+                break;
             }
         }
 
@@ -140,7 +149,118 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 case IBreakExpression exp:
                     if (exp.Value is null) throw new Break();
                     throw new Break(await ExecuteAsync(exp.Value, variables).ConfigureAwait(false));
+                case IAssignmentExpression exp:
+                {
+                    var value = await ExecuteAsync(exp.RightOperand, variables).ConfigureAwait(false);
+                    await ExecuteAssignmentAsync(exp.LeftOperand, value, variables).ConfigureAwait(false);
+                    return value;
+                }
+                case IBinaryOperatorExpression exp:
+                {
+                    switch (exp.Operator)
+                    {
+                        default:
+                            throw ExhaustiveMatch.Failed();
+                        case BinaryOperator.Plus:
+                            return await AddAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false);
+                        case BinaryOperator.Minus:
+                            return await SubtractAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false);
+                        case BinaryOperator.Asterisk:
+                            return await MultiplyAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false);
+                        case BinaryOperator.Slash:
+                            return await DivideAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false);
+                        case BinaryOperator.EqualsEquals:
+                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false) == 0);
+                        case BinaryOperator.NotEqual:
+                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false) != 0);
+                        case BinaryOperator.LessThan:
+                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false) < 0);
+                        case BinaryOperator.LessThanOrEqual:
+                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false) <= 0);
+                        case BinaryOperator.GreaterThan:
+                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false) > 0);
+                        case BinaryOperator.GreaterThanOrEqual:
+                            return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false) >= 0);
+                        case BinaryOperator.And:
+                        {
+                            var left = await ExecuteAsync(exp.LeftOperand, variables).ConfigureAwait(false);
+                            if (!left.BoolValue) return AzothValue.Bool(false);
+                            return await ExecuteAsync(exp.RightOperand, variables).ConfigureAwait(false);
+                        }
+                        case BinaryOperator.Or:
+                        {
+                            var left = await ExecuteAsync(exp.LeftOperand, variables).ConfigureAwait(false);
+                            if (left.BoolValue) return AzothValue.Bool(true);
+                            return await ExecuteAsync(exp.RightOperand, variables).ConfigureAwait(false);
+                        }
+                        case BinaryOperator.DotDot:
+                        case BinaryOperator.LessThanDotDot:
+                        case BinaryOperator.DotDotLessThan:
+                        case BinaryOperator.LessThanDotDotLessThan:
+                            throw new NotImplementedException($"Operator {exp.Operator}");
+                    }
+                }
             }
+        }
+
+        private async Task<AzothValue> AddAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+        {
+            if (leftExp.DataType != rightExp.DataType)
+                throw new InvalidOperationException(
+                    $"Can't add expressions of type {leftExp.DataType} and {rightExp.DataType}");
+            var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
+            var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
+            var dataType = leftExp.DataType;
+            if (dataType == DataType.Byte)
+                return AzothValue.Byte((byte)(left.ByteValue + right.ByteValue));
+
+            throw new NotImplementedException($"Add {dataType}");
+        }
+
+        private async Task<AzothValue> SubtractAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+        {
+            if (leftExp.DataType != rightExp.DataType)
+                throw new InvalidOperationException(
+                    $"Can't subtract expressions of type {leftExp.DataType} and {rightExp.DataType}");
+            var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
+            var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
+            var dataType = leftExp.DataType;
+            throw new NotImplementedException($"Subtract {dataType}");
+        }
+
+        private async Task<AzothValue> MultiplyAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+        {
+            if (leftExp.DataType != rightExp.DataType)
+                throw new InvalidOperationException(
+                    $"Can't multiply expressions of type {leftExp.DataType} and {rightExp.DataType}");
+            var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
+            var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
+            var dataType = leftExp.DataType;
+            throw new NotImplementedException($"Multiply {dataType}");
+        }
+
+        private async Task<AzothValue> DivideAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+        {
+            if (leftExp.DataType != rightExp.DataType)
+                throw new InvalidOperationException(
+                    $"Can't divide expressions of type {leftExp.DataType} and {rightExp.DataType}");
+            var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
+            var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
+            var dataType = leftExp.DataType;
+            throw new NotImplementedException($"Divide {dataType}");
+        }
+
+        private async ValueTask<int> CompareAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+        {
+            if (leftExp.DataType != rightExp.DataType)
+                throw new InvalidOperationException(
+                    $"Can't compare expressions of type {leftExp.DataType} and {rightExp.DataType}");
+            var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
+            var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
+            var dataType = leftExp.DataType;
+            if (dataType == DataType.Byte)
+                return left.ByteValue.CompareTo(right.ByteValue);
+            throw new NotImplementedException($"Compare {dataType}");
         }
 
         private async ValueTask<AzothValue> ExecuteBlockOrResultAsync(
@@ -165,6 +285,22 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 IIfExpression exp => await ExecuteAsync(exp, variables).ConfigureAwait(false),
                 _ => throw ExhaustiveMatch.Failed(elseClause)
             };
+        }
+
+        private ValueTask ExecuteAssignmentAsync(
+            IAssignableExpression expression,
+            AzothValue value,
+            LocalVariableScope variables)
+        {
+            switch (expression)
+            {
+                default:
+                    throw new NotImplementedException($"Can't interpret assignment into {expression.GetType().Name}");
+                case INameExpression exp:
+                    variables[exp.ReferencedSymbol] = value;
+                    break;
+            }
+            return default;
         }
 
         public Task WaitForExitAsync()

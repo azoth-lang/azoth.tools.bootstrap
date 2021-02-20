@@ -19,10 +19,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
             get
             {
                 if (values.TryGetValue(symbol, out var value)) return value;
-
                 if (enclosingScope is null)
                     throw new InvalidOperationException($"Value for variable '{symbol}' not defined ");
                 return enclosingScope[symbol];
+            }
+            set
+            {
+                if (values.ContainsKey(symbol))
+                {
+                    values[symbol] = value;
+                    return;
+                }
+                if (enclosingScope is null)
+                    throw new InvalidOperationException($"Value for variable '{symbol}' not defined ");
+                enclosingScope[symbol] = value;
             }
         }
 
