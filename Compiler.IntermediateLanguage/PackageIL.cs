@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
@@ -33,11 +32,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.IntermediateLanguage
             References = references;
             EntryPoint = entryPoint;
             Declarations = declarations.ToFixedSet();
-        }
-
-        public IEnumerable<DeclarationIL> GetNonMemberDeclarations()
-        {
-            return Declarations.Where(d => !d.IsMember);
         }
     }
 }
