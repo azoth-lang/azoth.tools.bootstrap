@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
     [StructLayout(LayoutKind.Explicit)]
     internal readonly struct AzothValue
     {
-        [FieldOffset(0)] public readonly Reference ReferenceValue;
+        [FieldOffset(0)] public readonly AzothObject ObjectValue;
         [FieldOffset(0)] public readonly BigInteger IntValue;
         [FieldOffset(0)] private readonly ValueType value;
 
@@ -21,6 +21,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
         #region Static Factory Methods/Properties
         public static readonly AzothValue None;
 
+        public static AzothValue Object(AzothObject value)
+        {
+            return new AzothValue(value);
+        }
         public static AzothValue Int(BigInteger value)
         {
             return new AzothValue(value);
@@ -52,6 +56,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
         #endregion
 
         #region Private Constructors
+        private AzothValue(AzothObject value) : this()
+        {
+            ObjectValue = value;
+        }
         private AzothValue(BigInteger value) : this()
         {
             IntValue = value;

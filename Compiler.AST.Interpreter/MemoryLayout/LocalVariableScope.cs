@@ -7,14 +7,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
     internal class LocalVariableScope
     {
         private readonly LocalVariableScope? enclosingScope;
-        private readonly IDictionary<NamedBindingSymbol, AzothValue> values = new Dictionary<NamedBindingSymbol, AzothValue>();
+        private readonly IDictionary<BindingSymbol, AzothValue> values = new Dictionary<BindingSymbol, AzothValue>();
 
         public LocalVariableScope(LocalVariableScope? enclosingScope = null)
         {
             this.enclosingScope = enclosingScope;
         }
 
-        public AzothValue this[NamedBindingSymbol symbol]
+        public AzothValue this[BindingSymbol symbol]
         {
             get
             {
@@ -36,7 +36,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
             }
         }
 
-        public void Add(NamedBindingSymbol symbol, AzothValue value)
+        public void Add(BindingSymbol symbol, AzothValue value)
         {
             values.Add(symbol, value);
         }

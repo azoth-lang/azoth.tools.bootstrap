@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,9 +19,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
         private readonly Package package;
         private readonly Task executionTask;
         private readonly FixedDictionary<FunctionSymbol, IConcreteFunctionInvocableDeclaration> functions;
+        private readonly FixedDictionary<ConstructorSymbol, IConstructorDeclaration?> constructors;
+        private readonly FixedDictionary<ObjectTypeSymbol, IClassDeclaration> classes;
         private byte? exitCode;
         private readonly MethodSignatureCache methodSignatures = new MethodSignatureCache();
-        private readonly VTableList vTables = new VTableList();
+        private readonly ConcurrentDictionary<IClassDeclaration, VTable> vTables = new ConcurrentDictionary<IClassDeclaration, VTable>();
 
         public InterpreterProcess(Package package)
         {
@@ -29,8 +32,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             functions = package.AllDeclarations
                                .OfType<IConcreteFunctionInvocableDeclaration>()
                                .ToFixedDictionary(f => f.Symbol);
+            var defaultConstructorSymbols = package.AllDeclarations.OfType<IClassDeclaration>()
+                                                   .Select(c => c.DefaultConstructorSymbol)
+                                                   .WhereNotNull();
+            classes = package.AllDeclarations.OfType<IClassDeclaration>()
+                             .ToFixedDictionary(c => c.Symbol);
+            constructors = defaultConstructorSymbols
+                           .Select(c => (c, default(IConstructorDeclaration)))
+                           .Concat(package.AllDeclarations
+                                      .OfType<IConstructorDeclaration>()
+                                      .Select(c => (c.Symbol, (IConstructorDeclaration?)c)))
+                           .ToFixedDictionary();
             executionTask = Task.Run(CallEntryPointAsync);
-
         }
 
         private async Task CallEntryPointAsync()
@@ -57,6 +70,63 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     variables.Add(symbol, arg);
 
                 foreach (var statement in function.Body.Statements)
+                    await ExecuteAsync(statement, variables).ConfigureAwait(false);
+                return default;
+            }
+            catch (Return @return)
+            {
+                return @return.Value;
+            }
+        }
+
+        private async ValueTask<AzothValue> CallConstructorAsync(
+            IConstructorDeclaration constructor,
+            AzothValue self,
+            IEnumerable<AzothValue> arguments)
+        {
+            try
+            {
+                var variables = new LocalVariableScope();
+                variables.Add(constructor.ImplicitSelfParameter.Symbol, self);
+                foreach (var (arg, parameter) in arguments.Zip(constructor.Parameters))
+                    switch (parameter)
+                    {
+                        default:
+                            throw ExhaustiveMatch.Failed(parameter);
+                        case IFieldParameter fieldParameter:
+                            // TODO initialize field
+                            break;
+                        case INamedParameter p:
+                            variables.Add(p.Symbol, arg);
+                            break;
+                    }
+
+                foreach (var statement in constructor.Body.Statements)
+                    await ExecuteAsync(statement, variables).ConfigureAwait(false);
+                return self;
+            }
+            catch (Return)
+            {
+                return self;
+            }
+        }
+
+        private async ValueTask<AzothValue> CallMethodAsync(
+            IMethodDeclaration method,
+            AzothValue self,
+            IEnumerable<AzothValue> arguments)
+        {
+            if (!(method is IConcreteMethodDeclaration concreteMethod))
+                throw new InvalidOperationException($"Can't call abstract method {method}");
+
+            try
+            {
+                var variables = new LocalVariableScope();
+                variables.Add(method.SelfParameter.Symbol, self);
+                foreach (var (arg, symbol) in arguments.Zip(method.Parameters.Select(p => p.Symbol)))
+                    variables.Add(symbol, arg);
+
+                foreach (var statement in concreteMethod.Body.Statements)
                     await ExecuteAsync(statement, variables).ConfigureAwait(false);
                 return default;
             }
@@ -249,10 +319,33 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                     var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
                     var methodSignature = methodSignatures[exp.ReferencedSymbol];
-                    var vtable = vTables[self.ReferenceValue.VTableRef];
-                    throw new NotImplementedException("Method call");
+                    var vtable = self.ObjectValue.VTable;
+                    var method = vtable[methodSignature];
+                    return await CallMethodAsync(method, self, arguments).ConfigureAwait(false);
                 }
+                case INewObjectExpression exp:
+                {
+                    var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
+                    var objectTypeSymbol = exp.ReferencedSymbol.ContainingSymbol;
+                    var @class = classes[objectTypeSymbol];
+                    var vTable = vTables.GetOrAdd(@class, CreateVTable);
+                    var self = AzothValue.Object(new AzothObject(vTable));
+                    var constructor = constructors[exp.ReferencedSymbol];
+                    // Default constructor is null
+                    if (constructor is null) return self;
+                    return await CallConstructorAsync(constructor, self, arguments).ConfigureAwait(false);
+                }
+                case IShareExpression exp:
+                    // TODO do share expressions make sense in Azoth?
+                    return await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
+                case ISelfExpression exp:
+                    return variables[exp.ReferencedSymbol];
             }
+        }
+
+        private VTable CreateVTable(IClassDeclaration @class)
+        {
+            return new VTable(@class, methodSignatures);
         }
 
         private async Task<List<AzothValue>> ExecuteArgumentsAsync(FixedList<IExpression> arguments, LocalVariableScope variables)
