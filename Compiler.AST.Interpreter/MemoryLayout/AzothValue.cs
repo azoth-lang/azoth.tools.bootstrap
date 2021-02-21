@@ -8,6 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
     {
         [FieldOffset(0)] public readonly AzothObject ObjectValue;
         [FieldOffset(0)] public readonly BigInteger IntValue;
+        [FieldOffset(0)] public readonly byte[] BytesValue;
         [FieldOffset(0)] private readonly ValueType value;
 
         public bool IsNone => value.Struct is null;
@@ -26,6 +27,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
             return new AzothValue(value);
         }
         public static AzothValue Int(BigInteger value)
+        {
+            return new AzothValue(value);
+        }
+        public static AzothValue Bytes(byte[] value)
         {
             return new AzothValue(value);
         }
@@ -63,6 +68,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
         private AzothValue(BigInteger value) : this()
         {
             IntValue = value;
+        }
+        private AzothValue(byte[] value) : this()
+        {
+            BytesValue = value;
         }
         private AzothValue(bool value) : this()
         {

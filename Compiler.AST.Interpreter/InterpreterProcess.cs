@@ -3,10 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
@@ -21,7 +23,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
         private readonly FixedDictionary<FunctionSymbol, IConcreteFunctionInvocableDeclaration> functions;
         private readonly FixedDictionary<ConstructorSymbol, IConstructorDeclaration?> constructors;
         private readonly FixedDictionary<ObjectTypeSymbol, IClassDeclaration> classes;
+        private readonly IClassDeclaration stringClass;
+        private readonly IConstructorDeclaration stringConstructor;
         private byte? exitCode;
+        private readonly MemoryStream standardOutput;
+        private readonly TextWriter standardOutputWriter;
         private readonly MethodSignatureCache methodSignatures = new MethodSignatureCache();
         private readonly ConcurrentDictionary<IClassDeclaration, VTable> vTables = new ConcurrentDictionary<IClassDeclaration, VTable>();
 
@@ -29,14 +35,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
         {
             if (package.EntryPoint is null) throw new ArgumentException("Package must have an entry point");
             this.package = package;
-            functions = package.AllDeclarations
-                               .OfType<IConcreteFunctionInvocableDeclaration>()
-                               .ToFixedDictionary(f => f.Symbol);
-            var defaultConstructorSymbols = package.AllDeclarations.OfType<IClassDeclaration>()
-                                                   .Select(c => c.DefaultConstructorSymbol)
-                                                   .WhereNotNull();
-            classes = package.AllDeclarations.OfType<IClassDeclaration>()
-                             .ToFixedDictionary(c => c.Symbol);
+            var allDeclarations = package.AllDeclarations.Concat(package.References.SelectMany(r => r.AllDeclarations))
+                                         .ToList();
+            functions = allDeclarations
+                        .OfType<IConcreteFunctionInvocableDeclaration>()
+                        .ToFixedDictionary(f => f.Symbol);
+            var defaultConstructorSymbols = allDeclarations
+                                            .OfType<IClassDeclaration>()
+                                            .Select(c => c.DefaultConstructorSymbol)
+                                            .WhereNotNull();
+            classes = allDeclarations.OfType<IClassDeclaration>()
+                                     .ToFixedDictionary(c => c.Symbol);
+            stringClass = classes.Values.Single(c => c.Symbol.Name == "string");
+            stringConstructor = stringClass.Members.OfType<IConstructorDeclaration>().Single();
             constructors = defaultConstructorSymbols
                            .Select(c => (c, default(IConstructorDeclaration)))
                            .Concat(package.AllDeclarations
@@ -44,21 +55,48 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                                       .Select(c => (c.Symbol, (IConstructorDeclaration?)c)))
                            .ToFixedDictionary();
             executionTask = Task.Run(CallEntryPointAsync);
+
+            standardOutput = new MemoryStream();
+            standardOutputWriter = new StreamWriter(standardOutput, Encoding.UTF8, leaveOpen: true);
+            StandardOutput = new StreamReader(standardOutput, Encoding.UTF8);
         }
 
         private async Task CallEntryPointAsync()
         {
-            //  TODO Construct entry point arguments
+            try
+            {
+                var entryPoint = package.EntryPoint!;
+                var arguments = new List<AzothValue>();
+                foreach (var parameterType in entryPoint.Symbol.ParameterDataTypes)
+                    if (parameterType is ObjectType objectType && objectType.Name.Text == "TestOutput")
+                    {
+                        var testOutputDeclaration = classes.Values.SingleOrDefault(c => c.Symbol.Name == "TestOutput");
+                        if (testOutputDeclaration is null)
+                            throw new InvalidOperationException("No TestOutput type declared");
+                        var @class = classes[testOutputDeclaration.Symbol];
+                        var vTable = vTables.GetOrAdd(@class, CreateVTable);
+                        var testOutput = AzothValue.Object(new AzothObject(vTable));
+                        arguments.Add(testOutput);
+                    }
+                    else
+                        throw new InvalidOperationException($"Parameter to main of type {parameterType} not supported");
 
-            var entryPoint = package.EntryPoint!;
-            var returnValue = await CallFunctionAsync(entryPoint, Enumerable.Empty<AzothValue>()).ConfigureAwait(false);
-            var returnType = entryPoint.Symbol.ReturnDataType;
-            if (returnType == DataType.Void)
-                exitCode = 0;
-            else if (returnType == DataType.Byte)
-                exitCode = returnValue.ByteValue;
-            else
-                throw new InvalidOperationException($"Main function cannot have return type {returnType}");
+                var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
+                // Flush any buffered output
+                await standardOutputWriter.FlushAsync().ConfigureAwait(false);
+                var returnType = entryPoint.Symbol.ReturnDataType;
+                if (returnType == DataType.Void)
+                    exitCode = 0;
+                else if (returnType == DataType.Byte)
+                    exitCode = returnValue.ByteValue;
+                else
+                    throw new InvalidOperationException($"Main function cannot have return type {returnType}");
+            }
+            finally
+            {
+                await standardOutputWriter.DisposeAsync().ConfigureAwait(false);
+                standardOutput.Position = 0;
+            }
         }
 
         private async Task<AzothValue> CallFunctionAsync(IConcreteFunctionInvocableDeclaration function, IEnumerable<AzothValue> arguments)
@@ -175,7 +213,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 case IFunctionInvocationExpression exp:
                 {
                     var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
-                    return await CallFunctionAsync(functions[exp.ReferencedSymbol], arguments).ConfigureAwait(false);
+                    var functionSymbol = exp.ReferencedSymbol;
+                    if (functionSymbol.Package == Intrinsic.SymbolTree.Package)
+                        return await CallIntrinsicAsync(functionSymbol, arguments).ConfigureAwait(false);
+                    return await CallFunctionAsync(functions[functionSymbol], arguments).ConfigureAwait(false);
                 }
                 case IBoolLiteralExpression exp:
                     return AzothValue.Bool(exp.Value);
@@ -250,6 +291,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 case IAssignmentExpression exp:
                 {
                     var value = await ExecuteAsync(exp.RightOperand, variables).ConfigureAwait(false);
+                    // TODO the expression being assigned into is supposed to be evaluated first
                     await ExecuteAssignmentAsync(exp.LeftOperand, value, variables).ConfigureAwait(false);
                     return value;
                 }
@@ -365,7 +407,38 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     return AzothValue.None;
                 case IImplicitOptionalConversionExpression exp:
                     return await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
+                case IStringLiteralExpression exp:
+                {
+                    // Call the constructor of the string class
+                    var arguments = new List<AzothValue>
+                    {
+                        AzothValue.Size((nuint) exp.Value.Length),
+                        AzothValue.Bytes(Encoding.UTF8.GetBytes(exp.Value))
+                    };
+                    var @class = stringClass;
+                    var vTable = vTables.GetOrAdd(@class, CreateVTable);
+                    var self = AzothValue.Object(new AzothObject(vTable));
+                    return await CallConstructorAsync(stringConstructor, self, arguments).ConfigureAwait(false);
+                }
+                case IUnsafeExpression exp:
+                    return await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
+                case IFieldAccessExpression exp:
+                {
+                    var obj = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
+                    return obj.ObjectValue[exp.ReferencedSymbol.Name];
+                }
             }
+        }
+
+        private async ValueTask<AzothValue> CallIntrinsicAsync(FunctionSymbol functionSymbol, List<AzothValue> arguments)
+        {
+            if (functionSymbol == Intrinsic.PrintUtf8)
+            {
+                var str = Encoding.UTF8.GetString(arguments[0].BytesValue, 0, (int)arguments[1].SizeValue);
+                await standardOutputWriter.WriteAsync(str).ConfigureAwait(false);
+                return AzothValue.None;
+            }
+            throw new NotImplementedException($"Intrinsic {functionSymbol}");
         }
 
         private VTable CreateVTable(IClassDeclaration @class)
@@ -498,7 +571,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             throw new NotImplementedException($"Negate {dataType}");
         }
 
-        private AzothValue Remainder(
+        private static AzothValue Remainder(
             AzothValue dividend,
             AzothValue divisor,
             NumericType type)
@@ -540,7 +613,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             };
         }
 
-        private static ValueTask ExecuteAssignmentAsync(
+        private async ValueTask ExecuteAssignmentAsync(
             IAssignableExpression expression,
             AzothValue value,
             LocalVariableScope variables)
@@ -552,8 +625,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 case INameExpression exp:
                     variables[exp.ReferencedSymbol] = value;
                     break;
+                case IFieldAccessExpression exp:
+                    var obj = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
+                    // TODO handle the access operator
+                    obj.ObjectValue[exp.ReferencedSymbol.Name] = value;
+                    break;
             }
-            return default;
         }
 
         public Task WaitForExitAsync()
@@ -561,7 +638,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             return executionTask;
         }
 
-        public TextReader StandardOutput => TextReader.Null;
+        public TextReader StandardOutput { get; }
         public TextReader StandardError => TextReader.Null;
 
         public byte ExitCode => exitCode ?? throw new InvalidOperationException("Process has not exited");

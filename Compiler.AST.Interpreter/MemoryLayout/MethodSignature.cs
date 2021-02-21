@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
@@ -54,6 +55,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
         public static bool operator !=(MethodSignature? left, MethodSignature? right)
         {
             return !Equals(left, right);
+        }
+
+        public override string ToString()
+        {
+            return $"{Name}({string.Join(", ", ParameterDataTypes.Prepend(SelfDataType))}) -> {ReturnDataType}";
         }
     }
 }

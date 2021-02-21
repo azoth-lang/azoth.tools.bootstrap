@@ -1,3 +1,4 @@
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -8,6 +9,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Primitives
     public static class Intrinsic
     {
         public static readonly FixedSymbolTree SymbolTree = DefineIntrinsicSymbols();
+
+        public static readonly FunctionSymbol MemAllocate =
+            SymbolTree.Symbols.OfType<FunctionSymbol>().Single(f => f.Name.Text == "mem_allocate");
+
+        public static readonly FunctionSymbol PrintUtf8 =
+            SymbolTree.Symbols.OfType<FunctionSymbol>().Single(f => f.Name.Text == "print_utf8");
 
         private static FixedSymbolTree DefineIntrinsicSymbols()
         {
