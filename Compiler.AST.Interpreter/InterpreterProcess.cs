@@ -436,6 +436,39 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     var obj = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                     return obj.ObjectValue[exp.ReferencedSymbol.Name];
                 }
+                case IForeachExpression exp:
+                {
+                    var loopVariable = exp.Symbol;
+                    if (exp.InExpression is IBinaryOperatorExpression binaryExp
+                        && binaryExp.Operator == BinaryOperator.DotDot
+                        && exp.Symbol.DataType == DataType.UInt32)
+                    {
+                        var start = (await ExecuteAsync(binaryExp.LeftOperand, variables).ConfigureAwait(false)).U32Value;
+                        var end = (await ExecuteAsync(binaryExp.RightOperand, variables).ConfigureAwait(false)).U32Value;
+                        try
+                        {
+                            for (uint i = start; i <= end; i++)
+                            {
+                                try
+                                {
+                                    var loopVariables = new LocalVariableScope(variables);
+                                    loopVariables.Add(loopVariable, AzothValue.U32(i));
+                                    await ExecuteAsync(exp.Block, loopVariables).ConfigureAwait(false);
+                                }
+                                catch (Next)
+                                {
+                                    continue;
+                                }
+                            }
+                            return AzothValue.None;
+                        }
+                        catch (Break @break)
+                        {
+                            return @break.Value;
+                        }
+                    }
+                    throw new NotImplementedException($"`foreach` over {exp.InExpression}");
+                }
             }
         }
 
