@@ -19,7 +19,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
         private readonly Task executionTask;
         private readonly FixedDictionary<FunctionSymbol, IConcreteFunctionInvocableDeclaration> functions;
         private byte? exitCode;
-
+        private readonly MethodSignatureCache methodSignatures = new MethodSignatureCache();
+        private readonly VTableList vTables = new VTableList();
 
         public InterpreterProcess(Package package)
         {
@@ -103,11 +104,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     return AzothValue.Int(exp.Value);
                 case IFunctionInvocationExpression exp:
                 {
-                    var arguments = new List<AzothValue>(exp.Arguments.Count);
-                    // Execute arguments in order
-                    foreach (var argument in exp.Arguments)
-                        arguments.Add(await ExecuteAsync(argument, variables).ConfigureAwait(false));
-
+                    var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
                     return await CallFunctionAsync(functions[exp.ReferencedSymbol], arguments).ConfigureAwait(false);
                 }
                 case IBoolLiteralExpression exp:
@@ -247,7 +244,24 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                         UnaryOperator.Plus => await ExecuteAsync(exp.Operand, variables).ConfigureAwait(false),
                         _ => throw ExhaustiveMatch.Failed(exp.Operator)
                     };
+                case IMethodInvocationExpression exp:
+                {
+                    var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
+                    var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
+                    var methodSignature = methodSignatures[exp.ReferencedSymbol];
+                    var vtable = vTables[self.ReferenceValue.VTableRef];
+                    throw new NotImplementedException("Method call");
+                }
             }
+        }
+
+        private async Task<List<AzothValue>> ExecuteArgumentsAsync(FixedList<IExpression> arguments, LocalVariableScope variables)
+        {
+            var values = new List<AzothValue>(arguments.Count);
+            // Execute arguments in order
+            foreach (var argument in arguments)
+                values.Add(await ExecuteAsync(argument, variables).ConfigureAwait(false));
+            return values;
         }
 
         private async Task<AzothValue> AddAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)

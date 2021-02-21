@@ -4,16 +4,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
 {
     internal readonly struct VTableRef : IEquatable<VTableRef>
     {
-        private readonly int index;
+        public readonly int Index;
 
         public VTableRef(int index)
         {
-            this.index = index;
+            Index = index;
         }
 
         public bool Equals(VTableRef other)
         {
-            return index == other.index;
+            return Index == other.Index;
         }
 
         public override bool Equals(object? obj)
@@ -23,7 +23,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(index);
+            return HashCode.Combine(Index);
         }
 
         public static bool operator ==(VTableRef left, VTableRef right)
