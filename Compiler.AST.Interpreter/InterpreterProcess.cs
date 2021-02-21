@@ -319,9 +319,27 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                     var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
                     var methodSignature = methodSignatures[exp.ReferencedSymbol];
-                    var vtable = self.ObjectValue.VTable;
-                    var method = vtable[methodSignature];
-                    return await CallMethodAsync(method, self, arguments).ConfigureAwait(false);
+
+                    var selfType = exp.Context.DataType;
+                    switch (selfType)
+                    {
+                        case EmptyType _:
+                        case UnknownType _:
+                        case BoolType _:
+                        case OptionalType _:
+                            throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
+                        case ReferenceType _:
+                            var vtable = self.ObjectValue.VTable;
+                            var method = vtable[methodSignature];
+                            return await CallMethodAsync(method, self, arguments).ConfigureAwait(false);
+                        case NumericType numericType:
+                            if (methodSignature.Name.Text == "remainder")
+                                return Remainder(self, arguments[0], numericType);
+
+                            throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
+                        default:
+                            throw ExhaustiveMatch.Failed(selfType);
+                    }
                 }
                 case INewObjectExpression exp:
                 {
@@ -338,8 +356,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 case IShareExpression exp:
                     // TODO do share expressions make sense in Azoth?
                     return await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
+                case IBorrowExpression exp:
+                    // TODO do borrow expressions make sense in Azoth?
+                    return await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
                 case ISelfExpression exp:
                     return variables[exp.ReferencedSymbol];
+                case IImplicitNoneConversionExpression exp:
+                    return AzothValue.None;
+                case IImplicitOptionalConversionExpression exp:
+                    return await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
             }
         }
 
@@ -348,7 +373,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             return new VTable(@class, methodSignatures);
         }
 
-        private async Task<List<AzothValue>> ExecuteArgumentsAsync(FixedList<IExpression> arguments, LocalVariableScope variables)
+        private async ValueTask<List<AzothValue>> ExecuteArgumentsAsync(FixedList<IExpression> arguments, LocalVariableScope variables)
         {
             var values = new List<AzothValue>(arguments.Count);
             // Execute arguments in order
@@ -357,7 +382,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             return values;
         }
 
-        private async Task<AzothValue> AddAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+        private async ValueTask<AzothValue> AddAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
         {
             if (leftExp.DataType != rightExp.DataType)
                 throw new InvalidOperationException(
@@ -378,7 +403,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             throw new NotImplementedException($"Add {dataType}");
         }
 
-        private async Task<AzothValue> SubtractAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+        private async ValueTask<AzothValue> SubtractAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
         {
             if (leftExp.DataType != rightExp.DataType)
                 throw new InvalidOperationException(
@@ -399,7 +424,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             throw new NotImplementedException($"Subtract {dataType}");
         }
 
-        private async Task<AzothValue> MultiplyAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+        private async ValueTask<AzothValue> MultiplyAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
         {
             if (leftExp.DataType != rightExp.DataType)
                 throw new InvalidOperationException(
@@ -420,7 +445,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             throw new NotImplementedException($"Multiply {dataType}");
         }
 
-        private async Task<AzothValue> DivideAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+        private async ValueTask<AzothValue> DivideAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
         {
             if (leftExp.DataType != rightExp.DataType)
                 throw new InvalidOperationException(
@@ -451,6 +476,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             var dataType = leftExp.DataType;
             if (dataType == DataType.Byte)
                 return left.ByteValue.CompareTo(right.ByteValue);
+            if (dataType == DataType.Int32)
+                return left.I32Value.CompareTo(right.I32Value);
+            if (dataType == DataType.UInt32)
+                return left.U32Value.CompareTo(right.U32Value);
+            if (dataType == DataType.Offset)
+                return left.OffsetValue.CompareTo(right.OffsetValue);
+            if (dataType == DataType.Size)
+                return left.SizeValue.CompareTo(right.SizeValue);
             throw new NotImplementedException($"Compare {dataType}");
         }
 
@@ -460,7 +493,27 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             var dataType = expression.DataType;
             if (dataType == DataType.Int32)
                 return AzothValue.I32(-value.I32Value);
+            if (dataType is IntegerConstantType)
+                return AzothValue.Int(-value.IntValue);
             throw new NotImplementedException($"Negate {dataType}");
+        }
+
+        private AzothValue Remainder(
+            AzothValue dividend,
+            AzothValue divisor,
+            NumericType type)
+        {
+            if (type == DataType.Byte)
+                return AzothValue.I32(dividend.ByteValue % divisor.ByteValue);
+            if (type == DataType.Int32)
+                return AzothValue.I32(dividend.I32Value % divisor.I32Value);
+            if (type == DataType.UInt32)
+                return AzothValue.U32(dividend.U32Value % divisor.U32Value);
+            if (type == DataType.Offset)
+                return AzothValue.Offset(dividend.OffsetValue % divisor.OffsetValue);
+            if (type == DataType.Size)
+                return AzothValue.Size(dividend.SizeValue % divisor.SizeValue);
+            throw new NotImplementedException($"Remainder {type}");
         }
 
         private async ValueTask<AzothValue> ExecuteBlockOrResultAsync(

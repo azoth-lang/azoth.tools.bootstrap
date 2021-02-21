@@ -13,8 +13,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 if (to == DataType.Byte) return AzothValue.Byte((byte)value.IntValue);
                 if (to == DataType.Int32) return AzothValue.I32((int)value.IntValue);
                 if (to == DataType.UInt32) return AzothValue.U32((uint)value.IntValue);
-                if (to == DataType.Offset) return AzothValue.Offset((IntPtr)(long)value.IntValue);
-                if (to == DataType.Size) return AzothValue.Size((UIntPtr)(ulong)value.IntValue);
+                if (to == DataType.Offset) return AzothValue.Offset((nint)(long)value.IntValue);
+                if (to == DataType.Size) return AzothValue.Size((nuint)(ulong)value.IntValue);
             }
 
             throw new NotImplementedException($"Conversion from {from} to {to}");
