@@ -132,8 +132,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                         default:
                             throw ExhaustiveMatch.Failed(parameter);
                         case IFieldParameter fieldParameter:
-                            // TODO initialize field
-                            break;
+                            throw new NotImplementedException("Field parameters");
                         case INamedParameter p:
                             variables.Add(p.Symbol, arg);
                             break;
@@ -290,8 +289,22 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     throw new Next();
                 case IAssignmentExpression exp:
                 {
-                    var value = await ExecuteAsync(exp.RightOperand, variables).ConfigureAwait(false);
-                    // TODO the expression being assigned into is supposed to be evaluated first
+                    // TODO this evaluates the left hand side twice for compound operators
+                    var value = exp.Operator switch
+                    {
+                        AssignmentOperator.Simple =>
+                            // TODO the expression being assigned into is supposed to be evaluated first
+                            await ExecuteAsync(exp.RightOperand, variables).ConfigureAwait(false),
+                        AssignmentOperator.Plus
+                            => await AddAsync(exp.LeftOperand, exp.RightOperand, variables) .ConfigureAwait(false),
+                        AssignmentOperator.Minus
+                            => await SubtractAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false),
+                        AssignmentOperator.Asterisk
+                            => await MultiplyAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false),
+                        AssignmentOperator.Slash
+                            => await DivideAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false),
+                        _ => throw ExhaustiveMatch.Failed(exp.Operator)
+                    };
                     await ExecuteAssignmentAsync(exp.LeftOperand, value, variables).ConfigureAwait(false);
                     return value;
                 }
@@ -375,10 +388,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                             var method = vtable[methodSignature];
                             return await CallMethodAsync(method, self, arguments).ConfigureAwait(false);
                         case NumericType numericType:
-                            if (methodSignature.Name.Text == "remainder")
-                                return Remainder(self, arguments[0], numericType);
-
-                            throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
+                            return methodSignature.Name.Text switch
+                            {
+                                "remainder" => Remainder(self, arguments[0], numericType),
+                                "to_display_string" => await ToDisplayStringAsync(self, numericType),
+                                _ => throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}")
+                            };
                         default:
                             throw ExhaustiveMatch.Failed(selfType);
                     }
@@ -410,15 +425,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 case IStringLiteralExpression exp:
                 {
                     // Call the constructor of the string class
-                    var arguments = new List<AzothValue>
-                    {
-                        AzothValue.Size((nuint) exp.Value.Length),
-                        AzothValue.Bytes(Encoding.UTF8.GetBytes(exp.Value))
-                    };
-                    var @class = stringClass;
-                    var vTable = vTables.GetOrAdd(@class, CreateVTable);
-                    var self = AzothValue.Object(new AzothObject(vTable));
-                    return await CallConstructorAsync(stringConstructor, self, arguments).ConfigureAwait(false);
+                    var value = exp.Value;
+                    return await ConstructStringAsync(value);
                 }
                 case IUnsafeExpression exp:
                     return await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
@@ -428,6 +436,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     return obj.ObjectValue[exp.ReferencedSymbol.Name];
                 }
             }
+        }
+
+        private async ValueTask<AzothValue> ConstructStringAsync(string value)
+        {
+            var arguments = new List<AzothValue>
+            {
+                AzothValue.Size((nuint) value.Length),
+                AzothValue.Bytes(Encoding.UTF8.GetBytes(value))
+            };
+            var @class = stringClass;
+            var vTable = vTables.GetOrAdd(@class, CreateVTable);
+            var self = AzothValue.Object(new AzothObject(vTable));
+            return await CallConstructorAsync(stringConstructor, self, arguments).ConfigureAwait(false);
         }
 
         private async ValueTask<AzothValue> CallIntrinsicAsync(FunctionSymbol functionSymbol, List<AzothValue> arguments)
@@ -587,6 +608,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             if (type == DataType.Size)
                 return AzothValue.Size(dividend.SizeValue % divisor.SizeValue);
             throw new NotImplementedException($"Remainder {type}");
+        }
+
+        private async ValueTask<AzothValue> ToDisplayStringAsync(AzothValue value, NumericType type)
+        {
+            string displayString;
+            if (type is IntegerConstantType) displayString = value.IntValue.ToString();
+            else if (type == DataType.Byte) displayString = value.ByteValue.ToString();
+            else if (type == DataType.Int32) displayString = value.I32Value.ToString();
+            else if (type == DataType.UInt32) displayString = value.U32Value.ToString();
+            else if (type == DataType.Offset) displayString = value.OffsetValue.ToString();
+            else if (type == DataType.Size) displayString = value.SizeValue.ToString();
+            else throw new NotImplementedException($"to_display_string({type})");
+
+            return await ConstructStringAsync(displayString).ConfigureAwait(false);
         }
 
         private async ValueTask<AzothValue> ExecuteBlockOrResultAsync(
