@@ -132,7 +132,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                         default:
                             throw ExhaustiveMatch.Failed(parameter);
                         case IFieldParameter fieldParameter:
-                            throw new NotImplementedException("Field parameters");
+                            self.ObjectValue[fieldParameter.ReferencedSymbol.Name] = arg;
+                            break;
                         case INamedParameter p:
                             variables.Add(p.Symbol, arg);
                             break;
@@ -296,7 +297,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                             // TODO the expression being assigned into is supposed to be evaluated first
                             await ExecuteAsync(exp.RightOperand, variables).ConfigureAwait(false),
                         AssignmentOperator.Plus
-                            => await AddAsync(exp.LeftOperand, exp.RightOperand, variables) .ConfigureAwait(false),
+                            => await AddAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false),
                         AssignmentOperator.Minus
                             => await SubtractAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false),
                         AssignmentOperator.Asterisk
