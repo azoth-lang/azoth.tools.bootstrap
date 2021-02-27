@@ -75,7 +75,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
 
         private (ITypeSyntax? Type, IReferenceCapabilitySyntax? Capability) ParseVariableDeclarationType()
         {
-            var capability = ParseReferenceCapability(null);
+            var capability = ParseReferenceCapability();
 
             switch (Tokens.Current)
             {

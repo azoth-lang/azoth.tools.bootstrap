@@ -26,7 +26,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
             typeof(FunctionKeywordToken),
             typeof(NewKeywordToken),
             typeof(IsolatedKeywordToken),
-            typeof(TransitionKeywordToken),
             typeof(SharedKeywordToken),
             typeof(ConstKeywordToken),
             typeof(IdKeywordToken),
@@ -127,10 +126,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
         public static IIsolatedKeywordToken IsolatedKeyword(TextSpan span)
         {
             return new IsolatedKeywordToken(span);
-        }
-        public static ITransitionKeywordToken TransitionKeyword(TextSpan span)
-        {
-            return new TransitionKeywordToken(span);
         }
         public static ISharedKeywordToken SharedKeyword(TextSpan span)
         {
@@ -264,7 +259,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
         typeof(IFunctionKeywordToken),
         typeof(INewKeywordToken),
         typeof(IIsolatedKeywordToken),
-        typeof(ITransitionKeywordToken),
         typeof(ISharedKeywordToken),
         typeof(IConstKeywordToken),
         typeof(IIdKeywordToken),
@@ -444,15 +438,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
     internal partial class IsolatedKeywordToken : Token, IIsolatedKeywordToken
     {
         public IsolatedKeywordToken(TextSpan span)
-            : base(span)
-        {
-        }
-    }
-
-    public partial interface ITransitionKeywordToken : IKeywordToken { }
-    internal partial class TransitionKeywordToken : Token, ITransitionKeywordToken
-    {
-        public TransitionKeywordToken(TextSpan span)
             : base(span)
         {
         }

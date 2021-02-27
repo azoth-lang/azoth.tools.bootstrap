@@ -108,7 +108,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit
                 containingNamespace ?? NamespaceName.Global,
                 finalName.Text,
                 declaredMutable ?? false,
-                referenceCapability ?? ReferenceCapability.Const);
+                referenceCapability ?? ReferenceCapability.Constant);
         }
 
         protected ObjectTypeSymbol Type(

@@ -14,14 +14,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public static readonly ReferenceCapability Isolated
             = new ReferenceCapability("iso", allowsWrite: true);
 
-        public static readonly ReferenceCapability LentIsolated
-            = new ReferenceCapability("lent iso", allowsWrite: true, isLent: true);
-
-        public static readonly ReferenceCapability Transition
-            = new ReferenceCapability("trn", allowsWrite: true, allowsReadAliases: true);
-
-        public static readonly ReferenceCapability LentTransition
-            = new ReferenceCapability("lent trn", allowsWrite: true, allowsReadAliases: true, isLent: true);
         /// <summary>
         /// A reference that can be aliased and has write access to the type
         /// </summary>
@@ -35,11 +27,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// A reference has read-only access and there are no references that
         /// can mutate this object.
         /// </summary>
-        public static readonly ReferenceCapability Const
+        public static readonly ReferenceCapability Constant
             = new ReferenceCapability("const", allowsReadAliases: true);
-
-        public static readonly ReferenceCapability LentConst
-            = new ReferenceCapability("lent const", allowsReadAliases: true, isLent: true);
 
         /// <summary>
         /// A reference that can be aliased and has read-only access to the type.
@@ -57,9 +46,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// </summary>
         public static readonly ReferenceCapability Identity
             = new ReferenceCapability("id", allowsWriteAliases: true, allowsReadAliases: true, allowsRead: false);
-
-        public static readonly ReferenceCapability LentIdentity = new ReferenceCapability("id", allowsWriteAliases: true,
-            allowsReadAliases: true, allowsRead: false, isLent: true);
 
         private readonly string value;
         /// <summary>

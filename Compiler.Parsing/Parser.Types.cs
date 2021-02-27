@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using static Azoth.Tools.Bootstrap.Compiler.CST.DeclaredReferenceCapability;
 
@@ -11,104 +12,59 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
 {
     public partial class Parser
     {
-        public ITypeSyntax ParseType(bool? inferLent)
+        public ITypeSyntax ParseType()
         {
-            var capability = ParseReferenceCapability(inferLent);
+            var capability = ParseReferenceCapability();
             return ParseTypeWithCapability(capability);
         }
 
-        public IReferenceCapabilitySyntax? ParseReferenceCapability(bool? inferLent)
+        public IReferenceCapabilitySyntax? ParseReferenceCapability()
         {
-            var tokens = new List<ICapabilityToken>();
-            ILentKeywordToken? lentKeyword;
-            if (Tokens.Current is ILentKeywordToken)
-            {
-                lentKeyword = Tokens.RequiredToken<ILentKeywordToken>();
-                tokens.Add(lentKeyword);
-            }
-            else
-                lentKeyword = null;
-
             switch (Tokens.Current)
             {
                 case IIsolatedKeywordToken _:
                 {
                     var isoKeyword = Tokens.RequiredToken<IIsolatedKeywordToken>();
-                    tokens.Add(isoKeyword);
-                    var span = TextSpan.Covering(lentKeyword?.Span, isoKeyword.Span);
-                    var capability = lentKeyword is null ? Isolated : LentIsolated;
-                    return new ReferenceCapabilitySyntax(span, tokens, capability);
-                }
-                case ITransitionKeywordToken _:
-                {
-                    var trnKeyword = Tokens.RequiredToken<ITransitionKeywordToken>();
-                    //TODO tokens.Add(trnKeyword);
-                    var span = TextSpan.Covering(lentKeyword?.Span, trnKeyword.Span);
-                    var capability = lentKeyword is null ? Transition : LentTransition;
-                    return new ReferenceCapabilitySyntax(span, tokens, capability);
+                    return new ReferenceCapabilitySyntax(isoKeyword.Span, isoKeyword.Yield(), Isolated);
                 }
                 case IConstKeywordToken _:
                 {
                     var constKeyword = Tokens.RequiredToken<IConstKeywordToken>();
-                    tokens.Add(constKeyword);
-                    var span = TextSpan.Covering(lentKeyword?.Span, constKeyword.Span);
-                    var capability = lentKeyword is null ? Const : LentConst;
-                    return new ReferenceCapabilitySyntax(span, tokens, capability);
+                    return new ReferenceCapabilitySyntax(constKeyword.Span, constKeyword.Yield(), Constant);
                 }
                 case IMutableKeywordToken _:
                 {
                     var mutableKeyword = Tokens.RequiredToken<IMutableKeywordToken>();
-                    tokens.Add(mutableKeyword);
-                    var span = TextSpan.Covering(lentKeyword?.Span, mutableKeyword.Span);
-
-                    DeclaredReferenceCapability capability;
-                    if (lentKeyword is null)
-                        capability = inferLent switch
-                        {
-                            true => LentMutable,
-                            false => SharedMutable,
-                            _ => Mutable
-                        };
-                    else
-                        capability = LentMutable;
+                    return new ReferenceCapabilitySyntax(mutableKeyword.Span, mutableKeyword.Yield(), Mutable);
+                }
+                case ILentKeywordToken lentKeyword:
+                {
+                    var tokens = new List<ICapabilityToken> { lentKeyword };
+                    Tokens.RequiredToken<ILentKeywordToken>();
+                    var mutableKeyword = Tokens.AcceptToken<IMutableKeywordToken>();
+                    if (mutableKeyword != null) tokens.Add(mutableKeyword);
+                    var span = TextSpan.Covering(lentKeyword.Span, mutableKeyword?.Span);
+                    var capability = mutableKeyword is null ? LentReadable : LentMutable;
                     return new ReferenceCapabilitySyntax(span, tokens, capability);
                 }
                 case ISharedKeywordToken sharedKeyword:
                 {
-                    tokens.Add(sharedKeyword);
-                    if (lentKeyword != null) Tokens.UnexpectedToken();
-                    else Tokens.RequiredToken<ISharedKeywordToken>();
+                    var tokens = new List<ICapabilityToken> { sharedKeyword };
+                    Tokens.RequiredToken<ISharedKeywordToken>();
                     var mutableKeyword = Tokens.AcceptToken<IMutableKeywordToken>();
                     if (mutableKeyword != null) tokens.Add(mutableKeyword);
-                    var span = TextSpan.Covering(lentKeyword?.Span, sharedKeyword?.Span, mutableKeyword?.Span);
-                    DeclaredReferenceCapability capability;
-                    if (lentKeyword is null)
-                        capability = mutableKeyword is null ? Shared : SharedMutable;
-                    else
-                        capability = mutableKeyword is null ? Lent : LentMutable;
+                    var span = TextSpan.Covering(sharedKeyword.Span, mutableKeyword?.Span);
+                    var capability = mutableKeyword is null ? SharedReadable : SharedMutable;
                     return new ReferenceCapabilitySyntax(span, tokens, capability);
                 }
                 case IIdKeywordToken _:
                 {
-                    // TODO If lent then error, but just make it an id
                     var idKeyword = Tokens.RequiredToken<IIdKeywordToken>();
-                    tokens.Add(idKeyword);
-                    var span = TextSpan.Covering(lentKeyword?.Span, idKeyword.Span);
-                    return new ReferenceCapabilitySyntax(span, tokens, Identity);
+                    return new ReferenceCapabilitySyntax(idKeyword.Span, idKeyword.Yield(), Identity);
                 }
                 default:
-                {
-                    if (lentKeyword is null)
-                        //Could be a readable reference capability, or could be a value type
-                        return null;
-
-                    var mutableKeyword = Tokens.AcceptToken<IMutableKeywordToken>();
-                    if (mutableKeyword != null)
-                        tokens.Add(mutableKeyword);
-                    var span = TextSpan.Covering(lentKeyword.Span, mutableKeyword?.Span);
-                    var capability = mutableKeyword is null ? Lent : LentMutable;
-                    return new ReferenceCapabilitySyntax(span, tokens, capability);
-                }
+                    //Could be a readable reference capability, or could be a value type
+                    return null;
             }
         }
 

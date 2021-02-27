@@ -33,7 +33,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             bool declaredMutable)
         {
             // The "root" of the reference capability tree for this type
-            var capability = declaredMutable ? ReferenceCapability.Isolated : ReferenceCapability.Const;
+            var capability = declaredMutable ? ReferenceCapability.Isolated : ReferenceCapability.Constant;
             return new ObjectType(containingNamespace, name, declaredMutable, capability);
         }
 
@@ -75,18 +75,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         //}
 
         /// <summary>
-        /// Make a lent isolated version of this type  for use as the constructor parameter. One issue is
+        /// Make a version of this type for use as the constructor parameter. One issue is
         /// that it should be mutable even if the underlying type is declared immutable.
         /// </summary>
         public ObjectType ToConstructorSelf()
         {
             // TODO handle the case where the type is not declared mutable but the constructor arg allows mutate
-            return new ObjectType(ContainingNamespace, Name, DeclaredMutable, ReferenceCapability.LentIsolated);
+            return new ObjectType(ContainingNamespace, Name, DeclaredMutable, ReferenceCapability.SharedMutable);
         }
 
         public ObjectType ToConstructorReturn()
         {
-            return this.To(DeclaredMutable ? ReferenceCapability.Isolated : ReferenceCapability.Const);
+            return this.To(DeclaredMutable ? ReferenceCapability.Isolated : ReferenceCapability.Constant);
         }
 
         public override string ToSourceCodeString()

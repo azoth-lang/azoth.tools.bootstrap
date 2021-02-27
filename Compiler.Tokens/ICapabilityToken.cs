@@ -4,7 +4,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
 {
     [Closed(
         typeof(IIsolatedKeywordToken),
-        typeof(ITransitionKeyword),
         typeof(ISharedKeywordToken),
         typeof(ILentKeywordToken),
         typeof(IConstKeywordToken),
@@ -13,7 +12,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
     public interface ICapabilityToken : IKeywordToken { }
 
     public partial interface IIsolatedKeywordToken : ICapabilityToken { }
-    public partial interface ITransitionKeyword : ICapabilityToken { }
     public partial interface ISharedKeywordToken : ICapabilityToken { }
     public partial interface ILentKeywordToken : ICapabilityToken { }
     public partial interface IConstKeywordToken : ICapabilityToken { }

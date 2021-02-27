@@ -160,7 +160,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
 
         private ITypeSyntax? ParseReturn()
         {
-            return Tokens.Accept<IRightArrowToken>() ? ParseType(false) : null;
+            return Tokens.Accept<IRightArrowToken>() ? ParseType() : null;
         }
         #endregion
 
@@ -209,7 +209,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
             var identifier = Tokens.RequiredToken<IIdentifierToken>();
             Name name = identifier.Value;
             Tokens.Expect<IColonToken>();
-            var type = ParseType(false);
+            var type = ParseType();
             IExpressionSyntax? initializer = null;
             if (Tokens.Accept<IEqualsToken>())
                 initializer = ParseExpression();

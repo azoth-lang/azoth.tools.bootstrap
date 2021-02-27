@@ -80,6 +80,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
             "switch",            // Useful for switch like constructs
             "symmetric",         // Symmetric operators
             "transmute",         // Reinterpret Cast
+            "trn",               // Transition reference capability
             "then",              // Python style loop else
             "type",              // Type aliases and declarations
             "unchecked",         // Unchecked Operations

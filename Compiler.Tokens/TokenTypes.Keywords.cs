@@ -31,7 +31,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
                     "FunctionKeywordToken" => "fn",
                     "SelfTypeKeywordToken" => "Self",
                     "IsolatedKeywordToken" => "iso",
-                    "TransitionKeywordToken" => "trn",
                     "MutableKeywordToken" => "mut",
                     "AnyKeywordToken" => "Any",
                     "TypeKeywordToken" => "Type",

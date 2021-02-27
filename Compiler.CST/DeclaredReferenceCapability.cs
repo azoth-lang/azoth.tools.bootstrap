@@ -10,17 +10,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
     public enum DeclaredReferenceCapability
     {
         Isolated = 1,
-        LentIsolated,
-        Transition,
-        LentTransition,
         Mutable,
         SharedMutable,
         LentMutable,
-        Const,
-        LentConst,
         Readable,
-        Shared,
-        Lent,
+        SharedReadable,
+        LentReadable,
+        Constant,
         Identity
     }
 }

@@ -8,9 +8,9 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         public ReferenceCapability To { get; }
         public bool Assignable { get; }
 
-        public ReferenceCapabilityAssignmentTestCase(ReferenceCapability @from, ReferenceCapability to, bool assignable)
+        public ReferenceCapabilityAssignmentTestCase(ReferenceCapability from, ReferenceCapability to, bool assignable)
         {
-            From = @from;
+            From = from;
             To = to;
             Assignable = assignable;
         }

@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
             var identifier = Tokens.RequiredToken<IIdentifierOrUnderscoreToken>();
             var name = identifier.Value;
             Tokens.Expect<IColonToken>();
-            var type = ParseType(true);
+            var type = ParseType();
             IExpressionSyntax? defaultValue = null;
             if (Tokens.Accept<IEqualsToken>()) defaultValue = ParseExpression();
             span = TextSpan.Covering(span, type.Span, defaultValue?.Span);
