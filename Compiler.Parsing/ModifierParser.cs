@@ -17,9 +17,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
             };
         }
 
-        public IMutableKeywordToken? ParseMutableModifier()
+        public IClassCapabilityToken? ParseClassCapability()
         {
-            return Tokens.Current is IMutableKeywordToken ? Tokens.RequiredToken<IMutableKeywordToken>() : null;
+            return Tokens.Current is IClassCapabilityToken ? Tokens.RequiredToken<IClassCapabilityToken>() : null;
         }
 
         public void ParseEndOfModifiers()

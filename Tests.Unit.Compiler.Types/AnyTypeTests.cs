@@ -44,7 +44,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         {
             var type = new AnyType(Isolated);
 
-            Assert.True(type.DeclaredMutable);
+            Assert.Equal(SharedMutable, type.DeclaredCapability);
         }
 
         [Fact]

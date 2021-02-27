@@ -100,14 +100,14 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit
         protected ObjectType DataType(
             string? name = null,
             NamespaceName? containingNamespace = null,
-            bool? declaredMutable = null,
+            ReferenceCapability? declaredCapability = null,
             ReferenceCapability? referenceCapability = null)
         {
             var finalName = Name(name) ?? DefaultName("DataType");
             return ObjectType.Create(
                 containingNamespace ?? NamespaceName.Global,
                 finalName.Text,
-                declaredMutable ?? false,
+                declaredCapability ?? ReferenceCapability.Shared,
                 referenceCapability ?? ReferenceCapability.Constant);
         }
 

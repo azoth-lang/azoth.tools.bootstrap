@@ -14,8 +14,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
     /// </remarks>
     public sealed class AnyType : ReferenceType
     {
-        public AnyType(ReferenceCapability referenceCapability)
-            : base(true, referenceCapability)
+        public AnyType(ReferenceCapability capability)
+            : base(ReferenceCapability.SharedMutable, capability)
         {
         }
 
@@ -28,12 +28,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
             return other is AnyType otherType
-                   && ReferenceCapability == otherType.ReferenceCapability;
+                   && Capability == otherType.Capability;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(SpecialTypeName.Any, ReferenceCapability);
+            return HashCode.Combine(SpecialTypeName.Any, Capability);
         }
 
         protected internal override Self To_ReturnsSelf(ReferenceCapability referenceCapability)
@@ -43,12 +43,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 
         public override string ToILString()
         {
-            return $"{ReferenceCapability} Any";
+            return $"{Capability} Any";
         }
 
         public override string ToSourceCodeString()
         {
-            return $"{ReferenceCapability} Any";
+            return $"{Capability} Any";
         }
     }
 }

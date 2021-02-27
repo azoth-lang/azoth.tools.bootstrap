@@ -10,39 +10,39 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         typeof(AnyType))]
     public abstract class ReferenceType : DataType
     {
-        public ReferenceCapability ReferenceCapability { get; }
-        // TODO not sure if !DeclaredMutable should be here. Constructor self is mutable even though not declared mutable
-        public bool IsReadOnly => !DeclaredMutable || !ReferenceCapability.AllowsWrite;
-        public bool IsMutable => DeclaredMutable && ReferenceCapability.AllowsWrite;
-        public bool IsMovable => ReferenceCapability.IsMovable;
+        public ReferenceCapability Capability { get; }
+        public bool IsReadOnly => !Capability.AllowsWrite;
+        public bool IsMutable => Capability.AllowsWrite;
+        public bool IsMovable => Capability.IsMovable;
 
         public override TypeSemantics Semantics => TypeSemantics.Reference;
 
         /// <summary>
-        /// Whether this type was declared `mut class` or just `class`. Types
-        /// not declared mutably are always immutable.
+        /// Whether this type was declared `mut class`, `const class`m or just `class`.
         /// </summary>
-        public bool DeclaredMutable { get; }
+        public ReferenceCapability DeclaredCapability { get; }
 
         // TODO clarify this
 
-        private protected ReferenceType(bool declaredMutable, ReferenceCapability referenceCapability)
+        private protected ReferenceType(
+            ReferenceCapability declaredCapability,
+            ReferenceCapability capability)
         {
-            ReferenceCapability = referenceCapability;
-            DeclaredMutable = declaredMutable;
+            DeclaredCapability = declaredCapability;
+            Capability = capability;
         }
 
         [SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores",
             Justification = "Returns self idiom")]
         protected internal Self ToMutable_ReturnsSelf()
         {
-            if (!DeclaredMutable) throw new InvalidOperationException("Can't convert type declared immutable to mutable reference");
-            return To_ReturnsSelf(ReferenceCapability.ToMutable());
+            if (!DeclaredCapability.AllowsWrite) throw new InvalidOperationException($"Can't convert type declared {DeclaredCapability} to mutable reference");
+            return To_ReturnsSelf(Capability.ToMutable());
         }
 
         protected internal sealed override Self ToReadable_ReturnsSelf()
         {
-            return To_ReturnsSelf(ReferenceCapability.ToReadable());
+            return To_ReturnsSelf(Capability.ToReadable());
         }
 
         [SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores",

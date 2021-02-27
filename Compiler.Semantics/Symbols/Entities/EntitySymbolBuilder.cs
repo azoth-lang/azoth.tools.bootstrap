@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
+using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -145,9 +146,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities
         {
             if (!@class.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
-            bool mutable = !(@class.MutableModifier is null);
+            var capability = @class.CapabilityModifier switch
+            {
+                IConstKeywordToken _ => ReferenceCapability.Constant,
+                IMutableKeywordToken _ => ReferenceCapability.SharedMutable,
+                null => ReferenceCapability.Shared,
+                _ => throw ExhaustiveMatch.Failed(@class.CapabilityModifier)
+            };
 
-            var classType = ObjectType.Create(@class.ContainingNamespaceName, @class.Name, mutable);
+            var classType = ObjectType.Create(@class.ContainingNamespaceName, @class.Name, capability);
 
             var symbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol!, classType);
             @class.Symbol.Fulfill(symbol);

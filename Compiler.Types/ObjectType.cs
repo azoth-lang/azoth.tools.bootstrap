@@ -30,11 +30,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public static ObjectType Create(
             NamespaceName containingNamespace,
             TypeName name,
-            bool declaredMutable)
+            ReferenceCapability declaredCapability)
         {
             // The "root" of the reference capability tree for this type
-            var capability = declaredMutable ? ReferenceCapability.Isolated : ReferenceCapability.Constant;
-            return new ObjectType(containingNamespace, name, declaredMutable, capability);
+            return new ObjectType(containingNamespace, name, declaredCapability, declaredCapability);
         }
 
         /// <summary>
@@ -45,20 +44,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         internal static ObjectType Create(
             NamespaceName containingNamespace,
             TypeName name,
-            bool declaredMutable,
+            ReferenceCapability declaredCapability,
             ReferenceCapability referenceCapability)
         {
-            if (!declaredMutable && referenceCapability.AllowsWrite)
-                throw new ArgumentException($"Capability {referenceCapability} not supported for types not declared mutable");
-            return new ObjectType(containingNamespace, name, declaredMutable, referenceCapability);
+            if (!declaredCapability.AllowsWrite && referenceCapability.AllowsWrite)
+                throw new ArgumentException($"Capability {referenceCapability} not supported for types declared {declaredCapability}");
+            return new ObjectType(containingNamespace, name, declaredCapability, referenceCapability);
         }
 
         private ObjectType(
             NamespaceName containingNamespace,
             TypeName name,
-            bool declaredMutable,
-            ReferenceCapability referenceCapability)
-            : base(declaredMutable, referenceCapability)
+            ReferenceCapability declaredCapability,
+            ReferenceCapability capability)
+            : base(declaredCapability, capability)
         {
             ContainingNamespace = containingNamespace;
             Name = name;
@@ -81,18 +80,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public ObjectType ToConstructorSelf()
         {
             // TODO handle the case where the type is not declared mutable but the constructor arg allows mutate
-            return new ObjectType(ContainingNamespace, Name, DeclaredMutable, ReferenceCapability.SharedMutable);
+            return new ObjectType(ContainingNamespace, Name, DeclaredCapability, ReferenceCapability.SharedMutable);
         }
 
         public ObjectType ToConstructorReturn()
         {
-            return this.To(DeclaredMutable ? ReferenceCapability.Isolated : ReferenceCapability.Constant);
+            return this.To(DeclaredCapability);
         }
 
         public override string ToSourceCodeString()
         {
             var builder = new StringBuilder();
-            builder.Append(ReferenceCapability);
+            builder.Append(Capability);
             builder.Append(' ');
             builder.Append(ContainingNamespace);
             if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
@@ -103,7 +102,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public override string ToILString()
         {
             var builder = new StringBuilder();
-            builder.Append(ReferenceCapability);
+            builder.Append(Capability);
             builder.Append(' ');
             builder.Append(ContainingNamespace);
             if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
@@ -119,19 +118,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             return other is ObjectType otherType
                 && ContainingNamespace == otherType.ContainingNamespace
                 && Name == otherType.Name
-                && DeclaredMutable == otherType.DeclaredMutable
-                && ReferenceCapability == otherType.ReferenceCapability;
+                && DeclaredCapability == otherType.DeclaredCapability
+                && Capability == otherType.Capability;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(ContainingNamespace, Name, DeclaredMutable, ReferenceCapability);
+            return HashCode.Combine(ContainingNamespace, Name, DeclaredCapability, Capability);
         }
         #endregion
 
         protected internal override Self To_ReturnsSelf(ReferenceCapability referenceCapability)
         {
-            return new ObjectType(ContainingNamespace, Name, DeclaredMutable, referenceCapability);
+            return new ObjectType(ContainingNamespace, Name, DeclaredCapability, referenceCapability);
         }
     }
 }

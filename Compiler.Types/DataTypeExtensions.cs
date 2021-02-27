@@ -31,11 +31,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
                 case (BoolType _, BoolConstantType _):
                     return true;
                 case (AnyType targetReference, ReferenceType sourceReference):
-                    return targetReference.ReferenceCapability.IsAssignableFrom(sourceReference.ReferenceCapability);
+                    return targetReference.Capability.IsAssignableFrom(sourceReference.Capability);
                 case (ReferenceType _, AnyType _):
                     return false;
                 case (ObjectType targetReference, ObjectType sourceReference):
-                    return targetReference.ReferenceCapability.IsAssignableFrom(sourceReference.ReferenceCapability)
+                    return targetReference.Capability.IsAssignableFrom(sourceReference.Capability)
                            && targetReference.Name == sourceReference.Name
                            && targetReference.ContainingNamespace == sourceReference.ContainingNamespace;
                 case (OptionalType targetOptional, OptionalType sourceOptional):

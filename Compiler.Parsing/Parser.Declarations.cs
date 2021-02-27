@@ -169,15 +169,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
              ModifierParser modifiers)
         {
             var accessModifier = modifiers.ParseAccessModifier();
-            var mutableModifier = modifiers.ParseMutableModifier();
+            var classCapability = modifiers.ParseClassCapability();
             modifiers.ParseEndOfModifiers();
             var @class = Tokens.Expect<IClassKeywordToken>();
             var identifier = Tokens.RequiredToken<IIdentifierToken>();
             Name name = identifier.Value;
             var headerSpan = TextSpan.Covering(@class, identifier.Span);
             var bodyParser = BodyParser();
-            return new ClassDeclarationSyntax(ContainingNamespace, headerSpan, File, accessModifier, mutableModifier, identifier.Span,
-                name, bodyParser.ParseClassBody);
+            return new ClassDeclarationSyntax(ContainingNamespace, headerSpan, File, accessModifier,
+                classCapability, identifier.Span, name, bodyParser.ParseClassBody);
         }
 
         private (FixedList<IMemberDeclarationSyntax> members, TextSpan span) ParseClassBody(IClassDeclarationSyntax declaringType)

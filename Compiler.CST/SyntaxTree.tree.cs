@@ -153,7 +153,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
 
     public partial interface IClassDeclarationSyntax : INonMemberEntityDeclarationSyntax
     {
-        IMutableKeywordToken? MutableModifier { get; }
+        IClassCapabilityToken? CapabilityModifier { get; }
         new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
         FixedList<IMemberDeclarationSyntax> Members { get; }
         ConstructorSymbol? DefaultConstructorSymbol { get; }

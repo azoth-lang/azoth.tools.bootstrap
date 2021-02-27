@@ -211,7 +211,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 case (ObjectType targetType, ObjectType expressionType)
                         when targetType.IsReadOnly && expressionType.IsMutable:
                     // TODO if source type is explicitly mutable, issue warning about using `mut` in immutable context
-                    var capability = targetType.ReferenceCapability == ReferenceCapability.Constant
+                    var capability = targetType.Capability == ReferenceCapability.Constant
                         ? expressionType.To(ReferenceCapability.Constant)
                         : expressionType.ToReadable();
                     expression = new ImplicitImmutabilityConversionExpression(expression, capability);
@@ -894,7 +894,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     break;
                 case TypeSemantics.Reference:
                     var referenceType = (ReferenceType)type;
-                    if (referenceType.ReferenceCapability.CanBeAcquired())
+                    if (referenceType.Capability.CanBeAcquired())
                         invocationExpression.Semantics = ExpressionSemantics.Acquire;
                     else if (referenceType.IsMutable)
                         invocationExpression.Semantics = ExpressionSemantics.Borrow;

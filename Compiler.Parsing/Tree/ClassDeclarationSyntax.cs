@@ -30,7 +30,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
         }
 
         public IAccessModifierToken? AccessModifier { get; }
-        public IMutableKeywordToken? MutableModifier { get; }
+        public IClassCapabilityToken? CapabilityModifier { get; }
         public new Name Name { get; }
         public new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
         public FixedList<IMemberDeclarationSyntax> Members { get; }
@@ -41,7 +41,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             TextSpan headerSpan,
             CodeFile file,
             IAccessModifierToken? accessModifier,
-            IMutableKeywordToken? mutableModifier,
+            IClassCapabilityToken? capabilityModifier,
             TextSpan nameSpan,
             Name name,
             Func<IClassDeclarationSyntax, (FixedList<IMemberDeclarationSyntax>, TextSpan)> parseMembers)
@@ -49,7 +49,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
         {
             ContainingNamespaceName = containingNamespaceName;
             AccessModifier = accessModifier;
-            MutableModifier = mutableModifier;
+            CapabilityModifier = capabilityModifier;
             Name = name;
             var (members, bodySpan) = parseMembers(this);
             Members = members;

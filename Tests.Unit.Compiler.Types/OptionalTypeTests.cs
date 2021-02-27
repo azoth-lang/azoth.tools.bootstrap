@@ -67,8 +67,8 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void With_equal_referent_are_equal()
         {
-            var type1 = new OptionalType(ObjectType.Create(Namespace("foo", "bar"), "Baz", true, SharedMutable));
-            var type2 = new OptionalType(ObjectType.Create(Namespace("foo", "bar"), "Baz", true, SharedMutable));
+            var type1 = new OptionalType(ObjectType.Create(Namespace("foo", "bar"), "Baz", SharedMutable, SharedMutable));
+            var type2 = new OptionalType(ObjectType.Create(Namespace("foo", "bar"), "Baz", SharedMutable, SharedMutable));
 
             Assert.Equal(type1, type2);
         }
