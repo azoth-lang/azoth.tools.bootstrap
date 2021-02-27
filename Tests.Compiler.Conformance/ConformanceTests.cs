@@ -9,10 +9,8 @@ using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.IR;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
-using Azoth.Tools.Bootstrap.IL.IO;
 using Azoth.Tools.Bootstrap.Tests.Conformance.Helpers;
 using Xunit;
 using Xunit.Abstractions;
@@ -211,31 +209,11 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
                 .ToList();
         }
 
-        private static (MemoryStream PackageIL, MemoryStream StdLibIL) EmitIL(PackageIR package, PackageIR stdLibPackage)
-        {
-            var writer = new ILWriter();
-            var packageIL = new MemoryStream();
-            writer.Write(package.ToIL(), packageIL);
-            packageIL.Position = 0;
-            var stdLibIL = new MemoryStream();
-            writer.Write(stdLibPackage.ToIL(), stdLibIL);
-            stdLibIL.Position = 0;
-            return (packageIL, stdLibIL);
-        }
-
         private static InterpreterProcess Execute(Package package)
         {
             var interpreter = new AzothTreeInterpreter();
             return interpreter.Execute(package);
         }
-
-        //private static InterpreterProcess Execute(MemoryStream packageIL, MemoryStream stdLibIL)
-        //{
-        //    var interpreter = new AzothInterpreter();
-        //    interpreter.LoadPackage(stdLibIL);
-        //    interpreter.LoadPackage(packageIL);
-        //    return interpreter.Execute();
-        //}
 
         private static int ExpectedExitCode(string code)
         {

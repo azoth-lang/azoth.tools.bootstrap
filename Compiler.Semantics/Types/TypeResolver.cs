@@ -25,7 +25,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
         }
 
         [return: NotNullIfNotNull("typeSyntax")]
-        public DataType? Evaluate(ITypeSyntax? typeSyntax)
+        public DataType? Evaluate(ITypeSyntax? typeSyntax, bool inferLent)
         {
             switch (typeSyntax)
             {
@@ -58,18 +58,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
                 }
                 case ICapabilityTypeSyntax referenceCapability:
                 {
-                    var type = Evaluate(referenceCapability.ReferentType);
+                    var type = Evaluate(referenceCapability.ReferentType, false);
                     if (type == DataType.Unknown)
                         return DataType.Unknown;
                     if (type is ReferenceType referenceType)
-                        referenceCapability.NamedType = Evaluate(referenceType, referenceCapability.Capability);
+                        referenceCapability.NamedType = Evaluate(referenceType, referenceCapability.Capability, inferLent);
                     else
                         referenceCapability.NamedType = DataType.Unknown;
                     break;
                 }
                 case IOptionalTypeSyntax optionalType:
                 {
-                    var referent = Evaluate(optionalType.Referent);
+                    var referent = Evaluate(optionalType.Referent, inferLent);
                     return optionalType.NamedType = new OptionalType(referent);
                 }
             }
@@ -77,7 +77,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
             return typeSyntax.NamedType ?? throw new InvalidOperationException();
         }
 
-        private static DataType Evaluate(ReferenceType referenceType, IReferenceCapabilitySyntax capability)
+        private static DataType Evaluate(
+            ReferenceType referenceType,
+            IReferenceCapabilitySyntax capability,
+            bool inferLent)
         {
             var referenceCapability = capability.Declared switch
             {
@@ -89,8 +92,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
                 DeclaredReferenceCapability.LentReadable => ReferenceCapability.Lent,
                 DeclaredReferenceCapability.Identity => ReferenceCapability.Identity,
 
-                DeclaredReferenceCapability.Mutable => throw new NotImplementedException("Evaluate DeclaredReferenceCapability.Mutable"),
-                DeclaredReferenceCapability.Readable => throw new NotImplementedException("Evaluate DeclaredReferenceCapability.Readable"),
+                DeclaredReferenceCapability.Mutable => inferLent ? ReferenceCapability.LentMutable : ReferenceCapability.SharedMutable,
+                DeclaredReferenceCapability.Readable => inferLent ? ReferenceCapability.Lent : ReferenceCapability.Shared,
                 _ => throw ExhaustiveMatch.Failed(capability.Declared),
             };
             return referenceType.To(referenceCapability);

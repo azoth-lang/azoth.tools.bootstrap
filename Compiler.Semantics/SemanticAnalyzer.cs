@@ -52,24 +52,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics
             // If there are errors from the semantics phase, don't continue on
             packageBuilder.Diagnostics.ThrowIfFatalErrors();
 
-            // Convert to IR
-            //var irFactory = new IRFactory();
-            //var packageIR = irFactory.CreatePackage(packageAbstractSyntax, packageAbstractSyntax.Diagnostics);
-
             EntryPoint.Determine(packageBuilder);
 
             // If there are errors from the previous phase, don't continue on
             packageBuilder.Diagnostics.ThrowIfFatalErrors();
 
             return packageBuilder.Build();
-
-            // Old IL Build
-            //var declarationsIL = BuildIL(packageAbstractSyntax);
-
-            //var entryPointIL = DetermineEntryPoint(declarationsIL, packageAbstractSyntax.Diagnostics);
-
-            //var references = packageSyntax.ReferencedPackages.ToFixedSet();
-            //return new PackageIL(packageAbstractSyntax.SymbolTree, packageAbstractSyntax.Diagnostics.Build(), references, declarationsIL, entryPointIL);
         }
 
         private static PackageBuilder CheckSemantics(PackageSyntax<Package> packageSyntax)
@@ -119,28 +107,5 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics
 
             return packageBuilder;
         }
-
-        //private static FixedList<DeclarationIL> BuildIL(Package package)
-        //{
-        //    var ilFactory = new ILFactory();
-        //    var declarationBuilder = new DeclarationBuilder(ilFactory);
-        //    declarationBuilder.Build(package.AllDeclarations, package.SymbolTree);
-        //    return declarationBuilder.AllDeclarations.ToFixedList();
-        //}
-
-        //private static FunctionIL? DetermineEntryPoint(
-        //    FixedList<DeclarationIL> declarations,
-        //    Diagnostics diagnostics)
-        //{
-        //    var mainFunctions = declarations.OfType<FunctionIL>()
-        //        .Where(f => f.Symbol.Name == "main")
-        //        .ToList();
-
-        //    // TODO warn on and remove main functions that don't have correct parameters or types
-        //    _ = diagnostics;
-        //    // TODO compiler error on multiple main functions
-
-        //    return mainFunctions.SingleOrDefault();
-        //}
     }
 }
