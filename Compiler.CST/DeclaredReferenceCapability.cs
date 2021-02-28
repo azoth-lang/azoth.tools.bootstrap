@@ -9,10 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
     /// </summary>
     public enum DeclaredReferenceCapability
     {
-        Isolated = 1,
+        IsolatedMutable = 1,
         Mutable,
         SharedMutable,
         LentMutable,
+        IsolatedReadable,
         Readable,
         SharedReadable,
         LentReadable,

@@ -84,12 +84,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
         {
             var referenceCapability = capability.Declared switch
             {
-                DeclaredReferenceCapability.Isolated => ReferenceCapability.Isolated,
+                DeclaredReferenceCapability.IsolatedMutable => ReferenceCapability.IsolatedMutable,
                 DeclaredReferenceCapability.SharedMutable => ReferenceCapability.SharedMutable,
                 DeclaredReferenceCapability.LentMutable => ReferenceCapability.LentMutable,
-                DeclaredReferenceCapability.Constant => ReferenceCapability.Constant,
+                DeclaredReferenceCapability.IsolatedReadable => ReferenceCapability.Isolated,
                 DeclaredReferenceCapability.SharedReadable => ReferenceCapability.Shared,
                 DeclaredReferenceCapability.LentReadable => ReferenceCapability.Lent,
+                DeclaredReferenceCapability.Constant => ReferenceCapability.Constant,
                 DeclaredReferenceCapability.Identity => ReferenceCapability.Identity,
 
                 DeclaredReferenceCapability.Mutable => inferLent ? ReferenceCapability.LentMutable : ReferenceCapability.SharedMutable,

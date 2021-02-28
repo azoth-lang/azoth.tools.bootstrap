@@ -4,6 +4,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 {
     public class ReferenceCapability
     {
+        #region Mutable
         /// <summary>
         /// A reference that owns the object and there are *no* references from
         /// the subtree out to other non-constant objects. Isolated references
@@ -11,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// reference capability must not be mutable (except for `self` in a
         /// constructor).
         /// </summary>
-        public static readonly ReferenceCapability Isolated
+        public static readonly ReferenceCapability IsolatedMutable
             = new ReferenceCapability("iso", allowsWrite: true);
 
         /// <summary>
@@ -22,13 +23,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 
         public static readonly ReferenceCapability LentMutable
             = new ReferenceCapability("lent mut", allowsWrite: true, allowsWriteAliases: true, allowsReadAliases: true, isLent: true);
+        #endregion
 
-        /// <summary>
-        /// A reference has read-only access and there are no references that
-        /// can mutate this object.
-        /// </summary>
-        public static readonly ReferenceCapability Constant
-            = new ReferenceCapability("const", allowsReadAliases: true);
+        #region Readable
+        public static readonly ReferenceCapability Isolated
+            = new ReferenceCapability("iso", allowsWrite: false);
 
         /// <summary>
         /// A reference that can be aliased and has read-only access to the type.
@@ -39,6 +38,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 
         public static readonly ReferenceCapability Lent =
             new ReferenceCapability("lent", allowsWriteAliases: true, allowsReadAliases: true, isLent: true);
+        #endregion
+
+        /// <summary>
+        /// A reference has read-only access and there are no references that
+        /// can mutate this object.
+        /// </summary>
+        public static readonly ReferenceCapability Constant
+            = new ReferenceCapability("const", allowsReadAliases: true);
 
         /// <summary>
         /// A reference that can be used to identify an object but not read or

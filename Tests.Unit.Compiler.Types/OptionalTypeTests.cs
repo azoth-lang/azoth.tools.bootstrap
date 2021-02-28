@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Optional_reference_has_reference_semantics()
         {
-            var optionalAny = new OptionalType(new AnyType(Isolated));
+            var optionalAny = new OptionalType(new AnyType(IsolatedMutable));
 
             Assert.Equal(TypeSemantics.Reference, optionalAny.Semantics);
         }

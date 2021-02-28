@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Is_reference_type()
         {
-            var type = new AnyType(Isolated);
+            var type = new AnyType(IsolatedMutable);
 
             Assert.OfType<ReferenceType>(type);
         }
@@ -18,7 +18,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Is_not_constant()
         {
-            var type = new AnyType(Isolated);
+            var type = new AnyType(IsolatedMutable);
 
             Assert.False(type.IsConstant);
         }
@@ -26,7 +26,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Is_known_type()
         {
-            var type = new AnyType(Isolated);
+            var type = new AnyType(IsolatedMutable);
 
             Assert.True(type.IsKnown);
         }
@@ -34,7 +34,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Is_not_empty_type()
         {
-            var type = new AnyType(Isolated);
+            var type = new AnyType(IsolatedMutable);
 
             Assert.False(type.IsEmpty);
         }
@@ -42,7 +42,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Is_declared_mutable()
         {
-            var type = new AnyType(Isolated);
+            var type = new AnyType(IsolatedMutable);
 
             Assert.Equal(SharedMutable, type.DeclaredCapability);
         }
@@ -50,7 +50,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Has_reference_semantics()
         {
-            var type = new AnyType(Isolated);
+            var type = new AnyType(IsolatedMutable);
 
             Assert.Equal(TypeSemantics.Reference, type.Semantics);
         }
