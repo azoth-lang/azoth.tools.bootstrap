@@ -5,11 +5,11 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
 {
-    internal class ImplicitNoneConversionExpression : ImplicitConversionExpression, IImplicitNoneConversionExpression
+    internal class ImplicitLiftedConversion : ImplicitConversionExpression, IImplicitLiftedConversionExpression
     {
         public OptionalType ConvertToType { get; }
 
-        public ImplicitNoneConversionExpression(
+        public ImplicitLiftedConversion(
             TextSpan span,
             DataType dataType,
             ExpressionSemantics semantics,
@@ -22,7 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
 
         public override string ToString()
         {
-            return $"{Expression.ToGroupedString(OperatorPrecedence.Min)} ⟦as {ConvertToType}⟧";
+            return $"{Expression.ToGroupedString(OperatorPrecedence.Min)} ⟦as ⟦Lifted?⟧⟧";
         }
     }
 }

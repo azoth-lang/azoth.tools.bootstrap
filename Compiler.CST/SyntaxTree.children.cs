@@ -84,9 +84,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
                     if(!(n.DefaultValue is null))
                         yield return n.DefaultValue;
                     yield break;
-                case IArgumentSyntax n:
-                    yield return n.Expression;
-                    yield break;
                 case IBodySyntax n:
                     foreach(var child in n.Statements)
                         yield return child;
@@ -176,24 +173,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
                     if(!(n.Value is null))
                         yield return n.Value;
                     yield break;
-                case IImplicitImmutabilityConversionExpressionSyntax n:
+                case IInvocationExpressionSyntax n:
                     yield return n.Expression;
-                    yield break;
-                case IImplicitNoneConversionExpressionSyntax n:
-                    yield return n.Expression;
-                    yield break;
-                case IImplicitNumericConversionExpressionSyntax n:
-                    yield return n.Expression;
-                    yield break;
-                case IImplicitOptionalConversionExpressionSyntax n:
-                    yield return n.Expression;
-                    yield break;
-                case IUnqualifiedInvocationExpressionSyntax n:
-                    foreach(var child in n.Arguments)
-                        yield return child;
-                    yield break;
-                case IQualifiedInvocationExpressionSyntax n:
-                    yield return n.Context;
                     foreach(var child in n.Arguments)
                         yield return child;
                     yield break;
@@ -209,9 +190,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
                     yield return n.Referent;
                     yield break;
                 case IMoveExpressionSyntax n:
-                    yield return n.Referent;
-                    yield break;
-                case IShareExpressionSyntax n:
                     yield return n.Referent;
                     yield break;
             }

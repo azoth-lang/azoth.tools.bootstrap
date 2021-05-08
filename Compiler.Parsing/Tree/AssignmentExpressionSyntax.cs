@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -7,12 +8,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
 {
     internal class AssignmentExpressionSyntax : ExpressionSyntax, IAssignmentExpressionSyntax
     {
-        private IAssignableExpressionSyntax leftOperand;
-        public ref IAssignableExpressionSyntax LeftOperand => ref leftOperand;
-
-        public AssignmentOperator Operator { get; }
-        private IExpressionSyntax rightOperand;
-        public ref IExpressionSyntax RightOperand => ref rightOperand;
+        public IAssignableExpressionSyntax LeftOperand { [DebuggerStepThrough] get; }
+        public AssignmentOperator Operator { [DebuggerStepThrough] get; }
+        public IExpressionSyntax RightOperand { [DebuggerStepThrough] get; }
 
         public AssignmentExpressionSyntax(
             IAssignableExpressionSyntax leftOperand,
@@ -20,9 +18,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             IExpressionSyntax rightOperand)
             : base(TextSpan.Covering(leftOperand.Span, rightOperand.Span))
         {
-            this.leftOperand = leftOperand;
-            this.rightOperand = rightOperand;
+            LeftOperand = leftOperand;
             Operator = @operator;
+            RightOperand = rightOperand;
         }
 
         protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Assignment;

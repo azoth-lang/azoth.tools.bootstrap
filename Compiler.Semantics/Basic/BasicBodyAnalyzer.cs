@@ -1,12 +1,10 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.ImplicitOperations;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.InferredSyntax;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -64,7 +62,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         ResolveTypes(variableDeclaration);
                         break;
                     case IExpressionStatementSyntax expressionStatement:
-                        InferType(ref expressionStatement.Expression);
+                        InferType(expressionStatement.Expression);
                         break;
                 }
         }
@@ -79,10 +77,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     ResolveTypes(variableDeclaration);
                     break;
                 case IExpressionStatementSyntax expressionStatement:
-                    InferType(ref expressionStatement.Expression);
+                    InferType(expressionStatement.Expression);
                     break;
                 case IResultStatementSyntax resultStatement:
-                    InferType(ref resultStatement.Expression);
+                    InferType(resultStatement.Expression);
                     break;
             }
         }
@@ -93,10 +91,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             if (variableDeclaration.Type != null)
             {
                 type = typeResolver.Evaluate(variableDeclaration.Type, false);
-                CheckType(ref variableDeclaration.Initializer!, type);
+                CheckType(variableDeclaration.Initializer!, type);
             }
             else if (variableDeclaration.Initializer != null)
-                type = InferDeclarationType(ref variableDeclaration.Initializer, variableDeclaration.Capability);
+                type = InferDeclarationType(variableDeclaration.Initializer, variableDeclaration.Capability);
             else
             {
                 diagnostics.Add(TypeError.NotImplemented(file, variableDeclaration.NameSpan,
@@ -106,7 +104,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
             if (variableDeclaration.Initializer != null)
             {
-                var initializerType = variableDeclaration.Initializer.DataType ?? throw new InvalidOperationException("Initializer type should be determined");
+                var initializerType = variableDeclaration.Initializer.ConvertedDataType
+                                      ?? throw new InvalidOperationException("Initializer type should be determined");
 
                 if (!type.IsAssignableFrom(initializerType))
                     diagnostics.Add(TypeError.CannotConvert(file, variableDeclaration.Initializer, initializerType, type));
@@ -121,12 +120,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         /// <summary>
         /// Infer the type of a variable declaration from an expression
         /// </summary>
-        private DataType InferDeclarationType([NotNull] ref IExpressionSyntax expression, IReferenceCapabilitySyntax? inferCapability)
+        private DataType InferDeclarationType(IExpressionSyntax expression, IReferenceCapabilitySyntax? inferCapability)
         {
-            var type = InferType(ref expression);
+            var type = InferType(expression);
             if (!type.IsKnown) return DataType.Unknown;
             type = type.ToNonConstantType();
-            type = InsertImplicitConversionIfNeeded(ref expression, type);
+            type = AddImplicitConversionIfNeeded(expression, type);
 
             switch (expression)
             {
@@ -160,12 +159,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         }
 
         public void CheckType(
-            [NotNullIfNotNull("expression")] ref IExpressionSyntax? expression,
+            IExpressionSyntax? expression,
             DataType expectedType)
         {
             if (expression is null) return;
-            InferType(ref expression);
-            var actualType = InsertImplicitConversionIfNeeded(ref expression, expectedType);
+            InferType(expression);
+            var actualType = AddImplicitConversionIfNeeded(expression, expectedType);
             if (!expectedType.IsAssignableFrom(actualType))
                 diagnostics.Add(TypeError.CannotConvert(file, expression, actualType, expectedType));
         }
@@ -173,52 +172,69 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         /// <summary>
         /// Create an implicit conversion if allowed and needed
         /// </summary>
-        private static DataType InsertImplicitConversionIfNeeded(
-            ref IExpressionSyntax expression,
+        private static DataType AddImplicitConversionIfNeeded(
+            IExpressionSyntax expression,
             DataType expectedType)
         {
-            switch (expectedExpressionType: expectedType, Type: expression.DataType)
+            var fromType = expression.DataType.Assigned();
+            var conversion = ImplicitConversion(expectedType, fromType);
+            if (conversion != null) expression.ImplicitConversion = conversion;
+            return expression.ConvertedDataType.Assigned();
+        }
+
+        private static Conversion? ImplicitConversion(DataType to, DataType from)
+        {
+            switch (to, from)
             {
-                case (OptionalType targetType, OptionalType expressionType)
-                        when expressionType.Referent is NeverType:
-                    expression = new ImplicitNoneConversionExpression(expression, targetType);
-                    break;
+                case (OptionalType optionalTo, OptionalType optionalFrom):
+                    // Direct subtype
+                    if (optionalTo.Referent.IsAssignableFrom(optionalFrom.Referent))
+                        return null;
+                    var liftedConversion = ImplicitConversion(optionalTo.Referent, optionalFrom.Referent);
+                    return liftedConversion is null ? null : new LiftedConversion(liftedConversion);
                 case (OptionalType targetType, /* non-optional type */ _):
                     // If needed, convert the type to the referent type of the optional type
-                    var type = InsertImplicitConversionIfNeeded(ref expression, targetType.Referent);
-                    if (targetType.Referent.IsAssignableFrom(type))
-                        expression = new ImplicitOptionalConversionExpression(expression, targetType);
-                    break;
+                    throw new NotImplementedException("Conversion to optional");
+                //var type = ApplyImplicitConversionIfNeeded(expression, targetType.Referent);
+                //if (targetType.Referent.IsAssignableFrom(type))
+                //{
+                //    var conversion = ImplicitConversion(targetType.Referent, @from);
+                //    expression = new ImplicitOptionalConversionExpression(expression, targetType);
+                //}
+                //else
+                //    return null;
                 case (FixedSizeIntegerType targetType, FixedSizeIntegerType expressionType):
                     if (targetType.Bits > expressionType.Bits && (!expressionType.IsSigned || targetType.IsSigned))
-                        expression = new ImplicitNumericConversionExpression(expression, targetType);
-                    break;
+                        return new NumericConversion(targetType);
+                    else
+                        return null;
                 case (FixedSizeIntegerType targetType, IntegerConstantType expressionType):
                 {
                     var requireSigned = expressionType.Value < 0;
                     var bits = expressionType.Value.GetByteCount(!targetType.IsSigned) * 8;
                     if (targetType.Bits >= bits && (!requireSigned || targetType.IsSigned))
-                        expression = new ImplicitNumericConversionExpression(expression, targetType);
+                        return new NumericConversion(targetType);
+                    else
+                        return null;
                 }
-                break;
                 case (PointerSizedIntegerType targetType, IntegerConstantType expressionType):
                 {
                     var requireSigned = expressionType.Value < 0;
                     if (!requireSigned || targetType.IsSigned)
-                        expression = new ImplicitNumericConversionExpression(expression, targetType);
+                        return new NumericConversion(targetType);
+                    else
+                        return null;
                 }
-                break;
                 case (ObjectType targetType, ObjectType expressionType)
-                        when targetType.IsReadOnly && expressionType.IsMutable:
+                   when targetType.IsReadOnly && expressionType.IsMutable:
                     // TODO if source type is explicitly mutable, issue warning about using `mut` in immutable context
                     var capability = targetType.Capability == ReferenceCapability.Constant
                         ? expressionType.To(ReferenceCapability.Constant)
                         : expressionType.ToReadable();
-                    expression = new ImplicitImmutabilityConversionExpression(expression, capability);
-                    break;
+                    return new ImmutabilityConversion(capability);
+                default:
+                    return null;
             }
-
-            return expression.DataType!;
         }
 
         /// <summary>
@@ -229,23 +245,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         /// what kind of expression it is without type information.</param>
         /// <param name="implicitShare">Whether implicit share expressions should be inserted around
         /// bare variable references.</param>
-        private DataType InferType([NotNull] ref IExpressionSyntax? expression, bool implicitShare = true)
+        private DataType InferType(IExpressionSyntax? expression, bool implicitShare = true)
         {
             switch (expression)
             {
                 default:
                     throw ExhaustiveMatch.Failed(expression);
                 case null:
-                    expression = null!; // Trick compiler into allowing it to stay null
                     return DataType.Unknown;
-                case IShareExpressionSyntax _:
-                    throw new InvalidOperationException("Share expressions should not be in the AST during basic analysis");
                 case IMoveExpressionSyntax exp:
                     switch (exp.Referent)
                     {
                         case INameExpressionSyntax nameExpression:
                             nameExpression.Semantics = ExpressionSemantics.Acquire;
-                            var type = InferType(ref exp.Referent, false);
+                            var type = InferType(exp.Referent, false);
                             switch (type)
                             {
                                 case ReferenceType referenceType:
@@ -259,7 +272,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                                     throw new NotImplementedException("Non-moveable type can't be moved");
                             }
 
-                            exp.ReferencedSymbol.Fulfill(nameExpression.ReferencedSymbol.Result);
+                            exp.ReferencedSymbol.Fulfill((NamedBindingSymbol?)nameExpression.ReferencedSymbol.Result);
                             exp.Semantics = ExpressionSemantics.Acquire;
                             return exp.DataType = type;
                         case IMutateExpressionSyntax _:
@@ -275,7 +288,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         case INameExpressionSyntax nameExpression:
                         {
                             nameExpression.Semantics = ExpressionSemantics.Borrow;
-                            var type = InferType(ref exp.Referent, false);
+                            var type = InferType(exp.Referent, false);
                             switch (type)
                             {
                                 case ReferenceType referenceType:
@@ -291,7 +304,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                                     throw new NotImplementedException("Non-mutable type can't be borrowed mutably");
                             }
 
-                            exp.ReferencedSymbol.Fulfill(nameExpression.ReferencedSymbol.Result);
+                            exp.ReferencedSymbol.Fulfill((NamedBindingSymbol?)nameExpression.ReferencedSymbol.Result);
                             return exp.DataType = type;
                         }
                         case IMutateExpressionSyntax _:
@@ -306,11 +319,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     if (exp.Value != null)
                     {
                         var expectedReturnType = returnType ?? throw new InvalidOperationException("Return statement in constructor");
-                        InferType(ref exp.Value, false);
+                        InferType(exp.Value, false);
                         // If we return ownership, there can be an implicit move
                         // otherwise there could be an implicit share or borrow
-                        InsertImplicitActionIfNeeded(ref exp.Value, expectedReturnType, implicitMutateAllowed: false);
-                        var actualType = InsertImplicitConversionIfNeeded(ref exp.Value, expectedReturnType);
+                        InsertImplicitActionIfNeeded(exp.Value, expectedReturnType, implicitMutateAllowed: false);
+                        var actualType = AddImplicitConversionIfNeeded(exp.Value, expectedReturnType);
                         if (!expectedReturnType.IsAssignableFrom(actualType))
                             diagnostics.Add(TypeError.CannotConvert(file, exp.Value, actualType, expectedReturnType));
                     }
@@ -329,9 +342,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     return exp.DataType = exp.Value ? DataType.True : DataType.False;
                 case IBinaryOperatorExpressionSyntax binaryOperatorExpression:
                 {
-                    var leftType = InferType(ref binaryOperatorExpression.LeftOperand);
+                    var leftType = InferType(binaryOperatorExpression.LeftOperand);
                     var @operator = binaryOperatorExpression.Operator;
-                    var rightType = InferType(ref binaryOperatorExpression.RightOperand);
+                    var rightType = InferType(binaryOperatorExpression.RightOperand);
 
                     // If either is unknown, then we can't know whether there is a a problem.
                     // Note that the operator could be overloaded
@@ -345,7 +358,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         case BinaryOperator.Minus:
                         case BinaryOperator.Asterisk:
                         case BinaryOperator.Slash:
-                            compatible = NumericOperatorTypesAreCompatible(ref binaryOperatorExpression.LeftOperand, ref binaryOperatorExpression.RightOperand);
+                            compatible = NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand, binaryOperatorExpression.RightOperand);
                             binaryOperatorExpression.DataType = compatible ? leftType : DataType.Unknown;
                             binaryOperatorExpression.Semantics = ExpressionSemantics.Copy;
                             break;
@@ -356,7 +369,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         case BinaryOperator.GreaterThan:
                         case BinaryOperator.GreaterThanOrEqual:
                             compatible = (leftType == DataType.Bool && rightType == DataType.Bool)
-                                         || NumericOperatorTypesAreCompatible(ref binaryOperatorExpression.LeftOperand, ref binaryOperatorExpression.RightOperand)
+                                         || NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand, binaryOperatorExpression.RightOperand)
                                          /*|| OperatorOverloadDefined(@operator, binaryOperatorExpression.LeftOperand, ref binaryOperatorExpression.RightOperand)*/;
                             binaryOperatorExpression.DataType = DataType.Bool;
                             binaryOperatorExpression.Semantics = ExpressionSemantics.Copy;
@@ -379,14 +392,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandsOfType(file,
                             binaryOperatorExpression.Span, @operator, leftType, rightType));
 
-                    return binaryOperatorExpression.DataType;
+                    return binaryOperatorExpression.ConvertedDataType.Assigned();
                 }
                 case INameExpressionSyntax exp:
                 {
-                    var type = InferNameType(exp);
+                    var type = InferVariableNameType(exp);
                     // In many contexts, variable names are implicitly shared
                     if (implicitShare)
-                        type = InsertImplicitReadIfNeeded(ref expression, type);
+                        type = InsertImplicitReadIfNeeded(expression, type);
 
                     // TODO do a more complete generation of expression semantics
                     if (exp.Semantics is null)
@@ -410,12 +423,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         default:
                             throw ExhaustiveMatch.Failed(@operator);
                         case UnaryOperator.Not:
-                            CheckType(ref exp.Operand, DataType.Bool);
+                            CheckType(exp.Operand, DataType.Bool);
                             exp.DataType = DataType.Bool;
                             break;
                         case UnaryOperator.Minus:
                         case UnaryOperator.Plus:
-                            var operandType = InferType(ref exp.Operand);
+                            var operandType = InferType(exp.Operand);
                             switch (operandType)
                             {
                                 case IntegerConstantType integerType:
@@ -436,11 +449,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                             break;
                     }
 
-                    return exp.DataType;
+                    return exp.ConvertedDataType.Assigned();
                 }
                 case INewObjectExpressionSyntax exp:
                 {
-                    var argumentTypes = exp.Arguments.Select(argument => InferType(ref argument.Expression)).ToFixedList();
+                    var argumentTypes = exp.Arguments.Select(argument => InferType(argument)).ToFixedList();
                     // TODO handle named constructors here
                     var constructingType = typeResolver.Evaluate(exp.Type, false);
                     if (!constructingType.IsKnown)
@@ -454,7 +467,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     var typeSymbol = exp.Type.ReferencedSymbol.Result ?? throw new InvalidOperationException();
                     var classType = (ObjectType)constructingType;
                     ObjectType constructedType;
-                    var constructorSymbols = symbolTreeBuilder.Children(typeSymbol).OfType<ConstructorSymbol>().ToFixedList();
+                    var constructorSymbols = symbolTreeBuilder.Children(typeSymbol).OfType<ConstructorSymbol>().ToFixedSet();
                     constructorSymbols = ResolveOverload(constructorSymbols, argumentTypes);
                     switch (constructorSymbols.Count)
                     {
@@ -468,8 +481,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                             exp.ReferencedSymbol.Fulfill(constructorSymbol);
                             foreach (var (arg, parameterDataType) in exp.Arguments.Zip(constructorSymbol.ParameterDataTypes))
                             {
-                                InsertImplicitConversionIfNeeded(ref arg.Expression, parameterDataType);
-                                CheckArgumentTypeCompatibility(parameterDataType, arg.Expression);
+                                AddImplicitConversionIfNeeded(arg, parameterDataType);
+                                CheckArgumentTypeCompatibility(parameterDataType, arg);
                             }
                             constructedType = constructorSymbol.ReturnDataType;
                             break;
@@ -485,7 +498,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 case IForeachExpressionSyntax exp:
                 {
                     var declaredType = typeResolver.Evaluate(exp.Type, false);
-                    var expressionType = CheckForeachInType(declaredType, ref exp.InExpression);
+                    var expressionType = CheckForeachInType(declaredType, exp.InExpression);
                     var variableType = declaredType ?? expressionType;
                     var symbol = new VariableSymbol((InvocableSymbol)containingSymbol, exp.VariableName,
                         exp.DeclarationNumber.Result, exp.IsMutableBinding, variableType);
@@ -500,7 +513,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 }
                 case IWhileExpressionSyntax exp:
                 {
-                    CheckType(ref exp.Condition, DataType.Bool);
+                    CheckType(exp.Condition, DataType.Bool);
                     InferBlockType(exp.Block);
                     // TODO assign correct type to the expression
                     exp.Semantics = ExpressionSemantics.Void;
@@ -511,18 +524,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     // TODO assign correct type to the expression
                     exp.Semantics = ExpressionSemantics.Void;
                     return exp.DataType = DataType.Void;
-                case IQualifiedInvocationExpressionSyntax exp:
-                    return InferMethodInvocationType(exp, ref expression);
-                case IUnqualifiedInvocationExpressionSyntax exp:
-                    return InferFunctionInvocationType(exp);
+                case IInvocationExpressionSyntax exp:
+                    return InferInvocationType(exp);
                 case IUnsafeExpressionSyntax exp:
                 {
-                    exp.DataType = InferType(ref exp.Expression);
+                    exp.DataType = InferType(exp.Expression);
                     exp.Semantics = exp.Expression.Semantics.Assigned();
-                    return exp.DataType;
+                    return exp.ConvertedDataType.Assigned();
                 }
                 case IIfExpressionSyntax exp:
-                    CheckType(ref exp.Condition, DataType.Bool);
+                    CheckType(exp.Condition, DataType.Bool);
                     InferBlockType(exp.ThenBlock);
                     switch (exp.ElseClause)
                     {
@@ -533,11 +544,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         case IIfExpressionSyntax _:
                         case IBlockExpressionSyntax _:
                             var elseExpression = (IExpressionSyntax)exp.ElseClause;
-                            InferType(ref elseExpression);
+                            InferType(elseExpression);
                             //ifExpression.ElseClause = elseExpression;
                             break;
                         case IResultStatementSyntax resultStatement:
-                            InferType(ref resultStatement.Expression);
+                            InferType(resultStatement.Expression);
                             break;
                     }
                     // TODO assign a type to the expression
@@ -547,7 +558,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 {
                     // Don't wrap the self expression in a share expression for field access
                     var isSelfField = exp.Context is ISelfExpressionSyntax;
-                    var contextType = InferType(ref exp.Context, !isSelfField);
+                    var contextType = InferType(exp.Context, !isSelfField);
                     var member = exp.Field;
                     var contextSymbol = LookupSymbolForType(contextType);
                     if (contextSymbol is null)
@@ -562,7 +573,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                                                   .Where(s => s.Name == member.Name).ToFixedList();
                     var type = AssignReferencedSymbolAndType(member, memberSymbols);
                     // In many contexts, variable names are implicitly shared
-                    if (implicitShare) type = InsertImplicitReadIfNeeded(ref expression, type);
+                    if (implicitShare) type = InsertImplicitReadIfNeeded(expression, type);
 
                     if (exp.Semantics is null)
                         switch (type.Semantics)
@@ -577,16 +588,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     return exp.DataType = type;
                 }
                 case IBreakExpressionSyntax exp:
-                    InferType(ref exp.Value);
+                    InferType(exp.Value);
                     return exp.DataType = DataType.Never;
                 case INextExpressionSyntax exp:
                     return exp.DataType = DataType.Never;
                 case IAssignmentExpressionSyntax exp:
                 {
-                    var left = InferAssignmentTargetType(ref exp.LeftOperand);
-                    InferType(ref exp.RightOperand);
-                    InsertImplicitConversionIfNeeded(ref exp.RightOperand, left);
-                    var right = exp.RightOperand.DataType ?? throw new InvalidOperationException();
+                    var left = InferAssignmentTargetType(exp.LeftOperand);
+                    InferType(exp.RightOperand);
+                    AddImplicitConversionIfNeeded(exp.RightOperand, left);
+                    var right = exp.RightOperand.ConvertedDataType.Assigned();
                     if (!left.IsAssignableFrom(right))
                         diagnostics.Add(TypeError.CannotConvert(file,
                             exp.RightOperand, right, left));
@@ -597,7 +608,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 {
                     var type = InferSelfType(exp);
                     if (implicitShare)
-                        type = InsertImplicitReadIfNeeded(ref expression, type);
+                        type = InsertImplicitReadIfNeeded(expression, type);
 
                     if (exp.Semantics is null)
                     {
@@ -611,14 +622,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 }
                 case INoneLiteralExpressionSyntax exp:
                     return exp.DataType = DataType.None;
-                case IImplicitConversionExpressionSyntax _:
-                    throw new Exception("ImplicitConversionExpressions are inserted by BasicExpressionAnalyzer. They should not be present in the AST yet.");
                 case IBlockExpressionSyntax blockSyntax:
                     return InferBlockType(blockSyntax);
             }
         }
 
-        private static DataType InsertImplicitReadIfNeeded([NotNull] ref IExpressionSyntax expression, DataType type)
+        private static DataType InsertImplicitReadIfNeeded(IExpressionSyntax expression, DataType type)
         {
             // Value types aren't shared
             if (!(type is ReferenceType referenceType)) return type;
@@ -628,7 +637,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             {
                 case INameExpressionSyntax exp:
                     exp.Semantics = ExpressionSemantics.Share;
-                    referencedSymbol = exp.ReferencedSymbol.Result;
+                    referencedSymbol =(NamedBindingSymbol?)exp.ReferencedSymbol.Result;
                     break;
                 case ISelfExpressionSyntax exp:
                     referencedSymbol = exp.ReferencedSymbol.Result;
@@ -643,14 +652,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     return type;
             }
 
-            type = referenceType.To(ReferenceCapability.Shared);
+            //type = referenceType.To(ReferenceCapability.Shared);
 
-            expression = new ImplicitReadExpressionSyntax(expression, type, referencedSymbol);
+            if (referenceType.Capability != ReferenceCapability.Shared)
+                throw new NotImplementedException("Need implicit read?");
+            //expression = new ImplicitReadExpressionSyntax(expression, type, referencedSymbol);
 
-            return type;
+            //return type;
+            return referenceType;
         }
 
-        private static void InsertImplicitMutateIfNeeded([NotNull] ref IExpressionSyntax expression, DataType type)
+        private static void InsertImplicitMutateIfNeeded(IExpressionSyntax expression, DataType type)
         {
             // Value types aren't shared
             if (!(type is ReferenceType referenceType)) return;
@@ -660,7 +672,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             {
                 case INameExpressionSyntax exp:
                     exp.Semantics = ExpressionSemantics.Borrow;
-                    referencedSymbol = exp.ReferencedSymbol.Result;
+                    referencedSymbol = (NamedBindingSymbol?)exp.ReferencedSymbol.Result;
                     break;
                 case ISelfExpressionSyntax exp:
                     referencedSymbol = exp.ReferencedSymbol.Result;
@@ -672,10 +684,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
             type = referenceType.ToMutable();
 
-            expression = new ImplicitMutateExpressionSyntax(expression, type, referencedSymbol);
+            if (!referenceType.IsMutable)
+                throw new NotImplementedException("Need implicit mutate?");
+            //expression = new ImplicitMutateExpressionSyntax(expression, type, referencedSymbol);
         }
 
-        private static void InsertImplicitMoveIfNeeded([NotNull] ref IExpressionSyntax expression, DataType type)
+        private static void InsertImplicitMoveIfNeeded(IExpressionSyntax expression, DataType type)
         {
             // Value types aren't moved
             if (!(type is ReferenceType referenceType)
@@ -688,25 +702,27 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 return;
 
             var referencedSymbol = name.ReferencedSymbol.Result;
-            expression = new ImplicitMoveSyntax(expression, type, referencedSymbol);
+            //expression = new ImplicitMoveSyntax(expression, type, referencedSymbol);
             name.Semantics = ExpressionSemantics.Acquire;
             expression.Semantics = ExpressionSemantics.Acquire;
+
+            throw new NotImplementedException("Need implicit move?");
         }
 
-        private static void InsertImplicitActionIfNeeded([NotNull] ref IExpressionSyntax expression, DataType toType, bool implicitMutateAllowed)
+        private static void InsertImplicitActionIfNeeded(IExpressionSyntax expression, DataType toType, bool implicitMutateAllowed)
         {
             var fromType = expression.DataType.Assigned();
             if (!(fromType is ReferenceType from) || !(toType is ReferenceType to)) return;
 
             if (@from.IsMovable && to.IsMovable)
-                InsertImplicitMoveIfNeeded(ref expression, to);
+                InsertImplicitMoveIfNeeded(expression, to);
             else if (@from.IsReadOnly || to.IsReadOnly)
-                InsertImplicitReadIfNeeded(ref expression, to.ToReadable());
+                InsertImplicitReadIfNeeded(expression, to.ToReadable());
             else if (implicitMutateAllowed)
-                InsertImplicitMutateIfNeeded(ref expression, to);
+                InsertImplicitMutateIfNeeded(expression, to);
         }
 
-        private DataType InferAssignmentTargetType([NotNull] ref IAssignableExpressionSyntax expression)
+        private DataType InferAssignmentTargetType(IAssignableExpressionSyntax expression)
         {
             switch (expression)
             {
@@ -715,7 +731,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 case IQualifiedNameExpressionSyntax exp:
                     // Don't wrap the self expression in a share expression for field access
                     var isSelfField = exp.Context is ISelfExpressionSyntax;
-                    var contextType = InferType(ref exp.Context, !isSelfField);
+                    var contextType = InferType(exp.Context, !isSelfField);
                     var member = exp.Field;
                     var contextSymbol = LookupSymbolForType(contextType);
                     // TODO Deal with no context symbol
@@ -726,100 +742,127 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     return exp.DataType = type;
                 case INameExpressionSyntax exp:
                     exp.Semantics = ExpressionSemantics.CreateReference;
-                    return InferNameType(exp);
+                    return InferVariableNameType(exp);
             }
         }
 
-        private DataType InferMethodInvocationType(
-            IQualifiedInvocationExpressionSyntax qualifiedInvocation,
-            ref IExpressionSyntax expression)
+        private DataType InferInvocationType(IInvocationExpressionSyntax invocation)
         {
             // This could actually be any of the following since the parser can't distinguish them:
+            // * Regular function invocation
             // * Associated function invocation
             // * Namespaced function invocation
             // * Method invocation
-            // First we need to distinguish those.
-            var contextName = MethodContextAsName(qualifiedInvocation.Context);
-            if (contextName != null)
+
+            var argumentTypes = invocation.Arguments.Select(argument => InferType(argument)).ToFixedList();
+            FixedSet<FunctionSymbol> functionSymbols = FixedSet<FunctionSymbol>.Empty;
+            switch (invocation.Expression)
             {
-                var contextSymbols = qualifiedInvocation.ContainingLexicalScope.Lookup(contextName.Segments[0]).Select(p => p.Result);
-                foreach (var name in contextName.Segments.Skip(1))
-                    contextSymbols = contextSymbols.SelectMany(c => symbolTrees.Children(c).Where(s => s.Name == name));
+                case IQualifiedNameExpressionSyntax exp:
+                    var name = exp.Field.Name!;
+                    var contextName = MethodContextAsName(exp.Context);
+                    if (contextName != null)
+                    {
+                        var contextSymbols = invocation.ContainingLexicalScope.Lookup(contextName.Segments[0])
+                                                       .Select(p => p.Result);
+                        foreach (var namePart in contextName.Segments.Skip(1))
+                            contextSymbols =
+                                contextSymbols.SelectMany(c => symbolTrees.Children(c).Where(s => s.Name == namePart));
 
-                var functionSymbols = contextSymbols
-                                      .SelectMany(c => symbolTrees
-                                                       .Children(c).OfType<FunctionSymbol>()
-                                                       .Where(s => s.Name == qualifiedInvocation.InvokedName))
-                                      .ToFixedSet();
-                if (functionSymbols.Any())
-                {
-                    // It is a namespaced or associated function invocation, modify the tree
-                    var functionInvocation = new FunctionInvocationExpressionSyntax(
-                        qualifiedInvocation.Span,
-                        contextName,
-                        qualifiedInvocation.InvokedName,
-                        qualifiedInvocation.InvokedNameSpan,
-                        qualifiedInvocation.Arguments,
-                        functionSymbols);
-
-                    expression = functionInvocation;
-                    return InferFunctionInvocationType(functionInvocation);
-                }
+                        functionSymbols = contextSymbols.SelectMany(c =>
+                            symbolTrees.Children(c).OfType<FunctionSymbol>()
+                                       .Where(s => s.Name == name)).ToFixedSet();
+                    }
+                    // TODO it isn't always safe to assume that just because we didn't find any functions this is a method
+                    if (!functionSymbols.Any())
+                    {
+                        InferType(exp.Context, false);
+                        return InferMethodInvocationType(invocation, exp.Context, name, argumentTypes);
+                    }
+                    break;
+                case INameExpressionSyntax exp:
+                    functionSymbols = invocation.ContainingLexicalScope.Lookup(exp.Name!)
+                                                .Select(p => p.As<FunctionSymbol>())
+                                                .WhereNotNull()
+                                                .Select(p => p.Result).ToFixedSet();
+                    break;
+                default:
+                    throw new NotImplementedException("Invocation of expression");
             }
 
-            var argumentTypes = qualifiedInvocation.Arguments.Select(argument => InferType(ref argument.Expression)).ToFixedList();
-            var contextType = InferType(ref qualifiedInvocation.Context, false);
+
+            return InferFunctionInvocationType(invocation, functionSymbols, argumentTypes);
+        }
+
+        private DataType InferMethodInvocationType(
+            IInvocationExpressionSyntax invocation,
+            IExpressionSyntax context,
+            Name methodName,
+            FixedList<DataType> argumentTypes)
+        {
             // If it is unknown, we already reported an error
-            if (contextType == DataType.Unknown)
+            if (context.DataType == DataType.Unknown)
             {
-                qualifiedInvocation.Semantics = ExpressionSemantics.Never;
-                return qualifiedInvocation.DataType = DataType.Unknown;
+                invocation.Semantics = ExpressionSemantics.Never;
+                return invocation.DataType = DataType.Unknown;
             };
 
-            var contextSymbol = LookupSymbolForType(contextType);
+            var contextSymbol = LookupSymbolForType(context.DataType.Known());
             var methodSymbols = symbolTrees.Children(contextSymbol!).OfType<MethodSymbol>()
-                                                 .Where(s => s.Name == qualifiedInvocation.InvokedName).ToFixedList();
-            methodSymbols = ResolveMethodOverload(contextType, methodSymbols, argumentTypes);
+                                                 .Where(s => s.Name == methodName).ToFixedList();
+            methodSymbols = ResolveMethodOverload(context.DataType.Known(), methodSymbols, argumentTypes);
 
             switch (methodSymbols.Count)
             {
                 case 0:
-                    diagnostics.Add(NameBindingError.CouldNotBindMethod(file, qualifiedInvocation.Span));
-                    qualifiedInvocation.ReferencedSymbol.Fulfill(null);
-                    qualifiedInvocation.DataType = DataType.Unknown;
+                    diagnostics.Add(NameBindingError.CouldNotBindMethod(file, invocation.Span));
+                    invocation.ReferencedSymbol.Fulfill(null);
+                    invocation.DataType = DataType.Unknown;
                     break;
                 case 1:
                     var methodSymbol = methodSymbols.Single();
-                    qualifiedInvocation.ReferencedSymbol.Fulfill(methodSymbol);
+                    invocation.ReferencedSymbol.Fulfill(methodSymbol);
 
                     var selfParamType = methodSymbol.SelfDataType;
-                    InsertImplicitActionIfNeeded(ref qualifiedInvocation.Context, selfParamType, implicitMutateAllowed: true);
+                    InsertImplicitActionIfNeeded(context, selfParamType, implicitMutateAllowed: true);
 
-                    InsertImplicitConversionIfNeeded(ref qualifiedInvocation.Context, selfParamType);
-                    CheckArgumentTypeCompatibility(selfParamType, qualifiedInvocation.Context);
+                    AddImplicitConversionIfNeeded(context, selfParamType);
+                    CheckArgumentTypeCompatibility(selfParamType, context);
 
-                    foreach (var (arg, type) in qualifiedInvocation.Arguments
-                                                                .Zip(methodSymbol.ParameterDataTypes))
+                    foreach (var (arg, type) in invocation.Arguments
+                                                          .Zip(methodSymbol.ParameterDataTypes))
                     {
-                        InsertImplicitConversionIfNeeded(ref arg.Expression, type);
-                        CheckArgumentTypeCompatibility(type, arg.Expression);
+                        AddImplicitConversionIfNeeded(arg, type);
+                        CheckArgumentTypeCompatibility(type, arg);
                     }
 
-                    qualifiedInvocation.DataType = methodSymbol.ReturnDataType;
-                    AssignInvocationSemantics(qualifiedInvocation, methodSymbol.ReturnDataType);
+                    invocation.DataType = methodSymbol.ReturnDataType;
+                    AssignInvocationSemantics(invocation, methodSymbol.ReturnDataType);
                     break;
                 default:
-                    diagnostics.Add(NameBindingError.AmbiguousMethodCall(file, qualifiedInvocation.Span));
-                    qualifiedInvocation.ReferencedSymbol.Fulfill(null);
-                    qualifiedInvocation.DataType = DataType.Unknown;
+                    diagnostics.Add(NameBindingError.AmbiguousMethodCall(file, invocation.Span));
+                    invocation.ReferencedSymbol.Fulfill(null);
+                    invocation.DataType = DataType.Unknown;
                     break;
             }
 
-            return qualifiedInvocation.DataType;
+            // There are no types for functions
+            invocation.Expression.DataType = DataType.Void;
+            invocation.Expression.Semantics = ExpressionSemantics.Void;
+
+            // Apply the referenced symbol to the underlying name
+            if (invocation.Expression is IQualifiedNameExpressionSyntax nameExpression)
+            {
+                nameExpression.Field.DataType = DataType.Void;
+                nameExpression.Field.Semantics = ExpressionSemantics.Void;
+                nameExpression.Field.ReferencedSymbol.Fulfill(invocation.ReferencedSymbol.Result);
+            }
+
+            return invocation.ConvertedDataType.Assigned();
         }
 
         /// <summary>
-        /// Used on the target of a method invocation to see if it is could be the name of a namespace or class
+        /// Used on the target of an invocation to see if it is could be a name
         /// </summary>
         /// <returns>A name if the expression is a qualified name, otherwise null</returns>
         private static NamespaceName? MethodContextAsName(IExpressionSyntax expression)
@@ -828,48 +871,56 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             {
                 IQualifiedNameExpressionSyntax memberAccess =>
                 // if implicit self
-                memberAccess.Context is null
+                memberAccess.Context is null // TODO is this correct or is there an expression for implicit self?
                     ? null
                     : MethodContextAsName(memberAccess.Context)?.Qualify(memberAccess.Field.Name!),
                 INameExpressionSyntax nameExpression => nameExpression.Name!,
                 _ => null
             };
         }
-
         private DataType InferFunctionInvocationType(
-            IUnqualifiedInvocationExpressionSyntax unqualifiedInvocationExpression)
+            IInvocationExpressionSyntax invocation,
+            FixedSet<FunctionSymbol> functionSymbols,
+            FixedList<DataType> argumentTypes)
         {
-            var argumentTypes = unqualifiedInvocationExpression.Arguments.Select(argument => InferType(ref argument.Expression)).ToFixedList();
-            var functionSymbols = unqualifiedInvocationExpression.LookupInContainingScope().Select(s => s.Result).ToFixedList();
             functionSymbols = ResolveOverload(functionSymbols, argumentTypes);
             switch (functionSymbols.Count)
             {
                 case 0:
-                    diagnostics.Add(NameBindingError.CouldNotBindFunction(file, unqualifiedInvocationExpression.Span));
-                    unqualifiedInvocationExpression.ReferencedSymbol.Fulfill(null);
-                    unqualifiedInvocationExpression.DataType = DataType.Unknown;
-                    unqualifiedInvocationExpression.Semantics = ExpressionSemantics.Never;
+                    diagnostics.Add(NameBindingError.CouldNotBindFunction(file, invocation.Span));
+                    invocation.ReferencedSymbol.Fulfill(null);
+                    invocation.DataType = DataType.Unknown;
+                    invocation.Semantics = ExpressionSemantics.Never;
                     break;
                 case 1:
                     var functionSymbol = functionSymbols.Single();
-                    unqualifiedInvocationExpression.ReferencedSymbol.Fulfill(functionSymbol);
-                    foreach (var (arg, parameterDataType) in unqualifiedInvocationExpression.Arguments.Zip(functionSymbol.ParameterDataTypes))
+                    invocation.ReferencedSymbol.Fulfill(functionSymbol);
+                    foreach (var (arg, parameterDataType) in invocation.Arguments.Zip(functionSymbol.ParameterDataTypes))
                     {
-                        InsertImplicitConversionIfNeeded(ref arg.Expression, parameterDataType);
-                        CheckArgumentTypeCompatibility(parameterDataType, arg.Expression);
+                        AddImplicitConversionIfNeeded(arg, parameterDataType);
+                        CheckArgumentTypeCompatibility(parameterDataType, arg);
                     }
 
-                    unqualifiedInvocationExpression.DataType = functionSymbol.ReturnDataType;
-                    AssignInvocationSemantics(unqualifiedInvocationExpression, functionSymbol.ReturnDataType);
+                    invocation.DataType = functionSymbol.ReturnDataType;
+                    AssignInvocationSemantics(invocation, functionSymbol.ReturnDataType);
                     break;
                 default:
-                    diagnostics.Add(NameBindingError.AmbiguousFunctionCall(file, unqualifiedInvocationExpression.Span));
-                    unqualifiedInvocationExpression.ReferencedSymbol.Fulfill(null);
-                    unqualifiedInvocationExpression.DataType = DataType.Unknown;
-                    unqualifiedInvocationExpression.Semantics = ExpressionSemantics.Never;
+                    diagnostics.Add(NameBindingError.AmbiguousFunctionCall(file, invocation.Span));
+                    invocation.ReferencedSymbol.Fulfill(null);
+                    invocation.DataType = DataType.Unknown;
+                    invocation.Semantics = ExpressionSemantics.Never;
                     break;
             }
-            return unqualifiedInvocationExpression.DataType;
+
+            // There are no types for functions
+            invocation.Expression.DataType = DataType.Void;
+            invocation.Expression.Semantics = ExpressionSemantics.Void;
+
+            // Apply the referenced symbol to the underlying name
+            if (invocation.Expression is INameExpressionSyntax nameExpression)
+                nameExpression.ReferencedSymbol.Fulfill(invocation.ReferencedSymbol.Result);
+
+            return invocation.ConvertedDataType.Assigned();
         }
 
         private static void AssignInvocationSemantics(
@@ -917,12 +968,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     block.Semantics = ExpressionSemantics.Void;
                     return block.DataType = DataType.Void; // TODO assign the correct type to the block
                 case IResultStatementSyntax result:
-                    InferType(ref result.Expression);
-                    return result.Expression.DataType!;
+                    InferType(result.Expression);
+                    return result.Expression.ConvertedDataType.Assigned();
             }
         }
 
-        public DataType InferNameType(INameExpressionSyntax nameExpression)
+        public DataType InferVariableNameType(INameExpressionSyntax nameExpression)
         {
             if (nameExpression.Name is null)
             {
@@ -932,7 +983,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             }
 
             DataType? type;
-            var symbols = nameExpression.LookupInContainingScope().ToFixedList();
+            var symbols = nameExpression.LookupInContainingScope()
+                                        .Select(p => p.As<NamedBindingSymbol>())
+                                        .WhereNotNull()
+                                        .ToFixedList();
             switch (symbols.Count)
             {
                 case 0:
@@ -942,7 +996,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     break;
                 case 1:
                     var symbol = symbols.Single().Result;
-                    // TODO fulfill the ReferencedSymbol once we have a correct symbol
                     nameExpression.ReferencedSymbol.Fulfill(symbol);
                     type = symbol.DataType;
                     break;
@@ -1007,7 +1060,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         /// check handles range expressions in the specific case of `foreach` only. It marks them
         /// as having the same type as the range endpoints.
         /// </summary>
-        private DataType CheckForeachInType(DataType? declaredType, ref IExpressionSyntax inExpression)
+        private DataType CheckForeachInType(DataType? declaredType, IExpressionSyntax inExpression)
         {
             switch (inExpression)
             {
@@ -1016,24 +1069,24 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     || binaryExpression.Operator == BinaryOperator.LessThanDotDot
                     || binaryExpression.Operator == BinaryOperator.DotDotLessThan
                     || binaryExpression.Operator == BinaryOperator.LessThanDotDotLessThan:
-                    var leftType = InferType(ref binaryExpression.LeftOperand);
-                    InferType(ref binaryExpression.RightOperand);
+                    var leftType = InferType(binaryExpression.LeftOperand);
+                    InferType(binaryExpression.RightOperand);
                     if (declaredType != null)
                     {
-                        leftType = InsertImplicitConversionIfNeeded(ref binaryExpression.LeftOperand, declaredType);
-                        InsertImplicitConversionIfNeeded(ref binaryExpression.RightOperand, declaredType);
+                        leftType = AddImplicitConversionIfNeeded(binaryExpression.LeftOperand, declaredType);
+                        AddImplicitConversionIfNeeded(binaryExpression.RightOperand, declaredType);
                     }
 
                     inExpression.Semantics = ExpressionSemantics.Copy; // Treat ranges as structs
                     return inExpression.DataType = leftType;
                 default:
-                    return InferType(ref inExpression);
+                    return InferType(inExpression);
             }
         }
 
         private void CheckArgumentTypeCompatibility(DataType type, IExpressionSyntax arg)
         {
-            var fromType = arg.DataType ?? throw new ArgumentException("argument must have a type");
+            var fromType = arg.ConvertedDataType.Assigned();
             if (!type.IsAssignableFrom(fromType))
                 diagnostics.Add(TypeError.CannotConvert(file, arg, fromType, type));
         }
@@ -1081,10 +1134,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         }
 
         private static bool NumericOperatorTypesAreCompatible(
-            ref IExpressionSyntax leftOperand,
-            ref IExpressionSyntax rightOperand)
+            IExpressionSyntax leftOperand,
+            IExpressionSyntax rightOperand)
         {
-            var leftType = leftOperand.DataType;
+            var leftType = leftOperand.ConvertedDataType;
             switch (leftType)
             {
                 default:
@@ -1097,12 +1150,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 //return !IsIntegerType(rightType);
                 case PointerSizedIntegerType integerType:
                     // TODO this isn't right we might need to convert either of them
-                    InsertImplicitConversionIfNeeded(ref rightOperand, integerType);
-                    return rightOperand.DataType is PointerSizedIntegerType;
+                    AddImplicitConversionIfNeeded(rightOperand, integerType);
+                    return rightOperand.ConvertedDataType is PointerSizedIntegerType;
                 case FixedSizeIntegerType integerType:
                     // TODO this isn't right we might need to convert either of them
-                    InsertImplicitConversionIfNeeded(ref rightOperand, integerType);
-                    return rightOperand.DataType is FixedSizeIntegerType;
+                    AddImplicitConversionIfNeeded(rightOperand, integerType);
+                    return rightOperand.ConvertedDataType is FixedSizeIntegerType;
                 case OptionalType _:
                     throw new NotImplementedException("Trying to do math on optional type");
                 case NeverType _:
@@ -1165,8 +1218,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         //    }
         //}
 
-        private static FixedList<TSymbol> ResolveOverload<TSymbol>(
-            FixedList<TSymbol> symbols,
+        private static FixedSet<TSymbol> ResolveOverload<TSymbol>(
+            FixedSet<TSymbol> symbols,
             FixedList<DataType> argumentTypes)
             where TSymbol : InvocableSymbol
         {
@@ -1176,7 +1229,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 if (s.Arity != argumentTypes.Count) return false;
                 // TODO check compatibility over argument types
                 return true;
-            }).ToFixedList();
+            }).ToFixedSet();
             // TODO Select most specific match
             return symbols;
         }

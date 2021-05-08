@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -11,8 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names
     {
         public static readonly NamespaceName Global = new NamespaceName(FixedList<Name>.Empty);
 
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "WTF")]
-        public FixedList<Name> Segments { [DebuggerHidden] get; }
+        public FixedList<Name> Segments { [DebuggerStepThrough] get; }
 
         public NamespaceName(FixedList<Name> segments)
         {
@@ -76,15 +74,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names
             return !Equals(left, right);
         }
 
-        [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates",
-            Justification = "Constructor is alternative")]
         public static implicit operator NamespaceName(Name name)
         {
             return new NamespaceName(name);
         }
 
-        [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates",
-            Justification = "This is just a chained implicit conversion")]
         public static implicit operator NamespaceName(string text)
         {
             return new NamespaceName(text);

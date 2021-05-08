@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
@@ -9,8 +8,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen
     {
         public const string DirectiveMarker = "◊";
 
-        [SuppressMessage("Design", "CA1031:Do not catch general exception types",
-            Justification = "Main method catching all exceptions to prevent exit")]
         public static int Main(string[] args)
         {
             if (args.Length != 1)

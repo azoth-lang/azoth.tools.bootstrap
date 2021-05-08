@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
@@ -9,11 +10,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
 {
     internal class QualifiedNameExpressionSyntax : ExpressionSyntax, IQualifiedNameExpressionSyntax
     {
-        private IExpressionSyntax context;
-        public ref IExpressionSyntax Context => ref context;
-
-        public AccessOperator AccessOperator { get; }
-        public INameExpressionSyntax Field { get; }
+        public IExpressionSyntax Context { [DebuggerStepThrough] get; }
+        public AccessOperator AccessOperator { [DebuggerStepThrough] get; }
+        public INameExpressionSyntax Field { [DebuggerStepThrough] get; }
         public IPromise<FieldSymbol?> ReferencedSymbol => Field.ReferencedSymbol.Select(s => (FieldSymbol?)s);
 
         public QualifiedNameExpressionSyntax(
@@ -23,7 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             INameExpressionSyntax field)
             : base(span)
         {
-            this.context = context;
+            Context = context;
             AccessOperator = accessOperator;
             Field = field;
         }

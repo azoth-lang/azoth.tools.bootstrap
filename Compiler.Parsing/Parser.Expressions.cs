@@ -144,18 +144,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
                             // Member Access
                             var accessOperator = BuildAccessOperator(Tokens.RequiredToken<IAccessOperatorToken>());
                             var nameSyntax = ParseName();
-                            if (!(Tokens.Current is IOpenParenToken))
-                            {
-                                var memberAccessSpan = TextSpan.Covering(expression.Span, nameSyntax.Span);
-                                expression = new QualifiedNameExpressionSyntax(memberAccessSpan, expression, accessOperator, nameSyntax.ToExpression());
-                            }
-                            else
+                            var memberAccessSpan = TextSpan.Covering(expression.Span, nameSyntax.Span);
+                            expression = new QualifiedNameExpressionSyntax(memberAccessSpan, expression, accessOperator, nameSyntax);
+                            if (Tokens.Current is IOpenParenToken)
                             {
                                 Tokens.RequiredToken<IOpenParenToken>();
                                 var arguments = ParseArguments();
                                 var closeParenSpan = Tokens.Expect<ICloseParenToken>();
                                 var invocationSpan = TextSpan.Covering(expression.Span, closeParenSpan);
-                                expression = new QualifiedInvocationExpressionSyntax(invocationSpan, expression, nameSyntax.Name, nameSyntax.Span, arguments);
+                                expression = new InvocationExpressionSyntax(invocationSpan, expression, arguments);
                             }
                             continue;
                         }
@@ -291,12 +288,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
                 {
                     var nameSyntax = ParseName();
                     if (!(Tokens.Current is IOpenParenToken))
-                        return nameSyntax.ToExpression();
+                        return nameSyntax;
                     Tokens.RequiredToken<IOpenParenToken>();
                     var arguments = ParseArguments();
                     var closeParenSpan = Tokens.Expect<ICloseParenToken>();
                     var span = TextSpan.Covering(nameSyntax.Span, closeParenSpan);
-                    return new UnqualifiedInvocationExpressionSyntax(span, nameSyntax.Name, nameSyntax.Span, arguments);
+                    return new InvocationExpressionSyntax(span, nameSyntax, arguments);
                 }
                 case IForeachKeywordToken _:
                     return ParseForeach();
@@ -475,16 +472,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
             return expression;
         }
 
-        public FixedList<IArgumentSyntax> ParseArguments()
+        public FixedList<IExpressionSyntax> ParseArguments()
         {
-            return AcceptManySeparated<IArgumentSyntax, ICommaToken>(AcceptArgument);
-        }
-
-        private IArgumentSyntax? AcceptArgument()
-        {
-            var expression = AcceptExpression();
-            if (expression is null) return null;
-            return new ArgumentSyntax(expression);
+            return AcceptManySeparated<IExpressionSyntax, ICommaToken>(AcceptExpression);
         }
 
         public IBlockOrResultSyntax ParseBlockOrResult()

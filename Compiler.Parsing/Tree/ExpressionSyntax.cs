@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -29,6 +30,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
                     throw new InvalidOperationException("Can't set type repeatedly");
                 dataType = value ?? throw new ArgumentNullException(nameof(DataType),
                            "Can't set type to null");
+            }
+        }
+
+        public DataType? ConvertedDataType => ImplicitConversion is null ? dataType : ImplicitConversion.To;
+
+        private Conversion? implicitConversion;
+        [DisallowNull]
+        public virtual Conversion? ImplicitConversion
+        {
+            [DebuggerStepThrough]
+            get => implicitConversion;
+            set
+            {
+                if (implicitConversion != null) throw new InvalidOperationException("Can't set conversion repeatedly");
+                implicitConversion = value ?? throw new ArgumentNullException(nameof(ImplicitConversion), "Can't set conversion to null");
             }
         }
 

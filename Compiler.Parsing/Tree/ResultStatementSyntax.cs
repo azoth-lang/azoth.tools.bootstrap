@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 
@@ -8,15 +9,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
     /// </summary>
     internal class ResultStatementSyntax : StatementSyntax, IResultStatementSyntax
     {
-        private IExpressionSyntax expression;
-        public ref IExpressionSyntax Expression => ref expression;
+        public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
 
         public ResultStatementSyntax(
             TextSpan span,
             IExpressionSyntax expression)
             : base(span)
         {
-            this.expression = expression;
+            Expression = expression;
         }
 
         public override string ToString()

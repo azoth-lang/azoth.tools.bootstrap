@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -8,10 +9,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
 {
     internal class UnaryOperatorExpressionSyntax : ExpressionSyntax, IUnaryOperatorExpressionSyntax
     {
-        public UnaryOperatorFixity Fixity { get; }
-        public UnaryOperator Operator { get; }
-        private IExpressionSyntax operand;
-        public ref IExpressionSyntax Operand => ref operand;
+        public UnaryOperatorFixity Fixity { [DebuggerStepThrough] get; }
+        public UnaryOperator Operator { [DebuggerStepThrough] get; }
+        public IExpressionSyntax Operand { [DebuggerStepThrough] get; }
 
         public UnaryOperatorExpressionSyntax(
             TextSpan span,
@@ -20,9 +20,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             IExpressionSyntax operand)
             : base(span, ExpressionSemantics.Copy)
         {
-            Operator = @operator;
-            this.operand = operand;
             Fixity = fixity;
+            Operator = @operator;
+            Operand = operand;
         }
 
         protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Unary;

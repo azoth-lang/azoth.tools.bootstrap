@@ -419,8 +419,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     return await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
                 case ISelfExpression exp:
                     return variables[exp.ReferencedSymbol];
-                case IImplicitNoneConversionExpression exp:
-                    return AzothValue.None;
                 case IImplicitOptionalConversionExpression exp:
                     return await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
                 case IStringLiteralExpression exp:

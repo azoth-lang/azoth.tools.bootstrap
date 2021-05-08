@@ -9,7 +9,6 @@ using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
 {
@@ -35,7 +34,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
         }
         // A null name means this syntax was generated as an assumed missing name and the name is unknown
         public Name? Name { get; }
-        public Promise<NamedBindingSymbol?> ReferencedSymbol { get; } = new Promise<NamedBindingSymbol?>();
+        public Promise<Symbol?> ReferencedSymbol { get; } = new Promise<Symbol?>();
 
         public NameExpressionSyntax(TextSpan span, Name? name)
             : base(span)
@@ -43,15 +42,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             Name = name;
         }
 
-        public IEnumerable<IPromise<NamedBindingSymbol>> LookupInContainingScope()
+        public IEnumerable<IPromise<Symbol>> LookupInContainingScope()
         {
             if (containingLexicalScope == null)
                 throw new InvalidOperationException($"Can't lookup type name without {nameof(ContainingLexicalScope)}");
 
             // If name is unknown, no symbols
-            if (Name is null) return Enumerable.Empty<IPromise<NamedBindingSymbol>>();
+            if (Name is null) return Enumerable.Empty<IPromise<Symbol>>();
 
-            return containingLexicalScope.Lookup(Name).Select(p => p.As<NamedBindingSymbol>()).WhereNotNull();
+            return containingLexicalScope.Lookup(Name);
         }
 
         protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;

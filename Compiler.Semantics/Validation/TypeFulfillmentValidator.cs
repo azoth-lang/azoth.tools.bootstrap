@@ -30,11 +30,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation
                     return;
                 case IForeachExpressionSyntax foreachExpression:
                     WalkChildren(foreachExpression);
-                    foreachExpression.DataType.Assigned();
+                    foreachExpression.ConvertedDataType.Assigned();
                     return;
                 case IExpressionSyntax expression:
                     WalkChildren(expression);
-                    expression.DataType.Assigned();
+                    expression.ConvertedDataType.Assigned();
                     return;
             }
 

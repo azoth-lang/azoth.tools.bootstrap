@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -9,16 +9,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
 {
     internal class MutateExpressionSyntax : ExpressionSyntax, IMutateExpressionSyntax
     {
-        [SuppressMessage("Style", "IDE0044:Add readonly modifier",
-            Justification = "Can't be readonly because a reference to it is exposed")]
-        private IExpressionSyntax referent;
-        public ref IExpressionSyntax Referent => ref referent;
-        public Promise<BindingSymbol?> ReferencedSymbol { get; } = new Promise<BindingSymbol?>();
+        public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
+        public Promise<BindingSymbol?> ReferencedSymbol { [DebuggerStepThrough] get; } = new Promise<BindingSymbol?>();
 
         public MutateExpressionSyntax(TextSpan span, IExpressionSyntax referent)
             : base(span, ExpressionSemantics.Borrow)
         {
-            this.referent  = referent;
+            Referent = referent;
         }
 
         protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;

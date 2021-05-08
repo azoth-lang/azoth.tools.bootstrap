@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Azoth.Tools.Bootstrap.Compiler.Core
 {
     /// <summary>
@@ -11,7 +9,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core
     /// Borrow - copy the reference, borrow the object
     /// Share - copy the reference, share the object
     /// </summary>
-    [SuppressMessage("Naming", "CA1717:Only FlagsAttribute enums should have plural names", Justification = "Name not plural")]
     public enum ExpressionSemantics
     {
         /// <summary>

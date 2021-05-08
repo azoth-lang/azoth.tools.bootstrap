@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -12,11 +12,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
     {
         public bool IsMutableBinding { get; }
         public new Name Name { get; }
-        public new AcyclicPromise<FieldSymbol> Symbol { get; }
+        public new AcyclicPromise<FieldSymbol> Symbol { [DebuggerStepThrough] get; }
         IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
         public ITypeSyntax Type { get; }
-        private IExpressionSyntax? initializer;
-        [DisallowNull] public ref IExpressionSyntax? Initializer => ref initializer;
+        public IExpressionSyntax? Initializer { [DebuggerStepThrough] get; }
 
         public FieldDeclarationSyntax(
             IClassDeclarationSyntax declaringClass,
@@ -33,7 +32,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             IsMutableBinding = mutableBinding;
             Name = name;
             Type = type;
-            this.initializer = initializer;
+            Initializer = initializer!;
             Symbol = (AcyclicPromise<FieldSymbol>)base.Symbol;
         }
 

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -16,18 +17,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
         /// though, the type name is the name of the unnamed constructor. Thus,
         /// this expression's type could be either an object type, or member type.
         /// </summary>
-        public ITypeNameSyntax Type { get; }
-        public Name? ConstructorName { get; }
-        public TextSpan? ConstructorNameSpan { get; }
-        public FixedList<IArgumentSyntax> Arguments { get; }
-        public Promise<ConstructorSymbol?> ReferencedSymbol { get; } = new Promise<ConstructorSymbol?>();
+        public ITypeNameSyntax Type { [DebuggerStepThrough] get; }
+        public Name? ConstructorName { [DebuggerStepThrough] get; }
+        public TextSpan? ConstructorNameSpan { [DebuggerStepThrough] get; }
+        public FixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
+        public Promise<ConstructorSymbol?> ReferencedSymbol { [DebuggerStepThrough] get; } = new Promise<ConstructorSymbol?>();
 
         public NewObjectExpressionSyntax(
             TextSpan span,
             ITypeNameSyntax typeSyntax,
             Name? constructorName,
             TextSpan? constructorNameSpan,
-            FixedList<IArgumentSyntax> arguments)
+            FixedList<IExpressionSyntax> arguments)
             : base(span, ExpressionSemantics.Acquire)
         {
             Type = typeSyntax;

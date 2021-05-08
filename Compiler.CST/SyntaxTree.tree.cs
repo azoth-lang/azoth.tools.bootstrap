@@ -20,7 +20,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         typeof(IBindingSyntax),
         typeof(IDeclarationSyntax),
         typeof(IParameterSyntax),
-        typeof(IArgumentSyntax),
         typeof(ITypeSyntax),
         typeof(IReferenceCapabilitySyntax),
         typeof(IStatementSyntax),
@@ -209,7 +208,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         new Name Name { get; }
         ITypeSyntax Type { get; }
         new AcyclicPromise<FieldSymbol> Symbol { get; }
-        [DisallowNull] ref IExpressionSyntax? Initializer { get; }
+        IExpressionSyntax? Initializer { get; }
     }
 
     public partial interface IAssociatedFunctionDeclarationSyntax : IMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
@@ -268,11 +267,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         IExpressionSyntax? DefaultValue { get; }
     }
 
-    public partial interface IArgumentSyntax : ISyntax
-    {
-        ref IExpressionSyntax Expression { get; }
-    }
-
     public partial interface IBodySyntax : IBodyOrBlockSyntax
     {
         new FixedList<IBodyStatementSyntax> Statements { get; }
@@ -318,7 +312,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
 
     public partial interface IResultStatementSyntax : IStatementSyntax, IBlockOrResultSyntax
     {
-        ref IExpressionSyntax Expression { get; }
+        IExpressionSyntax Expression { get; }
     }
 
     [Closed(
@@ -336,12 +330,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         ITypeSyntax? Type { get; }
         IReferenceCapabilitySyntax? Capability { get; }
         new Promise<VariableSymbol> Symbol { get; }
-        [DisallowNull] ref IExpressionSyntax? Initializer { get; }
+        IExpressionSyntax? Initializer { get; }
     }
 
     public partial interface IExpressionStatementSyntax : IBodyStatementSyntax
     {
-        ref IExpressionSyntax Expression { get; }
+        IExpressionSyntax Expression { get; }
     }
 
     [Closed(
@@ -360,14 +354,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         typeof(IBreakExpressionSyntax),
         typeof(INextExpressionSyntax),
         typeof(IReturnExpressionSyntax),
-        typeof(IImplicitConversionExpressionSyntax),
         typeof(IInvocationExpressionSyntax),
         typeof(ISelfExpressionSyntax),
         typeof(IMutateExpressionSyntax),
-        typeof(IMoveExpressionSyntax),
-        typeof(IShareExpressionSyntax))]
+        typeof(IMoveExpressionSyntax))]
     public partial interface IExpressionSyntax : ISyntax
     {
+        DataType? ConvertedDataType { get; }
     }
 
     [Closed(
@@ -386,13 +379,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         ITypeNameSyntax Type { get; }
         Name? ConstructorName { get; }
         TextSpan? ConstructorNameSpan { get; }
-        FixedList<IArgumentSyntax> Arguments { get; }
+        FixedList<IExpressionSyntax> Arguments { get; }
         Promise<ConstructorSymbol?> ReferencedSymbol { get; }
     }
 
     public partial interface IUnsafeExpressionSyntax : IExpressionSyntax
     {
-        ref IExpressionSyntax Expression { get; }
+        IExpressionSyntax Expression { get; }
     }
 
     [Closed(
@@ -425,28 +418,28 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
 
     public partial interface IAssignmentExpressionSyntax : IExpressionSyntax
     {
-        ref IAssignableExpressionSyntax LeftOperand { get; }
+        IAssignableExpressionSyntax LeftOperand { get; }
         AssignmentOperator Operator { get; }
-        ref IExpressionSyntax RightOperand { get; }
+        IExpressionSyntax RightOperand { get; }
     }
 
     public partial interface IBinaryOperatorExpressionSyntax : IExpressionSyntax
     {
-        ref IExpressionSyntax LeftOperand { get; }
+        IExpressionSyntax LeftOperand { get; }
         BinaryOperator Operator { get; }
-        ref IExpressionSyntax RightOperand { get; }
+        IExpressionSyntax RightOperand { get; }
     }
 
     public partial interface IUnaryOperatorExpressionSyntax : IExpressionSyntax
     {
         UnaryOperatorFixity Fixity { get; }
         UnaryOperator Operator { get; }
-        ref IExpressionSyntax Operand { get; }
+        IExpressionSyntax Operand { get; }
     }
 
     public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyntax
     {
-        ref IExpressionSyntax Condition { get; }
+        IExpressionSyntax Condition { get; }
         IBlockOrResultSyntax ThenBlock { get; }
         IElseClauseSyntax? ElseClause { get; }
     }
@@ -458,7 +451,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
 
     public partial interface IWhileExpressionSyntax : IExpressionSyntax
     {
-        ref IExpressionSyntax Condition { get; }
+        IExpressionSyntax Condition { get; }
         IBlockExpressionSyntax Block { get; }
     }
 
@@ -466,7 +459,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
     {
         Name VariableName { get; }
         Promise<int?> DeclarationNumber { get; }
-        ref IExpressionSyntax InExpression { get; }
+        IExpressionSyntax InExpression { get; }
         ITypeSyntax? Type { get; }
         new Promise<VariableSymbol> Symbol { get; }
         IBlockExpressionSyntax Block { get; }
@@ -474,7 +467,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
 
     public partial interface IBreakExpressionSyntax : IExpressionSyntax
     {
-        [DisallowNull] ref IExpressionSyntax? Value { get; }
+        IExpressionSyntax? Value { get; }
     }
 
     public partial interface INextExpressionSyntax : IExpressionSyntax
@@ -483,67 +476,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
 
     public partial interface IReturnExpressionSyntax : IExpressionSyntax
     {
-        [DisallowNull] ref IExpressionSyntax? Value { get; }
+        IExpressionSyntax? Value { get; }
     }
 
-    [Closed(
-        typeof(IImplicitImmutabilityConversionExpressionSyntax),
-        typeof(IImplicitNoneConversionExpressionSyntax),
-        typeof(IImplicitNumericConversionExpressionSyntax),
-        typeof(IImplicitOptionalConversionExpressionSyntax))]
-    public partial interface IImplicitConversionExpressionSyntax : IExpressionSyntax
+    public partial interface IInvocationExpressionSyntax : IExpressionSyntax, IHasContainingLexicalScope
     {
         IExpressionSyntax Expression { get; }
-        DataType DataType { get; }
-    }
-
-    public partial interface IImplicitImmutabilityConversionExpressionSyntax : IImplicitConversionExpressionSyntax
-    {
-        ObjectType ConvertToType { get; }
-    }
-
-    public partial interface IImplicitNoneConversionExpressionSyntax : IImplicitConversionExpressionSyntax
-    {
-        OptionalType ConvertToType { get; }
-    }
-
-    public partial interface IImplicitNumericConversionExpressionSyntax : IImplicitConversionExpressionSyntax
-    {
-        NumericType ConvertToType { get; }
-    }
-
-    public partial interface IImplicitOptionalConversionExpressionSyntax : IImplicitConversionExpressionSyntax
-    {
-        OptionalType ConvertToType { get; }
-    }
-
-    [Closed(
-        typeof(IUnqualifiedInvocationExpressionSyntax),
-        typeof(IQualifiedInvocationExpressionSyntax))]
-    public partial interface IInvocationExpressionSyntax : IExpressionSyntax
-    {
-        Name InvokedName { get; }
-        TextSpan InvokedNameSpan { get; }
-        FixedList<IArgumentSyntax> Arguments { get; }
-        IPromise<InvocableSymbol?> ReferencedSymbol { get; }
-    }
-
-    public partial interface IUnqualifiedInvocationExpressionSyntax : IInvocationExpressionSyntax, IHasContainingLexicalScope
-    {
-        NamespaceName Namespace { get; }
-        new Promise<FunctionSymbol?> ReferencedSymbol { get; }
-    }
-
-    public partial interface IQualifiedInvocationExpressionSyntax : IInvocationExpressionSyntax, IHasContainingLexicalScope
-    {
-        ref IExpressionSyntax Context { get; }
-        new Promise<MethodSymbol?> ReferencedSymbol { get; }
+        FixedList<IExpressionSyntax> Arguments { get; }
+        Promise<InvocableSymbol?> ReferencedSymbol { get; }
     }
 
     public partial interface INameExpressionSyntax : IAssignableExpressionSyntax, IHasContainingLexicalScope
     {
         Name? Name { get; }
-        Promise<NamedBindingSymbol?> ReferencedSymbol { get; }
+        Promise<Symbol?> ReferencedSymbol { get; }
     }
 
     public partial interface ISelfExpressionSyntax : IExpressionSyntax
@@ -554,7 +500,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
 
     public partial interface IQualifiedNameExpressionSyntax : IAssignableExpressionSyntax
     {
-        ref IExpressionSyntax Context { get; }
+        IExpressionSyntax Context { get; }
         AccessOperator AccessOperator { get; }
         INameExpressionSyntax Field { get; }
         IPromise<FieldSymbol?> ReferencedSymbol { get; }
@@ -562,19 +508,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
 
     public partial interface IMutateExpressionSyntax : IExpressionSyntax
     {
-        ref IExpressionSyntax Referent { get; }
+        IExpressionSyntax Referent { get; }
         Promise<BindingSymbol?> ReferencedSymbol { get; }
     }
 
     public partial interface IMoveExpressionSyntax : IExpressionSyntax
     {
-        ref IExpressionSyntax Referent { get; }
-        Promise<BindingSymbol?> ReferencedSymbol { get; }
-    }
-
-    public partial interface IShareExpressionSyntax : IExpressionSyntax
-    {
-        ref IExpressionSyntax Referent { get; }
+        IExpressionSyntax Referent { get; }
         Promise<BindingSymbol?> ReferencedSymbol { get; }
     }
 

@@ -3,7 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -213,14 +215,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
             };
         }
 
-
-
-        [return: NotNullIfNotNull("expression")]
-        private static IExpression? BuildExpression(IExpressionSyntax? expression)
+        [return: NotNullIfNotNull("expressionSyntax")]
+        private static IExpression? BuildExpression(IExpressionSyntax? expressionSyntax)
         {
-            return expression switch
+            if (expressionSyntax is null) return null;
+            IExpression expression = expressionSyntax switch
             {
-                null => null,
                 IAssignmentExpressionSyntax syn => BuildAssignmentExpression(syn),
                 IBinaryOperatorExpressionSyntax syn => BuildBinaryOperatorExpression(syn),
                 IBlockExpressionSyntax syn => BuildBlockExpression(syn),
@@ -229,29 +229,44 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
                 IBreakExpressionSyntax syn => BuildBreakExpression(syn),
                 IQualifiedNameExpressionSyntax syn => BuildFieldAccessExpression(syn),
                 IForeachExpressionSyntax syn => BuildForeachExpression(syn),
-                IUnqualifiedInvocationExpressionSyntax syn => BuildFunctionInvocationExpression(syn),
                 IIfExpressionSyntax syn => BuildIfExpression(syn),
-                IImplicitImmutabilityConversionExpressionSyntax syn => BuildImplicitImmutabilityConversionExpression(syn),
-                IImplicitNoneConversionExpressionSyntax syn => BuildImplicitNoneConversionExpression(syn),
-                IImplicitNumericConversionExpressionSyntax syn => BuildImplicitNumericConversionExpression(syn),
-                IImplicitOptionalConversionExpressionSyntax syn => BuildImplicitOptionalConversionExpression(syn),
                 IIntegerLiteralExpressionSyntax syn => BuildIntegerLiteralExpression(syn),
                 INoneLiteralExpressionSyntax syn => BuildNoneLiteralExpression(syn),
                 IStringLiteralExpressionSyntax syn => BuildStringLiteralExpression(syn),
                 ILoopExpressionSyntax syn => BuildLoopExpression(syn),
-                IQualifiedInvocationExpressionSyntax syn => BuildMethodInvocationExpression(syn),
                 IMoveExpressionSyntax syn => BuildMoveExpression(syn),
                 INameExpressionSyntax syn => BuildNameExpression(syn),
                 INewObjectExpressionSyntax syn => BuildNewObjectExpression(syn),
+                IInvocationExpressionSyntax syn => BuildInvocationExpression(syn),
                 INextExpressionSyntax syn => BuildNextExpression(syn),
                 IReturnExpressionSyntax syn => BuildReturnExpression(syn),
                 ISelfExpressionSyntax syn => BuildSelfExpression(syn),
-                IShareExpressionSyntax syn => BuildShareExpression(syn),
                 IUnaryOperatorExpressionSyntax syn => BuildUnaryOperatorExpression(syn),
                 IUnsafeExpressionSyntax syn => BuildUnsafeExpression(syn),
                 IWhileExpressionSyntax syn => BuildWhileExpression(syn),
-                _ => throw ExhaustiveMatch.Failed(expression),
+                _ => throw ExhaustiveMatch.Failed(expressionSyntax),
             };
+            return BuildImplicitConversion(expression, expressionSyntax.ImplicitConversion);
+        }
+
+        private static IExpression BuildImplicitConversion(IExpression expression, Conversion? implicitConversion)
+        {
+            return implicitConversion switch
+            {
+                null => expression,
+                ImmutabilityConversion c => BuildImplicitImmutabilityConversionExpression(expression, c),
+                LiftedConversion c => BuildImplicitLiftedConversionExpression(expression, c),
+                NumericConversion c => BuildImplicitNumericConversionExpression(expression, c),
+                OptionalConversion c => BuildImplicitOptionalConversionExpression(expression, c),
+                _ => throw ExhaustiveMatch.Failed(implicitConversion)
+            };
+        }
+
+        private static FixedList<IExpression> BuildExpressions(FixedList<IExpressionSyntax> expressions)
+        {
+            // The compiler isn't able to correctly figure out the nullability here. That is actually
+            // why this method even exists
+            return expressions.Select(BuildExpression).ToFixedList()!;
         }
 
         private static IAssignmentExpression BuildAssignmentExpression(IAssignmentExpressionSyntax syn)
@@ -337,13 +352,26 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
             return new ForeachExpression(syn.Span, type, semantics, symbol, inExpression, block);
         }
 
-        private static IFunctionInvocationExpression BuildFunctionInvocationExpression(IUnqualifiedInvocationExpressionSyntax syn)
+        private static IInvocationExpression BuildInvocationExpression(
+            IInvocationExpressionSyntax syn)
         {
             var type = syn.DataType ?? throw new InvalidOperationException();
             var semantics = syn.Semantics.Assigned();
             var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
-            FixedList<IExpression> arguments = syn.Arguments.Select(a => BuildExpression(a.Expression)).ToFixedList();
-            return new FunctionInvocationExpression(syn.Span, type, semantics, referencedSymbol, arguments);
+            var arguments = BuildExpressions(syn.Arguments);
+            switch (referencedSymbol)
+            {
+                default:
+                    throw ExhaustiveMatch.Failed(referencedSymbol);
+                case FunctionSymbol function:
+                    return new FunctionInvocationExpression(syn.Span, type, semantics, function, arguments);
+                case MethodSymbol method:
+                    var qualifiedName = (IQualifiedNameExpressionSyntax)syn.Expression;
+                    var context = BuildExpression(qualifiedName.Context);
+                    return new MethodInvocationExpression(syn.Span, type, semantics, context, method, arguments);
+                case ConstructorSymbol _:
+                    throw new InvalidOperationException("Invocation expression cannot invoke a constructor");
+            }
         }
 
         private static IIfExpression BuildIfExpression(IIfExpressionSyntax syn)
@@ -369,40 +397,39 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
         }
 
         private static IImplicitImmutabilityConversionExpression BuildImplicitImmutabilityConversionExpression(
-            IImplicitImmutabilityConversionExpressionSyntax syn)
+            IExpression expression,
+            ImmutabilityConversion conversion)
         {
-            var type = syn.DataType ?? throw new InvalidOperationException();
-            var semantics = syn.Semantics.Assigned();
-            var expression = BuildExpression(syn.Expression);
-            var convertToType = syn.ConvertToType;
-            return new ImplicitImmutabilityConversion(syn.Span, type, semantics, expression, convertToType);
+            var semantics = expression.Semantics;
+            var convertToType = conversion.To;
+            return new ImplicitImmutabilityConversion(expression.Span, convertToType, semantics, expression, convertToType);
         }
 
-        private static IImplicitNoneConversionExpression BuildImplicitNoneConversionExpression(IImplicitNoneConversionExpressionSyntax syn)
+        private static IImplicitLiftedConversionExpression BuildImplicitLiftedConversionExpression(
+            IExpression expression,
+            LiftedConversion conversion)
         {
-            var type = syn.DataType ?? throw new InvalidOperationException();
-            var semantics = syn.Semantics.Assigned();
-            var expression = BuildExpression(syn.Expression);
-            var convertToType = syn.ConvertToType;
-            return new ImplicitNoneConversionExpression(syn.Span, type, semantics, expression, convertToType);
+            var semantics = expression.Semantics;
+            var convertToType = conversion.To;
+            return new ImplicitLiftedConversion(expression.Span, convertToType, semantics, expression, convertToType);
         }
 
-        private static IImplicitNumericConversionExpression BuildImplicitNumericConversionExpression(IImplicitNumericConversionExpressionSyntax syn)
+        private static IImplicitNumericConversionExpression BuildImplicitNumericConversionExpression(
+            IExpression expression,
+            NumericConversion conversion)
         {
-            var type = syn.DataType ?? throw new InvalidOperationException();
-            var semantics = syn.Semantics.Assigned();
-            var expression = BuildExpression(syn.Expression);
-            var convertToType = syn.ConvertToType;
-            return new ImplicitNumericConversionExpression(syn.Span, type, semantics, expression, convertToType);
+            var semantics = expression.Semantics;
+            var convertToType = conversion.To;
+            return new ImplicitNumericConversionExpression(expression.Span, convertToType, semantics, expression, convertToType);
         }
 
-        private static IImplicitOptionalConversionExpression BuildImplicitOptionalConversionExpression(IImplicitOptionalConversionExpressionSyntax syn)
+        private static IImplicitOptionalConversionExpression BuildImplicitOptionalConversionExpression(
+            IExpression expression,
+            OptionalConversion conversion)
         {
-            var type = syn.DataType ?? throw new InvalidOperationException();
-            var semantics = syn.Semantics.Assigned();
-            var expression = BuildExpression(syn.Expression);
-            var convertToType = syn.ConvertToType;
-            return new ImplicitOptionalConversionExpression(syn.Span, type, semantics, expression, convertToType);
+            var semantics = expression.Semantics;
+            var convertToType = conversion.To;
+            return new ImplicitOptionalConversionExpression(expression.Span, convertToType, semantics, expression, convertToType);
         }
 
         private static IIntegerLiteralExpression BuildIntegerLiteralExpression(IIntegerLiteralExpressionSyntax syn)
@@ -436,16 +463,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
             return new LoopExpression(syn.Span, type, semantics, block);
         }
 
-        private static IMethodInvocationExpression BuildMethodInvocationExpression(IQualifiedInvocationExpressionSyntax syn)
-        {
-            var type = syn.DataType ?? throw new InvalidOperationException();
-            var semantics = syn.Semantics.Assigned();
-            var context = BuildExpression(syn.Context);
-            var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
-            FixedList<IExpression> arguments = syn.Arguments.Select(a => BuildExpression(a.Expression)).ToFixedList();
-            return new MethodInvocationExpression(syn.Span, type, semantics, context, referencedSymbol, arguments);
-        }
-
         private static IMoveExpression BuildMoveExpression(IMoveExpressionSyntax syn)
         {
             var type = syn.DataType ?? throw new InvalidOperationException();
@@ -459,7 +476,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
         {
             var type = syn.DataType ?? throw new InvalidOperationException();
             var semantics = syn.Semantics.Assigned();
-            var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
+            var referencedSymbol = (NamedBindingSymbol?)syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
             return new NameExpression(syn.Span, type, semantics, referencedSymbol);
         }
 
@@ -468,7 +485,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
             var type = syn.DataType ?? throw new InvalidOperationException();
             var semantics = syn.Semantics.Assigned();
             var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
-            FixedList<IExpression> arguments = syn.Arguments.Select(a => BuildExpression(a.Expression)).ToFixedList();
+            var arguments = BuildExpressions(syn.Arguments);
             return new NewObjectExpression(syn.Span, type, semantics, referencedSymbol, arguments);
         }
 
@@ -494,15 +511,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
             var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
             var isImplicit = syn.IsImplicit;
             return new SelfExpression(syn.Span, type, semantics, referencedSymbol, isImplicit);
-        }
-
-        private static IShareExpression BuildShareExpression(IShareExpressionSyntax syn)
-        {
-            var type = syn.DataType ?? throw new InvalidOperationException();
-            var semantics = syn.Semantics.Assigned();
-            var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
-            var referent = BuildExpression(syn.Referent);
-            return new ShareExpression(syn.Span, type, semantics, referencedSymbol, referent);
         }
 
         private static IUnaryOperatorExpression BuildUnaryOperatorExpression(IUnaryOperatorExpressionSyntax syn)

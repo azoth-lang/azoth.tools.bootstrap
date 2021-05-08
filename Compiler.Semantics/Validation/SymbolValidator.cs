@@ -64,19 +64,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation
                 case IMutateExpressionSyntax syn:
                     CheckReferencedSymbol(syn, syn.ReferencedSymbol);
                     break;
-                case IShareExpressionSyntax syn:
-                    CheckReferencedSymbol(syn, syn.ReferencedSymbol);
-                    break;
                 case IMoveExpressionSyntax syn:
                     CheckReferencedSymbol(syn, syn.ReferencedSymbol);
                     break;
                 case INewObjectExpressionSyntax syn:
                     CheckReferencedSymbol(syn, syn.ReferencedSymbol);
                     break;
-                case IUnqualifiedInvocationExpressionSyntax syn:
-                    CheckReferencedSymbol(syn, syn.ReferencedSymbol);
-                    break;
-                case IQualifiedInvocationExpressionSyntax syn:
+                case IInvocationExpressionSyntax syn:
                     CheckReferencedSymbol(syn, syn.ReferencedSymbol);
                     break;
             }

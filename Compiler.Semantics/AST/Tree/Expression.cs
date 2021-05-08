@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
@@ -7,8 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
 {
     internal abstract class Expression : AbstractSyntax, IExpression
     {
-        public DataType DataType { get; }
-        public ExpressionSemantics Semantics { get; }
+        public DataType DataType { [DebuggerStepThrough] get; }
+        public ExpressionSemantics Semantics { [DebuggerStepThrough] get; }
 
         protected Expression(TextSpan span, DataType dataType, ExpressionSemantics semantics)
             : base(span)

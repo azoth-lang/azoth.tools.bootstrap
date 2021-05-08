@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
@@ -6,10 +7,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
 {
     internal class WhileExpressionSyntax : ExpressionSyntax, IWhileExpressionSyntax
     {
-        private IExpressionSyntax condition;
-        public ref IExpressionSyntax Condition => ref condition;
-
-        public IBlockExpressionSyntax Block { get; }
+        public IExpressionSyntax Condition { [DebuggerStepThrough] get; }
+        public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
 
         public WhileExpressionSyntax(
             TextSpan span,
@@ -17,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             IBlockExpressionSyntax block)
             : base(span)
         {
-            this.condition = condition;
+            Condition = condition;
             Block = block;
         }
 

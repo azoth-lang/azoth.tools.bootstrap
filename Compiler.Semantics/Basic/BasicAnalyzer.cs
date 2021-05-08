@@ -90,7 +90,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     if (field.Initializer != null)
                     {
                         var resolver = new BasicBodyAnalyzer(field, symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics);
-                        resolver.CheckType(ref field.Initializer, field.Symbol.Result.DataType);
+                        resolver.CheckType(field.Initializer, field.Symbol.Result.DataType);
                     }
                     break;
                 case IConstructorDeclarationSyntax constructor:

@@ -9,6 +9,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
     /// </summary>
     public partial interface INameExpressionSyntax
     {
-        IEnumerable<IPromise<NamedBindingSymbol>> LookupInContainingScope();
+        IEnumerable<IPromise<Symbol>> LookupInContainingScope();
     }
 }

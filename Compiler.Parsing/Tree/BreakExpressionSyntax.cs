@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
@@ -6,15 +7,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
 {
     internal class BreakExpressionSyntax : ExpressionSyntax, IBreakExpressionSyntax
     {
-        private IExpressionSyntax? value;
-        public ref IExpressionSyntax? Value => ref value;
+        public IExpressionSyntax? Value { [DebuggerStepThrough] get; }
 
         public BreakExpressionSyntax(
             TextSpan span,
             IExpressionSyntax? value)
             : base(span, ExpressionSemantics.Void)
         {
-            this.value = value;
+            Value = value;
         }
 
         protected override OperatorPrecedence ExpressionPrecedence => Value != null ? OperatorPrecedence.Min : OperatorPrecedence.Primary;

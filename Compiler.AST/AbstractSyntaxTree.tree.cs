@@ -393,9 +393,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST
 
     [Closed(
         typeof(IImplicitImmutabilityConversionExpression),
-        typeof(IImplicitNoneConversionExpression),
         typeof(IImplicitNumericConversionExpression),
-        typeof(IImplicitOptionalConversionExpression))]
+        typeof(IImplicitOptionalConversionExpression),
+        typeof(IImplicitLiftedConversionExpression))]
     public partial interface IImplicitConversionExpression : IExpression
     {
         IExpression Expression { get; }
@@ -406,17 +406,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST
         ObjectType ConvertToType { get; }
     }
 
-    public partial interface IImplicitNoneConversionExpression : IImplicitConversionExpression
-    {
-        OptionalType ConvertToType { get; }
-    }
-
     public partial interface IImplicitNumericConversionExpression : IImplicitConversionExpression
     {
         NumericType ConvertToType { get; }
     }
 
     public partial interface IImplicitOptionalConversionExpression : IImplicitConversionExpression
+    {
+        OptionalType ConvertToType { get; }
+    }
+
+    public partial interface IImplicitLiftedConversionExpression : IImplicitConversionExpression
     {
         OptionalType ConvertToType { get; }
     }

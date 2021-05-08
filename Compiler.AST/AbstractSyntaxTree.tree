@@ -95,9 +95,9 @@ ReturnExpression: Expression = Value:Expression?;
 // ---------- Implicit Conversion Expressions
 ImplicitConversionExpression: Expression = Expression DataType:'DataType';
 ImplicitImmutabilityConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'ObjectType';
-ImplicitNoneConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'OptionalType';
 ImplicitNumericConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'NumericType';
 ImplicitOptionalConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'OptionalType';
+ImplicitLiftedConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'OptionalType';
 
 // ---------- Invocation Expressions
 InvocationExpression: Expression = ReferencedSymbol:'InvocableSymbol' Arguments:Expression*;

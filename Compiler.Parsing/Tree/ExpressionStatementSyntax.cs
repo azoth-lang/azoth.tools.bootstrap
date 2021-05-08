@@ -6,17 +6,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
 {
     internal class ExpressionStatementSyntax : StatementSyntax, IExpressionStatementSyntax
     {
-        private IExpressionSyntax expression;
-        public ref IExpressionSyntax Expression
-        {
-            [DebuggerStepThrough]
-            get => ref expression;
-        }
+        public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
 
         public ExpressionStatementSyntax(TextSpan span, IExpressionSyntax expression)
             : base(span)
         {
-            this.expression = expression;
+            Expression = expression;
         }
 
         public override string ToString()

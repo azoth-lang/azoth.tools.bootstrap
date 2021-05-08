@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 
-namespace azm
+namespace Azoth.Tools.Bootstrap.Assembler.CLI
 {
-    class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        public static void Main()
         {
             Console.WriteLine("Hello World!");
         }

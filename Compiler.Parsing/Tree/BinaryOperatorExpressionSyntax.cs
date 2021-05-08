@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -8,14 +9,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
 {
     internal class BinaryOperatorExpressionSyntax : ExpressionSyntax, IBinaryOperatorExpressionSyntax
     {
-        private IExpressionSyntax leftOperand;
-        public ref IExpressionSyntax LeftOperand => ref leftOperand;
-
-        public BinaryOperator Operator { get; }
-
-
-        private IExpressionSyntax rightOperand;
-        public ref IExpressionSyntax RightOperand => ref rightOperand;
+        public IExpressionSyntax LeftOperand { [DebuggerStepThrough] get; }
+        public BinaryOperator Operator { [DebuggerStepThrough] get; }
+        public IExpressionSyntax RightOperand { [DebuggerStepThrough] get; }
 
         public BinaryOperatorExpressionSyntax(
             IExpressionSyntax leftOperand,
@@ -23,9 +19,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             IExpressionSyntax rightOperand)
             : base(TextSpan.Covering(leftOperand.Span, rightOperand.Span))
         {
-            this.leftOperand = leftOperand;
+            LeftOperand = leftOperand;
             Operator = @operator;
-            this.rightOperand = rightOperand;
+            RightOperand = rightOperand;
         }
 
         protected override OperatorPrecedence ExpressionPrecedence => Operator switch

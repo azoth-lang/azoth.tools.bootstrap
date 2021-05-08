@@ -132,13 +132,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST
                 case IImplicitImmutabilityConversionExpression n:
                     yield return n.Expression;
                     yield break;
-                case IImplicitNoneConversionExpression n:
-                    yield return n.Expression;
-                    yield break;
                 case IImplicitNumericConversionExpression n:
                     yield return n.Expression;
                     yield break;
                 case IImplicitOptionalConversionExpression n:
+                    yield return n.Expression;
+                    yield break;
+                case IImplicitLiftedConversionExpression n:
                     yield return n.Expression;
                     yield break;
                 case IFunctionInvocationExpression n:

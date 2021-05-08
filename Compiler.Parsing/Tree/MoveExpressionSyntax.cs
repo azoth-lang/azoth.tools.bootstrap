@@ -11,21 +11,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
     [SuppressMessage("Performance", "CA1812:Class Never Instantiated")]
     internal class MoveExpressionSyntax : ExpressionSyntax, IMoveExpressionSyntax
     {
-        [SuppressMessage("Style", "IDE0044:Add readonly modifier",
-            Justification = "Can't be readonly because a reference to it is exposed")]
-        private IExpressionSyntax referent;
-        public ref IExpressionSyntax Referent
-        {
-            [DebuggerStepThrough]
-            get => ref referent;
-        }
+        public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
 
-        public Promise<BindingSymbol?> ReferencedSymbol { get; } = new Promise<BindingSymbol?>();
+        public Promise<BindingSymbol?> ReferencedSymbol { [DebuggerStepThrough] get; }
+            = new Promise<BindingSymbol?>();
 
         public MoveExpressionSyntax(TextSpan span, INameExpressionSyntax referent)
             : base(span) // TODO this could be a move or acquire?
         {
-            this.referent = referent;
+            Referent = referent;
         }
 
         protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;

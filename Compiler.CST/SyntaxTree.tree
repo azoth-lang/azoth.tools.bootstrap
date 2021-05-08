@@ -51,7 +51,7 @@ MethodDeclaration: MemberDeclaration, InvocableDeclaration = Name:'Name' SelfPar
 AbstractMethodDeclaration: MethodDeclaration = SelfParameter Parameters:NamedParameter* ReturnType:Type?;
 ConcreteMethodDeclaration: MethodDeclaration, ConcreteInvocableDeclaration = SelfParameter Parameters:NamedParameter* ReturnType:Type? Body;
 ConstructorDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = ImplicitSelfParameter:SelfParameter Parameters:ConstructorParameter* Body Symbol:'AcyclicPromise<ConstructorSymbol>';
-FieldDeclaration: MemberDeclaration, Binding = Name:'Name' Type Symbol:'AcyclicPromise<FieldSymbol>' &Initializer:Expression?;
+FieldDeclaration: MemberDeclaration, Binding = Name:'Name' Type Symbol:'AcyclicPromise<FieldSymbol>' Initializer:Expression?;
 AssociatedFunctionDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* ReturnType:Type? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
 // ---------- Parameters --------------
@@ -66,7 +66,6 @@ FieldParameter: Parameter, ConstructorParameter = ReferencedSymbol:'Promise<Fiel
 
 
 // ---------- Function Parts
-Argument = &Expression;
 Body: BodyOrBlock = Statements:BodyStatement*;
 
 // ---------- Types
@@ -78,17 +77,17 @@ ReferenceCapability = Tokens:'ICapabilityToken'* Declared:'DeclaredReferenceCapa
 
 // ---------- Statements
 Statement;
-ResultStatement: Statement, BlockOrResult = &Expression;
+ResultStatement: Statement, BlockOrResult = Expression;
 BodyStatement: Statement;
-VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Name:'Name' DeclarationNumber:'Promise<int?>' Type? Capability:ReferenceCapability? Symbol:'Promise<VariableSymbol>' &Initializer:Expression?;
-ExpressionStatement: BodyStatement = &Expression;
+VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Name:'Name' DeclarationNumber:'Promise<int?>' Type? Capability:ReferenceCapability? Symbol:'Promise<VariableSymbol>' Initializer:Expression?;
+ExpressionStatement: BodyStatement = Expression;
 
 // ---------- Expressions
-Expression;
+Expression = ConvertedDataType:'DataType'?;
 AssignableExpression: Expression;
 BlockExpression: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
-NewObjectExpression: Expression = Type:TypeName ConstructorName:'Name'? ConstructorNameSpan:'TextSpan'? Arguments:Argument* ReferencedSymbol:'Promise<ConstructorSymbol?>';
-UnsafeExpression: Expression = &Expression;
+NewObjectExpression: Expression = Type:TypeName ConstructorName:'Name'? ConstructorNameSpan:'TextSpan'? Arguments:Expression* ReferencedSymbol:'Promise<ConstructorSymbol?>';
+UnsafeExpression: Expression = Expression;
 
 // ---------- Literal Expressions
 LiteralExpression: Expression;
@@ -98,37 +97,25 @@ NoneLiteralExpression: LiteralExpression;
 StringLiteralExpression: LiteralExpression = Value:'string';
 
 // ---------- Operator Expressions
-AssignmentExpression: Expression = &LeftOperand:AssignableExpression Operator:'AssignmentOperator' &RightOperand:Expression;
-BinaryOperatorExpression: Expression = &LeftOperand:Expression Operator:'BinaryOperator' &RightOperand:Expression;
-UnaryOperatorExpression: Expression = Fixity:'UnaryOperatorFixity' Operator:'UnaryOperator' &Operand:Expression;
+AssignmentExpression: Expression = LeftOperand:AssignableExpression Operator:'AssignmentOperator' RightOperand:Expression;
+BinaryOperatorExpression: Expression = LeftOperand:Expression Operator:'BinaryOperator' RightOperand:Expression;
+UnaryOperatorExpression: Expression = Fixity:'UnaryOperatorFixity' Operator:'UnaryOperator' Operand:Expression;
 
 // ---------- Control Flow Expressions
-IfExpression: Expression, ElseClause = &Condition:Expression ThenBlock:BlockOrResult ElseClause?;
+IfExpression: Expression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
 LoopExpression: Expression = Block:BlockExpression;
-WhileExpression: Expression = &Condition:Expression Block:BlockExpression;
-ForeachExpression: Expression, LocalBinding = VariableName:'Name' DeclarationNumber:'Promise<int?>' &InExpression:Expression Type? Symbol:'Promise<VariableSymbol>' Block:BlockExpression;
-BreakExpression: Expression = &Value:Expression?;
+WhileExpression: Expression = Condition:Expression Block:BlockExpression;
+ForeachExpression: Expression, LocalBinding = VariableName:'Name' DeclarationNumber:'Promise<int?>' InExpression:Expression Type? Symbol:'Promise<VariableSymbol>' Block:BlockExpression;
+BreakExpression: Expression = Value:Expression?;
 NextExpression: Expression;
-ReturnExpression: Expression = &Value:Expression?;
-
-// ---------- Implicit Conversion Expressions
-ImplicitConversionExpression: Expression = Expression DataType:'DataType';
-ImplicitImmutabilityConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'ObjectType';
-ImplicitNoneConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'OptionalType';
-ImplicitNumericConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'NumericType';
-ImplicitOptionalConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'OptionalType';
+ReturnExpression: Expression = Value:Expression?;
 
 // ---------- Invocation Expressions
-InvocationExpression: Expression = InvokedName:'Name' InvokedNameSpan:'TextSpan' Arguments:Argument* ReferencedSymbol:'IPromise<InvocableSymbol?>';
-UnqualifiedInvocationExpression: InvocationExpression, 'IHasContainingLexicalScope' = Namespace:'NamespaceName' Arguments:Argument* ReferencedSymbol:'Promise<FunctionSymbol?>';
-// TODO in the CST, we don't know that this is a method invocation, it is just a qualified invocation (not even member because namespaces don't have members)
-// TODO remove IHasContainingLexicalScope when not needed because of conversion to FunctionInvocationExpression
-QualifiedInvocationExpression: InvocationExpression, 'IHasContainingLexicalScope' = &Context:Expression Arguments:Argument* ReferencedSymbol:'Promise<MethodSymbol?>';
+InvocationExpression: Expression, 'IHasContainingLexicalScope' = Expression Arguments:Expression* ReferencedSymbol:'Promise<InvocableSymbol?>';
 
 // ---------- Variable Expressions
-NameExpression: AssignableExpression, 'IHasContainingLexicalScope' = Name:'Name'? ReferencedSymbol:'Promise<NamedBindingSymbol?>';
+NameExpression: AssignableExpression, 'IHasContainingLexicalScope' = Name:'Name'? ReferencedSymbol:'Promise<Symbol?>';
 SelfExpression: Expression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfParameterSymbol?>';
-QualifiedNameExpression: AssignableExpression = &Context:Expression AccessOperator:'AccessOperator' Field:NameExpression ReferencedSymbol:'IPromise<FieldSymbol?>';
-MutateExpression: Expression = &Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
-MoveExpression: Expression = &Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
-ShareExpression: Expression = &Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
+QualifiedNameExpression: AssignableExpression = Context:Expression AccessOperator:'AccessOperator' Field:NameExpression ReferencedSymbol:'IPromise<FieldSymbol?>';
+MutateExpression: Expression = Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
+MoveExpression: Expression = Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';

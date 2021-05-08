@@ -59,12 +59,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation
                     return;
                 case IForeachExpressionSyntax foreachExpression:
                     WalkChildren(foreachExpression);
-                    foreachExpression.DataType.Known();
+                    foreachExpression.ConvertedDataType.Known();
                     foreachExpression.Symbol.Result.DataType.Known();
                     return;
                 case IExpressionSyntax expression:
                     WalkChildren(expression);
-                    expression.DataType.Known();
+                    expression.ConvertedDataType.Known();
                     return;
             }
 

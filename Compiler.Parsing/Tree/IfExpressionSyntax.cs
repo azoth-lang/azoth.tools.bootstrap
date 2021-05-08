@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
@@ -6,12 +7,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
 {
     internal class IfExpressionSyntax : ExpressionSyntax, IIfExpressionSyntax
     {
-        private IExpressionSyntax condition;
-
-        public ref IExpressionSyntax Condition => ref condition;
-
-        public IBlockOrResultSyntax ThenBlock { get; }
-        public IElseClauseSyntax? ElseClause { get; }
+        public IExpressionSyntax Condition { [DebuggerStepThrough] get; }
+        public IBlockOrResultSyntax ThenBlock { [DebuggerStepThrough] get; }
+        public IElseClauseSyntax? ElseClause { [DebuggerStepThrough] get; }
 
         public IfExpressionSyntax(
             TextSpan span,
@@ -20,7 +18,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             IElseClauseSyntax? elseClause)
             : base(span)
         {
-            this.condition = condition;
+            Condition = condition;
             ThenBlock = thenBlock;
             ElseClause = elseClause;
         }
