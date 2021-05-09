@@ -654,8 +654,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
             //type = referenceType.To(ReferenceCapability.Shared);
 
-            if (referenceType.Capability != ReferenceCapability.Shared)
-                throw new NotImplementedException("Need implicit read?");
+            //if (referenceType.Capability != ReferenceCapability.Shared)
+            //    throw new NotImplementedException("Need implicit read?");
             //expression = new ImplicitReadExpressionSyntax(expression, type, referencedSymbol);
 
             //return type;
