@@ -61,6 +61,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
         #endregion
 
         #region Private Constructors
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         private AzothValue(AzothObject value) : this()
         {
             ObjectValue = value;
@@ -104,6 +105,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
             this.value.Struct = NotStruct;
             this.value.Simple.SizeValue = value;
         }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         #endregion
 
         [StructLayout(LayoutKind.Explicit)]
