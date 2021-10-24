@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -22,15 +21,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
         {
             switch (Tokens.Current)
             {
-                case IIsolatedKeywordToken isolatedKeyword:
-                    Tokens.RequiredToken<IIsolatedKeywordToken>();
-                    return ParseReferenceCapability(isolatedKeyword, IsolatedReadable, IsolatedMutable);
-                case ISharedKeywordToken sharedKeyword:
-                    Tokens.RequiredToken<ISharedKeywordToken>();
-                    return ParseReferenceCapability(sharedKeyword, SharedReadable, SharedMutable);
-                case ILentKeywordToken lentKeyword:
-                    Tokens.RequiredToken<ILentKeywordToken>();
-                    return ParseReferenceCapability(lentKeyword, LentReadable, LentMutable);
+                case IIsolatedKeywordToken _:
+                {
+                    var isolatedKeyword = Tokens.RequiredToken<IIsolatedKeywordToken>();
+                    return new ReferenceCapabilitySyntax(isolatedKeyword.Span, isolatedKeyword.Yield(), Isolated);
+                }
                 case IMutableKeywordToken _:
                 {
                     var mutableKeyword = Tokens.RequiredToken<IMutableKeywordToken>();
@@ -50,19 +45,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
                     //Could be a readable reference capability, or could be a value type
                     return null;
             }
-        }
-
-        private IReferenceCapabilitySyntax ParseReferenceCapability(
-            ICapabilityToken capabilityToken,
-            DeclaredReferenceCapability readable,
-            DeclaredReferenceCapability mutable)
-        {
-            var tokens = new List<ICapabilityToken> { capabilityToken };
-            var mutableKeyword = Tokens.AcceptToken<IMutableKeywordToken>();
-            if (mutableKeyword != null) tokens.Add(mutableKeyword);
-            var span = TextSpan.Covering(capabilityToken.Span, mutableKeyword?.Span);
-            var capability = mutableKeyword is null ? readable : mutable;
-            return new ReferenceCapabilitySyntax(span, tokens, capability);
         }
 
         public ITypeSyntax ParseTypeWithCapability(IReferenceCapabilitySyntax? capability)

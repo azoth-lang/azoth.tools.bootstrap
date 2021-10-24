@@ -19,17 +19,10 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         {
             var data = new TheoryData<ReferenceCapabilityAssignmentTestCase>
             {
-                // From something to the lent version
-                new ReferenceCapabilityAssignmentTestCase(SharedMutable, LentMutable, true),
-                new ReferenceCapabilityAssignmentTestCase(Shared, Lent, true),
-
                 // Up the standard hierarchy
-                new ReferenceCapabilityAssignmentTestCase(SharedMutable, Shared, true),
-                new ReferenceCapabilityAssignmentTestCase(Constant, Shared, true),
-                new ReferenceCapabilityAssignmentTestCase(Shared, Identity, true),
-
-                // Up the lent hierarchy
-                new ReferenceCapabilityAssignmentTestCase(LentMutable, Lent, true),
+                new ReferenceCapabilityAssignmentTestCase(Mutable, ReadOnly, true),
+                new ReferenceCapabilityAssignmentTestCase(Constant, ReadOnly, true),
+                new ReferenceCapabilityAssignmentTestCase(ReadOnly, Identity, true),
             };
             // All all transitive conversions?
             return data;

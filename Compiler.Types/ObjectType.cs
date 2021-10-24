@@ -80,7 +80,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public ObjectType ToConstructorSelf()
         {
             // TODO handle the case where the type is not declared mutable but the constructor arg allows mutate
-            return new ObjectType(ContainingNamespace, Name, DeclaredCapability, ReferenceCapability.SharedMutable);
+            return new ObjectType(ContainingNamespace, Name, DeclaredCapability, ReferenceCapability.Mutable);
         }
 
         public ObjectType ToConstructorReturn()

@@ -26,10 +26,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
             typeof(FunctionKeywordToken),
             typeof(NewKeywordToken),
             typeof(IsolatedKeywordToken),
-            typeof(SharedKeywordToken),
             typeof(ConstKeywordToken),
             typeof(IdKeywordToken),
-            typeof(LentKeywordToken),
             typeof(NamespaceKeywordToken),
             typeof(UsingKeywordToken),
             typeof(ForeachKeywordToken),
@@ -127,10 +125,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
         {
             return new IsolatedKeywordToken(span);
         }
-        public static ISharedKeywordToken SharedKeyword(TextSpan span)
-        {
-            return new SharedKeywordToken(span);
-        }
         public static IConstKeywordToken ConstKeyword(TextSpan span)
         {
             return new ConstKeywordToken(span);
@@ -138,10 +132,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
         public static IIdKeywordToken IdKeyword(TextSpan span)
         {
             return new IdKeywordToken(span);
-        }
-        public static ILentKeywordToken LentKeyword(TextSpan span)
-        {
-            return new LentKeywordToken(span);
         }
         public static INamespaceKeywordToken NamespaceKeyword(TextSpan span)
         {
@@ -259,10 +249,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
         typeof(IFunctionKeywordToken),
         typeof(INewKeywordToken),
         typeof(IIsolatedKeywordToken),
-        typeof(ISharedKeywordToken),
         typeof(IConstKeywordToken),
         typeof(IIdKeywordToken),
-        typeof(ILentKeywordToken),
         typeof(INamespaceKeywordToken),
         typeof(IUsingKeywordToken),
         typeof(IForeachKeywordToken),
@@ -443,15 +431,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
         }
     }
 
-    public partial interface ISharedKeywordToken : IKeywordToken { }
-    internal partial class SharedKeywordToken : Token, ISharedKeywordToken
-    {
-        public SharedKeywordToken(TextSpan span)
-            : base(span)
-        {
-        }
-    }
-
     public partial interface IConstKeywordToken : IKeywordToken { }
     internal partial class ConstKeywordToken : Token, IConstKeywordToken
     {
@@ -465,15 +444,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens
     internal partial class IdKeywordToken : Token, IIdKeywordToken
     {
         public IdKeywordToken(TextSpan span)
-            : base(span)
-        {
-        }
-    }
-
-    public partial interface ILentKeywordToken : IKeywordToken { }
-    internal partial class LentKeywordToken : Token, ILentKeywordToken
-    {
-        public LentKeywordToken(TextSpan span)
             : base(span)
         {
         }

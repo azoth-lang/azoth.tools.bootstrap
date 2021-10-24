@@ -83,7 +83,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
                 case ISemicolonToken _:
                     // TODO this is strange that  let x := ...; is valid
                     capability ??= new ReferenceCapabilitySyntax(Tokens.Current.Span.AtStart(),
-                        Enumerable.Empty<ICapabilityToken>(), DeclaredReferenceCapability.Readable);
+                        Enumerable.Empty<ICapabilityToken>(), DeclaredReferenceCapability.ReadOnly);
                     return (null, capability);
                 default:
                     return (ParseTypeWithCapability(capability), null);

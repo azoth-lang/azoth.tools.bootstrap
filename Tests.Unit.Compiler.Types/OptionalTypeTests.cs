@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Optional_reference_has_reference_semantics()
         {
-            var optionalAny = new OptionalType(new AnyType(IsolatedMutable));
+            var optionalAny = new OptionalType(new AnyType(Isolated));
 
             Assert.Equal(TypeSemantics.Reference, optionalAny.Semantics);
         }
@@ -67,8 +67,8 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void With_equal_referent_are_equal()
         {
-            var type1 = new OptionalType(ObjectType.Create(Namespace("foo", "bar"), "Baz", SharedMutable, SharedMutable));
-            var type2 = new OptionalType(ObjectType.Create(Namespace("foo", "bar"), "Baz", SharedMutable, SharedMutable));
+            var type1 = new OptionalType(ObjectType.Create(Namespace("foo", "bar"), "Baz", Mutable, Mutable));
+            var type2 = new OptionalType(ObjectType.Create(Namespace("foo", "bar"), "Baz", Mutable, Mutable));
 
             Assert.Equal(type1, type2);
         }

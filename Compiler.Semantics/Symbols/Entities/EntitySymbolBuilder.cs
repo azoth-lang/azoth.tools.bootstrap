@@ -149,8 +149,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities
             var capability = @class.CapabilityModifier switch
             {
                 IConstKeywordToken _ => ReferenceCapability.Constant,
-                IMutableKeywordToken _ => ReferenceCapability.SharedMutable,
-                null => ReferenceCapability.Shared,
+                IMutableKeywordToken _ => ReferenceCapability.Mutable,
+                null => ReferenceCapability.ReadOnly,
                 _ => throw ExhaustiveMatch.Failed(@class.CapabilityModifier)
             };
 
@@ -251,7 +251,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities
             IClassDeclarationSyntax declaringClass)
         {
             var selfType = declaringClass.Symbol.Result.DeclaresDataType;
-            selfType = selfType.To(selfParameter.MutableSelf ? ReferenceCapability.LentMutable : ReferenceCapability.Lent);
+            selfType = selfType.To(selfParameter.MutableSelf ? ReferenceCapability.Mutable : ReferenceCapability.ReadOnly);
             return selfType;
         }
 

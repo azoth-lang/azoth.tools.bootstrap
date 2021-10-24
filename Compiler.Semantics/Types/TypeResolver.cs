@@ -84,17 +84,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
         {
             var referenceCapability = capability.Declared switch
             {
-                DeclaredReferenceCapability.IsolatedMutable => ReferenceCapability.IsolatedMutable,
-                DeclaredReferenceCapability.SharedMutable => ReferenceCapability.SharedMutable,
-                DeclaredReferenceCapability.LentMutable => ReferenceCapability.LentMutable,
-                DeclaredReferenceCapability.IsolatedReadable => ReferenceCapability.Isolated,
-                DeclaredReferenceCapability.SharedReadable => ReferenceCapability.Shared,
-                DeclaredReferenceCapability.LentReadable => ReferenceCapability.Lent,
+                DeclaredReferenceCapability.Isolated => ReferenceCapability.Isolated,
+
                 DeclaredReferenceCapability.Constant => ReferenceCapability.Constant,
                 DeclaredReferenceCapability.Identity => ReferenceCapability.Identity,
 
-                DeclaredReferenceCapability.Mutable => inferLent ? ReferenceCapability.LentMutable : ReferenceCapability.SharedMutable,
-                DeclaredReferenceCapability.Readable => inferLent ? ReferenceCapability.Lent : ReferenceCapability.Shared,
+                DeclaredReferenceCapability.Mutable => ReferenceCapability.Mutable,
+                DeclaredReferenceCapability.ReadOnly => ReferenceCapability.ReadOnly,
                 _ => throw ExhaustiveMatch.Failed(capability.Declared),
             };
             return referenceType.To(referenceCapability);

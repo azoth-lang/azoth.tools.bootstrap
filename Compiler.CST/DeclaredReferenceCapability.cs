@@ -1,22 +1,13 @@
 namespace Azoth.Tools.Bootstrap.Compiler.CST
 {
     /// <summary>
-    /// The reference capability a type was declared with. In addition to the standard
-    /// reference capabilities, this also adds 'Mutable' and 'Readable' which represent
-    /// `mut T` and `T` respectively. This is because a declared type may not fully
-    /// determine the reference capability. For these two cases, whether the type is
-    /// shared or lent must be inferred.
+    /// The reference capability a type was declared with.
     /// </summary>
     public enum DeclaredReferenceCapability
     {
-        IsolatedMutable = 1,
+        Isolated = 1,
         Mutable,
-        SharedMutable,
-        LentMutable,
-        IsolatedReadable,
-        Readable,
-        SharedReadable,
-        LentReadable,
+        ReadOnly, // read-only from this reference, possibly writable from others
         Constant,
         Identity
     }

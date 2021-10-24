@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Is_reference_type()
         {
-            var type = new AnyType(IsolatedMutable);
+            var type = new AnyType(Isolated);
 
             Assert.OfType<ReferenceType>(type);
         }
@@ -18,7 +18,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Is_not_constant()
         {
-            var type = new AnyType(IsolatedMutable);
+            var type = new AnyType(Isolated);
 
             Assert.False(type.IsConstant);
         }
@@ -26,7 +26,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Is_known_type()
         {
-            var type = new AnyType(IsolatedMutable);
+            var type = new AnyType(Isolated);
 
             Assert.True(type.IsKnown);
         }
@@ -34,7 +34,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Is_not_empty_type()
         {
-            var type = new AnyType(IsolatedMutable);
+            var type = new AnyType(Isolated);
 
             Assert.False(type.IsEmpty);
         }
@@ -42,15 +42,15 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Is_declared_mutable()
         {
-            var type = new AnyType(IsolatedMutable);
+            var type = new AnyType(Isolated);
 
-            Assert.Equal(SharedMutable, type.DeclaredCapability);
+            Assert.Equal(Mutable, type.DeclaredCapability);
         }
 
         [Fact]
         public void Has_reference_semantics()
         {
-            var type = new AnyType(IsolatedMutable);
+            var type = new AnyType(Isolated);
 
             Assert.Equal(TypeSemantics.Reference, type.Semantics);
         }
@@ -108,8 +108,8 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Any_types_with_same_reference_capability_are_equal()
         {
-            var type1 = new AnyType(Shared);
-            var type2 = new AnyType(Shared);
+            var type1 = new AnyType(ReadOnly);
+            var type2 = new AnyType(ReadOnly);
 
             Assert.Equal(type1, type2);
         }
@@ -117,8 +117,8 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [Fact]
         public void Any_types_with_different_reference_capabilities_are_not_equal()
         {
-            var type1 = new AnyType(Shared);
-            var type2 = new AnyType(SharedMutable);
+            var type1 = new AnyType(ReadOnly);
+            var type2 = new AnyType(Mutable);
 
             Assert.NotEqual(type1, type2);
         }

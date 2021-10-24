@@ -107,7 +107,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit
             return ObjectType.Create(
                 containingNamespace ?? NamespaceName.Global,
                 finalName.Text,
-                declaredCapability ?? ReferenceCapability.Shared,
+                declaredCapability ?? ReferenceCapability.ReadOnly,
                 referenceCapability ?? ReferenceCapability.Constant);
         }
 
