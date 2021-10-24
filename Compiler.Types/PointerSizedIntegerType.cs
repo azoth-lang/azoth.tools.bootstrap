@@ -8,8 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
     /// </summary>
     public sealed class PointerSizedIntegerType : IntegerType
     {
-        internal new static readonly PointerSizedIntegerType Size = new PointerSizedIntegerType(SpecialTypeName.Size, false);
-        internal new static readonly PointerSizedIntegerType Offset = new PointerSizedIntegerType(SpecialTypeName.Offset, true);
+        internal new static readonly PointerSizedIntegerType Size = new(SpecialTypeName.Size, false);
+        internal new static readonly PointerSizedIntegerType Offset = new(SpecialTypeName.Offset, true);
 
         public bool IsSigned { get; }
         public override bool IsKnown => true;

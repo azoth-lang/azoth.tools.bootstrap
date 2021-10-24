@@ -36,7 +36,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// <summary>
         /// The value `none` has this type, which is `never?`
         /// </summary>
-        public static readonly OptionalType None = new OptionalType(Never);
+        public static readonly OptionalType None = new(Never);
         #endregion
 
         /// <summary>

@@ -626,7 +626,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         private static DataType InsertImplicitReadIfNeeded(IExpressionSyntax expression, DataType type)
         {
             // Value types aren't shared
-            if (!(type is ReferenceType referenceType)) return type;
+            if (type is not ReferenceType referenceType) return type;
 
             BindingSymbol? referencedSymbol;
             switch (expression)
@@ -661,7 +661,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         private static void InsertImplicitMutateIfNeeded(IExpressionSyntax expression, DataType type)
         {
             // Value types aren't shared
-            if (!(type is ReferenceType referenceType)) return;
+            if (type is not ReferenceType referenceType) return;
 
             BindingSymbol? referencedSymbol;
             switch (expression)
@@ -688,12 +688,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         private static void InsertImplicitMoveIfNeeded(IExpressionSyntax expression, DataType type)
         {
             // Value types aren't moved
-            if (!(type is ReferenceType referenceType)
-                // Neither are non-moveable types
-                || !referenceType.IsMovable)
+            if (type is not ReferenceType { IsMovable: true })
                 return;
 
-            if (!(expression is INameExpressionSyntax name))
+            if (expression is not INameExpressionSyntax name)
                 // Implicit move not needed
                 return;
 
@@ -708,7 +706,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         private static void InsertImplicitActionIfNeeded(IExpressionSyntax expression, DataType toType, bool implicitMutateAllowed)
         {
             var fromType = expression.DataType.Assigned();
-            if (!(fromType is ReferenceType from) || !(toType is ReferenceType to)) return;
+            if (fromType is not ReferenceType from || toType is not ReferenceType to) return;
 
             if (@from.IsMovable && to.IsMovable)
                 InsertImplicitMoveIfNeeded(expression, to);

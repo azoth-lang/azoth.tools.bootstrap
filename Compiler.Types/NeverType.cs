@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
     public sealed class NeverType : EmptyType
     {
         #region Singleton
-        internal static readonly NeverType Instance = new NeverType();
+        internal static readonly NeverType Instance = new();
 
         private NeverType()
             : base(SpecialTypeName.Never)
