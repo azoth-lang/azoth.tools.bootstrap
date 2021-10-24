@@ -69,7 +69,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols.Trees
 
         public PrimitiveSymbolTree BuildPrimitives()
         {
-            if (!(Package is null))
+            if (Package is not null)
                 throw new InvalidOperationException($"Can't build {nameof(PrimitiveSymbolTree)} WITH a package");
             return new PrimitiveSymbolTree(symbolChildren.ToFixedDictionary(e => e.Key, e => e.Value.ToFixedSet()));
         }

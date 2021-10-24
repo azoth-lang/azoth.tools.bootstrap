@@ -5,6 +5,7 @@
     <AssemblyName>Azoth.Tools.Bootstrap.Compiler.Symbols</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Compiler.Symbols</RootNamespace>
     <Nullable>enable</Nullable>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

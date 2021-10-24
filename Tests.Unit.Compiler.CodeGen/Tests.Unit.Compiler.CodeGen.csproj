@@ -8,6 +8,8 @@
     <AssemblyName>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.CodeGen</AssemblyName>
 
     <RootNamespace>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.CodeGen</RootNamespace>
+
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

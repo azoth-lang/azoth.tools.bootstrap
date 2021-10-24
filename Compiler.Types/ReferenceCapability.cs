@@ -10,34 +10,33 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// reference and no references out from those objects to non-constant
         /// references.
         /// </summary>
-        public static readonly ReferenceCapability Isolated
-            = new ReferenceCapability("iso", allowsWrite: true);
+        public static readonly ReferenceCapability Isolated = new("iso", allowsWrite: true);
 
         /// <summary>
         /// A reference that has write access and can be stored into fields etc.
         /// </summary>
         public static readonly ReferenceCapability Mutable
-            = new ReferenceCapability("mut", allowsWrite: true, allowsWriteAliases: true, allowsReadAliases: true);
+            = new("mut", allowsWrite: true, allowsWriteAliases: true, allowsReadAliases: true);
 
         /// <summary>
         /// A reference that has read-only access and can be stored into fields etc.
         /// </summary>
         public static readonly ReferenceCapability ReadOnly
-            = new ReferenceCapability("read-only", allowsWriteAliases: true, allowsReadAliases: true);
+            = new("read-only", allowsWriteAliases: true, allowsReadAliases: true);
 
         /// <summary>
         /// A reference has read-only access and there are no references that
         /// can mutate this object.
         /// </summary>
         public static readonly ReferenceCapability Constant
-            = new ReferenceCapability("const", allowsReadAliases: true);
+            = new("const", allowsReadAliases: true);
 
         /// <summary>
         /// A reference that can be used to identify an object but not read or
         /// write to it.
         /// </summary>
         public static readonly ReferenceCapability Identity
-            = new ReferenceCapability("id", allowsWriteAliases: true, allowsRead: false, allowsReadAliases: true);
+            = new("id", allowsWriteAliases: true, allowsRead: false, allowsReadAliases: true);
 
         private readonly string value;
         /// <summary>

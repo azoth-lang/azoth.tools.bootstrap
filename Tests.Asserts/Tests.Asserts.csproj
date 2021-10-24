@@ -10,6 +10,8 @@
     <AssemblyName>Azoth.Tools.Bootstrap.Tests.Asserts</AssemblyName>
 
     <RootNamespace>Xunit</RootNamespace>
+
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

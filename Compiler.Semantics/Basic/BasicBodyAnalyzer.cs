@@ -220,13 +220,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 case (PointerSizedIntegerType targetType, IntegerConstantType expressionType):
                 {
                     var requireSigned = expressionType.Value < 0;
-                    if (!requireSigned || targetType.IsSigned)
-                        return new NumericConversion(targetType);
-                    else
-                        return null;
+                    return !requireSigned || targetType.IsSigned ? new NumericConversion(targetType) : null;
                 }
-                case (ObjectType targetType, ObjectType expressionType)
-                   when targetType.IsReadOnly && expressionType.IsMutable:
+                case (ObjectType { IsReadOnly: true } targetType, ObjectType { IsMutable: true } expressionType):
                     // TODO if source type is explicitly mutable, issue warning about using `mut` in immutable context
                     var capability = targetType.Capability == ReferenceCapability.Constant
                         ? expressionType.To(ReferenceCapability.Constant)

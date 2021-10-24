@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>Azoth.Tools.Bootstrap.Compiler.Semantics</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Compiler.Semantics</RootNamespace>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>default</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 

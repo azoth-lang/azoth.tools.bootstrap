@@ -6,6 +6,7 @@
     <RootNamespace>Azoth.Tools.Bootstrap.Compiler.CodeGen</RootNamespace>
     <AssemblyName>CompilerCodeGen</AssemblyName>
     <Nullable>enable</Nullable>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

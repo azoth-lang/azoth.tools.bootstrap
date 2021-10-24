@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Azoth.Tools.Bootstrap.Framework
 {
-    // These attributes make it so FixedList<T> is displayed nicely in the debugger similar to Set<T>
+    // These attributes make it so FixedSet<T> is displayed nicely in the debugger similar to Set<T>
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     public class FixedSet<T> : IReadOnlyCollection<T>, IEquatable<FixedSet<T>>

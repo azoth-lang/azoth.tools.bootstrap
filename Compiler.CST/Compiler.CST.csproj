@@ -6,6 +6,7 @@
     <RootNamespace>Azoth.Tools.Bootstrap.Compiler.CST</RootNamespace>
     <Nullable>enable</Nullable>
     <DisableFastUpToDateCheck>True</DisableFastUpToDateCheck>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
