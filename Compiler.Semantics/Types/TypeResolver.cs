@@ -25,7 +25,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
         }
 
         [return: NotNullIfNotNull("typeSyntax")]
-        public DataType? Evaluate(ITypeSyntax? typeSyntax, bool inferLent)
+        public DataType? Evaluate(ITypeSyntax? typeSyntax)
         {
             switch (typeSyntax)
             {
@@ -58,18 +58,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
                 }
                 case ICapabilityTypeSyntax referenceCapability:
                 {
-                    var type = Evaluate(referenceCapability.ReferentType, false);
+                    var type = Evaluate(referenceCapability.ReferentType);
                     if (type == DataType.Unknown)
                         return DataType.Unknown;
                     if (type is ReferenceType referenceType)
-                        referenceCapability.NamedType = Evaluate(referenceType, referenceCapability.Capability, inferLent);
+                        referenceCapability.NamedType = Evaluate(referenceType, referenceCapability.Capability);
                     else
                         referenceCapability.NamedType = DataType.Unknown;
                     break;
                 }
                 case IOptionalTypeSyntax optionalType:
                 {
-                    var referent = Evaluate(optionalType.Referent, inferLent);
+                    var referent = Evaluate(optionalType.Referent);
                     return optionalType.NamedType = new OptionalType(referent);
                 }
             }
@@ -79,8 +79,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
 
         private static DataType Evaluate(
             ReferenceType referenceType,
-            IReferenceCapabilitySyntax capability,
-            bool inferLent)
+            IReferenceCapabilitySyntax capability)
         {
             var referenceCapability = capability.Declared switch
             {

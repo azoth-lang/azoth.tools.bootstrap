@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// references.
         /// </summary>
         public static readonly ReferenceCapability Isolated
-            = new ReferenceCapability("iso mut", allowsWrite: true);
+            = new ReferenceCapability("iso", allowsWrite: true);
 
         /// <summary>
         /// A reference that has write access and can be stored into fields etc.

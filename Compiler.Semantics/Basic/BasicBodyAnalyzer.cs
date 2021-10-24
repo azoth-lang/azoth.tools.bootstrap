@@ -90,7 +90,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             DataType type;
             if (variableDeclaration.Type != null)
             {
-                type = typeResolver.Evaluate(variableDeclaration.Type, false);
+                type = typeResolver.Evaluate(variableDeclaration.Type);
                 CheckType(variableDeclaration.Initializer!, type);
             }
             else if (variableDeclaration.Initializer != null)
@@ -455,7 +455,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 {
                     var argumentTypes = exp.Arguments.Select(argument => InferType(argument)).ToFixedList();
                     // TODO handle named constructors here
-                    var constructingType = typeResolver.Evaluate(exp.Type, false);
+                    var constructingType = typeResolver.Evaluate(exp.Type);
                     if (!constructingType.IsKnown)
                     {
                         diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
@@ -497,7 +497,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 }
                 case IForeachExpressionSyntax exp:
                 {
-                    var declaredType = typeResolver.Evaluate(exp.Type, false);
+                    var declaredType = typeResolver.Evaluate(exp.Type);
                     var expressionType = CheckForeachInType(declaredType, exp.InExpression);
                     var variableType = declaredType ?? expressionType;
                     var symbol = new VariableSymbol((InvocableSymbol)containingSymbol, exp.VariableName,
@@ -1190,7 +1190,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         // Re-expose type analyzer to BasicAnalyzer
         public DataType EvaluateType(ITypeSyntax typeSyntax, bool inferLent)
         {
-            return typeResolver.Evaluate(typeSyntax, inferLent);
+            return typeResolver.Evaluate(typeSyntax);
         }
 
         //private void InferExpressionTypeInInvocation(ExpressionSyntax callee, FixedList<DataType> argumentTypes)
