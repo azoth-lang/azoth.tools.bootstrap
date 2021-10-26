@@ -111,15 +111,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             this.symbolTrees = symbolTrees;
             this.returnType = returnType;
             typeResolver = new TypeResolver(file, diagnostics);
-            var parameterCapabilities = new FlowReferenceCapabilities();
-            var parameterSharing = new FlowSharing();
+            var capabilities = new FlowReferenceCapabilities();
+            var sharing = new FlowSharing();
             foreach (var parameterSymbol in parameterSymbols)
             {
-                parameterCapabilities.Declare(parameterSymbol);
-                parameterSharing.Declare(parameterSymbol);
+                capabilities.Declare(parameterSymbol);
+                sharing.Declare(parameterSymbol);
             }
-            this.parameterCapabilities = parameterCapabilities.Snapshot();
-            this.parameterSharing = parameterSharing;
+            this.parameterCapabilities = capabilities.Snapshot();
+            this.parameterSharing = sharing;
         }
 
         public void ResolveTypes(IBodySyntax body)
@@ -194,6 +194,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 variableDeclaration.DeclarationNumber.Result, variableDeclaration.IsMutableBinding, type);
             variableDeclaration.Symbol.Fulfill(symbol);
             symbolTreeBuilder.Add(symbol);
+            capabilities.Declare(symbol);
+            sharing.Declare(symbol);
         }
 
         /// <summary>
@@ -323,6 +325,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         ///     expression can be replaced because the parser can't always correctly determine
         ///     what kind of expression it is without type information.</param>
         /// <param name="sharing"></param>
+        /// <param name="capabilities"></param>
         /// <param name="implicitShare">Whether implicit share expressions should be inserted around
         ///     bare variable references.</param>
         private DataType InferType(
@@ -359,9 +362,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                             exp.ReferencedSymbol.Fulfill((NamedBindingSymbol?)nameExpression.ReferencedSymbol.Result);
                             exp.Semantics = ExpressionSemantics.Acquire;
                             return exp.DataType = type;
-                        case IMutateExpressionSyntax _:
+                        case IMutateExpressionSyntax:
                             throw new NotImplementedException("Raise error about `move mut` expression");
-                        case IMoveExpressionSyntax _:
+                        case IMoveExpressionSyntax:
                             throw new NotImplementedException("Raise error about `move move` expression");
                         default:
                             throw new NotImplementedException("Tried to move out of expression type that isn't implemented");
@@ -391,9 +394,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                             exp.ReferencedSymbol.Fulfill((NamedBindingSymbol?)nameExpression.ReferencedSymbol.Result);
                             return exp.DataType = type;
                         }
-                        case IMutateExpressionSyntax _:
+                        case IMutateExpressionSyntax:
                             throw new NotImplementedException("Raise error about `mut mut` expression");
-                        case IMoveExpressionSyntax _:
+                        case IMoveExpressionSyntax:
                             throw new NotImplementedException("Raise error about `mut move` expression");
                         default:
                             throw new NotImplementedException("Tried mutate expression type that isn't implemented");
@@ -893,7 +896,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             {
                 invocation.Semantics = ExpressionSemantics.Never;
                 return invocation.DataType = DataType.Unknown;
-            };
+            }
 
             var contextSymbol = LookupSymbolForType(context.DataType.Known());
             var methodSymbols = symbolTrees.Children(contextSymbol!).OfType<MethodSymbol>()

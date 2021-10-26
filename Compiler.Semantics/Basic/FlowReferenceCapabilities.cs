@@ -25,8 +25,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
         public void Declare(BindingSymbol symbol)
         {
-            //currentTypes = currentTypes.Add(symbol, symbol.DataType);
-            throw new NotImplementedException();
+            if (symbol.DataType is ReferenceType referenceType)
+                currentCapabilities.Add(symbol, referenceType.Capability);
+
+            // Other types don't have capabilities and don't need to be tracked
         }
 
         public void Restrict(BindingSymbol symbol, ReferenceCapability type)
