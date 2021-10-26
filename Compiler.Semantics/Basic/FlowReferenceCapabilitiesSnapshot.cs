@@ -18,5 +18,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         {
             this.currentCapabilities = new ReadOnlyDictionary<BindingSymbol, ReferenceCapability>(currentCapabilities);
         }
+
+        public FlowReferenceCapabilities MutableCopy()
+        {
+            return new FlowReferenceCapabilities(currentCapabilities);
+        }
     }
 }

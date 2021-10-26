@@ -11,7 +11,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
     /// </summary>
     public class FlowReferenceCapabilities
     {
-        private readonly Dictionary<BindingSymbol, ReferenceCapability> currentCapabilities = new();
+        private readonly Dictionary<BindingSymbol, ReferenceCapability> currentCapabilities;
+
+        public FlowReferenceCapabilities()
+        {
+            this.currentCapabilities = new();
+        }
+
+        public FlowReferenceCapabilities(IReadOnlyDictionary<BindingSymbol, ReferenceCapability> currentCapabilities)
+        {
+            this.currentCapabilities = new(currentCapabilities);
+        }
 
         public void Declare(BindingSymbol symbol)
         {
