@@ -129,13 +129,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
             switch (expression)
             {
-                case IMoveExpressionSyntax _:
+                case IMoveExpressionSyntax:
                     // If we are explicitly moving then take the actual type
                     return type;
-                case IMutateExpressionSyntax _:
+                case IMutateExpressionSyntax:
                 {
                     // If we are explicitly borrowing or moving then take the actual type
-                    if (!(type is ReferenceType))
+                    if (type is not ReferenceType)
                         throw new NotImplementedException("Compile error: can't borrow non reference type");
 
                     throw new NotImplementedException("Mutate expression declaration type");
@@ -145,15 +145,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 {
                     // We assume immutability on variables unless explicitly stated
                     if (inferCapability is null) return type.ToReadable();
-                    if (type is ReferenceType referenceType)
-                    {
-                        if (!referenceType.IsMutable)
-                            throw new NotImplementedException("Compile error: can't infer a mutable type");
+                    if (type is not ReferenceType referenceType)
+                        throw new NotImplementedException("Compile error: can't infer mutability for non reference type");
+                    if (!referenceType.IsMutable)
+                        throw new NotImplementedException("Compile error: can't infer a mutable type");
 
-                        return type;
-                    }
+                    return type;
 
-                    throw new NotImplementedException("Compile error: can't infer mutability for non reference type");
                 }
             }
         }
