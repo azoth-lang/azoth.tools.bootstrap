@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
@@ -32,9 +33,70 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         private readonly Diagnostics diagnostics;
         private readonly DataType? returnType;
         private readonly TypeResolver typeResolver;
+        private readonly FlowReferenceCapabilitiesSnapshot parameterCapabilities;
+        private readonly FlowSharing parameterSharing;
 
         public BasicBodyAnalyzer(
+            IFunctionDeclarationSyntax containingDeclaration,
+            SymbolTreeBuilder symbolTreeBuilder,
+            SymbolForest symbolTrees,
+            ObjectTypeSymbol? stringSymbol,
+            Diagnostics diagnostics,
+            DataType? returnType = null)
+            : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
+                symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
+        { }
+
+        public BasicBodyAnalyzer(
+            IAssociatedFunctionDeclarationSyntax containingDeclaration,
+            SymbolTreeBuilder symbolTreeBuilder,
+            SymbolForest symbolTrees,
+            ObjectTypeSymbol? stringSymbol,
+            Diagnostics diagnostics,
+            DataType? returnType = null)
+            : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
+                symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
+        { }
+
+        public BasicBodyAnalyzer(
+            IConstructorDeclarationSyntax containingDeclaration,
+            SymbolTreeBuilder symbolTreeBuilder,
+            SymbolForest symbolTrees,
+            ObjectTypeSymbol? stringSymbol,
+            Diagnostics diagnostics,
+            DataType? returnType = null)
+            : this(containingDeclaration,
+                containingDeclaration.Parameters.OfType<INamedParameterSyntax>()
+                                                .Select(p => p.Symbol.Result)
+                                                .Prepend<BindingSymbol>(containingDeclaration.ImplicitSelfParameter.Symbol.Result),
+                symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
+        { }
+
+        public BasicBodyAnalyzer(
+            IConcreteMethodDeclarationSyntax containingDeclaration,
+            SymbolTreeBuilder symbolTreeBuilder,
+            SymbolForest symbolTrees,
+            ObjectTypeSymbol? stringSymbol,
+            Diagnostics diagnostics,
+            DataType? returnType = null)
+            : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
+                symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
+        { }
+
+        public BasicBodyAnalyzer(
+            IFieldDeclarationSyntax containingDeclaration,
+            SymbolTreeBuilder symbolTreeBuilder,
+            SymbolForest symbolTrees,
+            ObjectTypeSymbol? stringSymbol,
+            Diagnostics diagnostics,
+            DataType? returnType = null)
+            : this(containingDeclaration, Enumerable.Empty<BindingSymbol>(),
+                symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
+        { }
+
+        private BasicBodyAnalyzer(
             IEntityDeclarationSyntax containingDeclaration,
+            IEnumerable<BindingSymbol> parameterSymbols,
             SymbolTreeBuilder symbolTreeBuilder,
             SymbolForest symbolTrees,
             ObjectTypeSymbol? stringSymbol,
@@ -49,52 +111,65 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             this.symbolTrees = symbolTrees;
             this.returnType = returnType;
             typeResolver = new TypeResolver(file, diagnostics);
+            var parameterCapabilities = new FlowReferenceCapabilities();
+            var parameterSharing = new FlowSharing();
+            foreach (var parameterSymbol in parameterSymbols)
+            {
+                parameterCapabilities.Declare(parameterSymbol);
+                parameterSharing.Declare(parameterSymbol);
+            }
+            this.parameterCapabilities = parameterCapabilities.Snapshot();
+            this.parameterSharing = parameterSharing;
         }
 
         public void ResolveTypes(IBodySyntax body)
         {
+            var referenceCapabilities = parameterCapabilities;
+            var sharing = parameterSharing; // TODO make a copy
             foreach (var statement in body.Statements)
                 switch (statement)
                 {
                     default:
                         throw ExhaustiveMatch.Failed(statement);
                     case IVariableDeclarationStatementSyntax variableDeclaration:
-                        ResolveTypes(variableDeclaration);
+                        ResolveTypes(variableDeclaration, sharing);
                         break;
                     case IExpressionStatementSyntax expressionStatement:
-                        InferType(expressionStatement.Expression);
+                        InferType(expressionStatement.Expression, sharing);
                         break;
                 }
         }
 
-        private void ResolveTypes(IStatementSyntax statement)
+        private void ResolveTypes(IStatementSyntax statement, FlowSharing sharing)
         {
             switch (statement)
             {
                 default:
                     throw ExhaustiveMatch.Failed(statement);
                 case IVariableDeclarationStatementSyntax variableDeclaration:
-                    ResolveTypes(variableDeclaration);
+                    ResolveTypes(variableDeclaration, sharing);
                     break;
                 case IExpressionStatementSyntax expressionStatement:
-                    InferType(expressionStatement.Expression);
+                    InferType(expressionStatement.Expression, sharing);
                     break;
                 case IResultStatementSyntax resultStatement:
-                    InferType(resultStatement.Expression);
+                    InferType(resultStatement.Expression, sharing);
                     break;
             }
         }
 
-        private void ResolveTypes(IVariableDeclarationStatementSyntax variableDeclaration)
+        private void ResolveTypes(
+            IVariableDeclarationStatementSyntax variableDeclaration,
+            FlowSharing sharing)
         {
             DataType type;
             if (variableDeclaration.Type != null)
             {
                 type = typeResolver.Evaluate(variableDeclaration.Type);
-                CheckType(variableDeclaration.Initializer!, type);
+                CheckType(variableDeclaration.Initializer!, type, sharing);
             }
             else if (variableDeclaration.Initializer != null)
-                type = InferDeclarationType(variableDeclaration.Initializer, variableDeclaration.Capability);
+                type = InferDeclarationType(variableDeclaration.Initializer, variableDeclaration.Capability, sharing);
             else
             {
                 diagnostics.Add(TypeError.NotImplemented(file, variableDeclaration.NameSpan,
@@ -120,9 +195,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         /// <summary>
         /// Infer the type of a variable declaration from an expression
         /// </summary>
-        private DataType InferDeclarationType(IExpressionSyntax expression, IReferenceCapabilitySyntax? inferCapability)
+        private DataType InferDeclarationType(
+            IExpressionSyntax expression,
+            IReferenceCapabilitySyntax? inferCapability,
+            FlowSharing sharing)
         {
-            var type = InferType(expression);
+            var type = InferType(expression, sharing);
             if (!type.IsKnown) return DataType.Unknown;
             type = type.ToNonConstantType();
             type = AddImplicitConversionIfNeeded(expression, type);
@@ -158,10 +236,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
         public void CheckType(
             IExpressionSyntax? expression,
-            DataType expectedType)
+            DataType expectedType,
+            FlowSharing sharing)
         {
             if (expression is null) return;
-            InferType(expression);
+            InferType(expression, sharing);
             var actualType = AddImplicitConversionIfNeeded(expression, expectedType);
             if (!expectedType.IsAssignableFrom(actualType))
                 diagnostics.Add(TypeError.CannotConvert(file, expression, actualType, expectedType));
@@ -235,11 +314,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         /// Infer the type of an expression and assign that type to the expression.
         /// </summary>
         /// <param name="expression">A reference to the repression. This is a reference so that the
-        /// expression can be replaced because the parser can't always correctly determine
-        /// what kind of expression it is without type information.</param>
+        ///     expression can be replaced because the parser can't always correctly determine
+        ///     what kind of expression it is without type information.</param>
+        /// <param name="sharing"></param>
         /// <param name="implicitShare">Whether implicit share expressions should be inserted around
-        /// bare variable references.</param>
-        private DataType InferType(IExpressionSyntax? expression, bool implicitShare = true)
+        ///     bare variable references.</param>
+        private DataType InferType(IExpressionSyntax? expression, FlowSharing sharing, bool implicitShare = true)
         {
             switch (expression)
             {
@@ -252,7 +332,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     {
                         case INameExpressionSyntax nameExpression:
                             nameExpression.Semantics = ExpressionSemantics.Acquire;
-                            var type = InferType(exp.Referent, false);
+                            var type = InferType(exp.Referent, sharing, false);
                             switch (type)
                             {
                                 case ReferenceType referenceType:
@@ -282,7 +362,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         case INameExpressionSyntax nameExpression:
                         {
                             nameExpression.Semantics = ExpressionSemantics.Borrow;
-                            var type = InferType(exp.Referent, false);
+                            var type = InferType(exp.Referent, sharing, false);
                             switch (type)
                             {
                                 case ReferenceType referenceType:
@@ -313,7 +393,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     if (exp.Value != null)
                     {
                         var expectedReturnType = returnType ?? throw new InvalidOperationException("Return statement in constructor");
-                        InferType(exp.Value, false);
+                        InferType(exp.Value, sharing, false);
                         // If we return ownership, there can be an implicit move
                         // otherwise there could be an implicit share or borrow
                         InsertImplicitActionIfNeeded(exp.Value, expectedReturnType, implicitMutateAllowed: false);
@@ -336,9 +416,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     return exp.DataType = exp.Value ? DataType.True : DataType.False;
                 case IBinaryOperatorExpressionSyntax binaryOperatorExpression:
                 {
-                    var leftType = InferType(binaryOperatorExpression.LeftOperand);
+                    var leftType = InferType(binaryOperatorExpression.LeftOperand, sharing);
                     var @operator = binaryOperatorExpression.Operator;
-                    var rightType = InferType(binaryOperatorExpression.RightOperand);
+                    var rightType = InferType(binaryOperatorExpression.RightOperand, sharing);
 
                     // If either is unknown, then we can't know whether there is a a problem.
                     // Note that the operator could be overloaded
@@ -417,12 +497,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         default:
                             throw ExhaustiveMatch.Failed(@operator);
                         case UnaryOperator.Not:
-                            CheckType(exp.Operand, DataType.Bool);
+                            CheckType(exp.Operand, DataType.Bool, sharing);
                             exp.DataType = DataType.Bool;
                             break;
                         case UnaryOperator.Minus:
                         case UnaryOperator.Plus:
-                            var operandType = InferType(exp.Operand);
+                            var operandType = InferType(exp.Operand, sharing);
                             switch (operandType)
                             {
                                 case IntegerConstantType integerType:
@@ -447,7 +527,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 }
                 case INewObjectExpressionSyntax exp:
                 {
-                    var argumentTypes = exp.Arguments.Select(argument => InferType(argument)).ToFixedList();
+                    var argumentTypes = exp.Arguments.Select(arg => InferType(arg, sharing)).ToFixedList();
                     // TODO handle named constructors here
                     var constructingType = typeResolver.Evaluate(exp.Type);
                     if (!constructingType.IsKnown)
@@ -492,7 +572,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 case IForeachExpressionSyntax exp:
                 {
                     var declaredType = typeResolver.Evaluate(exp.Type);
-                    var expressionType = CheckForeachInType(declaredType, exp.InExpression);
+                    var expressionType = CheckForeachInType(declaredType, exp.InExpression, sharing);
                     var variableType = declaredType ?? expressionType;
                     var symbol = new VariableSymbol((InvocableSymbol)containingSymbol, exp.VariableName,
                         exp.DeclarationNumber.Result, exp.IsMutableBinding, variableType);
@@ -500,35 +580,35 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     symbolTreeBuilder.Add(symbol);
 
                     // TODO check the break types
-                    InferBlockType(exp.Block);
+                    InferBlockType(exp.Block, sharing);
                     // TODO assign correct type to the expression
                     exp.Semantics = ExpressionSemantics.Void;
                     return exp.DataType = DataType.Void;
                 }
                 case IWhileExpressionSyntax exp:
                 {
-                    CheckType(exp.Condition, DataType.Bool);
-                    InferBlockType(exp.Block);
+                    CheckType(exp.Condition, DataType.Bool, sharing);
+                    InferBlockType(exp.Block, sharing);
                     // TODO assign correct type to the expression
                     exp.Semantics = ExpressionSemantics.Void;
                     return exp.DataType = DataType.Void;
                 }
                 case ILoopExpressionSyntax exp:
-                    InferBlockType(exp.Block);
+                    InferBlockType(exp.Block, sharing);
                     // TODO assign correct type to the expression
                     exp.Semantics = ExpressionSemantics.Void;
                     return exp.DataType = DataType.Void;
                 case IInvocationExpressionSyntax exp:
-                    return InferInvocationType(exp);
+                    return InferInvocationType(exp, sharing);
                 case IUnsafeExpressionSyntax exp:
                 {
-                    exp.DataType = InferType(exp.Expression);
+                    exp.DataType = InferType(exp.Expression, sharing);
                     exp.Semantics = exp.Expression.Semantics.Assigned();
                     return exp.ConvertedDataType.Assigned();
                 }
                 case IIfExpressionSyntax exp:
-                    CheckType(exp.Condition, DataType.Bool);
-                    InferBlockType(exp.ThenBlock);
+                    CheckType(exp.Condition, DataType.Bool, sharing);
+                    InferBlockType(exp.ThenBlock, sharing);
                     switch (exp.ElseClause)
                     {
                         default:
@@ -538,11 +618,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         case IIfExpressionSyntax _:
                         case IBlockExpressionSyntax _:
                             var elseExpression = (IExpressionSyntax)exp.ElseClause;
-                            InferType(elseExpression);
+                            InferType(elseExpression, sharing);
                             //ifExpression.ElseClause = elseExpression;
                             break;
                         case IResultStatementSyntax resultStatement:
-                            InferType(resultStatement.Expression);
+                            InferType(resultStatement.Expression, sharing);
                             break;
                     }
                     // TODO assign a type to the expression
@@ -552,7 +632,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 {
                     // Don't wrap the self expression in a share expression for field access
                     var isSelfField = exp.Context is ISelfExpressionSyntax;
-                    var contextType = InferType(exp.Context, !isSelfField);
+                    var contextType = InferType(exp.Context, sharing, !isSelfField);
                     var member = exp.Field;
                     var contextSymbol = LookupSymbolForType(contextType);
                     if (contextSymbol is null)
@@ -582,14 +662,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     return exp.DataType = type;
                 }
                 case IBreakExpressionSyntax exp:
-                    InferType(exp.Value);
+                    InferType(exp.Value, sharing);
                     return exp.DataType = DataType.Never;
                 case INextExpressionSyntax exp:
                     return exp.DataType = DataType.Never;
                 case IAssignmentExpressionSyntax exp:
                 {
-                    var left = InferAssignmentTargetType(exp.LeftOperand);
-                    InferType(exp.RightOperand);
+                    var left = InferAssignmentTargetType(exp.LeftOperand, sharing);
+                    InferType(exp.RightOperand, sharing);
                     AddImplicitConversionIfNeeded(exp.RightOperand, left);
                     var right = exp.RightOperand.ConvertedDataType.Assigned();
                     if (!left.IsAssignableFrom(right))
@@ -617,7 +697,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 case INoneLiteralExpressionSyntax exp:
                     return exp.DataType = DataType.None;
                 case IBlockExpressionSyntax blockSyntax:
-                    return InferBlockType(blockSyntax);
+                    return InferBlockType(blockSyntax, sharing);
             }
         }
 
@@ -714,7 +794,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 InsertImplicitMutateIfNeeded(expression, to);
         }
 
-        private DataType InferAssignmentTargetType(IAssignableExpressionSyntax expression)
+        private DataType InferAssignmentTargetType(
+            IAssignableExpressionSyntax expression,
+            FlowSharing sharing)
         {
             switch (expression)
             {
@@ -723,7 +805,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 case IQualifiedNameExpressionSyntax exp:
                     // Don't wrap the self expression in a share expression for field access
                     var isSelfField = exp.Context is ISelfExpressionSyntax;
-                    var contextType = InferType(exp.Context, !isSelfField);
+                    var contextType = InferType(exp.Context, sharing, !isSelfField);
                     var member = exp.Field;
                     var contextSymbol = LookupSymbolForType(contextType);
                     // TODO Deal with no context symbol
@@ -738,7 +820,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             }
         }
 
-        private DataType InferInvocationType(IInvocationExpressionSyntax invocation)
+        private DataType InferInvocationType(
+            IInvocationExpressionSyntax invocation,
+            FlowSharing sharing)
         {
             // This could actually be any of the following since the parser can't distinguish them:
             // * Regular function invocation
@@ -746,7 +830,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             // * Namespaced function invocation
             // * Method invocation
 
-            var argumentTypes = invocation.Arguments.Select(argument => InferType(argument)).ToFixedList();
+            var argumentTypes = invocation.Arguments.Select(arg => InferType(arg, sharing)).ToFixedList();
             FixedSet<FunctionSymbol> functionSymbols = FixedSet<FunctionSymbol>.Empty;
             switch (invocation.Expression)
             {
@@ -768,7 +852,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     // TODO it isn't always safe to assume that just because we didn't find any functions this is a method
                     if (!functionSymbols.Any())
                     {
-                        InferType(exp.Context, false);
+                        InferType(exp.Context, sharing, false);
                         return InferMethodInvocationType(invocation, exp.Context, name, argumentTypes);
                     }
                     break;
@@ -947,7 +1031,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             }
         }
 
-        private DataType InferBlockType(IBlockOrResultSyntax blockOrResult)
+        private DataType InferBlockType(IBlockOrResultSyntax blockOrResult, FlowSharing sharing)
         {
             switch (blockOrResult)
             {
@@ -955,12 +1039,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     throw ExhaustiveMatch.Failed(blockOrResult);
                 case IBlockExpressionSyntax block:
                     foreach (var statement in block.Statements)
-                        ResolveTypes(statement);
+                        ResolveTypes(statement, sharing);
 
                     block.Semantics = ExpressionSemantics.Void;
                     return block.DataType = DataType.Void; // TODO assign the correct type to the block
                 case IResultStatementSyntax result:
-                    InferType(result.Expression);
+                    InferType(result.Expression, sharing);
                     return result.Expression.ConvertedDataType.Assigned();
             }
         }
@@ -1052,7 +1136,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         /// check handles range expressions in the specific case of `foreach` only. It marks them
         /// as having the same type as the range endpoints.
         /// </summary>
-        private DataType CheckForeachInType(DataType? declaredType, IExpressionSyntax inExpression)
+        private DataType CheckForeachInType(
+            DataType? declaredType,
+            IExpressionSyntax inExpression,
+            FlowSharing sharing)
         {
             switch (inExpression)
             {
@@ -1061,8 +1148,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     || binaryExpression.Operator == BinaryOperator.LessThanDotDot
                     || binaryExpression.Operator == BinaryOperator.DotDotLessThan
                     || binaryExpression.Operator == BinaryOperator.LessThanDotDotLessThan:
-                    var leftType = InferType(binaryExpression.LeftOperand);
-                    InferType(binaryExpression.RightOperand);
+                    var leftType = InferType(binaryExpression.LeftOperand, sharing);
+                    InferType(binaryExpression.RightOperand, sharing);
                     if (declaredType != null)
                     {
                         leftType = AddImplicitConversionIfNeeded(binaryExpression.LeftOperand, declaredType);
@@ -1072,7 +1159,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     inExpression.Semantics = ExpressionSemantics.Copy; // Treat ranges as structs
                     return inExpression.DataType = leftType;
                 default:
-                    return InferType(inExpression);
+                    return InferType(inExpression, sharing);
             }
         }
 
