@@ -127,17 +127,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             var capabilities = parameterCapabilities.MutableCopy();
             var sharing = parameterSharing; // TODO make a copy
             foreach (var statement in body.Statements)
-                switch (statement)
-                {
-                    default:
-                        throw ExhaustiveMatch.Failed(statement);
-                    case IVariableDeclarationStatementSyntax variableDeclaration:
-                        ResolveTypes(variableDeclaration, sharing, capabilities);
-                        break;
-                    case IExpressionStatementSyntax expressionStatement:
-                        InferType(expressionStatement.Expression, sharing, capabilities);
-                        break;
-                }
+                ResolveTypes(statement, sharing, capabilities);
         }
 
         private void ResolveTypes(
@@ -156,6 +146,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     InferType(expressionStatement.Expression, sharing, capabilities);
                     break;
                 case IResultStatementSyntax resultStatement:
+                    // TODO how does the type of this expression get applied to the containing block?
                     InferType(resultStatement.Expression, sharing, capabilities);
                     break;
             }
@@ -714,6 +705,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             }
         }
 
+        // TODO implicit read is no longer a conversion to be inserted, it is just the inferred type (remove method and replace with something else)
         private static DataType InsertImplicitReadIfNeeded(IExpressionSyntax expression, DataType type)
         {
             // Value types aren't shared
@@ -724,7 +716,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             {
                 case INameExpressionSyntax exp:
                     exp.Semantics = ExpressionSemantics.Share;
-                    referencedSymbol =(NamedBindingSymbol?)exp.ReferencedSymbol.Result;
+                    referencedSymbol = (NamedBindingSymbol?)exp.ReferencedSymbol.Result;
                     break;
                 case ISelfExpressionSyntax exp:
                     referencedSymbol = exp.ReferencedSymbol.Result;

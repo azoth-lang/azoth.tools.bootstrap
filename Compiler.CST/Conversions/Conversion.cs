@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions
     [Closed(
         typeof(OptionalConversion),
         typeof(NumericConversion),
-        typeof(ImmutabilityConversion),
+        typeof(ImmutabilityConversion), // TODO not sure this should be a conversion
         typeof(LiftedConversion))]
     public abstract class Conversion
     {
