@@ -13,13 +13,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
     {
         private readonly FixedDictionary<BindingSymbol, ReferenceCapability> currentCapabilities;
 
-        public ReferenceCapabilitiesSnapshot(
+        internal ReferenceCapabilitiesSnapshot(
             IDictionary<BindingSymbol, ReferenceCapability> currentCapabilities)
         {
             this.currentCapabilities = currentCapabilities.ToFixedDictionary();
         }
 
-        public ReferenceCapabilities MutableCopy()
-            => new ReferenceCapabilities(currentCapabilities);
+        public ReferenceCapabilities MutableCopy() => new(currentCapabilities);
     }
 }

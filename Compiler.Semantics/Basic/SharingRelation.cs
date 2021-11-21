@@ -13,16 +13,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
     /// </summary>
     public class SharingRelation
     {
-        private readonly Dictionary<BindingSymbol, ISet<BindingSymbol>> sets;
+        private readonly Dictionary<SharingVariable, ISet<SharingVariable>> sets;
 
         public SharingRelation()
         {
-            sets = new();
+            // Construct a single element set for the result so that it exists when unioning
+            sets = new() { { SharingVariable.Result, new HashSet<SharingVariable>() { SharingVariable.Result } } };
         }
 
-        public SharingRelation(IReadOnlyDictionary<BindingSymbol, FixedSet<BindingSymbol>> sets)
+        internal SharingRelation(IReadOnlyDictionary<SharingVariable, FixedSet<SharingVariable>> sets)
         {
-            this.sets = sets.ToDictionary(pair => pair.Key, pair => (ISet<BindingSymbol>)pair.Value.ToHashSet());
+            this.sets = sets.ToDictionary(pair => pair.Key, pair => (ISet<SharingVariable>)pair.Value.ToHashSet());
         }
 
         /// <summary>
@@ -37,13 +38,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             // No need to track `const` and `id`, they never participate in sharing
             if (capability != ReferenceCapability.Constant
                 && capability != ReferenceCapability.Identity)
-                sets.Add(symbol, new HashSet<BindingSymbol>() { symbol });
+                sets.Add(symbol, new HashSet<SharingVariable>() { symbol });
         }
 
-        public void Union(BindingSymbol symbol1, BindingSymbol symbol2)
+        public void Union(SharingVariable var1, SharingVariable var2)
         {
-            if (!sets.TryGetValue(symbol1, out var set1)
-                || !sets.TryGetValue(symbol2, out var set2)
+            if (!sets.TryGetValue(var1, out var set1)
+                || !sets.TryGetValue(var2, out var set2)
                 || set1 == set2)
                 return;
 
@@ -57,21 +58,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         }
 
         /// <summary>
-        /// Split the given symbol out from sharing with the other variables it is connected to.
+        /// Split the given variable out from sharing with the other variables it is connected to.
         /// </summary>
-        public void Split(BindingSymbol symbol)
+        public void Split(SharingVariable variable)
         {
-            if (!sets.TryGetValue(symbol, out var set)
+            if (!sets.TryGetValue(variable, out var set)
                 || set.Count == 1)
                 return;
 
-            set.Remove(symbol);
-            sets[symbol] = new HashSet<BindingSymbol> { symbol };
+            set.Remove(variable);
+            sets[variable] = new HashSet<SharingVariable> { variable };
         }
 
         public bool IsIsolated(BindingSymbol symbol)
             => sets.TryGetValue(symbol, out var set) && set.Count == 1;
 
-        public SharingRelationSnapshot Snapshot() => new SharingRelationSnapshot(sets);
+        public SharingRelationSnapshot Snapshot() => new(sets);
     }
 }

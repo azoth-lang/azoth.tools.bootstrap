@@ -18,7 +18,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             currentCapabilities = new();
         }
 
-        public ReferenceCapabilities(
+        internal ReferenceCapabilities(
             IReadOnlyDictionary<BindingSymbol, ReferenceCapability> currentCapabilities)
         {
             this.currentCapabilities = new(currentCapabilities);
@@ -37,7 +37,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             throw new NotImplementedException();
         }
 
-        public ReferenceCapabilitiesSnapshot Snapshot()
-            => new ReferenceCapabilitiesSnapshot(currentCapabilities);
+        public ReferenceCapabilitiesSnapshot Snapshot() => new(currentCapabilities);
     }
 }

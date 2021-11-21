@@ -187,12 +187,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             symbolTreeBuilder.Add(symbol);
             capabilities.Declare(symbol);
             sharing.Declare(symbol);
-            //if (type is ReferenceType referenceType
-            //    && (referenceType.Capability == ReferenceCapability.Mutable
-            //        || referenceType.Capability == ReferenceCapability.ReadOnly))
-            //{
-            //    sharing.Union(symbol,);
-            //}
+            if (type is ReferenceType referenceType
+                && (referenceType.Capability == ReferenceCapability.Mutable
+                    || referenceType.Capability == ReferenceCapability.ReadOnly))
+            {
+                sharing.Union(symbol, SharingVariable.Result);
+            }
         }
 
         /// <summary>
