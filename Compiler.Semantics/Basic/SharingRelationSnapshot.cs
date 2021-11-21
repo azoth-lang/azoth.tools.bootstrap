@@ -8,15 +8,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
     /// An immutable snapshot of the sharing relationship between variables and the
     /// expression result at one point in the code.
     /// </summary>
-    public class FlowSharingSnapshot
+    public class SharingRelationSnapshot
     {
         private readonly FixedDictionary<BindingSymbol, FixedSet<BindingSymbol>> sets;
 
-        public FlowSharingSnapshot(IDictionary<BindingSymbol, ISet<BindingSymbol>> sets)
+        public SharingRelationSnapshot(IDictionary<BindingSymbol, ISet<BindingSymbol>> sets)
         {
             this.sets = sets.ToFixedDictionary(pair => pair.Key, pair => pair.Value.ToFixedSet());
         }
 
-        public FlowSharing MutableCopy() => new FlowSharing(sets);
+        public SharingRelation MutableCopy() => new SharingRelation(sets);
     }
 }

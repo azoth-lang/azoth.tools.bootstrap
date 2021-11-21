@@ -9,17 +9,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
     /// An immutable snapshot of the flow sensitive reference capabilities at one particular point
     /// in the code.
     /// </summary>
-    public class FlowReferenceCapabilitiesSnapshot
+    public class ReferenceCapabilitiesSnapshot
     {
         private readonly FixedDictionary<BindingSymbol, ReferenceCapability> currentCapabilities;
 
-        public FlowReferenceCapabilitiesSnapshot(
+        public ReferenceCapabilitiesSnapshot(
             IDictionary<BindingSymbol, ReferenceCapability> currentCapabilities)
         {
             this.currentCapabilities = currentCapabilities.ToFixedDictionary();
         }
 
-        public FlowReferenceCapabilities MutableCopy()
-            => new FlowReferenceCapabilities(currentCapabilities);
+        public ReferenceCapabilities MutableCopy()
+            => new ReferenceCapabilities(currentCapabilities);
     }
 }

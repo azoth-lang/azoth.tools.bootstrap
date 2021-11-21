@@ -11,16 +11,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
     /// relationship is flow sensitive. Note that the sharing relationship is a partition of
     /// the set of variables into disjoint subsets.
     /// </summary>
-    public class FlowSharing
+    public class SharingRelation
     {
         private readonly Dictionary<BindingSymbol, ISet<BindingSymbol>> sets;
 
-        public FlowSharing()
+        public SharingRelation()
         {
             sets = new();
         }
 
-        public FlowSharing(IReadOnlyDictionary<BindingSymbol, FixedSet<BindingSymbol>> sets)
+        public SharingRelation(IReadOnlyDictionary<BindingSymbol, FixedSet<BindingSymbol>> sets)
         {
             this.sets = sets.ToDictionary(pair => pair.Key, pair => (ISet<BindingSymbol>)pair.Value.ToHashSet());
         }
@@ -34,6 +34,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             if (symbol.DataType is not ReferenceType referenceType) return;
 
             var capability = referenceType.Capability;
+            // No need to track `const` and `id`, they never participate in sharing
             if (capability != ReferenceCapability.Constant
                 && capability != ReferenceCapability.Identity)
                 sets.Add(symbol, new HashSet<BindingSymbol>() { symbol });
@@ -71,6 +72,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         public bool IsIsolated(BindingSymbol symbol)
             => sets.TryGetValue(symbol, out var set) && set.Count == 1;
 
-        public FlowSharingSnapshot Snapshot() => new FlowSharingSnapshot(sets);
+        public SharingRelationSnapshot Snapshot() => new SharingRelationSnapshot(sets);
     }
 }

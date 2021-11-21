@@ -20,8 +20,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
     /// Do basic analysis of bodies.
     /// </summary>
     /// <remarks>
-    /// Type checking doesn't concern anything with reachability. It only deals
-    /// with types and reference capabilities.
+    /// This includes type checking with reference capabilities and the sharing relationships
+    /// between variables.
     /// </remarks>
     public class BasicBodyAnalyzer
     {
@@ -33,8 +33,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         private readonly Diagnostics diagnostics;
         private readonly DataType? returnType;
         private readonly TypeResolver typeResolver;
-        private readonly FlowReferenceCapabilitiesSnapshot parameterCapabilities;
-        private readonly FlowSharingSnapshot parameterSharing;
+        private readonly ReferenceCapabilitiesSnapshot parameterCapabilities;
+        private readonly SharingRelationSnapshot parameterSharing;
 
         public BasicBodyAnalyzer(
             IFunctionDeclarationSyntax containingDeclaration,
@@ -111,8 +111,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             this.symbolTrees = symbolTrees;
             this.returnType = returnType;
             typeResolver = new TypeResolver(file, diagnostics);
-            var capabilities = new FlowReferenceCapabilities();
-            var sharing = new FlowSharing();
+            var capabilities = new ReferenceCapabilities();
+            var sharing = new SharingRelation();
             foreach (var parameterSymbol in parameterSymbols)
             {
                 capabilities.Declare(parameterSymbol);
@@ -132,8 +132,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
         private void ResolveTypes(
             IStatementSyntax statement,
-            FlowSharing sharing,
-            FlowReferenceCapabilities capabilities)
+            SharingRelation sharing,
+            ReferenceCapabilities capabilities)
         {
             switch (statement)
             {
@@ -154,14 +154,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
         private void ResolveTypes(
             IVariableDeclarationStatementSyntax variableDeclaration,
-            FlowSharing sharing,
-            FlowReferenceCapabilities capabilities)
+            SharingRelation sharing,
+            ReferenceCapabilities capabilities)
         {
             DataType type;
             if (variableDeclaration.Type != null)
             {
                 type = typeResolver.Evaluate(variableDeclaration.Type);
-                CheckType(variableDeclaration.Initializer!, type, sharing, capabilities);
+                CheckType(variableDeclaration.Initializer, type, sharing, capabilities);
             }
             else if (variableDeclaration.Initializer != null)
                 type = InferDeclarationType(variableDeclaration.Initializer, variableDeclaration.Capability, sharing, capabilities);
@@ -187,6 +187,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             symbolTreeBuilder.Add(symbol);
             capabilities.Declare(symbol);
             sharing.Declare(symbol);
+            //if (type is ReferenceType referenceType
+            //    && (referenceType.Capability == ReferenceCapability.Mutable
+            //        || referenceType.Capability == ReferenceCapability.ReadOnly))
+            //{
+            //    sharing.Union(symbol,);
+            //}
         }
 
         /// <summary>
@@ -195,8 +201,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         private DataType InferDeclarationType(
             IExpressionSyntax expression,
             IReferenceCapabilitySyntax? inferCapability,
-            FlowSharing sharing,
-            FlowReferenceCapabilities capabilities)
+            SharingRelation sharing,
+            ReferenceCapabilities capabilities)
         {
             var type = InferType(expression, sharing, capabilities);
             if (!type.IsKnown) return DataType.Unknown;
@@ -227,7 +233,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         throw new NotImplementedException("Compile error: can't infer a mutable type");
 
                     return type;
-
                 }
             }
         }
@@ -235,8 +240,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         public void CheckType(
             IExpressionSyntax? expression,
             DataType expectedType,
-            FlowSharing sharing,
-            FlowReferenceCapabilities capabilities)
+            SharingRelation sharing,
+            ReferenceCapabilities capabilities)
         {
             if (expression is null) return;
             InferType(expression, sharing, capabilities);
@@ -321,8 +326,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         ///     bare variable references.</param>
         private DataType InferType(
             IExpressionSyntax? expression,
-            FlowSharing sharing,
-            FlowReferenceCapabilities capabilities,
+            SharingRelation sharing,
+            ReferenceCapabilities capabilities,
             bool implicitShare = true)
         {
             switch (expression)
@@ -801,8 +806,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
         private DataType InferAssignmentTargetType(
             IAssignableExpressionSyntax expression,
-            FlowSharing sharing,
-            FlowReferenceCapabilities capabilities)
+            SharingRelation sharing,
+            ReferenceCapabilities capabilities)
         {
             switch (expression)
             {
@@ -828,8 +833,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
         private DataType InferInvocationType(
             IInvocationExpressionSyntax invocation,
-            FlowSharing sharing,
-            FlowReferenceCapabilities capabilities)
+            SharingRelation sharing,
+            ReferenceCapabilities capabilities)
         {
             // This could actually be any of the following since the parser can't distinguish them:
             // * Regular function invocation
@@ -961,6 +966,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 _ => null
             };
         }
+
         private DataType InferFunctionInvocationType(
             IInvocationExpressionSyntax invocation,
             FixedSet<FunctionSymbol> functionSymbols,
@@ -1040,8 +1046,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
         private DataType InferBlockType(
             IBlockOrResultSyntax blockOrResult,
-            FlowSharing sharing,
-            FlowReferenceCapabilities capabilities)
+            SharingRelation sharing,
+            ReferenceCapabilities capabilities)
         {
             switch (blockOrResult)
             {
@@ -1149,8 +1155,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         private DataType CheckForeachInType(
             DataType? declaredType,
             IExpressionSyntax inExpression,
-            FlowSharing sharing,
-            FlowReferenceCapabilities capabilities)
+            SharingRelation sharing,
+            ReferenceCapabilities capabilities)
         {
             switch (inExpression)
             {
