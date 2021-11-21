@@ -18,7 +18,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             UnaryOperatorFixity fixity,
             UnaryOperator @operator,
             IExpressionSyntax operand)
-            : base(span, ExpressionSemantics.Copy)
+            : base(span, ExpressionSemantics.CopyValue)
         {
             Fixity = fixity;
             Operator = @operator;

@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
         public bool Value { [DebuggerStepThrough] get; }
 
         public BoolLiteralExpressionSyntax(TextSpan span, bool value)
-            : base(span, ExpressionSemantics.Copy)
+            : base(span, ExpressionSemantics.CopyValue)
         {
             Value = value;
         }

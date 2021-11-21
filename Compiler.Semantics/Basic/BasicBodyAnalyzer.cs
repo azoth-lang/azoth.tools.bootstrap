@@ -340,7 +340,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     switch (exp.Referent)
                     {
                         case INameExpressionSyntax nameExpression:
-                            nameExpression.Semantics = ExpressionSemantics.Acquire;
+                            nameExpression.Semantics = ExpressionSemantics.IsolatedReference;
                             var type = InferType(exp.Referent, sharing, capabilities, false);
                             switch (type)
                             {
@@ -356,7 +356,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                             }
 
                             exp.ReferencedSymbol.Fulfill((NamedBindingSymbol?)nameExpression.ReferencedSymbol.Result);
-                            exp.Semantics = ExpressionSemantics.Acquire;
+                            exp.Semantics = ExpressionSemantics.IsolatedReference;
                             return exp.DataType = type;
                         case IMutateExpressionSyntax:
                             throw new NotImplementedException("Raise error about `move mut` expression");
@@ -370,7 +370,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     {
                         case INameExpressionSyntax nameExpression:
                         {
-                            nameExpression.Semantics = ExpressionSemantics.Borrow;
+                            nameExpression.Semantics = ExpressionSemantics.MutableReference;
                             var type = InferType(exp.Referent, sharing, capabilities, false);
                             switch (type)
                             {
@@ -443,7 +443,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         case BinaryOperator.Slash:
                             compatible = NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand, binaryOperatorExpression.RightOperand);
                             binaryOperatorExpression.DataType = compatible ? leftType : DataType.Unknown;
-                            binaryOperatorExpression.Semantics = ExpressionSemantics.Copy;
+                            binaryOperatorExpression.Semantics = ExpressionSemantics.CopyValue;
                             break;
                         case BinaryOperator.EqualsEquals:
                         case BinaryOperator.NotEqual:
@@ -455,13 +455,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                                          || NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand, binaryOperatorExpression.RightOperand)
                                          /*|| OperatorOverloadDefined(@operator, binaryOperatorExpression.LeftOperand, ref binaryOperatorExpression.RightOperand)*/;
                             binaryOperatorExpression.DataType = DataType.Bool;
-                            binaryOperatorExpression.Semantics = ExpressionSemantics.Copy;
+                            binaryOperatorExpression.Semantics = ExpressionSemantics.CopyValue;
                             break;
                         case BinaryOperator.And:
                         case BinaryOperator.Or:
                             compatible = leftType == DataType.Bool && rightType == DataType.Bool;
                             binaryOperatorExpression.DataType = DataType.Bool;
-                            binaryOperatorExpression.Semantics = ExpressionSemantics.Copy;
+                            binaryOperatorExpression.Semantics = ExpressionSemantics.CopyValue;
                             break;
                         case BinaryOperator.DotDot:
                         case BinaryOperator.LessThanDotDot:
@@ -489,10 +489,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         switch (type.Semantics)
                         {
                             case TypeSemantics.Copy:
-                                exp.Semantics = ExpressionSemantics.Copy;
+                                exp.Semantics = ExpressionSemantics.CopyValue;
                                 break;
                             case TypeSemantics.Move:
-                                exp.Semantics = ExpressionSemantics.Move;
+                                exp.Semantics = ExpressionSemantics.MoveValue;
                                 break;
                         }
 
@@ -648,7 +648,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     {
                         member.ReferencedSymbol.Fulfill(null);
                         member.DataType = DataType.Unknown;
-                        exp.Semantics ??= ExpressionSemantics.Copy;
+                        exp.Semantics ??= ExpressionSemantics.CopyValue;
                         return exp.DataType = DataType.Unknown;
                     }
                     // TODO Deal with no context symbol
@@ -662,10 +662,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         switch (type.Semantics)
                         {
                             case TypeSemantics.Copy:
-                                exp.Semantics = ExpressionSemantics.Copy;
+                                exp.Semantics = ExpressionSemantics.CopyValue;
                                 break;
                             case TypeSemantics.Move:
-                                exp.Semantics = ExpressionSemantics.Move;
+                                exp.Semantics = ExpressionSemantics.MoveValue;
                                 break;
                         }
                     return exp.DataType = type;
@@ -697,7 +697,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     {
                         if (type is ReferenceType referenceType)
                             exp.Semantics = referenceType.IsMutable
-                                ? ExpressionSemantics.Borrow : ExpressionSemantics.Share;
+                                ? ExpressionSemantics.MutableReference : ExpressionSemantics.ReadOnlyReference;
                         else
                             throw new NotImplementedException("Could not assign semantics to `self` expression");
                     }
@@ -720,15 +720,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             switch (expression)
             {
                 case INameExpressionSyntax exp:
-                    exp.Semantics = ExpressionSemantics.Share;
+                    exp.Semantics = ExpressionSemantics.ReadOnlyReference;
                     referencedSymbol = (NamedBindingSymbol?)exp.ReferencedSymbol.Result;
                     break;
                 case ISelfExpressionSyntax exp:
                     referencedSymbol = exp.ReferencedSymbol.Result;
                     break;
                 case IQualifiedNameExpressionSyntax exp:
-                    exp.Field.Semantics = ExpressionSemantics.Share;
-                    exp.Semantics = ExpressionSemantics.Share;
+                    exp.Field.Semantics = ExpressionSemantics.ReadOnlyReference;
+                    exp.Semantics = ExpressionSemantics.ReadOnlyReference;
                     referencedSymbol = exp.ReferencedSymbol.Result;
                     break;
                 default:
@@ -755,7 +755,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             switch (expression)
             {
                 case INameExpressionSyntax exp:
-                    exp.Semantics = ExpressionSemantics.Borrow;
+                    exp.Semantics = ExpressionSemantics.MutableReference;
                     referencedSymbol = (NamedBindingSymbol?)exp.ReferencedSymbol.Result;
                     break;
                 case ISelfExpressionSyntax exp:
@@ -785,8 +785,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
             var referencedSymbol = name.ReferencedSymbol.Result;
             //expression = new ImplicitMoveSyntax(expression, type, referencedSymbol);
-            name.Semantics = ExpressionSemantics.Acquire;
-            expression.Semantics = ExpressionSemantics.Acquire;
+            name.Semantics = ExpressionSemantics.IsolatedReference;
+            expression.Semantics = ExpressionSemantics.IsolatedReference;
 
             throw new NotImplementedException("Need implicit move?");
         }
@@ -1024,10 +1024,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     invocationExpression.Semantics = ExpressionSemantics.Void;
                     break;
                 case TypeSemantics.Move:
-                    invocationExpression.Semantics = ExpressionSemantics.Move;
+                    invocationExpression.Semantics = ExpressionSemantics.MoveValue;
                     break;
                 case TypeSemantics.Copy:
-                    invocationExpression.Semantics = ExpressionSemantics.Copy;
+                    invocationExpression.Semantics = ExpressionSemantics.CopyValue;
                     break;
                 case TypeSemantics.Never:
                     invocationExpression.Semantics = ExpressionSemantics.Never;
@@ -1035,11 +1035,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 case TypeSemantics.Reference:
                     var referenceType = (ReferenceType)type;
                     if (referenceType.Capability.CanBeAcquired())
-                        invocationExpression.Semantics = ExpressionSemantics.Acquire;
+                        invocationExpression.Semantics = ExpressionSemantics.IsolatedReference;
                     else if (referenceType.IsMutable)
-                        invocationExpression.Semantics = ExpressionSemantics.Borrow;
+                        invocationExpression.Semantics = ExpressionSemantics.MutableReference;
                     else
-                        invocationExpression.Semantics = ExpressionSemantics.Share;
+                        invocationExpression.Semantics = ExpressionSemantics.ReadOnlyReference;
                     break;
             }
         }
@@ -1173,7 +1173,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         AddImplicitConversionIfNeeded(binaryExpression.RightOperand, declaredType);
                     }
 
-                    inExpression.Semantics = ExpressionSemantics.Copy; // Treat ranges as structs
+                    inExpression.Semantics = ExpressionSemantics.CopyValue; // Treat ranges as structs
                     return inExpression.DataType = leftType;
                 default:
                     return InferType(inExpression, sharing, capabilities);
@@ -1205,7 +1205,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         default:
                             throw ExhaustiveMatch.Failed(memberSymbol.DataType.Semantics);
                         case TypeSemantics.Copy:
-                            exp.Semantics = ExpressionSemantics.Copy;
+                            exp.Semantics = ExpressionSemantics.CopyValue;
                             break;
                         case TypeSemantics.Never:
                             exp.Semantics = ExpressionSemantics.Never;

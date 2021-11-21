@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
         public string Value { [DebuggerStepThrough] get; }
 
         public StringLiteralExpressionSyntax(TextSpan span, string value)
-            : base(span, ExpressionSemantics.Share)
+            : base(span, ExpressionSemantics.ReadOnlyReference)
         {
             Value = value;
         }

@@ -29,7 +29,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             Name? constructorName,
             TextSpan? constructorNameSpan,
             FixedList<IExpressionSyntax> arguments)
-            : base(span, ExpressionSemantics.Acquire)
+            : base(span, ExpressionSemantics.IsolatedReference)
         {
             Type = typeSyntax;
             Arguments = arguments;

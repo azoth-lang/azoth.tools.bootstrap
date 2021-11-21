@@ -1,14 +1,10 @@
 namespace Azoth.Tools.Bootstrap.Compiler.Core
 {
     /// <summary>
-    /// The semantics of the value of an expression
-    ///
-    /// Move - the value is moved
-    /// Copy - the value is copied, either memcopy or using copy initializer
-    /// Acquire - take ownership from (can apply to isolated, owned, and held)
-    /// Borrow - copy the reference, borrow the object
-    /// Share - copy the reference, share the object
+    /// The semantics of the value of an expression.
     /// </summary>
+    /// <remarks>Expression semantics apply the rules of value type move and copy
+    /// as well as reference isolation and mutation.</remarks>
     public enum ExpressionSemantics
     {
         /// <summary>
@@ -22,25 +18,24 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core
         /// <summary>
         /// The value is moved
         /// </summary>
-        Move = 1,
+        MoveValue = 1,
         /// <summary>
         /// The value is copied. For expression, does not indicate whether it is
         /// safe to bit copy the type or a copy function is needed
         /// </summary>
-        Copy,
+        CopyValue,
         /// <summary>
-        /// The ownership is transferred between the references. Leaves the
-        /// giver in a moved state.
+        /// Produce an isolated reference to the object. The source reference is converted to `id`
         /// </summary>
-        Acquire,
+        IsolatedReference,
         /// <summary>
-        /// Copy a reference, borrow the referent
+        /// Produce a mutable reference to the object
         /// </summary>
-        Borrow,
+        MutableReference,
         /// <summary>
-        /// Copy a reference, share the referent
+        /// Produce a read only reference to the object
         /// </summary>
-        Share,
+        ReadOnlyReference,
         /// <summary>
         /// Take a reference to a place. Used for LValues
         /// </summary>

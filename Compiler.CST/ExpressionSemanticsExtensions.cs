@@ -13,11 +13,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
             {
                 ExpressionSemantics.Never => "never",
                 ExpressionSemantics.Void => "void",
-                ExpressionSemantics.Move => "move",
-                ExpressionSemantics.Copy => "copy",
-                ExpressionSemantics.Acquire => "own",
-                ExpressionSemantics.Borrow => "borrow",
-                ExpressionSemantics.Share => "share",
+                ExpressionSemantics.MoveValue => "move",
+                ExpressionSemantics.CopyValue => "copy",
+                ExpressionSemantics.IsolatedReference => "iso",
+                ExpressionSemantics.MutableReference => "mut",
+                ExpressionSemantics.ReadOnlyReference => "read",
                 ExpressionSemantics.CreateReference => "ref",
                 _ => throw ExhaustiveMatch.Failed(valueSemantics),
             };

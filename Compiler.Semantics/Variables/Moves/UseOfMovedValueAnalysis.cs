@@ -70,12 +70,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Moves
             //?? nameExpression.Type.Assigned().OldValueSemantics;
             switch (valueSemantics)
             {
-                case ExpressionSemantics.Move:
-                case ExpressionSemantics.Acquire:
+                case ExpressionSemantics.MoveValue:
+                case ExpressionSemantics.IsolatedReference:
                     return possiblyMoved.Set(symbol, true);
-                case ExpressionSemantics.Copy:
-                case ExpressionSemantics.Borrow:
-                case ExpressionSemantics.Share:
+                case ExpressionSemantics.CopyValue:
+                case ExpressionSemantics.MutableReference:
+                case ExpressionSemantics.ReadOnlyReference:
                 case ExpressionSemantics.Void:
                 case ExpressionSemantics.Never:
                 case ExpressionSemantics.CreateReference:

@@ -9,6 +9,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         Mutable,
         ReadOnly, // read-only from this reference, possibly writable from others
         Constant,
-        Identity
+        Identity,
     }
 }

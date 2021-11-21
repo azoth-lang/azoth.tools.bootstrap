@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
         public Promise<BindingSymbol?> ReferencedSymbol { [DebuggerStepThrough] get; } = new Promise<BindingSymbol?>();
 
         public MutateExpressionSyntax(TextSpan span, IExpressionSyntax referent)
-            : base(span, ExpressionSemantics.Borrow)
+            : base(span, ExpressionSemantics.MutableReference)
         {
             Referent = referent;
         }

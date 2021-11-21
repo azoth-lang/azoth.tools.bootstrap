@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
         public BigInteger Value { get; }
 
         public IntegerLiteralExpressionSyntax(TextSpan span, BigInteger value)
-            : base(span, ExpressionSemantics.Copy)
+            : base(span, ExpressionSemantics.CopyValue)
         {
             Value = value;
         }
