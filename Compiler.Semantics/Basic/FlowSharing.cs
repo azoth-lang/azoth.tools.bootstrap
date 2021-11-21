@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 {
@@ -11,7 +13,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
     /// </summary>
     public class FlowSharing
     {
-        private readonly Dictionary<BindingSymbol, ISet<BindingSymbol>> sets = new();
+        private readonly Dictionary<BindingSymbol, ISet<BindingSymbol>> sets;
+
+        public FlowSharing()
+        {
+            sets = new();
+        }
+
+        public FlowSharing(IReadOnlyDictionary<BindingSymbol, FixedSet<BindingSymbol>> sets)
+        {
+            this.sets = sets.ToDictionary(pair => pair.Key, pair => (ISet<BindingSymbol>)pair.Value.ToHashSet());
+        }
 
         /// <summary>
         /// Declare a new variable. Newly created variables are not connected to any others.
@@ -57,8 +69,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         }
 
         public bool IsIsolated(BindingSymbol symbol)
-        {
-            return sets.TryGetValue(symbol, out var set) && set.Count == 1;
-        }
+            => sets.TryGetValue(symbol, out var set) && set.Count == 1;
+
+        public FlowSharingSnapshot Snapshot() => new FlowSharingSnapshot(sets);
     }
 }

@@ -15,10 +15,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
         public FlowReferenceCapabilities()
         {
-            this.currentCapabilities = new();
+            currentCapabilities = new();
         }
 
-        public FlowReferenceCapabilities(IReadOnlyDictionary<BindingSymbol, ReferenceCapability> currentCapabilities)
+        public FlowReferenceCapabilities(
+            IReadOnlyDictionary<BindingSymbol, ReferenceCapability> currentCapabilities)
         {
             this.currentCapabilities = new(currentCapabilities);
         }
@@ -37,8 +38,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         }
 
         public FlowReferenceCapabilitiesSnapshot Snapshot()
-        {
-            return new FlowReferenceCapabilitiesSnapshot(currentCapabilities);
-        }
+            => new FlowReferenceCapabilitiesSnapshot(currentCapabilities);
     }
 }

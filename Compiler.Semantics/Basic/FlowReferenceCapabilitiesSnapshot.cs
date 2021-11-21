@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 {
@@ -11,17 +11,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
     /// </summary>
     public class FlowReferenceCapabilitiesSnapshot
     {
-        private readonly IReadOnlyDictionary<BindingSymbol, ReferenceCapability> currentCapabilities;
+        private readonly FixedDictionary<BindingSymbol, ReferenceCapability> currentCapabilities;
 
         public FlowReferenceCapabilitiesSnapshot(
             IDictionary<BindingSymbol, ReferenceCapability> currentCapabilities)
         {
-            this.currentCapabilities = new ReadOnlyDictionary<BindingSymbol, ReferenceCapability>(currentCapabilities);
+            this.currentCapabilities = currentCapabilities.ToFixedDictionary();
         }
 
         public FlowReferenceCapabilities MutableCopy()
-        {
-            return new FlowReferenceCapabilities(currentCapabilities);
-        }
+            => new FlowReferenceCapabilities(currentCapabilities);
     }
 }

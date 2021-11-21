@@ -26,13 +26,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             switch (target, source)
             {
                 case (_, _) when target.Equals(source):
-                case (UnknownType _, _):
-                case (_, UnknownType _):
-                case (BoolType _, BoolConstantType _):
+                case (UnknownType, _):
+                case (_, UnknownType):
+                case (BoolType, BoolConstantType):
                     return true;
                 case (AnyType targetReference, ReferenceType sourceReference):
                     return targetReference.Capability.IsAssignableFrom(sourceReference.Capability);
-                case (ReferenceType _, AnyType _):
+                case (ReferenceType, AnyType):
                     return false;
                 case (ObjectType targetReference, ObjectType sourceReference):
                     return targetReference.Capability.IsAssignableFrom(sourceReference.Capability)
@@ -76,7 +76,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             return type switch
             {
                 ReferenceType referenceType => referenceType,
-                OptionalType optionalType when optionalType.Referent is ReferenceType referenceType => referenceType,
+                OptionalType { Referent: ReferenceType referenceType } => referenceType,
                 _ => null
             };
         }

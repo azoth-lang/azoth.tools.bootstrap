@@ -34,7 +34,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         private readonly DataType? returnType;
         private readonly TypeResolver typeResolver;
         private readonly FlowReferenceCapabilitiesSnapshot parameterCapabilities;
-        private readonly FlowSharing parameterSharing;
+        private readonly FlowSharingSnapshot parameterSharing;
 
         public BasicBodyAnalyzer(
             IFunctionDeclarationSyntax containingDeclaration,
@@ -119,13 +119,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 sharing.Declare(parameterSymbol);
             }
             this.parameterCapabilities = capabilities.Snapshot();
-            this.parameterSharing = sharing;
+            this.parameterSharing = sharing.Snapshot();
         }
 
         public void ResolveTypes(IBodySyntax body)
         {
             var capabilities = parameterCapabilities.MutableCopy();
-            var sharing = parameterSharing; // TODO make a copy
+            var sharing = parameterSharing.MutableCopy();
             foreach (var statement in body.Statements)
                 ResolveTypes(statement, sharing, capabilities);
         }
@@ -791,9 +791,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             var fromType = expression.DataType.Assigned();
             if (fromType is not ReferenceType from || toType is not ReferenceType to) return;
 
-            if (@from.IsMovable && to.IsMovable)
+            if (from.IsMovable && to.IsMovable)
                 InsertImplicitMoveIfNeeded(expression, to);
-            else if (@from.IsReadOnly || to.IsReadOnly)
+            else if (from.IsReadOnly || to.IsReadOnly)
                 InsertImplicitReadIfNeeded(expression, to.ToReadable());
             else if (implicitMutateAllowed)
                 InsertImplicitMutateIfNeeded(expression, to);

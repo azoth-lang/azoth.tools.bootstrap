@@ -62,7 +62,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             if (Members.Any(m => m is IConstructorDeclarationSyntax))
                 return;
 
-            if (!(DefaultConstructorSymbol is null))
+            if (DefaultConstructorSymbol is not null)
                 throw new InvalidOperationException($"Can't {nameof(CreateDefaultConstructor)} twice");
 
             var constructedType = Symbol.Result.DeclaresDataType;
@@ -76,7 +76,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
 
         public override string ToString()
         {
-            return $"class {Name} {{ … }}";
+            var capabilityToken = CapabilityModifier;
+            string capability = capabilityToken is null ? "" : capabilityToken + " ";
+            return $"{capability}class {Name} {{ … }}";
         }
     }
 }
