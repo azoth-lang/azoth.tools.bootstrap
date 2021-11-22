@@ -42,7 +42,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             SymbolForest symbolTrees,
             ObjectTypeSymbol? stringSymbol,
             Diagnostics diagnostics,
-            DataType? returnType = null)
+            DataType returnType)
             : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
                 symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
         { }
@@ -53,7 +53,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             SymbolForest symbolTrees,
             ObjectTypeSymbol? stringSymbol,
             Diagnostics diagnostics,
-            DataType? returnType = null)
+            DataType returnType)
             : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
                 symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
         { }
@@ -64,7 +64,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             SymbolForest symbolTrees,
             ObjectTypeSymbol? stringSymbol,
             Diagnostics diagnostics,
-            DataType? returnType = null)
+            DataType returnType)
             : this(containingDeclaration,
                 containingDeclaration.Parameters.OfType<INamedParameterSyntax>()
                                                 .Select(p => p.Symbol.Result)
@@ -78,7 +78,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             SymbolForest symbolTrees,
             ObjectTypeSymbol? stringSymbol,
             Diagnostics diagnostics,
-            DataType? returnType = null)
+            DataType returnType)
             : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
                 symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
         { }
@@ -88,10 +88,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             SymbolTreeBuilder symbolTreeBuilder,
             SymbolForest symbolTrees,
             ObjectTypeSymbol? stringSymbol,
-            Diagnostics diagnostics,
-            DataType? returnType = null)
+            Diagnostics diagnostics)
             : this(containingDeclaration, Enumerable.Empty<BindingSymbol>(),
-                symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
+                symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, null)
         { }
 
         private BasicBodyAnalyzer(
@@ -101,7 +100,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             SymbolForest symbolTrees,
             ObjectTypeSymbol? stringSymbol,
             Diagnostics diagnostics,
-            DataType? returnType = null)
+            DataType? returnType)
         {
             file = containingDeclaration.File;
             containingSymbol = containingDeclaration.Symbol.Result;
@@ -317,18 +316,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         /// <summary>
         /// Infer the type of an expression and assign that type to the expression.
         /// </summary>
-        /// <param name="expression">A reference to the repression. This is a reference so that the
-        ///     expression can be replaced because the parser can't always correctly determine
-        ///     what kind of expression it is without type information.</param>
-        /// <param name="sharing"></param>
-        /// <param name="capabilities"></param>
-        /// <param name="implicitShare">Whether implicit share expressions should be inserted around
-        ///     bare variable references.</param>
         private DataType InferType(
             IExpressionSyntax? expression,
             SharingRelation sharing,
             ReferenceCapabilities capabilities,
-            bool implicitShare = true)
+            bool implicitReadOnly = true)
         {
             switch (expression)
             {
@@ -395,14 +387,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         case IMoveExpressionSyntax:
                             throw new NotImplementedException("Raise error about `mut move` expression");
                         default:
-                            throw new NotImplementedException("Tried mutate expression type that isn't implemented");
+                            throw new NotImplementedException("Tried to mutate expression type that isn't implemented");
                     }
                 case IReturnExpressionSyntax exp:
                 {
-                    if (exp.Value != null)
+                    if (exp.Value is not null)
                     {
-                        var expectedReturnType = returnType ?? throw new InvalidOperationException("Return statement in constructor");
-                        InferType(exp.Value, sharing, capabilities, false);
+                        var expectedReturnType = returnType ?? throw new InvalidOperationException("Return statement in field initializer.");
+                        InferType(exp.Value, sharing, capabilities, implicitReadOnly: false);
+                        // TODO all variables drop out of scope before returning, this should change sharing
+
                         // If we return ownership, there can be an implicit move
                         // otherwise there could be an implicit share or borrow
                         InsertImplicitActionIfNeeded(exp.Value, expectedReturnType, implicitMutateAllowed: false);
@@ -412,6 +406,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     }
                     else if (returnType == DataType.Never)
                         diagnostics.Add(TypeError.CantReturnFromNeverFunction(file, exp.Span));
+                    // TODO if returnType is null, then this is a field and shouldn't contain a return expression
                     else if (returnType != DataType.Void)
                         diagnostics.Add(TypeError.ReturnExpressionMustHaveValue(file, exp.Span, returnType ?? DataType.Unknown));
 
@@ -481,7 +476,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 {
                     var type = InferVariableNameType(exp);
                     // In many contexts, variable names are implicitly shared
-                    if (implicitShare)
+                    if (implicitReadOnly)
                         type = InsertImplicitReadIfNeeded(expression, type);
 
                     // TODO do a more complete generation of expression semantics
@@ -656,7 +651,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                                                   .Where(s => s.Name == member.Name).ToFixedList();
                     var type = AssignReferencedSymbolAndType(member, memberSymbols);
                     // In many contexts, variable names are implicitly shared
-                    if (implicitShare) type = InsertImplicitReadIfNeeded(expression, type);
+                    if (implicitReadOnly) type = InsertImplicitReadIfNeeded(expression, type);
 
                     if (exp.Semantics is null)
                         switch (type.Semantics)
@@ -690,7 +685,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 case ISelfExpressionSyntax exp:
                 {
                     var type = InferSelfType(exp);
-                    if (implicitShare)
+                    if (implicitReadOnly)
                         type = InsertImplicitReadIfNeeded(expression, type);
 
                     if (exp.Semantics is null)
@@ -783,12 +778,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 // Implicit move not needed
                 return;
 
-            var referencedSymbol = name.ReferencedSymbol.Result;
-            //expression = new ImplicitMoveSyntax(expression, type, referencedSymbol);
             name.Semantics = ExpressionSemantics.IsolatedReference;
-            expression.Semantics = ExpressionSemantics.IsolatedReference;
 
-            throw new NotImplementedException("Need implicit move?");
+            throw new NotImplementedException();
         }
 
         private static void InsertImplicitActionIfNeeded(IExpressionSyntax expression, DataType toType, bool implicitMutateAllowed)
@@ -1098,7 +1090,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     break;
             }
 
-            return nameExpression.DataType = type!;
+            return nameExpression.DataType = type;
         }
 
         private DataType InferSelfType(ISelfExpressionSyntax selfExpression)

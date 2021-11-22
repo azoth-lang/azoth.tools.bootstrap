@@ -9,10 +9,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions
     /// simple subtype relationships.
     /// </summary>
     [Closed(
+        typeof(IdentityConversion),
         typeof(OptionalConversion),
         typeof(NumericConversion),
-        typeof(ImmutabilityConversion), // TODO not sure this should be a conversion
-        typeof(LiftedConversion))]
+        typeof(ImmutabilityConversion),
+        typeof(LiftedConversion),
+        typeof(RecoverConversion))]
     public abstract class Conversion
     {
         public DataType To { [DebuggerStepThrough] get; }

@@ -8,12 +8,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions
     /// </summary>
     public class OptionalConversion : Conversion
     {
+        public Conversion UnderlyingConversion { [DebuggerStepThrough] get; }
         public new OptionalType To { [DebuggerStepThrough] get; }
 
-        public OptionalConversion(OptionalType to)
-            : base(to)
+        public OptionalConversion(Conversion underlyingConversion)
+            : base(new OptionalType(underlyingConversion.To))
         {
-            To = to;
+            UnderlyingConversion = underlyingConversion;
+            To = (OptionalType)base.To;
         }
     }
 }

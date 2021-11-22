@@ -16,17 +16,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing
         {
             try
             {
-                switch (Tokens.Current)
+                return Tokens.Current switch
                 {
-                    case ICloseParenToken _:
-                    case ICloseBraceToken _:
-                    case ISemicolonToken _:
-                    case ICommaToken _:
-                    case IRightArrowToken _:
-                        return null;
-                    default:
-                        return ParseExpression();
-                }
+                    ICloseParenToken
+                        or ICloseBraceToken
+                        or ISemicolonToken
+                        or ICommaToken
+                        or IRightArrowToken => null,
+                    _ => ParseExpression()
+                };
             }
             catch (ParseFailedException)
             {

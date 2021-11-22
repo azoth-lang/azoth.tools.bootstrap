@@ -258,6 +258,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
                 LiftedConversion c => BuildImplicitLiftedConversionExpression(expression, c),
                 NumericConversion c => BuildImplicitNumericConversionExpression(expression, c),
                 OptionalConversion c => BuildImplicitOptionalConversionExpression(expression, c),
+                RecoverIsolation c => throw new NotImplementedException(),
+                RecoverConst c => throw new NotImplementedException(),
+                IdentityConversion c => expression,
                 _ => throw ExhaustiveMatch.Failed(implicitConversion)
             };
         }

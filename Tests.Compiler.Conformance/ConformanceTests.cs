@@ -33,11 +33,11 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
             Assert.NotEmpty(GetConformanceTestCases());
         }
 
-        private static readonly Regex ExitCodePattern = new Regex(@"//[ \t]*exit code: (?<exitCode>\d+)", RegexOptions.Compiled);
+        private static readonly Regex ExitCodePattern = new(@"//[ \t]*exit code: (?<exitCode>\d+)", RegexOptions.Compiled);
         private const string ExpectedOutputFileFormat = @"//[ \t]*{0} file: (?<file>[a-zA-Z0-9_.]+)";
         private const string ExpectedOutputFormat = @"\/\*[ \t]*{0}:\r?\n(?<output>(\*+[^/]|[^*])*)\*\/";
-        private static readonly Regex ExpectCompileErrorsPattern = new Regex(@"//[ \t]*compile: errors", RegexOptions.Compiled);
-        private static readonly Regex ErrorPattern = new Regex(@"//[ \t]*ERROR([ \t].*)?", RegexOptions.Compiled | RegexOptions.Multiline);
+        private static readonly Regex ExpectCompileErrorsPattern = new(@"//[ \t]*compile: errors", RegexOptions.Compiled);
+        private static readonly Regex ErrorPattern = new(@"//[ \t]*ERROR([ \t].*)?", RegexOptions.Compiled | RegexOptions.Multiline);
 
         [Theory]
         [MemberData(nameof(GetConformanceTestCases))]
