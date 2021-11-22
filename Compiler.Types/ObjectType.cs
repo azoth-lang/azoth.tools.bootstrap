@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types
 {
@@ -128,9 +127,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         }
         #endregion
 
-        protected internal override Self To_ReturnsSelf(ReferenceCapability referenceCapability)
-        {
-            return new ObjectType(ContainingNamespace, Name, DeclaredCapability, referenceCapability);
-        }
+        public override ObjectType To(ReferenceCapability referenceCapability)
+            => new ObjectType(ContainingNamespace, Name, DeclaredCapability, referenceCapability);
+
+        public override ObjectType ToReadable() => (ObjectType)base.ToReadable();
     }
 }

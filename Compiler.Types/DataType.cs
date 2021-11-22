@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -91,14 +90,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// </summary>
         public abstract string ToILString();
 
-        public static implicit operator Self(DataType type)
-        {
-            return new Self(type);
-        }
-
-        [SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores",
-            Justification = "Returns self idiom")]
-        protected internal virtual Self ToReadable_ReturnsSelf()
+        /// <summary>
+        /// Returns the same type except with any mutability removed
+        /// </summary>
+        public virtual DataType ToReadable()
         {
             return this;
         }

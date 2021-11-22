@@ -1,6 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
-using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types
@@ -32,21 +30,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             Capability = capability;
         }
 
-        [SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores",
-            Justification = "Returns self idiom")]
-        protected internal Self ToMutable_ReturnsSelf()
+        public ReferenceType ToMutable()
         {
             if (!DeclaredCapability.AllowsWrite) throw new InvalidOperationException($"Can't convert type declared {DeclaredCapability} to mutable reference");
-            return To_ReturnsSelf(Capability.ToMutable());
+            return To(Capability.ToMutable());
         }
 
-        protected internal sealed override Self ToReadable_ReturnsSelf()
+        public override ReferenceType ToReadable()
         {
-            return To_ReturnsSelf(Capability.ToReadOnly());
+            return To(Capability.ToReadOnly());
         }
 
-        [SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores",
-            Justification = "Returns self idiom")]
-        protected internal abstract Self To_ReturnsSelf(ReferenceCapability referenceCapability);
+        /// <summary>
+        /// Return the same type except with the given reference capability
+        /// </summary>
+        public abstract ReferenceType To(ReferenceCapability referenceCapability);
     }
 }

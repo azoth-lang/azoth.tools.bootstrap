@@ -7,16 +7,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
     public static class DataTypeExtensions
     {
         /// <summary>
-        /// Returns the same type except with any mutability removed
-        /// </summary>
-        [DebuggerHidden]
-        public static T ToReadable<T>(this T type)
-            where T : DataType
-        {
-            return type.ToReadable_ReturnsSelf().Cast<T>();
-        }
-
-        /// <summary>
         /// Tests whether a place of the target type could be assigned a value of the source type.
         /// This does not account for implicit conversions, but does allow for borrowing
         /// and sharing. It also allows for isolated upgrading to mutable.

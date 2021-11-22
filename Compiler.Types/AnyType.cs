@@ -1,6 +1,5 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types
 {
@@ -21,8 +20,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 
         public override bool IsKnown => true;
 
-
-
         public override bool Equals(DataType? other)
         {
             if (other is null) return false;
@@ -31,24 +28,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
                    && Capability == otherType.Capability;
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(SpecialTypeName.Any, Capability);
-        }
+        public override int GetHashCode() => HashCode.Combine(SpecialTypeName.Any, Capability);
 
-        protected internal override Self To_ReturnsSelf(ReferenceCapability referenceCapability)
-        {
-            return new AnyType(referenceCapability);
-        }
+        public override AnyType To(ReferenceCapability referenceCapability)
+            => new AnyType(referenceCapability);
 
-        public override string ToILString()
-        {
-            return $"{Capability} Any";
-        }
+        public override string ToILString() => $"{Capability} Any";
 
-        public override string ToSourceCodeString()
-        {
-            return $"{Capability} Any";
-        }
+        public override string ToSourceCodeString() => $"{Capability} Any";
     }
 }
