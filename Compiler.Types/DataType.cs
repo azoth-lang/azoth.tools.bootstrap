@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types
@@ -65,10 +64,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// <summary>
         /// Convert types for literal constants to their corresponding types
         /// </summary>
-        public virtual DataType ToNonConstantType()
-        {
-            return this;
-        }
+        public virtual DataType ToNonConstantType() => this;
 
         // TODO equality
 
@@ -93,10 +89,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// <summary>
         /// Returns the same type except with any mutability removed
         /// </summary>
-        public virtual DataType ToReadable()
-        {
-            return this;
-        }
+        public virtual DataType ToReadable() => this;
 
         #region Equality
         public abstract bool Equals(DataType? other);
@@ -110,14 +103,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         }
 
         public static bool operator ==(DataType? left, DataType? right)
-        {
-            return Equals(left, right);
-        }
+            => Equals(left, right);
 
         public static bool operator !=(DataType? left, DataType? right)
-        {
-            return !Equals(left, right);
-        }
+            => !Equals(left, right);
+
         #endregion
     }
 }
