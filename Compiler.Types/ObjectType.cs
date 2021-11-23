@@ -130,6 +130,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public override ObjectType To(ReferenceCapability referenceCapability)
             => new ObjectType(ContainingNamespace, Name, DeclaredCapability, referenceCapability);
 
-        public override ObjectType ToReadable() => (ObjectType)base.ToReadable();
+        public override ObjectType ToReadOnly() => (ObjectType)base.ToReadOnly();
     }
 }

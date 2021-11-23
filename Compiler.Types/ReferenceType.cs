@@ -36,7 +36,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             return To(Capability.ToMutable());
         }
 
-        public override ReferenceType ToReadable()
+        public override ReferenceType ToReadOnly()
         {
             return To(Capability.ToReadOnly());
         }

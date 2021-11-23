@@ -89,7 +89,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// <summary>
         /// Returns the same type except with any mutability removed
         /// </summary>
-        public virtual DataType ToReadable() => this;
+        public virtual DataType ToReadOnly() => this;
 
         #region Equality
         public abstract bool Equals(DataType? other);

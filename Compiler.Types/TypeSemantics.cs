@@ -1,12 +1,8 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Azoth.Tools.Bootstrap.Compiler.Types
 {
     /// <summary>
     /// The semantics of values of a type
     /// </summary>
-    [SuppressMessage("Naming", "CA1717:Only FlagsAttribute enums should have plural names",
-        Justification = "Name not plural")]
     public enum TypeSemantics
     {
         /// <summary>
