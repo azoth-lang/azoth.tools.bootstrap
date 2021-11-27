@@ -228,7 +228,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     if (inferCapability is null) return type.ToReadOnly();
                     if (type is not ReferenceType referenceType)
                         throw new NotImplementedException("Compile error: can't infer mutability for non reference type");
-                    if (!referenceType.IsMutableReference)
+                    if (!referenceType.IsWritableReference)
                         throw new NotImplementedException("Compile error: can't infer a mutable type");
 
                     return type;
@@ -320,6 +320,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
                     return new RecoverConst(priorConversion);
                 }
+                case (ObjectType { IsIsolatedReference: true } to, ObjectType { IsIsolatedReference: false } from):
+                {
+                    // Try to recover isolation
+                    if (!to.DeclaredTypesEquals(from) // Underlying types must match
+                        || !sharing.IsIsolated(SharingVariable.Result)) // Expression must be isolated
+                        return null;
+
+                    return new RecoverIsolation(priorConversion);
+                }
                 default:
                     return null;
             }
@@ -381,7 +390,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                             switch (type)
                             {
                                 case ReferenceType referenceType:
-                                    if (!referenceType.IsMutableReference)
+                                    if (!referenceType.IsWritableReference)
                                     {
                                         diagnostics.Add(TypeError.ExpressionCantBeMutable(file, exp.Referent));
                                         type = DataType.Unknown;
@@ -925,7 +934,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     var referenceType = (ReferenceType)type;
                     if (referenceType.Capability.CanBeAcquired())
                         invocationExpression.Semantics = ExpressionSemantics.IsolatedReference;
-                    else if (referenceType.IsMutableReference)
+                    else if (referenceType.IsWritableReference)
                         invocationExpression.Semantics = ExpressionSemantics.MutableReference;
                     else
                         invocationExpression.Semantics = ExpressionSemantics.ReadOnlyReference;
