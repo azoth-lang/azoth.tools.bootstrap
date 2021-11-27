@@ -25,7 +25,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
         }
 
         [return: NotNullIfNotNull("typeSyntax")]
-        public DataType? Evaluate(ITypeSyntax? typeSyntax)
+        public DataType? Evaluate(ITypeSyntax? typeSyntax, bool implicitRead)
         {
             switch (typeSyntax)
             {
@@ -46,7 +46,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
                         case 1:
                             var symbol = symbolPromises.Single().Result;
                             typeName.ReferencedSymbol.Fulfill(symbol);
-                            typeName.NamedType = symbol.DeclaresDataType;
+                            var type = symbol.DeclaresDataType;
+                            if (implicitRead) type = type.ToReadOnly();
+                            typeName.NamedType = type;
                             break;
                         default:
                             diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
@@ -58,7 +60,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
                 }
                 case ICapabilityTypeSyntax referenceCapability:
                 {
-                    var type = Evaluate(referenceCapability.ReferentType);
+                    var type = Evaluate(referenceCapability.ReferentType, implicitRead: false);
                     if (type == DataType.Unknown)
                         return DataType.Unknown;
                     if (type is ReferenceType referenceType)
@@ -69,7 +71,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
                 }
                 case IOptionalTypeSyntax optionalType:
                 {
-                    var referent = Evaluate(optionalType.Referent);
+                    var referent = Evaluate(optionalType.Referent, implicitRead);
                     return optionalType.NamedType = new OptionalType(referent);
                 }
             }

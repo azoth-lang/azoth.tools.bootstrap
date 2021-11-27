@@ -159,7 +159,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             DataType type;
             if (variableDeclaration.Type != null)
             {
-                type = typeResolver.Evaluate(variableDeclaration.Type);
+                type = typeResolver.Evaluate(variableDeclaration.Type, implicitRead: true);
                 CheckType(variableDeclaration.Initializer, type, sharing, capabilities);
             }
             else if (variableDeclaration.Initializer != null)
@@ -542,7 +542,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 {
                     var argumentTypes = exp.Arguments.Select(arg => InferType(arg, sharing, capabilities)).ToFixedList();
                     // TODO handle named constructors here
-                    var constructingType = typeResolver.Evaluate(exp.Type);
+                    var constructingType = typeResolver.Evaluate(exp.Type, implicitRead: false);
                     if (!constructingType.IsKnown)
                     {
                         diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
@@ -584,7 +584,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 }
                 case IForeachExpressionSyntax exp:
                 {
-                    var declaredType = typeResolver.Evaluate(exp.Type);
+                    var declaredType = typeResolver.Evaluate(exp.Type, implicitRead: true);
                     var expressionType = CheckForeachInType(declaredType, exp.InExpression, sharing, capabilities);
                     var variableType = declaredType ?? expressionType;
                     var symbol = new VariableSymbol((InvocableSymbol)containingSymbol, exp.VariableName,

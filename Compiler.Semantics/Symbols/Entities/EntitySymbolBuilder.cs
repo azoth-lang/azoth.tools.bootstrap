@@ -123,7 +123,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities
 
             field.Symbol.BeginFulfilling();
             var resolver = new TypeResolver(field.File, diagnostics);
-            var type = resolver.Evaluate(field.Type);
+            var type = resolver.Evaluate(field.Type, implicitRead: true);
             var symbol = new FieldSymbol(field.DeclaringClass.Symbol.Result, field.Name, field.IsMutableBinding, type);
             field.Symbol.Fulfill(symbol);
             symbolTree.Add(symbol);
@@ -181,7 +181,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities
                         throw ExhaustiveMatch.Failed(parameter);
                     case INamedParameterSyntax namedParameter:
                     {
-                        var type = resolver.Evaluate(namedParameter.Type);
+                        var type = resolver.Evaluate(namedParameter.Type, implicitRead: true);
                         types.Add(type);
                     }
                     break;
@@ -269,7 +269,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities
             ITypeSyntax? returnTypeSyntax, TypeResolver resolver)
         {
             var returnType = returnTypeSyntax != null
-                ? resolver.Evaluate(returnTypeSyntax) : DataType.Void;
+                ? resolver.Evaluate(returnTypeSyntax, implicitRead: true) : DataType.Void;
             return returnType;
         }
     }
