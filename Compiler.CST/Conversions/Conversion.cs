@@ -14,5 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions
     public abstract class Conversion
     {
         public abstract (DataType, ExpressionSemantics) Apply(DataType type, ExpressionSemantics semantics);
+
+        public abstract bool IsChainedTo(Conversion conversion);
     }
 }

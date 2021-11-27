@@ -19,6 +19,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
                 case (UnknownType, _):
                 case (_, UnknownType):
                 case (BoolType, BoolConstantType):
+                case (_, NeverType):
                     return true;
                 case (AnyType targetReference, ReferenceType sourceReference):
                     return targetReference.Capability.IsAssignableFrom(sourceReference.Capability);

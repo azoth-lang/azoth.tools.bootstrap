@@ -281,17 +281,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         return null;
                     var liftedConversion = ImplicitConversion(to.Referent, @from.Referent, IdentityConversion.Instance, sharing, capabilities);
                     return liftedConversion is null ? null : new LiftedConversion(liftedConversion, priorConversion);
-                case (OptionalType to, /* non-optional type */ _):
-                    // If needed, convert the type to the referent type of the optional type
-                    throw new NotImplementedException("Conversion to optional");
-                //var type = ApplyImplicitConversionIfNeeded(expression, targetType.Referent);
-                //if (targetType.Referent.IsAssignableFrom(type))
-                //{
-                //    var conversion = ImplicitConversion(targetType.Referent, @from);
-                //    expression = new ImplicitOptionalConversionExpression(expression, targetType);
-                //}
-                //else
-                //    return null;
+                case (OptionalType to, /* non-optional */ DataType from):
+                    var nonOptionalTo = to.Referent;
+                    if (!nonOptionalTo.IsAssignableFrom(from))
+                    {
+                        var conversion = ImplicitConversion(nonOptionalTo, from, priorConversion, sharing, capabilities);
+                        if (conversion is null) return null; // Not able to convert to the referent type
+                        priorConversion = conversion;
+                    }
+                    return new OptionalConversion(priorConversion);
                 case (FixedSizeIntegerType to, FixedSizeIntegerType from):
                     if (to.Bits > from.Bits && (!from.IsSigned || to.IsSigned))
                         return new NumericConversion(to, priorConversion);

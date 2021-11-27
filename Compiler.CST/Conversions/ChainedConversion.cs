@@ -20,5 +20,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions
         {
             PriorConversion = priorConversion;
         }
+
+        public override bool IsChainedTo(Conversion conversion)
+            => PriorConversion == conversion || PriorConversion.IsChainedTo(conversion);
     }
 }

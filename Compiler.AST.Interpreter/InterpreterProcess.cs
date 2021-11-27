@@ -200,6 +200,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             {
                 default:
                     throw new NotImplementedException($"Can't interpret {expression.GetType().Name}");
+                case INoneLiteralExpression:
+                    return AzothValue.None;
                 case IReturnExpression exp:
                     if (exp.Value is null) throw new Return();
                     throw new Return(await ExecuteAsync(exp.Value, variables).ConfigureAwait(false));

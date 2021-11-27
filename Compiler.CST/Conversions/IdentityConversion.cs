@@ -17,5 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions
 
         public override (DataType, ExpressionSemantics) Apply(DataType type, ExpressionSemantics semantics)
             => (type, semantics);
+
+        public override bool IsChainedTo(Conversion conversion) => false;
     }
 }

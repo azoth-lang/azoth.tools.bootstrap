@@ -90,7 +90,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
 
         public void AddConversion(ChainedConversion conversion)
         {
-            if (conversion.PriorConversion != ImplicitConversion)
+            if (!conversion.IsChainedTo(ImplicitConversion))
                 throw new InvalidOperationException("Cannot add conversion not chained to existing conversion.");
             ImplicitConversion = conversion;
         }
