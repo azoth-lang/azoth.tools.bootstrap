@@ -486,7 +486,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 }
                 case INameExpressionSyntax exp:
                 {
-                    var type = ResolveVariableNameSymbol(exp)?.DataType.ToReadOnly() ?? DataType.Unknown;
+                    var type = ResolveVariableNameSymbol(exp)?.DataType ?? DataType.Unknown;
+                    if (implicitRead) type = type.ToReadOnly();
                     var referenceSemantics = implicitRead
                         ? ExpressionSemantics.ReadOnlyReference
                         : ExpressionSemantics.MutableReference;
