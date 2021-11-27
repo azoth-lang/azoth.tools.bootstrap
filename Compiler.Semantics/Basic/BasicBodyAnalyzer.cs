@@ -403,7 +403,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                             nameExpression.Semantics = semantics;
                             nameExpression.DataType = type;
                             exp.ReferencedSymbol.Fulfill(symbol);
-                            exp.Semantics = semantics;
                             return exp.DataType = type;
                         }
                         case IMutateExpressionSyntax:
