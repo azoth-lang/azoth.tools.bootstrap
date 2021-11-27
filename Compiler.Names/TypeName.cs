@@ -42,8 +42,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names
 
         public abstract override string ToString();
 
-        [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates",
-            Justification = "Name() constructor is alternative")]
         public static implicit operator TypeName(string text)
         {
             return new Name(text);

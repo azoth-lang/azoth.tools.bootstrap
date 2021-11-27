@@ -41,8 +41,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names
             return text;
         }
 
-        [SuppressMessage("Usage", "CA2225:Operator overloads have named alternates",
-            Justification = "Constructor is alternative")]
         public static implicit operator Name(string text)
         {
             return new Name(text);

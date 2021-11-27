@@ -752,7 +752,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     if (!functionSymbols.Any())
                     {
                         // TODO handle mutable self inference
-                        InferType(exp.Context, sharing, capabilities/*, false*/);
+                        InferType(exp.Context, sharing, capabilities, implicitRead: false);
                         return InferMethodInvocationType(invocation, exp.Context, name, argumentTypes);
                     }
                     break;
@@ -765,7 +765,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 default:
                     throw new NotImplementedException("Invocation of expression");
             }
-
 
             return InferFunctionInvocationType(invocation, functionSymbols, argumentTypes);
         }
@@ -846,11 +845,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         {
             return expression switch
             {
-                IQualifiedNameExpressionSyntax memberAccess =>
-                // if implicit self
-                memberAccess.Context is null // TODO is this correct or is there an expression for implicit self?
-                    ? null
-                    : MethodContextAsName(memberAccess.Context)?.Qualify(memberAccess.Field.Name!),
+                IQualifiedNameExpressionSyntax memberAccess
+                    => MethodContextAsName(memberAccess.Context)?.Qualify(memberAccess.Field.Name!),
                 INameExpressionSyntax nameExpression => nameExpression.Name!,
                 _ => null
             };
