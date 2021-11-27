@@ -322,36 +322,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         private DataType InferType(
             IExpressionSyntax? expression,
             SharingRelation sharing,
-            ReferenceCapabilities capabilities)
-            => InferType(expression, sharing, capabilities, ApplyWithoutConversion);
-
-        private static DataType ApplyWithoutConversion(
-            IExpressionSyntax expression,
-            DataType type,
-            ExpressionSemantics? possibleSemantics)
-        {
-            if (possibleSemantics is { } semantics)
-            {
-                if (expression.Semantics is null)
-                    expression.Semantics = semantics;
-                else if (expression.Semantics != semantics)
-                    throw new InvalidOperationException(
-                        $"Cannot apply expression semantics to expression '{expression}' that already has them ");
-            }
-
-            return expression.DataType = type;
-        }
-
-        private delegate DataType ApplyWithConversion(
-            IExpressionSyntax expression,
-            DataType type,
-            ExpressionSemantics? possibleSemantics = null);
-
-        private DataType InferType(
-            IExpressionSyntax? expression,
-            SharingRelation sharing,
             ReferenceCapabilities capabilities,
-            ApplyWithConversion applyWithConversion)
+            bool implicitRead = true)
         {
             switch (expression)
             {
@@ -378,9 +350,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                                     throw new NotImplementedException("Non-moveable type can't be moved");
                             }
                             const ExpressionSemantics semantics = ExpressionSemantics.IsolatedReference;
-                            type = applyWithConversion(nameExpression, type, semantics);
+                            nameExpression.Semantics = semantics;
+                            nameExpression.DataType = type;
                             exp.ReferencedSymbol.Fulfill(symbol);
-                            return applyWithConversion(exp, type, semantics);
+                            exp.Semantics = semantics;
+                            return exp.DataType = type;
                         case IMutateExpressionSyntax:
                             throw new NotImplementedException("Raise error about `move mut` expression");
                         case IMoveExpressionSyntax:
@@ -410,9 +384,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                                     throw new NotImplementedException("Non-mutable type can't be borrowed mutably");
                             }
                             const ExpressionSemantics semantics = ExpressionSemantics.MutableReference;
-                            type = applyWithConversion(nameExpression, type, semantics);
+                            nameExpression.Semantics = semantics;
+                            nameExpression.DataType = type;
                             exp.ReferencedSymbol.Fulfill(symbol);
-                            return applyWithConversion(exp, type, semantics);
+                            exp.Semantics = semantics;
+                            return exp.DataType = type;
                         }
                         case IMutateExpressionSyntax:
                             throw new NotImplementedException("Raise error about `mut mut` expression");
@@ -511,8 +487,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 case INameExpressionSyntax exp:
                 {
                     var type = ResolveVariableNameSymbol(exp)?.DataType.ToReadOnly() ?? DataType.Unknown;
-                    var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
-                    return applyWithConversion(exp, type, semantics);
+                    var referenceSemantics = implicitRead
+                        ? ExpressionSemantics.ReadOnlyReference
+                        : ExpressionSemantics.MutableReference;
+                    exp.Semantics = type.Semantics.ToExpressionSemantics(referenceSemantics);
+                    return exp.DataType = type;
                 }
                 case IUnaryOperatorExpressionSyntax exp:
                 {
@@ -650,7 +629,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                             break;
                     }
                     // TODO assign a type to the expression
-                    return applyWithConversion(exp, DataType.Void, ExpressionSemantics.Void);
+                    exp.Semantics = ExpressionSemantics.Void;
+                    return exp.DataType = DataType.Void;
                 case IQualifiedNameExpressionSyntax exp:
                 {
                     // Don't wrap the self expression in a share expression for field access
@@ -671,8 +651,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                                                   .Where(s => s.Name == member.Name).ToFixedList();
                     var type = ResolvedReferencedSymbol(member, memberSymbols)?.DataType ?? DataType.Unknown;
                     var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
-                    type = applyWithConversion(member, type, semantics);
-                    return applyWithConversion(exp, type, semantics);
+                    member.Semantics = semantics;
+                    member.DataType = type;
+                    exp.Semantics = semantics;
+                    return exp.DataType = type;
                 }
                 case IBreakExpressionSyntax exp:
                     InferType(exp.Value, sharing, capabilities);
@@ -694,8 +676,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 case ISelfExpressionSyntax exp:
                 {
                     var type = ResolveSelfSymbol(exp)?.DataType ?? DataType.Unknown;
-                    var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
-                    return applyWithConversion(exp, type, semantics);
+                    var referenceSemantics = implicitRead
+                        ? ExpressionSemantics.ReadOnlyReference
+                        : ExpressionSemantics.MutableReference;
+                    exp.Semantics = type.Semantics.ToExpressionSemantics(referenceSemantics);
+                    return exp.DataType = type;
                 }
                 case INoneLiteralExpressionSyntax exp:
                     return exp.DataType = DataType.None;
