@@ -9,9 +9,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
     public abstract class ReferenceType : DataType
     {
         public ReferenceCapability Capability { get; }
-        public bool IsReadOnly => !Capability.AllowsWrite;
-        public bool IsMutable => Capability.AllowsWrite;
-        public bool IsMovable => Capability.IsMovable;
+        public bool IsReadOnlyReference => !Capability.AllowsWrite;
+        public bool IsMutableReference => Capability.AllowsWrite;
+        public bool IsMovableReference => Capability.IsMovable;
+        public bool IsConstReference => Capability == ReferenceCapability.Constant;
 
         public override TypeSemantics Semantics => TypeSemantics.Reference;
 

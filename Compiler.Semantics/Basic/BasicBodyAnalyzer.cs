@@ -206,7 +206,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             var type = InferType(expression, sharing, capabilities);
             if (!type.IsKnown) return DataType.Unknown;
             type = type.ToNonConstantType();
-            type = AddImplicitConversionIfNeeded(expression, type);
+            type = AddImplicitConversionIfNeeded(expression, type, sharing, capabilities);
 
             switch (expression)
             {
@@ -228,7 +228,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     if (inferCapability is null) return type.ToReadOnly();
                     if (type is not ReferenceType referenceType)
                         throw new NotImplementedException("Compile error: can't infer mutability for non reference type");
-                    if (!referenceType.IsMutable)
+                    if (!referenceType.IsMutableReference)
                         throw new NotImplementedException("Compile error: can't infer a mutable type");
 
                     return type;
@@ -245,8 +245,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         {
             if (expression is null) return;
             // TODO use allowImplicitMutateOrMove to affect conversions applied etc.
-            InferType(expression, sharing, capabilities);
-            var actualType = AddImplicitConversionIfNeeded(expression, expectedType);
+            InferType(expression, sharing, capabilities, implicitRead: !allowImplicitMutateOrMove);
+            var actualType = AddImplicitConversionIfNeeded(expression, expectedType, sharing, capabilities);
             if (!expectedType.IsAssignableFrom(actualType))
                 diagnostics.Add(TypeError.CannotConvert(file, expression, actualType, expectedType));
         }
@@ -256,25 +256,32 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         /// </summary>
         private static DataType AddImplicitConversionIfNeeded(
             IExpressionSyntax expression,
-            DataType expectedType)
+            DataType expectedType,
+            SharingRelation sharing,
+            ReferenceCapabilities capabilities)
         {
             var fromType = expression.DataType.Assigned();
-            var conversion = ImplicitConversion(expectedType, fromType, expression.ImplicitConversion);
+            var conversion = ImplicitConversion(expectedType, fromType, expression.ImplicitConversion, sharing, capabilities);
             if (conversion != null) expression.AddConversion(conversion);
             return expression.ConvertedDataType.Assigned();
         }
 
-        private static ChainedConversion? ImplicitConversion(DataType to, DataType from, Conversion priorConversion)
+        private static ChainedConversion? ImplicitConversion(
+            DataType toType,
+            DataType fromType,
+            Conversion priorConversion,
+            SharingRelation sharing,
+            ReferenceCapabilities capabilities)
         {
-            switch (to, from)
+            switch (toType, fromType)
             {
-                case (OptionalType optionalTo, OptionalType optionalFrom):
+                case (OptionalType to, OptionalType from):
                     // Direct subtype
-                    if (optionalTo.Referent.IsAssignableFrom(optionalFrom.Referent))
+                    if (to.Referent.IsAssignableFrom(from.Referent))
                         return null;
-                    var liftedConversion = ImplicitConversion(optionalTo.Referent, optionalFrom.Referent, IdentityConversion.Instance);
+                    var liftedConversion = ImplicitConversion(to.Referent, @from.Referent, IdentityConversion.Instance, sharing, capabilities);
                     return liftedConversion is null ? null : new LiftedConversion(liftedConversion, priorConversion);
-                case (OptionalType targetType, /* non-optional type */ _):
+                case (OptionalType to, /* non-optional type */ _):
                     // If needed, convert the type to the referent type of the optional type
                     throw new NotImplementedException("Conversion to optional");
                 //var type = ApplyImplicitConversionIfNeeded(expression, targetType.Referent);
@@ -285,32 +292,34 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 //}
                 //else
                 //    return null;
-                case (FixedSizeIntegerType targetType, FixedSizeIntegerType expressionType):
-                    if (targetType.Bits > expressionType.Bits && (!expressionType.IsSigned || targetType.IsSigned))
-                        return new NumericConversion(targetType, priorConversion);
+                case (FixedSizeIntegerType to, FixedSizeIntegerType from):
+                    if (to.Bits > from.Bits && (!from.IsSigned || to.IsSigned))
+                        return new NumericConversion(to, priorConversion);
                     else
                         return null;
-                case (FixedSizeIntegerType targetType, IntegerConstantType expressionType):
+                case (FixedSizeIntegerType to, IntegerConstantType from):
                 {
-                    var requireSigned = expressionType.Value < 0;
-                    var bits = expressionType.Value.GetByteCount(!targetType.IsSigned) * 8;
-                    if (targetType.Bits >= bits && (!requireSigned || targetType.IsSigned))
-                        return new NumericConversion(targetType, priorConversion);
+                    var requireSigned = from.Value < 0;
+                    var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
+                    if (to.Bits >= bits && (!requireSigned || to.IsSigned))
+                        return new NumericConversion(to, priorConversion);
                     else
                         return null;
                 }
-                case (PointerSizedIntegerType targetType, IntegerConstantType expressionType):
+                case (PointerSizedIntegerType to, IntegerConstantType from):
                 {
-                    var requireSigned = expressionType.Value < 0;
-                    return !requireSigned || targetType.IsSigned ? new NumericConversion(targetType, priorConversion) : null;
+                    var requireSigned = from.Value < 0;
+                    return !requireSigned || to.IsSigned ? new NumericConversion(to, priorConversion) : null;
                 }
-                case (ObjectType { IsReadOnly: true } targetType, ObjectType { IsMutable: true } expressionType):
-                    // TODO if source type is explicitly mutable, issue warning about using `mut` in immutable context
-                    var capability = targetType.Capability == ReferenceCapability.Constant
-                        ? expressionType.To(ReferenceCapability.Constant)
-                        : expressionType.ToReadOnly();
-                    // TODO I don't think this is correct here
+                case (ObjectType { IsConstReference: true } to, ObjectType { IsConstReference: false } from):
+                {
+                    // Try to recover const
+                    if (!to.DeclaredTypesEquals(from) // Underlying types must match
+                        || !sharing.IsIsolated(SharingVariable.Result))  // Expression must be isolated
+                        return null;
+
                     return new RecoverConst(priorConversion);
+                }
                 default:
                     return null;
             }
@@ -340,7 +349,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                             switch (type)
                             {
                                 case ReferenceType referenceType:
-                                    if (!referenceType.IsMovable)
+                                    if (!referenceType.IsMovableReference)
                                     {
                                         diagnostics.Add(TypeError.CannotMoveValue(file, exp));
                                         type = DataType.Unknown;
@@ -372,7 +381,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                             switch (type)
                             {
                                 case ReferenceType referenceType:
-                                    if (!referenceType.IsMutable)
+                                    if (!referenceType.IsMutableReference)
                                     {
                                         diagnostics.Add(TypeError.ExpressionCantBeMutable(file, exp.Referent));
                                         type = DataType.Unknown;
@@ -404,16 +413,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         var expectedReturnType = returnType ?? throw new InvalidOperationException("Return statement in field initializer.");
 
                         CheckType(exp.Value, expectedReturnType, sharing, capabilities, allowImplicitMutateOrMove: true);
-
-                        //InferType(exp.Value, sharing, capabilities, implicitReadOnly: false);
-                        // TODO all variables drop out of scope before returning, this should change sharing
-
-                        // If we return ownership, there can be an implicit move
-                        // otherwise there could be an implicit share or borrow
-                        //InsertImplicitActionIfNeeded(exp.Value, expectedReturnType, allowImplicitMutateAndMove: false);
-                        //var actualType = AddImplicitConversionIfNeeded(exp.Value, expectedReturnType);
-                        //if (!expectedReturnType.IsAssignableFrom(actualType))
-                        //    diagnostics.Add(TypeError.CannotConvert(file, exp.Value, actualType, expectedReturnType));
                     }
                     else if (returnType == DataType.Never)
                         diagnostics.Add(TypeError.CantReturnFromNeverFunction(file, exp.Span));
@@ -448,7 +447,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         case BinaryOperator.Minus:
                         case BinaryOperator.Asterisk:
                         case BinaryOperator.Slash:
-                            compatible = NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand, binaryOperatorExpression.RightOperand);
+                            compatible = NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand, binaryOperatorExpression.RightOperand, sharing, capabilities);
                             binaryOperatorExpression.DataType = compatible ? leftType : DataType.Unknown;
                             binaryOperatorExpression.Semantics = ExpressionSemantics.CopyValue;
                             break;
@@ -459,7 +458,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                         case BinaryOperator.GreaterThan:
                         case BinaryOperator.GreaterThanOrEqual:
                             compatible = (leftType == DataType.Bool && rightType == DataType.Bool)
-                                         || NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand, binaryOperatorExpression.RightOperand)
+                                         || NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand, binaryOperatorExpression.RightOperand, sharing, capabilities)
                                          /*|| OperatorOverloadDefined(@operator, binaryOperatorExpression.LeftOperand, ref binaryOperatorExpression.RightOperand)*/;
                             binaryOperatorExpression.DataType = DataType.Bool;
                             binaryOperatorExpression.Semantics = ExpressionSemantics.CopyValue;
@@ -560,7 +559,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                             exp.ReferencedSymbol.Fulfill(constructorSymbol);
                             foreach (var (arg, parameterDataType) in exp.Arguments.Zip(constructorSymbol.ParameterDataTypes))
                             {
-                                AddImplicitConversionIfNeeded(arg, parameterDataType);
+                                AddImplicitConversionIfNeeded(arg, parameterDataType, sharing, capabilities);
                                 CheckArgumentTypeCompatibility(parameterDataType, arg);
                             }
                             constructedType = constructorSymbol.ReturnDataType;
@@ -666,7 +665,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 {
                     var left = InferAssignmentTargetType(exp.LeftOperand, sharing, capabilities);
                     InferType(exp.RightOperand, sharing, capabilities);
-                    AddImplicitConversionIfNeeded(exp.RightOperand, left);
+                    AddImplicitConversionIfNeeded(exp.RightOperand, left, sharing, capabilities);
                     var right = exp.RightOperand.ConvertedDataType.Assigned();
                     if (!left.IsAssignableFrom(right))
                         diagnostics.Add(TypeError.CannotConvert(file,
@@ -754,7 +753,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     {
                         // TODO handle mutable self inference
                         InferType(exp.Context, sharing, capabilities, implicitRead: false);
-                        return InferMethodInvocationType(invocation, exp.Context, name, argumentTypes);
+                        return InferMethodInvocationType(invocation, exp.Context, name, argumentTypes, sharing, capabilities);
                     }
                     break;
                 case INameExpressionSyntax exp:
@@ -767,14 +766,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     throw new NotImplementedException("Invocation of expression");
             }
 
-            return InferFunctionInvocationType(invocation, functionSymbols, argumentTypes);
+            return InferFunctionInvocationType(invocation, functionSymbols, argumentTypes, sharing, capabilities);
         }
 
         private DataType InferMethodInvocationType(
             IInvocationExpressionSyntax invocation,
             IExpressionSyntax context,
             Name methodName,
-            FixedList<DataType> argumentTypes)
+            FixedList<DataType> argumentTypes,
+            SharingRelation sharing,
+            ReferenceCapabilities capabilities)
         {
             // If it is unknown, we already reported an error
             if (context.DataType == DataType.Unknown)
@@ -803,13 +804,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     // TODO handle mutable self parameters
                     //InsertImplicitActionIfNeeded(context, selfParamType, allowImplicitMutateAndMove: true);
 
-                    AddImplicitConversionIfNeeded(context, selfParamType);
+                    AddImplicitConversionIfNeeded(context, selfParamType, sharing, capabilities);
                     CheckArgumentTypeCompatibility(selfParamType, context);
 
                     foreach (var (arg, type) in invocation.Arguments
                                                           .Zip(methodSymbol.ParameterDataTypes))
                     {
-                        AddImplicitConversionIfNeeded(arg, type);
+                        AddImplicitConversionIfNeeded(arg, type, sharing, capabilities);
                         CheckArgumentTypeCompatibility(type, arg);
                     }
 
@@ -856,7 +857,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         private DataType InferFunctionInvocationType(
             IInvocationExpressionSyntax invocation,
             FixedSet<FunctionSymbol> functionSymbols,
-            FixedList<DataType> argumentTypes)
+            FixedList<DataType> argumentTypes,
+            SharingRelation sharing,
+            ReferenceCapabilities capabilities)
         {
             functionSymbols = ResolveOverload(functionSymbols, argumentTypes);
             switch (functionSymbols.Count)
@@ -872,7 +875,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     invocation.ReferencedSymbol.Fulfill(functionSymbol);
                     foreach (var (arg, parameterDataType) in invocation.Arguments.Zip(functionSymbol.ParameterDataTypes))
                     {
-                        AddImplicitConversionIfNeeded(arg, parameterDataType);
+                        AddImplicitConversionIfNeeded(arg, parameterDataType, sharing, capabilities);
                         CheckArgumentTypeCompatibility(parameterDataType, arg);
                     }
 
@@ -922,7 +925,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     var referenceType = (ReferenceType)type;
                     if (referenceType.Capability.CanBeAcquired())
                         invocationExpression.Semantics = ExpressionSemantics.IsolatedReference;
-                    else if (referenceType.IsMutable)
+                    else if (referenceType.IsMutableReference)
                         invocationExpression.Semantics = ExpressionSemantics.MutableReference;
                     else
                         invocationExpression.Semantics = ExpressionSemantics.ReadOnlyReference;
@@ -1041,8 +1044,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     InferType(binaryExpression.RightOperand, sharing, capabilities);
                     if (declaredType != null)
                     {
-                        leftType = AddImplicitConversionIfNeeded(binaryExpression.LeftOperand, declaredType);
-                        AddImplicitConversionIfNeeded(binaryExpression.RightOperand, declaredType);
+                        leftType = AddImplicitConversionIfNeeded(binaryExpression.LeftOperand, declaredType, sharing, capabilities);
+                        AddImplicitConversionIfNeeded(binaryExpression.RightOperand, declaredType, sharing, capabilities);
                     }
 
                     inExpression.Semantics = ExpressionSemantics.CopyValue; // Treat ranges as structs
@@ -1101,7 +1104,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 
         private static bool NumericOperatorTypesAreCompatible(
             IExpressionSyntax leftOperand,
-            IExpressionSyntax rightOperand)
+            IExpressionSyntax rightOperand,
+            SharingRelation sharing,
+            ReferenceCapabilities capabilities)
         {
             var leftType = leftOperand.ConvertedDataType;
             switch (leftType)
@@ -1116,11 +1121,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 //return !IsIntegerType(rightType);
                 case PointerSizedIntegerType integerType:
                     // TODO this isn't right we might need to convert either of them
-                    AddImplicitConversionIfNeeded(rightOperand, integerType);
+                    AddImplicitConversionIfNeeded(rightOperand, integerType, sharing, capabilities);
                     return rightOperand.ConvertedDataType is PointerSizedIntegerType;
                 case FixedSizeIntegerType integerType:
                     // TODO this isn't right we might need to convert either of them
-                    AddImplicitConversionIfNeeded(rightOperand, integerType);
+                    AddImplicitConversionIfNeeded(rightOperand, integerType, sharing, capabilities);
                     return rightOperand.ConvertedDataType is FixedSizeIntegerType;
                 case OptionalType _:
                     throw new NotImplementedException("Trying to do math on optional type");

@@ -47,6 +47,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// </summary>
         public virtual bool IsEmpty => false;
 
+        /// <summary>
+        /// Whether this is a type for constants like the integer constant type.
+        /// </summary>
         public virtual bool IsConstant => false;
 
         /// <summary>

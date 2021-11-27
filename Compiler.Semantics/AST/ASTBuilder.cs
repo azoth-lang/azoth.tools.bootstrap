@@ -259,7 +259,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
                 NumericConversion c => BuildImplicitNumericConversionExpression(expression, expressionSyntax),
                 OptionalConversion c => BuildImplicitOptionalConversionExpression(expression, expressionSyntax),
                 RecoverIsolation c => throw new NotImplementedException(),
-                RecoverConst c => throw new NotImplementedException(),
+                RecoverConst c => BuildRecoverConstExpression(expression, expressionSyntax),
                 IdentityConversion c => expression,
                 _ => throw ExhaustiveMatch.Failed(expressionSyntax.ImplicitConversion)
             };
@@ -424,6 +424,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
             var semantics = expressionSyntax.ConvertedSemantics!.Value;
             var convertToType = (OptionalType)expressionSyntax.ConvertedDataType!;
             return new ImplicitOptionalConversionExpression(expression.Span, convertToType, semantics, expression, convertToType);
+        }
+
+        private static IRecoverConstExpression BuildRecoverConstExpression(
+            IExpression expression,
+            IExpressionSyntax expressionSyntax)
+        {
+            var semantics = expressionSyntax.ConvertedSemantics!.Value;
+            var convertToType = (ReferenceType)expressionSyntax.ConvertedDataType!;
+            return new RecoverConstExpression(expression.Span, convertToType, semantics, expression);
         }
 
         private static IIntegerLiteralExpression BuildIntegerLiteralExpression(IIntegerLiteralExpressionSyntax syn)

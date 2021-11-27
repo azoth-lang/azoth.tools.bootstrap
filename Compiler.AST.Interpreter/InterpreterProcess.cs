@@ -467,6 +467,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     }
                     throw new NotImplementedException($"`foreach` over {exp.InExpression}");
                 }
+                case IRecoverExpression exp:
+                    return await ExecuteAsync(exp.Value, variables).ConfigureAwait(false);
             }
         }
 

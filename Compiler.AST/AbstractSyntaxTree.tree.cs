@@ -273,7 +273,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST
         typeof(ISelfExpression),
         typeof(IBorrowExpression),
         typeof(IMoveExpression),
-        typeof(IShareExpression))]
+        typeof(IShareExpression),
+        typeof(IRecoverExpression))]
     public partial interface IExpression : IAbstractSyntax
     {
         DataType DataType { get; }
@@ -476,6 +477,22 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST
     {
         BindingSymbol ReferencedSymbol { get; }
         IExpression Referent { get; }
+    }
+
+    [Closed(
+        typeof(IRecoverConstExpression),
+        typeof(IRecoverIsolationExpression))]
+    public partial interface IRecoverExpression : IExpression
+    {
+        IExpression Value { get; }
+    }
+
+    public partial interface IRecoverConstExpression : IRecoverExpression
+    {
+    }
+
+    public partial interface IRecoverIsolationExpression : IRecoverExpression
+    {
     }
 
 }

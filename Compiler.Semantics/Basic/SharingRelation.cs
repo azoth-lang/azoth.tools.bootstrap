@@ -70,8 +70,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             sets[variable] = new HashSet<SharingVariable> { variable };
         }
 
-        public bool IsIsolated(BindingSymbol symbol)
-            => sets.TryGetValue(symbol, out var set) && set.Count == 1;
+        public bool IsIsolated(SharingVariable variable)
+            => sets.TryGetValue(variable, out var set) && set.Count == 1;
 
         public SharingRelationSnapshot Snapshot() => new(sets);
     }

@@ -109,6 +109,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             return builder.ToString();
         }
 
+        public bool DeclaredTypesEquals(DataType? other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return other is ObjectType otherType
+                 && ContainingNamespace == otherType.ContainingNamespace
+                 && Name == otherType.Name
+                 && DeclaredCapability == otherType.DeclaredCapability;
+        }
+
         #region Equality
         public override bool Equals(DataType? other)
         {

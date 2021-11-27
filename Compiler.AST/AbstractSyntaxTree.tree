@@ -111,3 +111,8 @@ FieldAccessExpression: AssignableExpression = Context:Expression AccessOperator:
 BorrowExpression: Expression = ReferencedSymbol:'BindingSymbol' Referent:Expression;
 MoveExpression: Expression = ReferencedSymbol:'BindingSymbol' Referent:Expression;
 ShareExpression: Expression = ReferencedSymbol:'BindingSymbol' Referent:Expression;
+
+// ---------- Recover Expressions
+RecoverExpression: Expression = Value:Expression;
+RecoverConstExpression: RecoverExpression = Value:Expression;
+RecoverIsolationExpression: RecoverExpression = Value:Expression;
