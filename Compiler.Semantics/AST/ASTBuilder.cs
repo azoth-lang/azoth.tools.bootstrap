@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -246,22 +247,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
                 IWhileExpressionSyntax syn => BuildWhileExpression(syn),
                 _ => throw ExhaustiveMatch.Failed(expressionSyntax),
             };
-            return BuildImplicitConversion(expression, expressionSyntax.ImplicitConversion);
+            return BuildImplicitConversion(expression, expressionSyntax);
         }
 
-        private static IExpression BuildImplicitConversion(IExpression expression, Conversion? implicitConversion)
+        private static IExpression BuildImplicitConversion(IExpression expression, IExpressionSyntax expressionSyntax)
         {
-            return implicitConversion switch
+            return expressionSyntax.ImplicitConversion switch
             {
                 null => expression,
-                ImmutabilityConversion c => BuildImplicitImmutabilityConversionExpression(expression, c),
-                LiftedConversion c => BuildImplicitLiftedConversionExpression(expression, c),
-                NumericConversion c => BuildImplicitNumericConversionExpression(expression, c),
-                OptionalConversion c => BuildImplicitOptionalConversionExpression(expression, c),
+                LiftedConversion c => BuildImplicitLiftedConversionExpression(expression, expressionSyntax),
+                NumericConversion c => BuildImplicitNumericConversionExpression(expression, expressionSyntax),
+                OptionalConversion c => BuildImplicitOptionalConversionExpression(expression, expressionSyntax),
                 RecoverIsolation c => throw new NotImplementedException(),
                 RecoverConst c => throw new NotImplementedException(),
                 IdentityConversion c => expression,
-                _ => throw ExhaustiveMatch.Failed(implicitConversion)
+                _ => throw ExhaustiveMatch.Failed(expressionSyntax.ImplicitConversion)
             };
         }
 
@@ -399,39 +399,30 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
             };
         }
 
-        private static IImplicitImmutabilityConversionExpression BuildImplicitImmutabilityConversionExpression(
-            IExpression expression,
-            ImmutabilityConversion conversion)
-        {
-            var semantics = expression.Semantics;
-            var convertToType = conversion.To;
-            return new ImplicitImmutabilityConversion(expression.Span, convertToType, semantics, expression, convertToType);
-        }
-
         private static IImplicitLiftedConversionExpression BuildImplicitLiftedConversionExpression(
             IExpression expression,
-            LiftedConversion conversion)
+            IExpressionSyntax expressionSyntax)
         {
-            var semantics = expression.Semantics;
-            var convertToType = conversion.To;
+            var semantics = expressionSyntax.ConvertedSemantics!.Value;
+            var convertToType = (OptionalType)expressionSyntax.ConvertedDataType!;
             return new ImplicitLiftedConversion(expression.Span, convertToType, semantics, expression, convertToType);
         }
 
         private static IImplicitNumericConversionExpression BuildImplicitNumericConversionExpression(
             IExpression expression,
-            NumericConversion conversion)
+            IExpressionSyntax expressionSyntax)
         {
-            var semantics = expression.Semantics;
-            var convertToType = conversion.To;
+            var semantics = expressionSyntax.ConvertedSemantics!.Value;
+            var convertToType = (NumericType)expressionSyntax.ConvertedDataType!;
             return new ImplicitNumericConversionExpression(expression.Span, convertToType, semantics, expression, convertToType);
         }
 
         private static IImplicitOptionalConversionExpression BuildImplicitOptionalConversionExpression(
             IExpression expression,
-            OptionalConversion conversion)
+            IExpressionSyntax expressionSyntax)
         {
-            var semantics = expression.Semantics;
-            var convertToType = conversion.To;
+            var semantics = expressionSyntax.ConvertedSemantics!.Value;
+            var convertToType = (OptionalType)expressionSyntax.ConvertedDataType!;
             return new ImplicitOptionalConversionExpression(expression.Span, convertToType, semantics, expression, convertToType);
         }
 

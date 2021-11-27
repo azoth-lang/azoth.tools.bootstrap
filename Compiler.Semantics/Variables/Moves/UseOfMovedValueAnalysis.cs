@@ -76,6 +76,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Moves
                 case ExpressionSemantics.CopyValue:
                 case ExpressionSemantics.MutableReference:
                 case ExpressionSemantics.ReadOnlyReference:
+                case ExpressionSemantics.ConstReference:
+                case ExpressionSemantics.IdReference:
                 case ExpressionSemantics.Void:
                 case ExpressionSemantics.Never:
                 case ExpressionSemantics.CreateReference:

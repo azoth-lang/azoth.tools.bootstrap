@@ -259,12 +259,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
             DataType expectedType)
         {
             var fromType = expression.DataType.Assigned();
-            var conversion = ImplicitConversion(expectedType, fromType);
-            if (conversion != null) expression.ImplicitConversion = conversion;
+            var conversion = ImplicitConversion(expectedType, fromType, expression.ImplicitConversion);
+            if (conversion != null) expression.AddConversion(conversion);
             return expression.ConvertedDataType.Assigned();
         }
 
-        private static Conversion? ImplicitConversion(DataType to, DataType from)
+        private static ChainedConversion? ImplicitConversion(DataType to, DataType from, Conversion priorConversion)
         {
             switch (to, from)
             {
@@ -272,8 +272,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     // Direct subtype
                     if (optionalTo.Referent.IsAssignableFrom(optionalFrom.Referent))
                         return null;
-                    var liftedConversion = ImplicitConversion(optionalTo.Referent, optionalFrom.Referent);
-                    return liftedConversion is null ? null : new LiftedConversion(liftedConversion);
+                    var liftedConversion = ImplicitConversion(optionalTo.Referent, optionalFrom.Referent, IdentityConversion.Instance);
+                    return liftedConversion is null ? null : new LiftedConversion(liftedConversion, priorConversion);
                 case (OptionalType targetType, /* non-optional type */ _):
                     // If needed, convert the type to the referent type of the optional type
                     throw new NotImplementedException("Conversion to optional");
@@ -287,7 +287,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                 //    return null;
                 case (FixedSizeIntegerType targetType, FixedSizeIntegerType expressionType):
                     if (targetType.Bits > expressionType.Bits && (!expressionType.IsSigned || targetType.IsSigned))
-                        return new NumericConversion(targetType);
+                        return new NumericConversion(targetType, priorConversion);
                     else
                         return null;
                 case (FixedSizeIntegerType targetType, IntegerConstantType expressionType):
@@ -295,21 +295,22 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
                     var requireSigned = expressionType.Value < 0;
                     var bits = expressionType.Value.GetByteCount(!targetType.IsSigned) * 8;
                     if (targetType.Bits >= bits && (!requireSigned || targetType.IsSigned))
-                        return new NumericConversion(targetType);
+                        return new NumericConversion(targetType, priorConversion);
                     else
                         return null;
                 }
                 case (PointerSizedIntegerType targetType, IntegerConstantType expressionType):
                 {
                     var requireSigned = expressionType.Value < 0;
-                    return !requireSigned || targetType.IsSigned ? new NumericConversion(targetType) : null;
+                    return !requireSigned || targetType.IsSigned ? new NumericConversion(targetType, priorConversion) : null;
                 }
                 case (ObjectType { IsReadOnly: true } targetType, ObjectType { IsMutable: true } expressionType):
                     // TODO if source type is explicitly mutable, issue warning about using `mut` in immutable context
                     var capability = targetType.Capability == ReferenceCapability.Constant
                         ? expressionType.To(ReferenceCapability.Constant)
                         : expressionType.ToReadOnly();
-                    return new ImmutabilityConversion(capability);
+                    // TODO I don't think this is correct here
+                    return new RecoverConst(priorConversion);
                 default:
                     return null;
             }

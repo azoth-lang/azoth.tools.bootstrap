@@ -1,4 +1,4 @@
-using System.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions
@@ -6,16 +6,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions
     /// <summary>
     /// A conversion from `T` to `T?`
     /// </summary>
-    public class OptionalConversion : Conversion
+    public sealed class OptionalConversion : ChainedConversion
     {
-        public Conversion UnderlyingConversion { [DebuggerStepThrough] get; }
-        public new OptionalType To { [DebuggerStepThrough] get; }
-
-        public OptionalConversion(Conversion underlyingConversion)
-            : base(new OptionalType(underlyingConversion.To))
+        public OptionalConversion(Conversion priorConversion) : base(priorConversion)
         {
-            UnderlyingConversion = underlyingConversion;
-            To = (OptionalType)base.To;
+        }
+
+        public override (DataType, ExpressionSemantics) Apply(DataType type, ExpressionSemantics semantics)
+        {
+            (type, semantics) = PriorConversion.Apply(type, semantics);
+            return (new OptionalType(type), semantics);
         }
     }
 }

@@ -9,8 +9,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
     public partial interface IExpressionSyntax
     {
         [DisallowNull] DataType? DataType { get; set; }
-        [DisallowNull] Conversion? ImplicitConversion { get; set; }
         [DisallowNull] ExpressionSemantics? Semantics { get; set; }
         string ToGroupedString(OperatorPrecedence surroundingPrecedence);
+        void AddConversion(ChainedConversion conversion);
     }
 }

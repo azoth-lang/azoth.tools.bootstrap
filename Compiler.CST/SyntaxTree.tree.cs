@@ -3,6 +3,7 @@ using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
+using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
@@ -360,7 +361,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         typeof(IMoveExpressionSyntax))]
     public partial interface IExpressionSyntax : ISyntax
     {
+        Conversion ImplicitConversion { get; }
         DataType? ConvertedDataType { get; }
+        ExpressionSemantics? ConvertedSemantics { get; }
     }
 
     [Closed(

@@ -33,23 +33,35 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
             }
         }
 
-        public DataType? ConvertedDataType => ImplicitConversion is null ? dataType : ImplicitConversion.To;
-
-        private Conversion? implicitConversion;
-        [DisallowNull]
-        public virtual Conversion? ImplicitConversion
+        private Conversion? cachedOnConversion = null;
+        private DataType? cachedConvertedDataType = null;
+        private ExpressionSemantics? cachedConvertedExpressionSemantics = null;
+        public DataType? ConvertedDataType
         {
-            [DebuggerStepThrough]
-            get => implicitConversion;
-            set
+            get
             {
-                if (implicitConversion != null) throw new InvalidOperationException("Can't set conversion repeatedly");
-                implicitConversion = value ?? throw new ArgumentNullException(nameof(ImplicitConversion), "Can't set conversion to null");
+                var (convertedType, _) = ApplyConversion();
+                return convertedType;
             }
         }
 
-        private ExpressionSemantics? semantics;
+        public ExpressionSemantics? ConvertedSemantics
+        {
+            get
+            {
+                var (_, convertedSemantics) = ApplyConversion();
+                return convertedSemantics;
+            }
+        }
 
+        public virtual Conversion ImplicitConversion
+        {
+            [DebuggerStepThrough]
+            get;
+            private set;
+        } = IdentityConversion.Instance;
+
+        private ExpressionSemantics? semantics;
         [DisallowNull]
         public ExpressionSemantics? Semantics
         {
@@ -76,9 +88,30 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
 
         protected abstract OperatorPrecedence ExpressionPrecedence { get; }
 
+        public void AddConversion(ChainedConversion conversion)
+        {
+            if (conversion.PriorConversion != ImplicitConversion)
+                throw new InvalidOperationException("Cannot add conversion not chained to existing conversion.");
+            ImplicitConversion = conversion;
+        }
+
         public string ToGroupedString(OperatorPrecedence surroundingPrecedence)
         {
             return surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();
+        }
+
+        private (DataType?, ExpressionSemantics?) ApplyConversion()
+        {
+            if (DataType is null || Semantics is null) return (DataType, Semantics);
+
+            if (cachedOnConversion != ImplicitConversion)
+            {
+                (cachedConvertedDataType, cachedConvertedExpressionSemantics) =
+                    ImplicitConversion.Apply(DataType, Semantics.Value);
+                cachedOnConversion = ImplicitConversion;
+            }
+
+            return (cachedConvertedDataType, cachedConvertedExpressionSemantics);
         }
     }
 }

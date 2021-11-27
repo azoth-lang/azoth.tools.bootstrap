@@ -1,4 +1,4 @@
-using System.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using ExhaustiveMatching;
 
@@ -10,18 +10,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions
     /// </summary>
     [Closed(
         typeof(IdentityConversion),
-        typeof(OptionalConversion),
-        typeof(NumericConversion),
-        typeof(ImmutabilityConversion),
-        typeof(LiftedConversion),
-        typeof(RecoverConversion))]
+        typeof(ChainedConversion))]
     public abstract class Conversion
     {
-        public DataType To { [DebuggerStepThrough] get; }
-
-        protected Conversion(DataType to)
-        {
-            To = to;
-        }
+        public abstract (DataType, ExpressionSemantics) Apply(DataType type, ExpressionSemantics semantics);
     }
 }

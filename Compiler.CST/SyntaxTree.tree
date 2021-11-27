@@ -8,6 +8,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
+◊using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Tokens;
@@ -83,7 +84,7 @@ VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' 
 ExpressionStatement: BodyStatement = Expression;
 
 // ---------- Expressions
-Expression = ConvertedDataType:'DataType'?;
+Expression = ImplicitConversion:'Conversion' ConvertedDataType:'DataType'? ConvertedSemantics:'ExpressionSemantics'?;
 AssignableExpression: Expression;
 BlockExpression: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
 NewObjectExpression: Expression = Type:TypeName ConstructorName:'Name'? ConstructorNameSpan:'TextSpan'? Arguments:Expression* ReferencedSymbol:'Promise<ConstructorSymbol?>';

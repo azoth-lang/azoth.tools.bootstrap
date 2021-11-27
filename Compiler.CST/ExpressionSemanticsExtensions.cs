@@ -18,6 +18,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
                 ExpressionSemantics.IsolatedReference => "iso",
                 ExpressionSemantics.MutableReference => "mut",
                 ExpressionSemantics.ReadOnlyReference => "read",
+                ExpressionSemantics.ConstReference => "const",
+                ExpressionSemantics.IdReference => "id",
                 ExpressionSemantics.CreateReference => "ref",
                 _ => throw ExhaustiveMatch.Failed(valueSemantics),
             };
