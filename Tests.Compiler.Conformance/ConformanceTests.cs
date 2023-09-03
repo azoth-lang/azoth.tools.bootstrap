@@ -18,7 +18,7 @@ using Xunit.Abstractions;
 namespace Azoth.Tools.Bootstrap.Tests.Conformance
 {
     [Trait("Category", "Conformance")]
-    public class ConformanceTests
+    public partial class ConformanceTests
     {
         private readonly ITestOutputHelper testOutput;
 
@@ -33,11 +33,14 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
             Assert.NotEmpty(GetConformanceTestCases());
         }
 
-        private static readonly Regex ExitCodePattern = new(@"//[ \t]*exit code: (?<exitCode>\d+)", RegexOptions.Compiled);
+        [GeneratedRegex(@"//[ \t]*exit code: (?<exitCode>\d+)", RegexOptions.Compiled)]
+        private static partial Regex ExitCodePattern();
         private const string ExpectedOutputFileFormat = @"//[ \t]*{0} file: (?<file>[a-zA-Z0-9_.]+)";
         private const string ExpectedOutputFormat = @"\/\*[ \t]*{0}:\r?\n(?<output>(\*+[^/]|[^*])*)\*\/";
-        private static readonly Regex ExpectCompileErrorsPattern = new(@"//[ \t]*compile: errors", RegexOptions.Compiled);
-        private static readonly Regex ErrorPattern = new(@"//[ \t]*ERROR([ \t].*)?", RegexOptions.Compiled | RegexOptions.Multiline);
+        [GeneratedRegex("//[ \\t]*compile: errors")]
+        private static partial Regex ExpectCompileErrorsPattern();
+        [GeneratedRegex(@"(?<!^.*//.*)//[ \t]*ERROR([ \t].*)?", RegexOptions.Multiline)]
+        private static partial Regex ErrorPattern();
 
         [Theory]
         [MemberData(nameof(GetConformanceTestCases))]
@@ -199,12 +202,12 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
 
         private static bool ExpectCompileErrors(string code)
         {
-            return ExpectCompileErrorsPattern.IsMatch(code);
+            return ExpectCompileErrorsPattern().IsMatch(code);
         }
 
         private static List<int> ExpectedCompileErrorLines(CodeFile codeFile, string code)
         {
-            return ErrorPattern.Matches(code)
+            return ErrorPattern().Matches(code)
                 .Select(match => codeFile.Code.Lines.LineIndexContainingOffset(match.Index) + 1)
                 .ToList();
         }
@@ -217,7 +220,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
 
         private static int ExpectedExitCode(string code)
         {
-            var exitCode = ExitCodePattern.Match(code).Groups["exitCode"]?.Captures.SingleOrDefault()?.Value ?? "0";
+            var exitCode = ExitCodePattern().Match(code).Groups["exitCode"]?.Captures.SingleOrDefault()?.Value ?? "0";
             return int.Parse(exitCode, CultureInfo.InvariantCulture);
         }
 

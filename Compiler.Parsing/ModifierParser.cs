@@ -24,7 +24,7 @@ internal class ModifierParser : RecursiveDescentParser
 
     public void ParseEndOfModifiers()
     {
-        while (!(Tokens.Current is IEndOfFileToken))
+        while (Tokens.Current is not IEndOfFileToken)
         {
             Tokens.UnexpectedToken();
         }

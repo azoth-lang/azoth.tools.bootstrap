@@ -150,16 +150,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities
             {
                 IConstKeywordToken _ => ReferenceCapability.Constant,
                 IMutableKeywordToken _ => ReferenceCapability.Mutable,
+                IIsolatedKeywordToken _ => ReferenceCapability.Isolated,
                 null => ReferenceCapability.ReadOnly,
                 _ => throw ExhaustiveMatch.Failed(@class.CapabilityModifier)
             };
 
             var classType = ObjectType.Create(@class.ContainingNamespaceName, @class.Name, capability);
 
-            var symbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol!, classType);
+            var symbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
             @class.Symbol.Fulfill(symbol);
             symbolTree.Add(symbol);
             @class.CreateDefaultConstructor(symbolTree);
+            return;
 
             void AddCircularDefinitionError()
             {

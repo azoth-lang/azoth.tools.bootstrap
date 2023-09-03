@@ -89,6 +89,7 @@
         //"Float64",
         //"Underscore",
         //"External",
+        //"Sealed",
     }.AsReadOnly();
 #>
 using System;
