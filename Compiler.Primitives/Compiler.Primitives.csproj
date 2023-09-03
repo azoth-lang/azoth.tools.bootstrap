@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>Azoth.Tools.Bootstrap.Compiler.Primitives</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Compiler.Primitives</RootNamespace>
     <LangVersion>default</LangVersion>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Names</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Names</RootNamespace>
     <Nullable>enable</Nullable>
