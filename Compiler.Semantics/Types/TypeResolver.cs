@@ -81,24 +81,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
 
         [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
         public ObjectType Evaluate(ObjectType referenceType, IReferenceCapabilitySyntax capability)
-            => referenceType.To(Evaluate(capability));
+            => referenceType.To(capability.Declared.ToReferenceCapability());
 
         private static ReferenceType Evaluate(ReferenceType referenceType, IReferenceCapabilitySyntax capability)
-            => referenceType.To(Evaluate(capability));
-
-        private static ReferenceCapability Evaluate(IReferenceCapabilitySyntax capability)
-        {
-            return capability.Declared switch
-            {
-                DeclaredReferenceCapability.Isolated => ReferenceCapability.Isolated,
-
-                DeclaredReferenceCapability.Constant => ReferenceCapability.Constant,
-                DeclaredReferenceCapability.Identity => ReferenceCapability.Identity,
-
-                DeclaredReferenceCapability.Mutable => ReferenceCapability.Mutable,
-                DeclaredReferenceCapability.ReadOnly => ReferenceCapability.ReadOnly,
-                _ => throw ExhaustiveMatch.Failed(capability.Declared),
-            };
-        }
+            => referenceType.To(capability.Declared.ToReferenceCapability());
     }
 }

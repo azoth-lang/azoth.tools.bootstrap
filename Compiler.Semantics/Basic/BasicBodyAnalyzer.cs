@@ -157,12 +157,12 @@ public class BasicBodyAnalyzer
         ReferenceCapabilities capabilities)
     {
         DataType type;
-        if (variableDeclaration.Type != null)
+        if (variableDeclaration.Type is not null)
         {
             type = typeResolver.Evaluate(variableDeclaration.Type, implicitRead: true);
             CheckType(variableDeclaration.Initializer, type, sharing, capabilities);
         }
-        else if (variableDeclaration.Initializer != null)
+        else if (variableDeclaration.Initializer is not null)
             type = InferDeclarationType(variableDeclaration.Initializer, variableDeclaration.Capability, sharing, capabilities);
         else
         {
@@ -171,7 +171,7 @@ public class BasicBodyAnalyzer
             type = DataType.Unknown;
         }
 
-        if (variableDeclaration.Initializer != null)
+        if (variableDeclaration.Initializer is not null)
         {
             var initializerType = variableDeclaration.Initializer.ConvertedDataType
                                   ?? throw new InvalidOperationException("Initializer type should be determined");
@@ -231,7 +231,7 @@ public class BasicBodyAnalyzer
                 if (!referenceType.IsWritableReference)
                     throw new NotImplementedException("Compile error: can't infer a mutable type");
 
-                return type;
+                return referenceType.To(inferCapability.Declared.ToReferenceCapability());
             }
         }
     }
