@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 {
     /// <summary>
-    /// A variable that can participate in sharing. This is all the <see cref="BindingSymbol"/>
+    /// A variable that can participate in sharing. This is all the <see cref="BindingSymbol"/>s
     /// plus a special value <see cref="Result"/> representing the result of an expression.
     /// </summary>
     public readonly struct SharingVariable : IEquatable<SharingVariable>
@@ -21,11 +21,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         public override int GetHashCode()
             => HashCode.Combine(symbol);
 
-        public bool Equals(SharingVariable other)
-        {
-            if (symbol is null) return other.symbol is null;
-            return symbol.Equals(other.symbol);
-        }
+        public bool Equals(SharingVariable other) => Equals(symbol, other.symbol);
 
         public override bool Equals(object? obj)
             => obj is SharingVariable other && Equals(other);

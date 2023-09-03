@@ -846,9 +846,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
         }
 
         /// <summary>
-        /// Used on the target of an invocation to see if it is could be a name
+        /// Used on the target of an invocation to see if it is could be a name.
         /// </summary>
-        /// <returns>A name if the expression is a qualified name, otherwise null</returns>
+        /// <returns>A name if the expression is a qualified name, otherwise null.</returns>
         private static NamespaceName? MethodContextAsName(IExpressionSyntax expression)
         {
             return expression switch
