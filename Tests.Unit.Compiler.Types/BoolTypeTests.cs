@@ -57,11 +57,11 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         }
 
         [Fact]
-        public void Has_proper_ToString()
+        public void Has_proper_ToSourceCodeString()
         {
             var type = BoolType.Instance;
 
-            Assert.Equal("bool", type.ToString());
+            Assert.Equal("bool", type.ToSourceCodeString());
         }
 
         [Fact]

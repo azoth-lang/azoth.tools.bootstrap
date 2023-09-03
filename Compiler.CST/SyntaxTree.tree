@@ -80,7 +80,7 @@ ReferenceCapability = Tokens:'ICapabilityToken'* Declared:'DeclaredReferenceCapa
 Statement;
 ResultStatement: Statement, BlockOrResult = Expression;
 BodyStatement: Statement;
-VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Name:'Name' DeclarationNumber:'Promise<int?>' Type? Capability:ReferenceCapability? Symbol:'Promise<VariableSymbol>' Initializer:Expression?;
+VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Name:'Name' DeclarationNumber:'Promise<int?>' Capability:ReferenceCapability? Type? Symbol:'Promise<VariableSymbol>' Initializer:Expression?;
 ExpressionStatement: BodyStatement = Expression;
 
 // ---------- Expressions

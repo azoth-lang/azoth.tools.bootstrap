@@ -30,7 +30,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors
             DataType rightOperandType)
         {
             return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3001,
-                $"Operator `{@operator.ToSymbolString()}` cannot be applied to operands of type `{leftOperandType}` and `{rightOperandType}`.");
+                $"Operator `{@operator.ToSymbolString()}` cannot be applied to operands of type `{leftOperandType.ToSourceCodeString()}` and `{rightOperandType.ToSourceCodeString()}`.");
         }
 
         public static Diagnostic OperatorCannotBeAppliedToOperandOfType(
@@ -70,7 +70,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors
         public static Diagnostic CannotConvert(CodeFile file, ISyntax expression, DataType ofType, DataType toType)
         {
             return new Diagnostic(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3007,
-                $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType}` to type `{toType}`");
+                $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToSourceCodeString()}` to type `{toType.ToSourceCodeString()}`");
         }
 
         public static Diagnostic MustBeInvocable(CodeFile file, IExpressionSyntax expression)
@@ -112,7 +112,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors
         public static Diagnostic CannotAssignFieldOfReadOnly(CodeFile file, in TextSpan span, ReferenceType referenceType)
         {
             return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3014,
-                $"Cannot assign into a field through a read only reference of type `{referenceType}`");
+                $"Cannot assign into a field through a read only reference of type `{referenceType.ToSourceCodeString()}`");
         }
     }
 }

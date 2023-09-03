@@ -117,8 +117,8 @@ public class BasicBodyAnalyzer
             capabilities.Declare(parameterSymbol);
             sharing.Declare(parameterSymbol);
         }
-        this.parameterCapabilities = capabilities.Snapshot();
-        this.parameterSharing = sharing.Snapshot();
+        parameterCapabilities = capabilities.Snapshot();
+        parameterSharing = sharing.Snapshot();
     }
 
     public void ResolveTypes(IBodySyntax body)
@@ -548,7 +548,7 @@ public class BasicBodyAnalyzer
                 {
                     diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
                     exp.ReferencedSymbol.Fulfill(null);
-                    return exp.DataType  = DataType.Unknown;
+                    return exp.DataType = DataType.Unknown;
                 }
 
                 // TODO handle null typesymbol
@@ -710,9 +710,9 @@ public class BasicBodyAnalyzer
                 throw ExhaustiveMatch.Failed(expression);
             case IQualifiedNameExpressionSyntax exp:
                 // TODO handle mutable self
-                var contextType = InferType(exp.Context, sharing, capabilities);
+                var contextType = InferType(exp.Context, sharing, capabilities, false);
                 if (contextType is ReferenceType { IsWritableReference: false } contextReferenceType)
-                    diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(file,expression.Span, contextReferenceType));
+                    diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(file, expression.Span, contextReferenceType));
                 var member = exp.Field;
                 var contextSymbol = LookupSymbolForType(contextType);
                 // TODO Deal with no context symbol

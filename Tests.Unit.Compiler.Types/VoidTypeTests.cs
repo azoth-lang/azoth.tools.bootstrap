@@ -48,11 +48,11 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         }
 
         [Fact]
-        public void Has_proper_ToString()
+        public void Has_proper_ToSourceCodeString()
         {
             var type = VoidType.Instance;
 
-            Assert.Equal("void", type.ToString());
+            Assert.Equal("void", type.ToSourceCodeString());
         }
 
         [Fact]

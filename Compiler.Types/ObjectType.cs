@@ -82,16 +82,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             return new ObjectType(ContainingNamespace, Name, DeclaredCapability, ReferenceCapability.Mutable);
         }
 
-        public ObjectType ToConstructorReturn()
-        {
-            return this.To(DeclaredCapability);
-        }
+        public ObjectType ToConstructorReturn() => To(DeclaredCapability);
 
         public override string ToSourceCodeString()
         {
             var builder = new StringBuilder();
-            builder.Append(Capability);
-            builder.Append(' ');
+            if (Capability != ReferenceCapability.ReadOnly)
+            {
+                builder.Append(Capability);
+                builder.Append(' ');
+            }
             builder.Append(ContainingNamespace);
             if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
             builder.Append(Name);

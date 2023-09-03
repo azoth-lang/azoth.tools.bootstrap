@@ -48,11 +48,11 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         }
 
         [Fact]
-        public void Has_proper_ToString()
+        public void Has_proper_ToSourceCodeString()
         {
             var type = NeverType.Instance;
 
-            Assert.Equal("never", type.ToString());
+            Assert.Equal("never", type.ToSourceCodeString());
         }
 
         [Fact]

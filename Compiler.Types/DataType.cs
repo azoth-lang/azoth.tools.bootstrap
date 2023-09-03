@@ -75,9 +75,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
         public sealed override string ToString()
 #pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
-        {
-            return ToILString();
-        }
+            => throw new NotSupportedException();
 
         /// <summary>
         /// How this type would be written in source code

@@ -328,8 +328,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         TextSpan NameSpan { get; }
         Name Name { get; }
         Promise<int?> DeclarationNumber { get; }
-        ITypeSyntax? Type { get; }
         IReferenceCapabilitySyntax? Capability { get; }
+        ITypeSyntax? Type { get; }
         new Promise<VariableSymbol> Symbol { get; }
         IExpressionSyntax? Initializer { get; }
     }

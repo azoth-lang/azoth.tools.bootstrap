@@ -28,8 +28,5 @@ internal class ReferenceCapabilitySyntax : Syntax, IReferenceCapabilitySyntax
         Declared = declared;
     }
 
-    public override string ToString()
-    {
-        return string.Join(' ', Tokens);
-    }
+    public override string ToString() => string.Join(' ', Tokens);
 }

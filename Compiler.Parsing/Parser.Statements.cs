@@ -1,4 +1,3 @@
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -73,6 +72,7 @@ public partial class Parser
             mutableBinding, name, identifier.Span, type, capability, initializer);
     }
 
+    // TODO return is really an either type
     private (ITypeSyntax? Type, IReferenceCapabilitySyntax? Capability) ParseVariableDeclarationType()
     {
         var capability = ParseReferenceCapability();
@@ -81,8 +81,9 @@ public partial class Parser
         {
             case IEqualsToken _:
             case ISemicolonToken _:
-                // TODO this is strange that  let x := ...; is valid
-                capability ??= ReferenceCapabilitySyntax.ImplicitReadOnly(Tokens.Current.Span.AtStart());
+                if (capability is null)
+                    // Error on `let x := ....;`
+                    Add(ParseError.MissingType(File, Tokens.Current.Span.AtStart()));
                 return (null, capability);
             default:
                 return (ParseTypeWithCapability(capability), null);

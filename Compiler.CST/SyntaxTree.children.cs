@@ -104,10 +104,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
                     yield return n.Expression;
                     yield break;
                 case IVariableDeclarationStatementSyntax n:
-                    if(!(n.Type is null))
-                        yield return n.Type;
                     if(!(n.Capability is null))
                         yield return n.Capability;
+                    if(!(n.Type is null))
+                        yield return n.Type;
                     if(!(n.Initializer is null))
                         yield return n.Initializer;
                     yield break;

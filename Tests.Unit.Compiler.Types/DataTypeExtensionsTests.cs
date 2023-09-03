@@ -13,8 +13,8 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
             var trueAssignable = DataType.Bool.IsAssignableFrom(DataType.True);
             var falseAssignable = DataType.Bool.IsAssignableFrom(DataType.False);
 
-            Assert.True(trueAssignable, $"{DataType.True} not assignable to {DataType.Bool}");
-            Assert.True(falseAssignable, $"{DataType.False} not assignable to {DataType.Bool}");
+            Assert.True(trueAssignable, $"{DataType.True.ToILString()} not assignable to {DataType.Bool.ToILString()}");
+            Assert.True(falseAssignable, $"{DataType.False.ToILString()} not assignable to {DataType.Bool.ToILString()}");
         }
 
         /// <summary>
@@ -24,10 +24,10 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         [InlineData(0)]
         [InlineData(1)]
         [InlineData(int.MaxValue)]
-        [InlineData((long)int.MaxValue+1)]
+        [InlineData((long)int.MaxValue + 1)]
         [InlineData(-1)]
         [InlineData(int.MinValue)]
-        [InlineData((long)int.MinValue-1)]
+        [InlineData((long)int.MinValue - 1)]
         public void Integer_constant_types_not_assignable_to_int32(long value)
         {
             var constType = new IntegerConstantType(value);

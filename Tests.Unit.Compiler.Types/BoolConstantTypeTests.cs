@@ -40,21 +40,21 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         }
 
         [Fact]
-        public void True_has_special_name_and_ToString()
+        public void True_has_special_name_and_ToILString()
         {
             var type = BoolConstantType.True;
 
             Assert.Equal(SpecialTypeName.True, type.Name);
-            Assert.Equal("const[true]", type.ToString());
+            Assert.Equal("const[true]", type.ToILString());
         }
 
         [Fact]
-        public void False_has_special_name_and_ToString()
+        public void False_has_special_name_and_ToILString()
         {
             var type = BoolConstantType.False;
 
             Assert.Equal(SpecialTypeName.False, type.Name);
-            Assert.Equal("const[false]", type.ToString());
+            Assert.Equal("const[false]", type.ToILString());
         }
 
         [Fact]
