@@ -228,8 +228,6 @@ public class BasicBodyAnalyzer
                 if (inferCapability is null) return type.ToReadOnly();
                 if (type is not ReferenceType referenceType)
                     throw new NotImplementedException("Compile error: can't infer mutability for non reference type");
-                if (!referenceType.IsWritableReference)
-                    throw new NotImplementedException("Compile error: can't infer a mutable type");
 
                 return referenceType.To(inferCapability.Declared.ToReferenceCapability());
             }

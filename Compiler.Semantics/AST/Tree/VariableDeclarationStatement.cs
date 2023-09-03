@@ -29,7 +29,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
         public override string ToString()
         {
             var binding = Symbol.IsMutableBinding ? "var" : "let";
-            var declarationNumber = Symbol.DeclarationNumber is null ? "" : "#" + Symbol.DeclarationNumber;
+            var declarationNumber = Symbol.DeclarationNumber is null ? "" : "⟦#" + Symbol.DeclarationNumber + "⟧";
             var initializer = Initializer != null ? " = " + Initializer : "";
             return $"{binding} {Symbol.Name}{declarationNumber}: {Symbol.DataType}{initializer};";
         }

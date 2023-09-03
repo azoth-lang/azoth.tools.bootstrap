@@ -30,8 +30,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
         protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Assignment;
 
         public override string ToString()
-        {
-            return $"{LeftOperand.ToGroupedString(ExpressionPrecedence)} {Operator.ToSymbolString()} {RightOperand.ToGroupedString(ExpressionPrecedence)}";
-        }
+            => $"{LeftOperand.ToGroupedString(ExpressionPrecedence)} {Operator.ToSymbolString()} {RightOperand.ToGroupedString(ExpressionPrecedence)}";
     }
 }

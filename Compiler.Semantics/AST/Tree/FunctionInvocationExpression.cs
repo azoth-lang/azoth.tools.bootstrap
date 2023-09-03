@@ -28,8 +28,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
         protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
         public override string ToString()
-        {
-            return $"{ReferencedSymbol.ContainingSymbol}.{ReferencedSymbol.Name}({string.Join(", ", Arguments)})";
-        }
+            => $"{ReferencedSymbol.ContainingSymbol}.{ReferencedSymbol.Name}({string.Join(", ", Arguments)})";
     }
 }

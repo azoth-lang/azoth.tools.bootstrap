@@ -20,8 +20,5 @@ internal class MutateExpressionSyntax : ExpressionSyntax, IMutateExpressionSynta
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
 
-    public override string ToString()
-    {
-        return $"mut {Referent}";
-    }
+    public override string ToString() => $"mut {Referent}";
 }

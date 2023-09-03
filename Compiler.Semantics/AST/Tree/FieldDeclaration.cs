@@ -22,9 +22,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
             DeclaringClass = declaringClass;
         }
 
-        public override string ToString()
-        {
-            return Symbol + ";";
-        }
+        public override string ToString() => Symbol + ";";
     }
 }

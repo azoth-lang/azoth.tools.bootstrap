@@ -55,8 +55,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
             };
 
         public override string ToString()
-        {
-            return $"{LeftOperand.ToGroupedString(ExpressionPrecedence)} {Operator.ToSymbolString()} {RightOperand.ToGroupedString(ExpressionPrecedence)}";
-        }
+            => $"{LeftOperand.ToGroupedString(ExpressionPrecedence)} {Operator.ToSymbolString()} {RightOperand.ToGroupedString(ExpressionPrecedence)}";
     }
 }

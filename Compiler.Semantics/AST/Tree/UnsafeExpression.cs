@@ -21,9 +21,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
 
         protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
-        public override string ToString()
-        {
-            return $"unsafe ({Expression})";
-        }
+        public override string ToString() => $"unsafe ({Expression})";
     }
 }

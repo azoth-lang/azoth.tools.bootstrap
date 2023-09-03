@@ -25,9 +25,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
 
         protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
-        public override string ToString()
-        {
-            return IsImplicit ? "⟦self⟧" : "self";
-        }
+        public override string ToString() => IsImplicit ? "⟦self⟧" : "self";
     }
 }

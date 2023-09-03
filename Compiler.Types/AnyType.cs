@@ -33,8 +33,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public override AnyType To(ReferenceCapability referenceCapability)
             => new(referenceCapability);
 
-        public override string ToILString() => $"{Capability} Any";
+        public override string ToILString() => $"{Capability.ToILString()} Any";
 
-        public override string ToSourceCodeString() => $"{Capability} Any";
+        public override string ToSourceCodeString()
+            => Capability != ReferenceCapability.ReadOnly
+                ? $"{Capability.ToSourceString()} Any" : "Any";
     }
 }

@@ -24,9 +24,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
 
         protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
-        public override string ToString()
-        {
-            return ReferencedSymbol.Name.ToString();
-        }
+        public override string ToString() => ReferencedSymbol.Name.ToString();
     }
 }

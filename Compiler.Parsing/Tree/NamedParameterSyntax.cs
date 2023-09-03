@@ -36,7 +36,7 @@ internal class NamedParameterSyntax : ParameterSyntax, INamedParameterSyntax
 
     public override string ToString()
     {
-        var defaultValue = DefaultValue != null ? " = " + DefaultValue : "";
+        var defaultValue = DefaultValue is not null ? " = " + DefaultValue : "";
         return $"{Name}: {Type}{defaultValue}";
     }
 }

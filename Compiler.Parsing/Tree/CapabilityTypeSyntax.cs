@@ -18,8 +18,5 @@ internal class CapabilityTypeSyntax : TypeSyntax, ICapabilityTypeSyntax
         Capability = referenceCapability;
     }
 
-    public override string ToString()
-    {
-        return $"{Capability} {ReferentType}";
-    }
+    public override string ToString() => $"{Capability} {ReferentType}";
 }

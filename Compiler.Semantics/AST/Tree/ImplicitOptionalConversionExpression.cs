@@ -21,8 +21,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
         }
 
         public override string ToString()
-        {
-            return $"{Expression.ToGroupedString(OperatorPrecedence.Min)} ⟦as {ConvertToType}⟧";
-        }
+            => $"{Expression.ToGroupedString(OperatorPrecedence.Min)} ⟦as {ConvertToType}⟧";
     }
 }

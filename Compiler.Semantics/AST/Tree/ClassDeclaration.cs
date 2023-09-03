@@ -27,8 +27,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
         }
 
         public override string ToString()
-        {
-            return $"class {Symbol.ContainingSymbol}.{Symbol.Name} {{ … }}";
-        }
+            => $"class {Symbol.ContainingSymbol}.{Symbol.Name} {{ … }}";
     }
 }

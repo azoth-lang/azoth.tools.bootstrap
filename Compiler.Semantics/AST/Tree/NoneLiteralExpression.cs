@@ -9,9 +9,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
         public NoneLiteralExpression(TextSpan span, DataType dataType, ExpressionSemantics semantics)
             : base(span, dataType, semantics) { }
 
-        public override string ToString()
-        {
-            return "none";
-        }
+        public override string ToString() => "none";
     }
 }

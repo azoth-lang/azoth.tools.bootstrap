@@ -26,7 +26,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
         {
             var mutable = Symbol.IsMutableBinding ? "var " : "";
             var defaultValue = DefaultValue != null ? " = " + DefaultValue : "";
-            var declarationNumber = Symbol.DeclarationNumber is null ? "" : "#" + Symbol.DeclarationNumber;
+            var declarationNumber = Symbol.DeclarationNumber is null ? "" : "⟦#" + Symbol.DeclarationNumber + "⟧";
             return $"{mutable}{Symbol.Name}{declarationNumber}: {Symbol.DataType}{defaultValue}";
         }
     }

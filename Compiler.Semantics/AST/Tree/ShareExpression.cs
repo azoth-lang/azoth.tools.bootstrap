@@ -25,9 +25,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
 
         protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
 
-        public override string ToString()
-        {
-            return $"⟦share⟧ {Referent}";
-        }
+        public override string ToString() => $"⟦share⟧ {Referent}";
     }
 }

@@ -21,8 +21,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
         protected abstract OperatorPrecedence ExpressionPrecedence { get; }
 
         public string ToGroupedString(OperatorPrecedence surroundingPrecedence)
-        {
-            return surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();
-        }
+            => surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();
     }
 }

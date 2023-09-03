@@ -89,7 +89,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             var builder = new StringBuilder();
             if (Capability != ReferenceCapability.ReadOnly)
             {
-                builder.Append(Capability);
+                builder.Append(Capability.ToSourceString());
                 builder.Append(' ');
             }
             builder.Append(ContainingNamespace);
@@ -101,7 +101,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public override string ToILString()
         {
             var builder = new StringBuilder();
-            builder.Append(Capability);
+            builder.Append(Capability.ToILString());
             builder.Append(' ');
             builder.Append(ContainingNamespace);
             if (ContainingNamespace != NamespaceName.Global) builder.Append('.');

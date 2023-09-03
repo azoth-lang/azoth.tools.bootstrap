@@ -44,8 +44,5 @@ internal class InvocationExpressionSyntax : ExpressionSyntax, IInvocationExpress
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
-    public override string ToString()
-    {
-        return $"{Expression}({string.Join(", ", Arguments)})";
-    }
+    public override string ToString() => $"{Expression}({string.Join(", ", Arguments)})";
 }

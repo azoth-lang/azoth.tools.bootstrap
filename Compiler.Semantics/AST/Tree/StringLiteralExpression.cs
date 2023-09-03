@@ -22,9 +22,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
 
         protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
-        public override string ToString()
-        {
-            return $"\"{Value.Escape()}\"";
-        }
+        public override string ToString() => $"\"{Value.Escape()}\"";
     }
 }

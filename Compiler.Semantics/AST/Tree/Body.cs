@@ -15,9 +15,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
             Statements = statements;
         }
 
-        public override string ToString()
-        {
-            return "{ … }";
-        }
+        public override string ToString() => "{ … }";
     }
 }

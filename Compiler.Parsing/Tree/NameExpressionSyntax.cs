@@ -54,8 +54,5 @@ internal class NameExpressionSyntax : ExpressionSyntax, INameExpressionSyntax
     }
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
-    public override string ToString()
-    {
-        return Name?.ToString() ?? "⧼unknown⧽";
-    }
+    public override string ToString() => Name?.ToString() ?? "⧼unknown⧽";
 }

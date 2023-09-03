@@ -23,9 +23,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
 
         protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
-        public override string ToString()
-        {
-            return Value.ToString(CultureInfo.InvariantCulture);
-        }
+        public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
     }
 }

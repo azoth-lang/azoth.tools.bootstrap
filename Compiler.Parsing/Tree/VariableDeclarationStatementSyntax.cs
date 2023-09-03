@@ -18,7 +18,7 @@ internal class VariableDeclarationStatementSyntax : StatementSyntax, IVariableDe
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public ITypeSyntax? Type { [DebuggerStepThrough] get; }
     public IReferenceCapabilitySyntax? Capability { [DebuggerStepThrough] get; }
-    public IExpressionSyntax? Initializer { [DebuggerStepThrough]  get; }
+    public IExpressionSyntax? Initializer { [DebuggerStepThrough] get; }
 
     public VariableDeclarationStatementSyntax(
         TextSpan span,
@@ -41,7 +41,8 @@ internal class VariableDeclarationStatementSyntax : StatementSyntax, IVariableDe
     public override string ToString()
     {
         var binding = IsMutableBinding ? "var" : "let";
-        var type = Type != null ? ": " + Type : "";
+        var type = Type is not null ? ": " + Type : "";
+        if (Capability is not null) type = ": " + Capability;
         var initializer = Initializer != null ? " = " + Initializer : "";
         return $"{binding} {Name}{type}{initializer};";
     }

@@ -48,8 +48,5 @@ internal class TypeNameSyntax : TypeSyntax, ITypeNameSyntax
         throw new InvalidOperationException($"Can't lookup type name without {nameof(ContainingLexicalScope)}");
     }
 
-    public override string ToString()
-    {
-        return Name.ToString();
-    }
+    public override string ToString() => Name.ToString();
 }

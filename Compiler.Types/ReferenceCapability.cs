@@ -2,7 +2,7 @@ using System;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types
 {
-    public class ReferenceCapability
+    public sealed class ReferenceCapability
     {
         /// <summary>
         /// A reference that has write access and is externally unique. That is,
@@ -22,7 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// A reference that has read-only access and can be stored into fields etc.
         /// </summary>
         public static readonly ReferenceCapability ReadOnly
-            = new("read-only", allowsWriteAliases: true, allowsReadAliases: true);
+            = new("readonly", allowsWriteAliases: true, allowsReadAliases: true);
 
         /// <summary>
         /// A reference has read-only access and there are no references that
@@ -38,7 +38,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public static readonly ReferenceCapability Identity
             = new("id", allowsWriteAliases: true, allowsRead: false, allowsReadAliases: true);
 
-        private readonly string value;
+        private readonly string name;
         /// <summary>
         /// Whether this kind of reference allows mutating the referenced object through this reference
         /// </summary>
@@ -60,7 +60,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 
 
         private ReferenceCapability(
-            string value,
+            string name,
             bool allowsWrite = false,
             bool allowsWriteAliases = false,
             bool allowsRead = true,
@@ -70,7 +70,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             AllowsWriteAliases = allowsWriteAliases;
             AllowsRead = allowsRead;
             AllowsReadAliases = allowsReadAliases;
-            this.value = value;
+            this.name = name;
         }
 
         public bool IsAssignableFrom(ReferenceCapability from)
@@ -101,6 +101,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         // TODO this should be can be moved?
         public bool CanBeAcquired() => !AllowsWriteAliases;
 
-        public override string ToString() => value;
+        [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+        public sealed override string ToString()
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
+            =>
+                throw new NotSupportedException();
+
+        public string ToILString() => name;
+
+        public string ToSourceString() => this == ReadOnly ? "⧼read-only⧽" : name;
     }
 }

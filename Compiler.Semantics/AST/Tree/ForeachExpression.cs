@@ -35,7 +35,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
         public override string ToString()
         {
             var binding = Symbol.IsMutableBinding ? "var " : "";
-            var declarationNumber = Symbol.DeclarationNumber is null ? "" : "#" + Symbol.DeclarationNumber;
+            var declarationNumber = Symbol.DeclarationNumber is null ? "" : "⟦#" + Symbol.DeclarationNumber + "⟧";
             return $"foreach {binding}{Symbol.Name}{declarationNumber}: {Symbol.DataType} in {InExpression} {Block}";
         }
     }

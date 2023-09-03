@@ -14,9 +14,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
             Expression = expression;
         }
 
-        public override string ToString()
-        {
-            return Expression + ";";
-        }
+        public override string ToString() => Expression + ";";
     }
 }

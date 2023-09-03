@@ -21,9 +21,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
 
         protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
 
-        public override string ToString()
-        {
-            return Value is null ? "return" : $"return {Value}";
-        }
+        public override string ToString() => Value is null ? "return" : $"return {Value}";
     }
 }

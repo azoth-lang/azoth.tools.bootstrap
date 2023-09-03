@@ -24,8 +24,5 @@ internal class MoveExpressionSyntax : ExpressionSyntax, IMoveExpressionSyntax
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
 
-    public override string ToString()
-    {
-        return $"move {Referent}";
-    }
+    public override string ToString() => $"move {Referent}";
 }

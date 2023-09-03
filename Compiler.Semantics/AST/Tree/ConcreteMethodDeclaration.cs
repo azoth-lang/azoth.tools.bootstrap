@@ -1,6 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using MoreLinq.Extensions;
 
@@ -35,7 +36,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
 
         public override string ToString()
         {
-            var returnType = Symbol.ReturnDataType != null ? " -> " + Symbol.ReturnDataType : "";
+            var returnType = Symbol.ReturnDataType != DataType.Void ? " -> " + Symbol.ReturnDataType : "";
             return $"fn {Symbol.ContainingSymbol}::{Symbol.Name}({string.Join(", ", Parameters.Prepend<IParameter>(SelfParameter))}){returnType} {Body}";
         }
     }
