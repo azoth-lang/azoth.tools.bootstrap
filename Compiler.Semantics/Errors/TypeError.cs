@@ -108,5 +108,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors
             return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3013,
                 $"Functions that never return can't contain return statements");
         }
+
+        public static Diagnostic CannotAssignFieldOfReadOnly(CodeFile file, in TextSpan span, ReferenceType referenceType)
+        {
+            return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3014,
+                $"Cannot assign into a field through a read only reference of type `{referenceType}`");
+        }
     }
 }

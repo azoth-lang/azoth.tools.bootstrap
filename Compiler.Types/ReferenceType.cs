@@ -18,7 +18,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public override TypeSemantics Semantics => TypeSemantics.Reference;
 
         /// <summary>
-        /// Whether this type was declared `mut class`, `const class` or just `class`.
+        /// Whether this type was declared `mut class`, `const class`, `iso class` or just `class`.
         /// </summary>
         public ReferenceCapability DeclaredCapability { get; }
 

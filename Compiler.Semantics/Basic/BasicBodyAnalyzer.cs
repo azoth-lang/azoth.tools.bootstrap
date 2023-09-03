@@ -335,6 +335,10 @@ public class BasicBodyAnalyzer
     /// <summary>
     /// Infer the type of an expression and assign that type to the expression.
     /// </summary>
+    /// <param name="expression"></param>
+    /// <param name="sharing"></param>
+    /// <param name="capabilities"></param>
+    /// <param name="implicitRead">Whether this expression should implicitly be inferred to be a read.</param>
     private DataType InferType(
         IExpressionSyntax? expression,
         SharingRelation sharing,
@@ -705,14 +709,15 @@ public class BasicBodyAnalyzer
             default:
                 throw ExhaustiveMatch.Failed(expression);
             case IQualifiedNameExpressionSyntax exp:
-                // Don't wrap the self expression in a share expression for field access
-                var isSelfField = exp.Context is ISelfExpressionSyntax;
                 // TODO handle mutable self
-                var contextType = InferType(exp.Context, sharing, capabilities/*, !isSelfField*/);
+                var contextType = InferType(exp.Context, sharing, capabilities);
+                if (contextType is ReferenceType { IsWritableReference: false } contextReferenceType)
+                    diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(file,expression.Span, contextReferenceType));
                 var member = exp.Field;
                 var contextSymbol = LookupSymbolForType(contextType);
                 // TODO Deal with no context symbol
-                var memberSymbols = symbolTreeBuilder.Children(contextSymbol!).OfType<FieldSymbol>().Where(s => s.Name == member.Name).ToFixedList();
+                var memberSymbols = symbolTreeBuilder.Children(contextSymbol!).OfType<FieldSymbol>()
+                                                     .Where(s => s.Name == member.Name).ToFixedList();
                 var type = ResolvedReferencedSymbol(member, memberSymbols)?.DataType ?? DataType.Unknown;
                 member.DataType = type;
                 var semantics = member.Semantics ??= ExpressionSemantics.CreateReference;
@@ -736,7 +741,7 @@ public class BasicBodyAnalyzer
         // * Method invocation
 
         var argumentTypes = invocation.Arguments.Select(arg => InferType(arg, sharing, capabilities)).ToFixedList();
-        FixedSet<FunctionSymbol> functionSymbols = FixedSet<FunctionSymbol>.Empty;
+        var functionSymbols = FixedSet<FunctionSymbol>.Empty;
         switch (invocation.Expression)
         {
             case IQualifiedNameExpressionSyntax exp:
