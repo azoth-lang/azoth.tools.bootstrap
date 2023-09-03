@@ -26,7 +26,8 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Symbols
 
         private static Symbol FakeSymbol(NamespaceOrPackageSymbol? containing, Name name)
         {
-            return new Mock<Symbol>(MockBehavior.Default, containing, name).Object;
+            // Argument is allowed to be null, Moq doesn't declare parameter correctly
+            return new Mock<Symbol>(MockBehavior.Default, containing!, name).Object;
         }
     }
 }

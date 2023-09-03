@@ -5,10 +5,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
 {
     internal class MethodSignatureCache
     {
-        private readonly MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+        private readonly MemoryCache cache = new(new MemoryCacheOptions());
 
         public MethodSignature this[MethodSymbol symbol]
-            => cache.GetOrCreate(symbol, Factory);
+            => cache.GetOrCreate(symbol, Factory)!;
 
         private static MethodSignature Factory(ICacheEntry entry)
         {
