@@ -9,9 +9,10 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic
 {
     /// <summary>
-    /// The basic analyzer does name binding, type checking and constant folding.
-    /// This class handles declarations and delegates expressions, types etc. to
-    /// other classes.
+    /// The basic analyzer does name binding, type checking and constant folding
+    /// within statements and expressions. Evaluating parameter and return types
+    /// has already been completed as part of symbol binding. This class handles
+    /// declarations and delegates expressions, types etc. to other classes.
     ///
     /// All basic analysis uses specific terminology to distinguish different
     /// aspects of type checking. (The entry method `Check` is an exception. It
