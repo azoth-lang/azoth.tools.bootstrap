@@ -258,7 +258,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
 
     public partial interface ISelfParameterSyntax : IParameterSyntax, IBindingParameterSyntax
     {
-        bool MutableSelf { get; }
+        IReferenceCapabilitySyntax Capability { get; }
         new Promise<SelfParameterSymbol> Symbol { get; }
     }
 

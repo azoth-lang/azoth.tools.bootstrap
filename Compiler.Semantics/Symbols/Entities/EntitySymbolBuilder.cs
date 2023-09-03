@@ -79,7 +79,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities
             method.Symbol.BeginFulfilling();
             var declaringClassSymbol = method.DeclaringClass.Symbol.Result;
             var resolver = new TypeResolver(method.File, diagnostics);
-            var selfParameterType = ResolveMethodSelfParameterType(method.SelfParameter, method.DeclaringClass);
+            var selfParameterType = ResolveMethodSelfParameterType(resolver, method.SelfParameter, method.DeclaringClass);
             var parameterTypes = ResolveParameterTypes(resolver, method.Parameters, method.DeclaringClass);
             var returnType = ResolveReturnType(method.ReturnType, resolver);
             var symbol = new MethodSymbol(declaringClassSymbol, method.Name, selfParameterType, parameterTypes, returnType);
@@ -241,20 +241,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities
         private static ObjectType ResolveConstructorSelfParameterType(
             ISelfParameterSyntax selfParameter,
             IClassDeclarationSyntax declaringClass)
-        {
-            var selfType = declaringClass.Symbol.Result.DeclaresDataType;
-            if (selfParameter.MutableSelf)
-                selfType = selfType.ToConstructorSelf();
-            return selfType;
-        }
+            => declaringClass.Symbol.Result.DeclaresDataType.ToConstructorSelf();
 
         private static ObjectType ResolveMethodSelfParameterType(
+            TypeResolver resolver,
             ISelfParameterSyntax selfParameter,
             IClassDeclarationSyntax declaringClass)
         {
             var selfType = declaringClass.Symbol.Result.DeclaresDataType;
-            selfType = selfType.To(selfParameter.MutableSelf ? ReferenceCapability.Mutable : ReferenceCapability.ReadOnly);
-            return selfType;
+            return resolver.Evaluate(selfType, selfParameter.Capability);
         }
 
         private void BuildSelfParameterSymbol(

@@ -76,8 +76,7 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
 
     public override string ToString()
     {
-        var capabilityToken = CapabilityModifier;
-        string capability = capabilityToken is null ? "" : capabilityToken + " ";
+        var capability = CapabilityModifier is null ? "" : CapabilityModifier + " ";
         return $"{capability}class {Name} {{ … }}";
     }
 }

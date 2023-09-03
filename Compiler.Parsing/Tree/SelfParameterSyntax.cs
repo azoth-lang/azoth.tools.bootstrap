@@ -9,23 +9,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class SelfParameterSyntax : ParameterSyntax, ISelfParameterSyntax
 {
     public bool IsMutableBinding => false;
-    // TODO replace with a reference capability
-    public bool MutableSelf { get; }
+    public IReferenceCapabilitySyntax Capability { get; }
     public Promise<SelfParameterSymbol> Symbol { get; } = new Promise<SelfParameterSymbol>();
     IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
     public override IPromise<DataType> DataType { get; }
-    public SelfParameterSyntax(TextSpan span, bool mutableSelf)
+    public SelfParameterSyntax(TextSpan span, IReferenceCapabilitySyntax capability)
         : base(span, null)
     {
-        MutableSelf = mutableSelf;
+        Capability = capability;
         DataType = Symbol.Select(s => s.DataType);
     }
 
     public override string ToString()
-    {
-        var value = "self";
-        if (MutableSelf)
-            value = "mut " + value;
-        return value;
-    }
+        => Capability.Declared == DeclaredReferenceCapability.ReadOnly ? "self" : Capability + " self";
 }

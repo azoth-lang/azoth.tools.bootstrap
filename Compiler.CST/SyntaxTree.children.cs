@@ -79,6 +79,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
                         yield return n.DefaultValue;
                     yield break;
                 case ISelfParameterSyntax n:
+                    yield return n.Capability;
                     yield break;
                 case IFieldParameterSyntax n:
                     if(!(n.DefaultValue is null))

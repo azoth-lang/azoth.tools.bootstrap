@@ -26,14 +26,15 @@ public partial class Parser
     {
         switch (Tokens.Current)
         {
-            case IMutableKeywordToken _:
-            case ISelfKeywordToken _:
+            case ICapabilityToken:
+            case ISelfKeywordToken:
             {
                 var span = Tokens.Current.Span;
-                var mutableSelf = Tokens.Accept<IMutableKeywordToken>();
+                var referenceCapability = ParseReferenceCapability()
+                    ?? ReferenceCapabilitySyntax.ImplicitReadOnly(Tokens.Current.Span.AtStart());
                 var selfSpan = Tokens.Expect<ISelfKeywordToken>();
                 span = TextSpan.Covering(span, selfSpan);
-                return new SelfParameterSyntax(span, mutableSelf);
+                return new SelfParameterSyntax(span, referenceCapability);
             }
             default:
                 return ParseFunctionParameter();

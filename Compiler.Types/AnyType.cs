@@ -31,7 +31,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public override int GetHashCode() => HashCode.Combine(SpecialTypeName.Any, Capability);
 
         public override AnyType To(ReferenceCapability referenceCapability)
-            => new AnyType(referenceCapability);
+            => new(referenceCapability);
 
         public override string ToILString() => $"{Capability} Any";
 

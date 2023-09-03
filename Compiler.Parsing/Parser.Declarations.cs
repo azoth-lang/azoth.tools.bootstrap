@@ -50,8 +50,6 @@ public partial class Parser
         }
     }
 
-
-
     internal IMemberDeclarationSyntax ParseMemberDeclaration(
         IClassDeclarationSyntax classDeclaration)
     {
@@ -245,7 +243,7 @@ public partial class Parser
             return new AssociatedFunctionDeclarationSyntax(declaringType, span, File, accessModifer, identifier.Span, name, namedParameters, returnType, body);
         }
 
-        if (!(parameters[0] is ISelfParameterSyntax))
+        if (parameters[0] is not ISelfParameterSyntax)
             Add(ParseError.SelfParameterMustBeFirst(File, selfParameter.Span));
 
         foreach (var extraSelfParameter in parameters.OfType<ISelfParameterSyntax>().Skip(1))
@@ -276,10 +274,12 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var newKeywordSpan = Tokens.Expect<INewKeywordToken>();
         var identifier = Tokens.AcceptToken<IIdentifierToken>();
-        Name? name = identifier is null ? null : (Name)identifier.Value;
+        var name = identifier is null ? null : (Name)identifier.Value;
         var bodyParser = BodyParser();
         // Implicit self parameter is taken to be after the current token which is expected to be `(`
-        var selfParameter = new SelfParameterSyntax(Tokens.Current.Span.AtEnd(), true);
+        var selfParameterLocation = Tokens.Current.Span.AtEnd();
+        var selfReferenceCapability = new ReferenceCapabilitySyntax(selfParameterLocation, Enumerable.Empty<ICapabilityToken>(), DeclaredReferenceCapability.Mutable);
+        var selfParameter = new SelfParameterSyntax(selfParameterLocation, selfReferenceCapability);
         var parameters = bodyParser.ParseParameters(bodyParser.ParseConstructorParameter);
         var body = bodyParser.ParseFunctionBody();
         // For now, just say constructors have no annotations

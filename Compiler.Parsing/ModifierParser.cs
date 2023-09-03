@@ -9,18 +9,10 @@ internal class ModifierParser : RecursiveDescentParser
         : base(tokens) { }
 
     public IAccessModifierToken? ParseAccessModifier()
-    {
-        return Tokens.Current switch
-        {
-            IAccessModifierToken _ => Tokens.RequiredToken<IAccessModifierToken>(),
-            _ => null
-        };
-    }
+        => Tokens.AcceptToken<IAccessModifierToken>();
 
     public IClassCapabilityToken? ParseClassCapability()
-    {
-        return Tokens.Current is IClassCapabilityToken ? Tokens.RequiredToken<IClassCapabilityToken>() : null;
-    }
+        => Tokens.AcceptToken<IClassCapabilityToken>();
 
     public void ParseEndOfModifiers()
     {

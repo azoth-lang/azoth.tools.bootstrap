@@ -42,7 +42,7 @@ public partial class Parser
                 return new ReferenceCapabilitySyntax(idKeyword.Span, idKeyword.Yield(), Identity);
             }
             default:
-                //Could be a readable reference capability, or could be a value type
+                // Could be a readable reference capability, or could be a value type
                 return null;
         }
     }
@@ -56,8 +56,7 @@ public partial class Parser
             type = new CapabilityTypeSyntax(capability!, type, span);
         }
 
-        IQuestionToken? question;
-        while ((question = Tokens.AcceptToken<IQuestionToken>()) != null)
+        while (Tokens.AcceptToken<IQuestionToken>() is IQuestionToken question)
         {
             var span = TextSpan.Covering(type.Span, question.Span);
             type = new OptionalTypeSyntax(span, type);

@@ -62,7 +62,7 @@ ConstructorParameter: Parameter;
 /// A parameter that creates a binding, i.e. a named or self parameter
 BindingParameter: Parameter, Binding;
 NamedParameter: Parameter, ConstructorParameter, BindingParameter, LocalBinding = Name:'Name' DeclarationNumber:'Promise<int?>' Type Symbol:'Promise<VariableSymbol>' DefaultValue:Expression?;
-SelfParameter: Parameter, BindingParameter = MutableSelf:'bool' Symbol:'Promise<SelfParameterSymbol>';
+SelfParameter: Parameter, BindingParameter = Capability:ReferenceCapability Symbol:'Promise<SelfParameterSymbol>';
 FieldParameter: Parameter, ConstructorParameter = ReferencedSymbol:'Promise<FieldSymbol?>' DefaultValue:Expression?;
 
 

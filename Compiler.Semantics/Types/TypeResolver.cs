@@ -24,7 +24,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
             this.diagnostics = diagnostics;
         }
 
-        [return: NotNullIfNotNull("typeSyntax")]
+        [return: NotNullIfNotNull(nameof(typeSyntax))]
         public DataType? Evaluate(ITypeSyntax? typeSyntax, bool implicitRead)
         {
             switch (typeSyntax)
@@ -79,11 +79,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
             return typeSyntax.NamedType ?? throw new InvalidOperationException();
         }
 
-        private static DataType Evaluate(
-            ReferenceType referenceType,
-            IReferenceCapabilitySyntax capability)
+        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
+        public ObjectType Evaluate(ObjectType referenceType, IReferenceCapabilitySyntax capability)
+            => referenceType.To(Evaluate(capability));
+
+        private static ReferenceType Evaluate(ReferenceType referenceType, IReferenceCapabilitySyntax capability)
+            => referenceType.To(Evaluate(capability));
+
+        private static ReferenceCapability Evaluate(IReferenceCapabilitySyntax capability)
         {
-            var referenceCapability = capability.Declared switch
+            return capability.Declared switch
             {
                 DeclaredReferenceCapability.Isolated => ReferenceCapability.Isolated,
 
@@ -94,7 +99,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types
                 DeclaredReferenceCapability.ReadOnly => ReferenceCapability.ReadOnly,
                 _ => throw ExhaustiveMatch.Failed(capability.Declared),
             };
-            return referenceType.To(referenceCapability);
         }
     }
 }

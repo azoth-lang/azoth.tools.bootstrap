@@ -82,8 +82,7 @@ public partial class Parser
             case IEqualsToken _:
             case ISemicolonToken _:
                 // TODO this is strange that  let x := ...; is valid
-                capability ??= new ReferenceCapabilitySyntax(Tokens.Current.Span.AtStart(),
-                    Enumerable.Empty<ICapabilityToken>(), DeclaredReferenceCapability.ReadOnly);
+                capability ??= ReferenceCapabilitySyntax.ImplicitReadOnly(Tokens.Current.Span.AtStart());
                 return (null, capability);
             default:
                 return (ParseTypeWithCapability(capability), null);
