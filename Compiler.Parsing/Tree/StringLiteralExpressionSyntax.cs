@@ -4,23 +4,22 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
+namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
+
+internal class StringLiteralExpressionSyntax : LiteralExpressionSyntax, IStringLiteralExpressionSyntax
 {
-    internal class StringLiteralExpressionSyntax : LiteralExpressionSyntax, IStringLiteralExpressionSyntax
+    public string Value { [DebuggerStepThrough] get; }
+
+    public StringLiteralExpressionSyntax(TextSpan span, string value)
+        : base(span, ExpressionSemantics.ReadOnlyReference)
     {
-        public string Value { [DebuggerStepThrough] get; }
+        Value = value;
+    }
 
-        public StringLiteralExpressionSyntax(TextSpan span, string value)
-            : base(span, ExpressionSemantics.ReadOnlyReference)
-        {
-            Value = value;
-        }
+    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
-        protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
-
-        public override string ToString()
-        {
-            return $"\"{Value.Escape()}\"";
-        }
+    public override string ToString()
+    {
+        return $"\"{Value.Escape()}\"";
     }
 }

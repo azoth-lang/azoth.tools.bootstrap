@@ -5,29 +5,28 @@ using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Parsing
-{
-    public partial class Parser
-    {
-        public FixedList<IUsingDirectiveSyntax> ParseUsingDirectives()
-        {
-            return AcceptMany(AcceptUsingDirective);
-        }
+namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
-        public IUsingDirectiveSyntax? AcceptUsingDirective()
-        {
-            var accept = Tokens.AcceptToken<IUsingKeywordToken>();
-            if (accept is null)
-                return null;
-            var identifiers = ParseManySeparated<(IIdentifierToken?, TextSpan), IDotToken>(
-                () => Tokens.ExpectToken<IIdentifierToken>());
-            NamespaceName name = NamespaceName.Global;
-            foreach (var (identifier, _) in identifiers)
-                if (!(identifier is null))
-                    name = name.Qualify(identifier.Value);
-            var semicolon = Tokens.Expect<ISemicolonToken>();
-            var span = TextSpan.Covering(accept.Span, semicolon);
-            return new UsingDirectiveSyntax(span, name);
-        }
+public partial class Parser
+{
+    public FixedList<IUsingDirectiveSyntax> ParseUsingDirectives()
+    {
+        return AcceptMany(AcceptUsingDirective);
+    }
+
+    public IUsingDirectiveSyntax? AcceptUsingDirective()
+    {
+        var accept = Tokens.AcceptToken<IUsingKeywordToken>();
+        if (accept is null)
+            return null;
+        var identifiers = ParseManySeparated<(IIdentifierToken?, TextSpan), IDotToken>(
+            () => Tokens.ExpectToken<IIdentifierToken>());
+        NamespaceName name = NamespaceName.Global;
+        foreach (var (identifier, _) in identifiers)
+            if (!(identifier is null))
+                name = name.Qualify(identifier.Value);
+        var semicolon = Tokens.Expect<ISemicolonToken>();
+        var span = TextSpan.Covering(accept.Span, semicolon);
+        return new UsingDirectiveSyntax(span, name);
     }
 }

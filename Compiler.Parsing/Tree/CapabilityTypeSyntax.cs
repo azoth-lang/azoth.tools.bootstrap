@@ -1,26 +1,25 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
+namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
+
+internal class CapabilityTypeSyntax : TypeSyntax, ICapabilityTypeSyntax
 {
-    internal class CapabilityTypeSyntax : TypeSyntax, ICapabilityTypeSyntax
+    public IReferenceCapabilitySyntax Capability { get; }
+    public ITypeSyntax ReferentType { get; }
+
+    public CapabilityTypeSyntax(
+        IReferenceCapabilitySyntax referenceCapability,
+        ITypeSyntax referentType,
+        TextSpan span)
+        : base(span)
     {
-        public IReferenceCapabilitySyntax Capability { get; }
-        public ITypeSyntax ReferentType { get; }
+        ReferentType = referentType;
+        Capability = referenceCapability;
+    }
 
-        public CapabilityTypeSyntax(
-            IReferenceCapabilitySyntax referenceCapability,
-            ITypeSyntax referentType,
-            TextSpan span)
-            : base(span)
-        {
-            ReferentType = referentType;
-            Capability = referenceCapability;
-        }
-
-        public override string ToString()
-        {
-            return $"{Capability} {ReferentType}";
-        }
+    public override string ToString()
+    {
+        return $"{Capability} {ReferentType}";
     }
 }

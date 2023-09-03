@@ -1,11 +1,7 @@
-using System.Diagnostics.CodeAnalysis;
+namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Parsing
+public enum ParseAs
 {
-    [SuppressMessage("Naming", "CA1717:Only FlagsAttribute enums should have plural names", Justification = "Not Plural")]
-    public enum ParseAs
-    {
-        Expression = 1,
-        Statement
-    }
+    Expression = 1,
+    Statement
 }

@@ -6,27 +6,26 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
+namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
+
+[SuppressMessage("Performance", "CA1812:Class Never Instantiated")]
+internal class MoveExpressionSyntax : ExpressionSyntax, IMoveExpressionSyntax
 {
-    [SuppressMessage("Performance", "CA1812:Class Never Instantiated")]
-    internal class MoveExpressionSyntax : ExpressionSyntax, IMoveExpressionSyntax
+    public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
+
+    public Promise<BindingSymbol?> ReferencedSymbol { [DebuggerStepThrough] get; }
+        = new Promise<BindingSymbol?>();
+
+    public MoveExpressionSyntax(TextSpan span, INameExpressionSyntax referent)
+        : base(span) // TODO this could be a move or acquire?
     {
-        public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
+        Referent = referent;
+    }
 
-        public Promise<BindingSymbol?> ReferencedSymbol { [DebuggerStepThrough] get; }
-            = new Promise<BindingSymbol?>();
+    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
 
-        public MoveExpressionSyntax(TextSpan span, INameExpressionSyntax referent)
-            : base(span) // TODO this could be a move or acquire?
-        {
-            Referent = referent;
-        }
-
-        protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
-
-        public override string ToString()
-        {
-            return $"move {Referent}";
-        }
+    public override string ToString()
+    {
+        return $"move {Referent}";
     }
 }

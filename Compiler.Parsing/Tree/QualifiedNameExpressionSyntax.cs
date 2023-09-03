@@ -6,32 +6,31 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
+namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
+
+internal class QualifiedNameExpressionSyntax : ExpressionSyntax, IQualifiedNameExpressionSyntax
 {
-    internal class QualifiedNameExpressionSyntax : ExpressionSyntax, IQualifiedNameExpressionSyntax
+    public IExpressionSyntax Context { [DebuggerStepThrough] get; }
+    public AccessOperator AccessOperator { [DebuggerStepThrough] get; }
+    public INameExpressionSyntax Field { [DebuggerStepThrough] get; }
+    public IPromise<FieldSymbol?> ReferencedSymbol => Field.ReferencedSymbol.Select(s => (FieldSymbol?)s);
+
+    public QualifiedNameExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax context,
+        AccessOperator accessOperator,
+        INameExpressionSyntax field)
+        : base(span)
     {
-        public IExpressionSyntax Context { [DebuggerStepThrough] get; }
-        public AccessOperator AccessOperator { [DebuggerStepThrough] get; }
-        public INameExpressionSyntax Field { [DebuggerStepThrough] get; }
-        public IPromise<FieldSymbol?> ReferencedSymbol => Field.ReferencedSymbol.Select(s => (FieldSymbol?)s);
+        Context = context;
+        AccessOperator = accessOperator;
+        Field = field;
+    }
 
-        public QualifiedNameExpressionSyntax(
-            TextSpan span,
-            IExpressionSyntax context,
-            AccessOperator accessOperator,
-            INameExpressionSyntax field)
-            : base(span)
-        {
-            Context = context;
-            AccessOperator = accessOperator;
-            Field = field;
-        }
+    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
-        protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
-
-        public override string ToString()
-        {
-            return $"{Context.ToGroupedString(ExpressionPrecedence)}{AccessOperator.ToSymbolString()}{Field}";
-        }
+    public override string ToString()
+    {
+        return $"{Context.ToGroupedString(ExpressionPrecedence)}{AccessOperator.ToSymbolString()}{Field}";
     }
 }

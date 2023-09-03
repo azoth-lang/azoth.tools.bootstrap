@@ -2,21 +2,20 @@ using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
+namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
+
+internal class ExpressionStatementSyntax : StatementSyntax, IExpressionStatementSyntax
 {
-    internal class ExpressionStatementSyntax : StatementSyntax, IExpressionStatementSyntax
+    public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
+
+    public ExpressionStatementSyntax(TextSpan span, IExpressionSyntax expression)
+        : base(span)
     {
-        public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
+        Expression = expression;
+    }
 
-        public ExpressionStatementSyntax(TextSpan span, IExpressionSyntax expression)
-            : base(span)
-        {
-            Expression = expression;
-        }
-
-        public override string ToString()
-        {
-            return Expression+";";
-        }
+    public override string ToString()
+    {
+        return Expression+";";
     }
 }

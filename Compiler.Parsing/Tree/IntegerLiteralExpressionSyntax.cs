@@ -4,23 +4,22 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
+namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
+
+internal class IntegerLiteralExpressionSyntax : LiteralExpressionSyntax, IIntegerLiteralExpressionSyntax
 {
-    internal class IntegerLiteralExpressionSyntax : LiteralExpressionSyntax, IIntegerLiteralExpressionSyntax
+    public BigInteger Value { get; }
+
+    public IntegerLiteralExpressionSyntax(TextSpan span, BigInteger value)
+        : base(span, ExpressionSemantics.CopyValue)
     {
-        public BigInteger Value { get; }
+        Value = value;
+    }
 
-        public IntegerLiteralExpressionSyntax(TextSpan span, BigInteger value)
-            : base(span, ExpressionSemantics.CopyValue)
-        {
-            Value = value;
-        }
+    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
-        protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
-
-        public override string ToString()
-        {
-            return Value.ToString(CultureInfo.InvariantCulture);
-        }
+    public override string ToString()
+    {
+        return Value.ToString(CultureInfo.InvariantCulture);
     }
 }

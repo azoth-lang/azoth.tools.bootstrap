@@ -5,45 +5,44 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree
+namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
+
+internal class VariableDeclarationStatementSyntax : StatementSyntax, IVariableDeclarationStatementSyntax
 {
-    internal class VariableDeclarationStatementSyntax : StatementSyntax, IVariableDeclarationStatementSyntax
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
+    public Name Name { [DebuggerStepThrough] get; }
+    public Promise<int?> DeclarationNumber { [DebuggerStepThrough] get; } = new Promise<int?>();
+    public Promise<VariableSymbol> Symbol { [DebuggerStepThrough] get; } = new Promise<VariableSymbol>();
+    IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
+    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public ITypeSyntax? Type { [DebuggerStepThrough] get; }
+    public IReferenceCapabilitySyntax? Capability { [DebuggerStepThrough] get; }
+    public IExpressionSyntax? Initializer { [DebuggerStepThrough]  get; }
+
+    public VariableDeclarationStatementSyntax(
+        TextSpan span,
+        bool isMutableBinding,
+        Name name,
+        TextSpan nameSpan,
+        ITypeSyntax? typeSyntax,
+        IReferenceCapabilitySyntax? capability,
+        IExpressionSyntax? initializer)
+        : base(span)
     {
-        public bool IsMutableBinding { [DebuggerStepThrough] get; }
-        public Name Name { [DebuggerStepThrough] get; }
-        public Promise<int?> DeclarationNumber { [DebuggerStepThrough] get; } = new Promise<int?>();
-        public Promise<VariableSymbol> Symbol { [DebuggerStepThrough] get; } = new Promise<VariableSymbol>();
-        IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
-        IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
-        public TextSpan NameSpan { [DebuggerStepThrough] get; }
-        public ITypeSyntax? Type { [DebuggerStepThrough] get; }
-        public IReferenceCapabilitySyntax? Capability { [DebuggerStepThrough] get; }
-        public IExpressionSyntax? Initializer { [DebuggerStepThrough]  get; }
+        IsMutableBinding = isMutableBinding;
+        Name = name;
+        NameSpan = nameSpan;
+        Type = typeSyntax;
+        Capability = capability;
+        Initializer = initializer;
+    }
 
-        public VariableDeclarationStatementSyntax(
-            TextSpan span,
-            bool isMutableBinding,
-            Name name,
-            TextSpan nameSpan,
-            ITypeSyntax? typeSyntax,
-            IReferenceCapabilitySyntax? capability,
-            IExpressionSyntax? initializer)
-            : base(span)
-        {
-            IsMutableBinding = isMutableBinding;
-            Name = name;
-            NameSpan = nameSpan;
-            Type = typeSyntax;
-            Capability = capability;
-            Initializer = initializer;
-        }
-
-        public override string ToString()
-        {
-            var binding = IsMutableBinding ? "var" : "let";
-            var type = Type != null ? ": " + Type : "";
-            var initializer = Initializer != null ? " = " + Initializer : "";
-            return $"{binding} {Name}{type}{initializer};";
-        }
+    public override string ToString()
+    {
+        var binding = IsMutableBinding ? "var" : "let";
+        var type = Type != null ? ": " + Type : "";
+        var initializer = Initializer != null ? " = " + Initializer : "";
+        return $"{binding} {Name}{type}{initializer};";
     }
 }
