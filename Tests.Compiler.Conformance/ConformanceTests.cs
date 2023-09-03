@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
@@ -12,6 +13,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Tests.Conformance.Helpers;
+using MoreLinq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -175,40 +177,48 @@ namespace Azoth.Tools.Bootstrap.Tests.Conformance
             var errorDiagnostics = diagnostics
                 .Where(d => d.Level >= DiagnosticLevel.CompilationError).ToList();
 
-            if (expectedCompileErrorLines.Any())
+            var errors = new StringBuilder();
+
+            var matchedErrors = errorDiagnostics
+                .FullGroupJoin(expectedCompileErrorLines, d => d.StartPosition.Line, l => l,
+                (line, errors, expected) => (line, errors.Count(), expected.Count()));
+
+            foreach (var matchedError in matchedErrors)
             {
-                foreach (var expectedCompileErrorLine in expectedCompileErrorLines)
+                switch (matchedError)
                 {
-                    // Assert a single error on the given line
-                    var errorsOnLine = errorDiagnostics.Count(e =>
-                        e.StartPosition.Line == expectedCompileErrorLine);
-                    Assert.True(errorsOnLine == 1,
-                        $"Expected one error on line {expectedCompileErrorLine}, found {errorsOnLine}");
+                    case (var line, 1, 0) when !expectCompileErrors:
+                        errors.AppendLine($"Unexpected error on line {line}.");
+                        break;
+                    case (var line, int errorCount and >= 1, 0) when !expectCompileErrors:
+                        errors.AppendLine($"{errorCount} unexpected errors on line {line}.");
+                        break;
+                    case (var line, 0, 1):
+                        errors.AppendLine($"Expected an error on line {line}.");
+                        break;
+                    case (var line, int errorCount and not 1, 1):
+                        errors.AppendLine(
+                            $"Expected one error on line {line}, found {errorCount}.");
+                        break;
                 }
             }
 
-            if (expectCompileErrors)
-                Assert.True(errorDiagnostics.Any(), "Expected compilation errors and there were none");
-            else
-                foreach (var error in errorDiagnostics)
-                {
-                    var errorLine = error.StartPosition.Line;
-                    if (expectedCompileErrorLines.All(line => line != errorLine))
-                        Assert.True(false, $"Unexpected error on line {error.StartPosition.Line}");
-                }
+            if (expectCompileErrors && !errorDiagnostics.Any())
+                errors.AppendLine("Expected compilation errors and there were none");
+
+            Assert.True(errors.Length == 0, errors.ToString().TrimEnd());
 
             return errorDiagnostics;
         }
 
         private static bool ExpectCompileErrors(string code)
-        {
-            return ExpectCompileErrorsPattern().IsMatch(code);
-        }
+            => ExpectCompileErrorsPattern().IsMatch(code);
 
         private static List<int> ExpectedCompileErrorLines(CodeFile codeFile, string code)
         {
             return ErrorPattern().Matches(code)
                 .Select(match => codeFile.Code.Lines.LineIndexContainingOffset(match.Index) + 1)
+                .Order()
                 .ToList();
         }
 
