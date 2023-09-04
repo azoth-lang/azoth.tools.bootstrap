@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -33,8 +32,7 @@ public class VariableFlags
     /// Returns the state for the variable or null if the symbol isn't a
     /// variable.
     /// </summary>
-    [SuppressMessage("Design", "CA1043:Use Integral Or String Argument For Indexers", Justification = "Symbols are like immutable strings")]
-    public bool? this[BindingSymbol symbol] => symbolMap.TryGetValue(symbol, out var i) ? (bool?)flags[i] : null;
+    public bool? this[BindingSymbol symbol] => symbolMap.TryGetValue(symbol, out var i) ? flags[i] : null;
 
     public VariableFlags Set(BindingSymbol symbol, bool value)
     {
@@ -54,8 +52,5 @@ public class VariableFlags
         return newFlags;
     }
 
-    private VariableFlags Clone()
-    {
-        return new VariableFlags(symbolMap, (BitArray)flags.Clone());
-    }
+    private VariableFlags Clone() => new(symbolMap, (BitArray)flags.Clone());
 }

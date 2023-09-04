@@ -87,26 +87,24 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 
         public ReferenceCapability ToMutable()
         {
-            if (!AllowsWrite) throw new InvalidOperationException($"Can't convert '{this}' to mutable because it does not allow write.");
+            if (!AllowsWrite) throw new InvalidOperationException($"Can't convert '{ToILString()}' to mutable because it does not allow write.");
             return Mutable;
         }
 
-        public ReferenceCapability ToReadOnly()
+        /// <summary>
+        /// This capability with any write ability removed.
+        /// </summary>
+        /// <returns></returns>
+        public ReferenceCapability WithoutWrite()
         {
-            if (!AllowsRead) throw new InvalidOperationException($"Can't convert '{this}' to readable because it does not allow read.");
-            // Already readable. Just return this. That will preserve the correct other attributes
+            // Already not writable. Just return this. That will preserve the correct other attributes
             if (!AllowsWrite) return this;
+            // It is either `iso` or `mut` either way, convert to `readonly`
             return ReadOnly;
         }
 
         // TODO this should be can be moved?
         public bool CanBeAcquired() => !AllowsWriteAliases;
-
-        public ReferenceCapability Restrict(ReferenceCapability capability)
-        {
-            if (capability.IsAssignableFrom(this)) return capability;
-            throw new InvalidOperationException($"Cannot restrict {ToILString()} to {capability.ToILString()}.");
-        }
 
         [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member

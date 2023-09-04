@@ -24,25 +24,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             Name = name;
         }
 
-        public override string ToSourceCodeString()
-        {
-            return Name.ToString();
-        }
+        public override string ToSourceCodeString() => Name.ToString();
 
-        public override string ToILString()
-        {
-            return ToSourceCodeString();
-        }
+        public override string ToILString() => ToSourceCodeString();
 
         public override bool Equals(DataType? other)
-        {
             // Empty types are all fixed instances, so a reference equality suffices
-            return ReferenceEquals(this, other);
-        }
+            => ReferenceEquals(this, other);
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Name);
-        }
+        public override int GetHashCode() => HashCode.Combine(Name);
     }
 }

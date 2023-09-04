@@ -40,6 +40,15 @@ public class ReferenceCapabilities
         return null;
     }
 
+    public DataType CurrentType(BindingSymbol? symbol)
+    {
+        if (symbol?.DataType is ReferenceType referenceType)
+            return referenceType.To(currentCapabilities[symbol]);
+
+        // Other types don't have capabilities and don't need to be tracked
+        return symbol?.DataType ?? DataType.Unknown;
+    }
+
     /// <summary>
     /// Creates an alias of the symbol therefor restricting the capability to no longer be `iso`.
     /// </summary>
@@ -50,6 +59,20 @@ public class ReferenceCapabilities
             var capability = currentCapabilities[symbol];
             if (capability == ReferenceCapability.Isolated)
                 currentCapabilities[symbol] = ReferenceCapability.Mutable;
+        }
+        // Other types don't have capabilities and don't need to be tracked
+    }
+
+    /// <summary>
+    /// Marks that a reference has been moved therefor restricting the capability to `id`.
+    /// </summary>
+    public void Move(BindingSymbol? symbol)
+    {
+        if (symbol?.DataType is ReferenceType)
+        {
+            var capability = currentCapabilities[symbol];
+            if (capability != ReferenceCapability.Identity)
+                currentCapabilities[symbol] = ReferenceCapability.Identity;
         }
         // Other types don't have capabilities and don't need to be tracked
     }

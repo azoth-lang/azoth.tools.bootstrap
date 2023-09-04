@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using ExhaustiveMatching;
+using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Moves;
 
@@ -35,10 +36,8 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<VariableFlags>
     }
 
     public VariableFlags StartState()
-    {
         // All variables start without possibly having their values moved out of them
-        return new VariableFlags(declaration, symbolTree, false);
-    }
+        => new(declaration, symbolTree, false);
 
     public VariableFlags Assignment(
         IAssignmentExpression assignmentExpression,
@@ -49,7 +48,7 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<VariableFlags>
             case INameExpression identifierName:
                 // We are assigning into this variable so it definitely has a value now
                 var symbol = identifierName.ReferencedSymbol;
-                return possiblyMoved.Set(symbol, false);
+                return symbol.DataType is ValueType ? possiblyMoved.Set(symbol, false) : possiblyMoved;
             case IFieldAccessExpression _:
                 return possiblyMoved;
             default:
@@ -64,6 +63,9 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<VariableFlags>
         var symbol = nameExpression.ReferencedSymbol;
         if (possiblyMoved[symbol] == true)
             diagnostics.Add(SemanticError.UseOfPossiblyMovedValue(file, nameExpression.Span));
+
+        if (symbol.DataType is not ValueType)
+            return possiblyMoved;
 
         var valueSemantics = nameExpression.Semantics;
         // TODO this isn't correct, but for now fields don't have proper move, borrow handling
@@ -92,16 +94,12 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<VariableFlags>
     public VariableFlags VariableDeclaration(
         IVariableDeclarationStatement variableDeclaration,
         VariableFlags possiblyMoved)
-    {
         // No affect on state since it should already be false
-        return possiblyMoved;
-    }
+        => possiblyMoved;
 
     public VariableFlags VariableDeclaration(
         IForeachExpression foreachExpression,
         VariableFlags possiblyMoved)
-    {
         // No affect on state since it should already be false
-        return possiblyMoved;
-    }
+        => possiblyMoved;
 }

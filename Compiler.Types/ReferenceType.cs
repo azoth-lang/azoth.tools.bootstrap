@@ -39,8 +39,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             return To(Capability.ToMutable());
         }
 
-        public override ReferenceType ToReadOnly()
-            => To(Capability.ToReadOnly());
+        public override ReferenceType WithoutWrite() => To(Capability.WithoutWrite());
 
         /// <summary>
         /// Return the same type except with the given reference capability

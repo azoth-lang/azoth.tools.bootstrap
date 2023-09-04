@@ -225,7 +225,7 @@ public class BasicBodyAnalyzer
             default:
             {
                 // We assume immutability on variables unless explicitly stated
-                if (inferCapability is null) return type.ToReadOnly();
+                if (inferCapability is null) return type.WithoutWrite() ?? type;
                 if (type is not ReferenceType referenceType)
                     throw new NotImplementedException("Compile error: can't infer mutability for non reference type");
 
@@ -379,9 +379,10 @@ public class BasicBodyAnalyzer
                                         diagnostics.Add(TypeError.CannotMoveValue(file, exp));
 
                                     type = referenceType.To(ReferenceCapability.Isolated);
+                                    capabilities.Move(symbol);
                                     break;
-                                    //default:
-                                    //throw new NotImplementedException("Non-moveable type can't be moved");
+                                default:
+                                    throw new NotImplementedException("Non-moveable type can't be moved");
                             }
                         }
                         const ExpressionSemantics semantics = ExpressionSemantics.IsolatedReference;
@@ -404,7 +405,7 @@ public class BasicBodyAnalyzer
                     {
                         var symbol = ResolveVariableNameSymbol(nameExpression);
                         capabilities.Alias(symbol);
-                        var type = symbol?.DataType ?? DataType.Unknown;
+                        var type = capabilities.CurrentType(symbol);
                         switch (type)
                         {
                             case ReferenceType referenceType:
@@ -524,8 +525,9 @@ public class BasicBodyAnalyzer
             {
                 var symbol = ResolveVariableNameSymbol(exp);
                 capabilities.Alias(symbol);
-                var type = symbol?.DataType ?? DataType.Unknown;
-                if (implicitRead) type = type.ToReadOnly();
+                var type = capabilities.CurrentType(symbol);
+                if (implicitRead)
+                    type = type.WithoutWrite();
                 var referenceSemantics = implicitRead
                     ? ExpressionSemantics.ReadOnlyReference
                     : ExpressionSemantics.MutableReference;
@@ -714,7 +716,7 @@ public class BasicBodyAnalyzer
             }
             case ISelfExpressionSyntax exp:
             {
-                var type = ResolveSelfSymbol(exp)?.DataType ?? DataType.Unknown;
+                var type = capabilities.CurrentType(ResolveSelfSymbol(exp));
                 var referenceSemantics = implicitRead
                     ? ExpressionSemantics.ReadOnlyReference
                     : ExpressionSemantics.MutableReference;
@@ -765,7 +767,7 @@ public class BasicBodyAnalyzer
                 return exp.DataType = type;
             case INameExpressionSyntax exp:
                 exp.Semantics = ExpressionSemantics.CreateReference;
-                return exp.DataType = ResolveVariableNameSymbol(exp)?.DataType ?? DataType.Unknown;
+                return exp.DataType = capabilities.CurrentType(ResolveVariableNameSymbol(exp));
         }
     }
 

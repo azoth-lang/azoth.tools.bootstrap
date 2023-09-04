@@ -69,7 +69,7 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
         {
             var type = BoolType.Instance;
 
-            var @readonly = type.ToReadOnly();
+            var @readonly = type.WithoutWrite();
 
             Assert.Equal(type, @readonly);
         }

@@ -47,7 +47,7 @@ public class TypeResolver
                             var symbol = symbolPromises.Single().Result;
                             typeName.ReferencedSymbol.Fulfill(symbol);
                             var type = symbol.DeclaresDataType;
-                            if (implicitRead) type = type.ToReadOnly();
+                            if (implicitRead) type = type.WithoutWrite();
                             typeName.NamedType = type;
                             break;
                         default:

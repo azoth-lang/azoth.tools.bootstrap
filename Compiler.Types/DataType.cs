@@ -32,7 +32,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public static readonly PointerSizedIntegerType Offset = PointerSizedIntegerType.Offset;
 
         /// <summary>
-        /// The value `none` has this type, which is `never?`
+        /// The value `none` has this type, which is `never?`.
         /// </summary>
         public static readonly OptionalType None = new(Never);
         #endregion
@@ -53,19 +53,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public virtual bool IsConstant => false;
 
         /// <summary>
-        /// A known type is one that has no unknown parts
+        /// A known type is one that has no unknown parts.
         /// </summary>
         public abstract bool IsKnown { get; }
 
         /// <summary>
-        /// The semantics of values of this type
+        /// The semantics of values of this type.
         /// </summary>
         public abstract TypeSemantics Semantics { get; }
 
         private protected DataType() { }
 
         /// <summary>
-        /// Convert types for literal constants to their corresponding types
+        /// Convert types for literal constants to their corresponding types.
         /// </summary>
         public virtual DataType ToNonConstantType() => this;
 
@@ -78,19 +78,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             => throw new NotSupportedException();
 
         /// <summary>
-        /// How this type would be written in source code
+        /// How this type would be written in source code.
         /// </summary>
         public abstract string ToSourceCodeString();
 
         /// <summary>
-        /// How this type would be written in IL
+        /// How this type would be written in IL.
         /// </summary>
         public abstract string ToILString();
 
         /// <summary>
-        /// Returns the same type except with any mutability removed
+        /// Returns the same type except with any mutability removed.
         /// </summary>
-        public virtual DataType ToReadOnly() => this;
+        public virtual DataType WithoutWrite() => this;
 
         #region Equality
         public abstract bool Equals(DataType? other);
@@ -108,7 +108,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 
         public static bool operator !=(DataType? left, DataType? right)
             => !Equals(left, right);
-
         #endregion
     }
 }
