@@ -196,6 +196,9 @@ public static class ISyntaxExtensions
             case IMoveExpressionSyntax n:
                 yield return n.Referent;
                 yield break;
+            case IFreezeExpressionSyntax n:
+                yield return n.Referent;
+                yield break;
         }
     }
 }

@@ -358,7 +358,8 @@ public partial interface IExpressionStatementSyntax : IBodyStatementSyntax
     typeof(IInvocationExpressionSyntax),
     typeof(ISelfExpressionSyntax),
     typeof(IMutateExpressionSyntax),
-    typeof(IMoveExpressionSyntax))]
+    typeof(IMoveExpressionSyntax),
+    typeof(IFreezeExpressionSyntax))]
 public partial interface IExpressionSyntax : ISyntax
 {
     Conversion ImplicitConversion { get; }
@@ -526,6 +527,12 @@ public partial interface IMutateExpressionSyntax : IExpressionSyntax
 }
 
 public partial interface IMoveExpressionSyntax : IExpressionSyntax
+{
+    IExpressionSyntax Referent { get; }
+    Promise<BindingSymbol?> ReferencedSymbol { get; }
+}
+
+public partial interface IFreezeExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
     Promise<BindingSymbol?> ReferencedSymbol { get; }

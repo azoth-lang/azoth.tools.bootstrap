@@ -121,4 +121,10 @@ public static class TypeError
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3015, $"Taking the `id` of the type `{type.ToSourceCodeString()}` is not supported, because it is not a reference type.");
     }
+
+    public static Diagnostic CannotFreezeValue(CodeFile file, IFreezeExpressionSyntax expression)
+    {
+        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3009, $"Cannot freeze the value `{file.Code[expression.Referent.Span]}`");
+    }
 }

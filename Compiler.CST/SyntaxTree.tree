@@ -122,3 +122,4 @@ SelfExpression: Expression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfPar
 QualifiedNameExpression: NameExpression = Context:Expression AccessOperator:'AccessOperator' Member:SimpleNameExpression;
 MutateExpression: Expression = Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
 MoveExpression: Expression = Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
+FreezeExpression: Expression = Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';

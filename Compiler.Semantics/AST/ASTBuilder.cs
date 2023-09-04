@@ -246,6 +246,7 @@ internal class ASTBuilder
             IUnsafeExpressionSyntax syn => BuildUnsafeExpression(syn),
             IWhileExpressionSyntax syn => BuildWhileExpression(syn),
             IIdExpressionSyntax syn => BuildIdExpression(syn),
+            IFreezeExpressionSyntax syn => BuildFreezeExpression(syn),
             _ => throw ExhaustiveMatch.Failed(expressionSyntax),
         };
         return BuildImplicitConversion(expression, expressionSyntax);
@@ -557,5 +558,14 @@ internal class ASTBuilder
         var semantics = syn.Semantics.Assigned();
         var referent = BuildExpression(syn.Referent);
         return new IdExpression(syn.Span, type, semantics, referent);
+    }
+
+    private static IFreezeExpression BuildFreezeExpression(IFreezeExpressionSyntax syn)
+    {
+        var type = syn.DataType ?? throw new InvalidOperationException();
+        var semantics = syn.Semantics.Assigned();
+        var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
+        var referent = BuildExpression(syn.Referent);
+        return new FreezeExpression(syn.Span, type, semantics, referencedSymbol, referent);
     }
 }

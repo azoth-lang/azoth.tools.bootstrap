@@ -373,7 +373,7 @@ public class BasicBodyAnalyzer
                     case ISimpleNameExpressionSyntax nameExpression:
                         var symbol = ResolveNameSymbol(nameExpression);
                         // Don't need to alias the symbol in capabilities because it will be moved
-                        DataType type = DataType.Unknown;
+                        DataType type;
                         if (symbol is VariableSymbol variableSymbol)
                         {
                             var symbolType = variableSymbol.DataType;
@@ -411,6 +411,49 @@ public class BasicBodyAnalyzer
                         throw new NotImplementedException("Raise error about `move move` expression");
                     default:
                         throw new NotImplementedException("Tried to move out of expression type that isn't implemented");
+                }
+            case IFreezeExpressionSyntax exp:
+                switch (exp.Referent)
+                {
+                    case ISimpleNameExpressionSyntax nameExpression:
+                        var symbol = ResolveNameSymbol(nameExpression);
+                        // Don't need to alias the symbol in capabilities because it will be moved
+                        DataType type = DataType.Unknown;
+                        if (symbol is VariableSymbol variableSymbol)
+                        {
+                            var symbolType = variableSymbol.DataType;
+                            switch (symbolType)
+                            {
+                                case ReferenceType referenceType:
+                                    if (!sharing.IsIsolated(variableSymbol))
+                                        diagnostics.Add(TypeError.CannotFreezeValue(file, exp));
+
+                                    type = referenceType.To(ReferenceCapability.Constant);
+                                    capabilities.Freeze(variableSymbol);
+                                    break;
+                                case UnknownType:
+                                    type = DataType.Unknown;
+                                    break;
+                                default:
+                                    throw new NotImplementedException("Non-freezable type can't be frozen.");
+                            }
+
+                            exp.ReferencedSymbol.Fulfill(variableSymbol);
+                        }
+                        else
+                            throw new NotImplementedException("Raise error about `freeze` of non-variable");
+
+                        const ExpressionSemantics semantics = ExpressionSemantics.IsolatedReference;
+                        nameExpression.Semantics = semantics;
+                        nameExpression.DataType = type;
+                        exp.Semantics = semantics;
+                        return exp.DataType = type;
+                    case IMutateExpressionSyntax:
+                        throw new NotImplementedException("Raise error about `freeze mut` expression.");
+                    case IMoveExpressionSyntax:
+                        throw new NotImplementedException("Raise error about `freeze move` expression.");
+                    default:
+                        throw new NotImplementedException("Tried to freeze expression type that isn't implemented.");
                 }
             case IMutateExpressionSyntax exp:
                 switch (exp.Referent)

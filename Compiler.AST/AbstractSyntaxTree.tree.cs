@@ -272,6 +272,7 @@ public partial interface IExpressionStatement : IBodyStatement
     typeof(ISelfExpression),
     typeof(IBorrowExpression),
     typeof(IMoveExpression),
+    typeof(IFreezeExpression),
     typeof(IShareExpression),
     typeof(IIdExpression),
     typeof(IRecoverExpression))]
@@ -468,6 +469,12 @@ public partial interface IBorrowExpression : IExpression
 }
 
 public partial interface IMoveExpression : IExpression
+{
+    BindingSymbol ReferencedSymbol { get; }
+    IExpression Referent { get; }
+}
+
+public partial interface IFreezeExpression : IExpression
 {
     BindingSymbol ReferencedSymbol { get; }
     IExpression Referent { get; }

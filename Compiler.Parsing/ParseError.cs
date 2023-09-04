@@ -91,4 +91,10 @@ internal static class ParseError
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2011, "Variable type and capability missing.");
     }
+
+    public static Diagnostic CantFreezeExpression(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2012, "Can't freeze expression. Can only freeze a variable.");
+    }
 }

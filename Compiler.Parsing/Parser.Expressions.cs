@@ -282,7 +282,7 @@ public partial class Parser
             case IIdentifierToken _:
             {
                 var nameSyntax = ParseName();
-                if (!(Tokens.Current is IOpenParenToken))
+                if (Tokens.Current is not IOpenParenToken)
                     return nameSyntax;
                 Tokens.RequiredToken<IOpenParenToken>();
                 var arguments = ParseArguments();
@@ -343,6 +343,17 @@ public partial class Parser
                 if (expression is ISimpleNameExpressionSyntax name)
                     return new MoveExpressionSyntax(span, name);
                 Add(ParseError.CantMoveOutOfExpression(File, span));
+                return expression;
+            }
+            case IFreezeKeywordToken _:
+            {
+                var freeze = Tokens.Required<IFreezeKeywordToken>();
+                // `freeze` is like a unary operator
+                var expression = ParseExpression(OperatorPrecedence.Unary);
+                var span = TextSpan.Covering(freeze, expression.Span);
+                if (expression is ISimpleNameExpressionSyntax name)
+                    return new FreezeExpressionSyntax(span, name);
+                Add(ParseError.CantFreezeExpression(File, span));
                 return expression;
             }
             case IBinaryOperatorToken _:

@@ -77,5 +77,16 @@ public class ReferenceCapabilities
         // Other types don't have capabilities and don't need to be tracked
     }
 
+    public void Freeze(VariableSymbol symbol)
+    {
+        if (symbol.DataType is ReferenceType)
+        {
+            var capability = currentCapabilities[symbol];
+            if (capability != ReferenceCapability.Identity)
+                currentCapabilities[symbol] = ReferenceCapability.Constant;
+        }
+        // Other types don't have capabilities and don't need to be tracked
+    }
+
     public ReferenceCapabilitiesSnapshot Snapshot() => new(currentCapabilities);
 }
