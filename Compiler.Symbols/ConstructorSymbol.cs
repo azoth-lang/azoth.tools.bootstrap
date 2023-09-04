@@ -16,10 +16,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols
             Name? name,
             FixedList<DataType> parameterDataTypes)
             : base(containingSymbol, name, parameterDataTypes,
-                containingSymbol.DeclaresDataType.ToConstructorReturn())
+                containingSymbol.DeclaresDataType.ToDefaultConstructorReturn())
         {
             ContainingSymbol = containingSymbol;
-            ReturnDataType = containingSymbol.DeclaresDataType.ToConstructorReturn();
+            ReturnDataType = containingSymbol.DeclaresDataType.ToDefaultConstructorReturn();
         }
 
         public static ConstructorSymbol CreateDefault(ObjectTypeSymbol containingSymbol)

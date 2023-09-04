@@ -44,10 +44,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
             var symbol = syn.Symbol.Result;
             var nameSpan = syn.NameSpan;
             var defaultConstructorSymbol = syn.DefaultConstructorSymbol;
+            return new ClassDeclaration(syn.File, syn.Span, symbol, nameSpan, defaultConstructorSymbol, BuildMembers);
+
             FixedList<IMemberDeclaration> BuildMembers(IClassDeclaration c)
                 => syn.Members.Select(m => BuildMember(c, m)).ToFixedList();
-
-            return new ClassDeclaration(syn.File, syn.Span, symbol, nameSpan, defaultConstructorSymbol, BuildMembers);
         }
 
         private static IMemberDeclaration BuildMember(

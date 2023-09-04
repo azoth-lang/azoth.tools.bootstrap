@@ -560,7 +560,7 @@ public class BasicBodyAnalyzer
                 // TODO handle null typesymbol
                 var typeSymbol = exp.Type.ReferencedSymbol.Result ?? throw new InvalidOperationException();
                 var classType = (ObjectType)constructingType;
-                ObjectType constructedType;
+                DataType constructedType;
                 var constructorSymbols = symbolTreeBuilder.Children(typeSymbol).OfType<ConstructorSymbol>().ToFixedSet();
                 constructorSymbols = ResolveOverload(constructorSymbols, argumentTypes);
                 switch (constructorSymbols.Count)
@@ -568,7 +568,7 @@ public class BasicBodyAnalyzer
                     case 0:
                         diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
                         exp.ReferencedSymbol.Fulfill(null);
-                        constructedType = classType.ToConstructorReturn();
+                        constructedType = DataType.Unknown;
                         break;
                     case 1:
                         var constructorSymbol = constructorSymbols.Single();
@@ -583,7 +583,7 @@ public class BasicBodyAnalyzer
                     default:
                         diagnostics.Add(NameBindingError.AmbiguousConstructorCall(file, exp.Span));
                         exp.ReferencedSymbol.Fulfill(null);
-                        constructedType = classType.ToConstructorReturn();
+                        constructedType = DataType.Unknown;
                         break;
                 }
 

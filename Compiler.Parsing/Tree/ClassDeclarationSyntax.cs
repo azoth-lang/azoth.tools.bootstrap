@@ -67,7 +67,7 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
 
         var constructedType = Symbol.Result.DeclaresDataType;
         var constructorSymbol = new ConstructorSymbol(Symbol.Result, null, FixedList<DataType>.Empty);
-        var selfParameterSymbol = new SelfParameterSymbol(constructorSymbol, constructedType);
+        var selfParameterSymbol = new SelfParameterSymbol(constructorSymbol, constructedType.ToConstructorSelf());
 
         symbolTree.Add(constructorSymbol);
         symbolTree.Add(selfParameterSymbol);

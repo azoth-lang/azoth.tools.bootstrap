@@ -74,11 +74,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// Make a version of this type for use as the constructor parameter. One issue is
         /// that it should be mutable even if the underlying type is declared immutable.
         /// </summary>
+        /// <remarks>This is always `mut` because the type can be mutated inside the constructor.</remarks>
         public ObjectType ToConstructorSelf()
             // TODO handle the case where the type is not declared mutable but the constructor arg allows mutate
-            => new(ContainingNamespace, Name, DeclaredCapability, ReferenceCapability.Mutable);
+            => To(ReferenceCapability.Mutable);
 
-        public ObjectType ToConstructorReturn() => To(DeclaredCapability);
+        /// <summary>
+        /// Make a version of this type for use as the return type of the default constructor.
+        /// </summary>
+        /// <remarks>This is always `iso` because there are no parameters that could reference the
+        /// new object and even if the declared type is `const` subclasses may not be.</remarks>
+        public ObjectType ToDefaultConstructorReturn() => To(ReferenceCapability.Isolated);
 
         public override string ToSourceCodeString()
         {
