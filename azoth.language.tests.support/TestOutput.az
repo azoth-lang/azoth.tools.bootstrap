@@ -2,7 +2,7 @@ published mut class TestOutput
 {
     published fn write(mut self, value: string)
     {
-       unsafe
+        unsafe
         {
             print_utf8(value.bytes, value.byte_count);
         }
