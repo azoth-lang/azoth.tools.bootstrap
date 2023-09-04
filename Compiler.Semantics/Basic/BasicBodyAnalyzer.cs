@@ -252,9 +252,8 @@ public class BasicBodyAnalyzer
         bool allowImplicitMutateOrMove = false)
     {
         if (expression is null) return;
-        // TODO use allowImplicitMutateOrMove to affect conversions applied etc.
         InferType(expression, sharing, capabilities, implicitRead: !allowImplicitMutateOrMove);
-        var actualType = AddImplicitConversionIfNeeded(expression, expectedType, sharing, capabilities, false);
+        var actualType = AddImplicitConversionIfNeeded(expression, expectedType, sharing, capabilities, allowImplicitMutateOrMove);
         if (!expectedType.IsAssignableFrom(actualType))
             diagnostics.Add(TypeError.CannotConvert(file, expression, actualType, expectedType));
     }
