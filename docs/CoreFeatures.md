@@ -2,7 +2,7 @@
 
 This is a list of core features that need to be implemented or at least accounted for in the design of the compiler.
 
-* Borrow Checking (lifetimes)
+* Reference Capabilities
 * Rebinding of local variables (for `let` and in separate scopes for `var`)
 * Binding mutability checking (i.e. `let` vs `var`)
   * Local variables

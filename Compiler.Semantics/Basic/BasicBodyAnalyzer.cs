@@ -970,12 +970,12 @@ public class BasicBodyAnalyzer
 
     private static void AssignInvocationSemantics(
         IInvocationExpressionSyntax invocationExpression,
-        DataType type)
+        DataType returnType)
     {
-        switch (type.Semantics)
+        switch (returnType.Semantics)
         {
             default:
-                throw ExhaustiveMatch.Failed(type.Semantics);
+                throw ExhaustiveMatch.Failed(returnType.Semantics);
             case TypeSemantics.Void:
                 invocationExpression.Semantics = ExpressionSemantics.Void;
                 break;
@@ -989,7 +989,9 @@ public class BasicBodyAnalyzer
                 invocationExpression.Semantics = ExpressionSemantics.Never;
                 break;
             case TypeSemantics.Reference:
-                var referenceType = (ReferenceType)type;
+                while (returnType is OptionalType optionalType)
+                    returnType = optionalType.Referent;
+                var referenceType = (ReferenceType)returnType;
                 if (referenceType.Capability.CanBeAcquired())
                     invocationExpression.Semantics = ExpressionSemantics.IsolatedReference;
                 else if (referenceType.IsWritableReference)

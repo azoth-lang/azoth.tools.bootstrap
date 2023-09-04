@@ -37,7 +37,7 @@ and borrow checking.
 * [x] Fields - no initializers
 * [x] Constructors
 * [x] Basic Methods - no generics
-* [ ] Optional Types
+* [x] Optional Types
 * [x] Basic Control Flow - `if`, `while`, `loop` `break`, `next`
 * [ ] Conversions and Casts - `as`, `as!`, `as?` (not including unboxing)
 * [ ] Namespaces
