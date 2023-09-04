@@ -97,6 +97,16 @@ public class SharingRelation
         subsetFor[variable] = newSet;
     }
 
+    /// <summary>
+    /// Split out any local variable or `iso` parameter since those references are out of scope.
+    /// </summary>
+    public void SplitForReturn()
+    {
+        foreach (var var in subsetFor.Keys)
+            if (var.IsLocal || var.DataType is ReferenceType { IsIsolatedReference: true })
+                Split(var);
+    }
+
     public bool IsIsolated(SharingVariable variable)
         => subsetFor.TryGetValue(variable, out var set) && set.Count == 1;
 

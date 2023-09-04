@@ -184,13 +184,14 @@ public class BasicBodyAnalyzer
         }
 
         var symbol = new VariableSymbol((InvocableSymbol)containingSymbol, variableDeclaration.Name,
-            variableDeclaration.DeclarationNumber.Result, variableDeclaration.IsMutableBinding, type);
+            variableDeclaration.DeclarationNumber.Result, variableDeclaration.IsMutableBinding, type, false);
         variableDeclaration.Symbol.Fulfill(symbol);
         symbolTreeBuilder.Add(symbol);
         capabilities.Declare(symbol);
         sharing.Declare(symbol);
-        // Union with the initializer result, then split out result for end of statement
+        // Union with the initializer result thereby unioning with any references used in the result
         sharing.Union(symbol, SharingVariable.Result);
+        // Split out result for end of statement
         sharing.Split(SharingVariable.Result);
     }
 
@@ -361,7 +362,7 @@ public class BasicBodyAnalyzer
                 else
                 {
                     diagnostics.Add(TypeError.CannotIdNonReferenceType(file, exp.Span, referentType));
-                    type = referentType;
+                    type = DataType.Unknown;
                 }
                 return exp.DataType = type;
             }
@@ -421,7 +422,6 @@ public class BasicBodyAnalyzer
                                 if (!referenceType.IsWritableReference)
                                 {
                                     diagnostics.Add(TypeError.ExpressionCantBeMutable(file, exp.Referent));
-                                    // TODO give a more specific type?
                                     type = DataType.Unknown;
                                 }
                                 else
@@ -449,7 +449,10 @@ public class BasicBodyAnalyzer
                 {
                     var expectedReturnType = returnType ?? throw new InvalidOperationException("Return statement in field initializer.");
 
-                    CheckType(exp.Value, expectedReturnType, sharing, capabilities, allowImplicitMutateOrMove: true);
+                    InferType(exp.Value, sharing, capabilities, implicitRead: false);
+                    sharing.SplitForReturn();
+                    AddImplicitConversionIfNeeded(exp.Value, expectedReturnType, sharing, capabilities, true);
+                    CheckTypeCompatibility(expectedReturnType, exp.Value);
                 }
                 else if (returnType == DataType.Never)
                     diagnostics.Add(TypeError.CantReturnFromNeverFunction(file, exp.Span));
@@ -611,7 +614,7 @@ public class BasicBodyAnalyzer
                         foreach (var (arg, parameterDataType) in exp.Arguments.Zip(constructorSymbol.ParameterDataTypes))
                         {
                             AddImplicitConversionIfNeeded(arg, parameterDataType, sharing, capabilities, false);
-                            CheckArgumentTypeCompatibility(parameterDataType, arg);
+                            CheckTypeCompatibility(parameterDataType, arg);
                         }
                         constructedType = constructorSymbol.ReturnDataType;
                         break;
@@ -630,7 +633,7 @@ public class BasicBodyAnalyzer
                 var expressionType = CheckForeachInType(declaredType, exp.InExpression, sharing, capabilities);
                 var variableType = declaredType ?? expressionType;
                 var symbol = new VariableSymbol((InvocableSymbol)containingSymbol, exp.VariableName,
-                    exp.DeclarationNumber.Result, exp.IsMutableBinding, variableType);
+                    exp.DeclarationNumber.Result, exp.IsMutableBinding, variableType, false);
                 exp.Symbol.Fulfill(symbol);
                 symbolTreeBuilder.Add(symbol);
 
@@ -868,13 +871,13 @@ public class BasicBodyAnalyzer
                 //InsertImplicitActionIfNeeded(context, selfParamType, allowImplicitMutateAndMove: true);
 
                 AddImplicitConversionIfNeeded(context, selfParamType, sharing, capabilities, true);
-                CheckArgumentTypeCompatibility(selfParamType, context);
+                CheckTypeCompatibility(selfParamType, context);
 
                 foreach (var (arg, type) in invocation.Arguments
                                                       .Zip(methodSymbol.ParameterDataTypes))
                 {
                     AddImplicitConversionIfNeeded(arg, type, sharing, capabilities, false);
-                    CheckArgumentTypeCompatibility(type, arg);
+                    CheckTypeCompatibility(type, arg);
                 }
 
                 invocation.DataType = methodSymbol.ReturnDataType;
@@ -939,7 +942,7 @@ public class BasicBodyAnalyzer
                 foreach (var (arg, parameterDataType) in invocation.Arguments.Zip(functionSymbol.ParameterDataTypes))
                 {
                     AddImplicitConversionIfNeeded(arg, parameterDataType, sharing, capabilities, false);
-                    CheckArgumentTypeCompatibility(parameterDataType, arg);
+                    CheckTypeCompatibility(parameterDataType, arg);
                 }
 
                 invocation.DataType = functionSymbol.ReturnDataType;
@@ -1118,7 +1121,7 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private void CheckArgumentTypeCompatibility(DataType type, IExpressionSyntax arg)
+    private void CheckTypeCompatibility(DataType type, IExpressionSyntax arg)
     {
         var fromType = arg.ConvertedDataType.Assigned();
         if (!type.IsAssignableFrom(fromType))

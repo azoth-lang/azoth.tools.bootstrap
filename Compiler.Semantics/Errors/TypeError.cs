@@ -40,44 +40,44 @@ public static class TypeError
         UnaryOperator @operator,
         DataType operandType)
     {
-        return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3002,
-            $"Operator `{@operator}` cannot be applied to operand of type `{operandType}`.");
+        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3002, $"Operator `{@operator}` cannot be applied to operand of type `{operandType}`.");
     }
 
     public static Diagnostic MustBeATypeExpression(CodeFile file, TextSpan span)
     {
-        return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3003, "Expression must be of type `type` (i.e. it must evaluate to a type)");
     }
 
     public static Diagnostic NameRefersToFunctionNotType(CodeFile file, TextSpan span, string name)
     {
-        return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3004,
-            $"The name `{name}` refers to a function not a type.");
+        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3004, $"The name `{name}` refers to a function not a type.");
     }
 
     public static Diagnostic MustBeABoolExpression(CodeFile file, TextSpan span)
     {
-        return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3005,
-            "Expression must be of type `bool`");
+        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3005, "Expression must be of type `bool`");
     }
 
     public static Diagnostic CircularDefinition(CodeFile file, TextSpan span, IClassDeclarationSyntax @class)
     {
-        return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3006,
-            $"Declaration of type `{@class.ContainingNamespaceName}.{@class.Name}` is part of a circular definition");
+        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3006, $"Declaration of type `{@class.ContainingNamespaceName}.{@class.Name}` is part of a circular definition");
     }
 
     public static Diagnostic CannotConvert(CodeFile file, ISyntax expression, DataType ofType, DataType toType)
     {
-        return new Diagnostic(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3007,
-            $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToSourceCodeString()}` to type `{toType.ToSourceCodeString()}`");
+        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3007, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToSourceCodeString()}` to type `{toType.ToSourceCodeString()}`");
     }
 
     public static Diagnostic MustBeInvocable(CodeFile file, IExpressionSyntax expression)
     {
-        return new Diagnostic(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3008,
-            $"Expression must be of callable type to be invoked `{file.Code[expression.Span]}`");
+        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3008, $"Expression must be of callable type to be invoked `{file.Code[expression.Span]}`");
     }
 
     public static Diagnostic CannotMoveValue(CodeFile file, IMoveExpressionSyntax expression)
@@ -88,32 +88,32 @@ public static class TypeError
 
     public static Diagnostic TypeDeclaredImmutable(CodeFile file, IExpressionSyntax expression)
     {
-        return new Diagnostic(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3010,
-            $"Type can't be made mutable because it was declared immutable `{file.Code[expression.Span]}`");
+        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3010, $"Type can't be made mutable because it was declared immutable `{file.Code[expression.Span]}`");
     }
 
     public static Diagnostic ExpressionCantBeMutable(CodeFile file, IExpressionSyntax expression)
     {
-        return new Diagnostic(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3011,
-            $"Expression can't be made mutable `{file.Code[expression.Span]}`");
+        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3011, $"Expression can't be made mutable `{file.Code[expression.Span]}`");
     }
 
     public static Diagnostic ReturnExpressionMustHaveValue(CodeFile file, in TextSpan span, DataType returnType)
     {
-        return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3012,
-            $"The return expression must return a value of type `{returnType}`");
+        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3012, $"The return expression must return a value of type `{returnType}`");
     }
 
     public static Diagnostic CantReturnFromNeverFunction(CodeFile file, in TextSpan span)
     {
-        return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3013,
-            $"Functions that never return can't contain return statements");
+        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3013, "Functions that never return can't contain return statements");
     }
 
     public static Diagnostic CannotAssignFieldOfReadOnly(CodeFile file, in TextSpan span, ReferenceType referenceType)
     {
-        return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3014,
-            $"Cannot assign into a field through a read only reference of type `{referenceType.ToSourceCodeString()}`");
+        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3014, $"Cannot assign into a field through a read only reference of type `{referenceType.ToSourceCodeString()}`");
     }
 
     public static Diagnostic CannotIdNonReferenceType(CodeFile file, in TextSpan span, DataType type)

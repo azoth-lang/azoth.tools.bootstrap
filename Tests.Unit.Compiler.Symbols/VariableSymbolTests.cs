@@ -10,13 +10,14 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Symbols
         {
             var func = Func();
             var dataType = DataType();
-            var symbol = Variable("foo", func, 42, true, dataType);
+            var symbol = Variable("foo", func, 42, true, dataType, true);
 
             Assert.Equal(func, symbol.ContainingSymbol);
             Assert.Equal(Name("foo"), symbol.Name);
             Assert.Equal(42, symbol.DeclarationNumber);
             Assert.True(symbol.IsMutableBinding);
             Assert.Equal(dataType, symbol.DataType);
+            Assert.True(symbol.IsParameter);
         }
 
         [Fact]

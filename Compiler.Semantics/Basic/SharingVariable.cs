@@ -1,5 +1,6 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 
@@ -17,6 +18,9 @@ public readonly struct SharingVariable : IEquatable<SharingVariable>
     {
         this.symbol = symbol;
     }
+
+    public bool IsLocal => symbol is VariableSymbol { IsLocal: true };
+    public DataType? DataType => symbol?.DataType;
 
     public override int GetHashCode()
         => HashCode.Combine(symbol);

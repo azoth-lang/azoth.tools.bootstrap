@@ -125,14 +125,16 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit
             InvocableSymbol? containing = null,
             int? declaration = null,
             bool? mut = null,
-            DataType? type = null)
+            DataType? type = null,
+            bool? isParameter = null)
         {
             return new VariableSymbol(
                 containing ?? Func(),
                 Name(name) ?? DefaultName("variable"),
                 declaration ?? ++unique,
                 mut ?? true,
-                type ?? DataType());
+                type ?? DataType(),
+                isParameter ?? false);
         }
 
         protected static VariableSymbol Variable(
@@ -141,14 +143,16 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit
             InvocableSymbol? containing = null,
             int? declaration = null,
             bool? mut = null,
-            DataType? type = null)
+            DataType? type = null,
+            bool? isParameter = null)
         {
             return new VariableSymbol(
                 containing ?? mother.ContainingSymbol,
                 Name(name) ?? mother.Name,
                 declaration ?? mother.DeclarationNumber,
                 mut ?? mother.IsMutableBinding,
-                type ?? mother.DataType);
+                type ?? mother.DataType,
+                isParameter ?? mother.IsParameter);
         }
 
         protected SelfParameterSymbol SelfParam(

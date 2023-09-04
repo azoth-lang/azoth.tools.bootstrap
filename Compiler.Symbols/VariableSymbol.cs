@@ -11,17 +11,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols
     {
         public new InvocableSymbol ContainingSymbol { get; }
         public int? DeclarationNumber { get; }
+        public bool IsParameter { get; }
+        public bool IsLocal => !IsParameter;
 
         public VariableSymbol(
             InvocableSymbol containingSymbol,
             Name name,
             int? declarationNumber,
             bool isMutableBinding,
-            DataType dataType)
+            DataType dataType,
+            bool isParameter)
             : base(containingSymbol, name, isMutableBinding, dataType)
         {
             ContainingSymbol = containingSymbol;
             DeclarationNumber = declarationNumber;
+            IsParameter = isParameter;
         }
 
         public override bool Equals(Symbol? other)

@@ -226,7 +226,7 @@ public class EntitySymbolBuilder
                 case INamedParameterSyntax namedParam:
                 {
                     var symbol = new VariableSymbol(containingSymbol, namedParam.Name,
-                        namedParam.DeclarationNumber.Result, namedParam.IsMutableBinding, type);
+                        namedParam.DeclarationNumber.Result, namedParam.IsMutableBinding, type, true);
                     namedParam.Symbol.Fulfill(symbol);
                     symbolTree.Add(symbol);
                 }

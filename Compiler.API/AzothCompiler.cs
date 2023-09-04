@@ -32,9 +32,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.API
             Name name,
             IEnumerable<ICodeFileSource> files,
             FixedDictionary<Name, Task<Package>> referenceTasks)
-        {
-            return CompilePackageAsync(name, files, referenceTasks, TaskScheduler.Default);
-        }
+            => CompilePackageAsync(name, files, referenceTasks, TaskScheduler.Default);
 
         public async Task<Package> CompilePackageAsync(
             Name name,
@@ -89,9 +87,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.API
             string name,
             IEnumerable<ICodeFileSource> fileSources,
             FixedDictionary<Name, Package> references)
-        {
-            return CompilePackage(name, fileSources.Select(s => s.Load()), references);
-        }
+            => CompilePackage(name, fileSources.Select(s => s.Load()), references);
 
         public Package CompilePackage(
             string name,
