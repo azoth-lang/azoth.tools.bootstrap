@@ -830,26 +830,14 @@ public class BasicBodyAnalyzer
         switch (invocation.Expression)
         {
             case IQualifiedNameExpressionSyntax exp:
+                var contextType = InferType(exp.Context, sharing, capabilities, implicitRead: false);
                 var name = exp.Member.Name!;
-                var contextName = MethodContextAsName(exp.Context);
-                if (contextName != null)
-                {
-                    var contextSymbols = invocation.ContainingLexicalScope.Lookup(contextName.Segments[0])
-                                                   .Select(p => p.Result);
-                    foreach (var namePart in contextName.Segments.Skip(1))
-                        contextSymbols =
-                            contextSymbols.SelectMany(c => symbolTrees.Children(c).Where(s => s.Name == namePart));
-
-                    functionSymbols = contextSymbols.SelectMany(c =>
-                        symbolTrees.Children(c).OfType<FunctionSymbol>()
-                                   .Where(s => s.Name == name)).ToFixedSet();
-                }
-                // TODO it isn't always safe to assume that just because we didn't find any functions this is a method
-                if (!functionSymbols.Any())
-                {
-                    // TODO handle mutable self inference
-                    InferType(exp.Context, sharing, capabilities, implicitRead: false);
+                if (contextType is not VoidType)
                     return InferMethodInvocationType(invocation, exp.Context, name, argumentTypes, sharing, capabilities);
+                if (exp.Context is INameExpressionSyntax { ReferencedSymbol.Result: Symbol contextSymbol })
+                {
+                    functionSymbols = symbolTrees.Children(contextSymbol).OfType<FunctionSymbol>()
+                                                     .Where(s => s.Name == name).ToFixedSet();
                 }
                 break;
             case ISimpleNameExpressionSyntax exp:
@@ -991,7 +979,7 @@ public class BasicBodyAnalyzer
         invocation.Expression.Semantics = ExpressionSemantics.Void;
 
         // Apply the referenced symbol to the underlying name
-        if (invocation.Expression is ISimpleNameExpressionSyntax nameExpression)
+        if (invocation.Expression is INameExpressionSyntax nameExpression)
             nameExpression.ReferencedSymbol.Fulfill(invocation.ReferencedSymbol.Result);
 
         return invocation.ConvertedDataType.Assigned();
