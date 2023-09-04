@@ -370,7 +370,7 @@ public class BasicBodyAnalyzer
             case IMoveExpressionSyntax exp:
                 switch (exp.Referent)
                 {
-                    case INameExpressionSyntax nameExpression:
+                    case ISimpleNameExpressionSyntax nameExpression:
                         var symbol = ResolveNameSymbol(nameExpression);
                         // Don't need to alias the symbol in capabilities because it will be moved
                         DataType type = DataType.Unknown;
@@ -415,7 +415,7 @@ public class BasicBodyAnalyzer
             case IMutateExpressionSyntax exp:
                 switch (exp.Referent)
                 {
-                    case INameExpressionSyntax nameExpression:
+                    case ISimpleNameExpressionSyntax nameExpression:
                     {
                         var symbol = ResolveNameSymbol(nameExpression);
                         DataType type = DataType.Unknown;
@@ -547,7 +547,7 @@ public class BasicBodyAnalyzer
 
                 return binaryOperatorExpression.ConvertedDataType.Assigned();
             }
-            case INameExpressionSyntax exp:
+            case ISimpleNameExpressionSyntax exp:
             {
                 var symbol = ResolveNameSymbol(exp);
                 DataType type;
@@ -804,7 +804,7 @@ public class BasicBodyAnalyzer
                 var semantics = member.Semantics ??= ExpressionSemantics.CreateReference;
                 exp.Semantics = semantics;
                 return exp.DataType = type;
-            case INameExpressionSyntax exp:
+            case ISimpleNameExpressionSyntax exp:
                 exp.Semantics = ExpressionSemantics.CreateReference;
                 var symbol = ResolveNameSymbol(exp);
                 if (symbol is VariableSymbol variableSymbol)
@@ -852,7 +852,7 @@ public class BasicBodyAnalyzer
                     return InferMethodInvocationType(invocation, exp.Context, name, argumentTypes, sharing, capabilities);
                 }
                 break;
-            case INameExpressionSyntax exp:
+            case ISimpleNameExpressionSyntax exp:
                 functionSymbols = exp.LookupInContainingScope()
                                     .Select(p => p.As<FunctionSymbol>())
                                     .WhereNotNull()
@@ -945,7 +945,7 @@ public class BasicBodyAnalyzer
         {
             IQualifiedNameExpressionSyntax memberAccess
                 => MethodContextAsName(memberAccess.Context)?.Qualify(memberAccess.Member.Name!),
-            INameExpressionSyntax nameExpression => nameExpression.Name!,
+            ISimpleNameExpressionSyntax nameExpression => nameExpression.Name!,
             _ => null
         };
     }
@@ -991,7 +991,7 @@ public class BasicBodyAnalyzer
         invocation.Expression.Semantics = ExpressionSemantics.Void;
 
         // Apply the referenced symbol to the underlying name
-        if (invocation.Expression is INameExpressionSyntax nameExpression)
+        if (invocation.Expression is ISimpleNameExpressionSyntax nameExpression)
             nameExpression.ReferencedSymbol.Fulfill(invocation.ReferencedSymbol.Result);
 
         return invocation.ConvertedDataType.Assigned();
@@ -1056,7 +1056,7 @@ public class BasicBodyAnalyzer
         }
     }
 
-    public Symbol? ResolveNameSymbol(INameExpressionSyntax nameExpression)
+    public Symbol? ResolveNameSymbol(ISimpleNameExpressionSyntax nameExpression)
     {
         if (nameExpression.Name is null)
         {
@@ -1181,7 +1181,7 @@ public class BasicBodyAnalyzer
     }
 
     private FieldSymbol? ResolvedReferencedSymbol(
-        INameExpressionSyntax exp,
+        ISimpleNameExpressionSyntax exp,
         FixedList<FieldSymbol> matchingSymbols)
     {
         switch (matchingSymbols.Count)

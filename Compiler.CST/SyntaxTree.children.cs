@@ -182,7 +182,7 @@ public static class ISyntaxExtensions
                 foreach (var child in n.Arguments)
                     yield return child;
                 yield break;
-            case INameExpressionSyntax n:
+            case ISimpleNameExpressionSyntax n:
                 yield break;
             case ISelfExpressionSyntax n:
                 yield break;

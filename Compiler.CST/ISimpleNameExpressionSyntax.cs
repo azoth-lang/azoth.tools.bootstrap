@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 /// <summary>
 /// An expression that is a single unqualified name
 /// </summary>
-public partial interface INameExpressionSyntax
+public partial interface ISimpleNameExpressionSyntax
 {
     IEnumerable<IPromise<Symbol>> LookupInContainingScope();
 }

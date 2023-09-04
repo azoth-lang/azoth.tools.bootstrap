@@ -340,7 +340,7 @@ public partial class Parser
                 // `move` is like a unary operator
                 var expression = ParseExpression(OperatorPrecedence.Unary);
                 var span = TextSpan.Covering(move, expression.Span);
-                if (expression is INameExpressionSyntax name)
+                if (expression is ISimpleNameExpressionSyntax name)
                     return new MoveExpressionSyntax(span, name);
                 Add(ParseError.CantMoveOutOfExpression(File, span));
                 return expression;
@@ -375,10 +375,10 @@ public partial class Parser
         return new SelfExpressionSyntax(selfKeyword, false);
     }
 
-    private INameExpressionSyntax ParseMissingIdentifier()
+    private ISimpleNameExpressionSyntax ParseMissingIdentifier()
     {
         var identifierSpan = Tokens.Expect<IIdentifierToken>();
-        return new NameExpressionSyntax(identifierSpan, null);
+        return new SimpleNameExpressionSyntax(identifierSpan, null);
     }
 
     private IUnsafeExpressionSyntax ParseUnsafeExpression()

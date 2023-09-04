@@ -236,7 +236,7 @@ internal class ASTBuilder
             IStringLiteralExpressionSyntax syn => BuildStringLiteralExpression(syn),
             ILoopExpressionSyntax syn => BuildLoopExpression(syn),
             IMoveExpressionSyntax syn => BuildMoveExpression(syn),
-            INameExpressionSyntax syn => BuildNameExpression(syn),
+            ISimpleNameExpressionSyntax syn => BuildNameExpression(syn),
             INewObjectExpressionSyntax syn => BuildNewObjectExpression(syn),
             IInvocationExpressionSyntax syn => BuildInvocationExpression(syn),
             INextExpressionSyntax syn => BuildNextExpression(syn),
@@ -286,7 +286,7 @@ internal class ASTBuilder
         return expression switch
         {
             IQualifiedNameExpressionSyntax syn => BuildFieldAccessExpression(syn),
-            INameExpressionSyntax syn => BuildNameExpression(syn),
+            ISimpleNameExpressionSyntax syn => BuildNameExpression(syn),
             _ => throw ExhaustiveMatch.Failed(expression),
         };
     }
@@ -483,7 +483,7 @@ internal class ASTBuilder
         return new MoveExpression(syn.Span, type, semantics, referencedSymbol, referent);
     }
 
-    private static INameExpression BuildNameExpression(INameExpressionSyntax syn)
+    private static INameExpression BuildNameExpression(ISimpleNameExpressionSyntax syn)
     {
         var type = syn.DataType ?? throw new InvalidOperationException();
         var semantics = syn.Semantics.Assigned();

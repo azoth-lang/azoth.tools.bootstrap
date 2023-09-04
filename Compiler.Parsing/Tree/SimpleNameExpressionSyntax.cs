@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 /// <summary>
 /// A name of a variable or namespace
 /// </summary>
-internal class NameExpressionSyntax : ExpressionSyntax, INameExpressionSyntax
+internal class SimpleNameExpressionSyntax : ExpressionSyntax, ISimpleNameExpressionSyntax
 {
     private LexicalScope? containingLexicalScope;
     public LexicalScope ContainingLexicalScope
@@ -36,7 +36,7 @@ internal class NameExpressionSyntax : ExpressionSyntax, INameExpressionSyntax
     public Name? Name { get; }
     public Promise<Symbol?> ReferencedSymbol { get; } = new Promise<Symbol?>();
 
-    public NameExpressionSyntax(TextSpan span, Name? name)
+    public SimpleNameExpressionSyntax(TextSpan span, Name? name)
         : base(span)
     {
         Name = name;

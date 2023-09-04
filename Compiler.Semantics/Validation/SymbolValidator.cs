@@ -52,7 +52,7 @@ public class SymbolValidator : SyntaxWalker
             case IDeclarationSyntax syn:
                 CheckSymbol(syn, syn.Symbol);
                 break;
-            case INameExpressionSyntax syn:
+            case ISimpleNameExpressionSyntax syn:
                 CheckReferencedSymbol(syn, syn.ReferencedSymbol);
                 break;
             case ISelfExpressionSyntax syn:

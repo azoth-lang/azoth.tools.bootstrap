@@ -16,7 +16,7 @@ internal class MoveExpressionSyntax : ExpressionSyntax, IMoveExpressionSyntax
     public Promise<BindingSymbol?> ReferencedSymbol { [DebuggerStepThrough] get; }
         = new Promise<BindingSymbol?>();
 
-    public MoveExpressionSyntax(TextSpan span, INameExpressionSyntax referent)
+    public MoveExpressionSyntax(TextSpan span, ISimpleNameExpressionSyntax referent)
         : base(span) // TODO this could be a move or acquire?
     {
         Referent = referent;

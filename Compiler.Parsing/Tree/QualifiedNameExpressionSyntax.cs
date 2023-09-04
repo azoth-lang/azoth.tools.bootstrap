@@ -12,14 +12,14 @@ internal class QualifiedNameExpressionSyntax : ExpressionSyntax, IQualifiedNameE
 {
     public IExpressionSyntax Context { [DebuggerStepThrough] get; }
     public AccessOperator AccessOperator { [DebuggerStepThrough] get; }
-    public INameExpressionSyntax Member { [DebuggerStepThrough] get; }
+    public ISimpleNameExpressionSyntax Member { [DebuggerStepThrough] get; }
     public IPromise<Symbol?> ReferencedSymbol => Member.ReferencedSymbol;
 
     public QualifiedNameExpressionSyntax(
         TextSpan span,
         IExpressionSyntax context,
         AccessOperator accessOperator,
-        INameExpressionSyntax member)
+        ISimpleNameExpressionSyntax member)
         : base(span)
     {
         Context = context;
