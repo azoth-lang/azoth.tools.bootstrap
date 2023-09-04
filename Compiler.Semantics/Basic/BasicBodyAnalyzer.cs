@@ -1064,17 +1064,16 @@ public class BasicBodyAnalyzer
                                     .WhereNotNull()
                                     .ToFixedList();
         var symbolCount = variableSymbols.Count;
-        Symbol symbol;
+        Symbol? symbol = null;
         if (symbolCount == 1)
-        {
             symbol = variableSymbols.Single().Result;
-        }
-        else
+        else if (symbolCount == 0)
         {
             // If no local variables, look for other symbols
             var symbols = nameExpression.LookupInContainingScope().ToFixedList();
             symbolCount = symbols.Count;
-            symbol = symbols.Single().Result;
+            if (symbolCount == 1)
+                symbol = symbols.Single().Result;
         }
 
         switch (symbolCount)
@@ -1084,10 +1083,8 @@ public class BasicBodyAnalyzer
                 nameExpression.ReferencedSymbol.Fulfill(null);
                 return null;
             case 1:
-            {
-                nameExpression.ReferencedSymbol.Fulfill(symbol);
-                return symbol;
-            }
+                nameExpression.ReferencedSymbol.Fulfill(symbol!);
+                return symbol!;
             default:
                 diagnostics.Add(NameBindingError.AmbiguousName(file, nameExpression.Span));
                 nameExpression.ReferencedSymbol.Fulfill(null);
