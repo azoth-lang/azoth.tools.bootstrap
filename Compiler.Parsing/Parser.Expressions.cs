@@ -152,7 +152,17 @@ public partial class Parser
                         continue;
                     }
                     break;
+                case ISemicolonToken _:
+                case ICloseBraceToken _:
+                    // These terminating tokens should be safe to return the atom even if it is a missing identifier
+                    return expression;
                 default:
+                    if (expression is ISimpleNameExpressionSyntax { Name: null })
+                    {
+                        // Weren't able to parse an atom nor find an operator. There is a risk of
+                        // not making progress. Mark the next token as unexpected.
+                        Tokens.UnexpectedToken();
+                    }
                     return expression;
             }
 
