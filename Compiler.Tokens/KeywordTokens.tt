@@ -70,6 +70,7 @@
         //"Implicit",
         //"Explicit",
         "Move",
+        "Freeze",
         "Copy",
         //"Match",
         "Loop",
@@ -97,43 +98,42 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
+
+public static partial class TokenTypes
 {
-    public static partial class TokenTypes
+    private static readonly IReadOnlyList<Type> Keyword = new List<Type>()
     {
-        private static readonly IReadOnlyList<Type> Keyword = new List<Type>()
-        {
 <# foreach(var keyword in keywords) {#>
-            typeof(<#=keyword#>KeywordToken),
+        typeof(<#=keyword#>KeywordToken),
 <#}#>
-        }.AsReadOnly();
-    }
+    }.AsReadOnly();
+}
 
-    public static partial class TokenFactory
-    {
+public static partial class TokenFactory
+{
 <# foreach(var keyword in keywords) {#>
-        public static I<#=keyword#>KeywordToken <#=keyword#>Keyword(TextSpan span)
-        {
-            return new <#=keyword#>KeywordToken(span);
-        }
-<#}#>
-    }
-
-    [Closed(
-<# for (int i = 0; i < keywords.Count; i++) {#>
-        typeof(I<#=keywords[i]#>KeywordToken)<# if(i == keywords.Count-1) {#>)]<#} else {#>,<#}#>
-
-<#}#>    public partial interface IKeywordToken : IToken { }
-
-<# foreach(var keyword in keywords) {#>
-
-    public partial interface I<#=keyword#>KeywordToken : IKeywordToken { }
-    internal partial class <#=keyword#>KeywordToken : Token, I<#=keyword#>KeywordToken
+    public static I<#=keyword#>KeywordToken <#=keyword#>Keyword(TextSpan span)
     {
-        public <#=keyword#>KeywordToken(TextSpan span)
-            : base(span)
-        {
-        }
+        return new <#=keyword#>KeywordToken(span);
     }
 <#}#>
 }
+
+[Closed(
+<# for (int i = 0; i < keywords.Count; i++) {#>
+    typeof(I<#=keywords[i]#>KeywordToken)<# if(i == keywords.Count-1) {#>)]<#} else {#>,<#}#>
+
+<#}#>public partial interface IKeywordToken : IToken { }
+
+<# foreach(var keyword in keywords) {#>
+
+public partial interface I<#=keyword#>KeywordToken : IKeywordToken { }
+internal partial class <#=keyword#>KeywordToken : Token, I<#=keyword#>KeywordToken
+{
+    public <#=keyword#>KeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+<#}#>

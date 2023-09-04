@@ -40,6 +40,7 @@ public static partial class TokenTypes
         typeof(MutableKeywordToken),
         typeof(NoneKeywordToken),
         typeof(MoveKeywordToken),
+        typeof(FreezeKeywordToken),
         typeof(CopyKeywordToken),
         typeof(LoopKeywordToken),
         typeof(WhileKeywordToken),
@@ -181,6 +182,10 @@ public static partial class TokenFactory
     {
         return new MoveKeywordToken(span);
     }
+    public static IFreezeKeywordToken FreezeKeyword(TextSpan span)
+    {
+        return new FreezeKeywordToken(span);
+    }
     public static ICopyKeywordToken CopyKeyword(TextSpan span)
     {
         return new CopyKeywordToken(span);
@@ -263,6 +268,7 @@ public static partial class TokenFactory
     typeof(IMutableKeywordToken),
     typeof(INoneKeywordToken),
     typeof(IMoveKeywordToken),
+    typeof(IFreezeKeywordToken),
     typeof(ICopyKeywordToken),
     typeof(ILoopKeywordToken),
     typeof(IWhileKeywordToken),
@@ -552,6 +558,15 @@ public partial interface IMoveKeywordToken : IKeywordToken { }
 internal partial class MoveKeywordToken : Token, IMoveKeywordToken
 {
     public MoveKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IFreezeKeywordToken : IKeywordToken { }
+internal partial class FreezeKeywordToken : Token, IFreezeKeywordToken
+{
+    public FreezeKeywordToken(TextSpan span)
         : base(span)
     {
     }
