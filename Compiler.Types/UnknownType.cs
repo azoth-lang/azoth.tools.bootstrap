@@ -24,24 +24,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public override TypeSemantics Semantics => TypeSemantics.Never;
 
         public override string ToSourceCodeString()
-        {
-            throw new InvalidOperationException("Unknown type has no source code representation");
-        }
+            => throw new InvalidOperationException("Unknown type has no source code representation");
 
-        public override string ToILString()
-        {
-            return "⧼unknown⧽";
-        }
+        public override string ToILString() => "⧼unknown⧽";
 
         public override bool Equals(DataType? other)
-        {
             // The unknown type is a singleton, so reference equality suffices
-            return ReferenceEquals(this, other);
-        }
+            => ReferenceEquals(this, other);
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(typeof(UnknownType));
-        }
+        public override int GetHashCode() => HashCode.Combine(typeof(UnknownType));
     }
 }

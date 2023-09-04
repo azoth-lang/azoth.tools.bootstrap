@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
@@ -9,11 +10,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 /// </summary>
 public class SharingRelationSnapshot
 {
-    private readonly FixedDictionary<SharingVariable, FixedSet<SharingVariable>> sets;
+    private readonly FixedSet<FixedSet<SharingVariable>> sets;
 
-    internal SharingRelationSnapshot(IDictionary<SharingVariable, ISet<SharingVariable>> sets)
+    internal SharingRelationSnapshot(ISet<ISet<SharingVariable>> sets)
     {
-        this.sets = sets.ToFixedDictionary(pair => pair.Key, pair => pair.Value.ToFixedSet());
+        this.sets = new(sets.Select(s => s.ToFixedSet()));
     }
 
     public SharingRelation MutableCopy() => new(sets);

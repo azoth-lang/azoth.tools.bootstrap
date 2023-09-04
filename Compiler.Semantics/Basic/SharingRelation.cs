@@ -13,17 +13,31 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 /// </summary>
 public class SharingRelation
 {
-    private readonly Dictionary<SharingVariable, ISet<SharingVariable>> sets;
+    /// <summary>
+    /// All the distinct subsets of variables
+    /// </summary>
+    private readonly HashSet<ISet<SharingVariable>> sets;
+    /// <summary>
+    /// This is a lookup of what set each variable is contained in.
+    /// </summary>
+    private readonly Dictionary<SharingVariable, ISet<SharingVariable>> subsetFor;
 
     public SharingRelation()
     {
+        sets = new();
         // Construct a single element set for the result so that it exists when unioning
-        sets = new() { { SharingVariable.Result, new HashSet<SharingVariable>() { SharingVariable.Result } } };
+        var set = new HashSet<SharingVariable> { SharingVariable.Result };
+        sets.Add(set);
+        subsetFor = new() { { SharingVariable.Result, set } };
     }
 
-    internal SharingRelation(IReadOnlyDictionary<SharingVariable, FixedSet<SharingVariable>> sets)
+    internal SharingRelation(IEnumerable<FixedSet<SharingVariable>> sets)
     {
-        this.sets = sets.ToDictionary(pair => pair.Key, pair => (ISet<SharingVariable>)pair.Value.ToHashSet());
+        this.sets = new(sets.Select(s => s.ToHashSet()));
+        subsetFor = new();
+        foreach (var set in this.sets)
+            foreach (var variable in set)
+                subsetFor.Add(variable, set);
     }
 
     /// <summary>
@@ -38,20 +52,25 @@ public class SharingRelation
         // No need to track `const` and `id`, they never participate in sharing
         if (capability != ReferenceCapability.Constant
             && capability != ReferenceCapability.Identity)
-            sets.Add(symbol, new HashSet<SharingVariable>() { symbol });
+        {
+            var set = new HashSet<SharingVariable> { symbol };
+            sets.Add(set);
+            subsetFor.Add(symbol, set);
+        }
     }
 
     public void Union(SharingVariable var1, SharingVariable var2)
     {
-        if (!sets.TryGetValue(var1, out var set1)
-            || !sets.TryGetValue(var2, out var set2)
+        if (!subsetFor.TryGetValue(var1, out var set1)
+            || !subsetFor.TryGetValue(var2, out var set2)
             || set1 == set2)
             return;
 
         var (smallerSet, largerSet) = set1.Count <= set2.Count ? (set1, set2) : (set2, set1);
         largerSet.UnionWith(smallerSet);
+        sets.Remove(smallerSet);
         foreach (var symbol in smallerSet)
-            sets[symbol] = largerSet;
+            subsetFor[symbol] = largerSet;
 
         // To avoid bugs, clear out the smaller set that shouldn't be used anymore
         smallerSet.Clear();
@@ -62,16 +81,21 @@ public class SharingRelation
     /// </summary>
     public void Split(SharingVariable variable)
     {
-        if (!sets.TryGetValue(variable, out var set)
+        if (!subsetFor.TryGetValue(variable, out var set)
             || set.Count == 1)
             return;
 
         set.Remove(variable);
-        sets[variable] = new HashSet<SharingVariable> { variable };
+        var newSet = new HashSet<SharingVariable> { variable };
+        sets.Add(newSet);
+        subsetFor[variable] = newSet;
     }
 
     public bool IsIsolated(SharingVariable variable)
-        => sets.TryGetValue(variable, out var set) && set.Count == 1;
+        => subsetFor.TryGetValue(variable, out var set) && set.Count == 1;
 
     public SharingRelationSnapshot Snapshot() => new(sets);
+
+    public override string ToString()
+        => string.Join(", ", sets.Select(s => $"{{{string.Join(", ", s.Distinct())}}}"));
 }

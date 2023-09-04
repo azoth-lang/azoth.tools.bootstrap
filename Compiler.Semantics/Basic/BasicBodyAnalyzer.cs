@@ -144,6 +144,8 @@ public class BasicBodyAnalyzer
                 break;
             case IExpressionStatementSyntax expressionStatement:
                 InferType(expressionStatement.Expression, sharing, capabilities);
+                // At the end of the statement, any result reference is discarded
+                sharing.Split(SharingVariable.Result);
                 break;
             case IResultStatementSyntax resultStatement:
                 // TODO how does the type of this expression get applied to the containing block?
@@ -322,7 +324,7 @@ public class BasicBodyAnalyzer
             {
                 // Try to recover const
                 if (!to.DeclaredTypesEquals(from) // Underlying types must match
-                    || !sharing.IsIsolated(SharingVariable.Result))  // Expression must be isolated
+                    || !sharing.IsIsolated(SharingVariable.Result))
                     return null;
 
                 return new RecoverConst(priorConversion);
@@ -332,7 +334,7 @@ public class BasicBodyAnalyzer
             {
                 // Try to recover isolation
                 if (!to.DeclaredTypesEquals(from) // Underlying types must match
-                    || !sharing.IsIsolated(SharingVariable.Result)) // Expression must be isolated
+                    || !sharing.IsIsolated(SharingVariable.Result))
                     return null;
 
                 return new RecoverIsolation(priorConversion);

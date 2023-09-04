@@ -34,4 +34,6 @@ public readonly struct SharingVariable : IEquatable<SharingVariable>
 
     public static implicit operator SharingVariable(BindingSymbol symbol)
         => new(symbol);
+
+    public override string ToString() => symbol?.ToString() ?? "⧼result⧽";
 }

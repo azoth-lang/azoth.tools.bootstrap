@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Framework
     public class FixedDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
         where TKey : notnull
     {
-        public static readonly FixedDictionary<TKey, TValue> Empty = new FixedDictionary<TKey, TValue>(new Dictionary<TKey, TValue>());
+        public static readonly FixedDictionary<TKey, TValue> Empty = new(new Dictionary<TKey, TValue>());
 
         private readonly IReadOnlyDictionary<TKey, TValue> items;
 
@@ -23,15 +23,10 @@ namespace Azoth.Tools.Bootstrap.Framework
 
         [DebuggerStepThrough]
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-        {
-            return items.GetEnumerator();
-        }
+            => items.GetEnumerator();
 
         [DebuggerStepThrough]
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable)items).GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)items).GetEnumerator();
 
         public int Count
         {
@@ -40,16 +35,11 @@ namespace Azoth.Tools.Bootstrap.Framework
         }
 
         [DebuggerStepThrough]
-        public bool ContainsKey(TKey key)
-        {
-            return items.ContainsKey(key);
-        }
+        public bool ContainsKey(TKey key) => items.ContainsKey(key);
 
         [DebuggerStepThrough]
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
-        {
-            return items.TryGetValue(key, out value);
-        }
+            => items.TryGetValue(key, out value);
 
         public TValue this[TKey key]
         {
