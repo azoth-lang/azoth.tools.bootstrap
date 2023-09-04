@@ -55,34 +55,31 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
+
+public static partial class TokenFactory
 {
-    public static partial class TokenFactory
-    {
 <# foreach(var token in tokens) {#>
-        public static I<#=token#>Token <#=token#>(TextSpan span)
-        {
-            return new <#=token#>Token(span);
-        }
+    public static I<#=token#>Token <#=token#>(TextSpan span)
+        => new <#=token#>Token(span);
 
-<#}#>
-    }
-
-    [Closed(
-<# for (int i = 0; i < tokens.Count; i++) {#>
-        typeof(I<#=tokens[i]#>Token)<# if(i == tokens.Count-1) {#>)]<#} else {#>,<#}#>
-
-<#}#>    public partial interface IEssentialToken { }
-
-<# foreach(var token in tokens) {#>
-
-    public partial interface I<#=token#>Token : IEssentialToken { }
-    internal partial class <#=token#>Token : Token, I<#=token#>Token
-    {
-        public <#=token#>Token(TextSpan span)
-            : base(span)
-        {
-        }
-    }
 <#}#>
 }
+
+[Closed(
+<# for (int i = 0; i < tokens.Count; i++) {#>
+    typeof(I<#=tokens[i]#>Token)<# if(i == tokens.Count-1) {#>)]<#} else {#>,<#}#>
+
+<#}#>public partial interface IEssentialToken { }
+
+<# foreach(var token in tokens) {#>
+
+public partial interface I<#=token#>Token : IEssentialToken { }
+internal partial class <#=token#>Token : Token, I<#=token#>Token
+{
+    public <#=token#>Token(TextSpan span)
+        : base(span)
+    {
+    }
+}
+<#}#>

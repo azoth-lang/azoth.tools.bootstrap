@@ -114,9 +114,8 @@ public static partial class TokenFactory
 {
 <# foreach(var keyword in keywords) {#>
     public static I<#=keyword#>KeywordToken <#=keyword#>Keyword(TextSpan span)
-    {
-        return new <#=keyword#>KeywordToken(span);
-    }
+        => new <#=keyword#>KeywordToken(span);
+
 <#}#>
 }
 

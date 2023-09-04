@@ -59,181 +59,137 @@ public static partial class TokenTypes
 public static partial class TokenFactory
 {
     public static IPublishedKeywordToken PublishedKeyword(TextSpan span)
-    {
-        return new PublishedKeywordToken(span);
-    }
+        => new PublishedKeywordToken(span);
+
     public static IPublicKeywordToken PublicKeyword(TextSpan span)
-    {
-        return new PublicKeywordToken(span);
-    }
+        => new PublicKeywordToken(span);
+
     public static ILetKeywordToken LetKeyword(TextSpan span)
-    {
-        return new LetKeywordToken(span);
-    }
+        => new LetKeywordToken(span);
+
     public static IVarKeywordToken VarKeyword(TextSpan span)
-    {
-        return new VarKeywordToken(span);
-    }
+        => new VarKeywordToken(span);
+
     public static IVoidKeywordToken VoidKeyword(TextSpan span)
-    {
-        return new VoidKeywordToken(span);
-    }
+        => new VoidKeywordToken(span);
+
     public static IIntKeywordToken IntKeyword(TextSpan span)
-    {
-        return new IntKeywordToken(span);
-    }
+        => new IntKeywordToken(span);
+
     public static IUIntKeywordToken UIntKeyword(TextSpan span)
-    {
-        return new UIntKeywordToken(span);
-    }
+        => new UIntKeywordToken(span);
+
     public static IByteKeywordToken ByteKeyword(TextSpan span)
-    {
-        return new ByteKeywordToken(span);
-    }
+        => new ByteKeywordToken(span);
+
     public static ISizeKeywordToken SizeKeyword(TextSpan span)
-    {
-        return new SizeKeywordToken(span);
-    }
+        => new SizeKeywordToken(span);
+
     public static IOffsetKeywordToken OffsetKeyword(TextSpan span)
-    {
-        return new OffsetKeywordToken(span);
-    }
+        => new OffsetKeywordToken(span);
+
     public static IBoolKeywordToken BoolKeyword(TextSpan span)
-    {
-        return new BoolKeywordToken(span);
-    }
+        => new BoolKeywordToken(span);
+
     public static INeverKeywordToken NeverKeyword(TextSpan span)
-    {
-        return new NeverKeywordToken(span);
-    }
+        => new NeverKeywordToken(span);
+
     public static IReturnKeywordToken ReturnKeyword(TextSpan span)
-    {
-        return new ReturnKeywordToken(span);
-    }
+        => new ReturnKeywordToken(span);
+
     public static IClassKeywordToken ClassKeyword(TextSpan span)
-    {
-        return new ClassKeywordToken(span);
-    }
+        => new ClassKeywordToken(span);
+
     public static IFunctionKeywordToken FunctionKeyword(TextSpan span)
-    {
-        return new FunctionKeywordToken(span);
-    }
+        => new FunctionKeywordToken(span);
+
     public static INewKeywordToken NewKeyword(TextSpan span)
-    {
-        return new NewKeywordToken(span);
-    }
+        => new NewKeywordToken(span);
+
     public static IIsolatedKeywordToken IsolatedKeyword(TextSpan span)
-    {
-        return new IsolatedKeywordToken(span);
-    }
+        => new IsolatedKeywordToken(span);
+
     public static IConstKeywordToken ConstKeyword(TextSpan span)
-    {
-        return new ConstKeywordToken(span);
-    }
+        => new ConstKeywordToken(span);
+
     public static IIdKeywordToken IdKeyword(TextSpan span)
-    {
-        return new IdKeywordToken(span);
-    }
+        => new IdKeywordToken(span);
+
     public static INamespaceKeywordToken NamespaceKeyword(TextSpan span)
-    {
-        return new NamespaceKeywordToken(span);
-    }
+        => new NamespaceKeywordToken(span);
+
     public static IUsingKeywordToken UsingKeyword(TextSpan span)
-    {
-        return new UsingKeywordToken(span);
-    }
+        => new UsingKeywordToken(span);
+
     public static IForeachKeywordToken ForeachKeyword(TextSpan span)
-    {
-        return new ForeachKeywordToken(span);
-    }
+        => new ForeachKeywordToken(span);
+
     public static IInKeywordToken InKeyword(TextSpan span)
-    {
-        return new InKeywordToken(span);
-    }
+        => new InKeywordToken(span);
+
     public static IIfKeywordToken IfKeyword(TextSpan span)
-    {
-        return new IfKeywordToken(span);
-    }
+        => new IfKeywordToken(span);
+
     public static IElseKeywordToken ElseKeyword(TextSpan span)
-    {
-        return new ElseKeywordToken(span);
-    }
+        => new ElseKeywordToken(span);
+
     public static IUnsafeKeywordToken UnsafeKeyword(TextSpan span)
-    {
-        return new UnsafeKeywordToken(span);
-    }
+        => new UnsafeKeywordToken(span);
+
     public static ISafeKeywordToken SafeKeyword(TextSpan span)
-    {
-        return new SafeKeywordToken(span);
-    }
+        => new SafeKeywordToken(span);
+
     public static ISelfKeywordToken SelfKeyword(TextSpan span)
-    {
-        return new SelfKeywordToken(span);
-    }
+        => new SelfKeywordToken(span);
+
     public static IMutableKeywordToken MutableKeyword(TextSpan span)
-    {
-        return new MutableKeywordToken(span);
-    }
+        => new MutableKeywordToken(span);
+
     public static INoneKeywordToken NoneKeyword(TextSpan span)
-    {
-        return new NoneKeywordToken(span);
-    }
+        => new NoneKeywordToken(span);
+
     public static IMoveKeywordToken MoveKeyword(TextSpan span)
-    {
-        return new MoveKeywordToken(span);
-    }
+        => new MoveKeywordToken(span);
+
     public static IFreezeKeywordToken FreezeKeyword(TextSpan span)
-    {
-        return new FreezeKeywordToken(span);
-    }
+        => new FreezeKeywordToken(span);
+
     public static ICopyKeywordToken CopyKeyword(TextSpan span)
-    {
-        return new CopyKeywordToken(span);
-    }
+        => new CopyKeywordToken(span);
+
     public static ILoopKeywordToken LoopKeyword(TextSpan span)
-    {
-        return new LoopKeywordToken(span);
-    }
+        => new LoopKeywordToken(span);
+
     public static IWhileKeywordToken WhileKeyword(TextSpan span)
-    {
-        return new WhileKeywordToken(span);
-    }
+        => new WhileKeywordToken(span);
+
     public static IBreakKeywordToken BreakKeyword(TextSpan span)
-    {
-        return new BreakKeywordToken(span);
-    }
+        => new BreakKeywordToken(span);
+
     public static INextKeywordToken NextKeyword(TextSpan span)
-    {
-        return new NextKeywordToken(span);
-    }
+        => new NextKeywordToken(span);
+
     public static IAnyKeywordToken AnyKeyword(TextSpan span)
-    {
-        return new AnyKeywordToken(span);
-    }
+        => new AnyKeywordToken(span);
+
     public static ITrueKeywordToken TrueKeyword(TextSpan span)
-    {
-        return new TrueKeywordToken(span);
-    }
+        => new TrueKeywordToken(span);
+
     public static IFalseKeywordToken FalseKeyword(TextSpan span)
-    {
-        return new FalseKeywordToken(span);
-    }
+        => new FalseKeywordToken(span);
+
     public static IAsKeywordToken AsKeyword(TextSpan span)
-    {
-        return new AsKeywordToken(span);
-    }
+        => new AsKeywordToken(span);
+
     public static IAndKeywordToken AndKeyword(TextSpan span)
-    {
-        return new AndKeywordToken(span);
-    }
+        => new AndKeywordToken(span);
+
     public static IOrKeywordToken OrKeyword(TextSpan span)
-    {
-        return new OrKeywordToken(span);
-    }
+        => new OrKeywordToken(span);
+
     public static INotKeywordToken NotKeyword(TextSpan span)
-    {
-        return new NotKeywordToken(span);
-    }
+        => new NotKeywordToken(span);
+
 }
 
 [Closed(

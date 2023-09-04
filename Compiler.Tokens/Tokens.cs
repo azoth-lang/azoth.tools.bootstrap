@@ -6,179 +6,109 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
 public static partial class TokenFactory
 {
     public static IEndOfFileToken EndOfFile(TextSpan span)
-    {
-        return new EndOfFileToken(span);
-    }
+        => new EndOfFileToken(span);
 
     public static IOpenBraceToken OpenBrace(TextSpan span)
-    {
-        return new OpenBraceToken(span);
-    }
+        => new OpenBraceToken(span);
 
     public static ICloseBraceToken CloseBrace(TextSpan span)
-    {
-        return new CloseBraceToken(span);
-    }
+        => new CloseBraceToken(span);
 
     public static IOpenParenToken OpenParen(TextSpan span)
-    {
-        return new OpenParenToken(span);
-    }
+        => new OpenParenToken(span);
 
     public static ICloseParenToken CloseParen(TextSpan span)
-    {
-        return new CloseParenToken(span);
-    }
+        => new CloseParenToken(span);
 
     public static ISemicolonToken Semicolon(TextSpan span)
-    {
-        return new SemicolonToken(span);
-    }
+        => new SemicolonToken(span);
 
     public static ICommaToken Comma(TextSpan span)
-    {
-        return new CommaToken(span);
-    }
+        => new CommaToken(span);
 
     public static IColonToken Colon(TextSpan span)
-    {
-        return new ColonToken(span);
-    }
+        => new ColonToken(span);
 
     public static IRightArrowToken RightArrow(TextSpan span)
-    {
-        return new RightArrowToken(span);
-    }
+        => new RightArrowToken(span);
 
     public static IDotToken Dot(TextSpan span)
-    {
-        return new DotToken(span);
-    }
+        => new DotToken(span);
 
     public static IColonColonDotToken ColonColonDot(TextSpan span)
-    {
-        return new ColonColonDotToken(span);
-    }
+        => new ColonColonDotToken(span);
 
     public static IDotDotToken DotDot(TextSpan span)
-    {
-        return new DotDotToken(span);
-    }
+        => new DotDotToken(span);
 
     public static ILessThanDotDotToken LessThanDotDot(TextSpan span)
-    {
-        return new LessThanDotDotToken(span);
-    }
+        => new LessThanDotDotToken(span);
 
     public static IDotDotLessThanToken DotDotLessThan(TextSpan span)
-    {
-        return new DotDotLessThanToken(span);
-    }
+        => new DotDotLessThanToken(span);
 
     public static ILessThanDotDotLessThanToken LessThanDotDotLessThan(TextSpan span)
-    {
-        return new LessThanDotDotLessThanToken(span);
-    }
+        => new LessThanDotDotLessThanToken(span);
 
     public static IPlusToken Plus(TextSpan span)
-    {
-        return new PlusToken(span);
-    }
+        => new PlusToken(span);
 
     public static IMinusToken Minus(TextSpan span)
-    {
-        return new MinusToken(span);
-    }
+        => new MinusToken(span);
 
     public static IAsteriskToken Asterisk(TextSpan span)
-    {
-        return new AsteriskToken(span);
-    }
+        => new AsteriskToken(span);
 
     public static ISlashToken Slash(TextSpan span)
-    {
-        return new SlashToken(span);
-    }
+        => new SlashToken(span);
 
     public static IEqualsToken Equals(TextSpan span)
-    {
-        return new EqualsToken(span);
-    }
+        => new EqualsToken(span);
 
     public static IEqualsEqualsToken EqualsEquals(TextSpan span)
-    {
-        return new EqualsEqualsToken(span);
-    }
+        => new EqualsEqualsToken(span);
 
     public static INotEqualToken NotEqual(TextSpan span)
-    {
-        return new NotEqualToken(span);
-    }
+        => new NotEqualToken(span);
 
     public static IGreaterThanToken GreaterThan(TextSpan span)
-    {
-        return new GreaterThanToken(span);
-    }
+        => new GreaterThanToken(span);
 
     public static IGreaterThanOrEqualToken GreaterThanOrEqual(TextSpan span)
-    {
-        return new GreaterThanOrEqualToken(span);
-    }
+        => new GreaterThanOrEqualToken(span);
 
     public static ILessThanToken LessThan(TextSpan span)
-    {
-        return new LessThanToken(span);
-    }
+        => new LessThanToken(span);
 
     public static ILessThanOrEqualToken LessThanOrEqual(TextSpan span)
-    {
-        return new LessThanOrEqualToken(span);
-    }
+        => new LessThanOrEqualToken(span);
 
     public static IPlusEqualsToken PlusEquals(TextSpan span)
-    {
-        return new PlusEqualsToken(span);
-    }
+        => new PlusEqualsToken(span);
 
     public static IMinusEqualsToken MinusEquals(TextSpan span)
-    {
-        return new MinusEqualsToken(span);
-    }
+        => new MinusEqualsToken(span);
 
     public static IAsteriskEqualsToken AsteriskEquals(TextSpan span)
-    {
-        return new AsteriskEqualsToken(span);
-    }
+        => new AsteriskEqualsToken(span);
 
     public static ISlashEqualsToken SlashEquals(TextSpan span)
-    {
-        return new SlashEqualsToken(span);
-    }
+        => new SlashEqualsToken(span);
 
     public static IQuestionToken Question(TextSpan span)
-    {
-        return new QuestionToken(span);
-    }
+        => new QuestionToken(span);
 
     public static IQuestionQuestionToken QuestionQuestion(TextSpan span)
-    {
-        return new QuestionQuestionToken(span);
-    }
+        => new QuestionQuestionToken(span);
 
     public static IQuestionDotToken QuestionDot(TextSpan span)
-    {
-        return new QuestionDotToken(span);
-    }
+        => new QuestionDotToken(span);
 
     public static ILessThanColonToken LessThanColon(TextSpan span)
-    {
-        return new LessThanColonToken(span);
-    }
+        => new LessThanColonToken(span);
 
     public static IRightDoubleArrowToken RightDoubleArrow(TextSpan span)
-    {
-        return new RightDoubleArrowToken(span);
-    }
+        => new RightDoubleArrowToken(span);
 
 }
 
