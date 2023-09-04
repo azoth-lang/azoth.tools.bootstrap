@@ -207,11 +207,11 @@ public class BasicBodyAnalyzer
         var type = InferType(expression, sharing, capabilities);
         if (!type.IsKnown) return DataType.Unknown;
         type = type.ToNonConstantType();
-        type = AddImplicitConversionIfNeeded(expression, type, sharing, capabilities);
 
         switch (expression)
         {
             case IMoveExpressionSyntax:
+                type = AddImplicitConversionIfNeeded(expression, type, sharing, capabilities);
                 // If we are explicitly moving then take the actual type
                 return type;
             case IMutateExpressionSyntax:
@@ -226,11 +226,20 @@ public class BasicBodyAnalyzer
             default:
             {
                 // We assume immutability on variables unless explicitly stated
-                if (inferCapability is null) return type.WithoutWrite() ?? type;
-                if (type is not ReferenceType referenceType)
-                    throw new NotImplementedException("Compile error: can't infer mutability for non reference type");
+                if (inferCapability is null)
+                    type = type.WithoutWrite();
+                else
+                {
+                    if (type is not ReferenceType referenceType)
+                        throw new NotImplementedException(
+                            "Compile error: can't infer mutability for non reference type");
 
-                return referenceType.To(inferCapability.Declared.ToReferenceCapability());
+                    type = referenceType.To(inferCapability.Declared.ToReferenceCapability());
+                }
+
+                // The conversion type may not be the inferred type of conversion fails
+                _ = AddImplicitConversionIfNeeded(expression, type, sharing, capabilities);
+                return type;
             }
         }
     }

@@ -81,10 +81,7 @@ internal abstract class ExpressionSyntax : Syntax, IExpressionSyntax
         this.semantics = semantics;
     }
 
-    public void Poison()
-    {
-        Poisoned = true;
-    }
+    public void Poison() => Poisoned = true;
 
     protected abstract OperatorPrecedence ExpressionPrecedence { get; }
 
@@ -96,9 +93,7 @@ internal abstract class ExpressionSyntax : Syntax, IExpressionSyntax
     }
 
     public string ToGroupedString(OperatorPrecedence surroundingPrecedence)
-    {
-        return surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();
-    }
+        => surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();
 
     private (DataType?, ExpressionSemantics?) ApplyConversion()
     {
