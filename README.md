@@ -66,12 +66,10 @@ As this subset is developed, the plan will be to:
 ### Excluded Language Features
 
 The following features will not be implemented by this compiler even though they are described in
-the [language reference](https://github.com/azoth/azoth.language.reference/blob/master/src/book.md).
+the [language reference](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/book.md).
 
-* [Loop
-  Labels](https://github.com/azoth/azoth.language.reference/blob/master/src/loop-expressions.md#loop-labels)
-* [Document Comment
-  Validation](https://github.com/azoth/azoth.language.reference/blob/master/src/documentation-comments.md#documentation-comments)
+* [Loop Labels](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/loop-expressions.md#loop-labels)
+* [Document Comment Validation](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/documentation-comments.md#documentation-comments)
 * Full Type Inference: Variable types can be inferred from the type of their initializer only.
 
 ### Features Planned for After v1.0
@@ -79,35 +77,21 @@ the [language reference](https://github.com/azoth/azoth.language.reference/blob/
 A number of language features are planned for the future but not yet included in the language. For
 quick reference, SOME of those features are:
 
-* [Global and Package
-  Qualifiers](https://github.com/azoth/azoth.language.reference/blob/master/src/planned-qualifier.md)
-* [Additional
-  Types](https://github.com/azoth/azoth.language.reference/blob/master/src/planned-types.md)
-  * [128-bit Integer
-    Types](https://github.com/azoth/azoth.language.reference/blob/master/src/planned-types.md#128-bit-integer-types)
-  * [128-bit Floating Point
-    Type](https://github.com/azoth/azoth.language.reference/blob/master/src/planned-types.md#128-bit-floating-point-type)
-  * [Fixed Point
-    Types](https://github.com/azoth/azoth.language.reference/blob/master/src/planned-types.md#fixed-point-types)
-  * [Decimal
-    Types](https://github.com/azoth/azoth.language.reference/blob/master/src/planned-types.md#decimal-types)
-  * [Real
-    Types](https://github.com/azoth/azoth.language.reference/blob/master/src/planned-types.md#real-types)
-* [Aliases](https://github.com/azoth/azoth.language.reference/blob/master/src/planned-aliases.md)
-* [Additional
-  Expressions](https://github.com/azoth/azoth.language.reference/blob/master/src/planned-expressions.md)
-  * [Multiline String
-    Literals](https://github.com/azoth/azoth.language.reference/blob/master/src/planned-expressions.md#multiline-string-literals)
-* [Operator
-  Features](https://github.com/azoth/azoth.language.reference/blob/master/src/planned-operators.md)
-* [Compile-time Function
-  Execution](https://github.com/azoth/azoth.language.reference/blob/master/src/planned-ctfe.md)
-* [Language-Oriented
-  Programming](https://github.com/azoth/azoth.language.reference/blob/master/src/planned-lop.md)
+* [Global and Package Qualifiers](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/planned-qualifier.md)
+* [Additional Types](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/planned-types.md)
+  * [128-bit Integer Types](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/planned-types.md#128-bit-integer-types)
+  * [128-bit Floating Point Type](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/planned-types.md#128-bit-floating-point-type)
+  * [Fixed Point Types](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/planned-types.md#fixed-point-types)
+  * [Decimal Types](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/planned-types.md#decimal-types)
+  * [Real Types](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/planned-types.md#real-types)
+* [Aliases](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/planned-aliases.md)
+* [Additional Expressions](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/planned-expressions.md)
+  * [Multiline String Literals](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/planned-expressions.md#multiline-string-literals)
+* [Operator Features](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/planned-operators.md)
+* [Compile-time Function Execution](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/planned-ctfe.md)
+* [Language-Oriented Programming](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/planned-lop.md)
 
-The full list can be found in the [language
-reference](https://github.com/azoth/azoth.language.reference/blob/master/src/book.md) planned
-features section.
+The full list can be found in the [language reference](https://github.com/azoth-lang/azoth.language.reference/blob/master/src/book.md) planned features section.
 
 ## Cleanup Tasks
 
