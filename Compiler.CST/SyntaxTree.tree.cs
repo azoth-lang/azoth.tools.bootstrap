@@ -367,8 +367,7 @@ public partial interface IExpressionSyntax : ISyntax
 }
 
 [Closed(
-    typeof(ISimpleNameExpressionSyntax),
-    typeof(IQualifiedNameExpressionSyntax))]
+    typeof(INameExpressionSyntax))]
 public partial interface IAssignableExpressionSyntax : IExpressionSyntax
 {
 }
@@ -494,10 +493,17 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax, IHasCo
     Promise<InvocableSymbol?> ReferencedSymbol { get; }
 }
 
-public partial interface ISimpleNameExpressionSyntax : IAssignableExpressionSyntax, IHasContainingLexicalScope
+[Closed(
+    typeof(ISimpleNameExpressionSyntax),
+    typeof(IQualifiedNameExpressionSyntax))]
+public partial interface INameExpressionSyntax : IAssignableExpressionSyntax
+{
+    Promise<Symbol?> ReferencedSymbol { get; }
+}
+
+public partial interface ISimpleNameExpressionSyntax : INameExpressionSyntax, IHasContainingLexicalScope
 {
     Name? Name { get; }
-    Promise<Symbol?> ReferencedSymbol { get; }
 }
 
 public partial interface ISelfExpressionSyntax : IExpressionSyntax
@@ -506,12 +512,11 @@ public partial interface ISelfExpressionSyntax : IExpressionSyntax
     Promise<SelfParameterSymbol?> ReferencedSymbol { get; }
 }
 
-public partial interface IQualifiedNameExpressionSyntax : IAssignableExpressionSyntax
+public partial interface IQualifiedNameExpressionSyntax : INameExpressionSyntax
 {
     IExpressionSyntax Context { get; }
     AccessOperator AccessOperator { get; }
     ISimpleNameExpressionSyntax Member { get; }
-    IPromise<Symbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IMutateExpressionSyntax : IExpressionSyntax

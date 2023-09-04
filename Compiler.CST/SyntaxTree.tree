@@ -116,8 +116,9 @@ ReturnExpression: Expression = Value:Expression?;
 InvocationExpression: Expression, 'IHasContainingLexicalScope' = Expression Arguments:Expression* ReferencedSymbol:'Promise<InvocableSymbol?>';
 
 // ---------- Variable Expressions
-SimpleNameExpression: AssignableExpression, 'IHasContainingLexicalScope' = Name:'Name'? ReferencedSymbol:'Promise<Symbol?>';
+NameExpression: AssignableExpression = ReferencedSymbol:'Promise<Symbol?>';
+SimpleNameExpression: NameExpression, 'IHasContainingLexicalScope' = Name:'Name'?;
 SelfExpression: Expression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfParameterSymbol?>';
-QualifiedNameExpression: AssignableExpression = Context:Expression AccessOperator:'AccessOperator' Member:SimpleNameExpression ReferencedSymbol:'IPromise<Symbol?>';
+QualifiedNameExpression: NameExpression = Context:Expression AccessOperator:'AccessOperator' Member:SimpleNameExpression;
 MutateExpression: Expression = Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
 MoveExpression: Expression = Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';

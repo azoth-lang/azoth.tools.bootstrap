@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
 /// <summary>
-/// An expression that is a single unqualified name
+/// An expression that is a single unqualified name.
 /// </summary>
 public partial interface ISimpleNameExpressionSyntax
 {
