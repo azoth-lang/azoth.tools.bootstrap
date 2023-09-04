@@ -212,19 +212,11 @@ public class BasicBodyAnalyzer
 
         switch (expression)
         {
-            case IMoveExpressionSyntax:
-                type = AddImplicitConversionIfNeeded(expression, type, sharing, capabilities, true);
-                // If we are explicitly moving then take the actual type
+            case IMoveExpressionSyntax when inferCapability is null:
+            case IMutateExpressionSyntax when inferCapability is null:
+                // If we are explicitly moving or borrowing and no capability is specified, then
+                // take the mutable type.
                 return type;
-            case IMutateExpressionSyntax:
-            {
-                // If we are explicitly borrowing or moving then take the actual type
-                if (type is not ReferenceType)
-                    throw new NotImplementedException("Compile error: can't borrow non reference type");
-
-                throw new NotImplementedException("Mutate expression declaration type");
-                //return referenceType.To(ReferenceCapability.Borrowed);
-            }
             default:
             {
                 // We assume immutability on variables unless explicitly stated
