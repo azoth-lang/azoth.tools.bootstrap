@@ -189,12 +189,9 @@ public class BasicBodyAnalyzer
         symbolTreeBuilder.Add(symbol);
         capabilities.Declare(symbol);
         sharing.Declare(symbol);
-        if (type is ReferenceType referenceType
-            && (referenceType.Capability == ReferenceCapability.Mutable
-                || referenceType.Capability == ReferenceCapability.ReadOnly))
-        {
-            sharing.Union(symbol, SharingVariable.Result);
-        }
+        // Union with the initializer result, then split out result for end of statement
+        sharing.Union(symbol, SharingVariable.Result);
+        sharing.Split(SharingVariable.Result);
     }
 
     /// <summary>
@@ -536,6 +533,7 @@ public class BasicBodyAnalyzer
             case INameExpressionSyntax exp:
             {
                 var symbol = ResolveVariableNameSymbol(exp);
+                sharing.UnionResult(symbol);
                 capabilities.Alias(symbol);
                 var type = capabilities.CurrentType(symbol);
                 if (implicitRead)

@@ -76,6 +76,12 @@ public class SharingRelation
         smallerSet.Clear();
     }
 
+    public void UnionResult(SharingVariable? var)
+    {
+        if (var is SharingVariable sharingVar)
+            Union(SharingVariable.Result, sharingVar);
+    }
+
     /// <summary>
     /// Split the given variable out from sharing with the other variables it is connected to.
     /// </summary>
