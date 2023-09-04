@@ -839,6 +839,9 @@ public class BasicBodyAnalyzer
                     functionSymbols = symbolTrees.Children(contextSymbol).OfType<FunctionSymbol>()
                                                      .Where(s => s.Name == name).ToFixedSet();
                 }
+                // No type for function names
+                exp.Member.DataType = DataType.Void;
+                exp.Member.Semantics = ExpressionSemantics.Void;
                 break;
             case ISimpleNameExpressionSyntax exp:
                 functionSymbols = exp.LookupInContainingScope()
