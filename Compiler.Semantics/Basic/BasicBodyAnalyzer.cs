@@ -13,6 +13,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 
@@ -380,6 +381,12 @@ public class BasicBodyAnalyzer
 
                                     type = referenceType.To(ReferenceCapability.Isolated);
                                     capabilities.Move(symbol);
+                                    break;
+                                case ValueType { Semantics: TypeSemantics.Move } valueType:
+                                    type = valueType;
+                                    break;
+                                case UnknownType:
+                                    type = DataType.Unknown;
                                     break;
                                 default:
                                     throw new NotImplementedException("Non-moveable type can't be moved");

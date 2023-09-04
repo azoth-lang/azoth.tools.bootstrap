@@ -156,10 +156,8 @@ public partial class Parser
         return new BodySyntax(span, statements.OfType<IBodyStatementSyntax>().ToFixedList());
     }
 
-    private ITypeSyntax? ParseReturn()
-    {
-        return Tokens.Accept<IRightArrowToken>() ? ParseType() : null;
-    }
+    private ITypeSyntax? ParseReturn() => Tokens.Accept<IRightArrowToken>() ? ParseType() : null;
+
     #endregion
 
     #region Parse Class Declarations
@@ -191,9 +189,7 @@ public partial class Parser
     #region Parse Member Declarations
     private FixedList<IMemberDeclarationSyntax> ParseMemberDeclarations(
         IClassDeclarationSyntax declaringType)
-    {
-        return ParseMany<IMemberDeclarationSyntax, ICloseBraceToken>(() => ParseMemberDeclaration(declaringType));
-    }
+        => ParseMany<IMemberDeclarationSyntax, ICloseBraceToken>(() => ParseMemberDeclaration(declaringType));
 
     internal FieldDeclarationSyntax ParseField(
         IClassDeclarationSyntax declaringType,
