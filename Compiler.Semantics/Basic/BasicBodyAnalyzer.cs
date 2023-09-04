@@ -79,7 +79,7 @@ public class BasicBodyAnalyzer
         ObjectTypeSymbol? stringSymbol,
         Diagnostics diagnostics,
         DataType returnType)
-        : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
+        : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result).Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
             symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
     { }
 
