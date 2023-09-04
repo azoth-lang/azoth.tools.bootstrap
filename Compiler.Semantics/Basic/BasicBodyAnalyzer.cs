@@ -414,6 +414,7 @@ public class BasicBodyAnalyzer
                     case INameExpressionSyntax nameExpression:
                     {
                         var symbol = ResolveVariableNameSymbol(nameExpression);
+                        sharing.UnionResult(symbol);
                         capabilities.Alias(symbol);
                         var type = capabilities.CurrentType(symbol);
                         switch (type)
@@ -1011,6 +1012,10 @@ public class BasicBodyAnalyzer
             case IBlockExpressionSyntax block:
                 foreach (var statement in block.Statements)
                     ResolveTypes(statement, sharing, capabilities);
+
+                // Drop any variables in the scope
+                foreach (var variableDeclaration in block.Statements.OfType<IVariableDeclarationStatementSyntax>())
+                    sharing.Drop(variableDeclaration.Symbol.Result);
 
                 block.Semantics = ExpressionSemantics.Void;
                 return block.DataType = DataType.Void; // TODO assign the correct type to the block

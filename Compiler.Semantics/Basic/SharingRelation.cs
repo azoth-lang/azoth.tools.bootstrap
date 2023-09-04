@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
@@ -56,6 +57,17 @@ public class SharingRelation
             var set = new HashSet<SharingVariable> { symbol };
             sets.Add(set);
             subsetFor.Add(symbol, set);
+        }
+    }
+
+    public void Drop(BindingSymbol symbol)
+    {
+        var variable = (SharingVariable)symbol;
+        if (subsetFor.TryGetValue(variable, out var set))
+        {
+            set.Remove(variable);
+            subsetFor.Remove(variable);
+            if (set.Count == 0) sets.Remove(set);
         }
     }
 
