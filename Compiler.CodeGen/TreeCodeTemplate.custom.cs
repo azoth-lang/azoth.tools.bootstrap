@@ -18,16 +18,13 @@ public partial class TreeCodeTemplate
     private IEnumerable<string> OrderedNamespaces()
     {
         return grammar.UsingNamespaces
-                      .Append("System.Diagnostics.CodeAnalysis")
                       .Append("ExhaustiveMatching")
                       .Distinct()
                       .OrderBy(v => v, NamespaceComparer.Instance);
     }
 
     private string TypeName(GrammarSymbol symbol)
-    {
-        return symbol.IsQuoted ? symbol.Text : $"{grammar.Prefix}{symbol.Text}{grammar.Suffix}";
-    }
+        => symbol.IsQuoted ? symbol.Text : $"{grammar.Prefix}{symbol.Text}{grammar.Suffix}";
 
     /// <summary>
     /// A property needs declared under three conditions:
@@ -46,9 +43,7 @@ public partial class TreeCodeTemplate
     /// Something is a new definition if it replaces some parent definition.
     /// </summary>
     private bool IsNewDefinition(GrammarRule rule, GrammarProperty property)
-    {
-        return BaseProperties(rule, property.Name).Any();
-    }
+        => BaseProperties(rule, property.Name).Any();
 
     private string TypeName(GrammarType type)
     {
@@ -76,9 +71,7 @@ public partial class TreeCodeTemplate
     /// Definitions for the property on the parents of the rule.
     /// </summary>
     private IEnumerable<GrammarProperty> BaseProperties(GrammarRule rule, string propertyName)
-    {
-        return grammar.ParentRules(rule).SelectMany(r => PropertyDefinitions(r, propertyName));
-    }
+        => grammar.ParentRules(rule).SelectMany(r => PropertyDefinitions(r, propertyName));
 
     /// <summary>
     /// Get the property definitions for a rule. If that rule defines the property itself, that
@@ -89,26 +82,24 @@ public partial class TreeCodeTemplate
     private IEnumerable<GrammarProperty> PropertyDefinitions(GrammarRule rule, string propertyName)
     {
         var property = rule.Properties.SingleOrDefault(p => p.Name == propertyName);
-        if (!(property is null)) return property.Yield();
+        if (property is not null) return property.Yield();
 
         return BaseProperties(rule, propertyName);
     }
 
     private FixedList<GrammarRule> ChildRules(GrammarRule rule)
-    {
-        return grammar.Rules.Where(r => r.Parents.Contains(rule.Nonterminal)).ToFixedList();
-    }
+        => grammar.Rules.Where(r => r.Parents.Contains(rule.Nonterminal)).ToFixedList();
 
     private string ClosedType(GrammarRule rule)
     {
         var children = ChildRules(rule);
         if (!children.Any()) return "";
         var builder = new StringBuilder();
-        builder.AppendLine("    [Closed(");
+        builder.AppendLine("[Closed(");
         var lastChild = children[^1];
         foreach (var child in children)
         {
-            builder.Append($"        typeof({TypeName(child.Nonterminal)})");
+            builder.Append($"    typeof({TypeName(child.Nonterminal)})");
             builder.AppendLine(child == lastChild ? ")]" : ",");
         }
         return builder.ToString();

@@ -7,9 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Lexing;
 public static class TokenIteratorExtensions
 {
     public static ITokenIterator<IEssentialToken> WhereNotTrivia(this ITokenIterator<IToken> tokens)
-    {
-        return new WhereNotTriviaIterator(tokens);
-    }
+        => new WhereNotTriviaIterator(tokens);
 
     private class WhereNotTriviaIterator : ITokenIterator<IEssentialToken>
     {

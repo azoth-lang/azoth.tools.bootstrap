@@ -19,6 +19,9 @@ indent_size = 2
 [*.{bat,cs,sln,csproj}]
 end_of_line = crlf
 
+[*.tt]
+insert_final_newline = false
+
 # .NET formatting settings:
 [*.cs]
 csharp_using_directive_placement = outside_namespace:silent

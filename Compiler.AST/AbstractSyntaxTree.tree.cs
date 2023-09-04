@@ -499,3 +499,4 @@ public partial interface IRecoverConstExpression : IRecoverExpression
 public partial interface IRecoverIsolationExpression : IRecoverExpression
 {
 }
+

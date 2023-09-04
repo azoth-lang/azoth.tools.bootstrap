@@ -8,34 +8,33 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using ExhaustiveMatching;
 
-namespace <#=grammar.Namespace #>
+namespace <#=grammar.Namespace #>;
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public static class <#=TypeName(grammar.BaseType)#>Extensions
 {
-    [GeneratedCode("AzothCompilerCodeGen", null)]
-    public static class <#=TypeName(grammar.BaseType)#>Extensions
+    [DebuggerStepThrough]
+    public static IEnumerable<<#=TypeName(grammar.BaseType)#>> Children(this <#=TypeName(grammar.BaseType)#> node)
     {
-        [DebuggerStepThrough]
-        public static IEnumerable<<#=TypeName(grammar.BaseType)#>> Children(this <#=TypeName(grammar.BaseType)#> node)
+        switch (node)
         {
-            switch(node)
-            {
-                default:
-                    throw ExhaustiveMatch.Failed(node);
+            default:
+                throw ExhaustiveMatch.Failed(node);
 <#  foreach(var rule in grammar.Rules.Where(grammar.IsLeaf)) { #>
-                case <#=TypeName(rule.Nonterminal) #> n:
+            case <#=TypeName(rule.Nonterminal) #> n:
 <#      foreach(var property in rule.Properties.Where(grammar.IsNonTerminal)) { #>
-<#          if(property.Type.IsList) { #>
-                    foreach(var child in n.<#=property.Name #>)
-                        yield return child;
-<#          } else if(property.Type.IsOptional) { #>
-                    if(!(n.<#=property.Name #> is null))
-                        yield return n.<#=property.Name #>;
-<#          } else { #>
+<#          if (property.Type.IsList) { #>
+                foreach (var child in n.<#=property.Name #>)
+                    yield return child;
+<#          } else if (property.Type.IsOptional) { #>
+                if (n.<#=property.Name #> is not null)
                     yield return n.<#=property.Name #>;
+<#          } else { #>
+                yield return n.<#=property.Name #>;
 <#          } #>
 <#      } #>
-                    yield break;
+                yield break;
 <#  } #>
-            }
         }
     }
 }

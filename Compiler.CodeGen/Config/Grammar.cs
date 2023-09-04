@@ -49,9 +49,7 @@ public class Grammar
     }
 
     public IEnumerable<GrammarRule> ParentRules(GrammarRule rule)
-    {
-        return Rules.Where(r => rule.Parents.Contains(r.Nonterminal));
-    }
+        => Rules.Where(r => rule.Parents.Contains(r.Nonterminal));
 
     public IEnumerable<GrammarRule> AncestorRules(GrammarRule rule)
     {
@@ -60,12 +58,8 @@ public class Grammar
     }
 
     public bool IsLeaf(GrammarRule rule)
-    {
-        return !Rules.Any(r => r.Parents.Contains(rule.Nonterminal));
-    }
+        => !Rules.Any(r => r.Parents.Contains(rule.Nonterminal));
 
     public bool IsNonTerminal(GrammarProperty property)
-    {
-        return Rules.Any(r => r.Nonterminal == property.Type.Symbol);
-    }
+        => Rules.Any(r => r.Nonterminal == property.Type.Symbol);
 }

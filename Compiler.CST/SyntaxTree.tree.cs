@@ -525,3 +525,4 @@ public partial interface IMoveExpressionSyntax : IExpressionSyntax
     IExpressionSyntax Referent { get; }
     Promise<BindingSymbol?> ReferencedSymbol { get; }
 }
+

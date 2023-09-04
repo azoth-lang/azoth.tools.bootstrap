@@ -36,7 +36,7 @@ public static class ISyntaxExtensions
             case IFunctionDeclarationSyntax n:
                 foreach (var child in n.Parameters)
                     yield return child;
-                if (!(n.ReturnType is null))
+                if (n.ReturnType is not null)
                     yield return n.ReturnType;
                 yield return n.Body;
                 yield break;
@@ -44,14 +44,14 @@ public static class ISyntaxExtensions
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
-                if (!(n.ReturnType is null))
+                if (n.ReturnType is not null)
                     yield return n.ReturnType;
                 yield break;
             case IConcreteMethodDeclarationSyntax n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
-                if (!(n.ReturnType is null))
+                if (n.ReturnType is not null)
                     yield return n.ReturnType;
                 yield return n.Body;
                 yield break;
@@ -63,26 +63,26 @@ public static class ISyntaxExtensions
                 yield break;
             case IFieldDeclarationSyntax n:
                 yield return n.Type;
-                if (!(n.Initializer is null))
+                if (n.Initializer is not null)
                     yield return n.Initializer;
                 yield break;
             case IAssociatedFunctionDeclarationSyntax n:
                 foreach (var child in n.Parameters)
                     yield return child;
-                if (!(n.ReturnType is null))
+                if (n.ReturnType is not null)
                     yield return n.ReturnType;
                 yield return n.Body;
                 yield break;
             case INamedParameterSyntax n:
                 yield return n.Type;
-                if (!(n.DefaultValue is null))
+                if (n.DefaultValue is not null)
                     yield return n.DefaultValue;
                 yield break;
             case ISelfParameterSyntax n:
                 yield return n.Capability;
                 yield break;
             case IFieldParameterSyntax n:
-                if (!(n.DefaultValue is null))
+                if (n.DefaultValue is not null)
                     yield return n.DefaultValue;
                 yield break;
             case IBodySyntax n:
@@ -104,11 +104,11 @@ public static class ISyntaxExtensions
                 yield return n.Expression;
                 yield break;
             case IVariableDeclarationStatementSyntax n:
-                if (!(n.Capability is null))
+                if (n.Capability is not null)
                     yield return n.Capability;
-                if (!(n.Type is null))
+                if (n.Type is not null)
                     yield return n.Type;
-                if (!(n.Initializer is null))
+                if (n.Initializer is not null)
                     yield return n.Initializer;
                 yield break;
             case IExpressionStatementSyntax n:
@@ -151,7 +151,7 @@ public static class ISyntaxExtensions
             case IIfExpressionSyntax n:
                 yield return n.Condition;
                 yield return n.ThenBlock;
-                if (!(n.ElseClause is null))
+                if (n.ElseClause is not null)
                     yield return n.ElseClause;
                 yield break;
             case ILoopExpressionSyntax n:
@@ -163,18 +163,18 @@ public static class ISyntaxExtensions
                 yield break;
             case IForeachExpressionSyntax n:
                 yield return n.InExpression;
-                if (!(n.Type is null))
+                if (n.Type is not null)
                     yield return n.Type;
                 yield return n.Block;
                 yield break;
             case IBreakExpressionSyntax n:
-                if (!(n.Value is null))
+                if (n.Value is not null)
                     yield return n.Value;
                 yield break;
             case INextExpressionSyntax n:
                 yield break;
             case IReturnExpressionSyntax n:
-                if (!(n.Value is null))
+                if (n.Value is not null)
                     yield return n.Value;
                 yield break;
             case IInvocationExpressionSyntax n:

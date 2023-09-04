@@ -49,13 +49,13 @@ public static class IAbstractSyntaxExtensions
                 yield return n.Body;
                 yield break;
             case INamedParameter n:
-                if (!(n.DefaultValue is null))
+                if (n.DefaultValue is not null)
                     yield return n.DefaultValue;
                 yield break;
             case ISelfParameter n:
                 yield break;
             case IFieldParameter n:
-                if (!(n.DefaultValue is null))
+                if (n.DefaultValue is not null)
                     yield return n.DefaultValue;
                 yield break;
             case IBody n:
@@ -66,7 +66,7 @@ public static class IAbstractSyntaxExtensions
                 yield return n.Expression;
                 yield break;
             case IVariableDeclarationStatement n:
-                if (!(n.Initializer is null))
+                if (n.Initializer is not null)
                     yield return n.Initializer;
                 yield break;
             case IExpressionStatement n:
@@ -105,7 +105,7 @@ public static class IAbstractSyntaxExtensions
             case IIfExpression n:
                 yield return n.Condition;
                 yield return n.ThenBlock;
-                if (!(n.ElseClause is null))
+                if (n.ElseClause is not null)
                     yield return n.ElseClause;
                 yield break;
             case ILoopExpression n:
@@ -120,13 +120,13 @@ public static class IAbstractSyntaxExtensions
                 yield return n.Block;
                 yield break;
             case IBreakExpression n:
-                if (!(n.Value is null))
+                if (n.Value is not null)
                     yield return n.Value;
                 yield break;
             case INextExpression n:
                 yield break;
             case IReturnExpression n:
-                if (!(n.Value is null))
+                if (n.Value is not null)
                     yield return n.Value;
                 yield break;
             case IImplicitImmutabilityConversionExpression n:
