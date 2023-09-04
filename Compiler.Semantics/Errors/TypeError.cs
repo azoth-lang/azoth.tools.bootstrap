@@ -19,7 +19,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors
     {
         public static Diagnostic NotImplemented(CodeFile file, TextSpan span, string message)
         {
-            return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3000, message);
+            return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+                3000, message);
         }
 
         public static Diagnostic OperatorCannotBeAppliedToOperandsOfType(
@@ -29,8 +30,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors
             DataType leftOperandType,
             DataType rightOperandType)
         {
-            return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3001,
-                $"Operator `{@operator.ToSymbolString()}` cannot be applied to operands of type `{leftOperandType.ToSourceCodeString()}` and `{rightOperandType.ToSourceCodeString()}`.");
+            return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+                3001, $"Operator `{@operator.ToSymbolString()}` cannot be applied to operands of type `{leftOperandType.ToSourceCodeString()}` and `{rightOperandType.ToSourceCodeString()}`.");
         }
 
         public static Diagnostic OperatorCannotBeAppliedToOperandOfType(
@@ -45,8 +46,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors
 
         public static Diagnostic MustBeATypeExpression(CodeFile file, TextSpan span)
         {
-            return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3003,
-                "Expression must be of type `type` (i.e. it must evaluate to a type)");
+            return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+                3003, "Expression must be of type `type` (i.e. it must evaluate to a type)");
         }
 
         public static Diagnostic NameRefersToFunctionNotType(CodeFile file, TextSpan span, string name)

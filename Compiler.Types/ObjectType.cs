@@ -30,10 +30,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
             NamespaceName containingNamespace,
             TypeName name,
             ReferenceCapability declaredCapability)
-        {
             // The "root" of the reference capability tree for this type
-            return new ObjectType(containingNamespace, name, declaredCapability, declaredCapability);
-        }
+            => new(containingNamespace, name, declaredCapability, declaredCapability);
 
         /// <summary>
         /// Create an object type with the given reference capability, enforcing that it be consistent
@@ -77,10 +75,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// that it should be mutable even if the underlying type is declared immutable.
         /// </summary>
         public ObjectType ToConstructorSelf()
-        {
             // TODO handle the case where the type is not declared mutable but the constructor arg allows mutate
-            return new ObjectType(ContainingNamespace, Name, DeclaredCapability, ReferenceCapability.Mutable);
-        }
+            => new(ContainingNamespace, Name, DeclaredCapability, ReferenceCapability.Mutable);
 
         public ObjectType ToConstructorReturn() => To(DeclaredCapability);
 
@@ -132,9 +128,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         }
 
         public override int GetHashCode()
-        {
-            return HashCode.Combine(ContainingNamespace, Name, DeclaredCapability, Capability);
-        }
+            => HashCode.Combine(ContainingNamespace, Name, DeclaredCapability, Capability);
+
         #endregion
 
         public override ObjectType To(ReferenceCapability referenceCapability)
