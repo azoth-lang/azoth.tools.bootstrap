@@ -718,7 +718,9 @@ public class BasicBodyAnalyzer
                 // TODO properly handle mutable self
                 var contextType = InferType(exp.Context, sharing, capabilities/*, !isSelfField*/);
                 var member = exp.Member;
-                var contextSymbol = LookupSymbolForType(contextType);
+                var contextSymbol = contextType is VoidType && exp.Context is INameExpressionSyntax context
+                    ? context.ReferencedSymbol.Result
+                    : LookupSymbolForType(contextType);
                 if (contextSymbol is null)
                 {
                     member.ReferencedSymbol.Fulfill(null);
@@ -727,9 +729,9 @@ public class BasicBodyAnalyzer
                     return exp.DataType = DataType.Unknown;
                 }
                 // TODO Deal with no context symbol
-                var memberSymbols = symbolTreeBuilder.Children(contextSymbol!).OfType<FieldSymbol>()
+                var memberSymbols = symbolTreeBuilder.Children(contextSymbol)
                                                      .Where(s => s.Name == member.Name).ToFixedList();
-                var type = ResolvedReferencedSymbol(member, memberSymbols)?.DataType ?? DataType.Unknown;
+                var type = ResolvedReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
                 var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 member.Semantics = semantics;
                 member.DataType = type;
@@ -796,8 +798,8 @@ public class BasicBodyAnalyzer
                             ?? throw new NotImplementedException(
                                 $"Missing context symbol for type {contextType.ToILString()}.");
                         var memberSymbols = symbolTreeBuilder.Children(contextSymbol).OfType<FieldSymbol>()
-                                                             .Where(s => s.Name == member.Name).ToFixedList();
-                        type = ResolvedReferencedSymbol(member, memberSymbols)?.DataType ?? DataType.Unknown;
+                                                             .Where(s => s.Name == member.Name).ToFixedList<Symbol>();
+                        type = ResolvedReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
                         break;
                 }
                 member.DataType = type;
@@ -1171,9 +1173,9 @@ public class BasicBodyAnalyzer
             diagnostics.Add(TypeError.CannotConvert(file, arg, fromType, type));
     }
 
-    private FieldSymbol? ResolvedReferencedSymbol(
+    private DataType? ResolvedReferencedSymbol(
         ISimpleNameExpressionSyntax exp,
-        FixedList<FieldSymbol> matchingSymbols)
+        FixedList<Symbol> matchingSymbols)
     {
         switch (matchingSymbols.Count)
         {
@@ -1183,27 +1185,32 @@ public class BasicBodyAnalyzer
                 return null;
             case 1:
                 var memberSymbol = matchingSymbols.Single();
-                switch (memberSymbol.DataType.Semantics)
+                DataType type = DataType.Void;
+                if (memberSymbol is FieldSymbol fieldSymbol)
                 {
-                    default:
-                        throw ExhaustiveMatch.Failed(memberSymbol.DataType.Semantics);
-                    case TypeSemantics.Copy:
-                        //exp.Semantics = ExpressionSemantics.CopyValue;
-                        break;
-                    case TypeSemantics.Never:
-                        //exp.Semantics = ExpressionSemantics.Never;
-                        break;
-                    case TypeSemantics.Reference:
-                        // Needs to be assigned based on share/borrow expression
-                        break;
-                    case TypeSemantics.Move:
-                        throw new InvalidOperationException("Can't move out of field");
-                    case TypeSemantics.Void:
-                        throw new InvalidOperationException("Can't assign semantics to void field");
+                    type = fieldSymbol.DataType;
+                    switch (type.Semantics)
+                    {
+                        default:
+                            throw ExhaustiveMatch.Failed(type.Semantics);
+                        case TypeSemantics.Copy:
+                            //exp.Semantics = ExpressionSemantics.CopyValue;
+                            break;
+                        case TypeSemantics.Never:
+                            //exp.Semantics = ExpressionSemantics.Never;
+                            break;
+                        case TypeSemantics.Reference:
+                            // Needs to be assigned based on share/borrow expression
+                            break;
+                        case TypeSemantics.Move:
+                            throw new InvalidOperationException("Can't move out of field");
+                        case TypeSemantics.Void:
+                            throw new InvalidOperationException("Can't assign semantics to void field");
+                    }
                 }
 
                 exp.ReferencedSymbol.Fulfill(memberSymbol);
-                return memberSymbol;
+                return type;
             default:
                 diagnostics.Add(NameBindingError.AmbiguousName(file, exp.Span));
                 exp.ReferencedSymbol.Fulfill(null);
