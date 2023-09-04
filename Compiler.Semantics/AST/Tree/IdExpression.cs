@@ -5,19 +5,17 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
-internal abstract class ImplicitConversionExpression : Expression, IImplicitConversionExpression
+internal class IdExpression : Expression, IIdExpression
 {
-    public IExpression Expression { get; }
+    public IExpression Referent { get; }
 
-    protected ImplicitConversionExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        IExpression expression)
+    public IdExpression(TextSpan span, DataType dataType, ExpressionSemantics semantics, IExpression referent)
         : base(span, dataType, semantics)
     {
-        Expression = expression;
+        Referent = referent;
     }
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
+
+    public override string ToString() => $"id {Referent}";
 }

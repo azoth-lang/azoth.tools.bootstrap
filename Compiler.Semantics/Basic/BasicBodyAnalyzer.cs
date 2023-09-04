@@ -349,6 +349,19 @@ public class BasicBodyAnalyzer
                 throw ExhaustiveMatch.Failed(expression);
             case null:
                 return DataType.Unknown;
+            case IIdExpressionSyntax exp:
+            {
+                var referentType = InferType(exp.Referent, sharing, capabilities);
+                DataType type;
+                if (referentType is ReferenceType referenceType)
+                    type = referenceType.To(ReferenceCapability.Identity);
+                else
+                {
+                    diagnostics.Add(TypeError.CannotIdNonReferenceType(file, exp.Span, referentType));
+                    type = referentType;
+                }
+                return exp.DataType = type;
+            }
             case IMoveExpressionSyntax exp:
                 switch (exp.Referent)
                 {
@@ -467,6 +480,16 @@ public class BasicBodyAnalyzer
                         break;
                     case BinaryOperator.EqualsEquals:
                     case BinaryOperator.NotEqual:
+                        compatible = (leftType == DataType.Bool && rightType == DataType.Bool)
+                                     || NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand,
+                                         binaryOperatorExpression.RightOperand, sharing, capabilities)
+                                     || IdOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand,
+                                         binaryOperatorExpression.RightOperand)
+                            /*|| OperatorOverloadDefined(@operator, binaryOperatorExpression.LeftOperand, ref binaryOperatorExpression.RightOperand)*/
+                            ;
+                        binaryOperatorExpression.DataType = DataType.Bool;
+                        binaryOperatorExpression.Semantics = ExpressionSemantics.CopyValue;
+                        break;
                     case BinaryOperator.LessThan:
                     case BinaryOperator.LessThanOrEqual:
                     case BinaryOperator.GreaterThan:
@@ -1165,6 +1188,18 @@ public class BasicBodyAnalyzer
             case VoidType _: // This might need a special error message
                 return false;
         }
+    }
+
+    /// <summary>
+    /// Check if two expressions are `id` types and comparable with `==` and `!=`.
+    /// </summary>
+    private static bool IdOperatorTypesAreCompatible(
+        IExpressionSyntax leftOperand,
+        IExpressionSyntax rightOperand)
+    {
+        return leftOperand.ConvertedDataType is ReferenceType { IsIdentityReference: true } leftType
+            && rightOperand.ConvertedDataType is ReferenceType { IsIdentityReference: true } rightType
+            && (leftType.IsAssignableFrom(rightType) || rightType.IsAssignableFrom(leftType));
     }
 
     //private bool OperatorOverloadDefined(BinaryOperator @operator, ExpressionSyntax leftOperand, ref ExpressionSyntax rightOperand)

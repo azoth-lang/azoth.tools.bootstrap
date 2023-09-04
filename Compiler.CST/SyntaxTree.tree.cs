@@ -348,6 +348,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         typeof(IAssignmentExpressionSyntax),
         typeof(IBinaryOperatorExpressionSyntax),
         typeof(IUnaryOperatorExpressionSyntax),
+        typeof(IIdExpressionSyntax),
         typeof(IIfExpressionSyntax),
         typeof(ILoopExpressionSyntax),
         typeof(IWhileExpressionSyntax),
@@ -438,6 +439,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
         UnaryOperatorFixity Fixity { get; }
         UnaryOperator Operator { get; }
         IExpressionSyntax Operand { get; }
+    }
+
+    public partial interface IIdExpressionSyntax : IExpressionSyntax
+    {
+        IExpressionSyntax Referent { get; }
     }
 
     public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyntax

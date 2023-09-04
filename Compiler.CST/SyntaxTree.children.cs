@@ -145,6 +145,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST
                 case IUnaryOperatorExpressionSyntax n:
                     yield return n.Operand;
                     yield break;
+                case IIdExpressionSyntax n:
+                    yield return n.Referent;
+                    yield break;
                 case IIfExpressionSyntax n:
                     yield return n.Condition;
                     yield return n.ThenBlock;

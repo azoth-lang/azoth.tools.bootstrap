@@ -6,71 +6,70 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
+
+public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
 {
-    public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
+    private readonly SymbolTreeBuilder treeBuilder;
+
+    private NamespaceSymbolBuilder(SymbolTreeBuilder treeBuilder)
     {
-        private readonly SymbolTreeBuilder treeBuilder;
+        this.treeBuilder = treeBuilder;
+    }
 
-        private NamespaceSymbolBuilder(SymbolTreeBuilder treeBuilder)
-        {
-            this.treeBuilder = treeBuilder;
-        }
+    public static void BuildNamespaceSymbols(PackageSyntax<Package> package)
+    {
+        var builder = new NamespaceSymbolBuilder(package.SymbolTree);
+        foreach (var compilationUnit in package.CompilationUnits)
+            builder.Walk(compilationUnit, package.Symbol);
+    }
 
-        public static void BuildNamespaceSymbols(PackageSyntax<Package> package)
+    protected override void WalkNonNull(ISyntax syntax, NamespaceOrPackageSymbol containingSymbol)
+    {
+        switch (syntax)
         {
-            var builder = new NamespaceSymbolBuilder(package.SymbolTree);
-            foreach (var compilationUnit in package.CompilationUnits)
-                builder.Walk(compilationUnit, package.Symbol);
-        }
-
-        protected override void WalkNonNull(ISyntax syntax, NamespaceOrPackageSymbol containingSymbol)
-        {
-            switch (syntax)
+            case ICompilationUnitSyntax syn:
             {
-                case ICompilationUnitSyntax syn:
-                {
-                    var sym = BuildNamespaceSymbol(containingSymbol, syn.ImplicitNamespaceName);
-                    WalkChildren(syn, sym);
-                }
-                break;
-                case INamespaceDeclarationSyntax syn:
-                {
-                    syn.ContainingNamespaceSymbol = containingSymbol;
-                    // TODO correctly handle Global qualifier
-                    var sym = BuildNamespaceSymbol(containingSymbol, syn.DeclaredNames);
-                    syn.Symbol.Fulfill(sym);
-                    WalkChildren(syn, sym);
-                }
-                break;
-                case INonMemberEntityDeclarationSyntax syn:
-                    syn.ContainingNamespaceSymbol = containingSymbol;
-                    break;
-                default:
-                    // do nothing
-                    return;
+                var sym = BuildNamespaceSymbol(containingSymbol, syn.ImplicitNamespaceName);
+                WalkChildren(syn, sym);
             }
-        }
-
-        private NamespaceOrPackageSymbol BuildNamespaceSymbol(
-            NamespaceOrPackageSymbol containingSymbol,
-            NamespaceName namespaces)
-        {
-            foreach (var nsName in namespaces.Segments)
+            break;
+            case INamespaceDeclarationSyntax syn:
             {
-                var nsSymbol = treeBuilder.Children(containingSymbol)
-                                     .OfType<NamespaceSymbol>()
-                                     .SingleOrDefault(c => c.Name == nsName);
-                if (nsSymbol is null)
-                {
-                    nsSymbol = new NamespaceSymbol(containingSymbol, nsName);
-                    treeBuilder.Add(nsSymbol);
-                }
+                syn.ContainingNamespaceSymbol = containingSymbol;
+                // TODO correctly handle Global qualifier
+                var sym = BuildNamespaceSymbol(containingSymbol, syn.DeclaredNames);
+                syn.Symbol.Fulfill(sym);
+                WalkChildren(syn, sym);
+            }
+            break;
+            case INonMemberEntityDeclarationSyntax syn:
+                syn.ContainingNamespaceSymbol = containingSymbol;
+                break;
+            default:
+                // do nothing
+                return;
+        }
+    }
 
-                containingSymbol = nsSymbol;
+    private NamespaceOrPackageSymbol BuildNamespaceSymbol(
+        NamespaceOrPackageSymbol containingSymbol,
+        NamespaceName namespaces)
+    {
+        foreach (var nsName in namespaces.Segments)
+        {
+            var nsSymbol = treeBuilder.Children(containingSymbol)
+                                      .OfType<NamespaceSymbol>()
+                                      .SingleOrDefault(c => c.Name == nsName);
+            if (nsSymbol is null)
+            {
+                nsSymbol = new NamespaceSymbol(containingSymbol, nsName);
+                treeBuilder.Add(nsSymbol);
             }
 
-            return containingSymbol;
+            containingSymbol = nsSymbol;
         }
+
+        return containingSymbol;
     }
 }

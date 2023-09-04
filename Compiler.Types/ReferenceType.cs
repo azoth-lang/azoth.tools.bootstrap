@@ -14,6 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         public bool IsMovableReference => Capability.IsMovable;
         public bool IsConstReference => Capability == ReferenceCapability.Constant;
         public bool IsIsolatedReference => Capability == ReferenceCapability.Isolated;
+        public bool IsIdentityReference => Capability == ReferenceCapability.Identity;
 
         public override TypeSemantics Semantics => TypeSemantics.Reference;
 

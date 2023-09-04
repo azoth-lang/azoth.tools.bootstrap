@@ -90,7 +90,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 else if (returnType == DataType.Byte)
                     exitCode = returnValue.ByteValue;
                 else
-                    throw new InvalidOperationException($"Main function cannot have return type {returnType}");
+                    throw new InvalidOperationException($"Main function cannot have return type {returnType.ToILString()}");
             }
             finally
             {
@@ -200,6 +200,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             {
                 default:
                     throw new NotImplementedException($"Can't interpret {expression.GetType().Name}");
+                case IIdExpression exp:
+                    return await ExecuteAsync(exp.Referent, variables);
                 case IMoveExpression exp:
                     return await ExecuteAsync(exp.Referent, variables);
                 case INoneLiteralExpression:
@@ -529,7 +531,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 return AzothValue.Offset(left.OffsetValue + right.OffsetValue);
             if (dataType == DataType.Size)
                 return AzothValue.Size(left.SizeValue * right.SizeValue);
-            throw new NotImplementedException($"Add {dataType}");
+            throw new NotImplementedException($"Add {dataType.ToILString()}");
         }
 
         private async ValueTask<AzothValue> SubtractAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
@@ -550,7 +552,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 return AzothValue.Offset(left.OffsetValue - right.OffsetValue);
             if (dataType == DataType.Size)
                 return AzothValue.Size(left.SizeValue - right.SizeValue);
-            throw new NotImplementedException($"Subtract {dataType}");
+            throw new NotImplementedException($"Subtract {dataType.ToILString()}");
         }
 
         private async ValueTask<AzothValue> MultiplyAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
@@ -571,7 +573,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 return AzothValue.Offset(left.OffsetValue * right.OffsetValue);
             if (dataType == DataType.Size)
                 return AzothValue.Size(left.SizeValue * right.SizeValue);
-            throw new NotImplementedException($"Multiply {dataType}");
+            throw new NotImplementedException($"Multiply {dataType.ToILString()}");
         }
 
         private async ValueTask<AzothValue> DivideAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
@@ -592,7 +594,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 return AzothValue.Offset(left.OffsetValue / right.OffsetValue);
             if (dataType == DataType.Size)
                 return AzothValue.Size(left.SizeValue / right.SizeValue);
-            throw new NotImplementedException($"Divide {dataType}");
+            throw new NotImplementedException($"Divide {dataType.ToILString()}");
         }
 
         private async ValueTask<int> CompareAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
@@ -613,7 +615,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 return left.OffsetValue.CompareTo(right.OffsetValue);
             if (dataType == DataType.Size)
                 return left.SizeValue.CompareTo(right.SizeValue);
-            throw new NotImplementedException($"Compare {dataType}");
+            if (dataType is ReferenceType { IsIdentityReference: true })
+                return ReferenceEquals(left.ObjectValue, right.ObjectValue) ? 0 : -1;
+            throw new NotImplementedException($"Compare {dataType.ToILString()}");
         }
 
         private async ValueTask<AzothValue> NegateAsync(IExpression expression, LocalVariableScope variables)
@@ -624,7 +628,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 return AzothValue.I32(-value.I32Value);
             if (dataType is IntegerConstantType)
                 return AzothValue.Int(-value.IntValue);
-            throw new NotImplementedException($"Negate {dataType}");
+            throw new NotImplementedException($"Negate {dataType.ToILString()}");
         }
 
         private static AzothValue Remainder(
@@ -642,7 +646,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 return AzothValue.Offset(dividend.OffsetValue % divisor.OffsetValue);
             if (type == DataType.Size)
                 return AzothValue.Size(dividend.SizeValue % divisor.SizeValue);
-            throw new NotImplementedException($"Remainder {type}");
+            throw new NotImplementedException($"Remainder {type.ToILString()}");
         }
 
         private async ValueTask<AzothValue> ToDisplayStringAsync(AzothValue value, NumericType type)
@@ -654,7 +658,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             else if (type == DataType.UInt32) displayString = value.U32Value.ToString();
             else if (type == DataType.Offset) displayString = value.OffsetValue.ToString();
             else if (type == DataType.Size) displayString = value.SizeValue.ToString();
-            else throw new NotImplementedException($"to_display_string({type})");
+            else throw new NotImplementedException($"to_display_string({type.ToILString()})");
 
             return await ConstructStringAsync(displayString).ConfigureAwait(false);
         }

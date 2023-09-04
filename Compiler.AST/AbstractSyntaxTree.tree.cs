@@ -274,6 +274,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST
         typeof(IBorrowExpression),
         typeof(IMoveExpression),
         typeof(IShareExpression),
+        typeof(IIdExpression),
         typeof(IRecoverExpression))]
     public partial interface IExpression : IAbstractSyntax
     {
@@ -476,6 +477,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST
     public partial interface IShareExpression : IExpression
     {
         BindingSymbol ReferencedSymbol { get; }
+        IExpression Referent { get; }
+    }
+
+    public partial interface IIdExpression : IExpression
+    {
         IExpression Referent { get; }
     }
 

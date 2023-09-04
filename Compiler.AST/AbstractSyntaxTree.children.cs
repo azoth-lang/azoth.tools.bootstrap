@@ -166,6 +166,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST
                 case IShareExpression n:
                     yield return n.Referent;
                     yield break;
+                case IIdExpression n:
+                    yield return n.Referent;
+                    yield break;
                 case IRecoverConstExpression n:
                     yield return n.Value;
                     yield break;

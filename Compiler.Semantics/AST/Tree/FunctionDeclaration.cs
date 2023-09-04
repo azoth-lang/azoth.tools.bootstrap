@@ -4,32 +4,31 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
+
+internal class FunctionDeclaration : InvocableDeclaration, IFunctionDeclaration
 {
-    internal class FunctionDeclaration : InvocableDeclaration, IFunctionDeclaration
+    public new FunctionSymbol Symbol { get; }
+    public new FixedList<INamedParameter> Parameters { get; }
+    public IBody Body { get; }
+
+    public FunctionDeclaration(
+        CodeFile file,
+        TextSpan span,
+        FunctionSymbol symbol,
+        TextSpan nameSpan,
+        FixedList<INamedParameter> parameters,
+        IBody body)
+        : base(file, span, symbol, nameSpan, parameters.ToFixedList<IConstructorParameter>())
     {
-        public new FunctionSymbol Symbol { get; }
-        public new FixedList<INamedParameter> Parameters { get; }
-        public IBody Body { get; }
+        Symbol = symbol;
+        Parameters = parameters;
+        Body = body;
+    }
 
-        public FunctionDeclaration(
-            CodeFile file,
-            TextSpan span,
-            FunctionSymbol symbol,
-            TextSpan nameSpan,
-            FixedList<INamedParameter> parameters,
-            IBody body)
-            : base(file, span, symbol, nameSpan, parameters.ToFixedList<IConstructorParameter>())
-        {
-            Symbol = symbol;
-            Parameters = parameters;
-            Body = body;
-        }
-
-        public override string ToString()
-        {
-            var returnType = Symbol.ReturnDataType != DataType.Void ? " -> " + Symbol.ReturnDataType : "";
-            return $"fn {Symbol.ContainingSymbol}.{Symbol.Name}({string.Join(", ", Parameters)}){returnType} {Body}";
-        }
+    public override string ToString()
+    {
+        var returnType = Symbol.ReturnDataType != DataType.Void ? " -> " + Symbol.ReturnDataType : "";
+        return $"fn {Symbol.ContainingSymbol}.{Symbol.Name}({string.Join(", ", Parameters)}){returnType} {Body}";
     }
 }

@@ -5,38 +5,37 @@ using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
+
+internal class UnaryOperatorExpression : Expression, IUnaryOperatorExpression
 {
-    internal class UnaryOperatorExpression : Expression, IUnaryOperatorExpression
+    public UnaryOperatorFixity Fixity { get; }
+    public UnaryOperator Operator { get; }
+    public IExpression Operand { get; }
+
+    public UnaryOperatorExpression(
+        TextSpan span,
+        DataType dataType,
+        ExpressionSemantics semantics,
+        UnaryOperatorFixity fixity,
+        UnaryOperator @operator,
+        IExpression operand)
+        : base(span, dataType, semantics)
     {
-        public UnaryOperatorFixity Fixity { get; }
-        public UnaryOperator Operator { get; }
-        public IExpression Operand { get; }
+        Fixity = fixity;
+        Operator = @operator;
+        Operand = operand;
+    }
 
-        public UnaryOperatorExpression(
-            TextSpan span,
-            DataType dataType,
-            ExpressionSemantics semantics,
-            UnaryOperatorFixity fixity,
-            UnaryOperator @operator,
-            IExpression operand)
-            : base(span, dataType, semantics)
+    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Unary;
+
+    public override string ToString()
+    {
+        return Fixity switch
         {
-            Fixity = fixity;
-            Operator = @operator;
-            Operand = operand;
-        }
-
-        protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Unary;
-
-        public override string ToString()
-        {
-            return Fixity switch
-            {
-                UnaryOperatorFixity.Prefix => $"{Operator.ToSymbolString()}{Operand.ToGroupedString(ExpressionPrecedence)}",
-                UnaryOperatorFixity.Postfix => $"{Operand.ToGroupedString(ExpressionPrecedence)}{Operator.ToSymbolString()}",
-                _ => throw ExhaustiveMatch.Failed(Fixity)
-            };
-        }
+            UnaryOperatorFixity.Prefix => $"{Operator.ToSymbolString()}{Operand.ToGroupedString(ExpressionPrecedence)}",
+            UnaryOperatorFixity.Postfix => $"{Operand.ToGroupedString(ExpressionPrecedence)}{Operator.ToSymbolString()}",
+            _ => throw ExhaustiveMatch.Failed(Fixity)
+        };
     }
 }

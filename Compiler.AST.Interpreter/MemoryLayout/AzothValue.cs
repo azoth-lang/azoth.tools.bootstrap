@@ -20,44 +20,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
         public nuint SizeValue => value.Simple.SizeValue;
 
         #region Static Factory Methods/Properties
-        public static readonly AzothValue None;
+        public static readonly AzothValue None = default;
 
-        public static AzothValue Object(AzothObject value)
-        {
-            return new AzothValue(value);
-        }
-        public static AzothValue Int(BigInteger value)
-        {
-            return new AzothValue(value);
-        }
-        public static AzothValue Bytes(byte[] value)
-        {
-            return new AzothValue(value);
-        }
-        public static AzothValue Bool(bool value)
-        {
-            return new AzothValue(value);
-        }
-        public static AzothValue Byte(byte value)
-        {
-            return new AzothValue(value);
-        }
-        public static AzothValue I32(int value)
-        {
-            return new AzothValue(value);
-        }
-        public static AzothValue U32(uint value)
-        {
-            return new AzothValue(value);
-        }
-        public static AzothValue Offset(nint value)
-        {
-            return new AzothValue(value);
-        }
-        public static AzothValue Size(nuint value)
-        {
-            return new AzothValue(value);
-        }
+        public static AzothValue Object(AzothObject value) => new(value);
+        public static AzothValue Int(BigInteger value) => new(value);
+        public static AzothValue Bytes(byte[] value) => new(value);
+        public static AzothValue Bool(bool value) => new(value);
+        public static AzothValue Byte(byte value) => new(value);
+        public static AzothValue I32(int value) => new(value);
+        public static AzothValue U32(uint value) => new(value);
+        public static AzothValue Offset(nint value) => new(value);
+
+        public static AzothValue Size(nuint value) => new(value);
+
         #endregion
 
         #region Private Constructors

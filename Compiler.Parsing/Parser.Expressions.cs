@@ -32,10 +32,7 @@ public partial class Parser
         }
     }
 
-    public IExpressionSyntax ParseExpression()
-    {
-        return ParseExpression(OperatorPrecedence.Min);
-    }
+    public IExpressionSyntax ParseExpression() => ParseExpression(OperatorPrecedence.Min);
 
     /// <summary>
     /// For expressions, we switch to a precedence climbing parser.
@@ -159,7 +156,7 @@ public partial class Parser
                     return expression;
             }
 
-            if (!(@operator is null) &&
+            if (@operator is not null &&
                 precedence is OperatorPrecedence operatorPrecedence)
             {
                 if (leftAssociative)
@@ -329,6 +326,14 @@ public partial class Parser
                 var span = TextSpan.Covering(mut, expression.Span);
                 return new MutateExpressionSyntax(span, expression);
             }
+            case IIdKeywordToken _:
+            {
+                var id = Tokens.Required<IIdKeywordToken>();
+                // `id` is like a unary operator
+                var expression = ParseExpression(OperatorPrecedence.Unary);
+                var span = TextSpan.Covering(id, expression.Span);
+                return new IdExpressionSyntax(span, expression);
+            }
             case IMoveKeywordToken _:
             {
                 var move = Tokens.Required<IMoveKeywordToken>();
@@ -471,9 +476,7 @@ public partial class Parser
     }
 
     public FixedList<IExpressionSyntax> ParseArguments()
-    {
-        return AcceptManySeparated<IExpressionSyntax, ICommaToken>(AcceptExpression);
-    }
+        => AcceptManySeparated<IExpressionSyntax, ICommaToken>(AcceptExpression);
 
     public IBlockOrResultSyntax ParseBlockOrResult()
     {

@@ -41,9 +41,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// </summary>
         [DebuggerHidden]
         public static DataType Assigned(this DataType? type)
-        {
-            return type ?? throw new InvalidOperationException("Type not assigned");
-        }
+            => type ?? throw new InvalidOperationException("Type not assigned");
 
         [DebuggerHidden]
         public static DataType Known(this DataType? type)
