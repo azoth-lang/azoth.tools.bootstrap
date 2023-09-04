@@ -28,13 +28,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols
         }
 
         public override int GetHashCode()
-        {
-            return HashCode.Combine(Name, IsMutableBinding, DataType);
-        }
+            => HashCode.Combine(Name, IsMutableBinding, DataType);
 
         public override string ToILString()
-        {
-            return $"{ContainingSymbol} {{self: {DataType}}}";
-        }
+            => $"{ContainingSymbol} {{self: {DataType.ToILString()}}}";
     }
 }

@@ -26,9 +26,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols.Trees
         }
 
         public bool Contains(Symbol symbol)
-        {
-            return symbolChildren.ContainsKey(symbol);
-        }
+            => symbolChildren.ContainsKey(symbol);
 
         public IEnumerable<Symbol> Children(Symbol symbol)
         {

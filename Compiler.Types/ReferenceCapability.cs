@@ -54,6 +54,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// <summary>
         /// Whether this kind of reference permits other readable aliases to the object to exist
         /// </summary>
+        // TODO merge with AllowsWriteAliases to just AllowsAliases?
         public bool AllowsReadAliases { get; }
 
         public bool IsMovable => AllowsWrite && !AllowsWriteAliases;
@@ -100,6 +101,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
 
         // TODO this should be can be moved?
         public bool CanBeAcquired() => !AllowsWriteAliases;
+
+        public ReferenceCapability Restrict(ReferenceCapability capability)
+        {
+            if (capability.IsAssignableFrom(this)) return capability;
+            throw new InvalidOperationException($"Cannot restrict {ToILString()} to {capability.ToILString()}.");
+        }
 
         [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member

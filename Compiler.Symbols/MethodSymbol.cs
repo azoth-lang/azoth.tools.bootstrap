@@ -38,13 +38,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols
         }
 
         public override int GetHashCode()
-        {
-            return HashCode.Combine(Name, SelfDataType, ParameterDataTypes, ReturnDataType);
-        }
+            => HashCode.Combine(Name, SelfDataType, ParameterDataTypes, ReturnDataType);
 
         public override string ToILString()
-        {
-            return $"{ContainingSymbol}::{Name}({string.Join(", ", ParameterDataTypes)}) -> {ReturnDataType}";
-        }
+            => $"{ContainingSymbol.ToILString()}::{Name}({string.Join(", ", ParameterDataTypes.Select(d => d.ToILString()))}) -> {ReturnDataType.ToILString()}";
     }
 }

@@ -23,9 +23,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols
         }
 
         public static ConstructorSymbol CreateDefault(ObjectTypeSymbol containingSymbol)
-        {
-            return new ConstructorSymbol(containingSymbol, null, FixedList<DataType>.Empty);
-        }
+            => new(containingSymbol, null, FixedList<DataType>.Empty);
 
         public override bool Equals(Symbol? other)
         {
@@ -38,14 +36,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols
         }
 
         public override int GetHashCode()
-        {
-            return HashCode.Combine(ContainingSymbol, Name, ParameterDataTypes);
-        }
+            => HashCode.Combine(ContainingSymbol, Name, ParameterDataTypes);
 
         public override string ToILString()
         {
             var name = Name is null ? $" {Name}" : "";
-            return $"{ContainingSymbol}::new{name}({string.Join(", ", ParameterDataTypes)})";
+            return $"{ContainingSymbol}::new{name}({string.Join(", ", ParameterDataTypes.Select(d => d.ToILString()))})";
         }
     }
 }

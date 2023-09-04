@@ -24,14 +24,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols
                    && Name == otherNamespace.Name;
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Name);
-        }
+        public override int GetHashCode() => HashCode.Combine(Name);
 
-        public override string ToILString()
-        {
-            return $"<{Name}>::";
-        }
+        public override string ToILString() => $"<{Name}>::";
     }
 }

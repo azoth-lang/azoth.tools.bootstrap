@@ -29,14 +29,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols
                    && DeclaresDataType == otherType.DeclaresDataType;
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Name, DeclaresDataType);
-        }
+        public override int GetHashCode() => HashCode.Combine(Name, DeclaresDataType);
 
-        public override string ToILString()
-        {
-            return Name.ToString();
-        }
+        public override string ToILString() => Name.ToString();
     }
 }

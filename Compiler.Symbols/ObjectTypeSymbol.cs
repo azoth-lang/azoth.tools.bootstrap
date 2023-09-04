@@ -37,14 +37,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols
         }
 
         public override int GetHashCode()
-        {
-            return HashCode.Combine(ContainingSymbol, Name, DeclaresDataType);
-        }
+            => HashCode.Combine(ContainingSymbol, Name, DeclaresDataType);
 
         public override string ToILString()
-        {
             // TODO include generics
-            return $"{ContainingSymbol}.{Name}";
-        }
+            => $"{ContainingSymbol.ToILString()}.{Name}";
     }
 }

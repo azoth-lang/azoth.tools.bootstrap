@@ -82,8 +82,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors
 
         public static Diagnostic CannotMoveValue(CodeFile file, IMoveExpressionSyntax expression)
         {
-            return new Diagnostic(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3009,
-                $"Cannot move value `{file.Code[expression.Referent.Span]}`");
+            return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+                3009, $"Cannot move value `{file.Code[expression.Referent.Span]}`");
         }
 
         public static Diagnostic TypeDeclaredImmutable(CodeFile file, IExpressionSyntax expression)

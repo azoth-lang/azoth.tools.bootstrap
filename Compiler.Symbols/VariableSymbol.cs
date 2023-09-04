@@ -37,15 +37,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols
         }
 
         public override int GetHashCode()
-        {
-            return HashCode.Combine(Name, DeclarationNumber, IsMutableBinding, DataType);
-        }
+            => HashCode.Combine(Name, DeclarationNumber, IsMutableBinding, DataType);
 
         public override string ToILString()
         {
             var mutable = IsMutableBinding ? "var" : "let";
             var declarationNumber = DeclarationNumber is null ? "" : "#" + DeclarationNumber;
-            return $"{ContainingSymbol} {{{mutable} {Name}{declarationNumber}: {DataType}}}";
+            return $"{ContainingSymbol.ToILString()} {{{mutable} {Name}{declarationNumber}: {DataType.ToILString()}}}";
         }
     }
 }

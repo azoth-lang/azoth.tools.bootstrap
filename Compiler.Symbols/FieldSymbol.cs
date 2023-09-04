@@ -30,14 +30,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols
         }
 
         public override int GetHashCode()
-        {
-            return HashCode.Combine(ContainingSymbol, Name, IsMutableBinding, DataType);
-        }
+            => HashCode.Combine(ContainingSymbol, Name, IsMutableBinding, DataType);
 
         public override string ToILString()
         {
             var mutable = IsMutableBinding ? "var" : "let";
-            return $"{ContainingSymbol}::{mutable} {Name}: {DataType}";
+            return $"{ContainingSymbol.ToILString()}::{mutable} {Name}: {DataType.ToILString()}";
         }
     }
 }

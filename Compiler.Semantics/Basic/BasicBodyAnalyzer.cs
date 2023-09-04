@@ -354,18 +354,22 @@ public class BasicBodyAnalyzer
                 {
                     case INameExpressionSyntax nameExpression:
                         var symbol = ResolveVariableNameSymbol(nameExpression);
-                        var type = symbol?.DataType ?? DataType.Unknown;
-                        switch (type)
+                        // Don't need to alias the symbol in capabilities because it will be moved
+                        DataType type = DataType.Unknown;
+                        if (symbol is not null)
                         {
-                            case ReferenceType referenceType:
-                                if (!referenceType.IsMovableReference)
-                                {
-                                    diagnostics.Add(TypeError.CannotMoveValue(file, exp));
-                                    type = DataType.Unknown;
-                                }
-                                break;
-                            default:
-                                throw new NotImplementedException("Non-moveable type can't be moved");
+                            var symbolType = symbol.DataType;
+                            switch (symbolType)
+                            {
+                                case ReferenceType referenceType:
+                                    if (!sharing.IsIsolated(symbol))
+                                        diagnostics.Add(TypeError.CannotMoveValue(file, exp));
+
+                                    type = referenceType.To(ReferenceCapability.Isolated);
+                                    break;
+                                    //default:
+                                    //throw new NotImplementedException("Non-moveable type can't be moved");
+                            }
                         }
                         const ExpressionSemantics semantics = ExpressionSemantics.IsolatedReference;
                         nameExpression.Semantics = semantics;
@@ -386,6 +390,7 @@ public class BasicBodyAnalyzer
                     case INameExpressionSyntax nameExpression:
                     {
                         var symbol = ResolveVariableNameSymbol(nameExpression);
+                        capabilities.Alias(symbol);
                         var type = symbol?.DataType ?? DataType.Unknown;
                         switch (type)
                         {
@@ -393,6 +398,7 @@ public class BasicBodyAnalyzer
                                 if (!referenceType.IsWritableReference)
                                 {
                                     diagnostics.Add(TypeError.ExpressionCantBeMutable(file, exp.Referent));
+                                    // TODO give a more specific type?
                                     type = DataType.Unknown;
                                 }
                                 else
@@ -493,7 +499,9 @@ public class BasicBodyAnalyzer
             }
             case INameExpressionSyntax exp:
             {
-                var type = ResolveVariableNameSymbol(exp)?.DataType ?? DataType.Unknown;
+                var symbol = ResolveVariableNameSymbol(exp);
+                capabilities.Alias(symbol);
+                var type = symbol?.DataType ?? DataType.Unknown;
                 if (implicitRead) type = type.ToReadOnly();
                 var referenceSemantics = implicitRead
                     ? ExpressionSemantics.ReadOnlyReference
@@ -709,14 +717,25 @@ public class BasicBodyAnalyzer
             case IQualifiedNameExpressionSyntax exp:
                 // TODO handle mutable self
                 var contextType = InferType(exp.Context, sharing, capabilities, false);
-                if (contextType is ReferenceType { IsWritableReference: false } contextReferenceType)
-                    diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(file, expression.Span, contextReferenceType));
+                DataType type;
                 var member = exp.Field;
-                var contextSymbol = LookupSymbolForType(contextType);
-                // TODO Deal with no context symbol
-                var memberSymbols = symbolTreeBuilder.Children(contextSymbol!).OfType<FieldSymbol>()
-                                                     .Where(s => s.Name == member.Name).ToFixedList();
-                var type = ResolvedReferencedSymbol(member, memberSymbols)?.DataType ?? DataType.Unknown;
+                switch (contextType)
+                {
+                    case ReferenceType { IsWritableReference: false } contextReferenceType:
+                        diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(file, expression.Span, contextReferenceType));
+                        goto default;
+                    case UnknownType:
+                        type = DataType.Unknown;
+                        break;
+                    default:
+                        var contextSymbol = LookupSymbolForType(contextType)
+                            ?? throw new NotImplementedException(
+                                $"Missing context symbol for type {contextType.ToILString()}.");
+                        var memberSymbols = symbolTreeBuilder.Children(contextSymbol).OfType<FieldSymbol>()
+                                                             .Where(s => s.Name == member.Name).ToFixedList();
+                        type = ResolvedReferencedSymbol(member, memberSymbols)?.DataType ?? DataType.Unknown;
+                        break;
+                }
                 member.DataType = type;
                 var semantics = member.Semantics ??= ExpressionSemantics.CreateReference;
                 exp.Semantics = semantics;

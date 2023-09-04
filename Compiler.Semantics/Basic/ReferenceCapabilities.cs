@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -32,9 +31,27 @@ public class ReferenceCapabilities
         // Other types don't have capabilities and don't need to be tracked
     }
 
-    public void Restrict(BindingSymbol symbol, ReferenceCapability type)
+    public ReferenceCapability? For(BindingSymbol? symbol)
     {
-        throw new NotImplementedException();
+        if (symbol?.DataType is ReferenceType)
+            return currentCapabilities[symbol];
+
+        // Other types don't have capabilities and don't need to be tracked
+        return null;
+    }
+
+    /// <summary>
+    /// Creates an alias of the symbol therefor restricting the capability to no longer be `iso`.
+    /// </summary>
+    public void Alias(BindingSymbol? symbol)
+    {
+        if (symbol?.DataType is ReferenceType)
+        {
+            var capability = currentCapabilities[symbol];
+            if (capability == ReferenceCapability.Isolated)
+                currentCapabilities[symbol] = ReferenceCapability.Mutable;
+        }
+        // Other types don't have capabilities and don't need to be tracked
     }
 
     public ReferenceCapabilitiesSnapshot Snapshot() => new(currentCapabilities);

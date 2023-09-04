@@ -53,9 +53,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
         public sealed override string ToString()
 #pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
-        {
-            return ToILString();
-        }
+            => ToILString();
 
         public abstract string ToILString();
     }
