@@ -211,7 +211,7 @@ public class BasicBodyAnalyzer
         switch (expression)
         {
             case IMoveExpressionSyntax:
-                type = AddImplicitConversionIfNeeded(expression, type, sharing, capabilities);
+                type = AddImplicitConversionIfNeeded(expression, type, sharing, capabilities, true);
                 // If we are explicitly moving then take the actual type
                 return type;
             case IMutateExpressionSyntax:
@@ -238,7 +238,7 @@ public class BasicBodyAnalyzer
                 }
 
                 // The conversion type may not be the inferred type of conversion fails
-                _ = AddImplicitConversionIfNeeded(expression, type, sharing, capabilities);
+                _ = AddImplicitConversionIfNeeded(expression, type, sharing, capabilities, true);
                 return type;
             }
         }
@@ -254,7 +254,7 @@ public class BasicBodyAnalyzer
         if (expression is null) return;
         // TODO use allowImplicitMutateOrMove to affect conversions applied etc.
         InferType(expression, sharing, capabilities, implicitRead: !allowImplicitMutateOrMove);
-        var actualType = AddImplicitConversionIfNeeded(expression, expectedType, sharing, capabilities);
+        var actualType = AddImplicitConversionIfNeeded(expression, expectedType, sharing, capabilities, false);
         if (!expectedType.IsAssignableFrom(actualType))
             diagnostics.Add(TypeError.CannotConvert(file, expression, actualType, expectedType));
     }
@@ -266,10 +266,11 @@ public class BasicBodyAnalyzer
         IExpressionSyntax expression,
         DataType expectedType,
         SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        ReferenceCapabilities capabilities,
+        bool allowConvertToIsolated)
     {
         var fromType = expression.DataType.Assigned();
-        var conversion = ImplicitConversion(expectedType, fromType, expression.ImplicitConversion, sharing, capabilities);
+        var conversion = ImplicitConversion(expectedType, fromType, expression.ImplicitConversion, sharing, capabilities, allowConvertToIsolated);
         if (conversion != null) expression.AddConversion(conversion);
         return expression.ConvertedDataType.Assigned();
     }
@@ -279,7 +280,8 @@ public class BasicBodyAnalyzer
         DataType fromType,
         Conversion priorConversion,
         SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        ReferenceCapabilities capabilities,
+        bool allowConvertToIsolated)
     {
         switch (toType, fromType)
         {
@@ -287,13 +289,13 @@ public class BasicBodyAnalyzer
                 // Direct subtype
                 if (to.Referent.IsAssignableFrom(from.Referent))
                     return null;
-                var liftedConversion = ImplicitConversion(to.Referent, @from.Referent, IdentityConversion.Instance, sharing, capabilities);
+                var liftedConversion = ImplicitConversion(to.Referent, @from.Referent, IdentityConversion.Instance, sharing, capabilities, allowConvertToIsolated);
                 return liftedConversion is null ? null : new LiftedConversion(liftedConversion, priorConversion);
             case (OptionalType to, /* non-optional */ DataType from):
                 var nonOptionalTo = to.Referent;
                 if (!nonOptionalTo.IsAssignableFrom(from))
                 {
-                    var conversion = ImplicitConversion(nonOptionalTo, from, priorConversion, sharing, capabilities);
+                    var conversion = ImplicitConversion(nonOptionalTo, from, priorConversion, sharing, capabilities, allowConvertToIsolated);
                     if (conversion is null) return null; // Not able to convert to the referent type
                     priorConversion = conversion;
                 }
@@ -326,7 +328,8 @@ public class BasicBodyAnalyzer
 
                 return new RecoverConst(priorConversion);
             }
-            case (ObjectType { IsIsolatedReference: true } to, ObjectType { IsIsolatedReference: false } from):
+            case (ObjectType { IsIsolatedReference: true } to, ObjectType { IsIsolatedReference: false } from)
+                when allowConvertToIsolated:
             {
                 // Try to recover isolation
                 if (!to.DeclaredTypesEquals(from) // Underlying types must match
@@ -616,7 +619,7 @@ public class BasicBodyAnalyzer
                         exp.ReferencedSymbol.Fulfill(constructorSymbol);
                         foreach (var (arg, parameterDataType) in exp.Arguments.Zip(constructorSymbol.ParameterDataTypes))
                         {
-                            AddImplicitConversionIfNeeded(arg, parameterDataType, sharing, capabilities);
+                            AddImplicitConversionIfNeeded(arg, parameterDataType, sharing, capabilities, false);
                             CheckArgumentTypeCompatibility(parameterDataType, arg);
                         }
                         constructedType = constructorSymbol.ReturnDataType;
@@ -722,7 +725,7 @@ public class BasicBodyAnalyzer
             {
                 var left = InferAssignmentTargetType(exp.LeftOperand, sharing, capabilities);
                 InferType(exp.RightOperand, sharing, capabilities);
-                AddImplicitConversionIfNeeded(exp.RightOperand, left, sharing, capabilities);
+                AddImplicitConversionIfNeeded(exp.RightOperand, left, sharing, capabilities, false);
                 var right = exp.RightOperand.ConvertedDataType.Assigned();
                 if (!left.IsAssignableFrom(right))
                     diagnostics.Add(TypeError.CannotConvert(file,
@@ -873,13 +876,13 @@ public class BasicBodyAnalyzer
                 // TODO handle mutable self parameters
                 //InsertImplicitActionIfNeeded(context, selfParamType, allowImplicitMutateAndMove: true);
 
-                AddImplicitConversionIfNeeded(context, selfParamType, sharing, capabilities);
+                AddImplicitConversionIfNeeded(context, selfParamType, sharing, capabilities, true);
                 CheckArgumentTypeCompatibility(selfParamType, context);
 
                 foreach (var (arg, type) in invocation.Arguments
                                                       .Zip(methodSymbol.ParameterDataTypes))
                 {
-                    AddImplicitConversionIfNeeded(arg, type, sharing, capabilities);
+                    AddImplicitConversionIfNeeded(arg, type, sharing, capabilities, false);
                     CheckArgumentTypeCompatibility(type, arg);
                 }
 
@@ -944,7 +947,7 @@ public class BasicBodyAnalyzer
                 invocation.ReferencedSymbol.Fulfill(functionSymbol);
                 foreach (var (arg, parameterDataType) in invocation.Arguments.Zip(functionSymbol.ParameterDataTypes))
                 {
-                    AddImplicitConversionIfNeeded(arg, parameterDataType, sharing, capabilities);
+                    AddImplicitConversionIfNeeded(arg, parameterDataType, sharing, capabilities, false);
                     CheckArgumentTypeCompatibility(parameterDataType, arg);
                 }
 
@@ -1113,8 +1116,8 @@ public class BasicBodyAnalyzer
                 InferType(binaryExpression.RightOperand, sharing, capabilities);
                 if (declaredType != null)
                 {
-                    leftType = AddImplicitConversionIfNeeded(binaryExpression.LeftOperand, declaredType, sharing, capabilities);
-                    AddImplicitConversionIfNeeded(binaryExpression.RightOperand, declaredType, sharing, capabilities);
+                    leftType = AddImplicitConversionIfNeeded(binaryExpression.LeftOperand, declaredType, sharing, capabilities, false);
+                    AddImplicitConversionIfNeeded(binaryExpression.RightOperand, declaredType, sharing, capabilities, false);
                 }
 
                 inExpression.Semantics = ExpressionSemantics.CopyValue; // Treat ranges as structs
@@ -1190,11 +1193,11 @@ public class BasicBodyAnalyzer
             //return !IsIntegerType(rightType);
             case PointerSizedIntegerType integerType:
                 // TODO this isn't right we might need to convert either of them
-                AddImplicitConversionIfNeeded(rightOperand, integerType, sharing, capabilities);
+                AddImplicitConversionIfNeeded(rightOperand, integerType, sharing, capabilities, false);
                 return rightOperand.ConvertedDataType is PointerSizedIntegerType;
             case FixedSizeIntegerType integerType:
                 // TODO this isn't right we might need to convert either of them
-                AddImplicitConversionIfNeeded(rightOperand, integerType, sharing, capabilities);
+                AddImplicitConversionIfNeeded(rightOperand, integerType, sharing, capabilities, false);
                 return rightOperand.ConvertedDataType is FixedSizeIntegerType;
             case OptionalType _:
                 throw new NotImplementedException("Trying to do math on optional type");
