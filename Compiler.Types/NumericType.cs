@@ -1,16 +1,15 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types
+namespace Azoth.Tools.Bootstrap.Compiler.Types;
+
+[Closed(
+    //typeof(FloatingPointType),
+    typeof(IntegerType))]
+public abstract class NumericType : SimpleType
 {
-    [Closed(
-        //typeof(FloatingPointType),
-        typeof(IntegerType))]
-    public abstract class NumericType : SimpleType
+    private protected NumericType(SpecialTypeName name)
+        : base(name)
     {
-        private protected NumericType(SpecialTypeName name)
-            : base(name)
-        {
-        }
     }
 }

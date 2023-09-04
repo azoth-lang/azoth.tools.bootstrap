@@ -1,17 +1,16 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 
-namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.ControlFlow
+namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.ControlFlow;
+
+internal class Break : Exception
 {
-    internal class Break : Exception
+    public AzothValue Value { get; }
+
+    public Break() { }
+
+    public Break(AzothValue value)
     {
-        public AzothValue Value { get; }
-
-        public Break() { }
-
-        public Break(AzothValue value)
-        {
-            Value = value;
-        }
+        Value = value;
     }
 }

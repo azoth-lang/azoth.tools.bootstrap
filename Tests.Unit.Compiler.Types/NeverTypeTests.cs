@@ -2,73 +2,72 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Xunit;
 
-namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
+namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
+
+[Trait("Category", "Types")]
+public class NeverTypeTests
 {
-    [Trait("Category", "Types")]
-    public class NeverTypeTests
+    [Fact]
+    public void Is_empty_data_type()
     {
-        [Fact]
-        public void Is_empty_data_type()
-        {
-            var type = NeverType.Instance;
+        var type = NeverType.Instance;
 
-            Assert.OfType<EmptyType>(type);
-        }
+        Assert.OfType<EmptyType>(type);
+    }
 
-        [Fact]
-        public void Is_known_type()
-        {
-            var type = NeverType.Instance;
+    [Fact]
+    public void Is_known_type()
+    {
+        var type = NeverType.Instance;
 
-            Assert.True(type.IsKnown);
-        }
+        Assert.True(type.IsKnown);
+    }
 
-        [Fact]
-        public void Is_empty_type()
-        {
-            var type = NeverType.Instance;
+    [Fact]
+    public void Is_empty_type()
+    {
+        var type = NeverType.Instance;
 
-            Assert.True(type.IsEmpty);
-        }
+        Assert.True(type.IsEmpty);
+    }
 
-        [Fact]
-        public void Never_has_never_semantics()
-        {
-            var type = NeverType.Instance;
+    [Fact]
+    public void Never_has_never_semantics()
+    {
+        var type = NeverType.Instance;
 
-            Assert.Equal(TypeSemantics.Never, type.Semantics);
-        }
+        Assert.Equal(TypeSemantics.Never, type.Semantics);
+    }
 
-        [Fact]
-        public void Has_special_name_never()
-        {
-            var type = NeverType.Instance;
+    [Fact]
+    public void Has_special_name_never()
+    {
+        var type = NeverType.Instance;
 
-            Assert.Equal(SpecialTypeName.Never, type.Name);
-        }
+        Assert.Equal(SpecialTypeName.Never, type.Name);
+    }
 
-        [Fact]
-        public void Has_proper_ToSourceCodeString()
-        {
-            var type = NeverType.Instance;
+    [Fact]
+    public void Has_proper_ToSourceCodeString()
+    {
+        var type = NeverType.Instance;
 
-            Assert.Equal("never", type.ToSourceCodeString());
-        }
+        Assert.Equal("never", type.ToSourceCodeString());
+    }
 
-        [Fact]
-        public void Convert_to_read_only_has_no_effect()
-        {
-            var type = NeverType.Instance;
+    [Fact]
+    public void Convert_to_read_only_has_no_effect()
+    {
+        var type = NeverType.Instance;
 
-            var @readonly = type.WithoutWrite();
+        var @readonly = type.WithoutWrite();
 
-            Assert.Equal(type, @readonly);
-        }
+        Assert.Equal(type, @readonly);
+    }
 
-        [Fact]
-        public void Is_equal_to_itself()
-        {
-            Assert.Equal(NeverType.Instance, NeverType.Instance);
-        }
+    [Fact]
+    public void Is_equal_to_itself()
+    {
+        Assert.Equal(NeverType.Instance, NeverType.Instance);
     }
 }

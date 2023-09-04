@@ -1,21 +1,20 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
+
+internal class EscapedIdentifierToken : IdentifierToken, IEscapedIdentifierToken
 {
-    internal class EscapedIdentifierToken : IdentifierToken, IEscapedIdentifierToken
+    public EscapedIdentifierToken(TextSpan span, string value)
+        : base(span, value)
     {
-        public EscapedIdentifierToken(TextSpan span, string value)
-            : base(span, value)
-        {
-        }
     }
+}
 
-    public static partial class TokenFactory
+public static partial class TokenFactory
+{
+
+    public static IEscapedIdentifierToken EscapedIdentifier(TextSpan span, string value)
     {
-
-        public static IEscapedIdentifierToken EscapedIdentifier(TextSpan span, string value)
-        {
-            return new EscapedIdentifierToken(span, value);
-        }
+        return new EscapedIdentifierToken(span, value);
     }
 }

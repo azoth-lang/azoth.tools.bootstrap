@@ -1,31 +1,30 @@
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Core.Operators
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+
+public static class BinaryOperatorExtensions
 {
-    public static class BinaryOperatorExtensions
+    public static string ToSymbolString(this BinaryOperator @operator)
     {
-        public static string ToSymbolString(this BinaryOperator @operator)
+        return @operator switch
         {
-            return @operator switch
-            {
-                BinaryOperator.Plus => "+",
-                BinaryOperator.Minus => "-",
-                BinaryOperator.Asterisk => "*",
-                BinaryOperator.Slash => "/",
-                BinaryOperator.EqualsEquals => "==",
-                BinaryOperator.NotEqual => "=/=",
-                BinaryOperator.LessThan => "<",
-                BinaryOperator.LessThanOrEqual => "<=",
-                BinaryOperator.GreaterThan => ">",
-                BinaryOperator.GreaterThanOrEqual => ">=",
-                BinaryOperator.And => "and",
-                BinaryOperator.Or => "or",
-                BinaryOperator.DotDot => "..",
-                BinaryOperator.LessThanDotDot => "<..",
-                BinaryOperator.DotDotLessThan => "..<",
-                BinaryOperator.LessThanDotDotLessThan => "<..<",
-                _ => throw ExhaustiveMatch.Failed(@operator)
-            };
-        }
+            BinaryOperator.Plus => "+",
+            BinaryOperator.Minus => "-",
+            BinaryOperator.Asterisk => "*",
+            BinaryOperator.Slash => "/",
+            BinaryOperator.EqualsEquals => "==",
+            BinaryOperator.NotEqual => "=/=",
+            BinaryOperator.LessThan => "<",
+            BinaryOperator.LessThanOrEqual => "<=",
+            BinaryOperator.GreaterThan => ">",
+            BinaryOperator.GreaterThanOrEqual => ">=",
+            BinaryOperator.And => "and",
+            BinaryOperator.Or => "or",
+            BinaryOperator.DotDot => "..",
+            BinaryOperator.LessThanDotDot => "<..",
+            BinaryOperator.DotDotLessThan => "..<",
+            BinaryOperator.LessThanDotDotLessThan => "<..<",
+            _ => throw ExhaustiveMatch.Failed(@operator)
+        };
     }
 }

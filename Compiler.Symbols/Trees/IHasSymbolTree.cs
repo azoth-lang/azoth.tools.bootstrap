@@ -1,7 +1,6 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Symbols.Trees
+namespace Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
+
+public interface IHasSymbolTree
 {
-    public interface IHasSymbolTree
-    {
-        FixedSymbolTree SymbolTree { get; }
-    }
+    FixedSymbolTree SymbolTree { get; }
 }

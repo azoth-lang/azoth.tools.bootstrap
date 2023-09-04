@@ -2,59 +2,58 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Xunit;
 
-namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Lexing.Helpers
+namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Lexing.Helpers;
+
+// TODO use xUnit assert extensions
+public static class AssertExtensions
 {
-    // TODO use xUnit assert extensions
-    public static class AssertExtensions
+    public static void AssertIdentifier(
+        this IToken token,
+        int expectedStart,
+        int expectedLength,
+        string expectedValue)
     {
-        public static void AssertIdentifier(
-            this IToken token,
-            int expectedStart,
-            int expectedLength,
-            string expectedValue)
-        {
-            Assert.NotNull(token);
-            var identifier = Assert.OfType<IIdentifierToken>(token);
-            Assert.True(expectedStart == identifier.Span.Start, $"Expected token start {expectedStart}, was {identifier.Span.Start}");
-            Assert.True(expectedLength == identifier.Span.Length, $"Expected token length {expectedLength}, was {identifier.Span.Length}");
-            Assert.Equal(expectedValue, identifier.Value);
-        }
+        Assert.NotNull(token);
+        var identifier = Assert.OfType<IIdentifierToken>(token);
+        Assert.True(expectedStart == identifier.Span.Start, $"Expected token start {expectedStart}, was {identifier.Span.Start}");
+        Assert.True(expectedLength == identifier.Span.Length, $"Expected token length {expectedLength}, was {identifier.Span.Length}");
+        Assert.Equal(expectedValue, identifier.Value);
+    }
 
-        public static void AssertStringLiteral(
-            this IToken token,
-            int expectedStart,
-            int expectedLength,
-            string expectedValue)
-        {
-            Assert.NotNull(token);
-            var identifier = Assert.OfType<IStringLiteralToken>(token);
-            Assert.True(expectedStart == identifier.Span.Start, $"Expected token start {expectedStart}, was {identifier.Span.Start}");
-            Assert.True(expectedLength == identifier.Span.Length, $"Expected token length {expectedLength}, was {identifier.Span.Length}");
-            Assert.Equal(expectedValue, identifier.Value);
-        }
+    public static void AssertStringLiteral(
+        this IToken token,
+        int expectedStart,
+        int expectedLength,
+        string expectedValue)
+    {
+        Assert.NotNull(token);
+        var identifier = Assert.OfType<IStringLiteralToken>(token);
+        Assert.True(expectedStart == identifier.Span.Start, $"Expected token start {expectedStart}, was {identifier.Span.Start}");
+        Assert.True(expectedLength == identifier.Span.Length, $"Expected token length {expectedLength}, was {identifier.Span.Length}");
+        Assert.Equal(expectedValue, identifier.Value);
+    }
 
-        public static void AssertIs<T>(
-            this IToken token,
-            int expectedStart,
-            int expectedLength)
-            where T : IToken
-        {
-            Assert.NotNull(token);
-            Assert.OfType<T>(token);
-            Assert.True(expectedStart == token.Span.Start, $"Expected token start {expectedStart}, was {token.Span.Start}");
-            Assert.True(expectedLength == token.Span.Length, $"Expected token length {expectedLength}, was {token.Span.Length}");
-        }
+    public static void AssertIs<T>(
+        this IToken token,
+        int expectedStart,
+        int expectedLength)
+        where T : IToken
+    {
+        Assert.NotNull(token);
+        Assert.OfType<T>(token);
+        Assert.True(expectedStart == token.Span.Start, $"Expected token start {expectedStart}, was {token.Span.Start}");
+        Assert.True(expectedLength == token.Span.Length, $"Expected token length {expectedLength}, was {token.Span.Length}");
+    }
 
-        public static void AssertError(this Diagnostic diagnostic, int errorCode, int start, int length)
-        {
-            Assert.NotNull(diagnostic);
-            Assert.Equal(DiagnosticLevel.CompilationError, diagnostic.Level);
-            AssertLexingDiagnostic(diagnostic, errorCode, start, length);
-        }
+    public static void AssertError(this Diagnostic diagnostic, int errorCode, int start, int length)
+    {
+        Assert.NotNull(diagnostic);
+        Assert.Equal(DiagnosticLevel.CompilationError, diagnostic.Level);
+        AssertLexingDiagnostic(diagnostic, errorCode, start, length);
+    }
 
-        public static void AssertLexingDiagnostic(this Diagnostic diagnostic, int errorCode, int start, int length)
-        {
-            Assert.Diagnostic(diagnostic, DiagnosticPhase.Lexing, errorCode, start, length);
-        }
+    public static void AssertLexingDiagnostic(this Diagnostic diagnostic, int errorCode, int start, int length)
+    {
+        Assert.Diagnostic(diagnostic, DiagnosticPhase.Lexing, errorCode, start, length);
     }
 }

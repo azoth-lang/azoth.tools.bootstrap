@@ -1,13 +1,12 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Tests.Unit.Fakes;
 
-namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Lexing.Fakes
+namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Lexing.Fakes;
+
+public static class FakeParseContext
 {
-    public static class FakeParseContext
+    public static ParseContext For(string text)
     {
-        public static ParseContext For(string text)
-        {
-            return new ParseContext(FakeCodeFile.For(text), new Diagnostics());
-        }
+        return new ParseContext(FakeCodeFile.For(text), new Diagnostics());
     }
 }

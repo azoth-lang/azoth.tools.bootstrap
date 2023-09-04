@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
-namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
+namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
+
+internal class AzothObject : Dictionary<Name, AzothValue>
 {
-    internal class AzothObject : Dictionary<Name, AzothValue>
+    public readonly VTable VTable;
+    public AzothObject(VTable vTable)
     {
-        public readonly VTable VTable;
-        public AzothObject(VTable vTable)
-        {
-            VTable = vTable;
-        }
+        VTable = vTable;
     }
 }

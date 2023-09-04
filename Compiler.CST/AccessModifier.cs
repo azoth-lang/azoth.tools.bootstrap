@@ -1,9 +1,8 @@
-namespace Azoth.Tools.Bootstrap.Compiler.CST
+namespace Azoth.Tools.Bootstrap.Compiler.CST;
+
+public enum AccessModifier
 {
-    public enum AccessModifier
-    {
-        Private = 1,
-        Public,
-        Published,
-    }
+    Private = 1,
+    Public,
+    Published,
 }

@@ -1,12 +1,11 @@
 using System;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Core.Promises
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Promises;
+
+public static class PromiseExtensions
 {
-    public static class PromiseExtensions
+    public static IPromise<S> Select<T, S>(this IPromise<T> promise, Func<T, S> selector)
     {
-        public static IPromise<S> Select<T, S>(this IPromise<T> promise, Func<T, S> selector)
-        {
-            return new DerivedPromise<T, S>(promise, selector);
-        }
+        return new DerivedPromise<T, S>(promise, selector);
     }
 }

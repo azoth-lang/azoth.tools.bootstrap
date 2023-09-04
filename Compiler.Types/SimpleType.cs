@@ -2,41 +2,40 @@ using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types
+namespace Azoth.Tools.Bootstrap.Compiler.Types;
+
+[Closed(
+    typeof(BoolType),
+    typeof(NumericType))]
+public abstract class SimpleType : ValueType
 {
-    [Closed(
-        typeof(BoolType),
-        typeof(NumericType))]
-    public abstract class SimpleType : ValueType
+    public SpecialTypeName Name { get; }
+
+    public override TypeSemantics Semantics => TypeSemantics.Copy;
+
+    private protected SimpleType(SpecialTypeName name)
     {
-        public SpecialTypeName Name { get; }
+        Name = name;
+    }
 
-        public override TypeSemantics Semantics => TypeSemantics.Copy;
+    public override string ToSourceCodeString()
+    {
+        return Name.ToString();
+    }
 
-        private protected SimpleType(SpecialTypeName name)
-        {
-            Name = name;
-        }
+    public override string ToILString()
+    {
+        return ToSourceCodeString();
+    }
 
-        public override string ToSourceCodeString()
-        {
-            return Name.ToString();
-        }
+    public override bool Equals(DataType? other)
+    {
+        // Most simple types are fixed instances, so a reference comparision suffices
+        return ReferenceEquals(this, other);
+    }
 
-        public override string ToILString()
-        {
-            return ToSourceCodeString();
-        }
-
-        public override bool Equals(DataType? other)
-        {
-            // Most simple types are fixed instances, so a reference comparision suffices
-            return ReferenceEquals(this, other);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Name);
-        }
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Name);
     }
 }

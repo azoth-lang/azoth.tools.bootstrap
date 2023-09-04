@@ -1,9 +1,8 @@
 using System.Numerics;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
+
+public partial interface IIntegerLiteralToken : ILiteralToken
 {
-    public partial interface IIntegerLiteralToken : ILiteralToken
-    {
-        BigInteger Value { get; }
-    }
+    BigInteger Value { get; }
 }

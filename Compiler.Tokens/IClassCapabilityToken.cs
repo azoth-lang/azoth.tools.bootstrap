@@ -1,16 +1,15 @@
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens
-{
-    [Closed(
-        typeof(IConstKeywordToken),
-        typeof(IMutableKeywordToken),
-        typeof(IIsolatedKeywordToken))]
-    public interface IClassCapabilityToken : IKeywordToken { }
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
 
-    public partial interface IConstKeywordToken : IClassCapabilityToken { }
+[Closed(
+    typeof(IConstKeywordToken),
+    typeof(IMutableKeywordToken),
+    typeof(IIsolatedKeywordToken))]
+public interface IClassCapabilityToken : IKeywordToken { }
 
-    public partial interface IMutableKeywordToken : IClassCapabilityToken { }
+public partial interface IConstKeywordToken : IClassCapabilityToken { }
 
-    public partial interface IIsolatedKeywordToken : IClassCapabilityToken { }
-}
+public partial interface IMutableKeywordToken : IClassCapabilityToken { }
+
+public partial interface IIsolatedKeywordToken : IClassCapabilityToken { }

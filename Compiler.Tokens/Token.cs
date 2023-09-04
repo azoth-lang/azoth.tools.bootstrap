@@ -1,18 +1,17 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens
-{
-    internal abstract class Token
-    {
-        public TextSpan Span { get; }
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
 
-        protected Token(TextSpan span)
-        {
-            Span = span;
-        }
-        public string Text(CodeText code)
-        {
-            return Span.GetText(code.Text);
-        }
+internal abstract class Token
+{
+    public TextSpan Span { get; }
+
+    protected Token(TextSpan span)
+    {
+        Span = span;
+    }
+    public string Text(CodeText code)
+    {
+        return Span.GetText(code.Text);
     }
 }

@@ -1,9 +1,8 @@
-namespace Azoth.Tools.Bootstrap.Lab.Config
+namespace Azoth.Tools.Bootstrap.Lab.Config;
+
+internal enum ProjectTemplate
 {
-    internal enum ProjectTemplate
-    {
-        App,
-        Lib,
-        //Web, // TODO add web template
-    }
+    App,
+    Lib,
+    //Web, // TODO add web template
 }

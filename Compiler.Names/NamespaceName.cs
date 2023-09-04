@@ -4,90 +4,89 @@ using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Names
+namespace Azoth.Tools.Bootstrap.Compiler.Names;
+
+public sealed class NamespaceName : IEquatable<NamespaceName>
 {
-    public sealed class NamespaceName : IEquatable<NamespaceName>
+    public static readonly NamespaceName Global = new NamespaceName(FixedList<Name>.Empty);
+
+    public FixedList<Name> Segments { [DebuggerStepThrough] get; }
+
+    public NamespaceName(FixedList<Name> segments)
     {
-        public static readonly NamespaceName Global = new NamespaceName(FixedList<Name>.Empty);
+        Segments = segments;
+    }
 
-        public FixedList<Name> Segments { [DebuggerStepThrough] get; }
+    public NamespaceName(IEnumerable<Name> segments)
+        : this(segments.ToFixedList()) { }
 
-        public NamespaceName(FixedList<Name> segments)
-        {
-            Segments = segments;
-        }
+    public NamespaceName(params string[] segments)
+        : this(segments.Select(s => new Name(s)).ToFixedList()) { }
 
-        public NamespaceName(IEnumerable<Name> segments)
-            : this(segments.ToFixedList()) { }
+    public NamespaceName(Name segment)
+    {
+        Segments = segment.Yield().ToFixedList();
+    }
 
-        public NamespaceName(params string[] segments)
-            : this(segments.Select(s => new Name(s)).ToFixedList()) { }
+    public NamespaceName Qualify(NamespaceName name)
+    {
+        return new NamespaceName(Segments.Concat(name.Segments));
+    }
 
-        public NamespaceName(Name segment)
-        {
-            Segments = segment.Yield().ToFixedList();
-        }
+    public IEnumerable<NamespaceName> NamespaceNames()
+    {
+        yield return Global;
+        for (int n = 1; n <= Segments.Count; n++)
+            yield return new NamespaceName(Segments.Take(n));
+    }
 
-        public NamespaceName Qualify(NamespaceName name)
-        {
-            return new NamespaceName(Segments.Concat(name.Segments));
-        }
+    public override string ToString()
+    {
+        return string.Join('.', Segments);
+    }
 
-        public IEnumerable<NamespaceName> NamespaceNames()
-        {
-            yield return Global;
-            for (int n = 1; n <= Segments.Count; n++)
-                yield return new NamespaceName(Segments.Take(n));
-        }
+    public bool Equals(NamespaceName? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return Segments.Equals(other.Segments);
+    }
 
-        public override string ToString()
-        {
-            return string.Join('.', Segments);
-        }
+    public override bool Equals(object? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is NamespaceName name && Equals(name);
+    }
 
-        public bool Equals(NamespaceName? other)
-        {
-            if (other is null) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Segments.Equals(other.Segments);
-        }
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Segments);
+    }
 
-        public override bool Equals(object? other)
-        {
-            if (other is null) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return other is NamespaceName name && Equals(name);
-        }
+    public static bool operator ==(NamespaceName? left, NamespaceName? right)
+    {
+        return Equals(left, right);
+    }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Segments);
-        }
+    public static bool operator !=(NamespaceName? left, NamespaceName? right)
+    {
+        return !Equals(left, right);
+    }
 
-        public static bool operator ==(NamespaceName? left, NamespaceName? right)
-        {
-            return Equals(left, right);
-        }
+    public static implicit operator NamespaceName(Name name)
+    {
+        return new NamespaceName(name);
+    }
 
-        public static bool operator !=(NamespaceName? left, NamespaceName? right)
-        {
-            return !Equals(left, right);
-        }
+    public static implicit operator NamespaceName(string text)
+    {
+        return new NamespaceName(text);
+    }
 
-        public static implicit operator NamespaceName(Name name)
-        {
-            return new NamespaceName(name);
-        }
-
-        public static implicit operator NamespaceName(string text)
-        {
-            return new NamespaceName(text);
-        }
-
-        public bool IsNestedIn(NamespaceName ns)
-        {
-            return ns.Segments.Count < Segments.Count
-                   && ns.Segments.SequenceEqual(Segments.Take(ns.Segments.Count));
-        }
+    public bool IsNestedIn(NamespaceName ns)
+    {
+        return ns.Segments.Count < Segments.Count
+               && ns.Segments.SequenceEqual(Segments.Take(ns.Segments.Count));
     }
 }

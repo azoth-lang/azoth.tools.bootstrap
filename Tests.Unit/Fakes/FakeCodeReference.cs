@@ -2,22 +2,21 @@ using System;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Tests.Unit.Fakes
+namespace Azoth.Tools.Bootstrap.Tests.Unit.Fakes;
+
+internal class FakeCodeReference : CodeReference
 {
-    internal class FakeCodeReference : CodeReference
+    #region Singleton
+
+    public static readonly FakeCodeReference Instance = new FakeCodeReference();
+
+    private FakeCodeReference()
+        : base(FixedList<string>.Empty)
+    { }
+    #endregion
+
+    public override string ToString()
     {
-        #region Singleton
-
-        public static readonly FakeCodeReference Instance = new FakeCodeReference();
-
-        private FakeCodeReference()
-            : base(FixedList<string>.Empty)
-        { }
-        #endregion
-
-        public override string ToString()
-        {
-            throw new InvalidOperationException("Fake doesn't support ToString()");
-        }
+        throw new InvalidOperationException("Fake doesn't support ToString()");
     }
 }

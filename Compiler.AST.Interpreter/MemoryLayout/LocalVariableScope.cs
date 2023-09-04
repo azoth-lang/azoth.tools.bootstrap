@@ -2,43 +2,42 @@ using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
+namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
+
+internal class LocalVariableScope
 {
-    internal class LocalVariableScope
+    private readonly LocalVariableScope? enclosingScope;
+    private readonly IDictionary<BindingSymbol, AzothValue> values = new Dictionary<BindingSymbol, AzothValue>();
+
+    public LocalVariableScope(LocalVariableScope? enclosingScope = null)
     {
-        private readonly LocalVariableScope? enclosingScope;
-        private readonly IDictionary<BindingSymbol, AzothValue> values = new Dictionary<BindingSymbol, AzothValue>();
+        this.enclosingScope = enclosingScope;
+    }
 
-        public LocalVariableScope(LocalVariableScope? enclosingScope = null)
+    public AzothValue this[BindingSymbol symbol]
+    {
+        get
         {
-            this.enclosingScope = enclosingScope;
+            if (values.TryGetValue(symbol, out var value)) return value;
+            if (enclosingScope is null)
+                throw new InvalidOperationException($"Value for variable '{symbol}' not defined ");
+            return enclosingScope[symbol];
         }
-
-        public AzothValue this[BindingSymbol symbol]
+        set
         {
-            get
+            if (values.ContainsKey(symbol))
             {
-                if (values.TryGetValue(symbol, out var value)) return value;
-                if (enclosingScope is null)
-                    throw new InvalidOperationException($"Value for variable '{symbol}' not defined ");
-                return enclosingScope[symbol];
+                values[symbol] = value;
+                return;
             }
-            set
-            {
-                if (values.ContainsKey(symbol))
-                {
-                    values[symbol] = value;
-                    return;
-                }
-                if (enclosingScope is null)
-                    throw new InvalidOperationException($"Value for variable '{symbol}' not defined ");
-                enclosingScope[symbol] = value;
-            }
+            if (enclosingScope is null)
+                throw new InvalidOperationException($"Value for variable '{symbol}' not defined ");
+            enclosingScope[symbol] = value;
         }
+    }
 
-        public void Add(BindingSymbol symbol, AzothValue value)
-        {
-            values.Add(symbol, value);
-        }
+    public void Add(BindingSymbol symbol, AzothValue value)
+    {
+        values.Add(symbol, value);
     }
 }

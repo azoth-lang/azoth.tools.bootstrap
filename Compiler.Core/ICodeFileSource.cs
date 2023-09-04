@@ -1,13 +1,12 @@
 using System.Threading.Tasks;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Core
+namespace Azoth.Tools.Bootstrap.Compiler.Core;
+
+/// <summary>
+/// A source for
+/// </summary>
+public interface ICodeFileSource
 {
-    /// <summary>
-    /// A source for
-    /// </summary>
-    public interface ICodeFileSource
-    {
-        CodeFile Load();
-        Task<CodeFile> LoadAsync();
-    }
+    CodeFile Load();
+    Task<CodeFile> LoadAsync();
 }

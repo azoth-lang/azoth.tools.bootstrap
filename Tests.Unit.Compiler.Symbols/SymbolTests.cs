@@ -3,31 +3,30 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Moq;
 using Xunit;
 
-namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Symbols
+namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Symbols;
+
+[Trait("Category", "Symbols")]
+public class SymbolTests : SymbolTestFixture
 {
-    [Trait("Category", "Symbols")]
-    public class SymbolTests : SymbolTestFixture
+    [Fact]
+    public void Symbol_not_in_namespace_is_global()
     {
-        [Fact]
-        public void Symbol_not_in_namespace_is_global()
-        {
-            var symbol = FakeSymbol(null, Name("My_Class"));
+        var symbol = FakeSymbol(null, Name("My_Class"));
 
-            Assert.True(symbol.IsGlobal);
-        }
+        Assert.True(symbol.IsGlobal);
+    }
 
-        [Fact]
-        public void Symbol_in_namespace_is_not_global()
-        {
-            var symbol = FakeSymbol(Namespace(), Name("My_Class"));
+    [Fact]
+    public void Symbol_in_namespace_is_not_global()
+    {
+        var symbol = FakeSymbol(Namespace(), Name("My_Class"));
 
-            Assert.False(symbol.IsGlobal);
-        }
+        Assert.False(symbol.IsGlobal);
+    }
 
-        private static Symbol FakeSymbol(NamespaceOrPackageSymbol? containing, Name name)
-        {
-            // Argument is allowed to be null, Moq doesn't declare parameter correctly
-            return new Mock<Symbol>(MockBehavior.Default, containing!, name).Object;
-        }
+    private static Symbol FakeSymbol(NamespaceOrPackageSymbol? containing, Name name)
+    {
+        // Argument is allowed to be null, Moq doesn't declare parameter correctly
+        return new Mock<Symbol>(MockBehavior.Default, containing!, name).Object;
     }
 }

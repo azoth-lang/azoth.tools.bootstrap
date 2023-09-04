@@ -1,21 +1,20 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
+
+internal abstract class IdentifierToken : Token
 {
-    internal abstract class IdentifierToken : Token
+    public string Value { get; }
+
+    protected IdentifierToken(TextSpan span, string value)
+        : base(span)
     {
-        public string Value { get; }
+        Value = value;
+    }
 
-        protected IdentifierToken(TextSpan span, string value)
-            : base(span)
-        {
-            Value = value;
-        }
-
-        // Helpful for debugging
-        public override string ToString()
-        {
-            return Value;
-        }
+    // Helpful for debugging
+    public override string ToString()
+    {
+        return Value;
     }
 }

@@ -1,7 +1,6 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
+
+public partial interface IStringLiteralToken : IEssentialToken
 {
-    public partial interface IStringLiteralToken : IEssentialToken
-    {
-        string Value { get; }
-    }
+    string Value { get; }
 }

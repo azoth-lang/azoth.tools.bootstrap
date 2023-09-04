@@ -1,4 +1,3 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Types
-{
-    // TODO implement StringConstantType
-}
+namespace Azoth.Tools.Bootstrap.Compiler.Types;
+
+// TODO implement StringConstantType

@@ -4,25 +4,24 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace Azoth.Tools.Bootstrap.Framework
+namespace Azoth.Tools.Bootstrap.Framework;
+
+/// <summary>
+/// This class is used in place of the FixedList[T] class by the debugger for
+/// display purposes. It just exposes the collection items as an array at the root.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public sealed class CollectionDebugView<T>
+    where T : class
 {
-    /// <summary>
-    /// This class is used in place of the FixedList[T] class by the debugger for
-    /// display purposes. It just exposes the collection items as an array at the root.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public sealed class CollectionDebugView<T>
-        where T : class
+    private readonly IEnumerable<T> collection;
+
+    public CollectionDebugView(IEnumerable<T> collection)
     {
-        private readonly IEnumerable<T> collection;
-
-        public CollectionDebugView(IEnumerable<T> collection)
-        {
-            this.collection = collection ?? throw new ArgumentNullException(nameof(collection));
-        }
-
-        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        [SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
-        public T[] Items => collection.ToArray();
+        this.collection = collection ?? throw new ArgumentNullException(nameof(collection));
     }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+    [SuppressMessage("Performance", "CA1819:Properties should not return arrays")]
+    public T[] Items => collection.ToArray();
 }

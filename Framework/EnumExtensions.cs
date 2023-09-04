@@ -1,13 +1,12 @@
 using System;
 
-namespace Azoth.Tools.Bootstrap.Framework
+namespace Azoth.Tools.Bootstrap.Framework;
+
+public static class EnumExtensions
 {
-    public static class EnumExtensions
+    public static bool IsDefined<TEnum>(this TEnum value)
+        where TEnum : struct, Enum
     {
-        public static bool IsDefined<TEnum>(this TEnum value)
-            where TEnum : struct, Enum
-        {
-            return Enum.IsDefined(typeof(TEnum), value);
-        }
+        return Enum.IsDefined(typeof(TEnum), value);
     }
 }

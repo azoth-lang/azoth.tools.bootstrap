@@ -1,4 +1,3 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens
-{
-    public interface IEscapedIdentifierToken : IIdentifierToken { }
-}
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
+
+public interface IEscapedIdentifierToken : IIdentifierToken { }

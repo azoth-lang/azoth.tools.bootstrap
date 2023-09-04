@@ -1,19 +1,18 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 
-namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.ControlFlow
+namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.ControlFlow;
+
+internal class Return : Exception
 {
-    internal class Return : Exception
+    public AzothValue Value { get; }
+
+    public Return()
     {
-        public AzothValue Value { get; }
+    }
 
-        public Return()
-        {
-        }
-
-        public Return(AzothValue value)
-        {
-            Value = value;
-        }
+    public Return(AzothValue value)
+    {
+        Value = value;
     }
 }

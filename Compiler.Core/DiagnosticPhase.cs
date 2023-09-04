@@ -1,9 +1,8 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Core
+namespace Azoth.Tools.Bootstrap.Compiler.Core;
+
+public enum DiagnosticPhase
 {
-    public enum DiagnosticPhase
-    {
-        Lexing = 1,
-        Parsing,
-        Analysis,
-    }
+    Lexing = 1,
+    Parsing,
+    Analysis,
 }

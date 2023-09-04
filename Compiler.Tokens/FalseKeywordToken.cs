@@ -1,7 +1,6 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
+
+internal partial class FalseKeywordToken
 {
-    internal partial class FalseKeywordToken
-    {
-        public bool Value => false;
-    }
+    public bool Value => false;
 }

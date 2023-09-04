@@ -1,9 +1,8 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Core.Promises
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Promises;
+
+public enum PromiseState
 {
-    public enum PromiseState
-    {
-        Pending = 0,
-        InProgress,
-        Fulfilled
-    }
+    Pending = 0,
+    InProgress,
+    Fulfilled
 }

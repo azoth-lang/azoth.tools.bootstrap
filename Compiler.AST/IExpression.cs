@@ -1,9 +1,8 @@
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
-namespace Azoth.Tools.Bootstrap.Compiler.AST
+namespace Azoth.Tools.Bootstrap.Compiler.AST;
+
+public partial interface IExpression
 {
-    public partial interface IExpression
-    {
-        string ToGroupedString(OperatorPrecedence surroundingPrecedence);
-    }
+    string ToGroupedString(OperatorPrecedence surroundingPrecedence);
 }

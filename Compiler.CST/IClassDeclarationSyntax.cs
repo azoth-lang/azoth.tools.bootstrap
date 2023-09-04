@@ -1,9 +1,8 @@
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CST
+namespace Azoth.Tools.Bootstrap.Compiler.CST;
+
+public partial interface IClassDeclarationSyntax
 {
-    public partial interface IClassDeclarationSyntax
-    {
-        void CreateDefaultConstructor(SymbolTreeBuilder symbolTree);
-    }
+    void CreateDefaultConstructor(SymbolTreeBuilder symbolTree);
 }

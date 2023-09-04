@@ -6,53 +6,52 @@ using System.Linq.Expressions;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
+
+public static partial class TokenTypes
 {
-    public static partial class TokenTypes
+    // Must be before KeywordFactories because it is used in the construction of it
+    private static readonly int KeywordTokenLength = "KeywordToken".Length;
+
+    public static readonly FixedDictionary<string, Func<TextSpan, IKeywordToken>> KeywordFactories =
+        BuildKeywordFactories();
+
+    public static readonly IReadOnlyCollection<string> Keywords = KeywordFactories.Keys.ToHashSet();
+
+    private static FixedDictionary<string, Func<TextSpan, IKeywordToken>> BuildKeywordFactories()
     {
-        // Must be before KeywordFactories because it is used in the construction of it
-        private static readonly int KeywordTokenLength = "KeywordToken".Length;
+        var factories = new Dictionary<string, Func<TextSpan, IKeywordToken>>();
 
-        public static readonly FixedDictionary<string, Func<TextSpan, IKeywordToken>> KeywordFactories =
-            BuildKeywordFactories();
-
-        public static readonly IReadOnlyCollection<string> Keywords = KeywordFactories.Keys.ToHashSet();
-
-        private static FixedDictionary<string, Func<TextSpan, IKeywordToken>> BuildKeywordFactories()
+        foreach (var tokenType in Keyword)
         {
-            var factories = new Dictionary<string, Func<TextSpan, IKeywordToken>>();
-
-            foreach (var tokenType in Keyword)
+            var tokenTypeName = tokenType.Name;
+            string keyword = tokenTypeName switch
             {
-                var tokenTypeName = tokenType.Name;
-                string keyword = tokenTypeName switch
-                {
-                    // Some exceptions to the normal rule
-                    "FunctionKeywordToken" => "fn",
-                    "SelfTypeKeywordToken" => "Self",
-                    "IsolatedKeywordToken" => "iso",
-                    "MutableKeywordToken" => "mut",
-                    "AnyKeywordToken" => "Any",
-                    "TypeKeywordToken" => "Type",
-                    "UnderscoreKeywordToken" => "_",
-                    _ => tokenTypeName.Substring(0, tokenTypeName.Length - KeywordTokenLength)
-                                      .ToLower(CultureInfo.InvariantCulture)
-                };
-                var factory = CompileFactory<IKeywordToken>(tokenType);
-                factories.Add(keyword, factory);
-            }
-            return factories.ToFixedDictionary();
+                // Some exceptions to the normal rule
+                "FunctionKeywordToken" => "fn",
+                "SelfTypeKeywordToken" => "Self",
+                "IsolatedKeywordToken" => "iso",
+                "MutableKeywordToken" => "mut",
+                "AnyKeywordToken" => "Any",
+                "TypeKeywordToken" => "Type",
+                "UnderscoreKeywordToken" => "_",
+                _ => tokenTypeName.Substring(0, tokenTypeName.Length - KeywordTokenLength)
+                                  .ToLower(CultureInfo.InvariantCulture)
+            };
+            var factory = CompileFactory<IKeywordToken>(tokenType);
+            factories.Add(keyword, factory);
         }
+        return factories.ToFixedDictionary();
+    }
 
-        private static Func<TextSpan, T> CompileFactory<T>(Type tokenType)
-            where T : IToken
-        {
-            var spanParam = Expression.Parameter(typeof(TextSpan), "span");
-            var newExpression = Expression.New(tokenType.GetConstructor(new[] { typeof(TextSpan) })!, spanParam);
-            var factory =
-                Expression.Lambda<Func<TextSpan, T>>(
-                    newExpression, spanParam);
-            return factory.Compile();
-        }
+    private static Func<TextSpan, T> CompileFactory<T>(Type tokenType)
+        where T : IToken
+    {
+        var spanParam = Expression.Parameter(typeof(TextSpan), "span");
+        var newExpression = Expression.New(tokenType.GetConstructor(new[] { typeof(TextSpan) })!, spanParam);
+        var factory =
+            Expression.Lambda<Func<TextSpan, T>>(
+                newExpression, spanParam);
+        return factory.Compile();
     }
 }

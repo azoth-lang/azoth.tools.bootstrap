@@ -1,7 +1,6 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
+
+internal partial class TrueKeywordToken
 {
-    internal partial class TrueKeywordToken
-    {
-        public bool Value => true;
-    }
+    public bool Value => true;
 }

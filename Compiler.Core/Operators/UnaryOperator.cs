@@ -1,9 +1,8 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Core.Operators
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+
+public enum UnaryOperator
 {
-    public enum UnaryOperator
-    {
-        Not,
-        Minus,
-        Plus,
-    }
+    Not,
+    Minus,
+    Plus,
 }

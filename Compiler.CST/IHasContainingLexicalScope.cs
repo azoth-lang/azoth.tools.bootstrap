@@ -1,9 +1,8 @@
 using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CST
+namespace Azoth.Tools.Bootstrap.Compiler.CST;
+
+public interface IHasContainingLexicalScope
 {
-    public interface IHasContainingLexicalScope
-    {
-        LexicalScope ContainingLexicalScope { get; set; }
-    }
+    LexicalScope ContainingLexicalScope { get; set; }
 }

@@ -1,57 +1,56 @@
 using System.Diagnostics;
 using System.Linq;
 
-namespace Azoth.Tools.Bootstrap.Compiler.AST.Walkers
+namespace Azoth.Tools.Bootstrap.Compiler.AST.Walkers;
+
+public abstract class AbstractSyntaxWalker<T>
 {
-    public abstract class AbstractSyntaxWalker<T>
+    [DebuggerHidden]
+    protected void Walk(IAbstractSyntax? syntax, T arg)
     {
-        [DebuggerHidden]
-        protected void Walk(IAbstractSyntax? syntax, T arg)
-        {
-            if (syntax is null) return;
-            WalkNonNull(syntax, arg);
-        }
-
-        protected abstract void WalkNonNull(IAbstractSyntax syntax, T arg);
-
-        [DebuggerHidden]
-        protected void WalkChildren(IAbstractSyntax syntax, T arg)
-        {
-            foreach (var child in syntax.Children())
-                WalkNonNull(child, arg);
-        }
-
-        [DebuggerHidden]
-        protected void WalkChildrenInReverse(IAbstractSyntax syntax, T arg)
-        {
-            foreach (var child in syntax.Children().Reverse())
-                WalkNonNull(child, arg);
-        }
+        if (syntax is null) return;
+        WalkNonNull(syntax, arg);
     }
 
-    public abstract class AbstractSyntaxWalker
+    protected abstract void WalkNonNull(IAbstractSyntax syntax, T arg);
+
+    [DebuggerHidden]
+    protected void WalkChildren(IAbstractSyntax syntax, T arg)
     {
-        [DebuggerHidden]
-        protected void Walk(IAbstractSyntax? syntax)
-        {
-            if (syntax is null) return;
-            WalkNonNull(syntax);
-        }
+        foreach (var child in syntax.Children())
+            WalkNonNull(child, arg);
+    }
 
-        protected abstract void WalkNonNull(IAbstractSyntax syntax);
+    [DebuggerHidden]
+    protected void WalkChildrenInReverse(IAbstractSyntax syntax, T arg)
+    {
+        foreach (var child in syntax.Children().Reverse())
+            WalkNonNull(child, arg);
+    }
+}
 
-        [DebuggerHidden]
-        protected void WalkChildren(IAbstractSyntax syntax)
-        {
-            foreach (var child in syntax.Children())
-                WalkNonNull(child);
-        }
+public abstract class AbstractSyntaxWalker
+{
+    [DebuggerHidden]
+    protected void Walk(IAbstractSyntax? syntax)
+    {
+        if (syntax is null) return;
+        WalkNonNull(syntax);
+    }
 
-        [DebuggerHidden]
-        protected void WalkChildrenInReverse(IAbstractSyntax syntax)
-        {
-            foreach (var child in syntax.Children().Reverse())
-                WalkNonNull(child);
-        }
+    protected abstract void WalkNonNull(IAbstractSyntax syntax);
+
+    [DebuggerHidden]
+    protected void WalkChildren(IAbstractSyntax syntax)
+    {
+        foreach (var child in syntax.Children())
+            WalkNonNull(child);
+    }
+
+    [DebuggerHidden]
+    protected void WalkChildrenInReverse(IAbstractSyntax syntax)
+    {
+        foreach (var child in syntax.Children().Reverse())
+            WalkNonNull(child);
     }
 }

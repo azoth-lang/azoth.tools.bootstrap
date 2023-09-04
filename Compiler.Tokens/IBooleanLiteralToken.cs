@@ -1,15 +1,14 @@
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens
-{
-    [Closed(
-        typeof(ITrueKeywordToken),
-        typeof(IFalseKeywordToken))]
-    public partial interface IBooleanLiteralToken : IKeywordToken
-    {
-        bool Value { get; }
-    }
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
 
-    public partial interface ITrueKeywordToken : IBooleanLiteralToken { }
-    public partial interface IFalseKeywordToken : IBooleanLiteralToken { }
+[Closed(
+    typeof(ITrueKeywordToken),
+    typeof(IFalseKeywordToken))]
+public partial interface IBooleanLiteralToken : IKeywordToken
+{
+    bool Value { get; }
 }
+
+public partial interface ITrueKeywordToken : IBooleanLiteralToken { }
+public partial interface IFalseKeywordToken : IBooleanLiteralToken { }

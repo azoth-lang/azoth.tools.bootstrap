@@ -1,9 +1,8 @@
-namespace Azoth.Tools.Bootstrap.Compiler.CST
+namespace Azoth.Tools.Bootstrap.Compiler.CST;
+
+/// <summary>
+/// Cast away mutability
+/// </summary>
+public partial interface IImplicitImmutabilityConversionExpressionSyntax
 {
-    /// <summary>
-    /// Cast away mutability
-    /// </summary>
-    public partial interface IImplicitImmutabilityConversionExpressionSyntax
-    {
-    }
 }

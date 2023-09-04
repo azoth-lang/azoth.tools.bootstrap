@@ -2,74 +2,73 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Xunit;
 
-namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types
+namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
+
+[Trait("Category", "Types")]
+public class VoidTypeTests
 {
-    [Trait("Category", "Types")]
-    public class VoidTypeTests
+    [Fact]
+    public void Is_empty_data_type()
     {
-        [Fact]
-        public void Is_empty_data_type()
-        {
-            var type = VoidType.Instance;
+        var type = VoidType.Instance;
 
-            Assert.OfType<EmptyType>(type);
-        }
+        Assert.OfType<EmptyType>(type);
+    }
 
-        [Fact]
-        public void Is_known_type()
-        {
-            var type = VoidType.Instance;
+    [Fact]
+    public void Is_known_type()
+    {
+        var type = VoidType.Instance;
 
-            Assert.True(type.IsKnown);
-        }
+        Assert.True(type.IsKnown);
+    }
 
-        [Fact]
-        public void Is_empty_type()
-        {
-            var type = VoidType.Instance;
+    [Fact]
+    public void Is_empty_type()
+    {
+        var type = VoidType.Instance;
 
-            Assert.True(type.IsEmpty);
-        }
+        Assert.True(type.IsEmpty);
+    }
 
-        [Fact]
-        public void Void_has_void_semantics()
-        {
-            var type = VoidType.Instance;
+    [Fact]
+    public void Void_has_void_semantics()
+    {
+        var type = VoidType.Instance;
 
-            Assert.Equal(TypeSemantics.Void, type.Semantics);
-        }
+        Assert.Equal(TypeSemantics.Void, type.Semantics);
+    }
 
-        [Fact]
-        public void Has_special_name_never()
-        {
-            var type = VoidType.Instance;
+    [Fact]
+    public void Has_special_name_never()
+    {
+        var type = VoidType.Instance;
 
-            Assert.Equal(SpecialTypeName.Void, type.Name);
-        }
+        Assert.Equal(SpecialTypeName.Void, type.Name);
+    }
 
-        [Fact]
-        public void Has_proper_ToSourceCodeString()
-        {
-            var type = VoidType.Instance;
+    [Fact]
+    public void Has_proper_ToSourceCodeString()
+    {
+        var type = VoidType.Instance;
 
-            Assert.Equal("void", type.ToSourceCodeString());
-        }
+        Assert.Equal("void", type.ToSourceCodeString());
+    }
 
-        [Fact]
-        public void Convert_to_read_only_has_no_effect()
-        {
-            var type = NeverType.Instance;
+    [Fact]
+    public void Convert_to_read_only_has_no_effect()
+    {
+        var type = NeverType.Instance;
 
-            var @readonly = type.WithoutWrite();
+        var @readonly = type.WithoutWrite();
 
-            Assert.Equal(type, @readonly);
-        }
+        Assert.Equal(type, @readonly);
+    }
 
 
-        [Fact]
-        public void Equal_to_itself()
-        {
-            Assert.Equal(NeverType.Instance, NeverType.Instance);
-        }
+    [Fact]
+    public void Equal_to_itself()
+    {
+        Assert.Equal(NeverType.Instance, NeverType.Instance);
     }
 }

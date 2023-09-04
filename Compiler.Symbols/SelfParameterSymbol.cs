@@ -1,36 +1,35 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Symbols
+namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
+
+public class SelfParameterSymbol : BindingSymbol
 {
-    public class SelfParameterSymbol : BindingSymbol
+    public new InvocableSymbol ContainingSymbol { get; }
+
+    public SelfParameterSymbol(InvocableSymbol containingSymbol, DataType dataType)
+        : base(containingSymbol, null, false, dataType)
     {
-        public new InvocableSymbol ContainingSymbol { get; }
+        if (containingSymbol is FunctionSymbol)
+            throw new ArgumentException("Function can't have self parameter", nameof(containingSymbol));
 
-        public SelfParameterSymbol(InvocableSymbol containingSymbol, DataType dataType)
-            : base(containingSymbol, null, false, dataType)
-        {
-            if (containingSymbol is FunctionSymbol)
-                throw new ArgumentException("Function can't have self parameter", nameof(containingSymbol));
-
-            ContainingSymbol = containingSymbol;
-        }
-
-        public override bool Equals(Symbol? other)
-        {
-            if (other is null) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return other is VariableSymbol otherVariable
-                   && ContainingSymbol == otherVariable.ContainingSymbol
-                   && Name == otherVariable.Name
-                   && IsMutableBinding == otherVariable.IsMutableBinding
-                   && DataType == otherVariable.DataType;
-        }
-
-        public override int GetHashCode()
-            => HashCode.Combine(Name, IsMutableBinding, DataType);
-
-        public override string ToILString()
-            => $"{ContainingSymbol} {{self: {DataType.ToILString()}}}";
+        ContainingSymbol = containingSymbol;
     }
+
+    public override bool Equals(Symbol? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is VariableSymbol otherVariable
+               && ContainingSymbol == otherVariable.ContainingSymbol
+               && Name == otherVariable.Name
+               && IsMutableBinding == otherVariable.IsMutableBinding
+               && DataType == otherVariable.DataType;
+    }
+
+    public override int GetHashCode()
+        => HashCode.Combine(Name, IsMutableBinding, DataType);
+
+    public override string ToILString()
+        => $"{ContainingSymbol} {{self: {DataType.ToILString()}}}";
 }

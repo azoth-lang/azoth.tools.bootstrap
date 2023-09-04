@@ -1,52 +1,51 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens
+namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
+
+[Closed(
+    typeof(ICommentToken),
+    typeof(IWhitespaceToken),
+    typeof(IUnexpectedToken))]
+public interface ITriviaToken : IToken { }
+
+public interface ICommentToken : ITriviaToken { }
+public interface IWhitespaceToken : ITriviaToken { }
+public interface IUnexpectedToken : ITriviaToken { }
+
+
+internal class WhitespaceToken : Token, IWhitespaceToken
 {
-    [Closed(
-        typeof(ICommentToken),
-        typeof(IWhitespaceToken),
-        typeof(IUnexpectedToken))]
-    public interface ITriviaToken : IToken { }
+    public WhitespaceToken(TextSpan span)
+        : base(span) { }
+}
 
-    public interface ICommentToken : ITriviaToken { }
-    public interface IWhitespaceToken : ITriviaToken { }
-    public interface IUnexpectedToken : ITriviaToken { }
+internal class CommentToken : Token, ICommentToken
+{
+    public CommentToken(TextSpan span)
+        : base(span) { }
+}
 
+internal class UnexpectedToken : Token, IUnexpectedToken
+{
+    public UnexpectedToken(TextSpan span)
+        : base(span) { }
+}
 
-    internal class WhitespaceToken : Token, IWhitespaceToken
+public static partial class TokenFactory
+{
+    public static IWhitespaceToken Whitespace(TextSpan span)
     {
-        public WhitespaceToken(TextSpan span)
-            : base(span) { }
+        return new WhitespaceToken(span);
     }
 
-    internal class CommentToken : Token, ICommentToken
+    public static ICommentToken Comment(TextSpan span)
     {
-        public CommentToken(TextSpan span)
-            : base(span) { }
+        return new CommentToken(span);
     }
 
-    internal class UnexpectedToken : Token, IUnexpectedToken
+    public static IUnexpectedToken Unexpected(TextSpan span)
     {
-        public UnexpectedToken(TextSpan span)
-            : base(span) { }
-    }
-
-    public static partial class TokenFactory
-    {
-        public static IWhitespaceToken Whitespace(TextSpan span)
-        {
-            return new WhitespaceToken(span);
-        }
-
-        public static ICommentToken Comment(TextSpan span)
-        {
-            return new CommentToken(span);
-        }
-
-        public static IUnexpectedToken Unexpected(TextSpan span)
-        {
-            return new UnexpectedToken(span);
-        }
+        return new UnexpectedToken(span);
     }
 }

@@ -1,10 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CST
+namespace Azoth.Tools.Bootstrap.Compiler.CST;
+
+public partial interface ITypeSyntax
 {
-    public partial interface ITypeSyntax
-    {
-        [DisallowNull] DataType? NamedType { get; set; }
-    }
+    [DisallowNull] DataType? NamedType { get; set; }
 }

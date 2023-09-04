@@ -1,6 +1,5 @@
-namespace Azoth.Tools.Bootstrap.Framework
+namespace Azoth.Tools.Bootstrap.Framework;
+
+public struct Void
 {
-    public struct Void
-    {
-    }
 }

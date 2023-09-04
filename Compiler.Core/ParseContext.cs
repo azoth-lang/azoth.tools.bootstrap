@@ -1,14 +1,13 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Core
-{
-    public class ParseContext
-    {
-        public CodeFile File { get; }
-        public Diagnostics Diagnostics { get; }
+namespace Azoth.Tools.Bootstrap.Compiler.Core;
 
-        public ParseContext(CodeFile file, Diagnostics diagnostics)
-        {
-            File = file;
-            Diagnostics = diagnostics;
-        }
+public class ParseContext
+{
+    public CodeFile File { get; }
+    public Diagnostics Diagnostics { get; }
+
+    public ParseContext(CodeFile file, Diagnostics diagnostics)
+    {
+        File = file;
+        Diagnostics = diagnostics;
     }
 }

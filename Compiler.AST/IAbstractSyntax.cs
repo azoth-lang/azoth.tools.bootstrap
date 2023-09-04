@@ -1,7 +1,6 @@
-namespace Azoth.Tools.Bootstrap.Compiler.AST
+namespace Azoth.Tools.Bootstrap.Compiler.AST;
+
+public partial interface IAbstractSyntax
 {
-    public partial interface IAbstractSyntax
-    {
-        string ToString();
-    }
+    string ToString();
 }

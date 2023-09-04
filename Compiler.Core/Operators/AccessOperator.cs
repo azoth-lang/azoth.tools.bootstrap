@@ -1,8 +1,7 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Core.Operators
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+
+public enum AccessOperator
 {
-    public enum AccessOperator
-    {
-        Standard,
-        Conditional,
-    }
+    Standard,
+    Conditional,
 }
