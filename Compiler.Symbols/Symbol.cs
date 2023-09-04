@@ -39,14 +39,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols
         }
 
         public static bool operator ==(Symbol? symbol1, Symbol? symbol2)
-        {
-            return Equals(symbol1, symbol2);
-        }
+            => Equals(symbol1, symbol2);
 
         public static bool operator !=(Symbol? symbol1, Symbol? symbol2)
-        {
-            return !(symbol1 == symbol2);
-        }
+            => !(symbol1 == symbol2);
         #endregion
 
         [Obsolete("Use ToILString() instead")]

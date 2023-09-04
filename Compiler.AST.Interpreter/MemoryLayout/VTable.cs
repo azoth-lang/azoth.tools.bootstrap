@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout
     {
         private readonly MethodSignatureCache methodSignatures;
         public IClassDeclaration Class { get; }
-        private readonly ConcurrentDictionary<MethodSignature, IMethodDeclaration> methods = new ConcurrentDictionary<MethodSignature, IMethodDeclaration>();
+        private readonly ConcurrentDictionary<MethodSignature, IMethodDeclaration> methods = new();
 
         public VTable(IClassDeclaration @class, MethodSignatureCache methodSignatures)
         {

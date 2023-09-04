@@ -255,12 +255,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST
             return expressionSyntax.ImplicitConversion switch
             {
                 null => expression,
-                LiftedConversion c => BuildImplicitLiftedConversionExpression(expression, expressionSyntax),
-                NumericConversion c => BuildImplicitNumericConversionExpression(expression, expressionSyntax),
-                OptionalConversion c => BuildImplicitOptionalConversionExpression(expression, expressionSyntax),
-                RecoverIsolation c => BuildRecoverIsolationExpression(expression, expressionSyntax),
-                RecoverConst c => BuildRecoverConstExpression(expression, expressionSyntax),
-                IdentityConversion c => expression,
+                LiftedConversion _ => BuildImplicitLiftedConversionExpression(expression, expressionSyntax),
+                NumericConversion _ => BuildImplicitNumericConversionExpression(expression, expressionSyntax),
+                OptionalConversion _ => BuildImplicitOptionalConversionExpression(expression, expressionSyntax),
+                RecoverIsolation _ => BuildRecoverIsolationExpression(expression, expressionSyntax),
+                RecoverConst _ => BuildRecoverConstExpression(expression, expressionSyntax),
+                IdentityConversion _ => expression,
                 _ => throw ExhaustiveMatch.Failed(expressionSyntax.ImplicitConversion)
             };
         }

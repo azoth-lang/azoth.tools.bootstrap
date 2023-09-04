@@ -200,6 +200,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             {
                 default:
                     throw new NotImplementedException($"Can't interpret {expression.GetType().Name}");
+                case IMoveExpression exp:
+                    return await ExecuteAsync(exp.Referent, variables);
                 case INoneLiteralExpression:
                     return AzothValue.None;
                 case IReturnExpression exp:
@@ -410,7 +412,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     var self = AzothValue.Object(new AzothObject(vTable));
                     var constructor = constructors[exp.ReferencedSymbol];
                     // Default constructor is null
-                    if (constructor is null) return self;
+                    if (constructor is null) return self; // TODO default constructor needs to assign default values?
                     return await CallConstructorAsync(constructor, self, arguments).ConfigureAwait(false);
                 }
                 case IShareExpression exp:
@@ -439,8 +441,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                 case IForeachExpression exp:
                 {
                     var loopVariable = exp.Symbol;
-                    if (exp.InExpression is IBinaryOperatorExpression binaryExp
-                        && binaryExp.Operator == BinaryOperator.DotDot
+                    if (exp.InExpression is IBinaryOperatorExpression { Operator: BinaryOperator.DotDot } binaryExp
                         && exp.Symbol.DataType == DataType.UInt32)
                     {
                         var start = (await ExecuteAsync(binaryExp.LeftOperand, variables).ConfigureAwait(false)).U32Value;
@@ -499,9 +500,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
         }
 
         private VTable CreateVTable(IClassDeclaration @class)
-        {
-            return new VTable(@class, methodSignatures);
-        }
+            => new(@class, methodSignatures);
 
         private async ValueTask<List<AzothValue>> ExecuteArgumentsAsync(FixedList<IExpression> arguments, LocalVariableScope variables)
         {
@@ -704,10 +703,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
             }
         }
 
-        public Task WaitForExitAsync()
-        {
-            return executionTask;
-        }
+        public Task WaitForExitAsync() => executionTask;
 
         public TextReader StandardOutput { get; }
         public TextReader StandardError => TextReader.Null;
