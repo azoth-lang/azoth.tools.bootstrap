@@ -510,8 +510,8 @@ public partial interface IQualifiedNameExpressionSyntax : IAssignableExpressionS
 {
     IExpressionSyntax Context { get; }
     AccessOperator AccessOperator { get; }
-    INameExpressionSyntax Field { get; }
-    IPromise<FieldSymbol?> ReferencedSymbol { get; }
+    INameExpressionSyntax Member { get; }
+    IPromise<Symbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IMutateExpressionSyntax : IExpressionSyntax

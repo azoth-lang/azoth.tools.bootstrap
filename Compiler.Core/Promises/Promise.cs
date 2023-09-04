@@ -52,16 +52,10 @@ public class Promise<T> : IPromise<T>
     }
 
     // Useful for debugging
-    public override string ToString()
-    {
-        return IsFulfilled ? value?.ToString() ?? "⧼null⧽" : "⧼pending⧽";
-    }
+    public override string ToString() => IsFulfilled ? value?.ToString() ?? "⧼null⧽" : "⧼pending⧽";
 }
 
 public static class Promise
 {
-    public static Promise<T> ForValue<T>(T value)
-    {
-        return new Promise<T>(value);
-    }
+    public static Promise<T> ForValue<T>(T value) => new(value);
 }

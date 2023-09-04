@@ -24,9 +24,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
     }
 
     public void BuildFor(ICompilationUnitSyntax compilationUnit, LexicalScope containingScope)
-    {
-        Walk(compilationUnit, containingScope);
-    }
+        => Walk(compilationUnit, containingScope);
 
     protected override void WalkNonNull(ISyntax syntax, LexicalScope containingScope)
     {

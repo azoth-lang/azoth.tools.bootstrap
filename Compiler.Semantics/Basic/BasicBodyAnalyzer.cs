@@ -692,7 +692,7 @@ public class BasicBodyAnalyzer
                 var isSelfField = exp.Context is ISelfExpressionSyntax;
                 // TODO properly handle mutable self
                 var contextType = InferType(exp.Context, sharing, capabilities/*, !isSelfField*/);
-                var member = exp.Field;
+                var member = exp.Member;
                 var contextSymbol = LookupSymbolForType(contextType);
                 if (contextSymbol is null)
                 {
@@ -757,7 +757,7 @@ public class BasicBodyAnalyzer
                 // TODO handle mutable self
                 var contextType = InferType(exp.Context, sharing, capabilities, false);
                 DataType type;
-                var member = exp.Field;
+                var member = exp.Member;
                 switch (contextType)
                 {
                     case ReferenceType { IsWritableReference: false } contextReferenceType:
@@ -801,7 +801,7 @@ public class BasicBodyAnalyzer
         switch (invocation.Expression)
         {
             case IQualifiedNameExpressionSyntax exp:
-                var name = exp.Field.Name!;
+                var name = exp.Member.Name!;
                 var contextName = MethodContextAsName(exp.Context);
                 if (contextName != null)
                 {
@@ -824,10 +824,10 @@ public class BasicBodyAnalyzer
                 }
                 break;
             case INameExpressionSyntax exp:
-                functionSymbols = invocation.ContainingLexicalScope.Lookup(exp.Name!)
-                                            .Select(p => p.As<FunctionSymbol>())
-                                            .WhereNotNull()
-                                            .Select(p => p.Result).ToFixedSet();
+                functionSymbols = exp.LookupInContainingScope()
+                                    .Select(p => p.As<FunctionSymbol>())
+                                    .WhereNotNull()
+                                    .Select(p => p.Result).ToFixedSet();
                 break;
             default:
                 throw new NotImplementedException("Invocation of expression");
@@ -898,9 +898,9 @@ public class BasicBodyAnalyzer
         // Apply the referenced symbol to the underlying name
         if (invocation.Expression is IQualifiedNameExpressionSyntax nameExpression)
         {
-            nameExpression.Field.DataType = DataType.Void;
-            nameExpression.Field.Semantics = ExpressionSemantics.Void;
-            nameExpression.Field.ReferencedSymbol.Fulfill(invocation.ReferencedSymbol.Result);
+            nameExpression.Member.DataType = DataType.Void;
+            nameExpression.Member.Semantics = ExpressionSemantics.Void;
+            nameExpression.Member.ReferencedSymbol.Fulfill(invocation.ReferencedSymbol.Result);
         }
 
         return invocation.ConvertedDataType.Assigned();
@@ -915,7 +915,7 @@ public class BasicBodyAnalyzer
         return expression switch
         {
             IQualifiedNameExpressionSyntax memberAccess
-                => MethodContextAsName(memberAccess.Context)?.Qualify(memberAccess.Field.Name!),
+                => MethodContextAsName(memberAccess.Context)?.Qualify(memberAccess.Member.Name!),
             INameExpressionSyntax nameExpression => nameExpression.Name!,
             _ => null
         };

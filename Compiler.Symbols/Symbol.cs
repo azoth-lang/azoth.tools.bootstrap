@@ -45,7 +45,7 @@ public abstract class Symbol : IEquatable<Symbol>
         => !(symbol1 == symbol2);
     #endregion
 
-    [Obsolete("Use ToILString() instead")]
+    [Obsolete("Use ToILString() instead", error: true)]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
     public sealed override string ToString()
 #pragma warning restore CS0809 // Obsolete member overrides non-obsolete member

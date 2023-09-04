@@ -12,25 +12,23 @@ internal class QualifiedNameExpressionSyntax : ExpressionSyntax, IQualifiedNameE
 {
     public IExpressionSyntax Context { [DebuggerStepThrough] get; }
     public AccessOperator AccessOperator { [DebuggerStepThrough] get; }
-    public INameExpressionSyntax Field { [DebuggerStepThrough] get; }
-    public IPromise<FieldSymbol?> ReferencedSymbol => Field.ReferencedSymbol.Select(s => (FieldSymbol?)s);
+    public INameExpressionSyntax Member { [DebuggerStepThrough] get; }
+    public IPromise<Symbol?> ReferencedSymbol => Member.ReferencedSymbol;
 
     public QualifiedNameExpressionSyntax(
         TextSpan span,
         IExpressionSyntax context,
         AccessOperator accessOperator,
-        INameExpressionSyntax field)
+        INameExpressionSyntax member)
         : base(span)
     {
         Context = context;
         AccessOperator = accessOperator;
-        Field = field;
+        Member = member;
     }
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
     public override string ToString()
-    {
-        return $"{Context.ToGroupedString(ExpressionPrecedence)}{AccessOperator.ToSymbolString()}{Field}";
-    }
+        => $"{Context.ToGroupedString(ExpressionPrecedence)}{AccessOperator.ToSymbolString()}{Member}";
 }

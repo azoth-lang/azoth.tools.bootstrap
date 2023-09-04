@@ -340,7 +340,7 @@ internal class ASTBuilder
         var semantics = syn.Semantics.Assigned();
         var context = BuildExpression(syn.Context);
         var accessOperator = syn.AccessOperator;
-        var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
+        var referencedSymbol = (FieldSymbol?)syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
         return new FieldAccessExpression(syn.Span, type, semantics, context, accessOperator, referencedSymbol);
     }
 

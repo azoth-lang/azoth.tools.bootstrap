@@ -118,6 +118,6 @@ InvocationExpression: Expression, 'IHasContainingLexicalScope' = Expression Argu
 // ---------- Variable Expressions
 NameExpression: AssignableExpression, 'IHasContainingLexicalScope' = Name:'Name'? ReferencedSymbol:'Promise<Symbol?>';
 SelfExpression: Expression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfParameterSymbol?>';
-QualifiedNameExpression: AssignableExpression = Context:Expression AccessOperator:'AccessOperator' Field:NameExpression ReferencedSymbol:'IPromise<FieldSymbol?>';
+QualifiedNameExpression: AssignableExpression = Context:Expression AccessOperator:'AccessOperator' Member:NameExpression ReferencedSymbol:'IPromise<Symbol?>';
 MutateExpression: Expression = Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
 MoveExpression: Expression = Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';

@@ -188,7 +188,7 @@ public static class ISyntaxExtensions
                 yield break;
             case IQualifiedNameExpressionSyntax n:
                 yield return n.Context;
-                yield return n.Field;
+                yield return n.Member;
                 yield break;
             case IMutateExpressionSyntax n:
                 yield return n.Referent;
