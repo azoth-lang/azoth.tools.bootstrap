@@ -103,8 +103,5 @@ public class AcyclicPromise<T> : IPromise<T>
 
 public static class AcyclicPromise
 {
-    public static AcyclicPromise<T> ForValue<T>(T value)
-    {
-        return new AcyclicPromise<T>(value);
-    }
+    public static AcyclicPromise<T> ForValue<T>(T value) => new(value);
 }

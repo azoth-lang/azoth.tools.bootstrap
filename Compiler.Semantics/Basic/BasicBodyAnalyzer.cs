@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -370,20 +371,20 @@ public class BasicBodyAnalyzer
                 switch (exp.Referent)
                 {
                     case INameExpressionSyntax nameExpression:
-                        var symbol = ResolveVariableNameSymbol(nameExpression);
+                        var symbol = ResolveNameSymbol(nameExpression);
                         // Don't need to alias the symbol in capabilities because it will be moved
                         DataType type = DataType.Unknown;
-                        if (symbol is not null)
+                        if (symbol is VariableSymbol variableSymbol)
                         {
-                            var symbolType = symbol.DataType;
+                            var symbolType = variableSymbol.DataType;
                             switch (symbolType)
                             {
                                 case ReferenceType referenceType:
-                                    if (!sharing.IsIsolated(symbol))
+                                    if (!sharing.IsIsolated(variableSymbol))
                                         diagnostics.Add(TypeError.CannotMoveValue(file, exp));
 
                                     type = referenceType.To(ReferenceCapability.Isolated);
-                                    capabilities.Move(symbol);
+                                    capabilities.Move(variableSymbol);
                                     break;
                                 case ValueType { Semantics: TypeSemantics.Move } valueType:
                                     type = valueType;
@@ -394,11 +395,14 @@ public class BasicBodyAnalyzer
                                 default:
                                     throw new NotImplementedException("Non-moveable type can't be moved");
                             }
+                            exp.ReferencedSymbol.Fulfill(variableSymbol);
                         }
+                        else
+                            throw new NotImplementedException("Raise error about `move` from non-variable");
+
                         const ExpressionSemantics semantics = ExpressionSemantics.IsolatedReference;
                         nameExpression.Semantics = semantics;
                         nameExpression.DataType = type;
-                        exp.ReferencedSymbol.Fulfill(symbol);
                         exp.Semantics = semantics;
                         return exp.DataType = type;
                     case IMutateExpressionSyntax:
@@ -413,28 +417,37 @@ public class BasicBodyAnalyzer
                 {
                     case INameExpressionSyntax nameExpression:
                     {
-                        var symbol = ResolveVariableNameSymbol(nameExpression);
-                        sharing.UnionResult(symbol);
-                        capabilities.Alias(symbol);
-                        var type = capabilities.CurrentType(symbol);
-                        switch (type)
+                        var symbol = ResolveNameSymbol(nameExpression);
+                        DataType type = DataType.Unknown;
+                        if (symbol is VariableSymbol variableSymbol)
                         {
-                            case ReferenceType referenceType:
-                                if (!referenceType.IsWritableReference)
-                                {
-                                    diagnostics.Add(TypeError.ExpressionCantBeMutable(file, exp.Referent));
-                                    type = DataType.Unknown;
-                                }
-                                else
-                                    type = referenceType.ToMutable();
-                                break;
-                            default:
-                                throw new NotImplementedException("Non-mutable type can't be borrowed mutably");
+                            sharing.UnionResult(variableSymbol);
+                            capabilities.Alias(variableSymbol);
+                            type = capabilities.CurrentType(variableSymbol);
+                            switch (type)
+                            {
+                                case ReferenceType referenceType:
+                                    if (!referenceType.IsWritableReference)
+                                    {
+                                        diagnostics.Add(TypeError.ExpressionCantBeMutable(file, exp.Referent));
+                                        type = DataType.Unknown;
+                                    }
+                                    else
+                                        type = referenceType.ToMutable();
+
+                                    break;
+                                default:
+                                    throw new NotImplementedException("Non-mutable type can't be borrowed mutably");
+                            }
+
+                            exp.ReferencedSymbol.Fulfill(variableSymbol);
                         }
+                        else
+                            throw new NotImplementedException("Raise error about `mut` from non-variable");
                         const ExpressionSemantics semantics = ExpressionSemantics.MutableReference;
                         nameExpression.Semantics = semantics;
                         nameExpression.DataType = type;
-                        exp.ReferencedSymbol.Fulfill(symbol);
+
                         return exp.DataType = type;
                     }
                     case IMutateExpressionSyntax:
@@ -536,15 +549,27 @@ public class BasicBodyAnalyzer
             }
             case INameExpressionSyntax exp:
             {
-                var symbol = ResolveVariableNameSymbol(exp);
-                sharing.UnionResult(symbol);
-                capabilities.Alias(symbol);
-                var type = capabilities.CurrentType(symbol);
-                if (implicitRead)
-                    type = type.WithoutWrite();
-                var referenceSemantics = implicitRead
-                    ? ExpressionSemantics.ReadOnlyReference
-                    : ExpressionSemantics.MutableReference;
+                var symbol = ResolveNameSymbol(exp);
+                DataType type;
+                ExpressionSemantics referenceSemantics;
+                if (symbol is VariableSymbol variableSymbol)
+                {
+                    sharing.UnionResult(variableSymbol);
+                    capabilities.Alias(variableSymbol);
+
+                    type = capabilities.CurrentType(variableSymbol);
+                    if (implicitRead) type = type.WithoutWrite();
+
+                    referenceSemantics = implicitRead
+                        ? ExpressionSemantics.ReadOnlyReference
+                        : ExpressionSemantics.MutableReference;
+                }
+                else
+                {
+                    // It must be a type or namespace name and as such isn't a proper expression
+                    type = DataType.Void;
+                    referenceSemantics = ExpressionSemantics.Void;
+                }
                 exp.Semantics = type.Semantics.ToExpressionSemantics(referenceSemantics);
                 return exp.DataType = type;
             }
@@ -781,7 +806,11 @@ public class BasicBodyAnalyzer
                 return exp.DataType = type;
             case INameExpressionSyntax exp:
                 exp.Semantics = ExpressionSemantics.CreateReference;
-                return exp.DataType = capabilities.CurrentType(ResolveVariableNameSymbol(exp));
+                var symbol = ResolveNameSymbol(exp);
+                if (symbol is VariableSymbol variableSymbol)
+                    return exp.DataType = capabilities.CurrentType(variableSymbol);
+
+                throw new NotImplementedException("Raise error about assigning into a non-variable");
         }
     }
 
@@ -1027,7 +1056,7 @@ public class BasicBodyAnalyzer
         }
     }
 
-    public NamedBindingSymbol? ResolveVariableNameSymbol(INameExpressionSyntax nameExpression)
+    public Symbol? ResolveNameSymbol(INameExpressionSyntax nameExpression)
     {
         if (nameExpression.Name is null)
         {
@@ -1036,20 +1065,36 @@ public class BasicBodyAnalyzer
             return null;
         }
 
-        var symbols = nameExpression.LookupInContainingScope()
-                                    .Select(p => p.As<NamedBindingSymbol>())
+        // First look for local variables
+        var variableSymbols = nameExpression.LookupInContainingScope()
+                                    .Select(p => p.As<VariableSymbol>())
                                     .WhereNotNull()
                                     .ToFixedList();
-        switch (symbols.Count)
+        var symbolCount = variableSymbols.Count;
+        Symbol symbol;
+        if (symbolCount == 1)
+        {
+            symbol = variableSymbols.Single().Result;
+        }
+        else
+        {
+            // If no local variables, look for other symbols
+            var symbols = nameExpression.LookupInContainingScope().ToFixedList();
+            symbolCount = symbols.Count;
+            symbol = symbols.Single().Result;
+        }
+
+        switch (symbolCount)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindName(file, nameExpression.Span));
                 nameExpression.ReferencedSymbol.Fulfill(null);
                 return null;
             case 1:
-                var symbol = symbols.Single().Result;
+            {
                 nameExpression.ReferencedSymbol.Fulfill(symbol);
                 return symbol;
+            }
             default:
                 diagnostics.Add(NameBindingError.AmbiguousName(file, nameExpression.Span));
                 nameExpression.ReferencedSymbol.Fulfill(null);
@@ -1109,10 +1154,10 @@ public class BasicBodyAnalyzer
         switch (inExpression)
         {
             case IBinaryOperatorExpressionSyntax binaryExpression
-                when binaryExpression.Operator == BinaryOperator.DotDot
-                     || binaryExpression.Operator == BinaryOperator.LessThanDotDot
-                     || binaryExpression.Operator == BinaryOperator.DotDotLessThan
-                     || binaryExpression.Operator == BinaryOperator.LessThanDotDotLessThan:
+                when binaryExpression.Operator is BinaryOperator.DotDot
+                    or BinaryOperator.LessThanDotDot
+                    or BinaryOperator.DotDotLessThan
+                    or BinaryOperator.LessThanDotDotLessThan:
                 var leftType = InferType(binaryExpression.LeftOperand, sharing, capabilities);
                 InferType(binaryExpression.RightOperand, sharing, capabilities);
                 if (declaredType != null)
