@@ -412,9 +412,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter
                     var @class = classes[objectTypeSymbol];
                     var vTable = vTables.GetOrAdd(@class, CreateVTable);
                     var self = AzothValue.Object(new AzothObject(vTable));
+                    // TODO run field initializers
                     var constructor = constructors[exp.ReferencedSymbol];
                     // Default constructor is null
-                    if (constructor is null) return self; // TODO default constructor needs to assign default values?
+                    if (constructor is null)
+                    {
+                        // Initialize fields to default values
+                        var fields = @class.Members.OfType<IFieldDeclaration>();
+                        foreach (var field in fields)
+                            self.ObjectValue[field.Symbol.Name] = new AzothValue();
+
+                        return self;
+                    }
                     return await CallConstructorAsync(constructor, self, arguments).ConfigureAwait(false);
                 }
                 case IShareExpression exp:
