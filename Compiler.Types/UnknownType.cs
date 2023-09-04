@@ -23,8 +23,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types
         /// </summary>
         public override TypeSemantics Semantics => TypeSemantics.Never;
 
-        public override string ToSourceCodeString()
-            => throw new InvalidOperationException("Unknown type has no source code representation");
+        /// <remarks><see cref="ToSourceCodeString"/> is used to format error messages. As such, it
+        /// is necessary to provide some output for the unknown type in case it appears in an error
+        /// message.</remarks>
+        public override string ToSourceCodeString() => "⧼unknown⧽";
 
         public override string ToILString() => "⧼unknown⧽";
 
