@@ -9,8 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(PointerSizedIntegerType))]
 public abstract class IntegerType : NumericType
 {
-    private protected IntegerType(SpecialTypeName name)
+    public bool IsSigned { get; }
+
+    private protected IntegerType(SpecialTypeName name, bool isSigned)
         : base(name)
     {
+        IsSigned = isSigned;
     }
 }

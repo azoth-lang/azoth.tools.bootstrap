@@ -14,14 +14,12 @@ public sealed class FixedSizeIntegerType : IntegerType
     //internal new static readonly FixedSizeIntegerType Int64 = new("int64", -64);
     //internal new static readonly FixedSizeIntegerType UInt64 = new("uint64", 64);
 
-    public bool IsSigned { get; }
     public int Bits { get; }
     public override bool IsKnown => true;
 
     private FixedSizeIntegerType(SpecialTypeName name, int bits)
-        : base(name)
+        : base(name, bits < 0)
     {
-        IsSigned = bits < 0;
         Bits = Math.Abs(bits);
     }
 }

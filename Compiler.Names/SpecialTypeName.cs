@@ -10,23 +10,23 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 public sealed class SpecialTypeName : TypeName
 {
     #region Empty and Simple Types
-    public static readonly SpecialTypeName Void = new SpecialTypeName("void");
-    public static readonly SpecialTypeName Never = new SpecialTypeName("never");
-    public static readonly SpecialTypeName Bool = new SpecialTypeName("bool");
-    public static readonly SpecialTypeName Any = new SpecialTypeName("Any");
-    public static readonly SpecialTypeName Byte = new SpecialTypeName("byte");
+    public static readonly SpecialTypeName Void = new("void");
+    public static readonly SpecialTypeName Never = new("never");
+    public static readonly SpecialTypeName Bool = new("bool");
+    public static readonly SpecialTypeName Any = new("Any");
+    public static readonly SpecialTypeName Byte = new("byte");
 #pragma warning disable CA1720
-    public static readonly SpecialTypeName Int = new SpecialTypeName("int");
-    public static readonly SpecialTypeName UInt = new SpecialTypeName("uint");
+    public static readonly SpecialTypeName Int = new("int");
+    public static readonly SpecialTypeName UInt = new("uint");
 #pragma warning restore CA1720
-    public static readonly SpecialTypeName Size = new SpecialTypeName("size");
-    public static readonly SpecialTypeName Offset = new SpecialTypeName("offset");
+    public static readonly SpecialTypeName Size = new("size");
+    public static readonly SpecialTypeName Offset = new("offset");
     #endregion
 
     #region Constant Types
-    public static readonly SpecialTypeName True = new SpecialTypeName("True");
-    public static readonly SpecialTypeName False = new SpecialTypeName("False");
-    public static readonly SpecialTypeName ConstInt = new SpecialTypeName("ConstInt");
+    public static readonly SpecialTypeName True = new("True");
+    public static readonly SpecialTypeName False = new("False");
+    public static readonly SpecialTypeName ConstInt = new("ConstInt");
     #endregion
 
     private SpecialTypeName(string text)
@@ -39,13 +39,7 @@ public sealed class SpecialTypeName : TypeName
         return other is SpecialTypeName otherName && Text == otherName.Text;
     }
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(typeof(SpecialTypeName), Text);
-    }
+    public override int GetHashCode() => HashCode.Combine(typeof(SpecialTypeName), Text);
 
-    public override string ToString()
-    {
-        return Text;
-    }
+    public override string ToString() => Text;
 }

@@ -11,12 +11,10 @@ public sealed class PointerSizedIntegerType : IntegerType
     internal new static readonly PointerSizedIntegerType Size = new(SpecialTypeName.Size, false);
     internal new static readonly PointerSizedIntegerType Offset = new(SpecialTypeName.Offset, true);
 
-    public bool IsSigned { get; }
     public override bool IsKnown => true;
 
     private PointerSizedIntegerType(SpecialTypeName name, bool signed)
-        : base(name)
+        : base(name, signed)
     {
-        IsSigned = signed;
     }
 }

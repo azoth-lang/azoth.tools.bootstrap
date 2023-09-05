@@ -815,7 +815,15 @@ public class BasicBodyAnalyzer
             case IBlockExpressionSyntax blockSyntax:
                 return InferBlockType(blockSyntax, sharing, capabilities);
             case IConversionExpressionSyntax exp:
-                throw new NotImplementedException("Analysis of conversion expressions");
+            {
+                var referentType = InferType(exp.Referent, sharing, capabilities);
+                var convertToType = typeResolver.Evaluate(exp.ConvertToType, false) ?? DataType.Unknown;
+                if (!ConversionTypesAreCompatible(exp.Referent, convertToType))
+                    diagnostics.Add(TypeError.CannotConvert(file, exp.Referent, referentType, convertToType));
+
+                exp.Semantics = exp.Referent.ConvertedSemantics!;
+                return exp.DataType = convertToType;
+            }
         }
     }
 
@@ -1299,6 +1307,17 @@ public class BasicBodyAnalyzer
         return leftOperand.ConvertedDataType is ReferenceType { IsIdentityReference: true } leftType
             && rightOperand.ConvertedDataType is ReferenceType { IsIdentityReference: true } rightType
             && (leftType.IsAssignableFrom(rightType) || rightType.IsAssignableFrom(leftType));
+    }
+
+    private static bool ConversionTypesAreCompatible(IExpressionSyntax expression, DataType convertToType)
+    {
+        return (expression.ConvertedDataType, convertToType) switch
+        {
+            // TODO add type for int and uint (currently just using int32)
+            (BoolType, IntegerType) => true,
+            //(IntegerType { IsSigned: false }, Un)
+            _ => false
+        };
     }
 
     //private bool OperatorOverloadDefined(BinaryOperator @operator, ExpressionSyntax leftOperand, ref ExpressionSyntax rightOperand)
