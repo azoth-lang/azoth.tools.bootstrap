@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -281,7 +280,7 @@ public class BasicBodyAnalyzer
                 // Direct subtype
                 if (to.Referent.IsAssignableFrom(from.Referent))
                     return null;
-                var liftedConversion = ImplicitConversion(to.Referent, @from.Referent, IdentityConversion.Instance, sharing, capabilities, allowConvertToIsolated);
+                var liftedConversion = ImplicitConversion(to.Referent, from.Referent, IdentityConversion.Instance, sharing, capabilities, allowConvertToIsolated);
                 return liftedConversion is null ? null : new LiftedConversion(liftedConversion, priorConversion);
             case (OptionalType to, /* non-optional */ DataType from):
                 var nonOptionalTo = to.Referent;
@@ -371,7 +370,7 @@ public class BasicBodyAnalyzer
                 switch (exp.Referent)
                 {
                     case ISimpleNameExpressionSyntax nameExpression:
-                        var symbol = ResolveNameSymbol(nameExpression);
+                        var symbol = InferNameSymbol(nameExpression);
                         // Don't need to alias the symbol in capabilities because it will be moved
                         DataType type;
                         if (symbol is VariableSymbol variableSymbol)
@@ -416,7 +415,7 @@ public class BasicBodyAnalyzer
                 switch (exp.Referent)
                 {
                     case ISimpleNameExpressionSyntax nameExpression:
-                        var symbol = ResolveNameSymbol(nameExpression);
+                        var symbol = InferNameSymbol(nameExpression);
                         // Don't need to alias the symbol in capabilities because it will be moved
                         DataType type = DataType.Unknown;
                         if (symbol is VariableSymbol variableSymbol)
@@ -460,7 +459,7 @@ public class BasicBodyAnalyzer
                 {
                     case ISimpleNameExpressionSyntax nameExpression:
                     {
-                        var symbol = ResolveNameSymbol(nameExpression);
+                        var symbol = InferNameSymbol(nameExpression);
                         DataType type = DataType.Unknown;
                         if (symbol is VariableSymbol variableSymbol)
                         {
@@ -592,7 +591,7 @@ public class BasicBodyAnalyzer
             }
             case ISimpleNameExpressionSyntax exp:
             {
-                var symbol = ResolveNameSymbol(exp);
+                var symbol = InferNameSymbol(exp);
                 DataType type;
                 ExpressionSemantics referenceSemantics;
                 if (symbol is VariableSymbol variableSymbol)
@@ -669,7 +668,7 @@ public class BasicBodyAnalyzer
                 var classType = (ObjectType)constructingType;
                 DataType constructedType;
                 var constructorSymbols = symbolTreeBuilder.Children(typeSymbol).OfType<ConstructorSymbol>().ToFixedSet();
-                constructorSymbols = ResolveOverload(constructorSymbols, argumentTypes);
+                constructorSymbols = SelectOverload(constructorSymbols, argumentTypes);
                 switch (constructorSymbols.Count)
                 {
                     case 0:
@@ -774,7 +773,7 @@ public class BasicBodyAnalyzer
                 // TODO Deal with no context symbol
                 var memberSymbols = symbolTreeBuilder.Children(contextSymbol)
                                                      .Where(s => s.Name == member.Name).ToFixedList();
-                var type = ResolvedReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
+                var type = InferReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
                 var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 member.Semantics = semantics;
                 member.DataType = type;
@@ -800,7 +799,7 @@ public class BasicBodyAnalyzer
             }
             case ISelfExpressionSyntax exp:
             {
-                var type = capabilities.CurrentType(ResolveSelfSymbol(exp));
+                var type = capabilities.CurrentType(InferSelfSymbol(exp));
                 var referenceSemantics = implicitRead
                     ? ExpressionSemantics.ReadOnlyReference
                     : ExpressionSemantics.MutableReference;
@@ -842,7 +841,7 @@ public class BasicBodyAnalyzer
                                 $"Missing context symbol for type {contextType.ToILString()}.");
                         var memberSymbols = symbolTreeBuilder.Children(contextSymbol).OfType<FieldSymbol>()
                                                              .Where(s => s.Name == member.Name).ToFixedList<Symbol>();
-                        type = ResolvedReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
+                        type = InferReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
                         break;
                 }
                 member.DataType = type;
@@ -851,7 +850,7 @@ public class BasicBodyAnalyzer
                 return exp.DataType = type;
             case ISimpleNameExpressionSyntax exp:
                 exp.Semantics = ExpressionSemantics.CreateReference;
-                var symbol = ResolveNameSymbol(exp);
+                var symbol = InferNameSymbol(exp);
                 if (symbol is VariableSymbol variableSymbol)
                     return exp.DataType = capabilities.CurrentType(variableSymbol);
 
@@ -919,7 +918,7 @@ public class BasicBodyAnalyzer
         var contextSymbol = LookupSymbolForType(context.DataType.Known());
         var methodSymbols = symbolTrees.Children(contextSymbol!).OfType<MethodSymbol>()
                                        .Where(s => s.Name == methodName).ToFixedList();
-        methodSymbols = ResolveMethodOverload(context.DataType.Known(), methodSymbols, argumentTypes);
+        methodSymbols = SelectMethodOverload(context.DataType.Known(), methodSymbols, argumentTypes);
 
         switch (methodSymbols.Count)
         {
@@ -971,21 +970,6 @@ public class BasicBodyAnalyzer
         return invocation.ConvertedDataType.Assigned();
     }
 
-    /// <summary>
-    /// Used on the target of an invocation to see if it is could be a name.
-    /// </summary>
-    /// <returns>A name if the expression is a qualified name, otherwise null.</returns>
-    private static NamespaceName? MethodContextAsName(IExpressionSyntax expression)
-    {
-        return expression switch
-        {
-            IQualifiedNameExpressionSyntax memberAccess
-                => MethodContextAsName(memberAccess.Context)?.Qualify(memberAccess.Member.Name!),
-            ISimpleNameExpressionSyntax nameExpression => nameExpression.Name!,
-            _ => null
-        };
-    }
-
     private DataType InferFunctionInvocationType(
         IInvocationExpressionSyntax invocation,
         FixedSet<FunctionSymbol> functionSymbols,
@@ -993,7 +977,7 @@ public class BasicBodyAnalyzer
         SharingRelation sharing,
         ReferenceCapabilities capabilities)
     {
-        functionSymbols = ResolveOverload(functionSymbols, argumentTypes);
+        functionSymbols = SelectOverload(functionSymbols, argumentTypes);
         switch (functionSymbols.Count)
         {
             case 0:
@@ -1092,7 +1076,7 @@ public class BasicBodyAnalyzer
         }
     }
 
-    public Symbol? ResolveNameSymbol(ISimpleNameExpressionSyntax nameExpression)
+    private Symbol? InferNameSymbol(ISimpleNameExpressionSyntax nameExpression)
     {
         if (nameExpression.Name is null)
         {
@@ -1135,7 +1119,7 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private SelfParameterSymbol? ResolveSelfSymbol(ISelfExpressionSyntax selfExpression)
+    private SelfParameterSymbol? InferSelfSymbol(ISelfExpressionSyntax selfExpression)
     {
         switch (containingSymbol)
         {
@@ -1213,7 +1197,7 @@ public class BasicBodyAnalyzer
             diagnostics.Add(TypeError.CannotConvert(file, arg, fromType, type));
     }
 
-    private DataType? ResolvedReferencedSymbol(
+    private DataType? InferReferencedSymbol(
         ISimpleNameExpressionSyntax exp,
         FixedList<Symbol> matchingSymbols)
     {
@@ -1357,7 +1341,7 @@ public class BasicBodyAnalyzer
     //    }
     //}
 
-    private static FixedSet<TSymbol> ResolveOverload<TSymbol>(
+    private static FixedSet<TSymbol> SelectOverload<TSymbol>(
         FixedSet<TSymbol> symbols,
         FixedList<DataType> argumentTypes)
         where TSymbol : InvocableSymbol
@@ -1373,7 +1357,7 @@ public class BasicBodyAnalyzer
         return symbols;
     }
 
-    private static FixedList<MethodSymbol> ResolveMethodOverload(
+    private static FixedList<MethodSymbol> SelectMethodOverload(
         DataType selfType,
         FixedList<MethodSymbol> symbols,
         FixedList<DataType> argumentTypes)

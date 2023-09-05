@@ -20,10 +20,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 ///
 /// Terminology:
 ///
-/// * Resolve - includes type inference and checking
-/// * Check - check something has an expected type
-/// * Infer - infer what type something has
-/// * Evaluate - determine the type for some type syntax
+/// * Resolve: includes type inference and checking
+/// * Check: check something has an expected type
+/// * Infer: infer what type something has
+/// * Evaluate: determine the type for some type syntax
 /// </summary>
 public class BasicAnalyzer
 {
