@@ -22,7 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 ///
 /// * Resolve: includes type inference and checking
 /// * Check: check something has an expected type
-/// * Infer: infer what type something has
+/// * Infer: infer what type (or sometimes symbol) something has
 /// * Evaluate: determine the type for some type syntax
 /// </summary>
 public class BasicAnalyzer

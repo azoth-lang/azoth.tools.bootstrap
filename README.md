@@ -40,7 +40,7 @@ and borrow checking.
 * [x] Optional Types
 * [x] Basic Control Flow - `if`, `while`, `loop` `break`, `next`
 * [ ] Conversions and Casts - `as`, `as!`, `as?` (not including unboxing)
-* [ ] Namespaces
+* [x] Namespaces
 * [ ] Strings
 * [ ] `foreach n in 1..100` - basic loop iteration may need to be hard-coded because the final
   version will depend on features not yet available.

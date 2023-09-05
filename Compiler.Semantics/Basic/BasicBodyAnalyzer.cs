@@ -874,6 +874,10 @@ public class BasicBodyAnalyzer
         switch (invocation.Expression)
         {
             case IQualifiedNameExpressionSyntax exp:
+                if (exp.Context is INameExpressionSyntax)
+                {
+                    // TODO special case move and freeze from self here
+                }
                 var contextType = InferType(exp.Context, sharing, capabilities, implicitRead: false);
                 var name = exp.Member.Name!;
                 if (contextType is not VoidType)
