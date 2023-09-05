@@ -82,6 +82,8 @@
         "True",
         "False",
         "As",
+        "AsExclamation",
+        "AsQuestion",
         "And",
         "Or",
         "Not",

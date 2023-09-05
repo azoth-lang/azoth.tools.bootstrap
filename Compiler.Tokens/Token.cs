@@ -10,8 +10,5 @@ internal abstract class Token
     {
         Span = span;
     }
-    public string Text(CodeText code)
-    {
-        return Span.GetText(code.Text);
-    }
+    public string Text(CodeText code) => Span.GetText(code.Text);
 }

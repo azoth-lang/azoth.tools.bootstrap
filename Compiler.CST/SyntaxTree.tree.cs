@@ -348,6 +348,7 @@ public partial interface IExpressionStatementSyntax : IBodyStatementSyntax
     typeof(IBinaryOperatorExpressionSyntax),
     typeof(IUnaryOperatorExpressionSyntax),
     typeof(IIdExpressionSyntax),
+    typeof(IConversionExpressionSyntax),
     typeof(IIfExpressionSyntax),
     typeof(ILoopExpressionSyntax),
     typeof(IWhileExpressionSyntax),
@@ -443,6 +444,12 @@ public partial interface IUnaryOperatorExpressionSyntax : IExpressionSyntax
 public partial interface IIdExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
+}
+
+public partial interface IConversionExpressionSyntax : IExpressionSyntax
+{
+    IExpressionSyntax Referent { get; }
+    ITypeSyntax? ConvertToType { get; }
 }
 
 public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyntax

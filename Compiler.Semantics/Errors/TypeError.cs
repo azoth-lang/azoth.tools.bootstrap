@@ -31,7 +31,7 @@ public static class TypeError
         DataType rightOperandType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3001, $"Operator `{@operator.ToSymbolString()}` cannot be applied to operands of type `{leftOperandType.ToSourceCodeString()}` and `{rightOperandType.ToSourceCodeString()}`.");
+            3001, $"Operator `{@operator.ToSymbolString()}` cannot be applied to operands of type `{leftOperandType.ToNonConstantType().ToSourceCodeString()}` and `{rightOperandType.ToNonConstantType().ToSourceCodeString()}`.");
     }
 
     public static Diagnostic OperatorCannotBeAppliedToOperandOfType(

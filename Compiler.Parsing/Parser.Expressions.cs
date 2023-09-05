@@ -99,7 +99,6 @@ public partial class Parser
                 case IGreaterThanToken _:
                 case IGreaterThanOrEqualToken _:
                 case ILessThanColonToken _: // Subtype operator
-                case IAsKeywordToken _:
                     if (minPrecedence <= OperatorPrecedence.Relational)
                     {
                         precedence = OperatorPrecedence.Relational;
@@ -114,6 +113,17 @@ public partial class Parser
                     {
                         precedence = OperatorPrecedence.Range;
                         @operator = Tokens.RequiredToken<IBinaryOperatorToken>();
+                    }
+                    break;
+                case IAsKeywordToken _:
+                case IAsExclamationKeywordToken _:
+                case IAsQuestionKeywordToken _:
+                    if (minPrecedence <= OperatorPrecedence.Conversion)
+                    {
+                        Tokens.RequiredToken<IBinaryOperatorToken>();
+                        var typeSyntax = ParseType();
+                        expression = new ConversionExpressionSyntax(expression, typeSyntax);
+                        continue;
                     }
                     break;
                 case IPlusToken _:
@@ -229,6 +239,9 @@ public partial class Parser
             ILessThanDotDotToken _ => BinaryOperator.LessThanDotDot,
             IDotDotLessThanToken _ => BinaryOperator.DotDotLessThan,
             ILessThanDotDotLessThanToken _ => BinaryOperator.LessThanDotDotLessThan,
+            IAsKeywordToken _ => BinaryOperator.As,
+            IAsExclamationKeywordToken _ => BinaryOperator.AsExclamation,
+            IAsQuestionKeywordToken _ => BinaryOperator.AsQuestion,
             IQuestionQuestionToken _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(operatorToken)
         };

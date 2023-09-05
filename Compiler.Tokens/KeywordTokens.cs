@@ -50,6 +50,8 @@ public static partial class TokenTypes
         typeof(TrueKeywordToken),
         typeof(FalseKeywordToken),
         typeof(AsKeywordToken),
+        typeof(AsExclamationKeywordToken),
+        typeof(AsQuestionKeywordToken),
         typeof(AndKeywordToken),
         typeof(OrKeywordToken),
         typeof(NotKeywordToken),
@@ -181,6 +183,12 @@ public static partial class TokenFactory
     public static IAsKeywordToken AsKeyword(TextSpan span)
         => new AsKeywordToken(span);
 
+    public static IAsExclamationKeywordToken AsExclamationKeyword(TextSpan span)
+        => new AsExclamationKeywordToken(span);
+
+    public static IAsQuestionKeywordToken AsQuestionKeyword(TextSpan span)
+        => new AsQuestionKeywordToken(span);
+
     public static IAndKeywordToken AndKeyword(TextSpan span)
         => new AndKeywordToken(span);
 
@@ -234,6 +242,8 @@ public static partial class TokenFactory
     typeof(ITrueKeywordToken),
     typeof(IFalseKeywordToken),
     typeof(IAsKeywordToken),
+    typeof(IAsExclamationKeywordToken),
+    typeof(IAsQuestionKeywordToken),
     typeof(IAndKeywordToken),
     typeof(IOrKeywordToken),
     typeof(INotKeywordToken))]
@@ -604,6 +614,24 @@ public partial interface IAsKeywordToken : IKeywordToken { }
 internal partial class AsKeywordToken : Token, IAsKeywordToken
 {
     public AsKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IAsExclamationKeywordToken : IKeywordToken { }
+internal partial class AsExclamationKeywordToken : Token, IAsExclamationKeywordToken
+{
+    public AsExclamationKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IAsQuestionKeywordToken : IKeywordToken { }
+internal partial class AsQuestionKeywordToken : Token, IAsQuestionKeywordToken
+{
+    public AsQuestionKeywordToken(TextSpan span)
         : base(span)
     {
     }

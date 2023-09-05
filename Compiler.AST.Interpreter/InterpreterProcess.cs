@@ -365,6 +365,9 @@ public class InterpreterProcess
                     case BinaryOperator.LessThanDotDot:
                     case BinaryOperator.DotDotLessThan:
                     case BinaryOperator.LessThanDotDotLessThan:
+                    case BinaryOperator.As:
+                    case BinaryOperator.AsExclamation:
+                    case BinaryOperator.AsQuestion:
                         throw new NotImplementedException($"Operator {exp.Operator}");
                 }
             case IUnaryOperatorExpression exp:

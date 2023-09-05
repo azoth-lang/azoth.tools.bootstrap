@@ -34,8 +34,10 @@ public static partial class TokenTypes
                 "MutableKeywordToken" => "mut",
                 "AnyKeywordToken" => "Any",
                 "TypeKeywordToken" => "Type",
+                "AsExclamationToken" => "as!",
+                "AsQuestion" => "as?",
                 "UnderscoreKeywordToken" => "_",
-                _ => tokenTypeName.Substring(0, tokenTypeName.Length - KeywordTokenLength)
+                _ => tokenTypeName[..^KeywordTokenLength]
                                   .ToLower(CultureInfo.InvariantCulture)
             };
             var factory = CompileFactory<IKeywordToken>(tokenType);

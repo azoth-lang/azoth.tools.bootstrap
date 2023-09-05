@@ -19,7 +19,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(ILessThanOrEqualToken),
     typeof(IQuestionQuestionToken),
     typeof(IAndKeywordToken),
-    typeof(IOrKeywordToken))]
+    typeof(IOrKeywordToken),
+    typeof(IAsKeywordToken),
+    typeof(IAsExclamationKeywordToken),
+    typeof(IAsQuestionKeywordToken))]
 public interface IBinaryOperatorToken : IEssentialToken
 {
 }
@@ -41,3 +44,6 @@ public partial interface ILessThanOrEqualToken : IBinaryOperatorToken { }
 public partial interface IQuestionQuestionToken : IBinaryOperatorToken { }
 public partial interface IAndKeywordToken : IBinaryOperatorToken { }
 public partial interface IOrKeywordToken : IBinaryOperatorToken { }
+public partial interface IAsKeywordToken : IBinaryOperatorToken { }
+public partial interface IAsExclamationKeywordToken : IBinaryOperatorToken { }
+public partial interface IAsQuestionKeywordToken : IBinaryOperatorToken { }

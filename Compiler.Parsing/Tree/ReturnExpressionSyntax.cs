@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -23,7 +23,5 @@ internal class ReturnExpressionSyntax : ExpressionSyntax, IReturnExpressionSynta
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
 
     public override string ToString()
-    {
-        return Value is null ? "return" : $"return {Value}";
-    }
+        => Value is null ? "return" : $"return {Value}";
 }

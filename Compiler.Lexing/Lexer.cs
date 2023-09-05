@@ -15,9 +15,7 @@ public class Lexer
 {
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Unit testability")]
     public ITokenIterator<IToken> Lex(ParseContext context)
-    {
-        return new TokenIterator<IToken>(context, Lex(context.File, context.Diagnostics));
-    }
+        => new TokenIterator<IToken>(context, Lex(context.File, context.Diagnostics));
 
     private static IEnumerable<IToken> Lex(CodeFile file, Diagnostics diagnostics)
     {
@@ -157,7 +155,7 @@ public class Lexer
                             {
                                 currentChar = text[tokenEnd];
                                 tokenEnd += 1;
-                                if (currentChar == '\r' || currentChar == '\n')
+                                if (currentChar is '\r' or '\n')
                                     break;
                             }
 
@@ -362,6 +360,17 @@ public class Lexer
                      || TokenTypes.IsReservedTypeName(value))
                 diagnostics.Add(LexError.ReservedWord(file, span, value));
 
+            var nextChar = tokenEnd < text.Length ? text[tokenEnd] : '\0';
+            if (nextChar is '?' or '!')
+            {
+                var extendedValue = value + nextChar;
+                if (TokenTypes.KeywordFactories.TryGetValue(extendedValue, out keywordFactory))
+                {
+                    tokenEnd += 1;
+                    return keywordFactory(TokenSpan());
+                }
+            }
+
             return TokenFactory.BareIdentifier(span, value);
         }
         IToken NewEscapedIdentifier()
@@ -474,8 +483,7 @@ public class Lexer
                         }
 
                         int value;
-                        if (codepoint.Length > 0
-                            && codepoint.Length <= 6
+                        if (codepoint.Length is > 0 and <= 6
                             && (value = Convert.ToInt32(codepoint.ToString(), 16)) <= 0x10FFFF)
                         {
                             // TODO disallow surrogate pairs
@@ -533,31 +541,20 @@ public class Lexer
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 
-    private static bool IsIntegerCharacter(char c)
-    {
-        return c >= '0' && c <= '9';
-    }
+    private static bool IsIntegerCharacter(char c) => c is >= '0' and <= '9';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 
     private static bool IsIdentifierStartCharacter(char c)
-    {
-        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
-    }
+        => c is (>= 'a' and <= 'z') or (>= 'A' and <= 'Z') or '_';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 
     private static bool IsIdentifierCharacter(char c)
-    {
-        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || char.IsNumber(c);
-    }
+        => c is (>= 'a' and <= 'z') or (>= 'A' and <= 'Z') or '_' || char.IsNumber(c);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 
     private static bool IsHexDigit(char c)
-    {
-        return (c >= '0' && c <= '9')
-               || (c >= 'a' && c <= 'f')
-               || (c >= 'A' && c <= 'F');
-    }
+        => c is (>= '0' and <= '9') or (>= 'a' and <= 'f') or (>= 'A' and <= 'F');
 }

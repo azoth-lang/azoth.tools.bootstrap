@@ -65,7 +65,6 @@ NamedParameter: Parameter, ConstructorParameter, BindingParameter, LocalBinding 
 SelfParameter: Parameter, BindingParameter = Capability:ReferenceCapability Symbol:'Promise<SelfParameterSymbol>';
 FieldParameter: Parameter, ConstructorParameter = ReferencedSymbol:'Promise<FieldSymbol?>' DefaultValue:Expression?;
 
-
 // ---------- Function Parts
 Body: BodyOrBlock = Statements:BodyStatement*;
 
@@ -102,6 +101,7 @@ AssignmentExpression: Expression = LeftOperand:AssignableExpression Operator:'As
 BinaryOperatorExpression: Expression = LeftOperand:Expression Operator:'BinaryOperator' RightOperand:Expression;
 UnaryOperatorExpression: Expression = Fixity:'UnaryOperatorFixity' Operator:'UnaryOperator' Operand:Expression;
 IdExpression: Expression = Referent:Expression;
+ConversionExpression: Expression = Referent:Expression ConvertToType:Type?;
 
 // ---------- Control Flow Expressions
 IfExpression: Expression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;

@@ -580,6 +580,10 @@ public class BasicBodyAnalyzer
                     case BinaryOperator.DotDotLessThan:
                     case BinaryOperator.LessThanDotDotLessThan:
                         throw new NotImplementedException("Type analysis of range operators");
+                    case BinaryOperator.As:
+                    case BinaryOperator.AsExclamation:
+                    case BinaryOperator.AsQuestion:
+                        throw new NotImplementedException("Type analysis of as operators");
                     default:
                         throw ExhaustiveMatch.Failed(@operator);
                 }
@@ -810,6 +814,8 @@ public class BasicBodyAnalyzer
                 return exp.DataType = DataType.None;
             case IBlockExpressionSyntax blockSyntax:
                 return InferBlockType(blockSyntax, sharing, capabilities);
+            case IConversionExpressionSyntax exp:
+                throw new NotImplementedException("Analysis of conversion expressions");
         }
     }
 

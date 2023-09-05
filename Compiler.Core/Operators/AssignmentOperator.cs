@@ -2,7 +2,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 
 public enum AssignmentOperator
 {
-    Simple,
+    Simple = 1,
     Plus,
     Minus,
     Asterisk,

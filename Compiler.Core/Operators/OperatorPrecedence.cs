@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 
 public enum OperatorPrecedence
 {
@@ -11,6 +11,7 @@ public enum OperatorPrecedence
     Equality, // `==` `≠`
     Relational, // `<` `<=` `>` `>=` `<:`
     Range, // `..` `..<`
+    Conversion, // `as` `as!` `as?`
     Additive, // `+` `-`
     Multiplicative, // `*` `/`
     Unary, // `+` `-` `not` `?`

@@ -20,10 +20,7 @@ public sealed class IntegerConstantType : IntegerType
         Value = value;
     }
 
-    public override DataType ToNonConstantType()
-    {
-        return Int32;
-    }
+    public override DataType ToNonConstantType() => Int32;
 
     public override bool Equals(DataType? other)
     {
@@ -33,18 +30,10 @@ public sealed class IntegerConstantType : IntegerType
                && Value == otherType.Value;
     }
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Value);
-    }
+    public override int GetHashCode() => HashCode.Combine(Value);
 
     public override string ToSourceCodeString()
-    {
-        throw new InvalidOperationException("Integer constant type has no source code representation");
-    }
+        => throw new InvalidOperationException("Integer constant type has no source code representation");
 
-    public override string ToILString()
-    {
-        return $"const[{Value}]";
-    }
+    public override string ToILString() => $"const[{Value}]";
 }
