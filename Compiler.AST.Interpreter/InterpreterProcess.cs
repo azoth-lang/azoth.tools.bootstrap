@@ -529,25 +529,23 @@ public class InterpreterProcess
     {
         if (leftExp.DataType != rightExp.DataType)
             throw new InvalidOperationException(
-                $"Can't add expressions of type {leftExp.DataType} and {rightExp.DataType}");
+                $"Can't add expressions of type {leftExp.DataType.ToILString()} and {rightExp.DataType.ToILString()}");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var dataType = leftExp.DataType;
-        if (dataType == DataType.Byte)
+        var type = leftExp.DataType;
+        if (type == DataType.Int) return AzothValue.Int(left.IntValue + right.IntValue);
+        if (type == DataType.UInt) return AzothValue.Int(left.IntValue + right.IntValue);
+        if (type == DataType.Byte)
             return AzothValue.Byte((byte)(left.ByteValue + right.ByteValue));
-        if (dataType == DataType.Int)
-            return AzothValue.Int(left.IntValue + right.IntValue);
-        if (dataType == DataType.UInt)
-            return AzothValue.Int(left.IntValue + right.IntValue);
-        if (dataType == DataType.Int32)
+        if (type == DataType.Int32)
             return AzothValue.I32(left.I32Value + right.I32Value);
-        if (dataType == DataType.UInt32)
+        if (type == DataType.UInt32)
             return AzothValue.U32(left.U32Value + right.U32Value);
-        if (dataType == DataType.Offset)
+        if (type == DataType.Offset)
             return AzothValue.Offset(left.OffsetValue + right.OffsetValue);
-        if (dataType == DataType.Size)
+        if (type == DataType.Size)
             return AzothValue.Size(left.SizeValue * right.SizeValue);
-        throw new NotImplementedException($"Add {dataType.ToILString()}");
+        throw new NotImplementedException($"Add {type.ToILString()}");
     }
 
     private async ValueTask<AzothValue> SubtractAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
@@ -558,22 +556,20 @@ public class InterpreterProcess
                 $"Can't subtract expressions of type {leftExp.DataType} and {rightExp.DataType}");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var dataType = leftExp.DataType;
-        if (dataType == DataType.Byte)
+        var type = leftExp.DataType;
+        if (type == DataType.Int) return AzothValue.Int(left.IntValue - right.IntValue);
+        if (type == DataType.UInt) return AzothValue.Int(left.IntValue - right.IntValue);
+        if (type == DataType.Byte)
             return AzothValue.Byte((byte)(left.ByteValue - right.ByteValue));
-        if (dataType == DataType.Int)
-            return AzothValue.Int(left.IntValue - right.IntValue);
-        if (dataType == DataType.UInt)
-            return AzothValue.Int(left.IntValue - right.IntValue);
-        if (dataType == DataType.Int32)
+        if (type == DataType.Int32)
             return AzothValue.I32(left.I32Value - right.I32Value);
-        if (dataType == DataType.UInt32)
+        if (type == DataType.UInt32)
             return AzothValue.U32(left.U32Value - right.U32Value);
-        if (dataType == DataType.Offset)
+        if (type == DataType.Offset)
             return AzothValue.Offset(left.OffsetValue - right.OffsetValue);
-        if (dataType == DataType.Size)
+        if (type == DataType.Size)
             return AzothValue.Size(left.SizeValue - right.SizeValue);
-        throw new NotImplementedException($"Subtract {dataType.ToILString()}");
+        throw new NotImplementedException($"Subtract {type.ToILString()}");
     }
 
     private async ValueTask<AzothValue> MultiplyAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
@@ -583,18 +579,19 @@ public class InterpreterProcess
                 $"Can't multiply expressions of type {leftExp.DataType} and {rightExp.DataType}");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var dataType = leftExp.DataType;
-        if (dataType == DataType.Byte)
-            return AzothValue.Byte((byte)(left.ByteValue * right.ByteValue));
-        if (dataType == DataType.Int32)
+        var type = leftExp.DataType;
+        if (type == DataType.Int) return AzothValue.Int(left.IntValue * right.IntValue);
+        if (type == DataType.UInt) return AzothValue.Int(left.IntValue * right.IntValue);
+        if (type == DataType.Byte) return AzothValue.Byte((byte)(left.ByteValue * right.ByteValue));
+        if (type == DataType.Int32)
             return AzothValue.I32(left.I32Value * right.I32Value);
-        if (dataType == DataType.UInt32)
+        if (type == DataType.UInt32)
             return AzothValue.U32(left.U32Value * right.U32Value);
-        if (dataType == DataType.Offset)
+        if (type == DataType.Offset)
             return AzothValue.Offset(left.OffsetValue * right.OffsetValue);
-        if (dataType == DataType.Size)
+        if (type == DataType.Size)
             return AzothValue.Size(left.SizeValue * right.SizeValue);
-        throw new NotImplementedException($"Multiply {dataType.ToILString()}");
+        throw new NotImplementedException($"Multiply {type.ToILString()}");
     }
 
     private async ValueTask<AzothValue> DivideAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
@@ -604,47 +601,48 @@ public class InterpreterProcess
                 $"Can't divide expressions of type {leftExp.DataType} and {rightExp.DataType}");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var dataType = leftExp.DataType;
-        if (dataType == DataType.Byte)
+        var type = leftExp.DataType;
+        if (type == DataType.Int) return AzothValue.Int(left.IntValue / right.IntValue);
+        if (type == DataType.UInt) return AzothValue.Int(left.IntValue / right.IntValue);
+        if (type == DataType.Byte)
             return AzothValue.Byte((byte)(left.ByteValue / right.ByteValue));
-        if (dataType == DataType.Int32)
+        if (type == DataType.Int32)
             return AzothValue.I32(left.I32Value / right.I32Value);
-        if (dataType == DataType.UInt32)
+        if (type == DataType.UInt32)
             return AzothValue.U32(left.U32Value / right.U32Value);
-        if (dataType == DataType.Offset)
+        if (type == DataType.Offset)
             return AzothValue.Offset(left.OffsetValue / right.OffsetValue);
-        if (dataType == DataType.Size)
+        if (type == DataType.Size)
             return AzothValue.Size(left.SizeValue / right.SizeValue);
-        throw new NotImplementedException($"Divide {dataType.ToILString()}");
+        throw new NotImplementedException($"Divide {type.ToILString()}");
     }
 
     private async ValueTask<int> CompareAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
     {
         if (leftExp.DataType != rightExp.DataType)
             throw new InvalidOperationException(
-                $"Can't compare expressions of type {leftExp.DataType} and {rightExp.DataType}");
+                $"Can't compare expressions of type {leftExp.DataType.ToILString()} and {rightExp.DataType.ToILString()}");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var dataType = leftExp.DataType;
-        if (dataType == DataType.Byte)
-            return left.ByteValue.CompareTo(right.ByteValue);
-        if (dataType == DataType.Int32)
-            return left.I32Value.CompareTo(right.I32Value);
-        if (dataType == DataType.UInt32)
-            return left.U32Value.CompareTo(right.U32Value);
-        if (dataType == DataType.Offset)
-            return left.OffsetValue.CompareTo(right.OffsetValue);
-        if (dataType == DataType.Size)
-            return left.SizeValue.CompareTo(right.SizeValue);
-        if (dataType is ReferenceType { IsIdentityReference: true })
+        var type = leftExp.DataType;
+        if (type == DataType.Int) return left.IntValue.CompareTo(right.IntValue);
+        if (type == DataType.UInt) return left.IntValue.CompareTo(right.IntValue);
+        if (type == DataType.Byte) return left.ByteValue.CompareTo(right.ByteValue);
+        if (type == DataType.Int32) return left.I32Value.CompareTo(right.I32Value);
+        if (type == DataType.UInt32) return left.U32Value.CompareTo(right.U32Value);
+        if (type == DataType.Offset) return left.OffsetValue.CompareTo(right.OffsetValue);
+        if (type == DataType.Size) return left.SizeValue.CompareTo(right.SizeValue);
+        if (type is ReferenceType { IsIdentityReference: true })
             return ReferenceEquals(left.ObjectValue, right.ObjectValue) ? 0 : -1;
-        throw new NotImplementedException($"Compare {dataType.ToILString()}");
+        throw new NotImplementedException($"Compare {type.ToILString()}");
     }
 
     private async ValueTask<AzothValue> NegateAsync(IExpression expression, LocalVariableScope variables)
     {
         var value = await ExecuteAsync(expression, variables).ConfigureAwait(false);
         var dataType = expression.DataType;
+        if (dataType == DataType.Int)
+            return AzothValue.Int(-value.IntValue);
         if (dataType == DataType.Int32)
             return AzothValue.I32(-value.I32Value);
         if (dataType is IntegerConstantType)
@@ -657,6 +655,10 @@ public class InterpreterProcess
         AzothValue divisor,
         NumericType type)
     {
+        if (type == DataType.Int)
+            return AzothValue.Int(dividend.IntValue % divisor.IntValue);
+        if (type == DataType.UInt)
+            return AzothValue.Int(dividend.IntValue % divisor.IntValue);
         if (type == DataType.Byte)
             return AzothValue.I32(dividend.ByteValue % divisor.ByteValue);
         if (type == DataType.Int32)
@@ -674,6 +676,8 @@ public class InterpreterProcess
     {
         string displayString;
         if (type is IntegerConstantType) displayString = value.IntValue.ToString();
+        else if (type == DataType.Int) displayString = value.IntValue.ToString();
+        else if (type == DataType.UInt) displayString = value.IntValue.ToString();
         else if (type == DataType.Byte) displayString = value.ByteValue.ToString();
         else if (type == DataType.Int32) displayString = value.I32Value.ToString();
         else if (type == DataType.UInt32) displayString = value.U32Value.ToString();
