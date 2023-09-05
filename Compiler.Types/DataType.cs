@@ -24,10 +24,10 @@ public abstract class DataType : IEquatable<DataType>
     public static readonly BoolConstantType True = BoolConstantType.True;
     public static readonly BoolConstantType False = BoolConstantType.False;
     public static readonly FixedSizeIntegerType Byte = FixedSizeIntegerType.Byte;
-#pragma warning disable CA1720
+    public static readonly BigIntegerType Int = BigIntegerType.Int;
+    public static readonly BigIntegerType UInt = BigIntegerType.UInt;
     public static readonly FixedSizeIntegerType Int32 = FixedSizeIntegerType.Int32;
     public static readonly FixedSizeIntegerType UInt32 = FixedSizeIntegerType.UInt32;
-#pragma warning restore CA1720
     public static readonly PointerSizedIntegerType Size = PointerSizedIntegerType.Size;
     public static readonly PointerSizedIntegerType Offset = PointerSizedIntegerType.Offset;
 

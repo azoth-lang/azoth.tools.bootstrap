@@ -535,6 +535,10 @@ public class InterpreterProcess
         var dataType = leftExp.DataType;
         if (dataType == DataType.Byte)
             return AzothValue.Byte((byte)(left.ByteValue + right.ByteValue));
+        if (dataType == DataType.Int)
+            return AzothValue.Int(left.IntValue + right.IntValue);
+        if (dataType == DataType.UInt)
+            return AzothValue.Int(left.IntValue + right.IntValue);
         if (dataType == DataType.Int32)
             return AzothValue.I32(left.I32Value + right.I32Value);
         if (dataType == DataType.UInt32)
@@ -548,6 +552,7 @@ public class InterpreterProcess
 
     private async ValueTask<AzothValue> SubtractAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
     {
+        // TODO check for negative values when subtracting unsigned
         if (leftExp.DataType != rightExp.DataType)
             throw new InvalidOperationException(
                 $"Can't subtract expressions of type {leftExp.DataType} and {rightExp.DataType}");
@@ -556,6 +561,10 @@ public class InterpreterProcess
         var dataType = leftExp.DataType;
         if (dataType == DataType.Byte)
             return AzothValue.Byte((byte)(left.ByteValue - right.ByteValue));
+        if (dataType == DataType.Int)
+            return AzothValue.Int(left.IntValue - right.IntValue);
+        if (dataType == DataType.UInt)
+            return AzothValue.Int(left.IntValue - right.IntValue);
         if (dataType == DataType.Int32)
             return AzothValue.I32(left.I32Value - right.I32Value);
         if (dataType == DataType.UInt32)

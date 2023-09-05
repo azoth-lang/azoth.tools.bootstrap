@@ -23,7 +23,7 @@ public class SizedIntegerTypeTests
     }
 
     [Fact]
-    public void Int_has_copy_semantics()
+    public void Int32_has_copy_semantics()
     {
         var type = FixedSizeIntegerType.Int32;
 

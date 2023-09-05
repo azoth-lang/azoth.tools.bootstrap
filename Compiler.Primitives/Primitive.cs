@@ -20,6 +20,8 @@ public static class Primitive
         BuildBoolSymbol(tree);
 
         BuildIntegerTypeSymbol(tree, DataType.Byte, stringType);
+        BuildIntegerTypeSymbol(tree, DataType.Int, stringType);
+        BuildIntegerTypeSymbol(tree, DataType.UInt, stringType);
         BuildIntegerTypeSymbol(tree, DataType.Int32, stringType);
         BuildIntegerTypeSymbol(tree, DataType.UInt32, stringType);
 
@@ -59,8 +61,5 @@ public static class Primitive
         tree.Add(symbol);
     }
 
-    private static FixedList<DataType> Params(params DataType[] types)
-    {
-        return types.ToFixedList();
-    }
+    private static FixedList<DataType> Params(params DataType[] types) => types.ToFixedList();
 }

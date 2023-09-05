@@ -41,7 +41,7 @@ public static class TypeError
         DataType operandType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3002, $"Operator `{@operator}` cannot be applied to operand of type `{operandType}`.");
+            3002, $"Operator `{@operator}` cannot be applied to operand of type `{operandType.ToSourceCodeString()}`.");
     }
 
     public static Diagnostic MustBeATypeExpression(CodeFile file, TextSpan span)
@@ -68,10 +68,10 @@ public static class TypeError
             3006, $"Declaration of type `{@class.ContainingNamespaceName}.{@class.Name}` is part of a circular definition");
     }
 
-    public static Diagnostic CannotConvert(CodeFile file, ISyntax expression, DataType ofType, DataType toType)
+    public static Diagnostic CannotImplicitlyConvert(CodeFile file, ISyntax expression, DataType ofType, DataType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3007, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToSourceCodeString()}` to type `{toType.ToSourceCodeString()}`");
+            3007, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstantType().ToSourceCodeString()}` to type `{toType.ToNonConstantType().ToSourceCodeString()}`");
     }
 
     public static Diagnostic MustBeInvocable(CodeFile file, IExpressionSyntax expression)
@@ -125,6 +125,12 @@ public static class TypeError
     public static Diagnostic CannotFreezeValue(CodeFile file, IFreezeExpressionSyntax expression)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3009, $"Cannot freeze the value `{file.Code[expression.Referent.Span]}`");
+            3016, $"Cannot freeze the value `{file.Code[expression.Referent.Span]}`");
+    }
+
+    public static Diagnostic CannotExplicitlyConvert(CodeFile file, ISyntax expression, DataType ofType, DataType toType)
+    {
+        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3007, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstantType().ToSourceCodeString()}` to type `{toType.ToNonConstantType().ToSourceCodeString()}`");
     }
 }

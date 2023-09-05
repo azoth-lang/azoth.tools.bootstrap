@@ -12,35 +12,21 @@ public abstract class SymbolTestFixture
     private int unique;
 
     protected NamespaceSymbol Namespace(string? name = null, NamespaceOrPackageSymbol? ns = null)
-    {
-        return new NamespaceSymbol(ns ?? Package(), Name(name) ?? DefaultName("namespace"));
-    }
+        => new(ns ?? Package(), Name(name) ?? DefaultName("namespace"));
 
     protected PackageSymbol Package(string? name = null)
-    {
-        return new PackageSymbol(Name(name) ?? DefaultName("package"));
-    }
+        => new(Name(name) ?? DefaultName("package"));
 
-    protected Name DefaultName(string prefix)
-    {
-        return new Name($"⧫{prefix}_{++unique}");
-    }
+    protected Name DefaultName(string prefix) => new($"⧫{prefix}_{++unique}");
 
     [return: NotNullIfNotNull("name")]
-    protected static Name? Name(string? name = null)
-    {
-        return name is null ? null : new Name(name);
-    }
+    protected static Name? Name(string? name = null) => name is null ? null : new Name(name);
 
     protected FixedList<DataType> Params(int? count = null)
-    {
-        return Enumerable.Range(1, count ?? ++unique).Select(n => Compiler.Types.DataType.Int32).ToFixedList<DataType>();
-    }
+        => Enumerable.Range(1, count ?? ++unique).Select(n => Compiler.Types.DataType.Int).ToFixedList<DataType>();
 
     protected static FixedList<DataType> Params(DataType param, params DataType[] @params)
-    {
-        return @params.Prepend(param).ToFixedList();
-    }
+        => @params.Prepend(param).ToFixedList();
 
     protected FunctionSymbol Func(string? name = null, NamespaceOrPackageSymbol? ns = null, FixedList<DataType>? @params = null, DataType? @return = null)
     {

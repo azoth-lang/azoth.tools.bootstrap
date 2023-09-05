@@ -20,6 +20,8 @@ public static class DataTypeExtensions
             case (_, UnknownType):
             case (BoolType, BoolConstantType):
             case (_, NeverType):
+            case (BigIntegerType { IsSigned: true }, IntegerType):
+            case (BigIntegerType, IntegerType { IsSigned: false }):
                 return true;
             case (AnyType targetReference, ReferenceType sourceReference):
                 return targetReference.Capability.IsAssignableFrom(sourceReference.Capability);

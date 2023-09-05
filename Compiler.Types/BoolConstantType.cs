@@ -18,18 +18,10 @@ public sealed class BoolConstantType : BoolType
         Value = value;
     }
 
-    public override DataType ToNonConstantType()
-    {
-        return Bool;
-    }
+    public override DataType ToNonConstantType() => Bool;
 
     public override string ToSourceCodeString()
-    {
-        throw new InvalidOperationException("Bool constant type has no source code representation");
-    }
+        => throw new InvalidOperationException("Bool constant type has no source code representation");
 
-    public override string ToILString()
-    {
-        return $"const[{(Value ? "true" : "false")}]";
-    }
+    public override string ToILString() => $"const[{(Value ? "true" : "false")}]";
 }

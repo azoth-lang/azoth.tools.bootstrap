@@ -6,7 +6,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 [Closed(
     typeof(IntegerConstantType),
     typeof(FixedSizeIntegerType),
-    typeof(PointerSizedIntegerType))]
+    typeof(PointerSizedIntegerType),
+    typeof(BigIntegerType))]
 public abstract class IntegerType : NumericType
 {
     public bool IsSigned { get; }

@@ -15,10 +15,10 @@ public sealed class SpecialTypeName : TypeName
     public static readonly SpecialTypeName Bool = new("bool");
     public static readonly SpecialTypeName Any = new("Any");
     public static readonly SpecialTypeName Byte = new("byte");
-#pragma warning disable CA1720
     public static readonly SpecialTypeName Int = new("int");
     public static readonly SpecialTypeName UInt = new("uint");
-#pragma warning restore CA1720
+    public static readonly SpecialTypeName Int32 = new("int32");
+    public static readonly SpecialTypeName UInt32 = new("uint32");
     public static readonly SpecialTypeName Size = new("size");
     public static readonly SpecialTypeName Offset = new("offset");
     #endregion

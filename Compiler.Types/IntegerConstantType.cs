@@ -20,7 +20,8 @@ public sealed class IntegerConstantType : IntegerType
         Value = value;
     }
 
-    public override DataType ToNonConstantType() => Int32;
+    // TODO should a more specific type be picked?
+    public override DataType ToNonConstantType() => Int;
 
     public override bool Equals(DataType? other)
     {

@@ -180,7 +180,7 @@ public class BasicBodyAnalyzer
                                   ?? throw new InvalidOperationException("Initializer type should be determined");
 
             if (!type.IsAssignableFrom(initializerType))
-                diagnostics.Add(TypeError.CannotConvert(file, variableDeclaration.Initializer, initializerType, type));
+                diagnostics.Add(TypeError.CannotImplicitlyConvert(file, variableDeclaration.Initializer, initializerType, type));
         }
 
         var symbol = new VariableSymbol((InvocableSymbol)containingSymbol, variableDeclaration.Name,
@@ -247,7 +247,7 @@ public class BasicBodyAnalyzer
         InferType(expression, sharing, capabilities, implicitRead: !allowImplicitMutateOrMove);
         var actualType = AddImplicitConversionIfNeeded(expression, expectedType, sharing, capabilities, allowImplicitMutateOrMove);
         if (!expectedType.IsAssignableFrom(actualType))
-            diagnostics.Add(TypeError.CannotConvert(file, expression, actualType, expectedType));
+            diagnostics.Add(TypeError.CannotImplicitlyConvert(file, expression, actualType, expectedType));
     }
 
     /// <summary>
@@ -639,7 +639,12 @@ public class BasicBodyAnalyzer
                                 exp.DataType = integerType;
                                 break;
                             case FixedSizeIntegerType sizedIntegerType:
+                                // TODO upgrade the size
                                 exp.DataType = sizedIntegerType;
+                                break;
+                            case BigIntegerType:
+                                // Even if unsigned before, it is signed now
+                                exp.DataType = DataType.Int;
                                 break;
                             case UnknownType _:
                                 exp.DataType = DataType.Unknown;
@@ -796,7 +801,7 @@ public class BasicBodyAnalyzer
                 AddImplicitConversionIfNeeded(exp.RightOperand, left, sharing, capabilities, false);
                 var right = exp.RightOperand.ConvertedDataType.Assigned();
                 if (!left.IsAssignableFrom(right))
-                    diagnostics.Add(TypeError.CannotConvert(file,
+                    diagnostics.Add(TypeError.CannotImplicitlyConvert(file,
                         exp.RightOperand, right, left));
                 exp.Semantics = ExpressionSemantics.Void;
                 return exp.DataType = DataType.Void;
@@ -818,8 +823,8 @@ public class BasicBodyAnalyzer
             {
                 var referentType = InferType(exp.Referent, sharing, capabilities);
                 var convertToType = typeResolver.Evaluate(exp.ConvertToType, false) ?? DataType.Unknown;
-                if (!ConversionTypesAreCompatible(exp.Referent, convertToType))
-                    diagnostics.Add(TypeError.CannotConvert(file, exp.Referent, referentType, convertToType));
+                if (!ExplicitConversionTypesAreCompatible(exp.Referent, convertToType))
+                    diagnostics.Add(TypeError.CannotExplicitlyConvert(file, exp.Referent, referentType, convertToType));
 
                 exp.Semantics = exp.Referent.ConvertedSemantics!;
                 return exp.DataType = convertToType;
@@ -1212,7 +1217,7 @@ public class BasicBodyAnalyzer
     {
         var fromType = arg.ConvertedDataType.Assigned();
         if (!type.IsAssignableFrom(fromType))
-            diagnostics.Add(TypeError.CannotConvert(file, arg, fromType, type));
+            diagnostics.Add(TypeError.CannotImplicitlyConvert(file, arg, fromType, type));
     }
 
     private DataType? InferReferencedSymbol(
@@ -1285,6 +1290,10 @@ public class BasicBodyAnalyzer
                 // TODO this isn't right we might need to convert either of them
                 AddImplicitConversionIfNeeded(rightOperand, integerType, sharing, capabilities, false);
                 return rightOperand.ConvertedDataType is FixedSizeIntegerType;
+            case BigIntegerType integerType:
+                // TODO this isn't right we might need to convert either of them
+                AddImplicitConversionIfNeeded(rightOperand, integerType, sharing, capabilities, false);
+                return rightOperand.ConvertedDataType is IntegerType;
             case OptionalType _:
                 throw new NotImplementedException("Trying to do math on optional type");
             case NeverType _:
@@ -1309,13 +1318,14 @@ public class BasicBodyAnalyzer
             && (leftType.IsAssignableFrom(rightType) || rightType.IsAssignableFrom(leftType));
     }
 
-    private static bool ConversionTypesAreCompatible(IExpressionSyntax expression, DataType convertToType)
+    private static bool ExplicitConversionTypesAreCompatible(IExpressionSyntax expression, DataType convertToType)
     {
         return (expression.ConvertedDataType, convertToType) switch
         {
             // TODO add type for int and uint (currently just using int32)
             (BoolType, IntegerType) => true,
-            //(IntegerType { IsSigned: false }, Un)
+            (IntegerType { IsSigned: false }, BigIntegerType) => true,
+            (IntegerType, BigIntegerType { IsSigned: true }) => true,
             _ => false
         };
     }

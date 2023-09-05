@@ -72,7 +72,7 @@ public class IntegerConstantTypeTests
 
         var nonConstant = type.ToNonConstantType();
 
-        Assert.Same(DataType.Int32, nonConstant);
+        Assert.Same(DataType.Int, nonConstant);
     }
 
     [Theory]
