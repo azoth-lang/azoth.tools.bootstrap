@@ -18,10 +18,7 @@ public class LivenessAnalysis : IBackwardDataFlowAnalysis<VariableFlags>
         this.symbolTree = symbolTree;
     }
 
-    public VariableFlags StartState()
-    {
-        return new VariableFlags(declaration, symbolTree, false);
-    }
+    public VariableFlags StartState() => new(declaration, symbolTree, false);
 
     public VariableFlags Assignment(
         IAssignmentExpression assignmentExpression,

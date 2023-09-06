@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public sealed class UnknownType : DataType
 {
     #region Singleton
-    internal static readonly UnknownType Instance = new UnknownType();
+    internal static readonly UnknownType Instance = new();
 
     private UnknownType() { }
     #endregion

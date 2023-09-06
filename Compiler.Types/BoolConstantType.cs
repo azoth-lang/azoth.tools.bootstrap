@@ -5,8 +5,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public sealed class BoolConstantType : BoolType
 {
-    internal new static readonly BoolConstantType True = new BoolConstantType(true);
-    internal new static readonly BoolConstantType False = new BoolConstantType(false);
+    internal new static readonly BoolConstantType True = new(true);
+    internal new static readonly BoolConstantType False = new(false);
 
     public override bool IsConstant => true;
 

@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public class BoolType : SimpleType
 {
     #region Singleton
-    internal static readonly BoolType Instance = new BoolType();
+    internal static readonly BoolType Instance = new();
 
     private BoolType()
         : base(SpecialTypeName.Bool)

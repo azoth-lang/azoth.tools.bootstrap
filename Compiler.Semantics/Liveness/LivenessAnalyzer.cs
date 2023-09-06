@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Liveness;
 public class LivenessAnalyzer : IBackwardDataFlowAnalyzer<VariableFlags>
 {
     #region Singleton
-    public static readonly LivenessAnalyzer Instance = new LivenessAnalyzer();
+    public static readonly LivenessAnalyzer Instance = new();
 
     private LivenessAnalyzer() { }
     #endregion
@@ -17,7 +17,5 @@ public class LivenessAnalyzer : IBackwardDataFlowAnalyzer<VariableFlags>
         IExecutableDeclaration declaration,
         ISymbolTree symbolTree,
         Diagnostics _)
-    {
-        return new LivenessAnalysis(declaration, symbolTree);
-    }
+        => new LivenessAnalysis(declaration, symbolTree);
 }

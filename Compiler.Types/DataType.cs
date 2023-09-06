@@ -69,8 +69,6 @@ public abstract class DataType : IEquatable<DataType>
     /// </summary>
     public virtual DataType ToNonConstantType() => this;
 
-    // TODO equality
-
     [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
     public sealed override string ToString()

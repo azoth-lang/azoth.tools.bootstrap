@@ -29,20 +29,11 @@ public abstract class TypeName : IEquatable<TypeName>
 
     public abstract override int GetHashCode();
 
-    public static bool operator ==(TypeName? left, TypeName? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(TypeName? left, TypeName? right) => Equals(left, right);
 
-    public static bool operator !=(TypeName? left, TypeName? right)
-    {
-        return !Equals(left, right);
-    }
+    public static bool operator !=(TypeName? left, TypeName? right) => !Equals(left, right);
 
     public abstract override string ToString();
 
-    public static implicit operator TypeName(string text)
-    {
-        return new Name(text);
-    }
+    public static implicit operator TypeName(string text) => new Name(text);
 }

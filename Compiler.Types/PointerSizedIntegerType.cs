@@ -4,7 +4,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 /// <summary>
 /// Integer types whose exact bit length is architecture dependent and whose
-/// length matches that of pointers
+/// length matches that of pointers.
 /// </summary>
 public sealed class PointerSizedIntegerType : IntegerType
 {

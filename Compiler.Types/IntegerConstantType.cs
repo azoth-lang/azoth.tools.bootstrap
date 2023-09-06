@@ -20,7 +20,7 @@ public sealed class IntegerConstantType : IntegerType
         Value = value;
     }
 
-    // TODO should a more specific type be picked?
+    // TODO return the smallest type that contains this constant value
     public override DataType ToNonConstantType() => Int;
 
     public override bool Equals(DataType? other)
