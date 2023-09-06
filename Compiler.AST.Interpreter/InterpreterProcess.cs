@@ -455,24 +455,29 @@ public class InterpreterProcess
             case IForeachExpression exp:
             {
                 var loopVariable = exp.Symbol;
+                var symbolDataType = exp.Symbol.DataType;
+                var isBigInt = symbolDataType == DataType.Int || symbolDataType == DataType.UInt;
                 if (exp.InExpression is IBinaryOperatorExpression { Operator: BinaryOperator.DotDot } binaryExp
-                    && exp.Symbol.DataType == DataType.UInt32)
+                    && (isBigInt || symbolDataType == DataType.UInt32))
                 {
-                    var start = (await ExecuteAsync(binaryExp.LeftOperand, variables).ConfigureAwait(false)).U32Value;
-                    var end = (await ExecuteAsync(binaryExp.RightOperand, variables).ConfigureAwait(false)).U32Value;
+                    var startValue = await ExecuteAsync(binaryExp.LeftOperand, variables).ConfigureAwait(false);
+                    var start = isBigInt ? startValue.IntValue : startValue.U32Value;
+                    var endValue = await ExecuteAsync(binaryExp.RightOperand, variables).ConfigureAwait(false);
+                    var end = isBigInt ? endValue.IntValue : endValue.U32Value;
                     try
                     {
-                        for (uint i = start; i <= end; i++)
+                        for (var i = start; i <= end; i++)
                         {
                             try
                             {
                                 var loopVariables = new LocalVariableScope(variables);
-                                loopVariables.Add(loopVariable, AzothValue.U32(i));
+                                var indexValue = isBigInt ? AzothValue.Int(i) : AzothValue.U32((uint)i);
+                                loopVariables.Add(loopVariable, indexValue);
                                 await ExecuteAsync(exp.Block, loopVariables).ConfigureAwait(false);
                             }
                             catch (Next)
                             {
-                                continue;
+                                // continue
                             }
                         }
                         return AzothValue.None;
