@@ -60,7 +60,6 @@ public class PackageSyntax<TReference>
         var declarations = new Queue<IDeclarationSyntax>();
         declarations.EnqueueRange(compilationUnits.SelectMany(cu => cu.Declarations));
         while (declarations.TryDequeue(out var declaration))
-        {
             switch (declaration)
             {
                 default:
@@ -79,11 +78,8 @@ public class PackageSyntax<TReference>
                     declarations.EnqueueRange(syn.Members);
                     break;
             }
-        }
     }
 
     public override string ToString()
-    {
-        return $"package {Symbol.Name.Text}: {CompilationUnits.Count} Compilation Units";
-    }
+        => $"package {Symbol.Name.Text}: {CompilationUnits.Count} Compilation Units";
 }

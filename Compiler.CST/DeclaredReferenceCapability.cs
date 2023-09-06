@@ -12,23 +12,19 @@ public enum DeclaredReferenceCapability
     Mutable,
     ReadOnly, // read-only from this reference, possibly writable from others
     Constant,
-    Identity,
 }
 
 public static class DeclaredReferenceCapabilityExtensions
 {
     public static ReferenceCapability ToReferenceCapability(this DeclaredReferenceCapability capability)
-    {
-        return capability switch
+        => capability switch
         {
             DeclaredReferenceCapability.Isolated => ReferenceCapability.Isolated,
 
             DeclaredReferenceCapability.Constant => ReferenceCapability.Constant,
-            DeclaredReferenceCapability.Identity => ReferenceCapability.Identity,
 
             DeclaredReferenceCapability.Mutable => ReferenceCapability.Mutable,
             DeclaredReferenceCapability.ReadOnly => ReferenceCapability.ReadOnly,
             _ => throw ExhaustiveMatch.Failed(capability),
         };
-    }
 }

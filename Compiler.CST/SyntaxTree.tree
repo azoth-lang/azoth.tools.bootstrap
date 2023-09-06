@@ -16,7 +16,6 @@
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 'ISyntax' = Span:'TextSpan';
-// Note: by declaring the AllEntityDeclarations property type with quotes, it avoids the system assuming it must represent a direct child syntax node
 CompilationUnit = File:'CodeFile' ImplicitNamespaceName:'NamespaceName' UsingDirectives:UsingDirective* Declarations:NonMemberDeclaration* Diagnostics:'Diagnostic'*;
 UsingDirective = Name:'NamespaceName';
 
@@ -120,6 +119,8 @@ NameExpression: AssignableExpression = ReferencedSymbol:'Promise<Symbol?>';
 SimpleNameExpression: NameExpression, 'IHasContainingLexicalScope' = Name:'Name'?;
 SelfExpression: Expression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfParameterSymbol?>';
 QualifiedNameExpression: NameExpression = Context:Expression AccessOperator:'AccessOperator' Member:SimpleNameExpression;
+
+// ---------- Capability Expressions
 MutateExpression: Expression = Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
 MoveExpression: Expression = Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
 FreezeExpression: Expression = Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
