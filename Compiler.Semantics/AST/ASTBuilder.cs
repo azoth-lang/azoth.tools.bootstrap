@@ -570,16 +570,10 @@ internal class ASTBuilder
         return new FreezeExpression(syn.Span, type, semantics, referencedSymbol, referent);
     }
 
-    private static IFreezeExpression BuildConversionExpression(IConversionExpressionSyntax syn)
+    private static IImplicitNumericConversionExpression BuildConversionExpression(IConversionExpressionSyntax syn)
     {
-
-#pragma warning disable IDE0022
-        throw new NotImplementedException("building conversion expression");
-#pragma warning restore IDE0022
-        //var type = syn.DataType ?? throw new InvalidOperationException();
-        //var semantics = syn.Semantics.Assigned();
-        //var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
-        //var referent = BuildExpression(syn.Referent);
-        //return new FreezeExpression(syn.Span, type, semantics, referencedSymbol, referent);
+        // TODO replace hack with a proper implementation
+        var referent = BuildExpression(syn.Referent);
+        return BuildImplicitNumericConversionExpression(referent, syn);
     }
 }

@@ -581,7 +581,7 @@ public class InterpreterProcess
     {
         if (leftExp.DataType != rightExp.DataType)
             throw new InvalidOperationException(
-                $"Can't multiply expressions of type {leftExp.DataType} and {rightExp.DataType}");
+                $"Can't multiply expressions of type {leftExp.DataType.ToILString()} and {rightExp.DataType.ToILString()}");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
         var type = leftExp.DataType;

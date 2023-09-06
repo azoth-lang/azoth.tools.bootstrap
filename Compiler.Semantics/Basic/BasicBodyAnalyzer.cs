@@ -276,6 +276,8 @@ public class BasicBodyAnalyzer
     {
         switch (toType, fromType)
         {
+            case (DataType to, DataType from) when from == to:
+                return null;
             case (OptionalType to, OptionalType from):
                 // Direct subtype
                 if (to.Referent.IsAssignableFrom(from.Referent))
@@ -305,12 +307,10 @@ public class BasicBodyAnalyzer
                 else
                     return null;
             }
-            case (BigIntegerType to, IntegerConstantType from):
-            {
-                var requireSigned = from.Value < 0;
-                if (!requireSigned || to.IsSigned) return new NumericConversion(to, priorConversion);
-                else return null;
-            }
+            case (BigIntegerType { IsSigned: true } to, IntegerType):
+                return new NumericConversion(to, priorConversion);
+            case (BigIntegerType to, IntegerType { IsSigned: false }):
+                return new NumericConversion(to, priorConversion);
             case (PointerSizedIntegerType to, IntegerConstantType from):
             {
                 var requireSigned = from.Value < 0;
