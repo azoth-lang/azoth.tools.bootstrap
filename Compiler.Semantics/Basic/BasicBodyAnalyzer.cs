@@ -305,6 +305,12 @@ public class BasicBodyAnalyzer
                 else
                     return null;
             }
+            case (BigIntegerType to, IntegerConstantType from):
+            {
+                var requireSigned = from.Value < 0;
+                if (!requireSigned || to.IsSigned) return new NumericConversion(to, priorConversion);
+                else return null;
+            }
             case (PointerSizedIntegerType to, IntegerConstantType from):
             {
                 var requireSigned = from.Value < 0;
