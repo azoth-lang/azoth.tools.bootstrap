@@ -27,7 +27,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 public class BasicBodyAnalyzer
 {
     private readonly CodeFile file;
-    private readonly Symbol containingSymbol;
+    private readonly InvocableSymbol containingSymbol;
     private readonly SymbolTreeBuilder symbolTreeBuilder;
     private readonly SymbolForest symbolTrees;
     private readonly ObjectTypeSymbol? stringSymbol;
@@ -104,7 +104,7 @@ public class BasicBodyAnalyzer
         DataType? returnType)
     {
         file = containingDeclaration.File;
-        containingSymbol = containingDeclaration.Symbol.Result;
+        containingSymbol = (InvocableSymbol)containingDeclaration.Symbol.Result;
         this.symbolTreeBuilder = symbolTreeBuilder;
         this.stringSymbol = stringSymbol;
         this.diagnostics = diagnostics;
@@ -183,8 +183,8 @@ public class BasicBodyAnalyzer
                 diagnostics.Add(TypeError.CannotImplicitlyConvert(file, variableDeclaration.Initializer, initializerType, type));
         }
 
-        var symbol = new VariableSymbol((InvocableSymbol)containingSymbol, variableDeclaration.Name,
-            variableDeclaration.DeclarationNumber.Result, variableDeclaration.IsMutableBinding, type, false);
+        var symbol = new VariableSymbol(containingSymbol, variableDeclaration.Name,
+            variableDeclaration.DeclarationNumber.Result, variableDeclaration.IsMutableBinding, type, isParameter: false);
         variableDeclaration.Symbol.Fulfill(symbol);
         symbolTreeBuilder.Add(symbol);
         capabilities.Declare(symbol);
@@ -229,8 +229,9 @@ public class BasicBodyAnalyzer
                     type = referenceType.To(inferCapability.Declared.ToReferenceCapability());
                 }
 
-                // The conversion type may not be the inferred type of conversion fails
-                _ = AddImplicitConversionIfNeeded(expression, type, sharing, capabilities, true);
+                // The conversion type may not be the inferred type if conversion fails
+                _ = AddImplicitConversionIfNeeded(expression, type, sharing, capabilities,
+                        allowConvertToIsolated: true);
                 return type;
             }
         }
@@ -296,16 +297,16 @@ public class BasicBodyAnalyzer
             case (FixedSizeIntegerType to, FixedSizeIntegerType from):
                 if (to.Bits > from.Bits && (!from.IsSigned || to.IsSigned))
                     return new NumericConversion(to, priorConversion);
-                else
-                    return null;
+
+                return null;
             case (FixedSizeIntegerType to, IntegerConstantType from):
             {
                 var requireSigned = from.Value < 0;
                 var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
                 if (to.Bits >= bits && (!requireSigned || to.IsSigned))
                     return new NumericConversion(to, priorConversion);
-                else
-                    return null;
+
+                return null;
             }
             case (BigIntegerType { IsSigned: true } to, IntegerType):
                 return new NumericConversion(to, priorConversion);
@@ -1178,10 +1179,6 @@ public class BasicBodyAnalyzer
                     : SemanticError.SelfOutsideMethod(file, selfExpression.Span));
                 selfExpression.ReferencedSymbol.Fulfill(null);
                 return null;
-            case NamespaceOrPackageSymbol _:
-            case BindingSymbol _:
-            case TypeSymbol _:
-                throw new InvalidOperationException("Invalid containing symbol for body");
         }
     }
 

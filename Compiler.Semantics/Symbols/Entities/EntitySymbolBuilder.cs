@@ -150,7 +150,6 @@ public class EntitySymbolBuilder
         {
             IConstKeywordToken _ => ReferenceCapability.Constant,
             IMutableKeywordToken _ => ReferenceCapability.Mutable,
-            IIsolatedKeywordToken _ => ReferenceCapability.Isolated,
             null => ReferenceCapability.ReadOnly,
             _ => throw ExhaustiveMatch.Failed(@class.CapabilityModifier)
         };
