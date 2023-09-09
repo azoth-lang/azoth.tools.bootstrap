@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Compiler.API\Compiler.API.csproj" />
+    <ProjectReference Include="..\Compiler.AST.Interpreter\Compiler.AST.Interpreter.csproj" />
   </ItemGroup>
 
 </Project>

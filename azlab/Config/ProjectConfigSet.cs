@@ -27,13 +27,7 @@ internal class ProjectConfigSet : IEnumerable<ProjectConfig>
 
     public ProjectConfig this[string name] => configs[name];
 
-    public IEnumerator<ProjectConfig> GetEnumerator()
-    {
-        return configs.Values.GetEnumerator();
-    }
+    public IEnumerator<ProjectConfig> GetEnumerator() => configs.Values.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

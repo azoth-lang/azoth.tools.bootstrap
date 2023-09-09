@@ -34,46 +34,47 @@ public class TypeResolver
             case null:
                 return null;
             case ITypeNameSyntax typeName:
+            {
+                var symbolPromises = typeName.LookupInContainingScope().ToFixedList();
+                switch (symbolPromises.Count)
                 {
-                    var symbolPromises = typeName.LookupInContainingScope().ToFixedList();
-                    switch (symbolPromises.Count)
-                    {
-                        case 0:
-                            diagnostics.Add(NameBindingError.CouldNotBindName(file, typeName.Span));
-                            typeName.ReferencedSymbol.Fulfill(null);
-                            typeName.NamedType = DataType.Unknown;
-                            break;
-                        case 1:
-                            var symbol = symbolPromises.Single().Result;
-                            typeName.ReferencedSymbol.Fulfill(symbol);
-                            var type = symbol.DeclaresDataType;
-                            if (implicitRead) type = type.WithoutWrite();
-                            typeName.NamedType = type;
-                            break;
-                        default:
-                            diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
-                            typeName.ReferencedSymbol.Fulfill(null);
-                            typeName.NamedType = DataType.Unknown;
-                            break;
-                    }
-                    break;
+                    case 0:
+                        diagnostics.Add(NameBindingError.CouldNotBindName(file, typeName.Span));
+                        typeName.ReferencedSymbol.Fulfill(null);
+                        typeName.NamedType = DataType.Unknown;
+                        break;
+                    case 1:
+                        var symbol = symbolPromises.Single().Result;
+                        typeName.ReferencedSymbol.Fulfill(symbol);
+                        // TODO this is wrong, should be read only not declared
+                        var type = symbol.DeclaresDataType;
+                        if (implicitRead) type = type.WithoutWrite();
+                        typeName.NamedType = type;
+                        break;
+                    default:
+                        diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
+                        typeName.ReferencedSymbol.Fulfill(null);
+                        typeName.NamedType = DataType.Unknown;
+                        break;
                 }
+                break;
+            }
             case ICapabilityTypeSyntax referenceCapability:
-                {
-                    var type = Evaluate(referenceCapability.ReferentType, implicitRead: false);
-                    if (type == DataType.Unknown)
-                        return DataType.Unknown;
-                    if (type is ReferenceType referenceType)
-                        referenceCapability.NamedType = Evaluate(referenceType, referenceCapability.Capability);
-                    else
-                        referenceCapability.NamedType = DataType.Unknown;
-                    break;
-                }
+            {
+                var type = Evaluate(referenceCapability.ReferentType, implicitRead: false);
+                if (type == DataType.Unknown)
+                    return DataType.Unknown;
+                if (type is ReferenceType referenceType)
+                    referenceCapability.NamedType = Evaluate(referenceType, referenceCapability.Capability);
+                else
+                    referenceCapability.NamedType = DataType.Unknown;
+                break;
+            }
             case IOptionalTypeSyntax optionalType:
-                {
-                    var referent = Evaluate(optionalType.Referent, implicitRead);
-                    return optionalType.NamedType = new OptionalType(referent);
-                }
+            {
+                var referent = Evaluate(optionalType.Referent, implicitRead);
+                return optionalType.NamedType = new OptionalType(referent);
+            }
         }
 
         return typeSyntax.NamedType ?? throw new InvalidOperationException();
