@@ -48,15 +48,9 @@ internal class ProjectSet : IEnumerable<Project>
         return project;
     }
 
-    public IEnumerator<Project> GetEnumerator()
-    {
-        return projects.Values.GetEnumerator();
-    }
+    public IEnumerator<Project> GetEnumerator() => projects.Values.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public async Task BuildAsync(TaskScheduler taskScheduler, bool verbose)
     {

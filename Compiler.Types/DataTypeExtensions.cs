@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -42,13 +43,14 @@ public static class DataTypeExtensions
     /// Validates that a type as been assigned.
     /// </summary>
     [DebuggerHidden]
-    public static DataType Assigned(this DataType? type)
+    public static DataType Assigned([NotNull] this DataType? type)
         => type ?? throw new InvalidOperationException("Type not assigned");
 
     [DebuggerHidden]
     public static DataType Known(this DataType? type)
     {
-        if (!type.Assigned().IsKnown) throw new InvalidOperationException($"Type {type} not known");
+        if (!type.Assigned().IsKnown)
+            throw new InvalidOperationException($"Type {type.ToILString()} not known");
 
         return type!;
     }
@@ -57,7 +59,7 @@ public static class DataTypeExtensions
     public static DataType Known(this IPromise<DataType> promise)
     {
         var type = promise.Result;
-        if (!type.IsKnown) throw new InvalidOperationException($"Type {type} not known");
+        if (!type.IsKnown) throw new InvalidOperationException($"Type {type.ToILString()} not known");
 
         return type;
     }

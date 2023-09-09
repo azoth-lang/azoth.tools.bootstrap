@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using ExhaustiveMatching;
 
@@ -29,6 +30,6 @@ public static class ExpressionSemanticsExtensions
     /// Validates that expression semantics have been assigned.
     /// </summary>
     [DebuggerHidden]
-    public static ExpressionSemantics Assigned(this ExpressionSemantics? semantics)
+    public static ExpressionSemantics Assigned([NotNull] this ExpressionSemantics? semantics)
         => semantics ?? throw new InvalidOperationException("Expression semantics not assigned");
 }
