@@ -68,7 +68,7 @@ public class InterpreterProcess
             var entryPoint = package.EntryPoint!;
             var arguments = new List<AzothValue>();
             foreach (var parameterType in entryPoint.Symbol.ParameterDataTypes)
-                if (parameterType is ObjectType objectType && objectType.Name.Text == "TestOutput")
+                if (parameterType is ObjectType { Name.Text: "TestOutput" })
                 {
                     var testOutputDeclaration = classes.Values.SingleOrDefault(c => c.Symbol.Name == "TestOutput");
                     if (testOutputDeclaration is null)
@@ -79,7 +79,7 @@ public class InterpreterProcess
                     arguments.Add(testOutput);
                 }
                 else
-                    throw new InvalidOperationException($"Parameter to main of type {parameterType} not supported");
+                    throw new InvalidOperationException($"Parameter to main of type {parameterType.ToILString()} not supported");
 
             var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
             // Flush any buffered output

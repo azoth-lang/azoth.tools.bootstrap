@@ -40,14 +40,6 @@ public class AnyTypeTests
     }
 
     [Fact]
-    public void Is_declared_mutable()
-    {
-        var type = new AnyType(Isolated);
-
-        Assert.Equal(Mutable, type.DeclaredCapability);
-    }
-
-    [Fact]
     public void Has_reference_semantics()
     {
         var type = new AnyType(Isolated);

@@ -8,7 +8,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -146,15 +145,7 @@ public class EntitySymbolBuilder
     {
         if (!@class.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
-        var capability = @class.CapabilityModifier switch
-        {
-            IConstKeywordToken _ => ReferenceCapability.Constant,
-            IMutableKeywordToken _ => ReferenceCapability.Mutable,
-            null => ReferenceCapability.ReadOnly,
-            _ => throw ExhaustiveMatch.Failed(@class.CapabilityModifier)
-        };
-
-        var classType = ObjectType.Create(@class.ContainingNamespaceName, @class.Name, capability);
+        var classType = ObjectType.Create(@class.ContainingNamespaceName, @class.Name, ReferenceCapability.Mutable);
 
         var symbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(symbol);

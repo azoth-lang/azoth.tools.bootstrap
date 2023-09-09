@@ -29,32 +29,15 @@ public sealed class ObjectType : ReferenceType
     public static ObjectType Create(
             NamespaceName containingNamespace,
             TypeName name,
-            ReferenceCapability declaredCapability)
+            ReferenceCapability capability)
         // The "root" of the reference capability tree for this type
-        => new(containingNamespace, name, declaredCapability, declaredCapability);
-
-    /// <summary>
-    /// Create an object type with the given reference capability, enforcing that it be consistent
-    /// with the whether the type was declared mutable
-    /// </summary>
-    /// <returns></returns>
-    internal static ObjectType Create(
-        NamespaceName containingNamespace,
-        TypeName name,
-        ReferenceCapability declaredCapability,
-        ReferenceCapability referenceCapability)
-    {
-        if (!declaredCapability.AllowsWrite && referenceCapability.AllowsWrite)
-            throw new ArgumentException($"Capability {referenceCapability} not supported for types declared {declaredCapability}");
-        return new ObjectType(containingNamespace, name, declaredCapability, referenceCapability);
-    }
+        => new(containingNamespace, name, capability);
 
     private ObjectType(
         NamespaceName containingNamespace,
         TypeName name,
-        ReferenceCapability declaredCapability,
         ReferenceCapability capability)
-        : base(declaredCapability, capability)
+        : base(capability)
     {
         ContainingNamespace = containingNamespace;
         Name = name;
@@ -117,8 +100,7 @@ public sealed class ObjectType : ReferenceType
         if (ReferenceEquals(this, other)) return true;
         return other is ObjectType otherType
                && ContainingNamespace == otherType.ContainingNamespace
-               && Name == otherType.Name
-               && DeclaredCapability == otherType.DeclaredCapability;
+               && Name == otherType.Name;
     }
 
     #region Equality
@@ -129,17 +111,16 @@ public sealed class ObjectType : ReferenceType
         return other is ObjectType otherType
                && ContainingNamespace == otherType.ContainingNamespace
                && Name == otherType.Name
-               && DeclaredCapability == otherType.DeclaredCapability
                && Capability == otherType.Capability;
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingNamespace, Name, DeclaredCapability, Capability);
+        => HashCode.Combine(ContainingNamespace, Name, Capability);
 
     #endregion
 
     public override ObjectType To(ReferenceCapability referenceCapability)
-        => new(ContainingNamespace, Name, DeclaredCapability, referenceCapability);
+        => new(ContainingNamespace, Name, referenceCapability);
 
     public override ObjectType WithoutWrite() => (ObjectType)base.WithoutWrite();
 }

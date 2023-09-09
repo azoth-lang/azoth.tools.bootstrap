@@ -46,7 +46,6 @@ public class TypeResolver
                     case 1:
                         var symbol = symbolPromises.Single().Result;
                         typeName.ReferencedSymbol.Fulfill(symbol);
-                        // TODO this is wrong, should be read only not declared
                         var type = symbol.DeclaresDataType;
                         if (implicitRead) type = type.WithoutWrite();
                         typeName.NamedType = type;

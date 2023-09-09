@@ -1,4 +1,3 @@
-using System;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -18,26 +17,12 @@ public abstract class ReferenceType : DataType
 
     public override TypeSemantics Semantics => TypeSemantics.Reference;
 
-    /// <summary>
-    /// Whether this type was declared `mut class`, `const class`, `iso class` or just `class`.
-    /// </summary>
-    public ReferenceCapability DeclaredCapability { get; }
-
-    // TODO clarify this
-
-    private protected ReferenceType(
-        ReferenceCapability declaredCapability,
-        ReferenceCapability capability)
+    private protected ReferenceType(ReferenceCapability capability)
     {
-        DeclaredCapability = declaredCapability;
         Capability = capability;
     }
 
-    public ReferenceType ToMutable()
-    {
-        if (!DeclaredCapability.AllowsWrite) throw new InvalidOperationException($"Can't convert type declared {DeclaredCapability} to mutable reference");
-        return To(Capability.ToMutable());
-    }
+    public ReferenceType ToMutable() => To(Capability.ToMutable());
 
     public override ReferenceType WithoutWrite() => To(Capability.WithoutWrite());
 

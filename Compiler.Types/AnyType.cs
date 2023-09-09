@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public sealed class AnyType : ReferenceType
 {
     public AnyType(ReferenceCapability capability)
-        : base(ReferenceCapability.Mutable, capability)
+        : base(capability)
     {
     }
 
