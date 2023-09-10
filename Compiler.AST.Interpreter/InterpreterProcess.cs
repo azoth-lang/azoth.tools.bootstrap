@@ -28,8 +28,8 @@ public class InterpreterProcess
     private byte? exitCode;
     private readonly MemoryStream standardOutput;
     private readonly TextWriter standardOutputWriter;
-    private readonly MethodSignatureCache methodSignatures = new MethodSignatureCache();
-    private readonly ConcurrentDictionary<IClassDeclaration, VTable> vTables = new ConcurrentDictionary<IClassDeclaration, VTable>();
+    private readonly MethodSignatureCache methodSignatures = new();
+    private readonly ConcurrentDictionary<IClassDeclaration, VTable> vTables = new();
 
     public InterpreterProcess(Package package)
     {
@@ -40,19 +40,19 @@ public class InterpreterProcess
         functions = allDeclarations
                     .OfType<IConcreteFunctionInvocableDeclaration>()
                     .ToFixedDictionary(f => f.Symbol);
-        var defaultConstructorSymbols = allDeclarations
-                                        .OfType<IClassDeclaration>()
-                                        .Select(c => c.DefaultConstructorSymbol)
-                                        .WhereNotNull();
+
         classes = allDeclarations.OfType<IClassDeclaration>()
                                  .ToFixedDictionary(c => c.Symbol);
         stringClass = classes.Values.Single(c => c.Symbol.Name == "string");
         stringConstructor = stringClass.Members.OfType<IConstructorDeclaration>().Single();
+        var defaultConstructorSymbols = allDeclarations
+                                        .OfType<IClassDeclaration>()
+                                        .Select(c => c.DefaultConstructorSymbol).WhereNotNull();
         constructors = defaultConstructorSymbols
                        .Select(c => (c, default(IConstructorDeclaration)))
-                       .Concat(package.AllDeclarations
-                                      .OfType<IConstructorDeclaration>()
-                                      .Select(c => (c.Symbol, (IConstructorDeclaration?)c)))
+                       .Concat(allDeclarations
+                               .OfType<IConstructorDeclaration>()
+                               .Select(c => (c.Symbol, (IConstructorDeclaration?)c)))
                        .ToFixedDictionary();
         executionTask = Task.Run(CallEntryPointAsync);
 

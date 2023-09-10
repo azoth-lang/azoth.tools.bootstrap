@@ -44,4 +44,6 @@ public class Package : IHasSymbolTree
                 declarations.EnqueueRange(syn.Members);
         }
     }
+
+    public override string ToString() => Symbol.ToString();
 }
