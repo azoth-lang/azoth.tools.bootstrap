@@ -204,6 +204,8 @@ public class InterpreterProcess
                 return await ExecuteAsync(exp.Referent, variables);
             case IMoveExpression exp:
                 return await ExecuteAsync(exp.Referent, variables);
+            case IFreezeExpression exp:
+                return await ExecuteAsync(exp.Referent, variables);
             case INoneLiteralExpression:
                 return AzothValue.None;
             case IReturnExpression exp:

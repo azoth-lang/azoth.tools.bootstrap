@@ -264,6 +264,7 @@ internal class ASTBuilder
             RecoverIsolation _ => BuildRecoverIsolationExpression(expression, expressionSyntax),
             RecoverConst _ => BuildRecoverConstExpression(expression, expressionSyntax),
             ImplicitMove _ => BuildImplicitMoveExpression(expression, expressionSyntax),
+            ImplicitFreeze _ => BuildImplicitFreezeExpression(expression, expressionSyntax),
             IdentityConversion _ => expression,
             _ => throw ExhaustiveMatch.Failed(expressionSyntax.ImplicitConversion)
         };
@@ -486,13 +487,14 @@ internal class ASTBuilder
         return new MoveExpression(syn.Span, type, semantics, referencedSymbol, referent);
     }
 
-    private static IMoveExpression BuildImplicitMoveExpression(IExpression exp, IExpressionSyntax expressionSyntax)
+    private static IMoveExpression BuildImplicitMoveExpression(
+        IExpression expression,
+        IExpressionSyntax expressionSyntax)
     {
-        var type = exp.DataType ?? throw new InvalidOperationException();
         var semantics = expressionSyntax.ConvertedSemantics!.Value;
         var convertToType = (ReferenceType)expressionSyntax.ConvertedDataType!;
-        var referencedSymbol = ((INameExpression)exp).ReferencedSymbol;
-        return new MoveExpression(exp.Span, convertToType, semantics, referencedSymbol, exp);
+        var referencedSymbol = ((INameExpression)expression).ReferencedSymbol;
+        return new MoveExpression(expression.Span, convertToType, semantics, referencedSymbol, expression);
     }
 
     private static INameExpression BuildNameExpression(ISimpleNameExpressionSyntax syn)
@@ -578,6 +580,16 @@ internal class ASTBuilder
         var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
         var referent = BuildExpression(syn.Referent);
         return new FreezeExpression(syn.Span, type, semantics, referencedSymbol, referent);
+    }
+
+    private static IFreezeExpression BuildImplicitFreezeExpression(
+        IExpression expression,
+        IExpressionSyntax expressionSyntax)
+    {
+        var semantics = expressionSyntax.ConvertedSemantics!.Value;
+        var convertToType = (ReferenceType)expressionSyntax.ConvertedDataType!;
+        var referencedSymbol = ((INameExpression)expression).ReferencedSymbol;
+        return new FreezeExpression(expressionSyntax.Span, convertToType, semantics, referencedSymbol, expression);
     }
 
     private static IImplicitNumericConversionExpression BuildConversionExpression(IConversionExpressionSyntax syn)

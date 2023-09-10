@@ -441,7 +441,7 @@ public class BasicBodyAnalyzer
                         else
                             throw new NotImplementedException("Raise error about `freeze` of non-variable");
 
-                        const ExpressionSemantics semantics = ExpressionSemantics.IsolatedReference;
+                        const ExpressionSemantics semantics = ExpressionSemantics.ConstReference;
                         nameExpression.Semantics = semantics;
                         nameExpression.DataType = type;
                         exp.Semantics = semantics;
@@ -951,6 +951,7 @@ public class BasicBodyAnalyzer
                 var selfParamType = methodSymbol.SelfDataType;
                 AddImplicitConversionIfNeeded(context, selfParamType, sharing, capabilities);
                 AddImplicitMoveIfNeeded(context, selfParamType, sharing, capabilities);
+                AddImplicitFreezeIfNeeded(context, selfParamType, sharing, capabilities);
                 CheckTypeCompatibility(selfParamType, context);
 
                 foreach (var (arg, type) in invocation.Arguments
@@ -1005,6 +1006,27 @@ public class BasicBodyAnalyzer
 
         context.AddConversion(new ImplicitMove(context.ImplicitConversion));
         capabilities.Move(symbol);
+    }
+
+    private static void AddImplicitFreezeIfNeeded(
+        IExpressionSyntax context,
+        DataType selfParamType,
+        SharingRelation sharing,
+        ReferenceCapabilities capabilities)
+    {
+        if (selfParamType is not ReferenceType { IsConstReference: true } toType
+            || context.DataType is not ReferenceType { AllowsFreeze: true } fromType)
+            return;
+
+        // TODO allow upcasting
+        if (!toType.BareTypeEquals(fromType)) return;
+
+        if (context is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
+            || !sharing.IsIsolatedExceptResult(symbol))
+            return;
+
+        context.AddConversion(new ImplicitFreeze(context.ImplicitConversion));
+        capabilities.Freeze(symbol);
     }
 
     private DataType InferFunctionInvocationType(
