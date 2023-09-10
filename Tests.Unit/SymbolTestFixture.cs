@@ -62,7 +62,7 @@ public abstract class SymbolTestFixture
         return new MethodSymbol(
             containing,
             Name(name) ?? DefaultName("method"),
-            self ?? containing.DeclaresDataType,
+            self ?? containing.DeclaresType.With(ReferenceCapability.ReadOnly),
             @params ?? Params(),
             @return ?? DataType());
     }
@@ -99,11 +99,11 @@ public abstract class SymbolTestFixture
 
     protected ObjectTypeSymbol Type(
         NamespaceOrPackageSymbol? ns = null,
-        ObjectType? dataType = null)
+        BareObjectType? dataType = null)
     {
         return new ObjectTypeSymbol(
             ns ?? Package(),
-            dataType ?? DataType());
+            dataType ?? DataType().BareType);
     }
 
     protected VariableSymbol Variable(

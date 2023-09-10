@@ -4,6 +4,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -46,8 +47,14 @@ public class TypeResolver
                     case 1:
                         var symbol = symbolPromises.Single().Result;
                         typeName.ReferencedSymbol.Fulfill(symbol);
-                        var type = symbol.DeclaresDataType;
-                        if (implicitRead) type = type.WithoutWrite();
+                        var type = symbol switch
+                        {
+                            PrimitiveTypeSymbol sym => sym.DeclaresType,
+                            ObjectTypeSymbol sym => implicitRead
+                                ? sym.DeclaresType.WithRead()
+                                : sym.DeclaresType.With(ReferenceCapability.Mutable),
+                            _ => throw ExhaustiveMatch.Failed(symbol)
+                        };
                         typeName.NamedType = type;
                         break;
                     default:
@@ -80,8 +87,8 @@ public class TypeResolver
     }
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-    public ObjectType Evaluate(ObjectType referenceType, IReferenceCapabilitySyntax capability)
-        => referenceType.To(capability.Declared.ToReferenceCapability());
+    public ObjectType Evaluate(BareObjectType referenceType, IReferenceCapabilitySyntax capability)
+        => referenceType.With(capability.Declared.ToReferenceCapability());
 
     private static ReferenceType Evaluate(ReferenceType referenceType, IReferenceCapabilitySyntax capability)
         => referenceType.To(capability.Declared.ToReferenceCapability());

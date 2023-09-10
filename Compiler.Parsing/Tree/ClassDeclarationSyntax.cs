@@ -72,7 +72,7 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
         if (DefaultConstructorSymbol is not null)
             throw new InvalidOperationException($"Can't {nameof(CreateDefaultConstructor)} twice");
 
-        var constructedType = Symbol.Result.DeclaresDataType;
+        var constructedType = Symbol.Result.DeclaresType;
         var constructorSymbol = new ConstructorSymbol(Symbol.Result, null, FixedList<DataType>.Empty);
         var selfParameterSymbol = new SelfParameterSymbol(constructorSymbol, constructedType.ToConstructorSelf());
 

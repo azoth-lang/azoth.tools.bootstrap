@@ -15,11 +15,14 @@ public abstract class ReferenceType : DataType
     public bool IsIsolatedReference => Capability == ReferenceCapability.Isolated;
     public bool IsIdentityReference => Capability == ReferenceCapability.Identity;
 
+    public BareReferenceType BareType { get; }
+
     public override TypeSemantics Semantics => TypeSemantics.Reference;
 
-    private protected ReferenceType(ReferenceCapability capability)
+    private protected ReferenceType(ReferenceCapability capability, BareReferenceType bareType)
     {
         Capability = capability;
+        BareType = bareType;
     }
 
     public ReferenceType ToMutable() => To(Capability.ToMutable());

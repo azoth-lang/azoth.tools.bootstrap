@@ -8,16 +8,20 @@ public class PrimitiveTypeSymbol : TypeSymbol
 {
     public new SpecialTypeName Name { get; }
 
-    public PrimitiveTypeSymbol(SimpleType declaresDataType)
-        : base(null, declaresDataType.Name, declaresDataType)
+    public DataType DeclaresType { get; }
+
+    public PrimitiveTypeSymbol(SimpleType declaresType)
+        : base(null, declaresType.Name)
     {
-        Name = declaresDataType.Name;
+        Name = declaresType.Name;
+        DeclaresType = declaresType;
     }
 
-    public PrimitiveTypeSymbol(EmptyType declaresDataType)
-        : base(null, declaresDataType.Name, declaresDataType)
+    public PrimitiveTypeSymbol(EmptyType declaresType)
+        : base(null, declaresType.Name)
     {
-        Name = declaresDataType.Name;
+        Name = declaresType.Name;
+        DeclaresType = declaresType;
     }
 
     public override bool Equals(Symbol? other)
@@ -26,10 +30,10 @@ public class PrimitiveTypeSymbol : TypeSymbol
         if (ReferenceEquals(this, other)) return true;
         return other is PrimitiveTypeSymbol otherType
                && Name == otherType.Name
-               && DeclaresDataType == otherType.DeclaresDataType;
+               && DeclaresType == otherType.DeclaresType;
     }
 
-    public override int GetHashCode() => HashCode.Combine(Name, DeclaresDataType);
+    public override int GetHashCode() => HashCode.Combine(Name, DeclaresType);
 
     public override string ToILString() => Name.ToString();
 }

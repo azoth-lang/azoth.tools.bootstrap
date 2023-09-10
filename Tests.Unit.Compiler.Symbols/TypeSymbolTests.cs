@@ -11,8 +11,8 @@ public class TypeSymbolTests : SymbolTestFixture
     {
         var container = Package("my.package");
         var type = DataType("T1");
-        var sym1 = Type(container, type);
-        var sym2 = Type(container, type);
+        var sym1 = Type(container, type.BareType);
+        var sym2 = Type(container, type.BareType);
 
         Assert.Equal(sym1, sym2);
     }
@@ -22,9 +22,9 @@ public class TypeSymbolTests : SymbolTestFixture
     {
         var container = Package("my.package");
         var type1 = DataType("My_Class1");
-        var sym1 = Type(container, type1);
+        var sym1 = Type(container, type1.BareType);
         var type2 = DataType("My_Class2");
-        var sym2 = Type(container, type2);
+        var sym2 = Type(container, type2.BareType);
 
         Assert.NotEqual(sym1, sym2);
     }
@@ -34,9 +34,9 @@ public class TypeSymbolTests : SymbolTestFixture
     {
         var container = new PackageSymbol(Name("my.package"));
         var type1 = DataType("T1");
-        var sym1 = Type(container, type1);
+        var sym1 = Type(container, type1.BareType);
         var type2 = DataType("T2");
-        var sym2 = Type(container, type2);
+        var sym2 = Type(container, type2.BareType);
 
         Assert.NotEqual(sym1, sym2);
     }

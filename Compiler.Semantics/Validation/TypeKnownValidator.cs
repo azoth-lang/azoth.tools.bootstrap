@@ -20,8 +20,7 @@ public class TypeKnownValidator : SyntaxWalker
     {
         switch (syntax)
         {
-            case IClassDeclarationSyntax classDeclaration:
-                classDeclaration.Symbol.Result.DeclaresDataType.Known();
+            case IClassDeclarationSyntax:
                 // Don't recur into body, we will see those as separate members
                 return;
             case IConstructorDeclarationSyntax constructorDeclaration:

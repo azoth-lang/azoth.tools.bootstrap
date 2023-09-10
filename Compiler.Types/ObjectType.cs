@@ -18,16 +18,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </remarks>
 public sealed class ObjectType : ReferenceType
 {
+    public new BareObjectType BareType => (BareObjectType)base.BareType;
     // TODO this needs a containing package
-    public NamespaceName ContainingNamespace { get; }
-    public TypeName Name { get; }
+    public NamespaceName ContainingNamespace => BareType.ContainingNamespace;
+    public TypeName Name => BareType.Name;
     public override bool IsKnown { [DebuggerStepThrough] get => true; }
 
     /// <summary>
     /// Whether this type was declared `const` meaning that most references should be treated as
     /// const.
     /// </summary>
-    public bool IsConst { get; }
+    public bool IsConst => BareType.IsConst;
 
     /// <summary>
     /// Create a object type for a given class or trait.
@@ -37,36 +38,22 @@ public sealed class ObjectType : ReferenceType
             TypeName name,
             bool isConst,
             ReferenceCapability capability)
-        => new(containingNamespace, name, isConst, capability);
+        => new(new BareObjectType(containingNamespace, name, isConst), capability);
+
+    /// <summary>
+    /// Create a object type for a given class or trait.
+    /// </summary>
+    public static ObjectType Create(
+        BareObjectType bareType,
+        ReferenceCapability capability)
+        => new(bareType, capability);
 
     private ObjectType(
-        NamespaceName containingNamespace,
-        TypeName name,
-        bool isConst,
+        BareObjectType bareType,
         ReferenceCapability capability)
-        : base(capability)
+        : base(capability, bareType)
     {
-        ContainingNamespace = containingNamespace;
-        Name = name;
-        IsConst = isConst;
     }
-
-    /// <summary>
-    /// Make a version of this type for use as the constructor parameter. One issue is
-    /// that it should be mutable even if the underlying type is declared immutable.
-    /// </summary>
-    /// <remarks>This is always `mut` because the type can be mutated inside the constructor.</remarks>
-    public ObjectType ToConstructorSelf()
-        // TODO does this need to be `init`?
-        => To(ReferenceCapability.Mutable);
-
-    /// <summary>
-    /// Make a version of this type for use as the return type of the default constructor.
-    /// </summary>
-    /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
-    /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
-    public ObjectType ToDefaultConstructorReturn()
-        => To(IsConst ? ReferenceCapability.Constant : ReferenceCapability.Isolated);
 
     public override string ToSourceCodeString()
     {
@@ -115,11 +102,10 @@ public sealed class ObjectType : ReferenceType
 
     public override int GetHashCode()
         => HashCode.Combine(ContainingNamespace, Name, Capability);
-
     #endregion
 
     public override ObjectType To(ReferenceCapability referenceCapability)
-        => new(ContainingNamespace, Name, IsConst, referenceCapability);
+        => new(BareType, referenceCapability);
 
     /// <remarks>For constant types, there can still be read only references. For example, inside
     /// the constructor.</remarks>

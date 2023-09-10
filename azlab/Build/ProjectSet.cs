@@ -280,7 +280,9 @@ internal class ProjectSet : IEnumerable<Project>
 
     private static string EmitIL(Project project, Package package, string cacheDir)
     {
+#pragma warning disable IDE0022
         throw new NotImplementedException();
+#pragma warning restore IDE0022
         //var emittedPackages = new HashSet<PackageIL>();
         //var packagesToEmit = new Queue<PackageIL>();
         //packagesToEmit.Enqueue(package);

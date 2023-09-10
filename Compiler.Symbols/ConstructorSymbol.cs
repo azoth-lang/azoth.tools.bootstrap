@@ -16,10 +16,10 @@ public sealed class ConstructorSymbol : InvocableSymbol
         Name? name,
         FixedList<DataType> parameterDataTypes)
         : base(containingSymbol, name, parameterDataTypes,
-            containingSymbol.DeclaresDataType.ToDefaultConstructorReturn())
+            containingSymbol.DeclaresType.ToDefaultConstructorReturn())
     {
         ContainingSymbol = containingSymbol;
-        ReturnDataType = containingSymbol.DeclaresDataType.ToDefaultConstructorReturn();
+        ReturnDataType = containingSymbol.DeclaresType.ToDefaultConstructorReturn();
     }
 
     public static ConstructorSymbol CreateDefault(ObjectTypeSymbol containingSymbol)

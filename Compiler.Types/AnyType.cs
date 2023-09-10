@@ -14,9 +14,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public sealed class AnyType : ReferenceType
 {
     public AnyType(ReferenceCapability capability)
-        : base(capability)
+        : base(capability, BareAnyType.Instance)
     {
     }
+
+    public new BareAnyType BareType => (BareAnyType)base.BareType;
 
     public override bool IsKnown => true;
 

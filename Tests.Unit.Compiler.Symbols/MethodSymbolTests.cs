@@ -53,7 +53,7 @@ public class MethodSymbolTests : SymbolTestFixture
         var ns = Namespace();
         var parameters = Params(DataType("T1"), DataType("T2"));
         var selfDataType = DataType("Class");
-        var selfType = Type(ns, selfDataType);
+        var selfType = Type(ns, selfDataType.BareType);
         var method = Method("A", selfType, selfDataType, parameters, DataType("T3"));
         var func = Func("A", ns, parameters, DataType("T3"));
 

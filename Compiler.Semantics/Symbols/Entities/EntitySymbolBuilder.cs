@@ -145,8 +145,7 @@ public class EntitySymbolBuilder
     {
         if (!@class.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
-        var capability = @class.IsConst ? ReferenceCapability.Constant : ReferenceCapability.Isolated;
-        var classType = ObjectType.Create(@class.ContainingNamespaceName, @class.Name, @class.IsConst, capability);
+        var classType = new BareObjectType(@class.ContainingNamespaceName, @class.Name, @class.IsConst);
 
         var symbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(symbol);
@@ -232,14 +231,14 @@ public class EntitySymbolBuilder
     private static ObjectType ResolveConstructorSelfParameterType(
         ISelfParameterSyntax selfParameter,
         IClassDeclarationSyntax declaringClass)
-        => declaringClass.Symbol.Result.DeclaresDataType.ToConstructorSelf();
+        => declaringClass.Symbol.Result.DeclaresType.ToConstructorSelf();
 
     private static ObjectType ResolveMethodSelfParameterType(
         TypeResolver resolver,
         ISelfParameterSyntax selfParameter,
         IClassDeclarationSyntax declaringClass)
     {
-        var selfType = declaringClass.Symbol.Result.DeclaresDataType;
+        var selfType = declaringClass.Symbol.Result.DeclaresType;
         return resolver.Evaluate(selfType, selfParameter.Capability);
     }
 
