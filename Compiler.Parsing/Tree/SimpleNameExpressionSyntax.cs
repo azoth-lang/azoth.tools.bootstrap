@@ -45,7 +45,7 @@ internal class SimpleNameExpressionSyntax : ExpressionSyntax, ISimpleNameExpress
 
     public IEnumerable<IPromise<Symbol>> LookupInContainingScope()
     {
-        if (containingLexicalScope == null)
+        if (containingLexicalScope is null)
             throw new InvalidOperationException($"Can't lookup type name without {nameof(ContainingLexicalScope)}");
 
         // If name is unknown, no symbols

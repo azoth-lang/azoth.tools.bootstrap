@@ -46,7 +46,7 @@ public static class Arbitrary
         // TODO this is a huge hack calling Sample() FIX IT!
         var token = GenPsuedoToken().Where(t =>
         {
-            if (lastToken == null)
+            if (lastToken is null)
                 return true;
 
             return !SeparateTokens(lastToken, t);
