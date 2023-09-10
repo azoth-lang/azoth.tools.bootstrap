@@ -23,7 +23,7 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
                ?? throw new InvalidOperationException($"{ContainingNamespaceSymbol} not yet assigned");
         set
         {
-            if (containingNamespaceSymbol != null)
+            if (containingNamespaceSymbol is not null)
                 throw new InvalidOperationException($"Can't set {nameof(ContainingNamespaceSymbol)} repeatedly");
             containingNamespaceSymbol = value;
         }

@@ -50,10 +50,10 @@ public partial class Parser
     public ITypeSyntax ParseTypeWithCapability(IReferenceCapabilitySyntax? capability)
     {
         var type = ParseBareType();
-        if (capability != null)
+        if (capability is not null)
         {
             var span = TextSpan.Covering(capability.Span, type.Span);
-            type = new CapabilityTypeSyntax(capability!, type, span);
+            type = new CapabilityTypeSyntax(capability, type, span);
         }
 
         while (Tokens.AcceptToken<IQuestionToken>() is IQuestionToken question)

@@ -26,7 +26,7 @@ internal abstract class ExpressionSyntax : Syntax, IExpressionSyntax
         get => dataType;
         set
         {
-            if (dataType != null)
+            if (dataType is not null)
                 throw new InvalidOperationException("Can't set type repeatedly");
             dataType = value ?? throw new ArgumentNullException(nameof(DataType),
                 "Can't set type to null");
@@ -69,7 +69,7 @@ internal abstract class ExpressionSyntax : Syntax, IExpressionSyntax
         get => semantics;
         set
         {
-            if (semantics != null)
+            if (semantics is not null)
                 throw new InvalidOperationException("Can't set semantics repeatedly");
             semantics = value ?? throw new ArgumentNullException(nameof(value));
         }

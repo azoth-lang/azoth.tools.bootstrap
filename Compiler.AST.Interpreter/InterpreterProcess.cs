@@ -231,7 +231,7 @@ public class InterpreterProcess
                 var condition = await ExecuteAsync(exp.Condition, variables).ConfigureAwait(false);
                 if (condition.BoolValue)
                     return await ExecuteBlockOrResultAsync(exp.ThenBlock, variables).ConfigureAwait(false);
-                if (exp.ElseClause != null)
+                if (exp.ElseClause is not null)
                     return await ExecuteElseAsync(exp.ElseClause, variables).ConfigureAwait(false);
                 return AzothValue.None;
             }

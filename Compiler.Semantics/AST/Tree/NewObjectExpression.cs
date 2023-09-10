@@ -29,7 +29,7 @@ internal class NewObjectExpression : Expression, INewObjectExpression
 
     public override string ToString()
     {
-        var name = ReferencedSymbol.Name != null ? "." + ReferencedSymbol.Name : "";
+        var name = ReferencedSymbol.Name is not null ? "." + ReferencedSymbol.Name : "";
         return $"new {ReferencedSymbol.ContainingSymbol}{name}({string.Join(", ", Arguments)})";
     }
 }

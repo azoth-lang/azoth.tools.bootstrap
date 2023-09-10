@@ -255,7 +255,7 @@ public class EntitySymbolBuilder
     private static DataType ResolveReturnType(
         ITypeSyntax? returnTypeSyntax, TypeResolver resolver)
     {
-        var returnType = returnTypeSyntax != null
+        var returnType = returnTypeSyntax is not null
             ? resolver.Evaluate(returnTypeSyntax, implicitRead: true) : DataType.Void;
         return returnType;
     }

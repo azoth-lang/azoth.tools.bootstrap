@@ -88,7 +88,7 @@ public class BasicAnalyzer
                 // has no body, so nothing to resolve
                 break;
             case IFieldDeclarationSyntax field:
-                if (field.Initializer != null)
+                if (field.Initializer is not null)
                 {
                     var resolver = new BasicBodyAnalyzer(field, symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics);
                     resolver.CheckType(field.Initializer, field.Symbol.Result.DataType, new SharingRelation(), new ReferenceCapabilities());

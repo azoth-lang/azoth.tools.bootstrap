@@ -15,7 +15,7 @@ public partial class Parser
         where T : class
     {
         return new Generator<T?>(acceptItem)
-               .TakeWhile(t => t != null).ToFixedList()!;
+               .TakeWhile(t => t is not null).ToFixedList()!;
     }
 
     /// <summary>
@@ -27,7 +27,7 @@ public partial class Parser
     {
         var items = new List<T>();
         var item = acceptItem();
-        while (item != null)
+        while (item is not null)
         {
             items.Add(item);
             if (!Tokens.Accept<TSeparator>()) break;

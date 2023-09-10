@@ -7,4 +7,7 @@ public sealed class BareAnyType : BareReferenceType
 
     private BareAnyType() { }
     #endregion
+
+    public override ReferenceType With(ReferenceCapability capability)
+        => new AnyType(capability);
 }

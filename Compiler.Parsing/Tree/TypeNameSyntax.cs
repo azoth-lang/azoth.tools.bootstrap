@@ -13,7 +13,7 @@ using Azoth.Tools.Bootstrap.Framework;
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 /// <summary>
-/// The unqualified name of a type
+/// The unqualified name of a type.
 /// </summary>
 internal class TypeNameSyntax : TypeSyntax, ITypeNameSyntax
 {
@@ -26,7 +26,7 @@ internal class TypeNameSyntax : TypeSyntax, ITypeNameSyntax
         [DebuggerStepThrough]
         set
         {
-            if (containingLexicalScope != null)
+            if (containingLexicalScope is not null)
                 throw new InvalidOperationException($"Can't set {nameof(ContainingLexicalScope)} repeatedly");
             containingLexicalScope = value;
         }
@@ -42,7 +42,7 @@ internal class TypeNameSyntax : TypeSyntax, ITypeNameSyntax
 
     public IEnumerable<IPromise<TypeSymbol>> LookupInContainingScope()
     {
-        if (containingLexicalScope != null)
+        if (containingLexicalScope is not null)
             return containingLexicalScope.Lookup(Name).Select(p => p.As<TypeSymbol>()).WhereNotNull();
 
         throw new InvalidOperationException($"Can't lookup type name without {nameof(ContainingLexicalScope)}");

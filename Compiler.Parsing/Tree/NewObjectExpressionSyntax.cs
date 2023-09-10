@@ -42,7 +42,7 @@ internal class NewObjectExpressionSyntax : ExpressionSyntax, INewObjectExpressio
 
     public override string ToString()
     {
-        var name = ConstructorName != null ? "."+ConstructorName : "";
+        var name = ConstructorName is not null ? "."+ConstructorName : "";
         return $"new {Type}{name}({string.Join(", ", Arguments)})";
     }
 }

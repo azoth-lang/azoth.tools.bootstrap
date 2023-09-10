@@ -30,7 +30,7 @@ internal class IfExpression : Expression, IIfExpression
 
     public override string ToString()
     {
-        if (ElseClause != null) return $"if {Condition} {ThenBlock} else {ElseClause}";
+        if (ElseClause is not null) return $"if {Condition} {ThenBlock} else {ElseClause}";
         return $"if {Condition} {ThenBlock}";
     }
 }

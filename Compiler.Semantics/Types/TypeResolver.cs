@@ -67,14 +67,9 @@ public class TypeResolver
             }
             case ICapabilityTypeSyntax referenceCapability:
             {
-                var type = Evaluate(referenceCapability.ReferentType, implicitRead: false);
-                if (type == DataType.Unknown)
-                    return DataType.Unknown;
-                if (type is ReferenceType referenceType)
-                    referenceCapability.NamedType = Evaluate(referenceType, referenceCapability.Capability);
-                else
-                    referenceCapability.NamedType = DataType.Unknown;
-                break;
+                var capability = referenceCapability.Capability.Declared.ToReferenceCapability();
+                var type = Evaluate(referenceCapability.ReferentType, capability);
+                return referenceCapability.NamedType = type;
             }
             case IOptionalTypeSyntax optionalType:
             {
@@ -86,10 +81,60 @@ public class TypeResolver
         return typeSyntax.NamedType ?? throw new InvalidOperationException();
     }
 
+    private DataType Evaluate(ITypeSyntax typeSyntax, ReferenceCapability capability)
+    {
+        switch (typeSyntax)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(typeSyntax);
+            case ITypeNameSyntax typeName:
+                var bareType = EvaluateBareType(typeName, capability);
+                return bareType?.With(capability) ?? (DataType)DataType.Unknown;
+            case ICapabilityTypeSyntax _:
+            case IOptionalTypeSyntax _:
+                throw new NotImplementedException("Report error about incorrect type expression.");
+        }
+    }
+
+    public BareReferenceType? EvaluateBareType(ITypeNameSyntax typeName, ReferenceCapability? capability = null)
+    {
+        var symbolPromises = typeName.LookupInContainingScope().ToFixedList();
+        switch (symbolPromises.Count)
+        {
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindName(file, typeName.Span));
+                typeName.ReferencedSymbol.Fulfill(null);
+                typeName.NamedType = DataType.Unknown;
+                return null;
+            case 1:
+                var symbol = symbolPromises.Single().Result;
+                typeName.ReferencedSymbol.Fulfill(symbol);
+                switch (symbol)
+                {
+                    default:
+                        throw ExhaustiveMatch.Failed(symbol);
+                    case PrimitiveTypeSymbol sym:
+                        typeName.NamedType = sym.DeclaresType;
+                        return null;
+                    case ObjectTypeSymbol sym:
+                        // TODO this is odd because without
+                        var bareType = sym.DeclaresType;
+                        // If capability not provided, then this is for a constructor or something
+                        // and reading the value doesn't matter, it exists to name the type.
+                        capability ??= ReferenceCapability.Identity;
+                        typeName.NamedType = bareType.With(capability);
+                        return bareType;
+
+                }
+            default:
+                diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
+                typeName.ReferencedSymbol.Fulfill(null);
+                typeName.NamedType = DataType.Unknown;
+                return null;
+        }
+    }
+
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
     public ObjectType Evaluate(BareObjectType referenceType, IReferenceCapabilitySyntax capability)
         => referenceType.With(capability.Declared.ToReferenceCapability());
-
-    private static ReferenceType Evaluate(ReferenceType referenceType, IReferenceCapabilitySyntax capability)
-        => referenceType.To(capability.Declared.ToReferenceCapability());
 }

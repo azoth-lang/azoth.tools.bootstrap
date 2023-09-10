@@ -159,32 +159,30 @@ public class BasicBodyAnalyzer
         SharingRelation sharing,
         ReferenceCapabilities capabilities)
     {
-        DataType type;
+        DataType variableType;
         if (variableDeclaration.Type is not null)
         {
-            type = typeResolver.Evaluate(variableDeclaration.Type, implicitRead: true);
-            CheckType(variableDeclaration.Initializer, type, sharing, capabilities);
+            variableType = typeResolver.Evaluate(variableDeclaration.Type, implicitRead: true);
+            _ = InferType(variableDeclaration.Initializer, sharing, capabilities);
         }
         else if (variableDeclaration.Initializer is not null)
-            type = InferDeclarationType(variableDeclaration.Initializer, variableDeclaration.Capability, sharing, capabilities);
+            variableType = InferDeclarationType(variableDeclaration.Initializer, variableDeclaration.Capability, sharing, capabilities);
         else
         {
             diagnostics.Add(TypeError.NotImplemented(file, variableDeclaration.NameSpan,
                 "Inference of local variable types not implemented"));
-            type = DataType.Unknown;
+            variableType = DataType.Unknown;
         }
 
         if (variableDeclaration.Initializer is not null)
         {
-            var initializerType = variableDeclaration.Initializer.ConvertedDataType
-                                  ?? throw new InvalidOperationException("Initializer type should be determined");
-
-            if (!type.IsAssignableFrom(initializerType))
-                diagnostics.Add(TypeError.CannotImplicitlyConvert(file, variableDeclaration.Initializer, initializerType, type));
+            var initializerType = AddImplicitConversionIfNeeded(variableDeclaration.Initializer, variableType, sharing, capabilities, allowConvertToIsolated: true);
+            if (!variableType.IsAssignableFrom(initializerType))
+                diagnostics.Add(TypeError.CannotImplicitlyConvert(file, variableDeclaration.Initializer, initializerType, variableType));
         }
 
         var symbol = new VariableSymbol(containingSymbol, variableDeclaration.Name,
-            variableDeclaration.DeclarationNumber.Result, variableDeclaration.IsMutableBinding, type, isParameter: false);
+            variableDeclaration.DeclarationNumber.Result, variableDeclaration.IsMutableBinding, variableType, isParameter: false);
         variableDeclaration.Symbol.Fulfill(symbol);
         symbolTreeBuilder.Add(symbol);
         capabilities.Declare(symbol);
@@ -229,9 +227,6 @@ public class BasicBodyAnalyzer
                     type = referenceType.To(inferCapability.Declared.ToReferenceCapability());
                 }
 
-                // The conversion type may not be the inferred type if conversion fails
-                _ = AddImplicitConversionIfNeeded(expression, type, sharing, capabilities,
-                        allowConvertToIsolated: true);
                 return type;
             }
         }
@@ -263,7 +258,7 @@ public class BasicBodyAnalyzer
     {
         var fromType = expression.DataType.Assigned();
         var conversion = ImplicitConversion(expectedType, fromType, expression.ImplicitConversion, sharing, capabilities, allowConvertToIsolated);
-        if (conversion != null) expression.AddConversion(conversion);
+        if (conversion is not null) expression.AddConversion(conversion);
         return expression.ConvertedDataType.Assigned();
     }
 
@@ -671,8 +666,8 @@ public class BasicBodyAnalyzer
             {
                 var argumentTypes = exp.Arguments.Select(arg => InferType(arg, sharing, capabilities)).ToFixedList();
                 // TODO handle named constructors here
-                var constructingType = typeResolver.Evaluate(exp.Type, implicitRead: false);
-                if (!constructingType.IsKnown)
+                var constructingType = typeResolver.EvaluateBareType(exp.Type);
+                if (constructingType is null)
                 {
                     diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
                     exp.ReferencedSymbol.Fulfill(null);
@@ -681,7 +676,6 @@ public class BasicBodyAnalyzer
 
                 // TODO handle null typesymbol
                 var typeSymbol = exp.Type.ReferencedSymbol.Result ?? throw new InvalidOperationException();
-                var classType = (ObjectType)constructingType;
                 DataType constructedType;
                 var constructorSymbols = symbolTreeBuilder.Children(typeSymbol).OfType<ConstructorSymbol>().ToFixedSet();
                 constructorSymbols = SelectOverload(constructorSymbols, argumentTypes);
@@ -1203,7 +1197,7 @@ public class BasicBodyAnalyzer
                     or BinaryOperator.LessThanDotDotLessThan:
                 var leftType = InferType(binaryExpression.LeftOperand, sharing, capabilities);
                 InferType(binaryExpression.RightOperand, sharing, capabilities);
-                if (declaredType != null)
+                if (declaredType is not null)
                 {
                     leftType = AddImplicitConversionIfNeeded(binaryExpression.LeftOperand, declaredType, sharing, capabilities, false);
                     AddImplicitConversionIfNeeded(binaryExpression.RightOperand, declaredType, sharing, capabilities, false);

@@ -24,7 +24,7 @@ internal class FieldParameterSyntax : ParameterSyntax, IFieldParameterSyntax
 
     public override string ToString()
     {
-        var defaultValue = DefaultValue != null ? " = " + DefaultValue : "";
+        var defaultValue = DefaultValue is not null ? " = " + DefaultValue : "";
         return $".{Name}{defaultValue}";
     }
 }

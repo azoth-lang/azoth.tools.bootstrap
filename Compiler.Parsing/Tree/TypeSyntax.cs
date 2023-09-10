@@ -16,7 +16,7 @@ internal abstract class TypeSyntax : Syntax, ITypeSyntax
         get => namedType;
         set
         {
-            if (namedType != null)
+            if (namedType is not null)
                 throw new InvalidOperationException("Can't set type repeatedly");
             namedType = value ?? throw new ArgumentNullException(nameof(NamedType),
                 "Can't set type to null");

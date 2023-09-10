@@ -96,7 +96,7 @@ public partial class Parser
         var declarations = bodyParser.ParseNonMemberDeclarations<ICloseBraceToken>();
         var closeBrace = Tokens.Expect<ICloseBraceToken>();
         var span = TextSpan.Covering(ns, closeBrace);
-        return new NamespaceDeclarationSyntax(ContainingNamespace, span, File, globalQualifier != null, name, nameSpan, usingDirectives, declarations);
+        return new NamespaceDeclarationSyntax(ContainingNamespace, span, File, globalQualifier is not null, name, nameSpan, usingDirectives, declarations);
     }
 
     private (NamespaceName, TextSpan) ParseNamespaceName()

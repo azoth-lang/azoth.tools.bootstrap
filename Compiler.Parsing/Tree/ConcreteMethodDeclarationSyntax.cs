@@ -31,7 +31,7 @@ internal class ConcreteMethodDeclarationSyntax : MethodDeclarationSyntax, IConcr
 
     public override string ToString()
     {
-        var returnType = ReturnType != null ? " -> " + ReturnType : "";
+        var returnType = ReturnType is not null ? " -> " + ReturnType : "";
         return $"fn {Name}({string.Join(", ", Parameters.Prepend<IParameterSyntax>(SelfParameter))}){returnType} {Body}";
     }
 }

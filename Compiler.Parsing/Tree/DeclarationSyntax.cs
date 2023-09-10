@@ -20,7 +20,7 @@ internal abstract class DeclarationSyntax : Syntax, IDeclarationSyntax
         [DebuggerStepThrough]
         set
         {
-            if (containingLexicalScope != null)
+            if (containingLexicalScope is not null)
                 throw new InvalidOperationException($"Can't set {nameof(ContainingLexicalScope)} repeatedly");
             containingLexicalScope = value;
         }

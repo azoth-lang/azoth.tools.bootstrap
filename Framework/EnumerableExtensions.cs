@@ -19,14 +19,14 @@ public static class EnumerableExtensions
     public static IEnumerable<T> YieldValue<T>(this T? value)
         where T : class
     {
-        if (value != null) yield return value;
+        if (value is not null) yield return value;
     }
 
     [DebuggerStepThrough]
     public static IEnumerable<T> YieldValue<T>(this T? value)
         where T : struct
     {
-        if (value != null) yield return value.Value;
+        if (value is not null) yield return value.Value;
     }
 
     [DebuggerStepThrough]

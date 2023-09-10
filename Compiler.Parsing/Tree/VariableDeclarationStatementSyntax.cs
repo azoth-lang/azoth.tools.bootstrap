@@ -43,7 +43,7 @@ internal class VariableDeclarationStatementSyntax : StatementSyntax, IVariableDe
         var binding = IsMutableBinding ? "var" : "let";
         var type = Type is not null ? ": " + Type : "";
         if (Capability is not null) type = ": " + Capability;
-        var initializer = Initializer != null ? " = " + Initializer : "";
+        var initializer = Initializer is not null ? " = " + Initializer : "";
         return $"{binding} {Name}{type}{initializer};";
     }
 }

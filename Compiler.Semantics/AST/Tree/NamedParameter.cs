@@ -25,7 +25,7 @@ internal class NamedParameter : Parameter, INamedParameter
     public override string ToString()
     {
         var mutable = Symbol.IsMutableBinding ? "var " : "";
-        var defaultValue = DefaultValue != null ? " = " + DefaultValue : "";
+        var defaultValue = DefaultValue is not null ? " = " + DefaultValue : "";
         var declarationNumber = Symbol.DeclarationNumber is null ? "" : "⟦#" + Symbol.DeclarationNumber + "⟧";
         return $"{mutable}{Symbol.Name}{declarationNumber}: {Symbol.DataType}{defaultValue}";
     }

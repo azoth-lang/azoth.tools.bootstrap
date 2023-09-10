@@ -10,4 +10,5 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(BareAnyType))]
 public abstract class BareReferenceType
 {
+    public abstract ReferenceType With(ReferenceCapability capability);
 }

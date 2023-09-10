@@ -16,7 +16,7 @@ internal static class Parser
         using (var reader = new StringReader(grammar))
         {
             string? line;
-            while ((line = reader.ReadLine()) != null)
+            while ((line = reader.ReadLine()) is not null)
                 lines.Add(line);
         }
 

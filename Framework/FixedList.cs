@@ -53,7 +53,7 @@ public class FixedList<T> : IReadOnlyList<T>, IEquatable<FixedList<T>>
 
     public bool Equals(FixedList<T>? other)
     {
-        return other != null && Count == other.Count && items.SequenceEqual(other.items);
+        return other is not null && Count == other.Count && items.SequenceEqual(other.items);
     }
 
     public override int GetHashCode()

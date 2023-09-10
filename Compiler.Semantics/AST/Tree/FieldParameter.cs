@@ -21,7 +21,7 @@ internal class FieldParameter : Parameter, IFieldParameter
 
     public override string ToString()
     {
-        var defaultValue = DefaultValue != null ? " = " + DefaultValue : "";
+        var defaultValue = DefaultValue is not null ? " = " + DefaultValue : "";
         return $".{ReferencedSymbol.Name}{defaultValue}";
     }
 }

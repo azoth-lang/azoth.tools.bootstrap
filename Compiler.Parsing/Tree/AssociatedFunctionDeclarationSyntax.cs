@@ -39,7 +39,7 @@ internal class AssociatedFunctionDeclarationSyntax : InvocableDeclarationSyntax,
 
     public override string ToString()
     {
-        var returnType = ReturnType != null ? " -> " + ReturnType : "";
+        var returnType = ReturnType is not null ? " -> " + ReturnType : "";
         return $"fn {Name}({string.Join(", ", Parameters)}){returnType} {Body}";
     }
 }

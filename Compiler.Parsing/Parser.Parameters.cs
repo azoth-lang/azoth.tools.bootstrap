@@ -51,7 +51,7 @@ public partial class Parser
                 var identifier = Tokens.RequiredToken<IIdentifierToken>();
                 var equals = Tokens.AcceptToken<IEqualsToken>();
                 IExpressionSyntax? defaultValue = null;
-                if (equals != null) defaultValue = ParseExpression();
+                if (equals is not null) defaultValue = ParseExpression();
                 var span = TextSpan.Covering(dot, identifier.Span, defaultValue?.Span);
                 Name name = identifier.Value;
                 return new FieldParameterSyntax(span, name, defaultValue);

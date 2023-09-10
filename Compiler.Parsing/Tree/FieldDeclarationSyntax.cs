@@ -39,7 +39,7 @@ internal class FieldDeclarationSyntax : MemberDeclarationSyntax, IFieldDeclarati
     public override string ToString()
     {
         var result = $"{Name}: {Type}";
-        if (Initializer != null)
+        if (Initializer is not null)
             result += Initializer.ToString();
         result += ";";
         return result;

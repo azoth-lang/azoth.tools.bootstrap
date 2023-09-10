@@ -28,7 +28,7 @@ internal class IfExpressionSyntax : ExpressionSyntax, IIfExpressionSyntax
 
     public override string ToString()
     {
-        if (ElseClause != null)
+        if (ElseClause is not null)
             return $"if {Condition} {ThenBlock} else {ElseClause}";
         return $"if {Condition} {ThenBlock}";
     }

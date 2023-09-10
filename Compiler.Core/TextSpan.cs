@@ -35,7 +35,7 @@ public readonly struct TextSpan : IEquatable<TextSpan>
 
     [System.Diagnostics.Contracts.Pure]
     public static TextSpan Covering(params TextSpan?[] spans)
-        => spans.Where(s => s != null).Cast<TextSpan>().Aggregate(Covering);
+        => spans.Where(s => s is not null).Cast<TextSpan>().Aggregate(Covering);
 
     /// <summary>
     /// Returns a zero length span that occurs at the start of the current span

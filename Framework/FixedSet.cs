@@ -44,7 +44,7 @@ public class FixedSet<T> : IReadOnlyCollection<T>, IEquatable<FixedSet<T>>
 
     public bool Equals(FixedSet<T>? other)
     {
-        return other != null && Count == other.Count && items.SetEquals(other.items);
+        return other is not null && Count == other.Count && items.SetEquals(other.items);
     }
 
     public override int GetHashCode()

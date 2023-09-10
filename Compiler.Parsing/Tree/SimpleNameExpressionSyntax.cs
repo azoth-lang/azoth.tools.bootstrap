@@ -28,7 +28,7 @@ internal class SimpleNameExpressionSyntax : ExpressionSyntax, ISimpleNameExpress
         [DebuggerStepThrough]
         set
         {
-            if (containingLexicalScope != null)
+            if (containingLexicalScope is not null)
                 throw new InvalidOperationException($"Can't set {nameof(ContainingLexicalScope)} repeatedly");
             containingLexicalScope = value;
         }

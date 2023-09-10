@@ -242,7 +242,7 @@ public partial class ConformanceTests
         // First check if there is a file for the expected output
         var match = Regex.Match(code, string.Format(CultureInfo.InvariantCulture, ExpectedOutputFileFormat, channel));
         var path = match.Groups["file"]?.Captures.SingleOrDefault()?.Value;
-        if (path != null)
+        if (path is not null)
         {
             var testCaseDirectory = Path.GetDirectoryName(testCasePath) ?? throw new InvalidOperationException();
             path = Path.Combine(testCaseDirectory, path);

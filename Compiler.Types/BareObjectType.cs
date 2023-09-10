@@ -37,7 +37,7 @@ public sealed class BareObjectType : BareReferenceType
     public ObjectType ToDefaultConstructorReturn()
         => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.Isolated);
 
-    public ObjectType With(ReferenceCapability capability)
+    public override ObjectType With(ReferenceCapability capability)
         => ObjectType.Create(this, capability);
 
     /// <summary>

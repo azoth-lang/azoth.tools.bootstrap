@@ -21,11 +21,11 @@ internal class BreakExpression : Expression, IBreakExpression
     }
 
     protected override OperatorPrecedence ExpressionPrecedence =>
-        Value != null ? OperatorPrecedence.Min : OperatorPrecedence.Primary;
+        Value is not null ? OperatorPrecedence.Min : OperatorPrecedence.Primary;
 
     public override string ToString()
     {
-        if (Value != null) return $"break {Value}";
+        if (Value is not null) return $"break {Value}";
         return "break";
     }
 }

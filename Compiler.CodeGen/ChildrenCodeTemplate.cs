@@ -383,7 +383,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen
                 }
                 set
                 {
-                    if ((value != null))
+                    if ((value is not null))
                     {
                         this.formatProviderField  = value;
                     }
