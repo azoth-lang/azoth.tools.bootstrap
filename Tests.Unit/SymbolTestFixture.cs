@@ -19,11 +19,11 @@ public abstract class SymbolTestFixture
 
     protected Name DefaultName(string prefix) => new($"⧫{prefix}_{++unique}");
 
-    [return: NotNullIfNotNull("name")]
+    [return: NotNullIfNotNull(nameof(name))]
     protected static Name? Name(string? name = null) => name is null ? null : new Name(name);
 
     protected FixedList<DataType> Params(int? count = null)
-        => Enumerable.Range(1, count ?? ++unique).Select(n => Compiler.Types.DataType.Int).ToFixedList<DataType>();
+        => Enumerable.Range(1, count ?? ++unique).Select(_ => Compiler.Types.DataType.Int).ToFixedList<DataType>();
 
     protected static FixedList<DataType> Params(DataType param, params DataType[] @params)
         => @params.Prepend(param).ToFixedList();
@@ -86,12 +86,14 @@ public abstract class SymbolTestFixture
     protected ObjectType DataType(
         string? name = null,
         NamespaceName? containingNamespace = null,
+        bool? isConst = null,
         ReferenceCapability? referenceCapability = null)
     {
         var finalName = Name(name) ?? DefaultName("DataType");
         return ObjectType.Create(
             containingNamespace ?? NamespaceName.Global,
             finalName.Text,
+            isConst ?? false,
             referenceCapability ?? ReferenceCapability.Constant);
     }
 

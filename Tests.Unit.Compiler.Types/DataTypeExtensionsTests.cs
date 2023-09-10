@@ -40,7 +40,7 @@ public class DataTypeExtensionsTests
     [Fact]
     public void Underlying_reference_type_of_reference_type_is_itself()
     {
-        var referenceType = ObjectType.Create("Foo", "Bar", Mutable);
+        var referenceType = ObjectType.Create("Foo", "Bar", false, Mutable);
 
         var underlyingType = referenceType.UnderlyingReferenceType();
 
@@ -50,7 +50,7 @@ public class DataTypeExtensionsTests
     [Fact]
     public void Underlying_reference_type_of_optional_reference_type_is_reference_type()
     {
-        var referenceType = ObjectType.Create("Foo", "Bar", Mutable);
+        var referenceType = ObjectType.Create("Foo", "Bar", false, Mutable);
         var optionalType = new OptionalType(referenceType);
 
         var underlyingType = optionalType.UnderlyingReferenceType();

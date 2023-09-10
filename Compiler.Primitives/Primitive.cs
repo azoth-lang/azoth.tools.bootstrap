@@ -14,7 +14,7 @@ public static class Primitive
     {
         var tree = new SymbolTreeBuilder();
 
-        var stringType = ObjectType.Create(NamespaceName.Global, "string", ReferenceCapability.Constant);
+        var stringType = ObjectType.Create(NamespaceName.Global, "string", false, ReferenceCapability.Constant);
 
         // Simple Types
         BuildBoolSymbol(tree);

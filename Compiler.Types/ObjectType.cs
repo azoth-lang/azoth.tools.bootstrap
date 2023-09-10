@@ -24,34 +24,32 @@ public sealed class ObjectType : ReferenceType
     public override bool IsKnown { [DebuggerStepThrough] get => true; }
 
     /// <summary>
-    /// Create a object type for a given class or trait
+    /// Whether this type was declared `const` meaning that most references should be treated as
+    /// const.
+    /// </summary>
+    public bool IsConst { get; }
+
+    /// <summary>
+    /// Create a object type for a given class or trait.
     /// </summary>
     public static ObjectType Create(
             NamespaceName containingNamespace,
             TypeName name,
+            bool isConst,
             ReferenceCapability capability)
-        // The "root" of the reference capability tree for this type
-        => new(containingNamespace, name, capability);
+        => new(containingNamespace, name, isConst, capability);
 
     private ObjectType(
         NamespaceName containingNamespace,
         TypeName name,
+        bool isConst,
         ReferenceCapability capability)
         : base(capability)
     {
         ContainingNamespace = containingNamespace;
         Name = name;
+        IsConst = isConst;
     }
-
-    /// <summary>
-    /// Use this type as a mutable type. Only allowed if the type is declared mutable
-    /// </summary>
-    //public ObjectType ToMutable()
-    //{
-    //Requires.That(nameof(DeclaredMutable), DeclaredMutable, "must be declared as a mutable type to use mutably");
-    //return new ObjectType(ContainingNamespace, Name, DeclaredMutable, ReferenceCapability.ToMutable());
-    //    throw new NotImplementedException();
-    //}
 
     /// <summary>
     /// Make a version of this type for use as the constructor parameter. One issue is
@@ -59,15 +57,16 @@ public sealed class ObjectType : ReferenceType
     /// </summary>
     /// <remarks>This is always `mut` because the type can be mutated inside the constructor.</remarks>
     public ObjectType ToConstructorSelf()
-        // TODO handle the case where the type is not declared mutable but the constructor arg allows mutate
+        // TODO does this need to be `init`?
         => To(ReferenceCapability.Mutable);
 
     /// <summary>
     /// Make a version of this type for use as the return type of the default constructor.
     /// </summary>
-    /// <remarks>This is always `iso` because there are no parameters that could reference the
-    /// new object and even if the declared type is `const` subclasses may not be.</remarks>
-    public ObjectType ToDefaultConstructorReturn() => To(ReferenceCapability.Isolated);
+    /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
+    /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
+    public ObjectType ToDefaultConstructorReturn()
+        => To(IsConst ? ReferenceCapability.Constant : ReferenceCapability.Isolated);
 
     public override string ToSourceCodeString()
     {
@@ -120,7 +119,9 @@ public sealed class ObjectType : ReferenceType
     #endregion
 
     public override ObjectType To(ReferenceCapability referenceCapability)
-        => new(ContainingNamespace, Name, referenceCapability);
+        => new(ContainingNamespace, Name, IsConst, referenceCapability);
 
+    /// <remarks>For constant types, there can still be read only references. For example, inside
+    /// the constructor.</remarks>
     public override ObjectType WithoutWrite() => (ObjectType)base.WithoutWrite();
 }
