@@ -468,7 +468,7 @@ public class BasicBodyAnalyzer
                             switch (type)
                             {
                                 case ReferenceType referenceType:
-                                    if (!referenceType.IsWritableReference)
+                                    if (!referenceType.AllowsWrite)
                                     {
                                         diagnostics.Add(TypeError.ExpressionCantBeMutable(file, exp.Referent));
                                         type = DataType.Unknown;
@@ -846,7 +846,7 @@ public class BasicBodyAnalyzer
                 var member = exp.Member;
                 switch (contextType)
                 {
-                    case ReferenceType { IsWritableReference: false } contextReferenceType:
+                    case ReferenceType { AllowsWrite: false } contextReferenceType:
                         diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(file, expression.Span, contextReferenceType));
                         goto default;
                     case UnknownType:
@@ -1060,7 +1060,7 @@ public class BasicBodyAnalyzer
                 var referenceType = (ReferenceType)returnType;
                 if (referenceType.Capability == ReferenceCapability.Isolated)
                     invocationExpression.Semantics = ExpressionSemantics.IsolatedReference;
-                else if (referenceType.IsWritableReference)
+                else if (referenceType.AllowsWrite)
                     invocationExpression.Semantics = ExpressionSemantics.MutableReference;
                 else
                     invocationExpression.Semantics = ExpressionSemantics.ReadOnlyReference;

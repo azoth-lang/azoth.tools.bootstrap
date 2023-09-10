@@ -31,17 +31,6 @@ public sealed class ObjectType : ReferenceType
     public bool IsConst => BareType.IsConst;
 
     /// <summary>
-    /// Does this reference allow it to be recovered to isolated if reference sharing permits.
-    /// </summary>
-    public bool AllowsRecoverIsolation => Capability.AllowsRecoverIsolation;
-
-    /// <summary>
-    /// Does this capability allow a reference with it to be frozen to const if reference
-    /// sharing permits.
-    /// </summary>
-    public bool AllowsFreeze => Capability.AllowsFreeze;
-
-    /// <summary>
     /// Create a object type for a given class or trait.
     /// </summary>
     public static ObjectType Create(

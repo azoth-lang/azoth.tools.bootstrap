@@ -10,11 +10,23 @@ public abstract class ReferenceType : DataType
 {
     public ReferenceCapability Capability { get; }
     public bool IsReadOnlyReference => Capability == ReferenceCapability.ReadOnly;
-    public bool IsWritableReference => Capability.AllowsWrite;
-    public bool IsMovableReference => Capability.AllowsMovable;
     public bool IsConstReference => Capability == ReferenceCapability.Constant;
     public bool IsIsolatedReference => Capability == ReferenceCapability.Isolated;
     public bool IsIdentityReference => Capability == ReferenceCapability.Identity;
+
+    public bool AllowsWrite => Capability.AllowsWrite;
+    public bool AllowsMove => Capability.AllowsMovable;
+
+    /// <summary>
+    /// Does this reference allow it to be recovered to isolated if reference sharing permits.
+    /// </summary>
+    public bool AllowsRecoverIsolation => Capability.AllowsRecoverIsolation;
+
+    /// <summary>
+    /// Does this capability allow a reference with it to be frozen to const if reference
+    /// sharing permits.
+    /// </summary>
+    public bool AllowsFreeze => Capability.AllowsFreeze;
 
     public BareReferenceType BareType { get; }
 
