@@ -10,23 +10,27 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public sealed class BareObjectType : BareReferenceType
 {
     public static BareObjectType Create(NamespaceName containingNamespace, Name name, bool isConst)
-        => new(containingNamespace, name, isConst, FixedList<Name>.Empty);
+        => new(containingNamespace, name, isConst, FixedList<GenericParameter>.Empty);
 
     public static BareObjectType Create(
         NamespaceName containingNamespace,
         Name name,
         bool isConst,
-        FixedList<Name> genericParameters)
+        FixedList<GenericParameter> genericParameters)
         => new(containingNamespace, name, isConst, genericParameters);
 
     public static BareObjectType Create(
         NamespaceName containingNamespace,
         Name name,
         bool isConst,
-        params Name[] genericParameters) =>
+        params GenericParameter[] genericParameters) =>
         new(containingNamespace, name, isConst, FixedList.Create(genericParameters));
 
-    private BareObjectType(NamespaceName containingNamespace, Name name, bool isConst, FixedList<Name> genericParameters)
+    private BareObjectType(
+        NamespaceName containingNamespace,
+        Name name,
+        bool isConst,
+        FixedList<GenericParameter> genericParameters)
     {
         ContainingNamespace = containingNamespace;
         Name = name;
@@ -45,7 +49,7 @@ public sealed class BareObjectType : BareReferenceType
     /// </summary>
     public bool IsConst { get; }
 
-    public FixedList<Name> GenericParameters { get; }
+    public FixedList<GenericParameter> GenericParameters { get; }
 
     /// <summary>
     /// Make a version of this type for use as the constructor parameter. One issue is
