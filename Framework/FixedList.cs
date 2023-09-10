@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Framework;
 [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
 public class FixedList<T> : IReadOnlyList<T>, IEquatable<FixedList<T>>
 {
-    public static readonly FixedList<T> Empty = new FixedList<T>(Enumerable.Empty<T>());
+    public static readonly FixedList<T> Empty = new(Enumerable.Empty<T>());
 
     private readonly IReadOnlyList<T> items;
 
@@ -22,16 +22,10 @@ public class FixedList<T> : IReadOnlyList<T>, IEquatable<FixedList<T>>
     }
 
     [DebuggerStepThrough]
-    public IEnumerator<T> GetEnumerator()
-    {
-        return items.GetEnumerator();
-    }
+    public IEnumerator<T> GetEnumerator() => items.GetEnumerator();
 
     [DebuggerStepThrough]
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return ((IEnumerable)items).GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)items).GetEnumerator();
 
     public int Count
     {
@@ -46,15 +40,10 @@ public class FixedList<T> : IReadOnlyList<T>, IEquatable<FixedList<T>>
     }
 
     #region Equality
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as FixedList<T>);
-    }
+    public override bool Equals(object? obj) => Equals(obj as FixedList<T>);
 
     public bool Equals(FixedList<T>? other)
-    {
-        return other is not null && Count == other.Count && items.SequenceEqual(other.items);
-    }
+        => other is not null && Count == other.Count && items.SequenceEqual(other.items);
 
     public override int GetHashCode()
     {
@@ -63,4 +52,9 @@ public class FixedList<T> : IReadOnlyList<T>, IEquatable<FixedList<T>>
         return hash.ToHashCode();
     }
     #endregion
+}
+
+public static class FixedList
+{
+    public static FixedList<T> Create<T>(params T[] items) => new(items);
 }

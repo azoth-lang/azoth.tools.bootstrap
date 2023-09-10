@@ -5,6 +5,10 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
+/// <summary>
+/// A symbol tree for the definition of all the primitive symbols. This special tree allows for a
+/// <see langword="null"/> package.
+/// </summary>
 public sealed class PrimitiveSymbolTree : ISymbolTree
 {
     PackageSymbol? ISymbolTree.Package => null;
@@ -18,14 +22,11 @@ public sealed class PrimitiveSymbolTree : ISymbolTree
         GlobalSymbols = symbolChildren.Keys.Where(s => s.ContainingSymbol is null).ToFixedSet();
     }
 
-    public bool Contains(Symbol symbol)
-    {
-        return symbolChildren.ContainsKey(symbol);
-    }
+    public bool Contains(Symbol symbol) => symbolChildren.ContainsKey(symbol);
 
     public IEnumerable<Symbol> Children(Symbol symbol)
     {
-        if (!(symbol.Package is null))
+        if (symbol.Package is not null)
             throw new ArgumentException("Symbol must be primitive", nameof(symbol));
 
         return symbolChildren.TryGetValue(symbol, out var children)

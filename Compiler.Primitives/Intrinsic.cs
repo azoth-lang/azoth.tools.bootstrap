@@ -10,9 +10,6 @@ public static class Intrinsic
 {
     public static readonly FixedSymbolTree SymbolTree = DefineIntrinsicSymbols();
 
-    public static readonly FunctionSymbol MemAllocate =
-        SymbolTree.Symbols.OfType<FunctionSymbol>().Single(f => f.Name.Text == "mem_allocate");
-
     public static readonly FunctionSymbol PrintUtf8 =
         SymbolTree.Symbols.OfType<FunctionSymbol>().Single(f => f.Name.Text == "print_utf8");
 
@@ -51,11 +48,61 @@ public static class Intrinsic
         var readUtf8Line = new FunctionSymbol(intrinsicsNamespace, "read_utf8_line", Params(DataType.Size, DataType.Size), DataType.Size);
         tree.Add(readUtf8Line);
 
+        BuildSpecializedCollectionSymbols(intrinsicsPackage, tree);
+
+
         return tree.Build();
     }
 
-    private static FixedList<DataType> Params(params DataType[] types)
+    private static void BuildSpecializedCollectionSymbols(
+        PackageSymbol intrinsicsPackage,
+        SymbolTreeBuilder tree)
     {
-        return types.ToFixedList();
+        var azothNamespace = new NamespaceSymbol(intrinsicsPackage, "azoth");
+        var collectionsNamespace = new NamespaceSymbol(intrinsicsPackage, "collections");
+        var specializedNamespace = new NamespaceSymbol(intrinsicsPackage, "specialized");
+        tree.Add(azothNamespace);
+        tree.Add(collectionsNamespace);
+        tree.Add(specializedNamespace);
+
+        BuildRawBoundedListSymbol(tree, specializedNamespace);
     }
+
+    private static void BuildRawBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
+    {
+        var type = new BareObjectType(@namespace.NamespaceName, "Raw_Bounded_List", false);
+        var classSymbol = new ObjectTypeSymbol(@namespace, type);
+        tree.Add(classSymbol);
+
+        // published new(.capacity) {...}
+        var constructor = new ConstructorSymbol(classSymbol, null, FixedList.Create<DataType>(DataType.Size));
+        tree.Add(constructor);
+
+        // published let capacity: size;
+        var capacity = new FieldSymbol(classSymbol, "capacity", false, DataType.Size);
+        tree.Add(capacity);
+
+        // Given setters are not implemented, making this a function for now
+        // published fn count() -> size
+        var count = new MethodSymbol(classSymbol, "count", type.WithRead(),
+            FixedList<DataType>.Empty, DataType.Size);
+        tree.Add(count);
+
+        // published /* unsafe */ fn at(mut self, index: size) -> T
+        var at = new MethodSymbol(classSymbol, "at", type.WithRead(),
+            FixedList.Create<DataType>(DataType.Size), DataType.Unknown);
+        tree.Add(at);
+
+        // published /* unsafe */ fn set(mut self, index: size, T value)
+        var set = new MethodSymbol(classSymbol, "set", type.WithRead(),
+            FixedList.Create<DataType>(DataType.Size, DataType.Unknown), DataType.Void);
+        tree.Add(set);
+
+        // published fn add(mut self, value: T);
+        var add = new MethodSymbol(classSymbol, "add", type.WithRead(),
+            FixedList.Create<DataType>(DataType.Unknown), DataType.Void);
+        tree.Add(add);
+    }
+
+    private static FixedList<DataType> Params(params DataType[] types) => types.ToFixedList();
 }

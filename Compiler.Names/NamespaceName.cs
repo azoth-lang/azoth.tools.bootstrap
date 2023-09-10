@@ -29,9 +29,7 @@ public sealed class NamespaceName : IEquatable<NamespaceName>
     }
 
     public NamespaceName Qualify(NamespaceName name)
-    {
-        return new NamespaceName(Segments.Concat(name.Segments));
-    }
+        => new(Segments.Concat(name.Segments));
 
     public IEnumerable<NamespaceName> NamespaceNames()
     {
@@ -40,10 +38,7 @@ public sealed class NamespaceName : IEquatable<NamespaceName>
             yield return new NamespaceName(Segments.Take(n));
     }
 
-    public override string ToString()
-    {
-        return string.Join('.', Segments);
-    }
+    public override string ToString() => string.Join('.', Segments);
 
     public bool Equals(NamespaceName? other)
     {
@@ -59,30 +54,17 @@ public sealed class NamespaceName : IEquatable<NamespaceName>
         return other is NamespaceName name && Equals(name);
     }
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Segments);
-    }
+    public override int GetHashCode() => HashCode.Combine(Segments);
 
     public static bool operator ==(NamespaceName? left, NamespaceName? right)
-    {
-        return Equals(left, right);
-    }
+        => Equals(left, right);
 
     public static bool operator !=(NamespaceName? left, NamespaceName? right)
-    {
-        return !Equals(left, right);
-    }
+        => !Equals(left, right);
 
-    public static implicit operator NamespaceName(Name name)
-    {
-        return new NamespaceName(name);
-    }
+    public static implicit operator NamespaceName(Name name) => new(name);
 
-    public static implicit operator NamespaceName(string text)
-    {
-        return new NamespaceName(text);
-    }
+    public static implicit operator NamespaceName(string text) => new(text);
 
     public bool IsNestedIn(NamespaceName ns)
     {

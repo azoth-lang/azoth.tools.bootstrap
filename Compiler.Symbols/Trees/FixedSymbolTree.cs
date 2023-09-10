@@ -22,10 +22,7 @@ public class FixedSymbolTree : ISymbolTree
         this.symbolChildren = symbolChildren;
     }
 
-    public bool Contains(Symbol symbol)
-    {
-        return symbolChildren.ContainsKey(symbol);
-    }
+    public bool Contains(Symbol symbol) => symbolChildren.ContainsKey(symbol);
 
     public IEnumerable<Symbol> Children(Symbol symbol)
     {
