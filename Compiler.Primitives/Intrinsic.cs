@@ -70,8 +70,9 @@ public static class Intrinsic
 
     private static void BuildRawBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
     {
-        var type = BareObjectType.Create(@namespace.NamespaceName, "Raw_Bounded_List", false, "T");
-        var classSymbol = new ObjectTypeSymbol(@namespace, type);
+        var classType = BareObjectType.Create(@namespace.NamespaceName, "Raw_Bounded_List", false, "T");
+        var itemType = classType.GenericParameterTypes[0];
+        var classSymbol = new ObjectTypeSymbol(@namespace, classType);
         tree.Add(classSymbol);
 
         // published new(.capacity) {...}
@@ -84,23 +85,23 @@ public static class Intrinsic
 
         // Given setters are not implemented, making this a function for now
         // published fn count() -> size
-        var count = new MethodSymbol(classSymbol, "count", type.WithRead(),
+        var count = new MethodSymbol(classSymbol, "count", classType.WithRead(),
             FixedList<DataType>.Empty, DataType.Size);
         tree.Add(count);
 
         // published /* unsafe */ fn at(mut self, index: size) -> T
-        var at = new MethodSymbol(classSymbol, "at", type.WithRead(),
-            FixedList.Create<DataType>(DataType.Size), DataType.Unknown);
+        var at = new MethodSymbol(classSymbol, "at", classType.WithRead(),
+            FixedList.Create<DataType>(DataType.Size), itemType);
         tree.Add(at);
 
         // published /* unsafe */ fn set(mut self, index: size, T value)
-        var set = new MethodSymbol(classSymbol, "set", type.WithRead(),
-            FixedList.Create<DataType>(DataType.Size, DataType.Unknown), DataType.Void);
+        var set = new MethodSymbol(classSymbol, "set", classType.WithRead(),
+            FixedList.Create<DataType>(DataType.Size, itemType), DataType.Void);
         tree.Add(set);
 
         // published fn add(mut self, value: T);
-        var add = new MethodSymbol(classSymbol, "add", type.WithRead(),
-            FixedList.Create<DataType>(DataType.Unknown), DataType.Void);
+        var add = new MethodSymbol(classSymbol, "add", classType.WithRead(),
+            FixedList.Create<DataType>(itemType), DataType.Void);
         tree.Add(add);
     }
 

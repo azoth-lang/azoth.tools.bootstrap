@@ -36,6 +36,7 @@ public sealed class BareObjectType : BareReferenceType
         Name = name;
         IsConst = isConst;
         GenericParameters = genericParameters;
+        GenericParameterTypes = GenericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList();
     }
 
     // TODO this needs a containing package
@@ -50,6 +51,8 @@ public sealed class BareObjectType : BareReferenceType
     public bool IsConst { get; }
 
     public FixedList<GenericParameter> GenericParameters { get; }
+
+    public FixedList<GenericParameterType> GenericParameterTypes { get; }
 
     /// <summary>
     /// Make a version of this type for use as the constructor parameter. One issue is
