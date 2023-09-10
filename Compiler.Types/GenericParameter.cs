@@ -1,3 +1,4 @@
+using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -7,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 /// <remarks>At the moment all generic parameters are types. In the future, they don't have to be.
 /// That is why this class exists to ease refactoring later.</remarks>
-public sealed class GenericParameter
+public sealed class GenericParameter : IEquatable<GenericParameter>
 {
     public GenericParameter(Name name)
     {
@@ -17,8 +18,26 @@ public sealed class GenericParameter
     public Name Name { get; }
     // TODO  public DataType DataType { get; }
 
-    public override string ToString() => Name.ToString();
+    #region Equals
+    public bool Equals(GenericParameter? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return Name.Equals(other.Name);
+    }
 
-    public static implicit operator GenericParameter(string name)
-        => new(name);
+    public override bool Equals(object? obj)
+        => obj is GenericParameter other && Equals(other);
+
+    public override int GetHashCode() => Name.GetHashCode();
+
+    public static bool operator ==(GenericParameter? left, GenericParameter? right) => Equals(left, right);
+
+    public static bool operator !=(GenericParameter? left, GenericParameter? right) => !Equals(left, right);
+
+    #endregion
+
+    public static implicit operator GenericParameter(string name) => new(name);
+
+    public override string ToString() => Name.ToString();
 }

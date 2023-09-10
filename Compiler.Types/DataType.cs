@@ -12,7 +12,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(ReferenceType),
     typeof(ValueType),
     typeof(EmptyType),
-    typeof(UnknownType))]
+    typeof(UnknownType),
+    typeof(GenericParameterType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class DataType : IEquatable<DataType>
 {

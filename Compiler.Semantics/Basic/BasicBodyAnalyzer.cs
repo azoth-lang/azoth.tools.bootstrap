@@ -1332,6 +1332,7 @@ public class BasicBodyAnalyzer
             case UnknownType _:
                 return true;
             case ReferenceType _:
+            case GenericParameterType _:
             case BoolType _:
             case VoidType _: // This might need a special error message
                 return false;
