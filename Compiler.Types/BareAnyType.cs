@@ -1,3 +1,5 @@
+using Azoth.Tools.Bootstrap.Compiler.Names;
+
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public sealed class BareAnyType : BareReferenceType
@@ -10,4 +12,6 @@ public sealed class BareAnyType : BareReferenceType
 
     public override ReferenceType With(ReferenceCapability capability)
         => new AnyType(capability);
+
+    public override string ToString() => SpecialTypeName.Any.ToString();
 }

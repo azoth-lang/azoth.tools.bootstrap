@@ -31,6 +31,17 @@ public sealed class ObjectType : ReferenceType
     public bool IsConst => BareType.IsConst;
 
     /// <summary>
+    /// Does this reference allow it to be recovered to isolated if reference sharing permits.
+    /// </summary>
+    public bool AllowsRecoverIsolation => Capability.AllowsRecoverIsolation;
+
+    /// <summary>
+    /// Does this capability allow a reference with it to be frozen to const if reference
+    /// sharing permits.
+    /// </summary>
+    public bool AllowsFreeze => Capability.AllowsFreeze;
+
+    /// <summary>
     /// Create a object type for a given class or trait.
     /// </summary>
     public static ObjectType Create(
@@ -63,9 +74,7 @@ public sealed class ObjectType : ReferenceType
             builder.Append(Capability.ToSourceString());
             builder.Append(' ');
         }
-        builder.Append(ContainingNamespace);
-        if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
-        builder.Append(Name);
+        BareType.ToString(builder);
         return builder.ToString();
     }
 
@@ -74,9 +83,7 @@ public sealed class ObjectType : ReferenceType
         var builder = new StringBuilder();
         builder.Append(Capability.ToILString());
         builder.Append(' ');
-        builder.Append(ContainingNamespace);
-        if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
-        builder.Append(Name);
+        BareType.ToString(builder);
         return builder.ToString();
     }
 

@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class IntegerConstantType : IntegerType
 {
-    public override bool IsConstant => true;
+    public override bool IsTypeOfConstant => true;
     public BigInteger Value { get; }
     public override bool IsKnown => true;
 

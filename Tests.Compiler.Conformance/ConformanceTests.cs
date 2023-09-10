@@ -41,7 +41,7 @@ public partial class ConformanceTests
     private const string ExpectedOutputFormat = @"\/\*[ \t]*{0}:\r?\n(?<output>(\*+[^/]|[^*])*)\*\/";
     [GeneratedRegex("//[ \\t]*compile: errors")]
     private static partial Regex ExpectCompileErrorsPattern();
-    [GeneratedRegex(@"(?<!^.*//.*)//[ \t]*ERROR([ \t].*)?", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?<!^.*//.*)//[ \t]*ERROR(?: x(?<count>\d+))?(?:[ \t].*)?", RegexOptions.Multiline)]
     private static partial Regex ErrorPattern();
 
     [Theory]
@@ -159,7 +159,7 @@ public partial class ConformanceTests
     {
         // Check for compiler errors
         var expectCompileErrors = ExpectCompileErrors(code);
-        var expectedCompileErrorLines = ExpectedCompileErrorLines(codeFile, code);
+        var expectedCompileErrors = ExpectedCompileErrors(codeFile, code);
 
         if (diagnostics.Any())
         {
@@ -180,8 +180,8 @@ public partial class ConformanceTests
         var errors = new StringBuilder();
 
         var matchedErrors = errorDiagnostics
-            .FullGroupJoin(expectedCompileErrorLines, d => d.StartPosition.Line, l => l,
-                (line, errors, expected) => (line, errors.Count(), expected.Count()));
+            .FullGroupJoin(expectedCompileErrors, d => d.StartPosition.Line, l => l.Line,
+                (line, errors, expected) => (line, errors.Count(), expected.Sum(e => e.Count)));
 
         foreach (var matchedError in matchedErrors)
         {
@@ -214,12 +214,21 @@ public partial class ConformanceTests
     private static bool ExpectCompileErrors(string code)
         => ExpectCompileErrorsPattern().IsMatch(code);
 
-    private static List<int> ExpectedCompileErrorLines(CodeFile codeFile, string code)
+    private static List<ExpectedError> ExpectedCompileErrors(CodeFile codeFile, string code)
     {
+
         return ErrorPattern().Matches(code)
-                             .Select(match => codeFile.Code.Lines.LineIndexContainingOffset(match.Index) + 1)
-                             .Order()
+                             .Select(Selector)
+                             .OrderBy(e => e.Line)
                              .ToList();
+
+        ExpectedError Selector(Match match)
+        {
+            var line = codeFile.Code.Lines.LineIndexContainingOffset(match.Index) + 1;
+            if (!int.TryParse(match.Groups["count"].Value, out var count))
+                count = 1;
+            return new(line, count);
+        }
     }
 
     private static InterpreterProcess Execute(Package package)
@@ -251,7 +260,7 @@ public partial class ConformanceTests
 
         // Then look for inline expected output
         match = Regex.Match(code, string.Format(CultureInfo.InvariantCulture, ExpectedOutputFormat, channel));
-        return match.Groups["output"]?.Captures.SingleOrDefault()?.Value ?? "";
+        return match.Groups["output"].Captures.SingleOrDefault()?.Value ?? "";
     }
 
     public static TheoryData<TestCase> GetConformanceTestCases()

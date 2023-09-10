@@ -312,16 +312,17 @@ public class BasicBodyAnalyzer
                 var requireSigned = from.Value < 0;
                 return !requireSigned || to.IsSigned ? new NumericConversion(to, priorConversion) : null;
             }
-            case (ObjectType { IsConstReference: true } to, ObjectType { IsConstReference: false } from):
+            case (ObjectType { IsConstReference: true } to, ObjectType { AllowsFreeze: true } from):
             {
                 // Try to recover const
+                // TODO all upcasting at the same time
                 if (!to.DeclaredTypesEquals(from) // Underlying types must match
                     || !sharing.IsIsolated(SharingVariable.Result))
                     return null;
 
                 return new RecoverConst(priorConversion);
             }
-            case (ObjectType { IsIsolatedReference: true } to, ObjectType { IsIsolatedReference: false } from)
+            case (ObjectType { IsIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from)
                 when allowConvertToIsolated:
             {
                 // Try to recover isolation
@@ -513,7 +514,7 @@ public class BasicBodyAnalyzer
                     CheckTypeCompatibility(expectedReturnType, exp.Value);
                 }
                 else if (returnType == DataType.Never)
-                    diagnostics.Add(TypeError.CantReturnFromNeverFunction(file, exp.Span));
+                    diagnostics.Add(TypeError.CannotReturnFromNeverFunction(file, exp.Span));
                 // TODO if returnType is null, then this is a field and shouldn't contain a return expression
                 else if (returnType != DataType.Void)
                     diagnostics.Add(TypeError.ReturnExpressionMustHaveValue(file, exp.Span, returnType ?? DataType.Unknown));
@@ -1065,7 +1066,7 @@ public class BasicBodyAnalyzer
                 while (returnType is OptionalType optionalType)
                     returnType = optionalType.Referent;
                 var referenceType = (ReferenceType)returnType;
-                if (referenceType.Capability.CanBeAcquired())
+                if (referenceType.Capability == ReferenceCapability.Isolated)
                     invocationExpression.Semantics = ExpressionSemantics.IsolatedReference;
                 else if (referenceType.IsWritableReference)
                     invocationExpression.Semantics = ExpressionSemantics.MutableReference;

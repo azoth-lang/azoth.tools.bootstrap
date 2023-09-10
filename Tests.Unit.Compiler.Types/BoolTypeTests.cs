@@ -21,7 +21,7 @@ public class BoolTypeTests
     {
         var type = BoolType.Instance;
 
-        Assert.False(type.IsConstant);
+        Assert.False(type.IsTypeOfConstant);
     }
 
     [Fact]

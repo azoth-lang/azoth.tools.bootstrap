@@ -11,4 +11,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public abstract class BareReferenceType
 {
     public abstract ReferenceType With(ReferenceCapability capability);
+
+    public abstract override string ToString();
 }

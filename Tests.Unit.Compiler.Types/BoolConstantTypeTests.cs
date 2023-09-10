@@ -20,7 +20,7 @@ public class BoolConstantTypeTests
     {
         var type = BoolConstantType.True;
 
-        Assert.True(type.IsConstant);
+        Assert.True(type.IsTypeOfConstant);
     }
 
     [Fact]

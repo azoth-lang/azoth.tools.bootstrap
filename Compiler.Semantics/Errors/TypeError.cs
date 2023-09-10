@@ -104,7 +104,7 @@ public static class TypeError
             3012, $"The return expression must return a value of type `{returnType}`");
     }
 
-    public static Diagnostic CantReturnFromNeverFunction(CodeFile file, in TextSpan span)
+    public static Diagnostic CannotReturnFromNeverFunction(CodeFile file, in TextSpan span)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3013, "Functions that never return can't contain return statements");
@@ -119,7 +119,7 @@ public static class TypeError
     public static Diagnostic CannotIdNonReferenceType(CodeFile file, in TextSpan span, DataType type)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3015, $"Taking the `id` of the type `{type.ToSourceCodeString()}` is not supported, because it is not a reference type.");
+            3015, $"Taking the `id` of the type `{type.ToSourceCodeString()}` is not supported, because it is not a reference typ.");
     }
 
     public static Diagnostic CannotFreezeValue(CodeFile file, IFreezeExpressionSyntax expression)
@@ -132,5 +132,11 @@ public static class TypeError
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3017, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstantType().ToSourceCodeString()}` to type `{toType.ToNonConstantType().ToSourceCodeString()}`");
+    }
+
+    public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, ISyntax expression, ReferenceCapability capability, BareObjectType type)
+    {
+        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3018, $"Cannot use `{capability.ToSourceString()}` on constant type `{type}`");
     }
 }

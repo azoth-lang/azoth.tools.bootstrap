@@ -1,3 +1,4 @@
+using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -46,4 +47,25 @@ public sealed class BareObjectType : BareReferenceType
     /// </summary>
     public ObjectType WithRead()
         => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.ReadOnly);
+
+    /// <summary>
+    /// Make a version of this type that is the default mutate reference capability for the type.
+    /// For constant types, that isn't allowed and a constant reference is returned.
+    /// </summary>
+    public ObjectType WithMutate()
+        => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.ReadOnly);
+
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+        ToString(builder);
+        return builder.ToString();
+    }
+
+    public void ToString(StringBuilder builder)
+    {
+        builder.Append(ContainingNamespace);
+        if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
+        builder.Append(Name);
+    }
 }

@@ -22,7 +22,7 @@ public class IntegerConstantTypeTests
     {
         var type = new IntegerConstantType(1);
 
-        Assert.True(type.IsConstant);
+        Assert.True(type.IsTypeOfConstant);
     }
 
     [Fact]

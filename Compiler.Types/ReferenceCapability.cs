@@ -57,8 +57,19 @@ public sealed class ReferenceCapability
     // TODO merge with AllowsWriteAliases to just AllowsAliases?
     public bool AllowsReadAliases { get; }
 
-    public bool IsMovable => AllowsWrite && !AllowsWriteAliases;
+    public bool AllowsMovable => AllowsWrite && !AllowsWriteAliases;
 
+    /// <summary>
+    /// Does this capability allow a reference with it to be recovered to isolated if reference
+    /// sharing permits.
+    /// </summary>
+    public bool AllowsRecoverIsolation => AllowsRead && AllowsReadAliases;
+
+    /// <summary>
+    /// Does this capability allow a reference with it to be frozen to const if reference
+    /// sharing permits.
+    /// </summary>
+    public bool AllowsFreeze => AllowsRead;
 
     private ReferenceCapability(
         string name,
@@ -85,12 +96,6 @@ public sealed class ReferenceCapability
         return true;
     }
 
-    public ReferenceCapability ToMutable()
-    {
-        if (!AllowsWrite) throw new InvalidOperationException($"Can't convert '{ToILString()}' to mutable because it does not allow write.");
-        return Mutable;
-    }
-
     /// <summary>
     /// This capability with any write ability removed.
     /// </summary>
@@ -102,9 +107,6 @@ public sealed class ReferenceCapability
         // It is either `iso` or `mut` either way, convert to `readonly`
         return ReadOnly;
     }
-
-    // TODO this should be can be moved?
-    public bool CanBeAcquired() => !AllowsWriteAliases;
 
     [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member

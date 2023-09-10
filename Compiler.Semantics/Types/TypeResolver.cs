@@ -50,9 +50,9 @@ public class TypeResolver
                         var type = symbol switch
                         {
                             PrimitiveTypeSymbol sym => sym.DeclaresType,
-                            ObjectTypeSymbol sym => implicitRead
+                            ObjectTypeSymbol sym => implicitRead || sym.DeclaresType.IsConst
                                 ? sym.DeclaresType.WithRead()
-                                : sym.DeclaresType.With(ReferenceCapability.Mutable),
+                                : sym.DeclaresType.WithMutate(),
                             _ => throw ExhaustiveMatch.Failed(symbol)
                         };
                         typeName.NamedType = type;
@@ -69,6 +69,9 @@ public class TypeResolver
             {
                 var capability = referenceCapability.Capability.Declared.ToReferenceCapability();
                 var type = Evaluate(referenceCapability.ReferentType, capability);
+                if (capability.AllowsWrite && type is ObjectType { IsConst: true } objectType)
+                    diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(file, referenceCapability, capability,
+                        objectType.BareType));
                 return referenceCapability.NamedType = type;
             }
             case IOptionalTypeSyntax optionalType:
@@ -122,6 +125,8 @@ public class TypeResolver
                         // If capability not provided, then this is for a constructor or something
                         // and reading the value doesn't matter, it exists to name the type.
                         capability ??= ReferenceCapability.Identity;
+                        // Compatibility of the capability with the type is not checked here. That
+                        // is done on the capability
                         typeName.NamedType = bareType.With(capability);
                         return bareType;
 

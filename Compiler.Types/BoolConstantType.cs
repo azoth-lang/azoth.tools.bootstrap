@@ -8,7 +8,7 @@ public sealed class BoolConstantType : BoolType
     internal new static readonly BoolConstantType True = new(true);
     internal new static readonly BoolConstantType False = new(false);
 
-    public override bool IsConstant => true;
+    public override bool IsTypeOfConstant => true;
 
     public bool Value { get; }
 

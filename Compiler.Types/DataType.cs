@@ -50,7 +50,7 @@ public abstract class DataType : IEquatable<DataType>
     /// <summary>
     /// Whether this is a type for constants like the integer constant type.
     /// </summary>
-    public virtual bool IsConstant => false;
+    public virtual bool IsTypeOfConstant => false;
 
     /// <summary>
     /// A known type is one that has no unknown parts.
