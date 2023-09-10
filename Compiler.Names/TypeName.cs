@@ -18,6 +18,7 @@ public abstract class TypeName : IEquatable<TypeName>
         Text = text;
     }
 
+    #region Equals
     public abstract bool Equals(TypeName? other);
 
     public override bool Equals(object? other)
@@ -32,6 +33,7 @@ public abstract class TypeName : IEquatable<TypeName>
     public static bool operator ==(TypeName? left, TypeName? right) => Equals(left, right);
 
     public static bool operator !=(TypeName? left, TypeName? right) => !Equals(left, right);
+    #endregion
 
     public abstract override string ToString();
 

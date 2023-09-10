@@ -70,7 +70,7 @@ public static class Intrinsic
 
     private static void BuildRawBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
     {
-        var type = new BareObjectType(@namespace.NamespaceName, "Raw_Bounded_List", false);
+        var type = BareObjectType.Create(@namespace.NamespaceName, "Raw_Bounded_List", false, "T");
         var classSymbol = new ObjectTypeSymbol(@namespace, type);
         tree.Add(classSymbol);
 

@@ -14,6 +14,7 @@ public sealed partial class Name : TypeName
     public Name(string text)
         : base(text) { }
 
+    #region Equals
     public override bool Equals(TypeName? other)
     {
         if (other is null) return false;
@@ -24,6 +25,7 @@ public sealed partial class Name : TypeName
 
     public override int GetHashCode()
         => HashCode.Combine(typeof(Name), Text);
+    #endregion
 
     public override string ToString()
     {

@@ -146,7 +146,7 @@ public class EntitySymbolBuilder
     {
         if (!@class.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
-        var classType = new BareObjectType(@class.ContainingNamespaceName, @class.Name, @class.IsConst);
+        var classType = BareObjectType.Create(@class.ContainingNamespaceName, @class.Name, @class.IsConst);
 
         var symbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(symbol);

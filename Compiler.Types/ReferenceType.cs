@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -28,6 +29,8 @@ public abstract class ReferenceType : DataType
     public bool AllowsFreeze => Capability.AllowsFreeze;
 
     public BareReferenceType BareType { get; }
+
+    public virtual TypeName Name => BareType.Name;
 
     public override TypeSemantics Semantics => TypeSemantics.Reference;
 

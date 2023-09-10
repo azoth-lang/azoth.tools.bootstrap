@@ -21,7 +21,7 @@ public sealed class ObjectType : ReferenceType
     public new BareObjectType BareType => (BareObjectType)base.BareType;
     // TODO this needs a containing package
     public NamespaceName ContainingNamespace => BareType.ContainingNamespace;
-    public TypeName Name => BareType.Name;
+    public override Name Name => BareType.Name;
     public override bool IsKnown { [DebuggerStepThrough] get => true; }
 
     /// <summary>
@@ -35,10 +35,10 @@ public sealed class ObjectType : ReferenceType
     /// </summary>
     public static ObjectType Create(
             NamespaceName containingNamespace,
-            TypeName name,
+            Name name,
             bool isConst,
             ReferenceCapability capability)
-        => new(new BareObjectType(containingNamespace, name, isConst), capability);
+        => new(BareObjectType.Create(containingNamespace, name, isConst), capability);
 
     /// <summary>
     /// Create a object type for a given class or trait.
@@ -63,7 +63,7 @@ public sealed class ObjectType : ReferenceType
             builder.Append(Capability.ToSourceString());
             builder.Append(' ');
         }
-        BareType.ToString(builder);
+        AppendName(builder);
         return builder.ToString();
     }
 
@@ -72,8 +72,15 @@ public sealed class ObjectType : ReferenceType
         var builder = new StringBuilder();
         builder.Append(Capability.ToILString());
         builder.Append(' ');
-        BareType.ToString(builder);
+        AppendName(builder);
         return builder.ToString();
+    }
+
+    private void AppendName(StringBuilder builder)
+    {
+        builder.Append(ContainingNamespace);
+        if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
+        builder.Append(Name);
     }
 
     #region Equality

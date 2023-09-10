@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -11,6 +12,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(BareAnyType))]
 public abstract class BareReferenceType : IEquatable<BareReferenceType>
 {
+    public abstract TypeName Name { get; }
+
     public abstract ReferenceType With(ReferenceCapability capability);
 
 

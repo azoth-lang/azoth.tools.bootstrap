@@ -1,27 +1,51 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public sealed class BareObjectType : BareReferenceType
 {
-    public BareObjectType(NamespaceName containingNamespace, TypeName name, bool isConst)
+    public static BareObjectType Create(NamespaceName containingNamespace, Name name, bool isConst)
+        => new(containingNamespace, name, isConst, FixedList<Name>.Empty);
+
+    public static BareObjectType Create(
+        NamespaceName containingNamespace,
+        Name name,
+        bool isConst,
+        FixedList<Name> genericParameters)
+        => new(containingNamespace, name, isConst, genericParameters);
+
+    public static BareObjectType Create(
+        NamespaceName containingNamespace,
+        Name name,
+        bool isConst,
+        params Name[] genericParameters) =>
+        new(containingNamespace, name, isConst, FixedList.Create(genericParameters));
+
+    private BareObjectType(NamespaceName containingNamespace, Name name, bool isConst, FixedList<Name> genericParameters)
     {
         ContainingNamespace = containingNamespace;
         Name = name;
         IsConst = isConst;
+        GenericParameters = genericParameters;
     }
 
     // TODO this needs a containing package
     public NamespaceName ContainingNamespace { get; }
-    public TypeName Name { get; }
+
+    public override Name Name { get; }
+
     /// <summary>
     /// Whether this type was declared `const` meaning that most references should be treated as
     /// const.
     /// </summary>
     public bool IsConst { get; }
+
+    public FixedList<Name> GenericParameters { get; }
 
     /// <summary>
     /// Make a version of this type for use as the constructor parameter. One issue is
@@ -102,5 +126,10 @@ public sealed class BareObjectType : BareReferenceType
         builder.Append(ContainingNamespace);
         if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
         builder.Append(Name);
+        if (!GenericParameters.Any()) return;
+
+        builder.Append('[');
+        builder.AppendJoin(", ", GenericParameters);
+        builder.Append(']');
     }
 }
