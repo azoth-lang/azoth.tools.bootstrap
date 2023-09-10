@@ -19,7 +19,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
             containingSymbol.DeclaresType.ToDefaultConstructorReturn())
     {
         ContainingSymbol = containingSymbol;
-        ReturnDataType = containingSymbol.DeclaresType.ToDefaultConstructorReturn();
+        ReturnDataType = containingSymbol.DeclaresType.ToConstructorReturn(parameterDataTypes);
     }
 
     public static ConstructorSymbol CreateDefault(ObjectTypeSymbol containingSymbol)

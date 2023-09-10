@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
@@ -37,6 +38,25 @@ public sealed class BareObjectType : BareReferenceType
     /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
     public ObjectType ToDefaultConstructorReturn()
         => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.Isolated);
+
+    public ObjectType ToConstructorReturn(IEnumerable<DataType> parameterTypes)
+    {
+        if (IsConst) return With(ReferenceCapability.Constant);
+        foreach (var parameterType in parameterTypes)
+            switch (parameterType)
+            {
+                case ReferenceType { IsConstReference: true }:
+                case OptionalType { Referent: ReferenceType { IsConstReference: true } }:
+                case SimpleType:
+                case EmptyType:
+                case UnknownType:
+                    continue;
+                default:
+                    return With(ReferenceCapability.Mutable);
+            }
+
+        return With(ReferenceCapability.Isolated);
+    }
 
     public override ObjectType With(ReferenceCapability capability)
         => ObjectType.Create(this, capability);

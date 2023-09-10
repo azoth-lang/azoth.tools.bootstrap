@@ -94,6 +94,7 @@ public class EntitySymbolBuilder
         var selfParameterType = ResolveConstructorSelfParameterType(constructor.ImplicitSelfParameter, constructor.DeclaringClass);
         var resolver = new TypeResolver(constructor.File, diagnostics);
         var parameterTypes = ResolveParameterTypes(resolver, constructor.Parameters, constructor.DeclaringClass);
+
         var declaringClassSymbol = constructor.DeclaringClass.Symbol.Result;
         var symbol = new ConstructorSymbol(declaringClassSymbol, constructor.Name, parameterTypes);
         constructor.Symbol.Fulfill(symbol);
