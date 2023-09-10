@@ -674,7 +674,7 @@ public class BasicBodyAnalyzer
                 // TODO handle null typesymbol
                 var typeSymbol = exp.Type.ReferencedSymbol.Result ?? throw new InvalidOperationException();
                 DataType constructedType;
-                var constructorSymbols = symbolTreeBuilder.Children(typeSymbol).OfType<ConstructorSymbol>().ToFixedSet();
+                var constructorSymbols = symbolTrees.Children(typeSymbol).OfType<ConstructorSymbol>().ToFixedSet();
                 constructorSymbols = SelectOverload(constructorSymbols, argumentTypes);
                 switch (constructorSymbols.Count)
                 {
@@ -778,8 +778,8 @@ public class BasicBodyAnalyzer
                     return exp.DataType = DataType.Unknown;
                 }
                 // TODO Deal with no context symbol
-                var memberSymbols = symbolTreeBuilder.Children(contextSymbol)
-                                                     .Where(s => s.Name == member.Name).ToFixedList();
+                var memberSymbols = symbolTrees.Children(contextSymbol)
+                                               .Where(s => s.Name == member.Name).ToFixedList();
                 var type = InferReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
                 var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 member.Semantics = semantics;
@@ -856,8 +856,8 @@ public class BasicBodyAnalyzer
                         var contextSymbol = LookupSymbolForType(contextType)
                             ?? throw new NotImplementedException(
                                 $"Missing context symbol for type {contextType.ToILString()}.");
-                        var memberSymbols = symbolTreeBuilder.Children(contextSymbol).OfType<FieldSymbol>()
-                                                             .Where(s => s.Name == member.Name).ToFixedList<Symbol>();
+                        var memberSymbols = symbolTrees.Children(contextSymbol).OfType<FieldSymbol>()
+                                                       .Where(s => s.Name == member.Name).ToFixedList<Symbol>();
                         type = InferReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
                         break;
                 }
