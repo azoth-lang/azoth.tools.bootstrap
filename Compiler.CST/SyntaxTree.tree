@@ -41,7 +41,7 @@ NamespaceDeclaration: NonMemberDeclaration = IsGlobalQualified:'bool' DeclaredNa
 
 // ---------- Non-Member Entity Declarations
 NonMemberEntityDeclaration: EntityDeclaration, NonMemberDeclaration = Name:'Name';
-ClassDeclaration: NonMemberEntityDeclaration = CapabilityModifier:'IClassCapabilityToken'? Name:'Name' Symbol:'AcyclicPromise<ObjectTypeSymbol>' Members:MemberDeclaration* DefaultConstructorSymbol:'ConstructorSymbol'?;
+ClassDeclaration: NonMemberEntityDeclaration = ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'Name' Symbol:'AcyclicPromise<ObjectTypeSymbol>' Members:MemberDeclaration* DefaultConstructorSymbol:'ConstructorSymbol'?;
 FunctionDeclaration: NonMemberEntityDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* ReturnType:Type? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
 // ---------- Member Declarations

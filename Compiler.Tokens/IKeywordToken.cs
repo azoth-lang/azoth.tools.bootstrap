@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
 [Closed(
     typeof(IMemberNameToken),
     typeof(IBindingToken),
-    typeof(IModiferToken),
+    typeof(IModifierToken),
     typeof(IAccessModifierToken),
     typeof(ITypeKindKeywordToken),
     typeof(IBooleanLiteralToken),

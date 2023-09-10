@@ -30,7 +30,10 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
     }
 
     public IAccessModifierToken? AccessModifier { get; }
-    public IClassCapabilityToken? CapabilityModifier { get; }
+    public IConstKeywordToken? ConstModifier { get; }
+    public bool IsConst { get; }
+    public IMoveKeywordToken? MoveModifier { get; }
+    public bool IsMove { get; }
     public new Name Name { get; }
     public new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
     public FixedList<IMemberDeclarationSyntax> Members { get; }
@@ -41,7 +44,8 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
         TextSpan headerSpan,
         CodeFile file,
         IAccessModifierToken? accessModifier,
-        IClassCapabilityToken? capabilityModifier,
+        IConstKeywordToken? constModifier,
+        IMoveKeywordToken? moveModifier,
         TextSpan nameSpan,
         Name name,
         Func<IClassDeclarationSyntax, (FixedList<IMemberDeclarationSyntax>, TextSpan)> parseMembers)
@@ -49,7 +53,10 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
     {
         ContainingNamespaceName = containingNamespaceName;
         AccessModifier = accessModifier;
-        CapabilityModifier = capabilityModifier;
+        ConstModifier = constModifier;
+        IsConst = ConstModifier is not null;
+        MoveModifier = moveModifier;
+        IsMove = MoveModifier is not null;
         Name = name;
         var (members, bodySpan) = parseMembers(this);
         Members = members;
@@ -76,7 +83,11 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
 
     public override string ToString()
     {
-        var capability = CapabilityModifier is null ? "" : CapabilityModifier + " ";
-        return $"{capability}class {Name} {{ … }}";
+        var modifiers = "";
+        var accessModifier = AccessModifier.ToAccessModifier();
+        if (accessModifier != CST.AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
+        if (IsConst) modifiers += "const ";
+        if (IsMove) modifiers += "move ";
+        return $"{modifiers}class {Name} {{ … }}";
     }
 }

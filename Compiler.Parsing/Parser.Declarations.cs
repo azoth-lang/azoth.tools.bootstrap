@@ -75,7 +75,7 @@ public partial class Parser
         Justification = "LastOrDefault() doesn't have a simple equivalent")]
     private ModifierParser ParseModifiers()
     {
-        var modifiers = AcceptMany(Tokens.AcceptToken<IModiferToken>);
+        var modifiers = AcceptMany(Tokens.AcceptToken<IModifierToken>);
         var endOfModifiers = TokenFactory.EndOfFile(modifiers.LastOrDefault()?.Span.AtEnd() ?? Tokens.Current.Span.AtStart());
         var modifierTokens = new TokenIterator<IEssentialToken>(Tokens.Context, modifiers.Append<IEssentialToken>(endOfModifiers));
         return new ModifierParser(modifierTokens);
@@ -165,7 +165,8 @@ public partial class Parser
         ModifierParser modifiers)
     {
         var accessModifier = modifiers.ParseAccessModifier();
-        var classCapability = modifiers.ParseClassCapability();
+        var constModifier = modifiers.ParseConstModifier();
+        var moveModifier = modifiers.ParseMoveModifier();
         modifiers.ParseEndOfModifiers();
         var @class = Tokens.Expect<IClassKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
@@ -173,7 +174,7 @@ public partial class Parser
         var headerSpan = TextSpan.Covering(@class, identifier.Span);
         var bodyParser = BodyParser();
         return new ClassDeclarationSyntax(ContainingNamespace, headerSpan, File, accessModifier,
-            classCapability, identifier.Span, name, bodyParser.ParseClassBody);
+            constModifier, moveModifier, identifier.Span, name, bodyParser.ParseClassBody);
     }
 
     private (FixedList<IMemberDeclarationSyntax> members, TextSpan span) ParseClassBody(IClassDeclarationSyntax declaringType)

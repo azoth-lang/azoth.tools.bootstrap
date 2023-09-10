@@ -152,7 +152,10 @@ public partial interface INonMemberEntityDeclarationSyntax : IEntityDeclarationS
 
 public partial interface IClassDeclarationSyntax : INonMemberEntityDeclarationSyntax
 {
-    IClassCapabilityToken? CapabilityModifier { get; }
+    IConstKeywordToken? ConstModifier { get; }
+    bool IsConst { get; }
+    IMoveKeywordToken? MoveModifier { get; }
+    bool IsMove { get; }
     new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
     FixedList<IMemberDeclarationSyntax> Members { get; }
     ConstructorSymbol? DefaultConstructorSymbol { get; }

@@ -1,4 +1,4 @@
-published mut class TestOutput
+published class TestOutput
 {
     published fn write(mut self, value: string)
     {
