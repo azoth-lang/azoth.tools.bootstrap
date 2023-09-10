@@ -13,20 +13,13 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Lexing.Helpers;
 
 public static class Arbitrary
 {
-    public static Arbitrary<PsuedoToken> PsuedoToken()
-    {
-        return Arb.From(GenPsuedoToken());
-    }
+    public static Arbitrary<PsuedoToken> PsuedoToken() => Arb.From(GenPsuedoToken());
 
     public static Arbitrary<List<PsuedoToken>> PsuedoTokenList()
-    {
-        return Arb.From(GenPsuedoTokenList(), Arb.Shrink);
-    }
+        => Arb.From(GenPsuedoTokenList(), Arb.Shrink);
 
     private static Gen<List<PsuedoToken>> GenPsuedoTokenList()
-    {
-        return Gen.Sized(size => GenPsuedoTokenList(size, size));
-    }
+        => Gen.Sized(size => GenPsuedoTokenList(size, size));
 
     private static Gen<List<PsuedoToken>> GenPsuedoTokenList(int size, int length)
     {
@@ -62,36 +55,28 @@ public static class Arbitrary
         {
             case ".":
             case "^":
-                return t2.Text == "." || t2.Text == ".." || t2.Text == "..<";
+                return t2.Text is "." or ".." or "..<";
             case "+":
             case ">":
-                return t2.Text == "=" || t2.Text == "==" || t2.Text == "=/=" || t2.Text == "=>";
+                return t2.Text is "=" or "==" or "=/=" or "=>";
             case "*":
-                return t2.Text == "=" || t2.Text == "==" || t2.Text == "=/=" || t2.Text == "=>"
-                       || t2.Text == "*=";
+                return t2.Text is "=" or "==" or "=/=" or "=>" or "*=";
             case "<":
-                return t2.Text == "=" || t2.Text == "==" || t2.Text == "=/=" || t2.Text == "=>"
-                       || t2.Text == ":" || t2.Text == "::."
-                       || t2.Text == ".." || t2.Text == "..<";
+                return t2.Text is "=" or "==" or "=/=" or "=>" or ":" or "::." or ".." or "..<";
             case "-":
-                return t2.Text == "=" || t2.Text == "==" || t2.Text == "=/=" || t2.Text == "=>"
-                       || t2.Text == ">" || t2.Text == ">=";
+                return t2.Text is "=" or "==" or "=/=" or "=>" or ">" or ">=";
             case "/":
-                return t2.Text == "=" || t2.Text == "==" || t2.Text == "=/=" || t2.Text == "=>"
-                       || t2.Text == "*" || t2.Text == "*="
-                       || t2.Text == "/" || t2.Text == "/="
+                return t2.Text is "=" or "==" or "=/=" or "=>" or "*" or "*=" or "/" or "/="
                        || t2.TokenType == typeof(ICommentToken);
             case "=":
-                return t2.Text == "=" || t2.Text == "==" || t2.Text == "=/=" || t2.Text == "=>" || t2.Text == "/="
-                       || t2.Text == ">" || t2.Text == ">=";
+                return t2.Text is "=" or "==" or "=/=" or "=>" or "/=" or ">" or ">=";
             case "?":
-                return t2.Text == "." || t2.Text == ".." || t2.Text == "..<"
-                       || t2.Text == "?" || t2.Text == "?." || t2.Text == "??";
+                return t2.Text is "." or ".." or "..<" or "?" or "?." or "??";
             case "..":
             case "<..":
-                return t2.Text == "<" || t2.Text == "<=" || t2.Text == "<:" || t2.Text == "<.." || t2.Text == "<..<";
+                return t2.Text is "<" or "<=" or "<:" or "<.." or "<..<";
             case "#":
-                return t2.Text == "#" || t2.Text == "##";
+                return t2.Text is "#" or "##";
             case ":":
                 // TODO actually ':',':' is fine. It is really the three token sequence ':',':','.' that is the problem
                 return t2.Text == ":";

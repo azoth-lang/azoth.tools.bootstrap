@@ -12,8 +12,8 @@
         "CloseBrace", // `}` U+007D
         "OpenParen", // `(` U+0028
         "CloseParen", // `)` U+0029
-        //"OpenBracket", // `[` U+005B
-        //"CloseBracket", // `]` U+005D
+        "OpenBracket", // `[` U+005B
+        "CloseBracket", // `]` U+005D
         "Semicolon", // `;` U+003B
         "Comma", // `",` U+002C
         //"Pipe", // `|` U+007C

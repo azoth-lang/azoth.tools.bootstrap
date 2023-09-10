@@ -270,8 +270,6 @@ public class LexerTests
 
     [Theory]
     // Not implemented
-    [InlineData("[")]
-    [InlineData("]")]
     [InlineData("#")]
     [InlineData("#(")]
     [InlineData("#[")]

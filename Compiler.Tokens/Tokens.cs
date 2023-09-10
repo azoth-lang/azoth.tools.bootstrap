@@ -20,6 +20,12 @@ public static partial class TokenFactory
     public static ICloseParenToken CloseParen(TextSpan span)
         => new CloseParenToken(span);
 
+    public static IOpenBracketToken OpenBracket(TextSpan span)
+        => new OpenBracketToken(span);
+
+    public static ICloseBracketToken CloseBracket(TextSpan span)
+        => new CloseBracketToken(span);
+
     public static ISemicolonToken Semicolon(TextSpan span)
         => new SemicolonToken(span);
 
@@ -118,6 +124,8 @@ public static partial class TokenFactory
     typeof(ICloseBraceToken),
     typeof(IOpenParenToken),
     typeof(ICloseParenToken),
+    typeof(IOpenBracketToken),
+    typeof(ICloseBracketToken),
     typeof(ISemicolonToken),
     typeof(ICommaToken),
     typeof(IColonToken),
@@ -191,6 +199,24 @@ public partial interface ICloseParenToken : IEssentialToken { }
 internal partial class CloseParenToken : Token, ICloseParenToken
 {
     public CloseParenToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IOpenBracketToken : IEssentialToken { }
+internal partial class OpenBracketToken : Token, IOpenBracketToken
+{
+    public OpenBracketToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface ICloseBracketToken : IEssentialToken { }
+internal partial class CloseBracketToken : Token, ICloseBracketToken
+{
+    public CloseBracketToken(TextSpan span)
         : base(span)
     {
     }

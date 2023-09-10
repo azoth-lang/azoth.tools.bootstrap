@@ -41,7 +41,11 @@ public class Lexer
                     yield return TokenFactory.CloseParen(SymbolSpan());
                     break;
                 case '[':
+                    yield return TokenFactory.OpenBracket(SymbolSpan());
+                    break;
                 case ']':
+                    yield return TokenFactory.CloseBracket(SymbolSpan());
+                    break;
                 case '|':
                 case '&':
                 case '@':
