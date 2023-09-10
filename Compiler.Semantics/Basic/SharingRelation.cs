@@ -122,6 +122,11 @@ public class SharingRelation
     public bool IsIsolated(SharingVariable variable)
         => subsetFor.TryGetValue(variable, out var set) && set.Count == 1;
 
+    public bool IsIsolatedExceptResult(SharingVariable variable)
+        => subsetFor.TryGetValue(variable, out var set)
+           && set.Count <= 2
+           && set.Except(SharingVariable.Result).Count() == 1;
+
     public SharingRelationSnapshot Snapshot() => new(sets);
 
     public override string ToString()

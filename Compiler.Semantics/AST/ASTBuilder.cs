@@ -263,6 +263,7 @@ internal class ASTBuilder
             OptionalConversion _ => BuildImplicitOptionalConversionExpression(expression, expressionSyntax),
             RecoverIsolation _ => BuildRecoverIsolationExpression(expression, expressionSyntax),
             RecoverConst _ => BuildRecoverConstExpression(expression, expressionSyntax),
+            ImplicitMove _ => BuildImplicitMoveExpression(expression, expressionSyntax),
             IdentityConversion _ => expression,
             _ => throw ExhaustiveMatch.Failed(expressionSyntax.ImplicitConversion)
         };
@@ -483,6 +484,15 @@ internal class ASTBuilder
         var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
         var referent = BuildExpression(syn.Referent);
         return new MoveExpression(syn.Span, type, semantics, referencedSymbol, referent);
+    }
+
+    private static IMoveExpression BuildImplicitMoveExpression(IExpression exp, IExpressionSyntax expressionSyntax)
+    {
+        var type = exp.DataType ?? throw new InvalidOperationException();
+        var semantics = expressionSyntax.ConvertedSemantics!.Value;
+        var convertToType = (ReferenceType)expressionSyntax.ConvertedDataType!;
+        var referencedSymbol = ((INameExpression)exp).ReferencedSymbol;
+        return new MoveExpression(exp.Span, convertToType, semantics, referencedSymbol, exp);
     }
 
     private static INameExpression BuildNameExpression(ISimpleNameExpressionSyntax syn)

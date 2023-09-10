@@ -313,7 +313,7 @@ public class BasicBodyAnalyzer
             {
                 // Try to recover const
                 // TODO all upcasting at the same time
-                if (!to.DeclaredTypesEquals(from) // Underlying types must match
+                if (!to.BareTypeEquals(from) // Underlying types must match
                     || !sharing.IsIsolated(SharingVariable.Result))
                     return null;
 
@@ -322,7 +322,7 @@ public class BasicBodyAnalyzer
             case (ObjectType { IsIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from):
             {
                 // Try to recover isolation
-                if (!to.DeclaredTypesEquals(from) // Underlying types must match
+                if (!to.BareTypeEquals(from) // Underlying types must match
                     || !sharing.IsIsolated(SharingVariable.Result))
                     return null;
 
@@ -949,10 +949,8 @@ public class BasicBodyAnalyzer
                 invocation.ReferencedSymbol.Fulfill(methodSymbol);
 
                 var selfParamType = methodSymbol.SelfDataType;
-                // TODO handle mutable self parameters
-                //InsertImplicitActionIfNeeded(context, selfParamType, allowImplicitMutateAndMove: true);
-
                 AddImplicitConversionIfNeeded(context, selfParamType, sharing, capabilities);
+                AddImplicitMoveIfNeeded(context, selfParamType, sharing, capabilities);
                 CheckTypeCompatibility(selfParamType, context);
 
                 foreach (var (arg, type) in invocation.Arguments
@@ -985,6 +983,28 @@ public class BasicBodyAnalyzer
         }
 
         return invocation.ConvertedDataType.Assigned();
+    }
+
+    private static void AddImplicitMoveIfNeeded(
+        IExpressionSyntax context,
+        DataType selfParamType,
+        SharingRelation sharing,
+        ReferenceCapabilities capabilities)
+    {
+        if (selfParamType is not ReferenceType { IsIsolatedReference: true } toType
+            || context.DataType is not ReferenceType { AllowsRecoverIsolation: true } fromType)
+            return;
+
+        // TODO allow upcasting
+        if (!toType.BareTypeEquals(fromType))
+            return;
+
+        if (context is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
+            || !sharing.IsIsolatedExceptResult(symbol))
+            return;
+
+        context.AddConversion(new ImplicitMove(context.ImplicitConversion));
+        capabilities.Move(symbol);
     }
 
     private DataType InferFunctionInvocationType(

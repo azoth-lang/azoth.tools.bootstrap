@@ -13,5 +13,11 @@ public sealed class BareAnyType : BareReferenceType
     public override ReferenceType With(ReferenceCapability capability)
         => new AnyType(capability);
 
+    #region Equals
+    public override bool Equals(BareReferenceType? other) => ReferenceEquals(this, other);
+
+    public override int GetHashCode() => SpecialTypeName.Any.GetHashCode();
+    #endregion
+
     public override string ToString() => SpecialTypeName.Any.ToString();
 }

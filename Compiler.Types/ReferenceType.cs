@@ -15,7 +15,6 @@ public abstract class ReferenceType : DataType
     public bool IsIdentityReference => Capability == ReferenceCapability.Identity;
 
     public bool AllowsWrite => Capability.AllowsWrite;
-    public bool AllowsMove => Capability.AllowsMovable;
 
     /// <summary>
     /// Does this reference allow it to be recovered to isolated if reference sharing permits.
@@ -51,4 +50,12 @@ public abstract class ReferenceType : DataType
     /// Return the same type except with the given reference capability
     /// </summary>
     public abstract ReferenceType To(ReferenceCapability referenceCapability);
+
+    public bool BareTypeEquals(DataType? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is ObjectType otherType
+            && BareType == otherType.BareType;
+    }
 }

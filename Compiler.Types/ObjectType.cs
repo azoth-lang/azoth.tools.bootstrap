@@ -76,15 +76,6 @@ public sealed class ObjectType : ReferenceType
         return builder.ToString();
     }
 
-    public bool DeclaredTypesEquals(DataType? other)
-    {
-        if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-        return other is ObjectType otherType
-               && ContainingNamespace == otherType.ContainingNamespace
-               && Name == otherType.Name;
-    }
-
     #region Equality
     public override bool Equals(DataType? other)
     {

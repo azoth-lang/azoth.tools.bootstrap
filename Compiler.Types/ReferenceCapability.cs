@@ -57,8 +57,6 @@ public sealed class ReferenceCapability
     // TODO merge with AllowsWriteAliases to just AllowsAliases?
     public bool AllowsReadAliases { get; }
 
-    public bool AllowsMovable => AllowsWrite && !AllowsWriteAliases;
-
     /// <summary>
     /// Does this capability allow a reference with it to be recovered to isolated if reference
     /// sharing permits.

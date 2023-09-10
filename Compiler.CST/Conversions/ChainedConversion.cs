@@ -11,7 +11,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
     typeof(OptionalConversion),
     typeof(NumericConversion),
     typeof(LiftedConversion),
-    typeof(RecoverConversion))]
+    typeof(RecoverConversion),
+    typeof(ImplicitMove))]
 public abstract class ChainedConversion : Conversion
 {
     public Conversion PriorConversion { [DebuggerStepThrough] get; }

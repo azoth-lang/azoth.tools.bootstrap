@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -60,6 +61,20 @@ public sealed class BareObjectType : BareReferenceType
 
     public override ObjectType With(ReferenceCapability capability)
         => ObjectType.Create(this, capability);
+
+    #region Equals
+    public override bool Equals(BareReferenceType? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is BareObjectType objectType
+            && ContainingNamespace == objectType.ContainingNamespace
+            && Name == objectType.Name
+            && IsConst == objectType.IsConst;
+    }
+
+    public override int GetHashCode() => HashCode.Combine(ContainingNamespace, Name, IsConst);
+    #endregion
 
     /// <summary>
     /// Make a version of this type that is the default read reference capability for the type. That
