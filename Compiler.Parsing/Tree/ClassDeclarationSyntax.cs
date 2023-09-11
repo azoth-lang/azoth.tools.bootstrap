@@ -35,6 +35,7 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
     public IMoveKeywordToken? MoveModifier { get; }
     public bool IsMove { get; }
     public new Name Name { get; }
+    public FixedList<IGenericParameterSyntax> GenericParameters { get; }
     public new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
     public FixedList<IMemberDeclarationSyntax> Members { get; }
     public ConstructorSymbol? DefaultConstructorSymbol { get; private set; }
@@ -48,6 +49,7 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
         IMoveKeywordToken? moveModifier,
         TextSpan nameSpan,
         Name name,
+        FixedList<IGenericParameterSyntax> genericParameters,
         Func<IClassDeclarationSyntax, (FixedList<IMemberDeclarationSyntax>, TextSpan)> parseMembers)
         : base(headerSpan, file, name, nameSpan, new AcyclicPromise<ObjectTypeSymbol>())
     {
@@ -58,6 +60,7 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
         MoveModifier = moveModifier;
         IsMove = MoveModifier is not null;
         Name = name;
+        GenericParameters = genericParameters;
         var (members, bodySpan) = parseMembers(this);
         Members = members;
         Span = TextSpan.Covering(headerSpan, bodySpan);

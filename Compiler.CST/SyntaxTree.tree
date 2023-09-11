@@ -41,7 +41,7 @@ NamespaceDeclaration: NonMemberDeclaration = IsGlobalQualified:'bool' DeclaredNa
 
 // ---------- Non-Member Entity Declarations
 NonMemberEntityDeclaration: EntityDeclaration, NonMemberDeclaration = Name:'Name';
-ClassDeclaration: NonMemberEntityDeclaration = ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'Name' Symbol:'AcyclicPromise<ObjectTypeSymbol>' Members:MemberDeclaration* DefaultConstructorSymbol:'ConstructorSymbol'?;
+ClassDeclaration: NonMemberEntityDeclaration = ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'Name' GenericParameters:GenericParameter* Symbol:'AcyclicPromise<ObjectTypeSymbol>' Members:MemberDeclaration* DefaultConstructorSymbol:'ConstructorSymbol'?;
 FunctionDeclaration: NonMemberEntityDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* ReturnType:Type? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
 // ---------- Member Declarations
@@ -53,6 +53,9 @@ ConcreteMethodDeclaration: MethodDeclaration, ConcreteInvocableDeclaration = Sel
 ConstructorDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = ImplicitSelfParameter:SelfParameter Parameters:ConstructorParameter* Body Symbol:'AcyclicPromise<ConstructorSymbol>';
 FieldDeclaration: MemberDeclaration, Binding = Name:'Name' Type Symbol:'AcyclicPromise<FieldSymbol>' Initializer:Expression?;
 AssociatedFunctionDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* ReturnType:Type? Body Symbol:'AcyclicPromise<FunctionSymbol>';
+
+// ---------- Type Parameters --------------
+GenericParameter = Name:'Name';
 
 // ---------- Parameters --------------
 Parameter = Name:'Name'? DataType:'IPromise<DataType>' Unused:'bool';

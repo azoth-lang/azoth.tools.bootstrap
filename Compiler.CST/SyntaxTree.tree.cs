@@ -19,6 +19,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(IElseClauseSyntax),
     typeof(IBindingSyntax),
     typeof(IDeclarationSyntax),
+    typeof(IGenericParameterSyntax),
     typeof(IParameterSyntax),
     typeof(ITypeSyntax),
     typeof(IReferenceCapabilitySyntax),
@@ -156,6 +157,7 @@ public partial interface IClassDeclarationSyntax : INonMemberEntityDeclarationSy
     bool IsConst { get; }
     IMoveKeywordToken? MoveModifier { get; }
     bool IsMove { get; }
+    FixedList<IGenericParameterSyntax> GenericParameters { get; }
     new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
     FixedList<IMemberDeclarationSyntax> Members { get; }
     ConstructorSymbol? DefaultConstructorSymbol { get; }
@@ -220,6 +222,11 @@ public partial interface IAssociatedFunctionDeclarationSyntax : IMemberDeclarati
     new FixedList<INamedParameterSyntax> Parameters { get; }
     ITypeSyntax? ReturnType { get; }
     new AcyclicPromise<FunctionSymbol> Symbol { get; }
+}
+
+public partial interface IGenericParameterSyntax : ISyntax
+{
+    Name Name { get; }
 }
 
 [Closed(

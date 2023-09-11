@@ -174,7 +174,8 @@ public partial class Parser
         var headerSpan = TextSpan.Covering(@class, identifier.Span);
         var bodyParser = BodyParser();
         return new ClassDeclarationSyntax(ContainingNamespace, headerSpan, File, accessModifier,
-            constModifier, moveModifier, identifier.Span, name, bodyParser.ParseClassBody);
+            constModifier, moveModifier, identifier.Span, name,
+            FixedList<IGenericParameterSyntax>.Empty, bodyParser.ParseClassBody);
     }
 
     private (FixedList<IMemberDeclarationSyntax> members, TextSpan span) ParseClassBody(IClassDeclarationSyntax declaringType)

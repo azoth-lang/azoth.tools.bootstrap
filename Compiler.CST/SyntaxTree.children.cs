@@ -30,6 +30,8 @@ public static class ISyntaxExtensions
                     yield return child;
                 yield break;
             case IClassDeclarationSyntax n:
+                foreach (var child in n.GenericParameters)
+                    yield return child;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
@@ -72,6 +74,8 @@ public static class ISyntaxExtensions
                 if (n.ReturnType is not null)
                     yield return n.ReturnType;
                 yield return n.Body;
+                yield break;
+            case IGenericParameterSyntax n:
                 yield break;
             case INamedParameterSyntax n:
                 yield return n.Type;
