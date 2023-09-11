@@ -15,18 +15,18 @@ public class SymbolForest
                                                                    .Concat(Packages.SelectMany(Children));
     public IEnumerable<Symbol> Symbols => packageTrees.Values.SelectMany(t => t.Symbols);
 
-    public SymbolForest(PrimitiveSymbolTree primitiveSymbolTree, SymbolTreeBuilder symbolTreeBuilder, IEnumerable<FixedSymbolTree> packageTrees)
+    public SymbolForest(PrimitiveSymbolTree primitiveSymbolTree, FixedSymbolTree intrinsicSymbolTree, SymbolTreeBuilder symbolTreeBuilder, IEnumerable<FixedSymbolTree> packageTrees)
     {
         if (symbolTreeBuilder.Package is null)
             throw new ArgumentException("Can't be builder for primitive symbols", nameof(symbolTreeBuilder));
         PrimitiveSymbolTree = primitiveSymbolTree;
-        this.packageTrees = packageTrees.Append<ISymbolTree>(symbolTreeBuilder).ToFixedDictionary(t => t.Package!);
+        this.packageTrees = packageTrees.Append<ISymbolTree>(symbolTreeBuilder).Append(intrinsicSymbolTree).ToFixedDictionary(t => t.Package!);
     }
 
-    public SymbolForest(PrimitiveSymbolTree primitiveSymbolTree, IEnumerable<FixedSymbolTree> packageTrees)
+    public SymbolForest(PrimitiveSymbolTree primitiveSymbolTree, FixedSymbolTree intrinsicSymbolTree, IEnumerable<FixedSymbolTree> packageTrees)
     {
         PrimitiveSymbolTree = primitiveSymbolTree;
-        this.packageTrees = packageTrees.ToFixedDictionary(t => t.Package!, t => (ISymbolTree)t);
+        this.packageTrees = packageTrees.Append(intrinsicSymbolTree).ToFixedDictionary(t => t.Package!, t => (ISymbolTree)t);
     }
 
     public IEnumerable<Symbol> Children(Symbol symbol)

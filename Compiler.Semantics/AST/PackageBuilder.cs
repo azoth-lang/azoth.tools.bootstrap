@@ -31,7 +31,7 @@ internal class PackageBuilder
         SymbolTree = symbolTree;
         Diagnostics = diagnostics;
         References = references;
-        SymbolTrees = new SymbolForest(Primitive.SymbolTree,
+        SymbolTrees = BuiltIn.CreateSymbolForest(
             ReferencedPackages.Select(p => p.SymbolTree).Append(SymbolTree));
     }
 

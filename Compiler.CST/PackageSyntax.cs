@@ -44,7 +44,7 @@ public class PackageSyntax<TReference>
         CompilationUnits = compilationUnits;
         AllEntityDeclarations = GetEntityDeclarations(CompilationUnits).ToFixedSet();
         References = references;
-        SymbolTrees = new SymbolForest(Primitive.SymbolTree, SymbolTree, ReferencedPackages.Select(p => p.SymbolTree));
+        SymbolTrees = BuiltIn.CreateSymbolForest(SymbolTree, ReferencedPackages.Select(p => p.SymbolTree));
         Diagnostics = new Diagnostics(CompilationUnits.SelectMany(cu => cu.Diagnostics));
     }
 
