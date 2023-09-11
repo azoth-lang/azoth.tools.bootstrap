@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -18,41 +19,47 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </remarks>
 public sealed class ObjectType : ReferenceType
 {
-    public new BareObjectType BareType => (BareObjectType)base.BareType;
+    public new DeclaredObjectType DeclaredType => (DeclaredObjectType)base.DeclaredType;
     // TODO this needs a containing package
-    public NamespaceName ContainingNamespace => BareType.ContainingNamespace;
-    public override Name Name => BareType.Name;
+    public NamespaceName ContainingNamespace => DeclaredType.ContainingNamespace;
+    public override Name Name => DeclaredType.Name;
+    public FixedList<DataType> TypeArguments { get; }
     public override bool IsKnown { [DebuggerStepThrough] get => true; }
 
     /// <summary>
     /// Whether this type was declared `const` meaning that most references should be treated as
     /// const.
     /// </summary>
-    public bool IsConst => BareType.IsConst;
+    public bool IsConst => DeclaredType.IsConst;
 
     /// <summary>
     /// Create a object type for a given class or trait.
     /// </summary>
     public static ObjectType Create(
-            NamespaceName containingNamespace,
-            Name name,
-            bool isConst,
-            ReferenceCapability capability)
-        => new(BareObjectType.Create(containingNamespace, name, isConst), capability);
+        ReferenceCapability capability,
+        NamespaceName containingNamespace,
+        Name name,
+        bool isConst)
+        => new(capability, DeclaredObjectType.Create(containingNamespace, name, isConst), FixedList<DataType>.Empty);
 
     /// <summary>
     /// Create a object type for a given class or trait.
     /// </summary>
     public static ObjectType Create(
-        BareObjectType bareType,
-        ReferenceCapability capability)
-        => new(bareType, capability);
+        ReferenceCapability capability,
+        DeclaredObjectType declaredType,
+        FixedList<DataType> typeArguments)
+        => new(capability, declaredType, typeArguments);
 
     private ObjectType(
-        BareObjectType bareType,
-        ReferenceCapability capability)
-        : base(capability, bareType)
+        ReferenceCapability capability,
+        DeclaredObjectType declaredType,
+        FixedList<DataType> typeArguments)
+        : base(capability, declaredType)
     {
+        if (declaredType.GenericParameters.Count != typeArguments.Count)
+            throw new ArgumentException($"Number of type arguments must match. Given `[{typeArguments.ToILString()}]` for `{declaredType}`.", nameof(typeArguments));
+        TypeArguments = typeArguments;
     }
 
     public override string ToSourceCodeString()
@@ -99,7 +106,7 @@ public sealed class ObjectType : ReferenceType
     #endregion
 
     public override ObjectType To(ReferenceCapability referenceCapability)
-        => new(BareType, referenceCapability);
+        => new(referenceCapability, DeclaredType, TypeArguments);
 
     /// <remarks>For constant types, there can still be read only references. For example, inside
     /// the constructor.</remarks>

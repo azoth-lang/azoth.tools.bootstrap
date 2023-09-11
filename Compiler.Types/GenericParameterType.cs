@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class GenericParameterType : DataType
 {
-    public GenericParameterType(BareObjectType declaringType, GenericParameter parameter)
+    public GenericParameterType(DeclaredObjectType declaringType, GenericParameter parameter)
     {
         if (!declaringType.GenericParameters.Contains(parameter))
             throw new ArgumentException("Must be declared with the type", nameof(parameter));
@@ -17,7 +17,7 @@ public sealed class GenericParameterType : DataType
         Parameter = parameter;
     }
 
-    public BareObjectType DeclaringType { get; }
+    public DeclaredObjectType DeclaringType { get; }
 
     public GenericParameter Parameter { get; }
     public override bool IsKnown => true;

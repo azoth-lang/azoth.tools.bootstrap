@@ -50,7 +50,7 @@ public class TypeResolver
                 var type = Evaluate(referenceCapability.ReferentType, capability);
                 if (capability.AllowsWrite && type is ObjectType { IsConst: true } objectType)
                     diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(file, referenceCapability, capability,
-                        objectType.BareType));
+                        objectType.DeclaredType));
                 return referenceCapability.NamedType = type;
             }
             case IOptionalTypeSyntax optionalType:
@@ -94,11 +94,11 @@ public class TypeResolver
         }
     }
 
-    public BareReferenceType? EvaluateBareType(ITypeNameSyntax typeName, ReferenceCapability? capability = null)
+    public DeclaredReferenceType? EvaluateBareType(ITypeNameSyntax typeName, ReferenceCapability? capability = null)
     {
         return ResolveType(typeName, AssignNamedType);
 
-        BareReferenceType? AssignNamedType(
+        DeclaredReferenceType? AssignNamedType(
             ITypeNameSyntax _,
             TypeSymbol symbol)
         {
@@ -148,6 +148,6 @@ public class TypeResolver
     }
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-    public ObjectType Evaluate(BareObjectType referenceType, IReferenceCapabilitySyntax capability)
+    public ObjectType Evaluate(DeclaredObjectType referenceType, IReferenceCapabilitySyntax capability)
         => referenceType.With(capability.Declared.ToReferenceCapability());
 }

@@ -28,16 +28,16 @@ public abstract class ReferenceType : DataType
     /// </summary>
     public bool AllowsFreeze => Capability.AllowsFreeze;
 
-    public BareReferenceType BareType { get; }
+    public DeclaredReferenceType DeclaredType { get; }
 
-    public virtual TypeName Name => BareType.Name;
+    public virtual TypeName Name => DeclaredType.Name;
 
     public override TypeSemantics Semantics => TypeSemantics.Reference;
 
-    private protected ReferenceType(ReferenceCapability capability, BareReferenceType bareType)
+    private protected ReferenceType(ReferenceCapability capability, DeclaredReferenceType declaredType)
     {
         Capability = capability;
-        BareType = bareType;
+        DeclaredType = declaredType;
     }
 
     public ReferenceType ToMutable()
@@ -59,6 +59,6 @@ public abstract class ReferenceType : DataType
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is ObjectType otherType
-            && BareType == otherType.BareType;
+            && DeclaredType == otherType.DeclaredType;
     }
 }

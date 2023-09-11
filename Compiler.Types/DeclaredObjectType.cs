@@ -7,26 +7,26 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-public sealed class BareObjectType : BareReferenceType
+public sealed class DeclaredObjectType : DeclaredReferenceType
 {
-    public static BareObjectType Create(NamespaceName containingNamespace, Name name, bool isConst)
+    public static DeclaredObjectType Create(NamespaceName containingNamespace, Name name, bool isConst)
         => new(containingNamespace, name, isConst, FixedList<GenericParameter>.Empty);
 
-    public static BareObjectType Create(
+    public static DeclaredObjectType Create(
         NamespaceName containingNamespace,
         Name name,
         bool isConst,
         FixedList<GenericParameter> genericParameters)
         => new(containingNamespace, name, isConst, genericParameters);
 
-    public static BareObjectType Create(
+    public static DeclaredObjectType Create(
         NamespaceName containingNamespace,
         Name name,
         bool isConst,
         params GenericParameter[] genericParameters) =>
         new(containingNamespace, name, isConst, FixedList.Create(genericParameters));
 
-    private BareObjectType(
+    private DeclaredObjectType(
         NamespaceName containingNamespace,
         Name name,
         bool isConst,
@@ -91,14 +91,14 @@ public sealed class BareObjectType : BareReferenceType
     }
 
     public override ObjectType With(ReferenceCapability capability)
-        => ObjectType.Create(this, capability);
+        => ObjectType.Create(capability, this, FixedList<DataType>.Empty);
 
     #region Equals
-    public override bool Equals(BareReferenceType? other)
+    public override bool Equals(DeclaredReferenceType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is BareObjectType objectType
+        return other is DeclaredObjectType objectType
             && ContainingNamespace == objectType.ContainingNamespace
             && Name == objectType.Name
             && IsConst == objectType.IsConst;

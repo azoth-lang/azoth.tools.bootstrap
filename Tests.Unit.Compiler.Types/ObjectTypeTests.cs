@@ -10,7 +10,7 @@ public class ObjectTypeTests
     [Fact]
     public void Has_reference_semantics()
     {
-        var type = ObjectType.Create("Foo", "Bar", false, Mutable);
+        var type = ObjectType.Create(Mutable, "Foo", "Bar", false);
 
         Assert.Equal(TypeSemantics.Reference, type.Semantics);
     }
@@ -18,7 +18,7 @@ public class ObjectTypeTests
     [Fact]
     public void Convert_to_non_constant_type_is_same_type()
     {
-        var type = ObjectType.Create("Foo", "Bar", false, Isolated);
+        var type = ObjectType.Create(Isolated, "Foo", "Bar", false);
 
         var nonConstant = type.ToNonConstantType();
 
@@ -28,8 +28,8 @@ public class ObjectTypeTests
     [Fact]
     public void With_same_name_and_reference_capability_are_equal()
     {
-        var type1 = ObjectType.Create("Foo", "Bar", false, Isolated);
-        var type2 = ObjectType.Create("Foo", "Bar", false, Isolated);
+        var type1 = ObjectType.Create(Isolated, "Foo", "Bar", false);
+        var type2 = ObjectType.Create(Isolated, "Foo", "Bar", false);
 
         Assert.Equal(type1, type2);
     }

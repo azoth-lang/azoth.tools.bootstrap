@@ -13,9 +13,7 @@ public abstract class LexicalScope
     internal abstract PackagesScope ContainingPackagesScope { get; }
 
     public virtual PackageSymbol? LookupPackage(Name name)
-    {
-        return ContainingPackagesScope.LookupPackage(name);
-    }
+        => ContainingPackagesScope.LookupPackage(name);
 
     public abstract IEnumerable<IPromise<Symbol>> LookupInGlobalScope(TypeName name);
 

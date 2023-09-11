@@ -90,20 +90,16 @@ public abstract class SymbolTestFixture
         ReferenceCapability? referenceCapability = null)
     {
         var finalName = Name(name) ?? DefaultName("DataType");
-        return ObjectType.Create(
-            containingNamespace ?? NamespaceName.Global,
-            finalName.Text,
-            isConst ?? false,
-            referenceCapability ?? ReferenceCapability.Constant);
+        return ObjectType.Create(referenceCapability ?? ReferenceCapability.Constant, containingNamespace ?? NamespaceName.Global, finalName.Text, isConst ?? false);
     }
 
     protected ObjectTypeSymbol Type(
         NamespaceOrPackageSymbol? ns = null,
-        BareObjectType? dataType = null)
+        DeclaredObjectType? dataType = null)
     {
         return new ObjectTypeSymbol(
             ns ?? Package(),
-            dataType ?? DataType().BareType);
+            dataType ?? DataType().DeclaredType);
     }
 
     protected VariableSymbol Variable(

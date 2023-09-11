@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -63,6 +65,9 @@ public static class DataTypeExtensions
 
         return type;
     }
+
+    public static string ToILString(this FixedList<DataType> types)
+        => string.Join(", ", types.Select(t => t.ToILString()));
 
     public static ReferenceType? UnderlyingReferenceType(this DataType type)
     {

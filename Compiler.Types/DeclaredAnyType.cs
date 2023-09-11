@@ -2,12 +2,12 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-public sealed class BareAnyType : BareReferenceType
+public sealed class DeclaredAnyType : DeclaredReferenceType
 {
     #region Singleton
-    internal static readonly BareAnyType Instance = new();
+    internal static readonly DeclaredAnyType Instance = new();
 
-    private BareAnyType() { }
+    private DeclaredAnyType() { }
     #endregion
 
     public override TypeName Name => SpecialTypeName.Any;
@@ -16,7 +16,7 @@ public sealed class BareAnyType : BareReferenceType
         => new AnyType(capability);
 
     #region Equals
-    public override bool Equals(BareReferenceType? other) => ReferenceEquals(this, other);
+    public override bool Equals(DeclaredReferenceType? other) => ReferenceEquals(this, other);
 
     public override int GetHashCode() => Name.GetHashCode();
     #endregion

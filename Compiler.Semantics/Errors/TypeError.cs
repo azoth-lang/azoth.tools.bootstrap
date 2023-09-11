@@ -134,7 +134,7 @@ public static class TypeError
             3017, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstantType().ToSourceCodeString()}` to type `{toType.ToNonConstantType().ToSourceCodeString()}`");
     }
 
-    public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, ISyntax expression, ReferenceCapability capability, BareObjectType type)
+    public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, ISyntax expression, ReferenceCapability capability, DeclaredObjectType type)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3018, $"Cannot use `{capability.ToSourceString()}` on constant type `{type}`");
