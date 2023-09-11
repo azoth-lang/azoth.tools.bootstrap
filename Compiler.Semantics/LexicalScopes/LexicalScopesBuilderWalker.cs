@@ -158,9 +158,12 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         // Only "static" names are in scope. Other names must use `self.`
         var symbols = @class.Members.OfType<IAssociatedFunctionDeclarationSyntax>()
                             .GroupBy(m => m.Name, m => m.Symbol)
-                            .ToFixedDictionary(e => (TypeName)e.Key, e => e.ToFixedSet<IPromise<Symbol>>());
+                            .ToDictionary(e => (TypeName)e.Key, e => e.ToFixedSet<IPromise<Symbol>>());
 
-        return NestedScope.Create(containingScope, symbols);
+        foreach (var genericParameter in @class.GenericParameters)
+            symbols.Add(genericParameter.Name, FixedSet.Create<IPromise<Symbol>>(genericParameter.Symbol));
+
+        return NestedScope.Create(containingScope, symbols.ToFixedDictionary());
     }
 
     private static LexicalScope BuildBodyScope(

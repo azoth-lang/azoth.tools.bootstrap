@@ -55,7 +55,7 @@ FieldDeclaration: MemberDeclaration, Binding = Name:'Name' Type Symbol:'AcyclicP
 AssociatedFunctionDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* ReturnType:Type? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
 // ---------- Type Parameters --------------
-GenericParameter = Name:'Name';
+GenericParameter = Name:'Name' Symbol:'Promise<GenericParameterTypeSymbol>';
 
 // ---------- Parameters --------------
 Parameter = Name:'Name'? DataType:'IPromise<DataType>' Unused:'bool';

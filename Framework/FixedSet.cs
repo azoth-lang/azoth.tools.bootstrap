@@ -23,29 +23,18 @@ public class FixedSet<T> : IReadOnlyCollection<T>, IEquatable<FixedSet<T>>
     }
 
     [DebuggerStepThrough]
-    public IEnumerator<T> GetEnumerator()
-    {
-        return items.GetEnumerator();
-    }
+    public IEnumerator<T> GetEnumerator() => items.GetEnumerator();
 
     [DebuggerStepThrough]
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return ((IEnumerable)items).GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)items).GetEnumerator();
 
     public int Count => items.Count;
 
     #region Equality
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as FixedSet<T>);
-    }
+    public override bool Equals(object? obj) => Equals(obj as FixedSet<T>);
 
     public bool Equals(FixedSet<T>? other)
-    {
-        return other is not null && Count == other.Count && items.SetEquals(other.items);
-    }
+        => other is not null && Count == other.Count && items.SetEquals(other.items);
 
     public override int GetHashCode()
     {
@@ -56,4 +45,9 @@ public class FixedSet<T> : IReadOnlyCollection<T>, IEquatable<FixedSet<T>>
         return hash.ToHashCode();
     }
     #endregion
+}
+
+public static class FixedSet
+{
+    public static FixedSet<T> Create<T>(params T[] items) => new(items);
 }

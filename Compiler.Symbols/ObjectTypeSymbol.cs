@@ -42,6 +42,11 @@ public sealed class ObjectTypeSymbol : TypeSymbol
     #endregion
 
     public override string ToILString()
-        // TODO include generics
-        => $"{ContainingSymbol.ToILString()}.{Name}";
+    {
+        var genericParametersCount = DeclaresType.GenericParameters.Count;
+        var value = $"{ContainingSymbol.ToILString()}.{Name}";
+        if (genericParametersCount > 0)
+            value += $"[{new string(',', genericParametersCount - 1)}]";
+        return value;
+    }
 }

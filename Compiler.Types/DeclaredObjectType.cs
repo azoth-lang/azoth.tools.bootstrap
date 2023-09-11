@@ -36,7 +36,8 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         Name = name;
         IsConst = isConst;
         GenericParameters = genericParameters;
-        GenericParameterTypes = GenericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList<DataType>();
+        GenericParameterTypes = GenericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList();
+        GenericParameterDataTypes = GenericParameterTypes.ToFixedList<DataType>();
     }
 
     // TODO this needs a containing package
@@ -52,7 +53,10 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
 
     public FixedList<GenericParameter> GenericParameters { get; }
 
-    public FixedList<DataType> GenericParameterTypes { get; }
+    public FixedList<GenericParameterType> GenericParameterTypes { get; }
+
+    // TODO this is really awkward. There should be a subtype relationship
+    public FixedList<DataType> GenericParameterDataTypes { get; }
 
     /// <summary>
     /// Make a version of this type for use as the constructor parameter. One issue is
@@ -61,7 +65,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// <remarks>This is always `mut` because the type can be mutated inside the constructor.</remarks>
     public ObjectType ToConstructorSelf()
         // TODO does this need to be `init`?
-        => With(ReferenceCapability.Mutable, GenericParameterTypes);
+        => With(ReferenceCapability.Mutable, GenericParameterDataTypes);
 
     /// <summary>
     /// Make a version of this type for use as the return type of the default constructor.
@@ -69,11 +73,11 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
     /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
     public ObjectType ToDefaultConstructorReturn()
-        => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.Isolated, GenericParameterTypes);
+        => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.Isolated, GenericParameterDataTypes);
 
     public ObjectType ToConstructorReturn(IEnumerable<DataType> parameterTypes)
     {
-        if (IsConst) return With(ReferenceCapability.Constant, GenericParameterTypes);
+        if (IsConst) return With(ReferenceCapability.Constant, GenericParameterDataTypes);
         foreach (var parameterType in parameterTypes)
             switch (parameterType)
             {
@@ -84,10 +88,10 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
                 case UnknownType:
                     continue;
                 default:
-                    return With(ReferenceCapability.Mutable, GenericParameterTypes);
+                    return With(ReferenceCapability.Mutable, GenericParameterDataTypes);
             }
 
-        return With(ReferenceCapability.Isolated, GenericParameterTypes);
+        return With(ReferenceCapability.Isolated, GenericParameterDataTypes);
     }
 
     public override ObjectType With(ReferenceCapability capability, FixedList<DataType> typeArguments)

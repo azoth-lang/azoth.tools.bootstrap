@@ -50,7 +50,7 @@ public class SymbolTreeBuilder : ISymbolTree
         if (!symbolChildren.TryGetValue(symbol, out var children))
         {
             // Add to parent's children
-            if (!(symbol.ContainingSymbol is null))
+            if (symbol.ContainingSymbol is not null)
                 GetOrAdd(symbol.ContainingSymbol).Add(symbol);
             children = new HashSet<Symbol>();
             symbolChildren.Add(symbol, children);
@@ -62,13 +62,13 @@ public class SymbolTreeBuilder : ISymbolTree
     {
         if (Package is null)
             throw new InvalidOperationException($"Can't build {nameof(FixedSymbolTree)} without a package");
-        return new FixedSymbolTree(Package, symbolChildren.ToFixedDictionary(e => e.Key, e => e.Value.ToFixedSet()));
+        return new(Package, symbolChildren.ToFixedDictionary(e => e.Key, e => e.Value.ToFixedSet()));
     }
 
     public PrimitiveSymbolTree BuildPrimitives()
     {
         if (Package is not null)
             throw new InvalidOperationException($"Can't build {nameof(PrimitiveSymbolTree)} WITH a package");
-        return new PrimitiveSymbolTree(symbolChildren.ToFixedDictionary(e => e.Key, e => e.Value.ToFixedSet()));
+        return new(symbolChildren.ToFixedDictionary(e => e.Key, e => e.Value.ToFixedSet()));
     }
 }

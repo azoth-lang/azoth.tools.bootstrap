@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -20,6 +21,9 @@ public sealed class GenericParameterType : DataType
     public DeclaredObjectType DeclaringType { get; }
 
     public GenericParameter Parameter { get; }
+
+    public Name Name => Parameter.Name;
+
     public override bool IsKnown => true;
 
     // TODO the type semantics isn't actually known because it is generic

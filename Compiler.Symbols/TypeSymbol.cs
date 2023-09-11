@@ -5,16 +5,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 [Closed(
     typeof(PrimitiveTypeSymbol),
-    typeof(ObjectTypeSymbol))]
+    typeof(ObjectTypeSymbol),
+    typeof(GenericParameterTypeSymbol))]
 public abstract class TypeSymbol : Symbol
 {
-    public new NamespaceOrPackageSymbol? ContainingSymbol { get; }
     public new TypeName Name { get; }
 
-    protected TypeSymbol(NamespaceOrPackageSymbol? containingSymbol, TypeName name)
+    protected TypeSymbol(Symbol? containingSymbol, TypeName name)
         : base(containingSymbol, name)
     {
-        ContainingSymbol = containingSymbol;
         Name = name;
     }
 }

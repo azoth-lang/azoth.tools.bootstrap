@@ -64,6 +64,7 @@ public class TypeResolver
                 ObjectTypeSymbol sym => implicitRead || sym.DeclaresType.IsConst
                     ? sym.DeclaresType.WithRead(typeArguments)
                     : sym.DeclaresType.WithMutate(typeArguments),
+                GenericParameterTypeSymbol sym => sym.DeclaresType,
                 _ => throw ExhaustiveMatch.Failed(symbol)
             };
             return typeName.NamedType = type;
@@ -121,6 +122,9 @@ public class TypeResolver
                     // is done on the capability type syntax.
                     typeSyntax.NamedType = bareType.With(capability, typeArguments);
                     return bareType;
+                case GenericParameterTypeSymbol sym:
+                    typeSyntax.NamedType = sym.DeclaresType;
+                    return null;
             }
         }
     }

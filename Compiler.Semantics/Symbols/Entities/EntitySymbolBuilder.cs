@@ -149,9 +149,11 @@ public class EntitySymbolBuilder
         var typeParameters = @class.GenericParameters.Select(p => new GenericParameter(p.Name)).ToFixedList();
         var classType = DeclaredObjectType.Create(@class.ContainingNamespaceName, @class.Name, @class.IsConst, typeParameters);
 
-        var symbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
-        @class.Symbol.Fulfill(symbol);
-        symbolTree.Add(symbol);
+        var classSymbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
+        @class.Symbol.Fulfill(classSymbol);
+        symbolTree.Add(classSymbol);
+
+        BuildGenericParameterSymbols(@class, classSymbol);
         @class.CreateDefaultConstructor(symbolTree);
         return;
 
@@ -159,6 +161,17 @@ public class EntitySymbolBuilder
         {
             // TODO use something better than Name here which is an old name
             diagnostics.Add(TypeError.CircularDefinition(@class.File, @class.NameSpan, @class));
+        }
+    }
+
+    private void BuildGenericParameterSymbols(IClassDeclarationSyntax @class, ObjectTypeSymbol classSymbol)
+    {
+        var classType = classSymbol.DeclaresType;
+        foreach (var (genericParameter, type) in @class.GenericParameters.Zip(classType.GenericParameterTypes))
+        {
+            var genericParameterSymbol = new GenericParameterTypeSymbol(classSymbol, type);
+            genericParameter.Symbol.Fulfill(genericParameterSymbol);
+            symbolTree.Add(genericParameterSymbol);
         }
     }
 
@@ -241,7 +254,7 @@ public class EntitySymbolBuilder
         IClassDeclarationSyntax declaringClass)
     {
         var selfType = declaringClass.Symbol.Result.DeclaresType;
-        return resolver.Evaluate(selfType, selfParameter.Capability, selfType.GenericParameterTypes);
+        return resolver.Evaluate(selfType, selfParameter.Capability, selfType.GenericParameterDataTypes);
     }
 
     private void BuildSelfParameterSymbol(

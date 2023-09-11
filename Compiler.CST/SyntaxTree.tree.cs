@@ -227,6 +227,7 @@ public partial interface IAssociatedFunctionDeclarationSyntax : IMemberDeclarati
 public partial interface IGenericParameterSyntax : ISyntax
 {
     Name Name { get; }
+    Promise<GenericParameterTypeSymbol> Symbol { get; }
 }
 
 [Closed(
