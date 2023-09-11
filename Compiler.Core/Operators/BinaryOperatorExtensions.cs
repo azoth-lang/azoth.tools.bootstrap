@@ -1,3 +1,4 @@
+using System;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Operators;
@@ -58,5 +59,31 @@ public static class BinaryOperatorExtensions
             BinaryOperator.AsQuestion => OperatorPrecedence.Conversion,
 
             _ => throw ExhaustiveMatch.Failed(@operator),
+        };
+
+    public static bool IsRangeOperator(this BinaryOperator @operator)
+        => @operator switch
+        {
+            BinaryOperator.DotDot
+                or BinaryOperator.DotDotLessThan
+                or BinaryOperator.LessThanDotDot
+                or BinaryOperator.LessThanDotDotLessThan => true,
+            _ => false,
+        };
+
+    public static bool RangeInclusiveOfStart(this BinaryOperator @operator) =>
+        @operator switch
+        {
+            BinaryOperator.DotDot or BinaryOperator.DotDotLessThan => true,
+            BinaryOperator.LessThanDotDot or BinaryOperator.LessThanDotDotLessThan => false,
+            _ => throw new InvalidOperationException($"`{@operator.ToSymbolString()}` is not a range operator."),
+        };
+
+    public static bool RangeInclusiveOfEnd(this BinaryOperator @operator) =>
+        @operator switch
+        {
+            BinaryOperator.DotDot or BinaryOperator.LessThanDotDot => true,
+            BinaryOperator.DotDotLessThan or BinaryOperator.LessThanDotDotLessThan => false,
+            _ => throw new InvalidOperationException($"`{@operator.ToSymbolString()}` is not a range operator."),
         };
 }

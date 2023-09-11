@@ -1,5 +1,7 @@
+using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 
@@ -87,6 +89,42 @@ internal readonly struct AzothValue
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     #endregion
+
+    public AzothValue Increment(NumericType numberType)
+    {
+        if (numberType == DataType.Int || numberType == DataType.UInt) return Int(IntValue + 1);
+        if (numberType == DataType.Byte) return Byte((byte)(ByteValue + 1));
+        if (numberType == DataType.Size) return Size(SizeValue + 1);
+        if (numberType == DataType.Offset) return Offset(OffsetValue + 1);
+        if (numberType == DataType.Int32) return I32(I32Value + 1);
+        if (numberType == DataType.UInt32) return U32(U32Value + 1);
+
+        throw new NotImplementedException($"Increment of {numberType}");
+    }
+
+    public AzothValue Decrement(NumericType numberType)
+    {
+        if (numberType == DataType.Int || numberType == DataType.UInt) return Int(IntValue - 1);
+        if (numberType == DataType.Byte) return Byte((byte)(ByteValue - 1));
+        if (numberType == DataType.Size) return Size(SizeValue - 1);
+        if (numberType == DataType.Offset) return Offset(OffsetValue - 1);
+        if (numberType == DataType.Int32) return I32(I32Value - 1);
+        if (numberType == DataType.UInt32) return U32(U32Value - 1);
+
+        throw new NotImplementedException($"Decrement of {numberType}");
+    }
+
+    public BigInteger ToBigInteger(NumericType numberType)
+    {
+        if (numberType == DataType.Int || numberType == DataType.UInt) return IntValue;
+        if (numberType == DataType.Byte) return ByteValue;
+        if (numberType == DataType.Size) return SizeValue;
+        if (numberType == DataType.Offset) return OffsetValue;
+        if (numberType == DataType.Int32) return I32Value;
+        if (numberType == DataType.UInt32) return U32Value;
+
+        throw new NotImplementedException($"ToBigInteger for {numberType}");
+    }
 
     [StructLayout(LayoutKind.Explicit)]
     private struct SimpleValue

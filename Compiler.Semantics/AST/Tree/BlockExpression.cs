@@ -2,7 +2,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -26,8 +25,8 @@ internal class BlockExpression : Expression, IBlockExpression
 
     public override string ToString()
     {
-        if (Statements.Any()) return $"{{ {Statements.Count} Statements }} : {DataType}";
+        if (Statements.Any()) return $"{{ {Statements.Count} Statements }} : {DataType.ToILString()}";
 
-        return $"{{ }} : {DataType}";
+        return $"{{ }} : {DataType.ToILString()}";
     }
 }

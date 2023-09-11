@@ -36,7 +36,7 @@ internal class ConcreteMethodDeclaration : InvocableDeclaration, IConcreteMethod
 
     public override string ToString()
     {
-        var returnType = Symbol.ReturnDataType != DataType.Void ? " -> " + Symbol.ReturnDataType : "";
+        var returnType = Symbol.ReturnDataType != DataType.Void ? " -> " + Symbol.ReturnDataType.ToILString() : "";
         return $"fn {Symbol.ContainingSymbol}::{Symbol.Name}({string.Join(", ", Parameters.Prepend<IParameter>(SelfParameter))}){returnType} {Body}";
     }
 }

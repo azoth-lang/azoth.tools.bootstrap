@@ -31,6 +31,6 @@ internal class VariableDeclarationStatement : Statement, IVariableDeclarationSta
         var binding = Symbol.IsMutableBinding ? "var" : "let";
         var declarationNumber = Symbol.DeclarationNumber is null ? "" : "⟦#" + Symbol.DeclarationNumber + "⟧";
         var initializer = Initializer is not null ? " = " + Initializer : "";
-        return $"{binding} {Symbol.Name}{declarationNumber}: {Symbol.DataType}{initializer};";
+        return $"{binding} {Symbol.Name}{declarationNumber}: {Symbol.DataType.ToILString()}{initializer};";
     }
 }

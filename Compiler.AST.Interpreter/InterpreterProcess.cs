@@ -465,23 +465,21 @@ public class InterpreterProcess
             {
                 var loopVariable = exp.Symbol;
                 var symbolDataType = exp.Symbol.DataType;
-                var isBigInt = symbolDataType == DataType.Int || symbolDataType == DataType.UInt;
-                if (exp.InExpression is IBinaryOperatorExpression { Operator: BinaryOperator.DotDot } binaryExp
-                    && (isBigInt || symbolDataType == DataType.UInt32))
+                if (exp.InExpression is IBinaryOperatorExpression { Operator: var @operator } binaryExp && @operator.IsRangeOperator()
+                    && symbolDataType is NumericType numberType)
                 {
                     var startValue = await ExecuteAsync(binaryExp.LeftOperand, variables).ConfigureAwait(false);
-                    var start = isBigInt ? startValue.IntValue : startValue.U32Value;
+                    if (!@operator.RangeInclusiveOfStart()) startValue = startValue.Increment(numberType);
                     var endValue = await ExecuteAsync(binaryExp.RightOperand, variables).ConfigureAwait(false);
-                    var end = isBigInt ? endValue.IntValue : endValue.U32Value;
+                    if (!@operator.RangeInclusiveOfEnd()) endValue = endValue.Decrement(numberType);
                     try
                     {
-                        for (var i = start; i <= end; i++)
+                        for (var i = startValue; i.ToBigInteger(numberType) <= endValue.ToBigInteger(numberType); i = i.Increment(numberType))
                         {
                             try
                             {
                                 var loopVariables = new LocalVariableScope(variables);
-                                var indexValue = isBigInt ? AzothValue.Int(i) : AzothValue.U32((uint)i);
-                                loopVariables.Add(loopVariable, indexValue);
+                                loopVariables.Add(loopVariable, i);
                                 await ExecuteAsync(exp.Block, loopVariables).ConfigureAwait(false);
                             }
                             catch (Next)
@@ -523,6 +521,11 @@ public class InterpreterProcess
             var str = Encoding.UTF8.GetString(arguments[0].BytesValue, 0, (int)arguments[1].SizeValue);
             await standardOutputWriter.WriteAsync(str).ConfigureAwait(false);
             return AzothValue.None;
+        }
+        if (function == Intrinsic.AbortUtf8)
+        {
+            var message = Encoding.UTF8.GetString(arguments[0].BytesValue, 0, (int)arguments[1].SizeValue);
+            throw new Abort(message);
         }
         throw new NotImplementedException($"Intrinsic {function}");
     }

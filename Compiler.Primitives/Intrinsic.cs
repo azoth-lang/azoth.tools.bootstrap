@@ -13,6 +13,8 @@ public static class Intrinsic
 
     public static readonly FunctionSymbol PrintUtf8 = Find<FunctionSymbol>("print_utf8");
 
+    public static readonly FunctionSymbol AbortUtf8 = Find<FunctionSymbol>("abort_utf8");
+
     public static readonly ObjectTypeSymbol RawBoundedList
         = Find<ObjectTypeSymbol>("Raw_Bounded_List");
 

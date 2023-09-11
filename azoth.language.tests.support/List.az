@@ -51,7 +51,7 @@ published class List[T]
         while capacity < new_count { capacity *= 2; }
         let count = .items.count();
         let new_items = new Raw_Bounded_List[T](capacity);
-        foreach i in 0..count { new_items.\set(i, .items.at(i)); }
+        foreach i in 0..<count { new_items.add(.items.at(i)); }
         .items = new_items;
     }
 }
