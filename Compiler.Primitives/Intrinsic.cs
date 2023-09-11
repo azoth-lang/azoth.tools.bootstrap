@@ -10,8 +10,14 @@ public static class Intrinsic
 {
     public static readonly FixedSymbolTree SymbolTree = DefineIntrinsicSymbols();
 
-    public static readonly FunctionSymbol PrintUtf8 =
-        SymbolTree.Symbols.OfType<FunctionSymbol>().Single(f => f.Name.Text == "print_utf8");
+    public static readonly FunctionSymbol PrintUtf8
+        = SymbolTree.Symbols.OfType<FunctionSymbol>().Single(f => f.Name.Text == "print_utf8");
+
+    public static readonly ObjectTypeSymbol RawBoundedList
+        = SymbolTree.Symbols.OfType<ObjectTypeSymbol>().Single(f => f.Name.Text == "Raw_Bounded_List");
+
+    public static readonly ConstructorSymbol NewRawBoundedList
+        = SymbolTree.Symbols.OfType<ConstructorSymbol>().Single(c => c.ContainingSymbol == RawBoundedList);
 
     private static FixedSymbolTree DefineIntrinsicSymbols()
     {

@@ -9,6 +9,7 @@ internal readonly struct AzothValue
     [FieldOffset(0)] public readonly AzothObject ObjectValue;
     [FieldOffset(0)] public readonly BigInteger IntValue;
     [FieldOffset(0)] public readonly byte[] BytesValue;
+    [FieldOffset(0)] public readonly AzothValue[] ArrayValue;
     [FieldOffset(0)] private readonly ValueType value;
 
     public bool IsNone => value.Struct is null;
@@ -25,6 +26,7 @@ internal readonly struct AzothValue
     public static AzothValue Object(AzothObject value) => new(value);
     public static AzothValue Int(BigInteger value) => new(value);
     public static AzothValue Bytes(byte[] value) => new(value);
+    public static AzothValue Array(int size) => new(new AzothValue[size]);
     public static AzothValue Bool(bool value) => new(value);
     public static AzothValue Byte(byte value) => new(value);
     public static AzothValue I32(int value) => new(value);
@@ -48,6 +50,10 @@ internal readonly struct AzothValue
     private AzothValue(byte[] value) : this()
     {
         BytesValue = value;
+    }
+    private AzothValue(AzothValue[] value)
+    {
+        ArrayValue = value;
     }
     private AzothValue(bool value) : this()
     {
@@ -104,5 +110,5 @@ internal readonly struct AzothValue
         public SimpleValue Simple;
     }
 
-    private static readonly object NotStruct = new object();
+    private static readonly object NotStruct = new();
 }

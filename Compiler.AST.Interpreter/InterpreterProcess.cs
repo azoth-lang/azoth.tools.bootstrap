@@ -414,12 +414,15 @@ public class InterpreterProcess
             case INewObjectExpression exp:
             {
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
-                var objectTypeSymbol = exp.ReferencedSymbol.ContainingSymbol;
+                var constructorSymbol = exp.ReferencedSymbol;
+                var objectTypeSymbol = constructorSymbol.ContainingSymbol;
+                if (objectTypeSymbol.Package == Intrinsic.SymbolTree.Package)
+                    return await CallIntrinsicAsync(constructorSymbol, arguments).ConfigureAwait(false);
                 var @class = classes[objectTypeSymbol];
                 var vTable = vTables.GetOrAdd(@class, CreateVTable);
                 var self = AzothValue.Object(new AzothObject(vTable));
                 // TODO run field initializers
-                var constructor = constructors[exp.ReferencedSymbol];
+                var constructor = constructors[constructorSymbol];
                 // Default constructor is null
                 if (constructor is null)
                 {
@@ -510,15 +513,25 @@ public class InterpreterProcess
         return await CallConstructorAsync(stringConstructor, self, arguments).ConfigureAwait(false);
     }
 
-    private async ValueTask<AzothValue> CallIntrinsicAsync(FunctionSymbol functionSymbol, List<AzothValue> arguments)
+    private async ValueTask<AzothValue> CallIntrinsicAsync(FunctionSymbol function, List<AzothValue> arguments)
     {
-        if (functionSymbol == Intrinsic.PrintUtf8)
+        if (function == Intrinsic.PrintUtf8)
         {
             var str = Encoding.UTF8.GetString(arguments[0].BytesValue, 0, (int)arguments[1].SizeValue);
             await standardOutputWriter.WriteAsync(str).ConfigureAwait(false);
             return AzothValue.None;
         }
-        throw new NotImplementedException($"Intrinsic {functionSymbol}");
+        throw new NotImplementedException($"Intrinsic {function}");
+    }
+
+    private static ValueTask<AzothValue> CallIntrinsicAsync(ConstructorSymbol constructor, List<AzothValue> arguments)
+    {
+        if (constructor == Intrinsic.NewRawBoundedList)
+        {
+            return ValueTask.FromResult(AzothValue.Array((int)arguments[0].SizeValue));
+        }
+
+        throw new NotImplementedException($"Intrinsic {constructor}");
     }
 
     private VTable CreateVTable(IClassDeclaration @class)
