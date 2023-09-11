@@ -171,11 +171,28 @@ public partial class Parser
         var @class = Tokens.Expect<IClassKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         Name name = identifier.Value;
-        var headerSpan = TextSpan.Covering(@class, identifier.Span);
+        var generic = AcceptGenericParameters();
+        var genericParameters = generic?.Parameters ?? FixedList<IGenericParameterSyntax>.Empty;
+        var headerSpan = TextSpan.Covering(@class, identifier.Span, generic?.Span);
         var bodyParser = BodyParser();
         return new ClassDeclarationSyntax(ContainingNamespace, headerSpan, File, accessModifier,
-            constModifier, moveModifier, identifier.Span, name,
-            FixedList<IGenericParameterSyntax>.Empty, bodyParser.ParseClassBody);
+            constModifier, moveModifier, identifier.Span, name, genericParameters, bodyParser.ParseClassBody);
+    }
+
+    private (FixedList<IGenericParameterSyntax> Parameters, TextSpan Span)? AcceptGenericParameters()
+    {
+        var openBracket = Tokens.AcceptToken<IOpenBracketToken>();
+        if (openBracket is null) return null;
+        var parameters = AcceptManySeparated<IGenericParameterSyntax, ICommaToken>(AcceptGenericParameter);
+        var closeBracketSpan = Tokens.Required<ICloseBracketToken>();
+        return (parameters, TextSpan.Covering(openBracket.Span, closeBracketSpan));
+    }
+
+    private IGenericParameterSyntax? AcceptGenericParameter()
+    {
+        var identifier = Tokens.AcceptToken<IIdentifierToken>();
+        if (identifier is null) return null;
+        return new GenericParameterSyntax(identifier.Span, identifier.Value);
     }
 
     private (FixedList<IMemberDeclarationSyntax> members, TextSpan span) ParseClassBody(IClassDeclarationSyntax declaringType)
