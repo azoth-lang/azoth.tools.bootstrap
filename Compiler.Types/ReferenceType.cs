@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 [Closed(
     typeof(ObjectType),
     typeof(AnyType))]
-public abstract class ReferenceType : DataType
+public abstract class ReferenceType : NonEmptyType
 {
     public ReferenceCapability Capability { get; }
     public bool IsReadOnlyReference => Capability == ReferenceCapability.ReadOnly;

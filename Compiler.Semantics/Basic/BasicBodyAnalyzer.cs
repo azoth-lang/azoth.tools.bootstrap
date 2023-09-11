@@ -664,7 +664,7 @@ public class BasicBodyAnalyzer
                 var argumentTypes = exp.Arguments.Select(arg => InferType(arg, sharing, capabilities)).ToFixedList();
                 // TODO handle named constructors here
                 var constructingType = typeResolver.EvaluateBareType(exp.Type);
-                if (constructingType is null)
+                if (!constructingType.IsKnown)
                 {
                     diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
                     exp.ReferencedSymbol.Fulfill(null);
@@ -686,12 +686,14 @@ public class BasicBodyAnalyzer
                     case 1:
                         var constructorSymbol = constructorSymbols.Single();
                         exp.ReferencedSymbol.Fulfill(constructorSymbol);
-                        foreach (var (arg, parameterDataType) in exp.Arguments.Zip(constructorSymbol.ParameterDataTypes))
+                        var contextType = (NonEmptyType)constructingType;
+                        foreach (var (arg, parameterDataType) in exp.Arguments
+                            .Zip(constructorSymbol.ParameterDataTypes.Select(contextType.ReplaceTypeParametersIn)))
                         {
                             AddImplicitConversionIfNeeded(arg, parameterDataType, sharing, capabilities);
                             CheckTypeCompatibility(parameterDataType, arg);
                         }
-                        constructedType = constructorSymbol.ReturnDataType;
+                        constructedType = contextType.ReplaceTypeParametersIn(constructorSymbol.ReturnDataType);
                         break;
                     default:
                         diagnostics.Add(NameBindingError.AmbiguousConstructorCall(file, exp.Span));
@@ -707,7 +709,7 @@ public class BasicBodyAnalyzer
                 var declaredType = typeResolver.Evaluate(exp.Type, implicitRead: true);
                 var expressionType = CheckForeachInType(declaredType, exp.InExpression, sharing, capabilities);
                 var variableType = declaredType ?? expressionType;
-                var symbol = new VariableSymbol((InvocableSymbol)containingSymbol, exp.VariableName,
+                var symbol = new VariableSymbol(containingSymbol, exp.VariableName,
                     exp.DeclarationNumber.Result, exp.IsMutableBinding, variableType, false);
                 exp.Symbol.Fulfill(symbol);
                 symbolTreeBuilder.Add(symbol);
@@ -948,21 +950,24 @@ public class BasicBodyAnalyzer
                 var methodSymbol = methodSymbols.Single();
                 invocation.ReferencedSymbol.Fulfill(methodSymbol);
 
-                var selfParamType = methodSymbol.SelfDataType;
+                // Since a method has been resolved, this must not be an empty type
+                var contextType = (NonEmptyType)context.DataType.Known();
+
+                var selfParamType = contextType.ReplaceTypeParametersIn(methodSymbol.SelfDataType);
                 AddImplicitConversionIfNeeded(context, selfParamType, sharing, capabilities);
                 AddImplicitMoveIfNeeded(context, selfParamType, sharing, capabilities);
                 AddImplicitFreezeIfNeeded(context, selfParamType, sharing, capabilities);
                 CheckTypeCompatibility(selfParamType, context);
 
                 foreach (var (arg, type) in invocation.Arguments
-                                                      .Zip(methodSymbol.ParameterDataTypes))
+                                                      .Zip(methodSymbol.ParameterDataTypes.Select(contextType.ReplaceTypeParametersIn)))
                 {
                     AddImplicitConversionIfNeeded(arg, type, sharing, capabilities);
                     CheckTypeCompatibility(type, arg);
                 }
 
-                invocation.DataType = methodSymbol.ReturnDataType;
-                AssignInvocationSemantics(invocation, methodSymbol.ReturnDataType);
+                invocation.DataType = contextType.ReplaceTypeParametersIn(methodSymbol.ReturnDataType);
+                AssignInvocationSemantics(invocation, invocation.DataType);
                 break;
             default:
                 diagnostics.Add(NameBindingError.AmbiguousMethodCall(file, invocation.Span));

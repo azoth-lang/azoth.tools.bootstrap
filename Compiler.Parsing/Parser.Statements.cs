@@ -18,8 +18,8 @@ public partial class Parser
                 var let = Tokens.Expect<IBindingToken>();
                 return ParseRestOfVariableDeclaration(let, false);
             case IVarKeywordToken _:
-                var @var = Tokens.Expect<IBindingToken>();
-                return ParseRestOfVariableDeclaration(@var, true);
+                var var = Tokens.Expect<IBindingToken>();
+                return ParseRestOfVariableDeclaration(var, true);
             case IForeachKeywordToken _:
                 var @foreach = ParseForeach();
                 return new ExpressionStatementSyntax(@foreach.Span, @foreach);

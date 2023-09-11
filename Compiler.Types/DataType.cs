@@ -9,11 +9,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// unresolved types like `UnknownType` or types containing unknown parts.
 /// </summary>
 [Closed(
-    typeof(ReferenceType),
-    typeof(ValueType),
+    typeof(NonEmptyType),
     typeof(EmptyType),
-    typeof(UnknownType),
-    typeof(GenericParameterType))]
+    typeof(UnknownType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class DataType : IEquatable<DataType>
 {
@@ -70,6 +68,11 @@ public abstract class DataType : IEquatable<DataType>
     /// </summary>
     public virtual DataType ToNonConstantType() => this;
 
+    /// <summary>
+    /// Returns the same type except with any mutability removed.
+    /// </summary>
+    public virtual DataType WithoutWrite() => this;
+
     [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
     public sealed override string ToString()
@@ -85,11 +88,6 @@ public abstract class DataType : IEquatable<DataType>
     /// How this type would be written in IL.
     /// </summary>
     public abstract string ToILString();
-
-    /// <summary>
-    /// Returns the same type except with any mutability removed.
-    /// </summary>
-    public virtual DataType WithoutWrite() => this;
 
     #region Equality
     public abstract bool Equals(DataType? other);

@@ -36,10 +36,10 @@ public class TypeResolver
             case null:
                 return null;
             case ISimpleTypeNameSyntax syn:
-                return ResolveType(syn, FixedList<DataType>.Empty, AssignTypeName) ?? DataType.Unknown;
+                return ResolveType(syn, FixedList<DataType>.Empty, CreateType);
             case IParameterizedTypeSyntax syn:
                 var typeArguments = Evaluate(syn.TypeArguments);
-                return ResolveType(syn, typeArguments, AssignTypeName) ?? DataType.Unknown;
+                return ResolveType(syn, typeArguments, CreateType);
             case ICapabilityTypeSyntax referenceCapability:
             {
                 var capability = referenceCapability.Capability.Declared.ToReferenceCapability();
@@ -56,7 +56,7 @@ public class TypeResolver
             }
         }
 
-        DataType AssignTypeName(ITypeNameSyntax typeName, TypeSymbol symbol, FixedList<DataType> typeArguments)
+        DataType CreateType(TypeSymbol symbol, FixedList<DataType> typeArguments)
         {
             var type = symbol switch
             {
@@ -67,7 +67,7 @@ public class TypeResolver
                 GenericParameterTypeSymbol sym => sym.DeclaresType,
                 _ => throw ExhaustiveMatch.Failed(symbol)
             };
-            return typeName.NamedType = type;
+            return type;
         }
     }
 
@@ -89,20 +89,19 @@ public class TypeResolver
         }
     }
 
-    public DeclaredReferenceType? EvaluateBareType(
+    public DataType EvaluateBareType(
         ITypeNameSyntax typeSyntax,
         ReferenceCapability? capability = null)
     {
         return typeSyntax switch
         {
-            ISimpleTypeNameSyntax syn => ResolveType(syn, FixedList<DataType>.Empty, AssignNamedType),
+            ISimpleTypeNameSyntax syn => ResolveType(syn, FixedList<DataType>.Empty, CreateType),
             IParameterizedTypeSyntax syn
-                => ResolveType(syn, Evaluate(syn.TypeArguments), AssignNamedType),
+                => ResolveType(syn, Evaluate(syn.TypeArguments), CreateType),
             _ => throw ExhaustiveMatch.Failed(typeSyntax)
         };
 
-        DeclaredReferenceType? AssignNamedType(
-            ITypeNameSyntax _,
+        DataType CreateType(
             TypeSymbol symbol,
             FixedList<DataType> typeArguments)
         {
@@ -111,8 +110,7 @@ public class TypeResolver
                 default:
                     throw ExhaustiveMatch.Failed(symbol);
                 case PrimitiveTypeSymbol sym:
-                    typeSyntax.NamedType = sym.DeclaresType;
-                    return null;
+                    return sym.DeclaresType;
                 case ObjectTypeSymbol sym:
                     var bareType = sym.DeclaresType;
                     // If capability not provided, then this is for a constructor or something
@@ -120,11 +118,9 @@ public class TypeResolver
                     capability ??= ReferenceCapability.Identity;
                     // Compatibility of the capability with the type is not checked here. That
                     // is done on the capability type syntax.
-                    typeSyntax.NamedType = bareType.With(capability, typeArguments);
-                    return bareType;
+                    return bareType.With(capability, typeArguments);
                 case GenericParameterTypeSymbol sym:
-                    typeSyntax.NamedType = sym.DeclaresType;
-                    return null;
+                    return sym.DeclaresType;
             }
         }
     }
@@ -132,11 +128,10 @@ public class TypeResolver
     private FixedList<DataType> Evaluate(IEnumerable<ITypeSyntax> types)
         => types.Select(t => Evaluate(t, implicitRead: true)).ToFixedList();
 
-    private TResult? ResolveType<TResult>(
+    private DataType ResolveType(
         ITypeNameSyntax typeName,
         FixedList<DataType> typeArguments,
-        Func<ITypeNameSyntax, TypeSymbol, FixedList<DataType>, TResult?> assignNamedType)
-        where TResult : notnull
+        Func<TypeSymbol, FixedList<DataType>, DataType> createType)
     {
         var symbols = typeName.LookupInContainingScope().ToFixedList();
         switch (symbols.Count)
@@ -144,17 +139,15 @@ public class TypeResolver
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindName(file, typeName.Span));
                 typeName.ReferencedSymbol.Fulfill(null);
-                typeName.NamedType = DataType.Unknown;
-                return default;
+                return typeName.NamedType = DataType.Unknown;
             case 1:
                 var symbol = symbols.Single();
                 typeName.ReferencedSymbol.Fulfill(symbol);
-                return assignNamedType(typeName, symbol, typeArguments);
+                return typeName.NamedType = createType(symbol, typeArguments);
             default:
                 diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
                 typeName.ReferencedSymbol.Fulfill(null);
-                typeName.NamedType = DataType.Unknown;
-                return default;
+                return typeName.NamedType = DataType.Unknown;
         }
     }
 

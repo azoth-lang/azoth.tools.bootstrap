@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// The type introduced by a generic parameter. This is not the concrete type is is substituted with.
 /// Rather this is the type variable (e.g. <c>T</c>) that can be used a type name in type expressions.
 /// </summary>
-public sealed class GenericParameterType : DataType
+public sealed class GenericParameterType : NonEmptyType
 {
     public GenericParameterType(DeclaredObjectType declaringType, GenericParameter parameter)
     {
@@ -27,7 +27,7 @@ public sealed class GenericParameterType : DataType
     public override bool IsKnown => true;
 
     // TODO the type semantics isn't actually known because it is generic
-    public override TypeSemantics Semantics => TypeSemantics.Reference;
+    public override TypeSemantics Semantics => TypeSemantics.Copy;
 
     #region Equals
     public override bool Equals(DataType? other)
@@ -42,7 +42,7 @@ public sealed class GenericParameterType : DataType
     public override int GetHashCode() => HashCode.Combine(DeclaringType, Parameter);
     #endregion
 
-    public override string ToSourceCodeString() => $"{Parameter}";
+    public override string ToSourceCodeString() => $"{DeclaringType}.{Parameter}";
 
     public override string ToILString() => $"{DeclaringType}.{Parameter}";
 }
