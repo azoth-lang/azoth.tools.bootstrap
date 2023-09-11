@@ -708,7 +708,7 @@ public class BasicBodyAnalyzer
             {
                 var declaredType = typeResolver.Evaluate(exp.Type, implicitRead: true);
                 var expressionType = CheckForeachInType(declaredType, exp.InExpression, sharing, capabilities);
-                var variableType = declaredType ?? expressionType;
+                var variableType = declaredType ?? expressionType.ToNonConstantType();
                 var symbol = new VariableSymbol(containingSymbol, exp.VariableName,
                     exp.DeclarationNumber.Result, exp.IsMutableBinding, variableType, false);
                 exp.Symbol.Fulfill(symbol);
@@ -1236,15 +1236,33 @@ public class BasicBodyAnalyzer
                     or BinaryOperator.DotDotLessThan
                     or BinaryOperator.LessThanDotDotLessThan:
                 var leftType = InferType(binaryExpression.LeftOperand, sharing, capabilities);
-                InferType(binaryExpression.RightOperand, sharing, capabilities);
-                if (declaredType is not null)
+                var rightType = InferType(binaryExpression.RightOperand, sharing, capabilities);
+                if (!leftType.IsKnown || !rightType.IsKnown)
+                    return inExpression.DataType = DataType.Unknown;
+
+                var assumedType = declaredType;
+                if (assumedType is null)
                 {
-                    leftType = AddImplicitConversionIfNeeded(binaryExpression.LeftOperand, declaredType, sharing, capabilities);
-                    AddImplicitConversionIfNeeded(binaryExpression.RightOperand, declaredType, sharing, capabilities);
+                    if (leftType is IntegerConstantType)
+                        assumedType = rightType.ToNonConstantType();
+                    else if (rightType is IntegerConstantType)
+                        assumedType = leftType.ToNonConstantType();
+                }
+                var type = assumedType;
+                if (assumedType is not null)
+                {
+                    AddImplicitConversionIfNeeded(binaryExpression.LeftOperand, assumedType, sharing, capabilities);
+                    AddImplicitConversionIfNeeded(binaryExpression.RightOperand, assumedType, sharing, capabilities);
+                }
+                else
+                {
+                    var compatible = NumericOperatorTypesAreCompatible(binaryExpression.LeftOperand,
+                        binaryExpression.RightOperand, sharing, capabilities);
+                    type = compatible ? leftType : DataType.Unknown;
                 }
 
                 inExpression.Semantics = ExpressionSemantics.CopyValue; // Treat ranges as structs
-                return inExpression.DataType = leftType;
+                return inExpression.DataType = type!;
             default:
                 return InferType(inExpression, sharing, capabilities);
         }

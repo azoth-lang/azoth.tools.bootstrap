@@ -29,7 +29,6 @@ internal readonly struct AzothValue
     public static AzothValue Int(BigInteger value) => new(value);
     public static AzothValue Bytes(byte[] value) => new(value);
     public static AzothValue RawBoundedList(nuint capacity) => new(new RawBoundedList(capacity));
-    public static AzothValue RawBoundedList(nuint count, AzothValue[] items) => new(new RawBoundedList(count, items));
     public static AzothValue Bool(bool value) => new(value);
     public static AzothValue Byte(byte value) => new(value);
     public static AzothValue I32(int value) => new(value);
@@ -111,7 +110,7 @@ internal readonly struct AzothValue
         if (numberType == DataType.Int32) return I32(I32Value - 1);
         if (numberType == DataType.UInt32) return U32(U32Value - 1);
 
-        throw new NotImplementedException($"Decrement of {numberType}");
+        throw new NotImplementedException($"Decrement of {numberType.ToILString()}");
     }
 
     public BigInteger ToBigInteger(NumericType numberType)
@@ -123,7 +122,7 @@ internal readonly struct AzothValue
         if (numberType == DataType.Int32) return I32Value;
         if (numberType == DataType.UInt32) return U32Value;
 
-        throw new NotImplementedException($"ToBigInteger for {numberType}");
+        throw new NotImplementedException($"ToBigInteger for {numberType.ToILString()}");
     }
 
     [StructLayout(LayoutKind.Explicit)]

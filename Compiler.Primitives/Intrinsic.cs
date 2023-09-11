@@ -30,6 +30,9 @@ public static class Intrinsic
     public static readonly MethodSymbol RawBoundedListAdd
         = Find<MethodSymbol>(RawBoundedList, "add");
 
+    public static readonly MethodSymbol RawBoundedListAt
+        = Find<MethodSymbol>(RawBoundedList, "at");
+
     private static IEnumerable<T> Find<T>()
         => SymbolTree.Symbols.OfType<T>();
 

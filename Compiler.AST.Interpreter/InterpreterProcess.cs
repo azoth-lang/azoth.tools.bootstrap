@@ -546,16 +546,16 @@ public class InterpreterProcess
         List<AzothValue> arguments)
     {
         if (method == Intrinsic.RawBoundedListCapacity)
-            return ValueTask.FromResult(AzothValue.Size((nuint)self.RawBoundedListValue.Items.Length));
+            return ValueTask.FromResult(AzothValue.Size(self.RawBoundedListValue.Capacity));
         if (method == Intrinsic.RawBoundedListCount)
             return ValueTask.FromResult(AzothValue.Size(self.RawBoundedListValue.Count));
         if (method == Intrinsic.RawBoundedListAdd)
         {
-            var oldList = self.RawBoundedListValue;
-            oldList.Items[oldList.Count] = arguments[0];
-            var newList = AzothValue.RawBoundedList(oldList.Count + 1, oldList.Items);
-            return ValueTask.FromResult(newList);
+            self.RawBoundedListValue.Add(arguments[0]);
+            return ValueTask.FromResult(AzothValue.None);
         }
+        if (method == Intrinsic.RawBoundedListAt)
+            return ValueTask.FromResult(self.RawBoundedListValue.At(arguments[0].SizeValue));
 
         throw new NotImplementedException($"Intrinsic {method}");
     }
@@ -591,7 +591,7 @@ public class InterpreterProcess
         if (type == DataType.Offset)
             return AzothValue.Offset(left.OffsetValue + right.OffsetValue);
         if (type == DataType.Size)
-            return AzothValue.Size(left.SizeValue * right.SizeValue);
+            return AzothValue.Size(left.SizeValue + right.SizeValue);
         throw new NotImplementedException($"Add {type.ToILString()}");
     }
 
