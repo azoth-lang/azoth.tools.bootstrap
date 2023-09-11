@@ -34,7 +34,7 @@ public class TypeResolver
                 throw ExhaustiveMatch.Failed(typeSyntax);
             case null:
                 return null;
-            case ITypeNameSyntax typeName:
+            case ISimpleTypeNameSyntax typeName:
             {
                 var symbolPromises = typeName.LookupInContainingScope().ToFixedList();
                 switch (symbolPromises.Count)
@@ -65,6 +65,10 @@ public class TypeResolver
                 }
                 break;
             }
+            case IParameterizedTypeSyntax syn:
+            {
+                throw new NotImplementedException("Resolution of parameterized type names not implemented");
+            }
             case ICapabilityTypeSyntax referenceCapability:
             {
                 var capability = referenceCapability.Capability.Declared.ToReferenceCapability();
@@ -90,9 +94,11 @@ public class TypeResolver
         {
             default:
                 throw ExhaustiveMatch.Failed(typeSyntax);
-            case ITypeNameSyntax typeName:
+            case ISimpleTypeNameSyntax typeName:
                 var bareType = EvaluateBareType(typeName, capability);
                 return bareType?.With(capability) ?? (DataType)DataType.Unknown;
+            case IParameterizedTypeSyntax syn:
+                throw new NotImplementedException("Parameterized types with reference capabilities not implemented");
             case ICapabilityTypeSyntax _:
             case IOptionalTypeSyntax _:
                 throw new NotImplementedException("Report error about incorrect type expression.");

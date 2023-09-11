@@ -277,6 +277,7 @@ public partial interface IBodySyntax : IBodyOrBlockSyntax
 
 [Closed(
     typeof(ITypeNameSyntax),
+    typeof(IParameterizedTypeSyntax),
     typeof(IOptionalTypeSyntax),
     typeof(ICapabilityTypeSyntax))]
 public partial interface ITypeSyntax : ISyntax
@@ -293,6 +294,13 @@ public partial interface ITypeNameSyntax : ITypeSyntax, IHasContainingLexicalSco
 
 public partial interface ISimpleTypeNameSyntax : ITypeNameSyntax
 {
+}
+
+public partial interface IParameterizedTypeSyntax : ITypeSyntax
+{
+    ITypeNameSyntax TypeName { get; }
+    Promise<TypeSymbol?> ReferencedSymbol { get; }
+    FixedList<ITypeSyntax> TypeArguments { get; }
 }
 
 public partial interface IOptionalTypeSyntax : ITypeSyntax

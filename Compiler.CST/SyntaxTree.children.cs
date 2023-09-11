@@ -91,6 +91,11 @@ public static class ISyntaxExtensions
                 yield break;
             case ISimpleTypeNameSyntax n:
                 yield break;
+            case IParameterizedTypeSyntax n:
+                yield return n.TypeName;
+                foreach (var child in n.TypeArguments)
+                    yield return child;
+                yield break;
             case IOptionalTypeSyntax n:
                 yield return n.Referent;
                 yield break;
