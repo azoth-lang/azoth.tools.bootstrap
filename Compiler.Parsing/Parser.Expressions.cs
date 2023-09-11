@@ -260,7 +260,7 @@ public partial class Parser
             case INewKeywordToken _:
             {
                 var newKeyword = Tokens.Expect<INewKeywordToken>();
-                var type = ParseTypeName();
+                var type = ParseSimpleTypeName();
                 Tokens.Expect<IOpenParenToken>();
                 var arguments = ParseArguments();
                 var closeParen = Tokens.Expect<ICloseParenToken>();

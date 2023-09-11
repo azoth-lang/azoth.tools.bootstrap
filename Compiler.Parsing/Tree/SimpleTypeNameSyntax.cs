@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 /// <summary>
 /// The unqualified name of a type.
 /// </summary>
-internal class TypeNameSyntax : TypeSyntax, ITypeNameSyntax
+internal class SimpleTypeNameSyntax : TypeSyntax, ISimpleTypeNameSyntax
 {
     private LexicalScope? containingLexicalScope;
     public LexicalScope ContainingLexicalScope
@@ -34,7 +34,7 @@ internal class TypeNameSyntax : TypeSyntax, ITypeNameSyntax
     public TypeName Name { get; }
     public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
 
-    public TypeNameSyntax(TextSpan span, TypeName name)
+    public SimpleTypeNameSyntax(TextSpan span, TypeName name)
         : base(span)
     {
         Name = name;

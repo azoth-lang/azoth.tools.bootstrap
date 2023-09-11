@@ -70,6 +70,7 @@ Body: BodyOrBlock = Statements:BodyStatement*;
 // ---------- Types
 Type;
 TypeName: Type, 'IHasContainingLexicalScope' = Name:'TypeName' ReferencedSymbol:'Promise<TypeSymbol?>';
+SimpleTypeName: TypeName = Name:'TypeName' ReferencedSymbol:'Promise<TypeSymbol?>';
 OptionalType: Type = Referent:Type;
 CapabilityType: Type = Capability:ReferenceCapability ReferentType:Type;
 ReferenceCapability = Tokens:'ICapabilityToken'* Declared:'DeclaredReferenceCapability';

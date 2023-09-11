@@ -89,7 +89,7 @@ public static class ISyntaxExtensions
                 foreach (var child in n.Statements)
                     yield return child;
                 yield break;
-            case ITypeNameSyntax n:
+            case ISimpleTypeNameSyntax n:
                 yield break;
             case IOptionalTypeSyntax n:
                 yield return n.Referent;

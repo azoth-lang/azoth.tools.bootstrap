@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
-public partial interface ITypeNameSyntax
+public partial interface ITypeNameSyntax : ITypeSyntax
 {
     IEnumerable<IPromise<TypeSymbol>> LookupInContainingScope();
 }

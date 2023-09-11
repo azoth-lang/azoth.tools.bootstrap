@@ -283,10 +283,16 @@ public partial interface ITypeSyntax : ISyntax
 {
 }
 
+[Closed(
+    typeof(ISimpleTypeNameSyntax))]
 public partial interface ITypeNameSyntax : ITypeSyntax, IHasContainingLexicalScope
 {
     TypeName Name { get; }
     Promise<TypeSymbol?> ReferencedSymbol { get; }
+}
+
+public partial interface ISimpleTypeNameSyntax : ITypeNameSyntax
+{
 }
 
 public partial interface IOptionalTypeSyntax : ITypeSyntax

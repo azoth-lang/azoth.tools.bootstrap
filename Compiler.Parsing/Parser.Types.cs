@@ -65,24 +65,27 @@ public partial class Parser
         return type;
     }
 
+    /// <summary>
+    /// Parse a bare type. That is a type that is expected to follow a reference capability.
+    /// </summary>
     private ITypeSyntax ParseBareType()
     {
         return Tokens.Current switch
         {
             IPrimitiveTypeToken _ => ParsePrimitiveType(),
             // otherwise we want a type name
-            _ => ParseTypeName()
+            _ => ParseSimpleTypeName()
         };
     }
 
-    private ITypeNameSyntax ParseTypeName()
+    private ISimpleTypeNameSyntax ParseSimpleTypeName()
     {
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
-        return new TypeNameSyntax(identifier.Span, name);
+        return new SimpleTypeNameSyntax(identifier.Span, name);
     }
 
-    private ITypeNameSyntax ParsePrimitiveType()
+    private ISimpleTypeNameSyntax ParsePrimitiveType()
     {
         var keyword = Tokens.RequiredToken<IPrimitiveTypeToken>();
         SpecialTypeName name = keyword switch
@@ -99,6 +102,6 @@ public partial class Parser
             _ => throw ExhaustiveMatch.Failed(keyword)
         };
 
-        return new TypeNameSyntax(keyword.Span, name);
+        return new SimpleTypeNameSyntax(keyword.Span, name);
     }
 }
