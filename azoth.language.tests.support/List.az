@@ -1,0 +1,57 @@
+published class List[T]
+{
+    var items: Raw_Bounded_List[T];
+
+    published new()
+    {
+        .items = new Raw_Bounded_List[T](2);
+    }
+
+    published new(var capacity: size)
+    {
+        if capacity < 2 => capacity = 2;
+        .items = new Raw_Bounded_List[T](capacity);
+    }
+
+    published fn capacity(self) -> size
+    {
+        return .items.capacity();
+    }
+
+    published fn count(self) -> size
+    {
+        return .items.count();
+    }
+
+    published fn at(self, index: size) -> T
+    {
+        let count = .items.count();
+        if index < 0 or index >= count => abort("index out of bounds");
+        return .items.at(index);
+    }
+
+    published fn \set(mut self, index: size, value: T)
+    {
+        let count = .items.count();
+        if index < 0 or index >= count => abort("index out of bounds");
+        .items.\set(index, value);
+    }
+
+    published fn add(mut self, value: T)
+    {
+        let count = .items.count();
+        .ensure_capacity(count + 1);
+        .items.add(value);
+    }
+
+    fn ensure_capacity(mut self, new_count: size)
+    {
+        var capacity = .items.capacity();
+        if new_count <= capacity => return;
+        while capacity < new_count { capacity *= 2; }
+        let count = .items.count();
+        let new_items = new Raw_Bounded_List[T](capacity);
+        foreach i in 0..count { new_items.\set(i, .items.at(i)); }
+        .items = new_items;
+    }
+}
