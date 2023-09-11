@@ -11,6 +11,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
 public partial class Parser
 {
+    public ITypeSyntax? AcceptType()
+    {
+        return Tokens.Current switch
+        {
+            ICapabilityToken or IIdentifierToken or IPrimitiveTypeToken => ParseType(),
+
+            _ => null
+        };
+    }
+
     public ITypeSyntax ParseType()
     {
         var capability = ParseReferenceCapability();
@@ -74,15 +84,29 @@ public partial class Parser
         {
             IPrimitiveTypeToken _ => ParsePrimitiveType(),
             // otherwise we want a type name
-            _ => ParseSimpleTypeName()
+            _ => ParseTypeName()
         };
     }
 
-    private ISimpleTypeNameSyntax ParseSimpleTypeName()
+    private ITypeNameSyntax ParseTypeName()
     {
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
+        var optionalGenerics = AcceptGenericTypeArguments();
+        if (optionalGenerics is { } generics)
+            return new ParameterizedTypeSyntax(TextSpan.Covering(identifier.Span, generics.Span),
+                name, generics.Arguments);
+
         return new SimpleTypeNameSyntax(identifier.Span, name);
+    }
+
+    private (FixedList<ITypeSyntax> Arguments, TextSpan Span)? AcceptGenericTypeArguments()
+    {
+        var openBracket = Tokens.AcceptToken<IOpenBracketToken>();
+        if (openBracket is null) return null;
+        var arguments = AcceptManySeparated<ITypeSyntax, ICommaToken>(AcceptType);
+        var closeBracketSpan = Tokens.Required<ICloseBracketToken>();
+        return (arguments, TextSpan.Covering(openBracket.Span, closeBracketSpan));
     }
 
     private ISimpleTypeNameSyntax ParsePrimitiveType()

@@ -92,7 +92,6 @@ public static class ISyntaxExtensions
             case ISimpleTypeNameSyntax n:
                 yield break;
             case IParameterizedTypeSyntax n:
-                yield return n.TypeName;
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;

@@ -10,9 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 public partial class Parser
 {
     public FixedList<IUsingDirectiveSyntax> ParseUsingDirectives()
-    {
-        return AcceptMany(AcceptUsingDirective);
-    }
+        => AcceptMany(AcceptUsingDirective);
 
     public IUsingDirectiveSyntax? AcceptUsingDirective()
     {
@@ -23,7 +21,7 @@ public partial class Parser
             () => Tokens.ExpectToken<IIdentifierToken>());
         NamespaceName name = NamespaceName.Global;
         foreach (var (identifier, _) in identifiers)
-            if (!(identifier is null))
+            if (identifier is not null)
                 name = name.Qualify(identifier.Value);
         var semicolon = Tokens.Expect<ISemicolonToken>();
         var span = TextSpan.Covering(accept.Span, semicolon);

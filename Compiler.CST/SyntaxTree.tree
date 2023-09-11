@@ -71,7 +71,8 @@ Body: BodyOrBlock = Statements:BodyStatement*;
 Type;
 TypeName: Type, 'IHasContainingLexicalScope' = Name:'TypeName' ReferencedSymbol:'Promise<TypeSymbol?>';
 SimpleTypeName: TypeName = Name:'TypeName' ReferencedSymbol:'Promise<TypeSymbol?>';
-ParameterizedType: Type = TypeName ReferencedSymbol:'Promise<TypeSymbol?>' TypeArguments:Type*;
+ParameterizedType: TypeName = Name:'Name' TypeArguments:Type* ReferencedSymbol:'Promise<TypeSymbol?>';
+// TODO QualifiedTypeName
 OptionalType: Type = Referent:Type;
 CapabilityType: Type = Capability:ReferenceCapability ReferentType:Type;
 ReferenceCapability = Tokens:'ICapabilityToken'* Declared:'DeclaredReferenceCapability';
