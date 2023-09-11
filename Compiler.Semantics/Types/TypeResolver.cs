@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -103,7 +104,7 @@ public class TypeResolver
         {
             ISimpleTypeNameSyntax syn => ResolveType(syn, FixedList<DataType>.Empty, AssignNamedType),
             IParameterizedTypeSyntax syn
-                => throw new NotImplementedException("Parameterized types with reference capabilities not implemented"),
+                => ResolveType(syn, Evaluate(syn.TypeArguments), AssignNamedType),
             _ => throw ExhaustiveMatch.Failed(typeSyntax)
         };
 
@@ -131,6 +132,9 @@ public class TypeResolver
             }
         }
     }
+
+    private FixedList<DataType> Evaluate(IEnumerable<ITypeSyntax> types)
+        => types.Select(t => Evaluate(t, implicitRead: true)).ToFixedList();
 
     private TResult? ResolveType<TResult>(
         ITypeNameSyntax typeName,
