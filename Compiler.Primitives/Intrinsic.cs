@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
@@ -10,14 +11,33 @@ public static class Intrinsic
 {
     public static readonly FixedSymbolTree SymbolTree = DefineIntrinsicSymbols();
 
-    public static readonly FunctionSymbol PrintUtf8
-        = SymbolTree.Symbols.OfType<FunctionSymbol>().Single(f => f.Name.Text == "print_utf8");
+    public static readonly FunctionSymbol PrintUtf8 = Find<FunctionSymbol>("print_utf8");
 
     public static readonly ObjectTypeSymbol RawBoundedList
-        = SymbolTree.Symbols.OfType<ObjectTypeSymbol>().Single(f => f.Name.Text == "Raw_Bounded_List");
+        = Find<ObjectTypeSymbol>("Raw_Bounded_List");
 
     public static readonly ConstructorSymbol NewRawBoundedList
-        = SymbolTree.Symbols.OfType<ConstructorSymbol>().Single(c => c.ContainingSymbol == RawBoundedList);
+        = Find<ConstructorSymbol>(RawBoundedList, null);
+
+    public static readonly MethodSymbol RawBoundedListCapacity
+        = Find<MethodSymbol>(RawBoundedList, "capacity");
+
+    public static readonly MethodSymbol RawBoundedListCount
+        = Find<MethodSymbol>(RawBoundedList, "count");
+
+    public static readonly MethodSymbol RawBoundedListAdd
+        = Find<MethodSymbol>(RawBoundedList, "add");
+
+    private static IEnumerable<T> Find<T>()
+        => SymbolTree.Symbols.OfType<T>();
+
+    private static T Find<T>(string name)
+        where T : Symbol
+        => Find<T>().Single(s => s.Name?.Text == name);
+
+    private static T Find<T>(Symbol containingSymbol, string? name)
+        where T : Symbol =>
+        Find<T>().Single(s => s.ContainingSymbol == containingSymbol && s.Name?.Text == name);
 
     private static FixedSymbolTree DefineIntrinsicSymbols()
     {
@@ -54,6 +74,9 @@ public static class Intrinsic
         var readUtf8Line = new FunctionSymbol(intrinsicsNamespace, "read_utf8_line", Params(DataType.Size, DataType.Size), DataType.Size);
         tree.Add(readUtf8Line);
 
+        var abortUtf8 = new FunctionSymbol(intrinsicsNamespace, "abort_utf8", Params(DataType.Size, DataType.Size), DataType.Never);
+        tree.Add(abortUtf8);
+
         BuildSpecializedCollectionSymbols(intrinsicsPackage, tree);
 
 
@@ -83,32 +106,29 @@ public static class Intrinsic
         tree.Add(classSymbol);
 
         // published new(.capacity) {...}
-        var constructor = new ConstructorSymbol(classSymbol, null, FixedList.Create<DataType>(DataType.Size));
+        var constructor = new ConstructorSymbol(classSymbol, null, Params(DataType.Size));
         tree.Add(constructor);
 
-        // published let capacity: size;
-        var capacity = new FieldSymbol(classSymbol, "capacity", false, DataType.Size);
+        // published fn capacity() -> size;
+        var capacity = new MethodSymbol(classSymbol, "capacity", readClassType, Params(), DataType.Size);
         tree.Add(capacity);
 
         // Given setters are not implemented, making this a function for now
         // published fn count() -> size
-        var count = new MethodSymbol(classSymbol, "count", readClassType,
-            FixedList<DataType>.Empty, DataType.Size);
+        var count = new MethodSymbol(classSymbol, "count", readClassType, Params(), DataType.Size);
         tree.Add(count);
 
         // published /* unsafe */ fn at(mut self, index: size) -> T
-        var at = new MethodSymbol(classSymbol, "at", readClassType,
-            FixedList.Create<DataType>(DataType.Size), itemType);
+        var at = new MethodSymbol(classSymbol, "at", readClassType, Params(DataType.Size), itemType);
         tree.Add(at);
 
         // published /* unsafe */ fn set(mut self, index: size, T value)
-        var set = new MethodSymbol(classSymbol, "set", readClassType,
-            FixedList.Create<DataType>(DataType.Size, itemType), DataType.Void);
+        var set = new MethodSymbol(classSymbol, "set", readClassType, Params(DataType.Size, itemType),
+            DataType.Void);
         tree.Add(set);
 
         // published fn add(mut self, value: T);
-        var add = new MethodSymbol(classSymbol, "add", readClassType,
-            FixedList.Create<DataType>(itemType), DataType.Void);
+        var add = new MethodSymbol(classSymbol, "add", readClassType, Params(itemType), DataType.Void);
         tree.Add(add);
     }
 

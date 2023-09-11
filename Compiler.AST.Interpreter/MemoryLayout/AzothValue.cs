@@ -9,7 +9,7 @@ internal readonly struct AzothValue
     [FieldOffset(0)] public readonly AzothObject ObjectValue;
     [FieldOffset(0)] public readonly BigInteger IntValue;
     [FieldOffset(0)] public readonly byte[] BytesValue;
-    [FieldOffset(0)] public readonly AzothValue[] ArrayValue;
+    [FieldOffset(0)] public readonly RawBoundedList RawBoundedListValue;
     [FieldOffset(0)] private readonly ValueType value;
 
     public bool IsNone => value.Struct is null;
@@ -26,57 +26,56 @@ internal readonly struct AzothValue
     public static AzothValue Object(AzothObject value) => new(value);
     public static AzothValue Int(BigInteger value) => new(value);
     public static AzothValue Bytes(byte[] value) => new(value);
-    public static AzothValue Array(int size) => new(new AzothValue[size]);
+    public static AzothValue RawBoundedList(nuint capacity) => new(new RawBoundedList(capacity));
+    public static AzothValue RawBoundedList(nuint count, AzothValue[] items) => new(new RawBoundedList(count, items));
     public static AzothValue Bool(bool value) => new(value);
     public static AzothValue Byte(byte value) => new(value);
     public static AzothValue I32(int value) => new(value);
     public static AzothValue U32(uint value) => new(value);
     public static AzothValue Offset(nint value) => new(value);
-
     public static AzothValue Size(nuint value) => new(value);
-
     #endregion
 
     #region Private Constructors
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    private AzothValue(AzothObject value) : this()
+    private AzothValue(AzothObject value)
     {
         ObjectValue = value;
     }
-    private AzothValue(BigInteger value) : this()
+    private AzothValue(BigInteger value)
     {
         IntValue = value;
     }
-    private AzothValue(byte[] value) : this()
+    private AzothValue(byte[] value)
     {
         BytesValue = value;
     }
-    private AzothValue(AzothValue[] value)
+    private AzothValue(RawBoundedList value)
     {
-        ArrayValue = value;
+        RawBoundedListValue = value;
     }
-    private AzothValue(bool value) : this()
+    private AzothValue(bool value)
     {
         this.value.Struct = NotStruct;
         this.value.Simple.BoolValue = value;
     }
 
-    private AzothValue(byte value) : this()
+    private AzothValue(byte value)
     {
         this.value.Struct = NotStruct;
         this.value.Simple.ByteValue = value;
     }
-    private AzothValue(int value) : this()
+    private AzothValue(int value)
     {
         this.value.Struct = NotStruct;
         this.value.Simple.I32Value = value;
     }
-    private AzothValue(uint value) : this()
+    private AzothValue(uint value)
     {
         this.value.Struct = NotStruct;
         this.value.Simple.U32Value = value;
     }
-    private AzothValue(nint value) : this()
+    private AzothValue(nint value)
     {
         this.value.Struct = NotStruct;
         this.value.Simple.OffsetValue = value;

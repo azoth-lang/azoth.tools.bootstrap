@@ -1,0 +1,4 @@
+published fn abort(message: string)
+{
+    abort_utf8(message.bytes, message.byte_count);
+}

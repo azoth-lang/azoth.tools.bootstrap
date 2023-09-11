@@ -960,7 +960,7 @@ public class BasicBodyAnalyzer
                 CheckTypeCompatibility(selfParamType, context);
 
                 foreach (var (arg, type) in invocation.Arguments
-                                                      .Zip(methodSymbol.ParameterDataTypes.Select(contextType.ReplaceTypeParametersIn)))
+                    .Zip(methodSymbol.ParameterDataTypes.Select(contextType.ReplaceTypeParametersIn)))
                 {
                     AddImplicitConversionIfNeeded(arg, type, sharing, capabilities);
                     CheckTypeCompatibility(type, arg);

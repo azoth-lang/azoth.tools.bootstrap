@@ -154,7 +154,7 @@ public class InterpreterProcess
         AzothValue self,
         IEnumerable<AzothValue> arguments)
     {
-        if (!(method is IConcreteMethodDeclaration concreteMethod))
+        if (method is not IConcreteMethodDeclaration concreteMethod)
             throw new InvalidOperationException($"Can't call abstract method {method}");
 
         try
@@ -385,7 +385,10 @@ public class InterpreterProcess
             {
                 var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
-                var methodSignature = methodSignatures[exp.ReferencedSymbol];
+                var methodSymbol = exp.ReferencedSymbol;
+                if (methodSymbol.Package == Intrinsic.SymbolTree.Package)
+                    return await CallIntrinsicAsync(methodSymbol, self, arguments);
+                var methodSignature = methodSignatures[methodSymbol];
 
                 var selfType = exp.Context.DataType;
                 switch (selfType)
@@ -528,10 +531,30 @@ public class InterpreterProcess
     {
         if (constructor == Intrinsic.NewRawBoundedList)
         {
-            return ValueTask.FromResult(AzothValue.Array((int)arguments[0].SizeValue));
+            return ValueTask.FromResult(AzothValue.RawBoundedList(arguments[0].SizeValue));
         }
 
         throw new NotImplementedException($"Intrinsic {constructor}");
+    }
+
+    private static ValueTask<AzothValue> CallIntrinsicAsync(
+        MethodSymbol method,
+        AzothValue self,
+        List<AzothValue> arguments)
+    {
+        if (method == Intrinsic.RawBoundedListCapacity)
+            return ValueTask.FromResult(AzothValue.Size((nuint)self.RawBoundedListValue.Items.Length));
+        if (method == Intrinsic.RawBoundedListCount)
+            return ValueTask.FromResult(AzothValue.Size(self.RawBoundedListValue.Count));
+        if (method == Intrinsic.RawBoundedListAdd)
+        {
+            var oldList = self.RawBoundedListValue;
+            oldList.Items[oldList.Count] = arguments[0];
+            var newList = AzothValue.RawBoundedList(oldList.Count + 1, oldList.Items);
+            return ValueTask.FromResult(newList);
+        }
+
+        throw new NotImplementedException($"Intrinsic {method}");
     }
 
     private VTable CreateVTable(IClassDeclaration @class)
