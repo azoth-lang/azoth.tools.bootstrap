@@ -26,6 +26,7 @@ public sealed class ObjectTypeSymbol : TypeSymbol
         DeclaresType = declaresType;
     }
 
+    #region Equals
     public override bool Equals(Symbol? other)
     {
         if (other is null) return false;
@@ -38,6 +39,7 @@ public sealed class ObjectTypeSymbol : TypeSymbol
 
     public override int GetHashCode()
         => HashCode.Combine(ContainingSymbol, Name, DeclaresType);
+    #endregion
 
     public override string ToILString()
         // TODO include generics

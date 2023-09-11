@@ -1,4 +1,6 @@
+using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -12,8 +14,12 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
 
     public override TypeName Name => SpecialTypeName.Any;
 
-    public override ReferenceType With(ReferenceCapability capability)
-        => new AnyType(capability);
+    public override ReferenceType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+    {
+        if (typeArguments.Count != 0)
+            throw new ArgumentException($"`{SpecialTypeName.Any}` does not support type arguments.");
+        return new AnyType(capability);
+    }
 
     #region Equals
     public override bool Equals(DeclaredReferenceType? other) => ReferenceEquals(this, other);

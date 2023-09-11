@@ -240,7 +240,7 @@ public class EntitySymbolBuilder
         IClassDeclarationSyntax declaringClass)
     {
         var selfType = declaringClass.Symbol.Result.DeclaresType;
-        return resolver.Evaluate(selfType, selfParameter.Capability);
+        return resolver.Evaluate(selfType, selfParameter.Capability, selfType.GenericParameterTypes);
     }
 
     private void BuildSelfParameterSymbol(

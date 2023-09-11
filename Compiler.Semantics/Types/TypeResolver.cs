@@ -37,7 +37,7 @@ public class TypeResolver
                 return null;
             case ISimpleTypeNameSyntax typeName:
             {
-                _ = ResolveType(typeName, AssignTypeName);
+                _ = ResolveType(typeName, FixedList<DataType>.Empty, AssignTypeName);
                 break;
             }
             case IParameterizedTypeSyntax syn:
@@ -62,14 +62,14 @@ public class TypeResolver
 
         return typeSyntax.NamedType ?? throw new InvalidOperationException();
 
-        Void AssignTypeName(ITypeNameSyntax typeName, TypeSymbol symbol)
+        Void AssignTypeName(ITypeNameSyntax typeName, TypeSymbol symbol, FixedList<DataType> typeArguments)
         {
             var type = symbol switch
             {
                 PrimitiveTypeSymbol sym => sym.DeclaresType,
                 ObjectTypeSymbol sym => implicitRead || sym.DeclaresType.IsConst
-                    ? sym.DeclaresType.WithRead()
-                    : sym.DeclaresType.WithMutate(),
+                    ? sym.DeclaresType.WithRead(typeArguments)
+                    : sym.DeclaresType.WithMutate(typeArguments),
                 _ => throw ExhaustiveMatch.Failed(symbol)
             };
             typeName.NamedType = type;
@@ -83,31 +83,41 @@ public class TypeResolver
         {
             default:
                 throw ExhaustiveMatch.Failed(typeSyntax);
-            case ISimpleTypeNameSyntax typeName:
-                var bareType = EvaluateBareType(typeName, capability);
-                return bareType?.With(capability) ?? (DataType)DataType.Unknown;
+            case ISimpleTypeNameSyntax syn:
+                _ = EvaluateBareType(syn, capability);
+                return syn.NamedType!;
             case IParameterizedTypeSyntax syn:
-                throw new NotImplementedException("Parameterized types with reference capabilities not implemented");
+                _ = EvaluateBareType(syn, capability);
+                return syn.NamedType!;
             case ICapabilityTypeSyntax _:
             case IOptionalTypeSyntax _:
                 throw new NotImplementedException("Report error about incorrect type expression.");
         }
     }
 
-    public DeclaredReferenceType? EvaluateBareType(ITypeNameSyntax typeName, ReferenceCapability? capability = null)
+    public DeclaredReferenceType? EvaluateBareType(
+        ITypeNameSyntax typeSyntax,
+        ReferenceCapability? capability = null)
     {
-        return ResolveType(typeName, AssignNamedType);
+        return typeSyntax switch
+        {
+            ISimpleTypeNameSyntax syn => ResolveType(syn, FixedList<DataType>.Empty, AssignNamedType),
+            IParameterizedTypeSyntax syn
+                => throw new NotImplementedException("Parameterized types with reference capabilities not implemented"),
+            _ => throw ExhaustiveMatch.Failed(typeSyntax)
+        };
 
         DeclaredReferenceType? AssignNamedType(
             ITypeNameSyntax _,
-            TypeSymbol symbol)
+            TypeSymbol symbol,
+            FixedList<DataType> typeArguments)
         {
             switch (symbol)
             {
                 default:
                     throw ExhaustiveMatch.Failed(symbol);
                 case PrimitiveTypeSymbol sym:
-                    typeName.NamedType = sym.DeclaresType;
+                    typeSyntax.NamedType = sym.DeclaresType;
                     return null;
                 case ObjectTypeSymbol sym:
                     var bareType = sym.DeclaresType;
@@ -116,7 +126,7 @@ public class TypeResolver
                     capability ??= ReferenceCapability.Identity;
                     // Compatibility of the capability with the type is not checked here. That
                     // is done on the capability type syntax.
-                    typeName.NamedType = bareType.With(capability);
+                    typeSyntax.NamedType = bareType.With(capability, typeArguments);
                     return bareType;
             }
         }
@@ -124,7 +134,8 @@ public class TypeResolver
 
     private TResult? ResolveType<TResult>(
         ITypeNameSyntax typeName,
-        Func<ITypeNameSyntax, TypeSymbol, TResult?> assignNamedType)
+        FixedList<DataType> typeArguments,
+        Func<ITypeNameSyntax, TypeSymbol, FixedList<DataType>, TResult?> assignNamedType)
         where TResult : notnull
     {
         var symbols = typeName.LookupInContainingScope().ToFixedList();
@@ -138,7 +149,7 @@ public class TypeResolver
             case 1:
                 var symbol = symbols.Single();
                 typeName.ReferencedSymbol.Fulfill(symbol);
-                return assignNamedType(typeName, symbol);
+                return assignNamedType(typeName, symbol, typeArguments);
             default:
                 diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
                 typeName.ReferencedSymbol.Fulfill(null);
@@ -148,6 +159,9 @@ public class TypeResolver
     }
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-    public ObjectType Evaluate(DeclaredObjectType referenceType, IReferenceCapabilitySyntax capability)
-        => referenceType.With(capability.Declared.ToReferenceCapability());
+    public ObjectType Evaluate(
+        DeclaredObjectType referenceType,
+        IReferenceCapabilitySyntax capability,
+        FixedList<DataType> typeArguments)
+        => referenceType.With(capability.Declared.ToReferenceCapability(), typeArguments);
 }

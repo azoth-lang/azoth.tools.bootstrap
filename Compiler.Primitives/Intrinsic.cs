@@ -71,6 +71,7 @@ public static class Intrinsic
     private static void BuildRawBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
     {
         var classType = DeclaredObjectType.Create(@namespace.NamespaceName, "Raw_Bounded_List", false, "T");
+        var readClassType = classType.WithRead(classType.GenericParameterTypes);
         var itemType = classType.GenericParameterTypes[0];
         var classSymbol = new ObjectTypeSymbol(@namespace, classType);
         tree.Add(classSymbol);
@@ -85,22 +86,22 @@ public static class Intrinsic
 
         // Given setters are not implemented, making this a function for now
         // published fn count() -> size
-        var count = new MethodSymbol(classSymbol, "count", classType.WithRead(),
+        var count = new MethodSymbol(classSymbol, "count", readClassType,
             FixedList<DataType>.Empty, DataType.Size);
         tree.Add(count);
 
         // published /* unsafe */ fn at(mut self, index: size) -> T
-        var at = new MethodSymbol(classSymbol, "at", classType.WithRead(),
+        var at = new MethodSymbol(classSymbol, "at", readClassType,
             FixedList.Create<DataType>(DataType.Size), itemType);
         tree.Add(at);
 
         // published /* unsafe */ fn set(mut self, index: size, T value)
-        var set = new MethodSymbol(classSymbol, "set", classType.WithRead(),
+        var set = new MethodSymbol(classSymbol, "set", readClassType,
             FixedList.Create<DataType>(DataType.Size, itemType), DataType.Void);
         tree.Add(set);
 
         // published fn add(mut self, value: T);
-        var add = new MethodSymbol(classSymbol, "add", classType.WithRead(),
+        var add = new MethodSymbol(classSymbol, "add", readClassType,
             FixedList.Create<DataType>(itemType), DataType.Void);
         tree.Add(add);
     }

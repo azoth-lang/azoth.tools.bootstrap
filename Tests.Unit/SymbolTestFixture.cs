@@ -62,7 +62,7 @@ public abstract class SymbolTestFixture
         return new MethodSymbol(
             containing,
             Name(name) ?? DefaultName("method"),
-            self ?? containing.DeclaresType.With(ReferenceCapability.ReadOnly),
+            self ?? containing.DeclaresType.With(ReferenceCapability.ReadOnly, FixedList<DataType>.Empty),
             @params ?? Params(),
             @return ?? DataType());
     }

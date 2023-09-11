@@ -521,7 +521,7 @@ public class BasicBodyAnalyzer
             case IIntegerLiteralExpressionSyntax exp:
                 return exp.DataType = new IntegerConstantType(exp.Value);
             case IStringLiteralExpressionSyntax exp:
-                return exp.DataType = stringSymbol?.DeclaresType.With(ReferenceCapability.Constant) ?? (DataType)DataType.Unknown;
+                return exp.DataType = stringSymbol?.DeclaresType.With(ReferenceCapability.Constant, FixedList<DataType>.Empty) ?? (DataType)DataType.Unknown;
             case IBoolLiteralExpressionSyntax exp:
                 return exp.DataType = exp.Value ? DataType.True : DataType.False;
             case IBinaryOperatorExpressionSyntax binaryOperatorExpression:

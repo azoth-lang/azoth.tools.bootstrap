@@ -36,7 +36,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         Name = name;
         IsConst = isConst;
         GenericParameters = genericParameters;
-        GenericParameterTypes = GenericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList();
+        GenericParameterTypes = GenericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList<DataType>();
     }
 
     // TODO this needs a containing package
@@ -52,7 +52,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
 
     public FixedList<GenericParameter> GenericParameters { get; }
 
-    public FixedList<GenericParameterType> GenericParameterTypes { get; }
+    public FixedList<DataType> GenericParameterTypes { get; }
 
     /// <summary>
     /// Make a version of this type for use as the constructor parameter. One issue is
@@ -61,7 +61,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// <remarks>This is always `mut` because the type can be mutated inside the constructor.</remarks>
     public ObjectType ToConstructorSelf()
         // TODO does this need to be `init`?
-        => With(ReferenceCapability.Mutable);
+        => With(ReferenceCapability.Mutable, GenericParameterTypes);
 
     /// <summary>
     /// Make a version of this type for use as the return type of the default constructor.
@@ -69,11 +69,11 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
     /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
     public ObjectType ToDefaultConstructorReturn()
-        => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.Isolated);
+        => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.Isolated, GenericParameterTypes);
 
     public ObjectType ToConstructorReturn(IEnumerable<DataType> parameterTypes)
     {
-        if (IsConst) return With(ReferenceCapability.Constant);
+        if (IsConst) return With(ReferenceCapability.Constant, GenericParameterTypes);
         foreach (var parameterType in parameterTypes)
             switch (parameterType)
             {
@@ -84,14 +84,14 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
                 case UnknownType:
                     continue;
                 default:
-                    return With(ReferenceCapability.Mutable);
+                    return With(ReferenceCapability.Mutable, GenericParameterTypes);
             }
 
-        return With(ReferenceCapability.Isolated);
+        return With(ReferenceCapability.Isolated, GenericParameterTypes);
     }
 
-    public override ObjectType With(ReferenceCapability capability)
-        => ObjectType.Create(capability, this, FixedList<DataType>.Empty);
+    public override ObjectType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+        => ObjectType.Create(capability, this, typeArguments);
 
     #region Equals
     public override bool Equals(DeclaredReferenceType? other)
@@ -111,15 +111,15 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// Make a version of this type that is the default read reference capability for the type. That
     /// is either read-only or constant.
     /// </summary>
-    public ObjectType WithRead()
-        => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.ReadOnly);
+    public ObjectType WithRead(FixedList<DataType> typeArguments)
+        => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.ReadOnly, typeArguments);
 
     /// <summary>
     /// Make a version of this type that is the default mutate reference capability for the type.
     /// For constant types, that isn't allowed and a constant reference is returned.
     /// </summary>
-    public ObjectType WithMutate()
-        => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.ReadOnly);
+    public ObjectType WithMutate(FixedList<DataType> typeArguments)
+        => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.ReadOnly, typeArguments);
 
     public override string ToString()
     {

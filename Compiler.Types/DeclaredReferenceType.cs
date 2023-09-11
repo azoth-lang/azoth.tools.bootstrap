@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -14,7 +15,7 @@ public abstract class DeclaredReferenceType : IEquatable<DeclaredReferenceType>
 {
     public abstract TypeName Name { get; }
 
-    public abstract ReferenceType With(ReferenceCapability capability);
+    public abstract ReferenceType With(ReferenceCapability capability, FixedList<DataType> typeArguments);
 
 
     #region MyRegion
