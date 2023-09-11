@@ -9,7 +9,6 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
-using Void = Azoth.Tools.Bootstrap.Framework.Void;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -36,15 +35,11 @@ public class TypeResolver
                 throw ExhaustiveMatch.Failed(typeSyntax);
             case null:
                 return null;
-            case ISimpleTypeNameSyntax typeName:
-            {
-                _ = ResolveType(typeName, FixedList<DataType>.Empty, AssignTypeName);
-                break;
-            }
+            case ISimpleTypeNameSyntax syn:
+                return ResolveType(syn, FixedList<DataType>.Empty, AssignTypeName) ?? DataType.Unknown;
             case IParameterizedTypeSyntax syn:
-            {
-                throw new NotImplementedException("Resolution of parameterized type names not implemented");
-            }
+                var typeArguments = Evaluate(syn.TypeArguments);
+                return ResolveType(syn, typeArguments, AssignTypeName) ?? DataType.Unknown;
             case ICapabilityTypeSyntax referenceCapability:
             {
                 var capability = referenceCapability.Capability.Declared.ToReferenceCapability();
@@ -61,9 +56,7 @@ public class TypeResolver
             }
         }
 
-        return typeSyntax.NamedType ?? throw new InvalidOperationException();
-
-        Void AssignTypeName(ITypeNameSyntax typeName, TypeSymbol symbol, FixedList<DataType> typeArguments)
+        DataType AssignTypeName(ITypeNameSyntax typeName, TypeSymbol symbol, FixedList<DataType> typeArguments)
         {
             var type = symbol switch
             {
@@ -73,8 +66,7 @@ public class TypeResolver
                     : sym.DeclaresType.WithMutate(typeArguments),
                 _ => throw ExhaustiveMatch.Failed(symbol)
             };
-            typeName.NamedType = type;
-            return default;
+            return typeName.NamedType = type;
         }
     }
 
