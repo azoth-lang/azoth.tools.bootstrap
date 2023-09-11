@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -40,9 +41,15 @@ internal class ParameterizedTypeSyntax : TypeSyntax, IParameterizedTypeSyntax
         Name = name;
     }
 
-    public IEnumerable<IPromise<TypeSymbol>> LookupInContainingScope()
-        => throw new NotImplementedException();
+    public IEnumerable<TypeSymbol> LookupInContainingScope()
+    {
+        if (containingLexicalScope is not null)
+            return containingLexicalScope.Lookup(Name).Select(p => p.As<ObjectTypeSymbol>())
+                .WhereNotNull().Select(p => p.Result)
+                .Where(s => s.DeclaresType.GenericParameters.Count == TypeArguments.Count);
+
+        throw new InvalidOperationException($"Can't lookup type name without {nameof(ContainingLexicalScope)}");
+    }
 
     public override string ToString() => $"{Name}[{string.Join(", ", TypeArguments)}]";
-
 }

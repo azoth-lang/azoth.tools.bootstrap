@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using Void = Azoth.Tools.Bootstrap.Framework.Void;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -36,33 +37,7 @@ public class TypeResolver
                 return null;
             case ISimpleTypeNameSyntax typeName:
             {
-                var symbolPromises = typeName.LookupInContainingScope().ToFixedList();
-                switch (symbolPromises.Count)
-                {
-                    case 0:
-                        diagnostics.Add(NameBindingError.CouldNotBindName(file, typeName.Span));
-                        typeName.ReferencedSymbol.Fulfill(null);
-                        typeName.NamedType = DataType.Unknown;
-                        break;
-                    case 1:
-                        var symbol = symbolPromises.Single().Result;
-                        typeName.ReferencedSymbol.Fulfill(symbol);
-                        var type = symbol switch
-                        {
-                            PrimitiveTypeSymbol sym => sym.DeclaresType,
-                            ObjectTypeSymbol sym => implicitRead || sym.DeclaresType.IsConst
-                                ? sym.DeclaresType.WithRead()
-                                : sym.DeclaresType.WithMutate(),
-                            _ => throw ExhaustiveMatch.Failed(symbol)
-                        };
-                        typeName.NamedType = type;
-                        break;
-                    default:
-                        diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
-                        typeName.ReferencedSymbol.Fulfill(null);
-                        typeName.NamedType = DataType.Unknown;
-                        break;
-                }
+                _ = ResolveType(typeName, AssignTypeName);
                 break;
             }
             case IParameterizedTypeSyntax syn:
@@ -86,6 +61,20 @@ public class TypeResolver
         }
 
         return typeSyntax.NamedType ?? throw new InvalidOperationException();
+
+        Void AssignTypeName(ITypeNameSyntax typeName, TypeSymbol symbol)
+        {
+            var type = symbol switch
+            {
+                PrimitiveTypeSymbol sym => sym.DeclaresType,
+                ObjectTypeSymbol sym => implicitRead || sym.DeclaresType.IsConst
+                    ? sym.DeclaresType.WithRead()
+                    : sym.DeclaresType.WithMutate(),
+                _ => throw ExhaustiveMatch.Failed(symbol)
+            };
+            typeName.NamedType = type;
+            return default;
+        }
     }
 
     private DataType Evaluate(ITypeSyntax typeSyntax, ReferenceCapability capability)
@@ -107,41 +96,54 @@ public class TypeResolver
 
     public BareReferenceType? EvaluateBareType(ITypeNameSyntax typeName, ReferenceCapability? capability = null)
     {
-        var symbolPromises = typeName.LookupInContainingScope().ToFixedList();
-        switch (symbolPromises.Count)
+        return ResolveType(typeName, AssignNamedType);
+
+        BareReferenceType? AssignNamedType(
+            ITypeNameSyntax _,
+            TypeSymbol symbol)
+        {
+            switch (symbol)
+            {
+                default:
+                    throw ExhaustiveMatch.Failed(symbol);
+                case PrimitiveTypeSymbol sym:
+                    typeName.NamedType = sym.DeclaresType;
+                    return null;
+                case ObjectTypeSymbol sym:
+                    var bareType = sym.DeclaresType;
+                    // If capability not provided, then this is for a constructor or something
+                    // and reading the value doesn't matter, it exists to name the type.
+                    capability ??= ReferenceCapability.Identity;
+                    // Compatibility of the capability with the type is not checked here. That
+                    // is done on the capability type syntax.
+                    typeName.NamedType = bareType.With(capability);
+                    return bareType;
+            }
+        }
+    }
+
+    private TResult? ResolveType<TResult>(
+        ITypeNameSyntax typeName,
+        Func<ITypeNameSyntax, TypeSymbol, TResult?> assignNamedType)
+        where TResult : notnull
+    {
+        var symbols = typeName.LookupInContainingScope().ToFixedList();
+        switch (symbols.Count)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindName(file, typeName.Span));
                 typeName.ReferencedSymbol.Fulfill(null);
                 typeName.NamedType = DataType.Unknown;
-                return null;
+                return default;
             case 1:
-                var symbol = symbolPromises.Single().Result;
+                var symbol = symbols.Single();
                 typeName.ReferencedSymbol.Fulfill(symbol);
-                switch (symbol)
-                {
-                    default:
-                        throw ExhaustiveMatch.Failed(symbol);
-                    case PrimitiveTypeSymbol sym:
-                        typeName.NamedType = sym.DeclaresType;
-                        return null;
-                    case ObjectTypeSymbol sym:
-                        // TODO this is odd because without
-                        var bareType = sym.DeclaresType;
-                        // If capability not provided, then this is for a constructor or something
-                        // and reading the value doesn't matter, it exists to name the type.
-                        capability ??= ReferenceCapability.Identity;
-                        // Compatibility of the capability with the type is not checked here. That
-                        // is done on the capability
-                        typeName.NamedType = bareType.With(capability);
-                        return bareType;
-
-                }
+                return assignNamedType(typeName, symbol);
             default:
                 diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
                 typeName.ReferencedSymbol.Fulfill(null);
                 typeName.NamedType = DataType.Unknown;
-                return null;
+                return default;
         }
     }
 

@@ -40,10 +40,10 @@ internal class SimpleTypeNameSyntax : TypeSyntax, ISimpleTypeNameSyntax
         Name = name;
     }
 
-    public IEnumerable<IPromise<TypeSymbol>> LookupInContainingScope()
+    public IEnumerable<TypeSymbol> LookupInContainingScope()
     {
         if (containingLexicalScope is not null)
-            return containingLexicalScope.Lookup(Name).Select(p => p.As<TypeSymbol>()).WhereNotNull();
+            return containingLexicalScope.Lookup(Name).Select(p => p.As<TypeSymbol>()).WhereNotNull().Select(p => p.Result);
 
         throw new InvalidOperationException($"Can't lookup type name without {nameof(ContainingLexicalScope)}");
     }
