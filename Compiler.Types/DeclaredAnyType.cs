@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -21,6 +22,8 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
         return new(capability);
     }
 
+    [SuppressMessage("Performance", "CA1822:Mark members as static",
+        Justification = "OO")]
     public AnyType With(ReferenceCapability capability) => new(capability);
 
     #region Equals

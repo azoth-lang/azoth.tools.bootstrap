@@ -46,13 +46,13 @@ public static class DataTypeExtensions
     /// </summary>
     [DebuggerHidden]
     public static DataType Assigned([NotNull] this DataType? type)
-        => type ?? throw new InvalidOperationException("Type not assigned");
+        => type ?? throw new InvalidOperationException("Type not assigned.");
 
     [DebuggerHidden]
     public static DataType Known(this DataType? type)
     {
         if (!type.Assigned().IsFullyKnown)
-            throw new InvalidOperationException($"Type {type.ToILString()} not known");
+            throw new InvalidOperationException($"Type {type.ToILString()} not fully known.");
 
         return type!;
     }
@@ -61,7 +61,8 @@ public static class DataTypeExtensions
     public static DataType Known(this IPromise<DataType> promise)
     {
         var type = promise.Result;
-        if (!type.IsFullyKnown) throw new InvalidOperationException($"Type {type.ToILString()} not known");
+        if (!type.IsFullyKnown)
+            throw new InvalidOperationException($"Type {type.ToILString()} not fully known.");
 
         return type;
     }
@@ -69,6 +70,10 @@ public static class DataTypeExtensions
     public static string ToILString(this FixedList<DataType> types)
         => string.Join(", ", types.Select(t => t.ToILString()));
 
+    /// <summary>
+    /// If this is a reference type or an optional reference type, the underlying reference type.
+    /// Otherwise, <see langword="null"/>.
+    /// </summary>
     public static ReferenceType? UnderlyingReferenceType(this DataType type)
     {
         return type switch

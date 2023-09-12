@@ -41,10 +41,11 @@ public sealed class ObjectType : ReferenceType
     /// </summary>
     public static ObjectType Create(
         ReferenceCapability capability,
+        Name containingPackage,
         NamespaceName containingNamespace,
         Name name,
         bool isConst)
-        => new(capability, DeclaredObjectType.Create(containingNamespace, name, isConst), FixedList<DataType>.Empty);
+        => new(capability, DeclaredObjectType.Create(containingPackage, containingNamespace, name, isConst), FixedList<DataType>.Empty);
 
     /// <summary>
     /// Create a object type for a given class or trait.

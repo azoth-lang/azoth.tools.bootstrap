@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 
 public sealed class NamespaceName : IEquatable<NamespaceName>
 {
-    public static readonly NamespaceName Global = new NamespaceName(FixedList<Name>.Empty);
+    public static readonly NamespaceName Global = new(FixedList<Name>.Empty);
 
     public FixedList<Name> Segments { [DebuggerStepThrough] get; }
 
@@ -40,6 +40,7 @@ public sealed class NamespaceName : IEquatable<NamespaceName>
 
     public override string ToString() => string.Join('.', Segments);
 
+    #region Equals
     public bool Equals(NamespaceName? other)
     {
         if (other is null) return false;
@@ -61,6 +62,7 @@ public sealed class NamespaceName : IEquatable<NamespaceName>
 
     public static bool operator !=(NamespaceName? left, NamespaceName? right)
         => !Equals(left, right);
+    #endregion
 
     public static implicit operator NamespaceName(Name name) => new(name);
 

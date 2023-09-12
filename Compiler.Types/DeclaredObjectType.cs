@@ -9,29 +9,37 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public sealed class DeclaredObjectType : DeclaredReferenceType
 {
-    public static DeclaredObjectType Create(NamespaceName containingNamespace, Name name, bool isConst)
-        => new(containingNamespace, name, isConst, FixedList<GenericParameter>.Empty);
+    public static DeclaredObjectType Create(
+        Name containingPackage,
+        NamespaceName containingNamespace,
+        Name name,
+        bool isConst)
+        => new(containingPackage, containingNamespace, name, isConst, FixedList<GenericParameter>.Empty);
 
     public static DeclaredObjectType Create(
+        Name containingPackage,
         NamespaceName containingNamespace,
         Name name,
         bool isConst,
         FixedList<GenericParameter> genericParameters)
-        => new(containingNamespace, name, isConst, genericParameters);
+        => new(containingPackage, containingNamespace, name, isConst, genericParameters);
 
     public static DeclaredObjectType Create(
+        Name containingPackage,
         NamespaceName containingNamespace,
         Name name,
         bool isConst,
         params GenericParameter[] genericParameters) =>
-        new(containingNamespace, name, isConst, FixedList.Create(genericParameters));
+        new(containingPackage, containingNamespace, name, isConst, FixedList.Create(genericParameters));
 
     private DeclaredObjectType(
+        Name containingPackage,
         NamespaceName containingNamespace,
         Name name,
         bool isConst,
         FixedList<GenericParameter> genericParameters)
     {
+        ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
         Name = name;
         IsConst = isConst;
@@ -40,7 +48,8 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         GenericParameterDataTypes = GenericParameterTypes.ToFixedList<DataType>();
     }
 
-    // TODO this needs a containing package
+    public Name ContainingPackage { get; }
+
     public NamespaceName ContainingNamespace { get; }
 
     public override Name Name { get; }
@@ -103,12 +112,14 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is DeclaredObjectType objectType
+            && ContainingPackage == objectType.ContainingPackage
             && ContainingNamespace == objectType.ContainingNamespace
             && Name == objectType.Name
             && IsConst == objectType.IsConst;
     }
 
-    public override int GetHashCode() => HashCode.Combine(ContainingNamespace, Name, IsConst);
+    public override int GetHashCode()
+        => HashCode.Combine(ContainingPackage, ContainingNamespace, Name, IsConst);
     #endregion
 
     /// <summary>
@@ -134,6 +145,9 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
 
     public void ToString(StringBuilder builder)
     {
+        builder.Append('<');
+        builder.Append(ContainingPackage);
+        builder.Append(">::");
         builder.Append(ContainingNamespace);
         if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
         builder.Append(Name);

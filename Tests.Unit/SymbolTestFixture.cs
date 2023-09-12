@@ -85,12 +85,18 @@ public abstract class SymbolTestFixture
 
     protected ObjectType DataType(
         string? name = null,
+        Name? containingPackage = null,
         NamespaceName? containingNamespace = null,
         bool? isConst = null,
         ReferenceCapability? referenceCapability = null)
     {
         var finalName = Name(name) ?? DefaultName("DataType");
-        return ObjectType.Create(referenceCapability ?? ReferenceCapability.Constant, containingNamespace ?? NamespaceName.Global, finalName.Text, isConst ?? false);
+        return ObjectType.Create(
+            referenceCapability ?? ReferenceCapability.Constant,
+            containingPackage ?? DefaultName("package"),
+            containingNamespace ?? NamespaceName.Global,
+            finalName.Text,
+            isConst ?? false);
     }
 
     protected ObjectTypeSymbol Type(

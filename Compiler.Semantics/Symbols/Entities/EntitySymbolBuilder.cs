@@ -147,7 +147,8 @@ public class EntitySymbolBuilder
         if (!@class.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
         var typeParameters = @class.GenericParameters.Select(p => new GenericParameter(p.Name)).ToFixedList();
-        var classType = DeclaredObjectType.Create(@class.ContainingNamespaceName, @class.Name, @class.IsConst, typeParameters);
+        var packageName = @class.ContainingNamespaceSymbol.Package!.Name;
+        var classType = DeclaredObjectType.Create(packageName, @class.ContainingNamespaceName, @class.Name, @class.IsConst, typeParameters);
 
         var classSymbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(classSymbol);
