@@ -91,7 +91,7 @@ public class EntitySymbolBuilder
     private void BuildConstructorSymbol(IConstructorDeclarationSyntax constructor)
     {
         constructor.Symbol.BeginFulfilling();
-        var selfParameterType = ResolveConstructorSelfParameterType(constructor.ImplicitSelfParameter, constructor.DeclaringClass);
+        var selfParameterType = ResolveConstructorSelfParameterType(constructor.DeclaringClass);
         var resolver = new TypeResolver(constructor.File, diagnostics);
         var parameterTypes = ResolveParameterTypes(resolver, constructor.Parameters, constructor.DeclaringClass);
 
@@ -107,7 +107,7 @@ public class EntitySymbolBuilder
     {
         associatedFunction.Symbol.BeginFulfilling();
         var resolver = new TypeResolver(associatedFunction.File, diagnostics);
-        var parameterTypes = ResolveParameterTypes(resolver, associatedFunction.Parameters, null);
+        var parameterTypes = ResolveParameterTypes(resolver, associatedFunction.Parameters);
         var returnType = ResolveReturnType(associatedFunction.ReturnType, resolver);
         var declaringClassSymbol = associatedFunction.DeclaringClass.Symbol.Result;
         var symbol = new FunctionSymbol(declaringClassSymbol, associatedFunction.Name, parameterTypes, returnType);
@@ -134,7 +134,7 @@ public class EntitySymbolBuilder
     {
         function.Symbol.BeginFulfilling();
         var resolver = new TypeResolver(function.File, diagnostics);
-        var parameterTypes = ResolveParameterTypes(resolver, function.Parameters, null);
+        var parameterTypes = ResolveParameterTypes(resolver, function.Parameters);
         var returnType = ResolveReturnType(function.ReturnType, resolver);
         var symbol = new FunctionSymbol(function.ContainingNamespaceSymbol, function.Name, parameterTypes, returnType);
         function.Symbol.Fulfill(symbol);
@@ -148,7 +148,8 @@ public class EntitySymbolBuilder
 
         var typeParameters = @class.GenericParameters.Select(p => new GenericParameter(p.Name)).ToFixedList();
         var packageName = @class.ContainingNamespaceSymbol.Package!.Name;
-        var classType = DeclaredObjectType.Create(packageName, @class.ContainingNamespaceName, @class.Name, @class.IsConst, typeParameters);
+        var classType = DeclaredObjectType.Create(packageName, @class.ContainingNamespaceName,
+            @class.Name, @class.IsConst, typeParameters);
 
         var classSymbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(classSymbol);
@@ -160,7 +161,6 @@ public class EntitySymbolBuilder
 
         void AddCircularDefinitionError()
         {
-            // TODO use something better than Name here which is an old name
             diagnostics.Add(TypeError.CircularDefinition(@class.File, @class.NameSpan, @class));
         }
     }
@@ -176,10 +176,24 @@ public class EntitySymbolBuilder
         }
     }
 
+    private static FixedList<DataType> ResolveParameterTypes(
+        TypeResolver resolver,
+        IEnumerable<INamedParameterSyntax> parameters)
+    {
+        var types = new List<DataType>();
+        foreach (var parameter in parameters)
+        {
+            var type = resolver.Evaluate(parameter.Type, implicitRead: true);
+            types.Add(type);
+        }
+
+        return types.ToFixedList();
+    }
+
     private FixedList<DataType> ResolveParameterTypes(
         TypeResolver resolver,
         IEnumerable<IConstructorParameterSyntax> parameters,
-        IClassDeclarationSyntax? declaringClass)
+        IClassDeclarationSyntax declaringClass)
     {
         var types = new List<DataType>();
         foreach (var parameter in parameters)
@@ -195,15 +209,13 @@ public class EntitySymbolBuilder
                 break;
                 case IFieldParameterSyntax fieldParameter:
                 {
-                    var field = (declaringClass ?? throw new InvalidOperationException("Field parameter outside of class declaration"))
-                                .Members.OfType<IFieldDeclarationSyntax>()
-                                .SingleOrDefault(f => f.Name == fieldParameter.Name);
+                    var field = declaringClass.Members.OfType<IFieldDeclarationSyntax>()
+                                              .SingleOrDefault(f => f.Name == fieldParameter.Name);
                     if (field is null)
                     {
                         types.Add(DataType.Unknown);
                         fieldParameter.ReferencedSymbol.Fulfill(null);
-                        // TODO report an error
-                        throw new NotImplementedException();
+                        throw new NotImplementedException("Report diagnostic about field parameter without matching field");
                     }
                     else
                     {
@@ -244,9 +256,7 @@ public class EntitySymbolBuilder
         }
     }
 
-    private static ObjectType ResolveConstructorSelfParameterType(
-        ISelfParameterSyntax selfParameter,
-        IClassDeclarationSyntax declaringClass)
+    private static ObjectType ResolveConstructorSelfParameterType(IClassDeclarationSyntax declaringClass)
         => declaringClass.Symbol.Result.DeclaresType.ToConstructorSelf();
 
     private static ObjectType ResolveMethodSelfParameterType(

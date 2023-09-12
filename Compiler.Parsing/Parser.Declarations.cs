@@ -82,8 +82,7 @@ public partial class Parser
     }
 
     #region Parse Namespaces
-    internal NamespaceDeclarationSyntax ParseNamespaceDeclaration(
-        ModifierParser modifiers)
+    internal NamespaceDeclarationSyntax ParseNamespaceDeclaration(ModifierParser modifiers)
     {
         modifiers.ParseEndOfModifiers();
         var ns = Tokens.Expect<INamespaceKeywordToken>();
