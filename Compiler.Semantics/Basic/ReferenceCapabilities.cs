@@ -43,7 +43,7 @@ public class ReferenceCapabilities
     public DataType CurrentType(BindingSymbol? symbol)
     {
         if (symbol?.DataType is ReferenceType referenceType)
-            return referenceType.To(currentCapabilities[symbol]);
+            return referenceType.With(currentCapabilities[symbol]);
 
         // Other types don't have capabilities and don't need to be tracked
         return symbol?.DataType ?? DataType.Unknown;

@@ -61,7 +61,7 @@ public class TypeResolver
             var type = symbol switch
             {
                 PrimitiveTypeSymbol sym => sym.DeclaresType,
-                ObjectTypeSymbol sym => implicitRead || sym.DeclaresType.IsConst
+                ObjectTypeSymbol sym => implicitRead
                     ? sym.DeclaresType.WithRead(typeArguments)
                     : sym.DeclaresType.WithMutate(typeArguments),
                 GenericParameterTypeSymbol sym => sym.DeclaresType,

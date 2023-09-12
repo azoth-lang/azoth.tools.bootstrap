@@ -16,6 +16,6 @@ public sealed class RecoverConst : RecoverConversion
         (type, _) = PriorConversion.Apply(type, semantics);
         if (type is not ReferenceType referenceType)
             throw new InvalidOperationException($"Cannot recover const for type '{type}'");
-        return (referenceType.To(ReferenceCapability.Constant), ExpressionSemantics.ConstReference);
+        return (referenceType.With(ReferenceCapability.Constant), ExpressionSemantics.ConstReference);
     }
 }

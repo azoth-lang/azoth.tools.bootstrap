@@ -14,6 +14,6 @@ public class ImplicitFreeze : ChainedConversion
         (type, _) = PriorConversion.Apply(type, semantics);
         if (type is not ReferenceType { AllowsFreeze: true } referenceType)
             throw new InvalidOperationException($"Cannot implicitly freeze type '{type.ToILString()}'");
-        return (referenceType.To(ReferenceCapability.Constant), ExpressionSemantics.ConstReference);
+        return (referenceType.With(ReferenceCapability.Constant), ExpressionSemantics.ConstReference);
     }
 }

@@ -14,6 +14,6 @@ public class ImplicitMove : ChainedConversion
         (type, _) = PriorConversion.Apply(type, semantics);
         if (type is not ReferenceType { AllowsRecoverIsolation: true } referenceType)
             throw new InvalidOperationException($"Cannot implicitly move type '{type.ToILString()}'");
-        return (referenceType.To(ReferenceCapability.Isolated), ExpressionSemantics.IsolatedReference);
+        return (referenceType.With(ReferenceCapability.Isolated), ExpressionSemantics.IsolatedReference);
     }
 }

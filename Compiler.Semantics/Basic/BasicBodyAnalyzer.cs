@@ -224,7 +224,7 @@ public class BasicBodyAnalyzer
                         throw new NotImplementedException(
                             "Compile error: can't infer mutability for non reference type");
 
-                    type = referenceType.To(inferCapability.Declared.ToReferenceCapability());
+                    type = referenceType.With(inferCapability.Declared.ToReferenceCapability());
                 }
 
                 return type;
@@ -357,7 +357,7 @@ public class BasicBodyAnalyzer
                 var referentType = InferType(exp.Referent, sharing, capabilities);
                 DataType type;
                 if (referentType is ReferenceType referenceType)
-                    type = referenceType.To(ReferenceCapability.Identity);
+                    type = referenceType.With(ReferenceCapability.Identity);
                 else
                 {
                     diagnostics.Add(TypeError.CannotIdNonReferenceType(file, exp.Span, referentType));
@@ -381,7 +381,7 @@ public class BasicBodyAnalyzer
                                     if (!sharing.IsIsolated(variableSymbol))
                                         diagnostics.Add(TypeError.CannotMoveValue(file, exp));
 
-                                    type = referenceType.To(ReferenceCapability.Isolated);
+                                    type = referenceType.With(ReferenceCapability.Isolated);
                                     capabilities.Move(variableSymbol);
                                     break;
                                 case ValueType { Semantics: TypeSemantics.MoveValue } valueType:
@@ -426,7 +426,7 @@ public class BasicBodyAnalyzer
                                     if (!sharing.IsIsolated(variableSymbol))
                                         diagnostics.Add(TypeError.CannotFreezeValue(file, exp));
 
-                                    type = referenceType.To(ReferenceCapability.Constant);
+                                    type = referenceType.With(ReferenceCapability.Constant);
                                     capabilities.Freeze(variableSymbol);
                                     break;
                                 case UnknownType:
@@ -474,7 +474,7 @@ public class BasicBodyAnalyzer
                                         type = DataType.Unknown;
                                     }
                                     else
-                                        type = referenceType.ToMutable();
+                                        type = referenceType.AsMutable();
 
                                     break;
                                 default:

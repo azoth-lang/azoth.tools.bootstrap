@@ -28,9 +28,11 @@ public abstract class EmptyType : DataType
 
     public override string ToILString() => ToSourceCodeString();
 
+    #region Equals
     public override bool Equals(DataType? other)
         // Empty types are all fixed instances, so a reference equality suffices
         => ReferenceEquals(this, other);
 
     public override int GetHashCode() => HashCode.Combine(Name);
+    #endregion
 }

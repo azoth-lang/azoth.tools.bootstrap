@@ -32,7 +32,7 @@ public sealed class AnyType : ReferenceType
     public override int GetHashCode() => HashCode.Combine(SpecialTypeName.Any, Capability);
     #endregion
 
-    public override AnyType To(ReferenceCapability referenceCapability)
+    public override AnyType With(ReferenceCapability referenceCapability)
         => new(referenceCapability);
 
     public override string ToILString() => $"{Capability.ToILString()} Any";

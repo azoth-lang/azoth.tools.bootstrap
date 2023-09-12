@@ -32,6 +32,7 @@ public sealed class OptionalType : ValueType
 
     public override string ToILString() => $"({Referent.ToILString()})?";
 
+    #region Equals
     public override bool Equals(DataType? other)
     {
         if (other is null) return false;
@@ -43,4 +44,5 @@ public sealed class OptionalType : ValueType
     public override int GetHashCode()
         // Use the type to give a different hashcode than just the referent
         => HashCode.Combine(typeof(OptionalType), Referent);
+    #endregion
 }

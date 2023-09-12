@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 /// <summary>
-/// The type introduced by a generic parameter. This is not the concrete type is is substituted with.
+/// The type introduced by a generic parameter. This is not the concrete type it is substituted with.
 /// Rather this is the type variable (e.g. <c>T</c>) that can be used a type name in type expressions.
 /// </summary>
 public sealed class GenericParameterType : NonEmptyType

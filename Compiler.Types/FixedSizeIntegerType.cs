@@ -3,6 +3,9 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
+/// <summary>
+/// An integer represented in a fixed number of bits.
+/// </summary>
 public sealed class FixedSizeIntegerType : IntegerType
 {
     //internal new static readonly FixedSizeIntegerType Int8 = new("int8", -8);

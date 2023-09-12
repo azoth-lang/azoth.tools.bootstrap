@@ -39,6 +39,7 @@ public sealed class ReferenceCapability
         = new("id", allowsWriteAliases: true, allowsRead: false, allowsReadAliases: true);
 
     private readonly string name;
+
     /// <summary>
     /// Whether this kind of reference allows mutating the referenced object through this reference
     /// </summary>
@@ -52,22 +53,23 @@ public sealed class ReferenceCapability
     /// </summary>
     public bool AllowsRead { get; }
     /// <summary>
-    /// Whether this kind of reference permits other readable aliases to the object to exist
+    /// Whether this kind of reference permits other readable aliases to the object to exist.
     /// </summary>
-    // TODO merge with AllowsWriteAliases to just AllowsAliases?
+    /// <remarks>Note that <see cref="Constant"/> does <see cref="AllowsReadAliases"/> but not
+    /// <see cref="AllowsWriteAliases"/>.</remarks>
     public bool AllowsReadAliases { get; }
 
     /// <summary>
     /// Does this capability allow a reference with it to be recovered to isolated if reference
     /// sharing permits.
     /// </summary>
-    public bool AllowsRecoverIsolation => AllowsRead && AllowsReadAliases;
+    public bool AllowsRecoverIsolation => this == Mutable || this == ReadOnly;
 
     /// <summary>
     /// Does this capability allow a reference with it to be frozen to const if reference
     /// sharing permits.
     /// </summary>
-    public bool AllowsFreeze => AllowsRead;
+    public bool AllowsFreeze => this == Mutable || this == ReadOnly || this == Isolated;
 
     private ReferenceCapability(
         string name,
@@ -97,7 +99,6 @@ public sealed class ReferenceCapability
     /// <summary>
     /// This capability with any write ability removed.
     /// </summary>
-    /// <returns></returns>
     public ReferenceCapability WithoutWrite()
     {
         // Already not writable. Just return this. That will preserve the correct other attributes
@@ -108,10 +109,9 @@ public sealed class ReferenceCapability
 
     [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
-    public sealed override string ToString()
+    public override string ToString()
 #pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
-        =>
-            throw new NotSupportedException();
+        => throw new NotSupportedException();
 
     public string ToILString() => name;
 

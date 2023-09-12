@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// <summary>
 /// The type of expressions and values whose type could not be determined or
 /// was somehow invalid. The unknown type can't be directly used in code.
-/// No well typed program contains any value of the unknown type.
+/// No well typed program contains any expression with an unknown type.
 /// </summary>
 public sealed class UnknownType : DataType
 {
@@ -30,9 +30,11 @@ public sealed class UnknownType : DataType
 
     public override string ToILString() => "⧼unknown⧽";
 
+    #region Equals
     public override bool Equals(DataType? other)
         // The unknown type is a singleton, so reference equality suffices
         => ReferenceEquals(this, other);
 
     public override int GetHashCode() => HashCode.Combine(typeof(UnknownType));
+    #endregion
 }

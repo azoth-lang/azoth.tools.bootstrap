@@ -22,7 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public sealed class ObjectType : ReferenceType
 {
     public new DeclaredObjectType DeclaredType => (DeclaredObjectType)base.DeclaredType;
-    // TODO this needs a containing package
+    public Name ContainingPackage => DeclaredType.ContainingPackage;
     public NamespaceName ContainingNamespace => DeclaredType.ContainingNamespace;
     public override Name Name => DeclaredType.Name;
     public FixedList<DataType> TypeArguments { get; }
@@ -68,7 +68,7 @@ public sealed class ObjectType : ReferenceType
         typeReplacements = declaredType.GenericParameterDataTypes.Zip(typeArguments).ToFixedDictionary();
     }
 
-    public override ObjectType To(ReferenceCapability referenceCapability)
+    public override ObjectType With(ReferenceCapability referenceCapability)
         => new(referenceCapability, DeclaredType, TypeArguments);
 
     /// <remarks>For constant types, there can still be read only references. For example, inside
@@ -110,11 +110,13 @@ public sealed class ObjectType : ReferenceType
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is ObjectType otherType && ContainingNamespace == otherType.ContainingNamespace
-                                             && Name == otherType.Name && Capability == otherType.Capability;
+        return other is ObjectType otherType
+               && Capability == otherType.Capability
+               && DeclaredType == otherType.DeclaredType
+               && TypeArguments.Equals(otherType.TypeArguments);
     }
 
-    public override int GetHashCode() => HashCode.Combine(ContainingNamespace, Name, Capability);
+    public override int GetHashCode() => HashCode.Combine(DeclaredType, Capability, TypeArguments);
     #endregion
 
     public override string ToSourceCodeString()

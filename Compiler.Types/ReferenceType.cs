@@ -40,19 +40,19 @@ public abstract class ReferenceType : NonEmptyType
         DeclaredType = declaredType;
     }
 
-    public ReferenceType ToMutable()
+    public ReferenceType AsMutable()
     {
         if (!Capability.AllowsWrite)
             throw new InvalidOperationException($"Can't convert '{Capability.ToILString()}' to mutable because it does not allow write.");
-        return To(ReferenceCapability.Mutable);
+        return With(ReferenceCapability.Mutable);
     }
 
-    public override ReferenceType WithoutWrite() => To(Capability.WithoutWrite());
+    public override ReferenceType WithoutWrite() => With(Capability.WithoutWrite());
 
     /// <summary>
     /// Return the same type except with the given reference capability
     /// </summary>
-    public abstract ReferenceType To(ReferenceCapability referenceCapability);
+    public abstract ReferenceType With(ReferenceCapability referenceCapability);
 
     public bool BareTypeEquals(DataType? other)
     {

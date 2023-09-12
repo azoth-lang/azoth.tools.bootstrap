@@ -69,7 +69,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
 
     /// <summary>
     /// Make a version of this type for use as the constructor parameter. One issue is
-    /// that it should be mutable even if the underlying type is declared immutable.
+    /// that it should be mutable even if the type is declared const.
     /// </summary>
     /// <remarks>This is always `mut` because the type can be mutated inside the constructor.</remarks>
     public ObjectType ToConstructorSelf()
@@ -84,6 +84,11 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     public ObjectType ToDefaultConstructorReturn()
         => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.Isolated, GenericParameterDataTypes);
 
+    /// <summary>
+    /// Determine the return type of a constructor with the given parameter types.
+    /// </summary>
+    /// <remarks>The capability of the return type is restricted by the parameter types because the
+    /// newly constructed object could contain references to them.</remarks>
     public ObjectType ToConstructorReturn(IEnumerable<DataType> parameterTypes)
     {
         if (IsConst) return With(ReferenceCapability.Constant, GenericParameterDataTypes);
@@ -91,7 +96,9 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
             switch (parameterType)
             {
                 case ReferenceType { IsConstReference: true }:
+                case ReferenceType { IsIsolatedReference: true }:
                 case OptionalType { Referent: ReferenceType { IsConstReference: true } }:
+                case OptionalType { Referent: ReferenceType { IsIsolatedReference: true } }:
                 case SimpleType:
                 case EmptyType:
                 case UnknownType:
@@ -106,22 +113,6 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     public override ObjectType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
         => ObjectType.Create(capability, this, typeArguments);
 
-    #region Equals
-    public override bool Equals(DeclaredReferenceType? other)
-    {
-        if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-        return other is DeclaredObjectType objectType
-            && ContainingPackage == objectType.ContainingPackage
-            && ContainingNamespace == objectType.ContainingNamespace
-            && Name == objectType.Name
-            && IsConst == objectType.IsConst;
-    }
-
-    public override int GetHashCode()
-        => HashCode.Combine(ContainingPackage, ContainingNamespace, Name, IsConst);
-    #endregion
-
     /// <summary>
     /// Make a version of this type that is the default read reference capability for the type. That
     /// is either read-only or constant.
@@ -134,7 +125,24 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// For constant types, that isn't allowed and a constant reference is returned.
     /// </summary>
     public ObjectType WithMutate(FixedList<DataType> typeArguments)
-        => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.ReadOnly, typeArguments);
+        => With(IsConst ? ReferenceCapability.Constant : ReferenceCapability.Mutable, typeArguments);
+
+    #region Equals
+    public override bool Equals(DeclaredReferenceType? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is DeclaredObjectType objectType
+            && ContainingPackage == objectType.ContainingPackage
+            && ContainingNamespace == objectType.ContainingNamespace
+            && Name == objectType.Name
+            && IsConst == objectType.IsConst
+            && GenericParameters.Equals(objectType.GenericParameters);
+    }
+
+    public override int GetHashCode()
+        => HashCode.Combine(ContainingPackage, ContainingNamespace, Name, IsConst, GenericParameters);
+    #endregion
 
     public override string ToString()
     {

@@ -20,9 +20,16 @@ public sealed class IntegerConstantType : IntegerType
         Value = value;
     }
 
-    // TODO return the smallest type that contains this constant value
+    /// <summary>
+    /// The default non-constant type to places values of this type in. For
+    /// <see cref="IntegerConstantType"/>, that is <see cref="DataType.Int"/>.
+    /// </summary>
+    /// <remarks>It might be thought this should return the smallest integer type that contains
+    /// the value. However, that would lead to unexpected behavior in some cases because small
+    /// integer constants might produce small fixed size integers leading to overflow.</remarks>
     public override DataType ToNonConstantType() => Int;
 
+    #region Equals
     public override bool Equals(DataType? other)
     {
         if (other is null) return false;
@@ -32,6 +39,7 @@ public sealed class IntegerConstantType : IntegerType
     }
 
     public override int GetHashCode() => HashCode.Combine(Value);
+    #endregion
 
     public override string ToSourceCodeString()
         => throw new InvalidOperationException("Integer constant type has no source code representation");

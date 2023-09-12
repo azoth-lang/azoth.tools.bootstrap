@@ -16,7 +16,8 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
     }
 
     public Name Name { get; }
-    // TODO  public DataType DataType { get; }
+
+    // TODO When parameters can be values not just types, add: public DataType DataType { get; }
 
     #region Equals
     public bool Equals(GenericParameter? other)
@@ -34,7 +35,6 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
     public static bool operator ==(GenericParameter? left, GenericParameter? right) => Equals(left, right);
 
     public static bool operator !=(GenericParameter? left, GenericParameter? right) => !Equals(left, right);
-
     #endregion
 
     public static implicit operator GenericParameter(string name) => new(name);
