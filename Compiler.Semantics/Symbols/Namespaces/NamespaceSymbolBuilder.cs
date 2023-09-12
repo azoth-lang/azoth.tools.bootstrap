@@ -11,15 +11,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
 {
     private readonly SymbolTreeBuilder treeBuilder;
+    private readonly PackageSymbol packageSymbol;
 
-    private NamespaceSymbolBuilder(SymbolTreeBuilder treeBuilder)
+    private NamespaceSymbolBuilder(SymbolTreeBuilder treeBuilder, PackageSymbol packageSymbol)
     {
         this.treeBuilder = treeBuilder;
+        this.packageSymbol = packageSymbol;
     }
 
     public static void BuildNamespaceSymbols(PackageSyntax<Package> package)
     {
-        var builder = new NamespaceSymbolBuilder(package.SymbolTree);
+        var builder = new NamespaceSymbolBuilder(package.SymbolTree, package.Symbol);
         foreach (var compilationUnit in package.CompilationUnits)
             builder.Walk(compilationUnit, package.Symbol);
     }
@@ -37,8 +39,8 @@ public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
             case INamespaceDeclarationSyntax syn:
             {
                 syn.ContainingNamespaceSymbol = containingSymbol;
-                // TODO correctly handle Global qualifier
-                var sym = BuildNamespaceSymbol(containingSymbol, syn.DeclaredNames);
+                var sym = BuildNamespaceSymbol(syn.IsGlobalQualified
+                    ? packageSymbol : containingSymbol, syn.DeclaredNames);
                 syn.Symbol.Fulfill(sym);
                 WalkChildren(syn, sym);
             }
