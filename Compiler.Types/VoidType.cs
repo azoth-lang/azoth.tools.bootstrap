@@ -19,7 +19,7 @@ public class VoidType : EmptyType
 
     public override bool IsEmpty => true;
 
-    public override bool IsKnown => true;
+    public override bool IsFullyKnown => true;
 
     public override TypeSemantics Semantics => TypeSemantics.Void;
 }

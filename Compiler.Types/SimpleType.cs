@@ -11,7 +11,7 @@ public abstract class SimpleType : ValueType
 {
     public SpecialTypeName Name { get; }
 
-    public override TypeSemantics Semantics => TypeSemantics.Copy;
+    public override TypeSemantics Semantics => TypeSemantics.CopyValue;
 
     private protected SimpleType(SpecialTypeName name)
     {

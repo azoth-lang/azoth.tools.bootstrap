@@ -15,7 +15,7 @@ public sealed class UnknownType : DataType
     private UnknownType() { }
     #endregion
 
-    public override bool IsKnown => false;
+    public override bool IsFullyKnown => false;
 
     /// <summary>
     /// Like `never` values of type unknown can be assigned to any value.

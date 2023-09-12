@@ -3,6 +3,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// <summary>
 /// The semantics of values of a type
 /// </summary>
+// TODO it isn't clear this provides any value beyond the move/copy distinction on value types
 public enum TypeSemantics
 {
     /// <summary>
@@ -25,16 +26,10 @@ public enum TypeSemantics
     Void = 0,
 
     /// <summary>
-    /// For types with move semantics, any time the value is used, it is moved
+    /// For value types with move semantics, any time the value is used, it is moved
     /// from the source to the destination.
     /// </summary>
-    /// <remarks>
-    /// Currently, all move types are <see cref="ValueType"/>. However, logically,
-    /// there is no reason other types including references couldn't have this
-    /// semantics. For example, a reference type representing a file could
-    /// have move semantics so there is only ever one reference to it.
-    /// </remarks>
-    Move = 1,
+    MoveValue = 1,
 
     /// <summary>
     /// Values of types with copy semantics are copied each time they are used.
@@ -43,12 +38,8 @@ public enum TypeSemantics
     /// For <see cref="SimpleType"/>, copy semantics means a bitwise copy.
     /// However, for other value types, copy semantics could mean calling the
     /// copy constructor. Currently, all copy types are <see cref="ValueType"/>.
-    /// However, logically, there is no reason other types including reference
-    /// types couldn't be copy types. For example, a big integer class could
-    /// be a copy type so each instance is independent and the class behaves
-    /// like a value type.
     /// </remarks>
-    Copy,
+    CopyValue,
 
     /// <summary>
     /// Types with reference semantics represent references to values where

@@ -7,7 +7,7 @@ public sealed class BigIntegerType : IntegerType
     internal new static readonly BigIntegerType Int = new(SpecialTypeName.Int, true);
     internal new static readonly BigIntegerType UInt = new(SpecialTypeName.UInt, false);
 
-    public override bool IsKnown => true;
+    public override bool IsFullyKnown => true;
 
     private BigIntegerType(SpecialTypeName name, bool signed)
         : base(name, signed)

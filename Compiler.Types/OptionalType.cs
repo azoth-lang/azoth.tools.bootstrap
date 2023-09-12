@@ -14,18 +14,18 @@ public sealed class OptionalType : ValueType
 {
     public DataType Referent { get; }
 
-    public override bool IsKnown { get; }
+    public override bool IsFullyKnown { get; }
 
     public override TypeSemantics Semantics =>
         Referent.Semantics == TypeSemantics.Never
-            ? TypeSemantics.Copy : Referent.Semantics;
+            ? TypeSemantics.CopyValue : Referent.Semantics;
 
     public OptionalType(DataType referent)
     {
         if (referent is VoidType)
             throw new ArgumentException("Cannot create `void?` type", nameof(referent));
         Referent = referent;
-        IsKnown = referent.IsKnown;
+        IsFullyKnown = referent.IsFullyKnown;
     }
 
     public override string ToSourceCodeString() => $"({Referent.ToSourceCodeString()})?";

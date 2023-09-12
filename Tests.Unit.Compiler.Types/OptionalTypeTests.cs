@@ -22,7 +22,7 @@ public class OptionalTypeTests
     {
         var optionalBool = new OptionalType(DataType.Bool);
 
-        Assert.Equal(TypeSemantics.Copy, optionalBool.Semantics);
+        Assert.Equal(TypeSemantics.CopyValue, optionalBool.Semantics);
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public class OptionalTypeTests
     {
         var optionalNever = new OptionalType(DataType.Never);
 
-        Assert.Equal(TypeSemantics.Copy, optionalNever.Semantics);
+        Assert.Equal(TypeSemantics.CopyValue, optionalNever.Semantics);
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ public class OptionalTypeTests
     {
         var optionalNever = new OptionalType(DataType.Unknown);
 
-        Assert.Equal(TypeSemantics.Copy, optionalNever.Semantics);
+        Assert.Equal(TypeSemantics.CopyValue, optionalNever.Semantics);
     }
 
     [Fact(Skip = "There are no move types yet (and they can't be faked)")]

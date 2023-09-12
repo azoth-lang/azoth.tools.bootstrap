@@ -28,7 +28,7 @@ public class AnyTypeTests
     {
         var type = new AnyType(Isolated);
 
-        Assert.True(type.IsKnown);
+        Assert.True(type.IsFullyKnown);
     }
 
     [Fact]

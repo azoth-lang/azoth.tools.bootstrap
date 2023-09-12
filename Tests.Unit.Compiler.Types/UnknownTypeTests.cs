@@ -11,7 +11,7 @@ public class UnknownTypeTests
     {
         var type = UnknownType.Instance;
 
-        Assert.False(type.IsKnown);
+        Assert.False(type.IsFullyKnown);
     }
 
     [Fact]

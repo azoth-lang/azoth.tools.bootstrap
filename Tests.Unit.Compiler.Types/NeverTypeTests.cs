@@ -20,7 +20,7 @@ public class NeverTypeTests
     {
         var type = NeverType.Instance;
 
-        Assert.True(type.IsKnown);
+        Assert.True(type.IsFullyKnown);
     }
 
     [Fact]

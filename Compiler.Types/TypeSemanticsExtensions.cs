@@ -11,8 +11,8 @@ public static class TypeSemanticsExtensions
     {
         return semantics switch
         {
-            TypeSemantics.Copy => ExpressionSemantics.CopyValue,
-            TypeSemantics.Move => ExpressionSemantics.MoveValue,
+            TypeSemantics.CopyValue => ExpressionSemantics.CopyValue,
+            TypeSemantics.MoveValue => ExpressionSemantics.MoveValue,
             TypeSemantics.Never => ExpressionSemantics.Never,
             TypeSemantics.Void => ExpressionSemantics.Void,
             TypeSemantics.Reference => referenceSemantics,

@@ -11,7 +11,7 @@ public sealed class PointerSizedIntegerType : IntegerType
     internal new static readonly PointerSizedIntegerType Size = new(SpecialTypeName.Size, false);
     internal new static readonly PointerSizedIntegerType Offset = new(SpecialTypeName.Offset, true);
 
-    public override bool IsKnown => true;
+    public override bool IsFullyKnown => true;
 
     private PointerSizedIntegerType(SpecialTypeName name, bool signed)
         : base(name, signed)

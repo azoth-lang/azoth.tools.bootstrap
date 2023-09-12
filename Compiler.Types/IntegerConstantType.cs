@@ -12,7 +12,7 @@ public sealed class IntegerConstantType : IntegerType
 {
     public override bool IsTypeOfConstant => true;
     public BigInteger Value { get; }
-    public override bool IsKnown => true;
+    public override bool IsFullyKnown => true;
 
     public IntegerConstantType(BigInteger value)
         : base(SpecialTypeName.ConstInt, value < BigInteger.Zero)

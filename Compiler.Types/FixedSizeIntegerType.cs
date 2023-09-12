@@ -15,7 +15,7 @@ public sealed class FixedSizeIntegerType : IntegerType
     //internal new static readonly FixedSizeIntegerType UInt64 = new("uint64", 64);
 
     public int Bits { get; }
-    public override bool IsKnown => true;
+    public override bool IsFullyKnown => true;
 
     private FixedSizeIntegerType(SpecialTypeName name, int bits)
         : base(name, bits < 0)

@@ -20,7 +20,7 @@ public class VoidTypeTests
     {
         var type = VoidType.Instance;
 
-        Assert.True(type.IsKnown);
+        Assert.True(type.IsFullyKnown);
     }
 
     [Fact]

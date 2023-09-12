@@ -203,7 +203,7 @@ public class BasicBodyAnalyzer
         ReferenceCapabilities capabilities)
     {
         var type = InferType(expression, sharing, capabilities);
-        if (!type.IsKnown) return DataType.Unknown;
+        if (!type.IsFullyKnown) return DataType.Unknown;
         type = type.ToNonConstantType();
 
         switch (expression)
@@ -384,7 +384,7 @@ public class BasicBodyAnalyzer
                                     type = referenceType.To(ReferenceCapability.Isolated);
                                     capabilities.Move(variableSymbol);
                                     break;
-                                case ValueType { Semantics: TypeSemantics.Move } valueType:
+                                case ValueType { Semantics: TypeSemantics.MoveValue } valueType:
                                     type = valueType;
                                     break;
                                 case UnknownType:
@@ -664,7 +664,7 @@ public class BasicBodyAnalyzer
                 var argumentTypes = exp.Arguments.Select(arg => InferType(arg, sharing, capabilities)).ToFixedList();
                 // TODO handle named constructors here
                 var constructingType = typeResolver.EvaluateBareType(exp.Type);
-                if (!constructingType.IsKnown)
+                if (!constructingType.IsFullyKnown)
                 {
                     diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
                     exp.ReferencedSymbol.Fulfill(null);
@@ -1092,10 +1092,10 @@ public class BasicBodyAnalyzer
             case TypeSemantics.Void:
                 invocationExpression.Semantics = ExpressionSemantics.Void;
                 break;
-            case TypeSemantics.Move:
+            case TypeSemantics.MoveValue:
                 invocationExpression.Semantics = ExpressionSemantics.MoveValue;
                 break;
-            case TypeSemantics.Copy:
+            case TypeSemantics.CopyValue:
                 invocationExpression.Semantics = ExpressionSemantics.CopyValue;
                 break;
             case TypeSemantics.Never:
@@ -1237,7 +1237,7 @@ public class BasicBodyAnalyzer
                     or BinaryOperator.LessThanDotDotLessThan:
                 var leftType = InferType(binaryExpression.LeftOperand, sharing, capabilities);
                 var rightType = InferType(binaryExpression.RightOperand, sharing, capabilities);
-                if (!leftType.IsKnown || !rightType.IsKnown)
+                if (!leftType.IsFullyKnown || !rightType.IsFullyKnown)
                     return inExpression.DataType = DataType.Unknown;
 
                 var assumedType = declaredType;
@@ -1295,7 +1295,7 @@ public class BasicBodyAnalyzer
                     {
                         default:
                             throw ExhaustiveMatch.Failed(type.Semantics);
-                        case TypeSemantics.Copy:
+                        case TypeSemantics.CopyValue:
                             //exp.Semantics = ExpressionSemantics.CopyValue;
                             break;
                         case TypeSemantics.Never:
@@ -1304,7 +1304,7 @@ public class BasicBodyAnalyzer
                         case TypeSemantics.Reference:
                             // Needs to be assigned based on share/borrow expression
                             break;
-                        case TypeSemantics.Move:
+                        case TypeSemantics.MoveValue:
                             throw new InvalidOperationException("Can't move out of field");
                         case TypeSemantics.Void:
                             throw new InvalidOperationException("Can't assign semantics to void field");

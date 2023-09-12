@@ -27,7 +27,7 @@ public class SizedIntegerTypeTests
     {
         var type = FixedSizeIntegerType.Int32;
 
-        Assert.Equal(TypeSemantics.Copy, type.Semantics);
+        Assert.Equal(TypeSemantics.CopyValue, type.Semantics);
     }
 
     [Fact]

@@ -51,7 +51,7 @@ public static class DataTypeExtensions
     [DebuggerHidden]
     public static DataType Known(this DataType? type)
     {
-        if (!type.Assigned().IsKnown)
+        if (!type.Assigned().IsFullyKnown)
             throw new InvalidOperationException($"Type {type.ToILString()} not known");
 
         return type!;
@@ -61,7 +61,7 @@ public static class DataTypeExtensions
     public static DataType Known(this IPromise<DataType> promise)
     {
         var type = promise.Result;
-        if (!type.IsKnown) throw new InvalidOperationException($"Type {type.ToILString()} not known");
+        if (!type.IsFullyKnown) throw new InvalidOperationException($"Type {type.ToILString()} not known");
 
         return type;
     }

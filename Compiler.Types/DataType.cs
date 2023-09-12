@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 /// <summary>
 /// The data type of a value in an Azoth program. This includes potentially
-/// unresolved types like `UnknownType` or types containing unknown parts.
+/// unresolved types like <see cref="UnknownType"/> or types containing unknown parts.
 /// </summary>
 [Closed(
     typeof(NonEmptyType),
@@ -54,7 +54,7 @@ public abstract class DataType : IEquatable<DataType>
     /// <summary>
     /// A known type is one that has no unknown parts.
     /// </summary>
-    public abstract bool IsKnown { get; }
+    public abstract bool IsFullyKnown { get; }
 
     /// <summary>
     /// The semantics of values of this type.
@@ -79,18 +79,9 @@ public abstract class DataType : IEquatable<DataType>
 #pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
         => throw new NotSupportedException();
 
-    /// <summary>
-    /// How this type would be written in source code.
-    /// </summary>
-    public abstract string ToSourceCodeString();
-
-    /// <summary>
-    /// How this type would be written in IL.
-    /// </summary>
-    public abstract string ToILString();
-
     #region Equality
     public abstract bool Equals(DataType? other);
+
     public abstract override int GetHashCode();
 
     public override bool Equals(object? obj)
@@ -100,10 +91,18 @@ public abstract class DataType : IEquatable<DataType>
         return obj.GetType() == GetType() && Equals((DataType)obj);
     }
 
-    public static bool operator ==(DataType? left, DataType? right)
-        => Equals(left, right);
+    public static bool operator ==(DataType? left, DataType? right) => Equals(left, right);
 
-    public static bool operator !=(DataType? left, DataType? right)
-        => !Equals(left, right);
+    public static bool operator !=(DataType? left, DataType? right) => !Equals(left, right);
     #endregion
+
+    /// <summary>
+    /// How this type would be written in source code.
+    /// </summary>
+    public abstract string ToSourceCodeString();
+
+    /// <summary>
+    /// How this type would be written in IL.
+    /// </summary>
+    public abstract string ToILString();
 }

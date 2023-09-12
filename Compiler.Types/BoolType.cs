@@ -15,5 +15,5 @@ public class BoolType : SimpleType
     private protected BoolType(SpecialTypeName name)
         : base(name) { }
 
-    public override bool IsKnown => true;
+    public override bool IsFullyKnown => true;
 }

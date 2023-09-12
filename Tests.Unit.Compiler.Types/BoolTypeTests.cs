@@ -29,7 +29,7 @@ public class BoolTypeTests
     {
         var type = BoolType.Instance;
 
-        Assert.True(type.IsKnown);
+        Assert.True(type.IsFullyKnown);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class BoolTypeTests
     {
         var type = BoolType.Instance;
 
-        Assert.Equal(TypeSemantics.Copy, type.Semantics);
+        Assert.Equal(TypeSemantics.CopyValue, type.Semantics);
     }
 
     [Fact]

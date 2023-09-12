@@ -30,7 +30,7 @@ public class IntegerConstantTypeTests
     {
         var type = new IntegerConstantType(1);
 
-        Assert.True(type.IsKnown);
+        Assert.True(type.IsFullyKnown);
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class IntegerConstantTypeTests
     {
         var type = new IntegerConstantType(1);
 
-        Assert.Equal(TypeSemantics.Copy, type.Semantics);
+        Assert.Equal(TypeSemantics.CopyValue, type.Semantics);
     }
 
     [Theory]

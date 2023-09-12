@@ -18,7 +18,7 @@ public sealed class AnyType : ReferenceType
 
     public override DeclaredAnyType DeclaredType => DeclaredAnyType.Instance;
 
-    public override bool IsKnown => true;
+    public override bool IsFullyKnown => true;
 
     #region Equals
     public override bool Equals(DataType? other)

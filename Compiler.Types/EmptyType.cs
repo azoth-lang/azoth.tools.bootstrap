@@ -17,7 +17,7 @@ public abstract class EmptyType : DataType
 
     public override bool IsEmpty => true;
 
-    public override bool IsKnown => true;
+    public override bool IsFullyKnown => true;
 
     private protected EmptyType(SpecialTypeName name)
     {

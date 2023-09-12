@@ -24,10 +24,10 @@ public sealed class GenericParameterType : NonEmptyType
 
     public Name Name => Parameter.Name;
 
-    public override bool IsKnown => true;
+    public override bool IsFullyKnown => true;
 
     // TODO the type semantics isn't actually known because it is generic
-    public override TypeSemantics Semantics => TypeSemantics.Copy;
+    public override TypeSemantics Semantics => TypeSemantics.CopyValue;
 
     #region Equals
     public override bool Equals(DataType? other)

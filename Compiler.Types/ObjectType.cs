@@ -26,7 +26,7 @@ public sealed class ObjectType : ReferenceType
     public NamespaceName ContainingNamespace => DeclaredType.ContainingNamespace;
     public override Name Name => DeclaredType.Name;
     public FixedList<DataType> TypeArguments { get; }
-    public override bool IsKnown { [DebuggerStepThrough] get => true; }
+    public override bool IsFullyKnown { [DebuggerStepThrough] get => true; }
 
     /// <summary>
     /// Whether this type was declared `const` meaning that most references should be treated as

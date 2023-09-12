@@ -19,7 +19,7 @@ public class UnsizedIntegerTypeTests
     {
         var type = PointerSizedIntegerType.Size;
 
-        Assert.True(type.IsKnown);
+        Assert.True(type.IsFullyKnown);
     }
 
     [Fact]
@@ -27,7 +27,7 @@ public class UnsizedIntegerTypeTests
     {
         var type = PointerSizedIntegerType.Size;
 
-        Assert.Equal(TypeSemantics.Copy, type.Semantics);
+        Assert.Equal(TypeSemantics.CopyValue, type.Semantics);
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class UnsizedIntegerTypeTests
     {
         var type = PointerSizedIntegerType.Offset;
 
-        Assert.True(type.IsKnown);
+        Assert.True(type.IsFullyKnown);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class UnsizedIntegerTypeTests
     {
         var type = PointerSizedIntegerType.Offset;
 
-        Assert.Equal(TypeSemantics.Copy, type.Semantics);
+        Assert.Equal(TypeSemantics.CopyValue, type.Semantics);
     }
 
     [Fact]
