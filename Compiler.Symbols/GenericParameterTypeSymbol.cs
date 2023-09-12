@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class GenericParameterTypeSymbol : TypeSymbol
 {
-    public new ObjectTypeSymbol ContainingSymbol { get; }
+    public override ObjectTypeSymbol ContainingSymbol { get; }
     public GenericParameterType DeclaresType { get; }
 
     public GenericParameterTypeSymbol(

@@ -5,11 +5,11 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 /// <summary>
-/// A symbol for a variable or parameter. Both of which are bindings using `let` or `var`
+/// A symbol for a variable or parameter. Both of which are bindings using `let` or `var`.
 /// </summary>
 public sealed class VariableSymbol : NamedBindingSymbol
 {
-    public new InvocableSymbol ContainingSymbol { get; }
+    public override InvocableSymbol ContainingSymbol { get; }
     public int? DeclarationNumber { get; }
     public bool IsParameter { get; }
     public bool IsLocal => !IsParameter;

@@ -1,7 +1,9 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Moq;
 using Xunit;
+using DT = Azoth.Tools.Bootstrap.Compiler.Types.DataType;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Symbols;
 
@@ -11,7 +13,7 @@ public class SymbolTests : SymbolTestFixture
     [Fact]
     public void Symbol_not_in_namespace_is_global()
     {
-        var symbol = FakeSymbol(null, Name("My_Class"));
+        var symbol = new PrimitiveTypeSymbol(DT.Void);
 
         Assert.True(symbol.IsGlobal);
     }
@@ -19,14 +21,11 @@ public class SymbolTests : SymbolTestFixture
     [Fact]
     public void Symbol_in_namespace_is_not_global()
     {
-        var symbol = FakeSymbol(Namespace(), Name("My_Class"));
+        var ns = Namespace();
+        var className = Name("My_Class");
+        var type = DeclaredObjectType.Create(ns.Package!.Name, ns.Name, className, false);
+        var symbol = new ObjectTypeSymbol(ns, type);
 
         Assert.False(symbol.IsGlobal);
-    }
-
-    private static Symbol FakeSymbol(NamespaceOrPackageSymbol? containing, Name name)
-    {
-        // Argument is allowed to be null, Moq doesn't declare parameter correctly
-        return new Mock<Symbol>(MockBehavior.Default, containing!, name).Object;
     }
 }

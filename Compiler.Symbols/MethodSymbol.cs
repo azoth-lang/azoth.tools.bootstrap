@@ -8,8 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class MethodSymbol : FunctionOrMethodSymbol
 {
-    public new TypeSymbol ContainingSymbol { get; }
-    public new Name Name { get; }
+    public override TypeSymbol ContainingSymbol { get; }
+    public override Name Name { get; }
     public DataType SelfDataType { get; }
 
     public MethodSymbol(

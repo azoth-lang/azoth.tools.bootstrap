@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
     typeof(FieldSymbol))]
 public abstract class NamedBindingSymbol : BindingSymbol
 {
-    public new Name Name { get; }
+    public override Name Name { get; }
 
     protected NamedBindingSymbol(
         Symbol containingSymbol,

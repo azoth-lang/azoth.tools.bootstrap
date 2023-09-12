@@ -1,5 +1,4 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -10,8 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class ObjectTypeSymbol : TypeSymbol
 {
     public override PackageSymbol? Package { get; }
-    public new NamespaceOrPackageSymbol ContainingSymbol { get; }
-    public new TypeName Name { get; }
+    public override NamespaceOrPackageSymbol ContainingSymbol { get; }
     public DeclaredObjectType DeclaresType { get; }
 
     public ObjectTypeSymbol(
@@ -22,7 +20,6 @@ public sealed class ObjectTypeSymbol : TypeSymbol
         // TODO check the declared type is in the containing namespace and package
         Package = containingSymbol.Package;
         ContainingSymbol = containingSymbol;
-        Name = declaresType.Name;
         DeclaresType = declaresType;
     }
 

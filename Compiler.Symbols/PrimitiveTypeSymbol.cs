@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public class PrimitiveTypeSymbol : TypeSymbol
 {
-    public new SpecialTypeName Name { get; }
+    public override SpecialTypeName Name { get; }
 
     public DataType DeclaresType { get; }
 

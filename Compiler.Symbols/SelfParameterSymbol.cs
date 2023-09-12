@@ -3,9 +3,9 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-public class SelfParameterSymbol : BindingSymbol
+public sealed class SelfParameterSymbol : BindingSymbol
 {
-    public new InvocableSymbol ContainingSymbol { get; }
+    public override InvocableSymbol ContainingSymbol { get; }
 
     public SelfParameterSymbol(InvocableSymbol containingSymbol, DataType dataType)
         : base(containingSymbol, null, false, dataType)

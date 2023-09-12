@@ -14,13 +14,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public abstract class Symbol : IEquatable<Symbol>
 {
     public virtual PackageSymbol? Package { get; }
-    public Symbol? ContainingSymbol { get; }
-    public TypeName? Name { get; }
+    public virtual Symbol? ContainingSymbol { get; }
+    public virtual TypeName? Name { get; }
     public bool IsGlobal => ContainingSymbol == Package;
 
-    protected Symbol(Symbol? containingSymbol, TypeName? name)
+    private protected Symbol(Symbol? containingSymbol, TypeName? name)
     {
-        // Note: constructor can't be `private protected` so `Symbol` can be mocked in unit tests
         Package = containingSymbol?.Package;
         ContainingSymbol = containingSymbol;
         Name = name;

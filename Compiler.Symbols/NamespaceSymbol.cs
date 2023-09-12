@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// </summary>
 public sealed class NamespaceSymbol : NamespaceOrPackageSymbol
 {
-    public new NamespaceOrPackageSymbol ContainingSymbol { get; }
+    public override NamespaceOrPackageSymbol ContainingSymbol { get; }
 
     public NamespaceSymbol(NamespaceOrPackageSymbol containingSymbol, Name name)
         : base(containingSymbol, name)

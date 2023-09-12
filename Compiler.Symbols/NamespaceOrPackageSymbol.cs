@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public abstract class NamespaceOrPackageSymbol : Symbol
 {
     public NamespaceName NamespaceName { get; }
-    public new Name Name { get; }
+    public override Name Name { get; }
 
     protected NamespaceOrPackageSymbol(NamespaceOrPackageSymbol? containingSymbol, Name name)
         : base(containingSymbol, name)

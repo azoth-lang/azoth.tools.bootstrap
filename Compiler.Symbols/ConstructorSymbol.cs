@@ -8,8 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class ConstructorSymbol : InvocableSymbol
 {
-    public new ObjectTypeSymbol ContainingSymbol { get; }
-    public new ObjectType ReturnDataType { get; }
+    public override ObjectTypeSymbol ContainingSymbol { get; }
+    public override ObjectType ReturnDataType { get; }
 
     public ConstructorSymbol(
         ObjectTypeSymbol containingSymbol,

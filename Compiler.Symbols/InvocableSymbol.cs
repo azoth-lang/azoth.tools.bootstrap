@@ -10,11 +10,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
     typeof(ConstructorSymbol))]
 public abstract class InvocableSymbol : Symbol
 {
-    public new Symbol ContainingSymbol { get; }
-    public new Name? Name { get; }
+    public override Symbol ContainingSymbol { get; }
+    public override Name? Name { get; }
     public FixedList<DataType> ParameterDataTypes { get; }
     public int Arity => ParameterDataTypes.Count;
-    public DataType ReturnDataType { get; }
+    public virtual DataType ReturnDataType { get; }
 
     protected InvocableSymbol(
         Symbol containingSymbol,

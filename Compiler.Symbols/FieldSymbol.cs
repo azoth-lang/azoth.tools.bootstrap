@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class FieldSymbol : NamedBindingSymbol
 {
-    public new TypeSymbol ContainingSymbol { get; }
+    public override TypeSymbol ContainingSymbol { get; }
 
     public FieldSymbol(
         TypeSymbol containingSymbol,

@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// </summary>
 public sealed class FunctionSymbol : FunctionOrMethodSymbol
 {
-    public new Name Name { get; }
+    public override Name Name { get; }
 
     public FunctionSymbol(
         Symbol containingSymbol,
