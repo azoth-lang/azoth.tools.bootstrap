@@ -34,6 +34,8 @@ public partial class Parser
                 return new ExpressionStatementSyntax(@if.Span, @if);
             case IUnsafeKeywordToken _:
                 return ParseUnsafeStatement();
+            case IRightDoubleArrowToken _:
+                return ParseResultStatement();
             default:
                 try
                 {
@@ -112,6 +114,23 @@ public partial class Parser
         var closeBrace = Tokens.Expect<ICloseBraceToken>();
         var span = TextSpan.Covering(openBrace, closeBrace);
         return new BlockExpressionSyntax(span, statements);
+    }
+
+    private IResultStatementSyntax ParseResultStatement()
+    {
+        try
+        {
+            var rightDoubleArrow = Tokens.Expect<IRightDoubleArrowToken>();
+            var expression = ParseExpression();
+            var semicolon = Tokens.Expect<ISemicolonToken>();
+            var span = TextSpan.Covering(rightDoubleArrow, expression.Span, semicolon);
+            return new ResultStatementSyntax(span, expression);
+        }
+        catch (ParseFailedException)
+        {
+            SkipToEndOfStatement();
+            throw;
+        }
     }
 
     /// <summary>

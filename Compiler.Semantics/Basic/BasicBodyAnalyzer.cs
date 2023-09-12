@@ -127,14 +127,21 @@ public class BasicBodyAnalyzer
         var capabilities = parameterCapabilities.MutableCopy();
         var sharing = parameterSharing.MutableCopy();
         foreach (var statement in body.Statements)
-            ResolveTypes(statement, sharing, capabilities);
+            ResolveTypes(statement, sharing, capabilities, StatementContext.BodyLevel);
     }
 
-    private void ResolveTypes(
+    /// <summary>
+    /// Resolve the types in a statement. If the statement was a <see cref="IResultStatementSyntax"/>
+    /// the type expression type is returned. Returns <see langword="null"/> otherwise.
+    /// </summary>
+    private DataType? ResolveTypes(
         IStatementSyntax statement,
         SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        ReferenceCapabilities capabilities,
+        StatementContext context)
     {
+        if (context == StatementContext.AfterResult)
+            diagnostics.Add(SemanticError.StatementAfterResult(file, statement.Span));
         switch (statement)
         {
             default:
@@ -148,10 +155,14 @@ public class BasicBodyAnalyzer
                 sharing.Split(SharingVariable.Result);
                 break;
             case IResultStatementSyntax resultStatement:
-                // TODO how does the type of this expression get applied to the containing block?
-                InferType(resultStatement.Expression, sharing, capabilities);
-                break;
+                var type = InferType(resultStatement.Expression, sharing, capabilities);
+                if (context == StatementContext.BodyLevel)
+                    diagnostics.Add(SemanticError.ResultStatementInBody(file, resultStatement.Span));
+
+                // return type for use in determining block type
+                return type;
         }
+        return null;
     }
 
     private void ResolveTypes(
@@ -1125,15 +1136,24 @@ public class BasicBodyAnalyzer
             default:
                 throw ExhaustiveMatch.Failed(blockOrResult);
             case IBlockExpressionSyntax block:
+                DataType? blockType = null;
                 foreach (var statement in block.Statements)
-                    ResolveTypes(statement, sharing, capabilities);
+                {
+                    var context = blockType is null ? StatementContext.BeforeResult : StatementContext.AfterResult;
+                    var resultType = ResolveTypes(statement, sharing, capabilities, context);
+                    // Always resolve types even if there is already a block type
+                    blockType ??= resultType;
+                }
 
                 // Drop any variables in the scope
                 foreach (var variableDeclaration in block.Statements.OfType<IVariableDeclarationStatementSyntax>())
                     sharing.Drop(variableDeclaration.Symbol.Result);
 
-                block.Semantics = ExpressionSemantics.Void;
-                return block.DataType = DataType.Void; // TODO assign the correct type to the block
+                // If there was no result expression, then the block type is void
+                blockType ??= DataType.Void;
+                // TODO what are the correct expression semantics for references?
+                block.Semantics = blockType.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
+                return block.DataType = blockType;
             case IResultStatementSyntax result:
                 InferType(result.Expression, sharing, capabilities);
                 return result.Expression.ConvertedDataType.Assigned();

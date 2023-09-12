@@ -68,4 +68,16 @@ public static class SemanticError
         return new(file, new TextSpan(0, 0), DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6009, "Could not find a `String` type. A `String` type must be defined in the global namespace.");
     }
+
+    public static Diagnostic ResultStatementInBody(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+            6010, "Result statement (i.e. `=> ...;`) cannot be used in the body of a function, or method, etc.");
+    }
+
+    public static Diagnostic StatementAfterResult(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+            6011, "Statement after result statement is unreachable.");
+    }
 }

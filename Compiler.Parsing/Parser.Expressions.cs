@@ -379,6 +379,8 @@ public partial class Parser
                 Add(ParseError.CantFreezeExpression(File, span));
                 return expression;
             }
+            case IOpenBraceToken _:
+                return ParseBlock();
             case IBinaryOperatorToken _:
             case IAssignmentToken _:
             case IQuestionDotToken _:
@@ -386,7 +388,6 @@ public partial class Parser
             case ICloseParenToken _:
                 // If it is one of these, we assume there is a missing identifier
                 return ParseMissingIdentifier();
-            case IOpenBraceToken _:
             case ICloseBraceToken _:
             case IColonToken _:
             case IColonColonDotToken _:
@@ -473,7 +474,7 @@ public partial class Parser
     {
         var @if = Tokens.Expect<IIfKeywordToken>();
         var condition = ParseExpression();
-        var thenBlock = ParseBlockOrResult();
+        var thenBlock = ParseBlockOrResultExpression();
         var elseClause = AcceptElse(parseAs);
         var span = TextSpan.Covering(@if, thenBlock.Span, elseClause?.Span);
         if (parseAs == ParseAs.Statement
@@ -492,7 +493,7 @@ public partial class Parser
             return null;
         var expression = Tokens.Current is IIfKeywordToken
             ? (IElseClauseSyntax)ParseIf(parseAs)
-            : ParseBlockOrResult();
+            : ParseBlockOrResultExpression();
         if (parseAs == ParseAs.Statement
             && expression is IResultStatementSyntax)
             Tokens.Expect<ISemicolonToken>();
@@ -514,11 +515,16 @@ public partial class Parser
     public FixedList<IExpressionSyntax> ParseArguments()
         => AcceptManySeparated<IExpressionSyntax, ICommaToken>(AcceptExpression);
 
-    public IBlockOrResultSyntax ParseBlockOrResult()
+    public IBlockOrResultSyntax ParseBlockOrResultExpression()
     {
         if (Tokens.Current is IOpenBraceToken)
             return ParseBlock();
 
+        return ParseResultExpression();
+    }
+
+    private IResultStatementSyntax ParseResultExpression()
+    {
         var rightDoubleArrow = Tokens.Expect<IRightDoubleArrowToken>();
         var expression = ParseExpression();
         var span = TextSpan.Covering(rightDoubleArrow, expression.Span);

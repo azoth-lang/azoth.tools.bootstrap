@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
 
 public class DeclarationNumberAssigner : SyntaxWalker
 {
-    private readonly Dictionary<Name, Promise<int?>> lastDeclaration = new Dictionary<Name, Promise<int?>>();
+    private readonly Dictionary<Name, Promise<int?>> lastDeclaration = new();
     private DeclarationNumberAssigner() { }
 
     public static void AssignIn(IEnumerable<IEntityDeclarationSyntax> entities)

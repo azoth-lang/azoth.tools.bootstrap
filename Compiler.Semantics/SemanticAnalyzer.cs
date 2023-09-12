@@ -67,6 +67,7 @@ public class SemanticAnalyzer
         // Resolve symbols for the entities
         EntitySymbolBuilder.BuildFor(packageSyntax);
 
+        // TODO handle string better
         var stringSymbol = packageSyntax.SymbolTrees
                                         .GlobalSymbols
                                         .OfType<ObjectTypeSymbol>()
@@ -79,6 +80,8 @@ public class SemanticAnalyzer
         packageSyntax.Diagnostics.ThrowIfFatalErrors();
 
 #if DEBUG
+        // Validate various properties of the package before continuing. Helps find bugs in the
+        // analysis up to this point and avoids confusing error messages from later stages.
         new SymbolValidator(packageSyntax.SymbolTree).Validate(packageSyntax.AllEntityDeclarations);
         new TypeFulfillmentValidator().Validate(packageSyntax.AllEntityDeclarations);
         new TypeKnownValidator().Validate(packageSyntax.AllEntityDeclarations);

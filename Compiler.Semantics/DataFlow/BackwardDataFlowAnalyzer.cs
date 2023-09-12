@@ -26,10 +26,7 @@ internal class BackwardDataFlowAnalyzer<TState> : AbstractSyntaxWalker<bool>
     private IBackwardDataFlowAnalysis<TState>? checker;
     private TState? currentState;
 
-    public void Check(IExecutableDeclaration syntax)
-    {
-        Walk(syntax, false);
-    }
+    public void Check(IExecutableDeclaration syntax) => Walk(syntax, false);
 
     protected override void WalkNonNull(IAbstractSyntax syntax, bool isLValue)
     {

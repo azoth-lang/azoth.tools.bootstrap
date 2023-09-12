@@ -89,9 +89,15 @@ public class TypeResolver
         }
     }
 
-    public DataType EvaluateBareType(
+    /// <summary>
+    /// Evaluate a type that should not have any reference capability.
+    /// </summary>
+    /// <remarks>This is used for new expressions and assigned an `id` reference capability to the type.</remarks>
+    public DataType EvaluateBareType(ITypeNameSyntax typeSyntax) => EvaluateBareType(typeSyntax, null);
+
+    private DataType EvaluateBareType(
         ITypeNameSyntax typeSyntax,
-        ReferenceCapability? capability = null)
+        ReferenceCapability? capability)
     {
         return typeSyntax switch
         {
@@ -153,8 +159,8 @@ public class TypeResolver
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
     public ObjectType Evaluate(
-        DeclaredObjectType referenceType,
+        DeclaredObjectType objectType,
         IReferenceCapabilitySyntax capability,
         FixedList<DataType> typeArguments)
-        => referenceType.With(capability.Declared.ToReferenceCapability(), typeArguments);
+        => objectType.With(capability.Declared.ToReferenceCapability(), typeArguments);
 }
