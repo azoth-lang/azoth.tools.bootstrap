@@ -24,6 +24,15 @@ public class PrimitiveTypeSymbol : TypeSymbol
         DeclaresType = declaresType;
     }
 
+    /// <remarks>This is a little odd that it "declares" a specific reference type while the
+    /// <see cref="ObjectTypeSymbol"/> declares a <see cref="DeclaredObjectType"/>.</remarks>
+    public PrimitiveTypeSymbol(AnyType declaresType)
+        : base(null, declaresType.Name)
+    {
+        Name = declaresType.Name;
+        DeclaresType = declaresType;
+    }
+
     public override bool Equals(Symbol? other)
     {
         if (other is null) return false;

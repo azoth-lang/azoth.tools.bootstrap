@@ -39,13 +39,12 @@ and borrow checking.
 * [x] Basic Methods - no generics
 * [x] Optional Types
 * [x] Basic Control Flow - `if`, `while`, `loop` `break`, `next`
-* [ ] Conversions and Casts - `as`, `as!`, `as?` (not including unboxing)
+* [~] Conversions and Casts - `as`, `as!`, `as?` (not including unboxing)
 * [x] Namespaces
 * [ ] Strings
 * [ ] `foreach n in 1..100` - basic loop iteration may need to be hard-coded because the final
   version will depend on features not yet available.
-* [ ] Basic Arrays of `Any` - may need to be implemented as intrinsics
-* [ ] Wrapper Types - `Int`, `UInt`, `Size`, `Offset` to enable simple types in arrays
+* [x] Basic `List[T]`
 * [ ] Basic Traits? - no generics, classes directly implement like interfaces
 * [ ] `foreach` in Iterator?
 * [ ] `string` as primitive type

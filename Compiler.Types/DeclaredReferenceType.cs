@@ -13,10 +13,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(DeclaredAnyType))]
 public abstract class DeclaredReferenceType : IEquatable<DeclaredReferenceType>
 {
+    public static readonly DeclaredAnyType Any = DeclaredAnyType.Instance;
+
     public abstract TypeName Name { get; }
 
     public abstract ReferenceType With(ReferenceCapability capability, FixedList<DataType> typeArguments);
-
 
     #region MyRegion
     public abstract bool Equals(DeclaredReferenceType? other);

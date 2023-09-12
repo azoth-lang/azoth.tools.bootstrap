@@ -28,7 +28,7 @@ public abstract class ReferenceType : NonEmptyType
     /// </summary>
     public bool AllowsFreeze => Capability.AllowsFreeze;
 
-    public DeclaredReferenceType DeclaredType { get; }
+    public virtual DeclaredReferenceType DeclaredType { get; }
 
     public virtual TypeName Name => DeclaredType.Name;
 

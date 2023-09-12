@@ -7,10 +7,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// The universal type all reference types can be converted to. A top type
 /// for reference and function types.
 /// </summary>
-/// <remarks>
-/// `Any` is "declared" mutable so that it can hold mutable references to
-/// mutable types.
-/// </remarks>
 public sealed class AnyType : ReferenceType
 {
     public AnyType(ReferenceCapability capability)
@@ -18,10 +14,13 @@ public sealed class AnyType : ReferenceType
     {
     }
 
-    public new DeclaredAnyType DeclaredType => (DeclaredAnyType)base.DeclaredType;
+    public override SpecialTypeName Name => SpecialTypeName.Any;
+
+    public override DeclaredAnyType DeclaredType => DeclaredAnyType.Instance;
 
     public override bool IsKnown => true;
 
+    #region Equals
     public override bool Equals(DataType? other)
     {
         if (other is null) return false;
@@ -31,6 +30,7 @@ public sealed class AnyType : ReferenceType
     }
 
     public override int GetHashCode() => HashCode.Combine(SpecialTypeName.Any, Capability);
+    #endregion
 
     public override AnyType To(ReferenceCapability referenceCapability)
         => new(referenceCapability);

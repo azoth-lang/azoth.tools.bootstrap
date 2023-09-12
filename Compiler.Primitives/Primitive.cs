@@ -28,8 +28,10 @@ public static class Primitive
         BuildIntegerTypeSymbol(tree, DataType.Size, stringType);
         BuildIntegerTypeSymbol(tree, DataType.Offset, stringType);
 
-        BuildEmptyType(tree, DataType.Void);
-        BuildEmptyType(tree, DataType.Never);
+        BuildEmptyTypeSymbol(tree, DataType.Void);
+        BuildEmptyTypeSymbol(tree, DataType.Never);
+
+        BuildAnyTypeSymbol(tree);
 
         return tree.BuildPrimitives();
     }
@@ -55,9 +57,15 @@ public static class Primitive
         tree.Add(displayStringMethod);
     }
 
-    private static void BuildEmptyType(SymbolTreeBuilder tree, EmptyType emptyType)
+    private static void BuildEmptyTypeSymbol(SymbolTreeBuilder tree, EmptyType emptyType)
     {
         var symbol = new PrimitiveTypeSymbol(emptyType);
+        tree.Add(symbol);
+    }
+
+    private static void BuildAnyTypeSymbol(SymbolTreeBuilder tree)
+    {
+        var symbol = new PrimitiveTypeSymbol(DeclaredReferenceType.Any.With(ReferenceCapability.Mutable));
         tree.Add(symbol);
     }
 

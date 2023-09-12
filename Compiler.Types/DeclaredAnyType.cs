@@ -14,12 +14,14 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
 
     public override TypeName Name => SpecialTypeName.Any;
 
-    public override ReferenceType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+    public override AnyType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
     {
         if (typeArguments.Count != 0)
             throw new ArgumentException($"`{SpecialTypeName.Any}` does not support type arguments.");
-        return new AnyType(capability);
+        return new(capability);
     }
+
+    public AnyType With(ReferenceCapability capability) => new(capability);
 
     #region Equals
     public override bool Equals(DeclaredReferenceType? other) => ReferenceEquals(this, other);
