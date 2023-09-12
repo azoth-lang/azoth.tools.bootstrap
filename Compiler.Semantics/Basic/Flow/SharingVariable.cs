@@ -2,7 +2,7 @@ using System;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
 /// <summary>
 /// A variable that can participate in sharing. This is all the <see cref="BindingSymbol"/>s

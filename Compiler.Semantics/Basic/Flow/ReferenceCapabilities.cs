@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
 /// <summary>
 /// A collection of reference capabilities assigned to symbols used to track flow sensitive
@@ -77,7 +77,7 @@ public class ReferenceCapabilities
         // Other types don't have capabilities and don't need to be tracked
     }
 
-    public void Freeze(VariableSymbol symbol)
+    public void Freeze(BindingSymbol symbol)
     {
         if (symbol.DataType is ReferenceType)
         {

@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
 /// <summary>
 /// Stores the sharing relationship between the variables and the expression result. This

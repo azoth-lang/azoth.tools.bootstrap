@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -124,10 +125,9 @@ public class BasicBodyAnalyzer
 
     public void ResolveTypes(IBodySyntax body)
     {
-        var capabilities = parameterCapabilities.MutableCopy();
-        var sharing = parameterSharing.MutableCopy();
+        var flow = new FlowState(parameterCapabilities, parameterSharing);
         foreach (var statement in body.Statements)
-            ResolveTypes(statement, sharing, capabilities, StatementContext.BodyLevel);
+            ResolveTypes(statement, StatementContext.BodyLevel, flow);
     }
 
     /// <summary>
@@ -136,9 +136,8 @@ public class BasicBodyAnalyzer
     /// </summary>
     private DataType? ResolveTypes(
         IStatementSyntax statement,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities,
-        StatementContext context)
+        StatementContext context,
+        FlowState flow)
     {
         if (context == StatementContext.AfterResult)
             diagnostics.Add(SemanticError.StatementAfterResult(file, statement.Span));
@@ -147,15 +146,15 @@ public class BasicBodyAnalyzer
             default:
                 throw ExhaustiveMatch.Failed(statement);
             case IVariableDeclarationStatementSyntax variableDeclaration:
-                ResolveTypes(variableDeclaration, sharing, capabilities);
+                ResolveTypes(variableDeclaration, flow);
                 break;
             case IExpressionStatementSyntax expressionStatement:
-                InferType(expressionStatement.Expression, sharing, capabilities);
+                InferType(expressionStatement.Expression, flow);
                 // At the end of the statement, any result reference is discarded
-                sharing.Split(SharingVariable.Result);
+                flow.Split(SharingVariable.Result);
                 break;
             case IResultStatementSyntax resultStatement:
-                var type = InferType(resultStatement.Expression, sharing, capabilities);
+                var type = InferType(resultStatement.Expression, flow);
                 if (context == StatementContext.BodyLevel)
                     diagnostics.Add(SemanticError.ResultStatementInBody(file, resultStatement.Span));
 
@@ -167,17 +166,16 @@ public class BasicBodyAnalyzer
 
     private void ResolveTypes(
         IVariableDeclarationStatementSyntax variableDeclaration,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        FlowState flow)
     {
         DataType variableType;
         if (variableDeclaration.Type is not null)
         {
             variableType = typeResolver.Evaluate(variableDeclaration.Type, implicitRead: true);
-            _ = InferType(variableDeclaration.Initializer, sharing, capabilities);
+            _ = InferType(variableDeclaration.Initializer, flow);
         }
         else if (variableDeclaration.Initializer is not null)
-            variableType = InferDeclarationType(variableDeclaration.Initializer, variableDeclaration.Capability, sharing, capabilities);
+            variableType = InferDeclarationType(variableDeclaration.Initializer, variableDeclaration.Capability, flow);
         else
         {
             diagnostics.Add(TypeError.NotImplemented(file, variableDeclaration.NameSpan,
@@ -187,7 +185,7 @@ public class BasicBodyAnalyzer
 
         if (variableDeclaration.Initializer is not null)
         {
-            var initializerType = AddImplicitConversionIfNeeded(variableDeclaration.Initializer, variableType, sharing, capabilities);
+            var initializerType = AddImplicitConversionIfNeeded(variableDeclaration.Initializer, variableType, flow);
             if (!variableType.IsAssignableFrom(initializerType))
                 diagnostics.Add(TypeError.CannotImplicitlyConvert(file, variableDeclaration.Initializer, initializerType, variableType));
         }
@@ -196,12 +194,11 @@ public class BasicBodyAnalyzer
             variableDeclaration.DeclarationNumber.Result, variableDeclaration.IsMutableBinding, variableType, isParameter: false);
         variableDeclaration.Symbol.Fulfill(symbol);
         symbolTreeBuilder.Add(symbol);
-        capabilities.Declare(symbol);
-        sharing.Declare(symbol);
+        flow.Declare(symbol);
         // Union with the initializer result thereby unioning with any references used in the result
-        sharing.Union(symbol, SharingVariable.Result);
+        flow.Union(symbol, SharingVariable.Result);
         // Split out result for end of statement
-        sharing.Split(SharingVariable.Result);
+        flow.Split(SharingVariable.Result);
     }
 
     /// <summary>
@@ -210,10 +207,9 @@ public class BasicBodyAnalyzer
     private DataType InferDeclarationType(
         IExpressionSyntax expression,
         IReferenceCapabilitySyntax? inferCapability,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        FlowState flow)
     {
-        var type = InferType(expression, sharing, capabilities);
+        var type = InferType(expression, flow);
         if (!type.IsFullyKnown) return DataType.Unknown;
         type = type.ToNonConstantType();
 
@@ -246,12 +242,11 @@ public class BasicBodyAnalyzer
     public void CheckType(
         IExpressionSyntax? expression,
         DataType expectedType,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        FlowState flow)
     {
         if (expression is null) return;
-        InferType(expression, sharing, capabilities, implicitRead: true);
-        var actualType = AddImplicitConversionIfNeeded(expression, expectedType, sharing, capabilities);
+        InferType(expression, flow, implicitRead: true);
+        var actualType = AddImplicitConversionIfNeeded(expression, expectedType, flow);
         if (!expectedType.IsAssignableFrom(actualType))
             diagnostics.Add(TypeError.CannotImplicitlyConvert(file, expression, actualType, expectedType));
     }
@@ -262,11 +257,10 @@ public class BasicBodyAnalyzer
     private static DataType AddImplicitConversionIfNeeded(
         IExpressionSyntax expression,
         DataType expectedType,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        FlowState flow)
     {
         var fromType = expression.DataType.Assigned();
-        var conversion = ImplicitConversion(expectedType, fromType, expression.ImplicitConversion, sharing, capabilities);
+        var conversion = ImplicitConversion(expectedType, fromType, expression.ImplicitConversion, flow);
         if (conversion is not null) expression.AddConversion(conversion);
         return expression.ConvertedDataType.Assigned();
     }
@@ -275,8 +269,7 @@ public class BasicBodyAnalyzer
         DataType toType,
         DataType fromType,
         Conversion priorConversion,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        FlowState flow)
     {
         switch (toType, fromType)
         {
@@ -286,13 +279,13 @@ public class BasicBodyAnalyzer
                 // Direct subtype
                 if (to.Referent.IsAssignableFrom(from.Referent))
                     return null;
-                var liftedConversion = ImplicitConversion(to.Referent, from.Referent, IdentityConversion.Instance, sharing, capabilities);
+                var liftedConversion = ImplicitConversion(to.Referent, from.Referent, IdentityConversion.Instance, flow);
                 return liftedConversion is null ? null : new LiftedConversion(liftedConversion, priorConversion);
             case (OptionalType to, /* non-optional */ DataType from):
                 var nonOptionalTo = to.Referent;
                 if (!nonOptionalTo.IsAssignableFrom(from))
                 {
-                    var conversion = ImplicitConversion(nonOptionalTo, from, priorConversion, sharing, capabilities);
+                    var conversion = ImplicitConversion(nonOptionalTo, from, priorConversion, flow);
                     if (conversion is null) return null; // Not able to convert to the referent type
                     priorConversion = conversion;
                 }
@@ -325,7 +318,7 @@ public class BasicBodyAnalyzer
                 // Try to recover const
                 // TODO all upcasting at the same time
                 if (!to.BareTypeEquals(from) // Underlying types must match
-                    || !sharing.IsIsolated(SharingVariable.Result))
+                    || !flow.IsIsolated(SharingVariable.Result))
                     return null;
 
                 return new RecoverConst(priorConversion);
@@ -334,7 +327,7 @@ public class BasicBodyAnalyzer
             {
                 // Try to recover isolation
                 if (!to.BareTypeEquals(from) // Underlying types must match
-                    || !sharing.IsIsolated(SharingVariable.Result))
+                    || !flow.IsIsolated(SharingVariable.Result))
                     return null;
 
                 return new RecoverIsolation(priorConversion);
@@ -353,8 +346,7 @@ public class BasicBodyAnalyzer
     /// <param name="implicitRead">Whether this expression should implicitly be inferred to be a read.</param>
     private DataType InferType(
         IExpressionSyntax? expression,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities,
+        FlowState flow,
         bool implicitRead = true)
     {
         switch (expression)
@@ -365,7 +357,7 @@ public class BasicBodyAnalyzer
                 return DataType.Unknown;
             case IIdExpressionSyntax exp:
             {
-                var referentType = InferType(exp.Referent, sharing, capabilities);
+                var referentType = InferType(exp.Referent, flow);
                 DataType type;
                 if (referentType is ReferenceType referenceType)
                     type = referenceType.With(ReferenceCapability.Identity);
@@ -389,11 +381,11 @@ public class BasicBodyAnalyzer
                             switch (symbolType)
                             {
                                 case ReferenceType referenceType:
-                                    if (!sharing.IsIsolated(variableSymbol))
+                                    if (!flow.IsIsolated(variableSymbol))
                                         diagnostics.Add(TypeError.CannotMoveValue(file, exp));
 
                                     type = referenceType.With(ReferenceCapability.Isolated);
-                                    capabilities.Move(variableSymbol);
+                                    flow.Move(variableSymbol);
                                     break;
                                 case ValueType { Semantics: TypeSemantics.MoveValue } valueType:
                                     type = valueType;
@@ -428,17 +420,17 @@ public class BasicBodyAnalyzer
                         var symbol = InferNameSymbol(nameExpression);
                         // Don't need to alias the symbol in capabilities because it will be moved
                         DataType type = DataType.Unknown;
-                        if (symbol is VariableSymbol variableSymbol)
+                        if (symbol is BindingSymbol bindingSymbol)
                         {
-                            var symbolType = variableSymbol.DataType;
+                            var symbolType = bindingSymbol.DataType;
                             switch (symbolType)
                             {
                                 case ReferenceType referenceType:
-                                    if (!sharing.IsIsolated(variableSymbol))
+                                    if (!flow.IsIsolated(bindingSymbol))
                                         diagnostics.Add(TypeError.CannotFreezeValue(file, exp));
 
                                     type = referenceType.With(ReferenceCapability.Constant);
-                                    capabilities.Freeze(variableSymbol);
+                                    flow.Freeze(bindingSymbol);
                                     break;
                                 case UnknownType:
                                     type = DataType.Unknown;
@@ -447,7 +439,7 @@ public class BasicBodyAnalyzer
                                     throw new NotImplementedException("Non-freezable type can't be frozen.");
                             }
 
-                            exp.ReferencedSymbol.Fulfill(variableSymbol);
+                            exp.ReferencedSymbol.Fulfill(bindingSymbol);
                         }
                         else
                             throw new NotImplementedException("Raise error about `freeze` of non-variable");
@@ -473,9 +465,9 @@ public class BasicBodyAnalyzer
                         DataType type = DataType.Unknown;
                         if (symbol is VariableSymbol variableSymbol)
                         {
-                            sharing.UnionResult(variableSymbol);
-                            capabilities.Alias(variableSymbol);
-                            type = capabilities.CurrentType(variableSymbol);
+                            flow.UnionResult(variableSymbol);
+                            flow.Alias(variableSymbol);
+                            type = flow.Type(variableSymbol);
                             switch (type)
                             {
                                 case ReferenceType referenceType:
@@ -515,9 +507,9 @@ public class BasicBodyAnalyzer
                 {
                     var expectedReturnType = returnType ?? throw new InvalidOperationException("Return statement in field initializer.");
 
-                    InferType(exp.Value, sharing, capabilities, implicitRead: false);
-                    sharing.SplitForReturn();
-                    AddImplicitConversionIfNeeded(exp.Value, expectedReturnType, sharing, capabilities);
+                    InferType(exp.Value, flow, implicitRead: false);
+                    flow.SplitForReturn();
+                    AddImplicitConversionIfNeeded(exp.Value, expectedReturnType, flow);
                     CheckTypeCompatibility(expectedReturnType, exp.Value);
                 }
                 else if (returnType == DataType.Never)
@@ -537,9 +529,9 @@ public class BasicBodyAnalyzer
                 return exp.DataType = exp.Value ? DataType.True : DataType.False;
             case IBinaryOperatorExpressionSyntax binaryOperatorExpression:
             {
-                var leftType = InferType(binaryOperatorExpression.LeftOperand, sharing, capabilities);
+                var leftType = InferType(binaryOperatorExpression.LeftOperand, flow);
                 var @operator = binaryOperatorExpression.Operator;
-                var rightType = InferType(binaryOperatorExpression.RightOperand, sharing, capabilities);
+                var rightType = InferType(binaryOperatorExpression.RightOperand, flow);
 
                 // If either is unknown, then we can't know whether there is a a problem.
                 // Note that the operator could be overloaded
@@ -553,7 +545,7 @@ public class BasicBodyAnalyzer
                     case BinaryOperator.Minus:
                     case BinaryOperator.Asterisk:
                     case BinaryOperator.Slash:
-                        compatible = NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand, binaryOperatorExpression.RightOperand, sharing, capabilities);
+                        compatible = NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand, binaryOperatorExpression.RightOperand, flow);
                         binaryOperatorExpression.DataType = compatible ? leftType : DataType.Unknown;
                         binaryOperatorExpression.Semantics = ExpressionSemantics.CopyValue;
                         break;
@@ -561,7 +553,7 @@ public class BasicBodyAnalyzer
                     case BinaryOperator.NotEqual:
                         compatible = (leftType == DataType.Bool && rightType == DataType.Bool)
                                      || NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand,
-                                         binaryOperatorExpression.RightOperand, sharing, capabilities)
+                                         binaryOperatorExpression.RightOperand, flow)
                                      || IdOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand,
                                          binaryOperatorExpression.RightOperand)
                             /*|| OperatorOverloadDefined(@operator, binaryOperatorExpression.LeftOperand, ref binaryOperatorExpression.RightOperand)*/
@@ -574,7 +566,7 @@ public class BasicBodyAnalyzer
                     case BinaryOperator.GreaterThan:
                     case BinaryOperator.GreaterThanOrEqual:
                         compatible = (leftType == DataType.Bool && rightType == DataType.Bool)
-                                     || NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand, binaryOperatorExpression.RightOperand, sharing, capabilities)
+                                     || NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand, binaryOperatorExpression.RightOperand, flow)
                             /*|| OperatorOverloadDefined(@operator, binaryOperatorExpression.LeftOperand, ref binaryOperatorExpression.RightOperand)*/;
                         binaryOperatorExpression.DataType = DataType.Bool;
                         binaryOperatorExpression.Semantics = ExpressionSemantics.CopyValue;
@@ -610,10 +602,10 @@ public class BasicBodyAnalyzer
                 ExpressionSemantics referenceSemantics;
                 if (symbol is VariableSymbol variableSymbol)
                 {
-                    sharing.UnionResult(variableSymbol);
-                    capabilities.Alias(variableSymbol);
+                    flow.UnionResult(variableSymbol);
+                    flow.Alias(variableSymbol);
 
-                    type = capabilities.CurrentType(variableSymbol);
+                    type = flow.Type(variableSymbol);
                     if (implicitRead) type = type.WithoutWrite();
 
                     referenceSemantics = implicitRead
@@ -637,12 +629,12 @@ public class BasicBodyAnalyzer
                     default:
                         throw ExhaustiveMatch.Failed(@operator);
                     case UnaryOperator.Not:
-                        CheckType(exp.Operand, DataType.Bool, sharing, capabilities);
+                        CheckType(exp.Operand, DataType.Bool, flow);
                         exp.DataType = DataType.Bool;
                         break;
                     case UnaryOperator.Minus:
                     case UnaryOperator.Plus:
-                        var operandType = InferType(exp.Operand, sharing, capabilities);
+                        var operandType = InferType(exp.Operand, flow);
                         switch (operandType)
                         {
                             case IntegerConstantType integerType:
@@ -672,7 +664,7 @@ public class BasicBodyAnalyzer
             }
             case INewObjectExpressionSyntax exp:
             {
-                var argumentTypes = exp.Arguments.Select(arg => InferType(arg, sharing, capabilities)).ToFixedList();
+                var argumentTypes = exp.Arguments.Select(arg => InferType(arg, flow)).ToFixedList();
                 // TODO handle named constructors here
                 var constructingType = typeResolver.EvaluateBareType(exp.Type);
                 if (!constructingType.IsFullyKnown)
@@ -701,7 +693,7 @@ public class BasicBodyAnalyzer
                         foreach (var (arg, parameterDataType) in exp.Arguments
                             .Zip(constructorSymbol.ParameterDataTypes.Select(contextType.ReplaceTypeParametersIn)))
                         {
-                            AddImplicitConversionIfNeeded(arg, parameterDataType, sharing, capabilities);
+                            AddImplicitConversionIfNeeded(arg, parameterDataType, flow);
                             CheckTypeCompatibility(parameterDataType, arg);
                         }
                         constructedType = contextType.ReplaceTypeParametersIn(constructorSymbol.ReturnDataType);
@@ -718,7 +710,7 @@ public class BasicBodyAnalyzer
             case IForeachExpressionSyntax exp:
             {
                 var declaredType = typeResolver.Evaluate(exp.Type, implicitRead: true);
-                var expressionType = CheckForeachInType(declaredType, exp.InExpression, sharing, capabilities);
+                var expressionType = CheckForeachInType(declaredType, exp.InExpression, flow);
                 var variableType = declaredType ?? expressionType.ToNonConstantType();
                 var symbol = new VariableSymbol(containingSymbol, exp.VariableName,
                     exp.DeclarationNumber.Result, exp.IsMutableBinding, variableType, false);
@@ -726,35 +718,35 @@ public class BasicBodyAnalyzer
                 symbolTreeBuilder.Add(symbol);
 
                 // TODO check the break types
-                InferBlockType(exp.Block, sharing, capabilities);
+                InferBlockType(exp.Block, flow);
                 // TODO assign correct type to the expression
                 exp.Semantics = ExpressionSemantics.Void;
                 return exp.DataType = DataType.Void;
             }
             case IWhileExpressionSyntax exp:
             {
-                CheckType(exp.Condition, DataType.Bool, sharing, capabilities);
-                InferBlockType(exp.Block, sharing, capabilities);
+                CheckType(exp.Condition, DataType.Bool, flow);
+                InferBlockType(exp.Block, flow);
                 // TODO assign correct type to the expression
                 exp.Semantics = ExpressionSemantics.Void;
                 return exp.DataType = DataType.Void;
             }
             case ILoopExpressionSyntax exp:
-                InferBlockType(exp.Block, sharing, capabilities);
+                InferBlockType(exp.Block, flow);
                 // TODO assign correct type to the expression
                 exp.Semantics = ExpressionSemantics.Void;
                 return exp.DataType = DataType.Void;
             case IInvocationExpressionSyntax exp:
-                return InferInvocationType(exp, sharing, capabilities);
+                return InferInvocationType(exp, flow);
             case IUnsafeExpressionSyntax exp:
             {
-                exp.DataType = InferType(exp.Expression, sharing, capabilities);
+                exp.DataType = InferType(exp.Expression, flow);
                 exp.Semantics = exp.Expression.Semantics.Assigned();
                 return exp.ConvertedDataType.Assigned();
             }
             case IIfExpressionSyntax exp:
-                CheckType(exp.Condition, DataType.Bool, sharing, capabilities);
-                InferBlockType(exp.ThenBlock, sharing, capabilities);
+                CheckType(exp.Condition, DataType.Bool, flow);
+                InferBlockType(exp.ThenBlock, flow);
                 switch (exp.ElseClause)
                 {
                     default:
@@ -764,10 +756,10 @@ public class BasicBodyAnalyzer
                     case IIfExpressionSyntax _:
                     case IBlockExpressionSyntax _:
                         var elseExpression = (IExpressionSyntax)exp.ElseClause;
-                        InferType(elseExpression, sharing, capabilities);
+                        InferType(elseExpression, flow);
                         break;
                     case IResultStatementSyntax resultStatement:
-                        InferType(resultStatement.Expression, sharing, capabilities);
+                        InferType(resultStatement.Expression, flow);
                         break;
                 }
                 // TODO assign a type to the expression
@@ -778,7 +770,7 @@ public class BasicBodyAnalyzer
                 // Don't wrap the self expression in a share expression for field access
                 var isSelfField = exp.Context is ISelfExpressionSyntax;
                 // TODO properly handle mutable self
-                var contextType = InferType(exp.Context, sharing, capabilities/*, !isSelfField*/);
+                var contextType = InferType(exp.Context, flow/*, !isSelfField*/);
                 var member = exp.Member;
                 var contextSymbol = contextType is VoidType && exp.Context is INameExpressionSyntax context
                     ? context.ReferencedSymbol.Result
@@ -801,15 +793,15 @@ public class BasicBodyAnalyzer
                 return exp.DataType = type;
             }
             case IBreakExpressionSyntax exp:
-                InferType(exp.Value, sharing, capabilities);
+                InferType(exp.Value, flow);
                 return exp.DataType = DataType.Never;
             case INextExpressionSyntax exp:
                 return exp.DataType = DataType.Never;
             case IAssignmentExpressionSyntax exp:
             {
-                var left = InferAssignmentTargetType(exp.LeftOperand, sharing, capabilities);
-                InferType(exp.RightOperand, sharing, capabilities);
-                AddImplicitConversionIfNeeded(exp.RightOperand, left, sharing, capabilities);
+                var left = InferAssignmentTargetType(exp.LeftOperand, flow);
+                InferType(exp.RightOperand, flow);
+                AddImplicitConversionIfNeeded(exp.RightOperand, left, flow);
                 var right = exp.RightOperand.ConvertedDataType.Assigned();
                 if (!left.IsAssignableFrom(right))
                     diagnostics.Add(TypeError.CannotImplicitlyConvert(file,
@@ -819,7 +811,7 @@ public class BasicBodyAnalyzer
             }
             case ISelfExpressionSyntax exp:
             {
-                var type = capabilities.CurrentType(InferSelfSymbol(exp));
+                var type = flow.Type(InferSelfSymbol(exp));
                 var referenceSemantics = implicitRead
                     ? ExpressionSemantics.ReadOnlyReference
                     : ExpressionSemantics.MutableReference;
@@ -829,10 +821,10 @@ public class BasicBodyAnalyzer
             case INoneLiteralExpressionSyntax exp:
                 return exp.DataType = DataType.None;
             case IBlockExpressionSyntax blockSyntax:
-                return InferBlockType(blockSyntax, sharing, capabilities);
+                return InferBlockType(blockSyntax, flow);
             case IConversionExpressionSyntax exp:
             {
-                var referentType = InferType(exp.Referent, sharing, capabilities);
+                var referentType = InferType(exp.Referent, flow);
                 var convertToType = typeResolver.Evaluate(exp.ConvertToType, false) ?? DataType.Unknown;
                 if (!ExplicitConversionTypesAreCompatible(exp.Referent, convertToType))
                     diagnostics.Add(TypeError.CannotExplicitlyConvert(file, exp.Referent, referentType, convertToType));
@@ -845,8 +837,7 @@ public class BasicBodyAnalyzer
 
     private DataType InferAssignmentTargetType(
         IAssignableExpressionSyntax expression,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        FlowState flow)
     {
         switch (expression)
         {
@@ -854,7 +845,7 @@ public class BasicBodyAnalyzer
                 throw ExhaustiveMatch.Failed(expression);
             case IQualifiedNameExpressionSyntax exp:
                 // TODO handle mutable self
-                var contextType = InferType(exp.Context, sharing, capabilities, false);
+                var contextType = InferType(exp.Context, flow, false);
                 DataType type;
                 var member = exp.Member;
                 switch (contextType)
@@ -882,7 +873,7 @@ public class BasicBodyAnalyzer
                 exp.Semantics = ExpressionSemantics.CreateReference;
                 var symbol = InferNameSymbol(exp);
                 if (symbol is VariableSymbol variableSymbol)
-                    return exp.DataType = capabilities.CurrentType(variableSymbol);
+                    return exp.DataType = flow.Type(variableSymbol);
 
                 throw new NotImplementedException("Raise error about assigning into a non-variable");
         }
@@ -890,8 +881,7 @@ public class BasicBodyAnalyzer
 
     private DataType InferInvocationType(
         IInvocationExpressionSyntax invocation,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        FlowState flow)
     {
         // This could actually be any of the following since the parser can't distinguish them:
         // * Regular function invocation
@@ -899,15 +889,15 @@ public class BasicBodyAnalyzer
         // * Namespaced function invocation
         // * Method invocation
 
-        var argumentTypes = invocation.Arguments.Select(arg => InferType(arg, sharing, capabilities)).ToFixedList();
+        var argumentTypes = invocation.Arguments.Select(arg => InferType(arg, flow)).ToFixedList();
         var functionSymbols = FixedSet<FunctionSymbol>.Empty;
         switch (invocation.Expression)
         {
             case IQualifiedNameExpressionSyntax exp:
-                var contextType = InferType(exp.Context, sharing, capabilities, implicitRead: false);
+                var contextType = InferType(exp.Context, flow, implicitRead: false);
                 var name = exp.Member.Name!;
                 if (contextType is not VoidType)
-                    return InferMethodInvocationType(invocation, exp.Context, name, argumentTypes, sharing, capabilities);
+                    return InferMethodInvocationType(invocation, exp.Context, name, argumentTypes, flow);
                 if (exp.Context is INameExpressionSyntax { ReferencedSymbol.Result: Symbol contextSymbol })
                 {
                     functionSymbols = symbolTrees.Children(contextSymbol).OfType<FunctionSymbol>()
@@ -927,7 +917,7 @@ public class BasicBodyAnalyzer
                 throw new NotImplementedException("Invocation of expression");
         }
 
-        return InferFunctionInvocationType(invocation, functionSymbols, argumentTypes, sharing, capabilities);
+        return InferFunctionInvocationType(invocation, functionSymbols, argumentTypes, flow);
     }
 
     private DataType InferMethodInvocationType(
@@ -935,8 +925,7 @@ public class BasicBodyAnalyzer
         IExpressionSyntax context,
         Name methodName,
         FixedList<DataType> argumentTypes,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        FlowState flow)
     {
         // If it is unknown, we already reported an error
         if (context.DataType == DataType.Unknown)
@@ -965,15 +954,15 @@ public class BasicBodyAnalyzer
                 var contextType = (NonEmptyType)context.DataType.Known();
 
                 var selfParamType = contextType.ReplaceTypeParametersIn(methodSymbol.SelfDataType);
-                AddImplicitConversionIfNeeded(context, selfParamType, sharing, capabilities);
-                AddImplicitMoveIfNeeded(context, selfParamType, sharing, capabilities);
-                AddImplicitFreezeIfNeeded(context, selfParamType, sharing, capabilities);
+                AddImplicitConversionIfNeeded(context, selfParamType, flow);
+                AddImplicitMoveIfNeeded(context, selfParamType, flow);
+                AddImplicitFreezeIfNeeded(context, selfParamType, flow);
                 CheckTypeCompatibility(selfParamType, context);
 
                 foreach (var (arg, type) in invocation.Arguments
                     .Zip(methodSymbol.ParameterDataTypes.Select(contextType.ReplaceTypeParametersIn)))
                 {
-                    AddImplicitConversionIfNeeded(arg, type, sharing, capabilities);
+                    AddImplicitConversionIfNeeded(arg, type, flow);
                     CheckTypeCompatibility(type, arg);
                 }
 
@@ -1005,8 +994,7 @@ public class BasicBodyAnalyzer
     private static void AddImplicitMoveIfNeeded(
         IExpressionSyntax context,
         DataType selfParamType,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        FlowState flow)
     {
         if (selfParamType is not ReferenceType { IsIsolatedReference: true } toType
             || context.DataType is not ReferenceType { AllowsRecoverIsolation: true } fromType)
@@ -1017,18 +1005,17 @@ public class BasicBodyAnalyzer
             return;
 
         if (context is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
-            || !sharing.IsIsolatedExceptResult(symbol))
+            || !flow.IsIsolatedExceptResult(symbol))
             return;
 
         context.AddConversion(new ImplicitMove(context.ImplicitConversion));
-        capabilities.Move(symbol);
+        flow.Move(symbol);
     }
 
     private static void AddImplicitFreezeIfNeeded(
         IExpressionSyntax context,
         DataType selfParamType,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        FlowState flow)
     {
         if (selfParamType is not ReferenceType { IsConstReference: true } toType
             || context.DataType is not ReferenceType { AllowsFreeze: true } fromType)
@@ -1038,19 +1025,18 @@ public class BasicBodyAnalyzer
         if (!toType.BareTypeEquals(fromType)) return;
 
         if (context is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
-            || !sharing.IsIsolatedExceptResult(symbol))
+            || !flow.IsIsolatedExceptResult(symbol))
             return;
 
         context.AddConversion(new ImplicitFreeze(context.ImplicitConversion));
-        capabilities.Freeze(symbol);
+        flow.Freeze(symbol);
     }
 
     private DataType InferFunctionInvocationType(
         IInvocationExpressionSyntax invocation,
         FixedSet<FunctionSymbol> functionSymbols,
         FixedList<DataType> argumentTypes,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        FlowState flow)
     {
         functionSymbols = SelectOverload(functionSymbols, argumentTypes);
         switch (functionSymbols.Count)
@@ -1066,7 +1052,7 @@ public class BasicBodyAnalyzer
                 invocation.ReferencedSymbol.Fulfill(functionSymbol);
                 foreach (var (arg, parameterDataType) in invocation.Arguments.Zip(functionSymbol.ParameterDataTypes))
                 {
-                    AddImplicitConversionIfNeeded(arg, parameterDataType, sharing, capabilities);
+                    AddImplicitConversionIfNeeded(arg, parameterDataType, flow);
                     CheckTypeCompatibility(parameterDataType, arg);
                 }
 
@@ -1128,8 +1114,7 @@ public class BasicBodyAnalyzer
 
     private DataType InferBlockType(
         IBlockOrResultSyntax blockOrResult,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        FlowState flow)
     {
         switch (blockOrResult)
         {
@@ -1140,14 +1125,14 @@ public class BasicBodyAnalyzer
                 foreach (var statement in block.Statements)
                 {
                     var context = blockType is null ? StatementContext.BeforeResult : StatementContext.AfterResult;
-                    var resultType = ResolveTypes(statement, sharing, capabilities, context);
+                    var resultType = ResolveTypes(statement, context, flow);
                     // Always resolve types even if there is already a block type
                     blockType ??= resultType;
                 }
 
                 // Drop any variables in the scope
                 foreach (var variableDeclaration in block.Statements.OfType<IVariableDeclarationStatementSyntax>())
-                    sharing.Drop(variableDeclaration.Symbol.Result);
+                    flow.Drop(variableDeclaration.Symbol.Result);
 
                 // If there was no result expression, then the block type is void
                 blockType ??= DataType.Void;
@@ -1155,7 +1140,7 @@ public class BasicBodyAnalyzer
                 block.Semantics = blockType.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 return block.DataType = blockType;
             case IResultStatementSyntax result:
-                InferType(result.Expression, sharing, capabilities);
+                InferType(result.Expression, flow);
                 return result.Expression.ConvertedDataType.Assigned();
         }
     }
@@ -1245,8 +1230,7 @@ public class BasicBodyAnalyzer
     private DataType CheckForeachInType(
         DataType? declaredType,
         IExpressionSyntax inExpression,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        FlowState flow)
     {
         switch (inExpression)
         {
@@ -1255,8 +1239,8 @@ public class BasicBodyAnalyzer
                     or BinaryOperator.LessThanDotDot
                     or BinaryOperator.DotDotLessThan
                     or BinaryOperator.LessThanDotDotLessThan:
-                var leftType = InferType(binaryExpression.LeftOperand, sharing, capabilities);
-                var rightType = InferType(binaryExpression.RightOperand, sharing, capabilities);
+                var leftType = InferType(binaryExpression.LeftOperand, flow);
+                var rightType = InferType(binaryExpression.RightOperand, flow);
                 if (!leftType.IsFullyKnown || !rightType.IsFullyKnown)
                     return inExpression.DataType = DataType.Unknown;
 
@@ -1271,20 +1255,20 @@ public class BasicBodyAnalyzer
                 var type = assumedType;
                 if (assumedType is not null)
                 {
-                    AddImplicitConversionIfNeeded(binaryExpression.LeftOperand, assumedType, sharing, capabilities);
-                    AddImplicitConversionIfNeeded(binaryExpression.RightOperand, assumedType, sharing, capabilities);
+                    AddImplicitConversionIfNeeded(binaryExpression.LeftOperand, assumedType, flow);
+                    AddImplicitConversionIfNeeded(binaryExpression.RightOperand, assumedType, flow);
                 }
                 else
                 {
                     var compatible = NumericOperatorTypesAreCompatible(binaryExpression.LeftOperand,
-                        binaryExpression.RightOperand, sharing, capabilities);
+                        binaryExpression.RightOperand, flow);
                     type = compatible ? leftType : DataType.Unknown;
                 }
 
                 inExpression.Semantics = ExpressionSemantics.CopyValue; // Treat ranges as structs
                 return inExpression.DataType = type!;
             default:
-                return InferType(inExpression, sharing, capabilities);
+                return InferType(inExpression, flow);
         }
     }
 
@@ -1343,8 +1327,7 @@ public class BasicBodyAnalyzer
     private static bool NumericOperatorTypesAreCompatible(
         IExpressionSyntax leftOperand,
         IExpressionSyntax rightOperand,
-        SharingRelation sharing,
-        ReferenceCapabilities capabilities)
+        FlowState flow)
     {
         var leftType = leftOperand.ConvertedDataType;
         switch (leftType)
@@ -1359,15 +1342,15 @@ public class BasicBodyAnalyzer
             //return !IsIntegerType(rightType);
             case PointerSizedIntegerType integerType:
                 // TODO this isn't right we might need to convert either of them
-                AddImplicitConversionIfNeeded(rightOperand, integerType, sharing, capabilities);
+                AddImplicitConversionIfNeeded(rightOperand, integerType, flow);
                 return rightOperand.ConvertedDataType is PointerSizedIntegerType;
             case FixedSizeIntegerType integerType:
                 // TODO this isn't right we might need to convert either of them
-                AddImplicitConversionIfNeeded(rightOperand, integerType, sharing, capabilities);
+                AddImplicitConversionIfNeeded(rightOperand, integerType, flow);
                 return rightOperand.ConvertedDataType is FixedSizeIntegerType;
             case BigIntegerType integerType:
                 // TODO this isn't right we might need to convert either of them
-                AddImplicitConversionIfNeeded(rightOperand, integerType, sharing, capabilities);
+                AddImplicitConversionIfNeeded(rightOperand, integerType, flow);
                 return rightOperand.ConvertedDataType is IntegerType;
             case OptionalType _:
                 throw new NotImplementedException("Trying to do math on optional type");

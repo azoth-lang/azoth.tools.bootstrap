@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
 /// <summary>
 /// An immutable snapshot of the sharing relationship between variables and the
