@@ -500,18 +500,19 @@ public class BasicBodyAnalyzer
                 }
             case IReturnExpressionSyntax exp:
             {
-                if (returnType is null) throw new NotImplementedException("Return statement in field initializer.");
+                if (returnType is null)
+                    throw new NotImplementedException("Return statement in field initializer.");
                 if (exp.Value is not null)
                 {
                     var expectedReturnType = returnType;
                     InferType(exp.Value, flow, implicitRead: false);
-                    flow.SplitForReturn();
+                    flow.DropAllLocalVariable(); // No longer in scope
+                    flow.DropIsolatedParameters(); // No longer external reference
                     AddImplicitConversionIfNeeded(exp.Value, expectedReturnType, flow);
                     CheckTypeCompatibility(expectedReturnType, exp.Value);
                 }
                 else if (returnType == DataType.Never)
                     diagnostics.Add(TypeError.CannotReturnFromNeverFunction(file, exp.Span));
-                // TODO if returnType is null, then this is a field and shouldn't contain a return expression
                 else if (returnType != DataType.Void)
                     diagnostics.Add(TypeError.ReturnExpressionMustHaveValue(file, exp.Span, returnType ?? DataType.Unknown));
 

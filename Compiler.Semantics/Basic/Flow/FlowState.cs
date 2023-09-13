@@ -40,6 +40,10 @@ public class FlowState
 
     public void Drop(BindingSymbol symbol) => sharing.Drop(symbol);
 
+    public void DropAllLocalVariable() => sharing.DropAllLocalVariable();
+
+    public void DropIsolatedParameters() => sharing.DropIsolatedParameters();
+
     public void Move(BindingSymbol symbol) => capabilities.Move(symbol);
 
     public void Freeze(BindingSymbol symbol) => capabilities.Freeze(symbol);
@@ -58,9 +62,6 @@ public class FlowState
     public void UnionResult(BindingSymbol symbol) => sharing.UnionResult(symbol);
 
     public void Split(SharingVariable variable) => sharing.Split(variable);
-
-    // TODO change to actually unbind them instead?
-    public void SplitForReturn() => sharing.SplitForReturn();
 
     public bool IsIsolated(SharingVariable variable) => sharing.IsIsolated(variable);
 

@@ -63,12 +63,29 @@ public class SharingRelation
     public void Drop(BindingSymbol symbol)
     {
         var variable = (SharingVariable)symbol;
-        if (subsetFor.TryGetValue(variable, out var set))
-        {
-            set.Remove(variable);
-            subsetFor.Remove(variable);
-            if (set.Count == 0) sets.Remove(set);
-        }
+        Drop(variable);
+    }
+
+    private void Drop(SharingVariable variable)
+    {
+        if (!subsetFor.TryGetValue(variable, out var set))
+            return;
+
+        set.Remove(variable);
+        subsetFor.Remove(variable);
+        if (set.Count == 0) sets.Remove(set);
+    }
+
+    public void DropAllLocalVariable()
+    {
+        foreach (var variable in subsetFor.Keys.Where(v => v.IsLocal).ToArray())
+            Drop(variable);
+    }
+
+    public void DropIsolatedParameters()
+    {
+        foreach (var variable in subsetFor.Keys.Where(v => v.DataType is ReferenceType { IsIsolatedReference: true }).ToArray())
+            Drop(variable);
     }
 
     public void Union(SharingVariable var1, SharingVariable var2)
@@ -107,16 +124,6 @@ public class SharingRelation
         var newSet = new HashSet<SharingVariable> { variable };
         sets.Add(newSet);
         subsetFor[variable] = newSet;
-    }
-
-    /// <summary>
-    /// Split out any local variable or `iso` parameter since those references are out of scope.
-    /// </summary>
-    public void SplitForReturn()
-    {
-        foreach (var var in subsetFor.Keys)
-            if (var.IsLocal || var.DataType is ReferenceType { IsIsolatedReference: true })
-                Split(var);
     }
 
     public bool IsIsolated(SharingVariable variable)
