@@ -7,12 +7,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class ConversionExpressionSyntax : ExpressionSyntax, IConversionExpressionSyntax
 {
     public IExpressionSyntax Referent { get; }
-    public ITypeSyntax? ConvertToType { get; }
+    // TODO which conversion operator `as` `as!` or `as?`
+    public ITypeSyntax ConvertToType { get; }
 
     public ConversionExpressionSyntax(
         IExpressionSyntax referent,
-        ITypeSyntax? convertToType)
-        : base(TextSpan.Covering(referent.Span, convertToType?.Span))
+        ITypeSyntax convertToType)
+        : base(TextSpan.Covering(referent.Span, convertToType.Span))
     {
         Referent = referent;
         ConvertToType = convertToType;
@@ -20,5 +21,6 @@ internal class ConversionExpressionSyntax : ExpressionSyntax, IConversionExpress
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Conversion;
 
-    public override string ToString() => throw new System.NotImplementedException();
+    public override string ToString() =>
+        $"{Referent.ToGroupedString(ExpressionPrecedence)} as {ConvertToType}";
 }

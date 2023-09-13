@@ -473,7 +473,7 @@ public partial interface IIdExpressionSyntax : IExpressionSyntax
 public partial interface IConversionExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
-    ITypeSyntax? ConvertToType { get; }
+    ITypeSyntax ConvertToType { get; }
 }
 
 public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyntax

@@ -158,8 +158,7 @@ public static class ISyntaxExtensions
                 yield break;
             case IConversionExpressionSyntax n:
                 yield return n.Referent;
-                if (n.ConvertToType is not null)
-                    yield return n.ConvertToType;
+                yield return n.ConvertToType;
                 yield break;
             case IIfExpressionSyntax n:
                 yield return n.Condition;
