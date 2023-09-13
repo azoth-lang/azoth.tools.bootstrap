@@ -18,7 +18,7 @@ public enum BinaryOperator
     LessThanDotDot,
     DotDotLessThan,
     LessThanDotDotLessThan,
-    As,
-    AsExclamation,
-    AsQuestion,
+    //As,
+    //AsExclamation,
+    //AsQuestion,
 }

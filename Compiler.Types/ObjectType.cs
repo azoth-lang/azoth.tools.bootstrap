@@ -26,7 +26,7 @@ public sealed class ObjectType : ReferenceType
     public NamespaceName ContainingNamespace => DeclaredType.ContainingNamespace;
     public override Name Name => DeclaredType.Name;
     public FixedList<DataType> TypeArguments { get; }
-    public override bool IsFullyKnown { [DebuggerStepThrough] get => true; }
+    public override bool IsFullyKnown { [DebuggerStepThrough] get; }
 
     /// <summary>
     /// Whether this type was declared `const` meaning that most references should be treated as
@@ -65,6 +65,7 @@ public sealed class ObjectType : ReferenceType
         if (declaredType.GenericParameters.Count != typeArguments.Count)
             throw new ArgumentException($"Number of type arguments must match. Given `[{typeArguments.ToILString()}]` for `{declaredType}`.", nameof(typeArguments));
         TypeArguments = typeArguments;
+        IsFullyKnown = typeArguments.All(a => a.IsFullyKnown);
         typeReplacements = declaredType.GenericParameterDataTypes.Zip(typeArguments).ToFixedDictionary();
     }
 

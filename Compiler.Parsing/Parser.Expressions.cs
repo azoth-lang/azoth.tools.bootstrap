@@ -239,9 +239,6 @@ public partial class Parser
             ILessThanDotDotToken _ => BinaryOperator.LessThanDotDot,
             IDotDotLessThanToken _ => BinaryOperator.DotDotLessThan,
             ILessThanDotDotLessThanToken _ => BinaryOperator.LessThanDotDotLessThan,
-            IAsKeywordToken _ => BinaryOperator.As,
-            IAsExclamationKeywordToken _ => BinaryOperator.AsExclamation,
-            IAsQuestionKeywordToken _ => BinaryOperator.AsQuestion,
             IQuestionQuestionToken _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(operatorToken)
         };

@@ -548,8 +548,10 @@ public class BasicBodyAnalyzer
 
                 // If either is unknown, then we can't know whether there is a a problem.
                 // Note that the operator could be overloaded
-                if (leftType == DataType.Unknown || rightType == DataType.Unknown)
+                if (!leftType.IsFullyKnown || !rightType.IsFullyKnown)
                     return binaryOperatorExpression.DataType = DataType.Unknown;
+
+                // TODO ----------------------------------------------------------------------------
 
                 bool compatible;
                 switch (@operator)
@@ -595,10 +597,6 @@ public class BasicBodyAnalyzer
                     case BinaryOperator.DotDotLessThan:
                     case BinaryOperator.LessThanDotDotLessThan:
                         throw new NotImplementedException("Type analysis of range operators");
-                    case BinaryOperator.As:
-                    case BinaryOperator.AsExclamation:
-                    case BinaryOperator.AsQuestion:
-                        throw new NotImplementedException("Type analysis of as operators");
                     default:
                         throw ExhaustiveMatch.Failed(@operator);
                 }
