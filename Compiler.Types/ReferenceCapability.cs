@@ -66,6 +66,11 @@ public sealed class ReferenceCapability
     public bool AllowsRecoverIsolation => this == Mutable || this == ReadOnly;
 
     /// <summary>
+    /// Does this capability allow a reference with it to be moved if reference sharing permits.
+    /// </summary>
+    public bool AllowsMove => this == Mutable || this == ReadOnly || this == Isolated;
+
+    /// <summary>
     /// Does this capability allow a reference with it to be frozen to const if reference
     /// sharing permits.
     /// </summary>

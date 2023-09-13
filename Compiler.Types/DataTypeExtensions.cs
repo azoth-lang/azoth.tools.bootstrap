@@ -31,6 +31,7 @@ public static class DataTypeExtensions
             case (ReferenceType, AnyType):
                 return false;
             case (ObjectType targetReference, ObjectType sourceReference):
+                // TODO account for subtype relationships
                 return targetReference.Capability.IsAssignableFrom(sourceReference.Capability)
                        && targetReference.Name == sourceReference.Name
                        && targetReference.ContainingNamespace == sourceReference.ContainingNamespace;

@@ -21,8 +21,7 @@ public sealed class LiftedConversion : ChainedConversion
         (type, semantics) = PriorConversion.Apply(type, semantics);
         if (type is not OptionalType optionalType)
             throw new InvalidOperationException($"Cannot apply lifted conversion to non-optional type '{type}'");
-        DataType? newType;
-        (newType, semantics) = UnderlyingConversion.Apply(optionalType, semantics);
+        (DataType? newType, semantics) = UnderlyingConversion.Apply(optionalType, semantics);
         return (new OptionalType(newType), semantics);
     }
 }

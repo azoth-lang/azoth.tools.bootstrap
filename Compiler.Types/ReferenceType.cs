@@ -23,6 +23,11 @@ public abstract class ReferenceType : NonEmptyType
     public bool AllowsRecoverIsolation => Capability.AllowsRecoverIsolation;
 
     /// <summary>
+    /// Does this capability allow a reference with it to be moved if reference sharing permits.
+    /// </summary>
+    public bool AllowsMove => Capability.AllowsMove;
+
+    /// <summary>
     /// Does this capability allow a reference with it to be frozen to const if reference
     /// sharing permits.
     /// </summary>

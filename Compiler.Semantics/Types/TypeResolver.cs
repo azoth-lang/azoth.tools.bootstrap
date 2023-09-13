@@ -29,6 +29,7 @@ public class TypeResolver
     [return: NotNullIfNotNull(nameof(typeSyntax))]
     public DataType? Evaluate(ITypeSyntax? typeSyntax, bool implicitRead)
     {
+        // TODO it isn't clear that the implicitRead parameter makes sense
         switch (typeSyntax)
         {
             default:

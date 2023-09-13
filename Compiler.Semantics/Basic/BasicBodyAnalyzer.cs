@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
@@ -158,7 +159,8 @@ public class BasicBodyAnalyzer
                 if (context == StatementContext.BodyLevel)
                     diagnostics.Add(SemanticError.ResultStatementInBody(file, resultStatement.Span));
 
-                // return type for use in determining block type
+                // Return type for use in determining block type. Keep result shared for use in
+                // parent expression.
                 return type;
         }
         return null;
@@ -168,14 +170,12 @@ public class BasicBodyAnalyzer
         IVariableDeclarationStatementSyntax variableDeclaration,
         FlowState flow)
     {
+        _ = InferType(variableDeclaration.Initializer, flow);
         DataType variableType;
         if (variableDeclaration.Type is not null)
-        {
             variableType = typeResolver.Evaluate(variableDeclaration.Type, implicitRead: true);
-            _ = InferType(variableDeclaration.Initializer, flow);
-        }
         else if (variableDeclaration.Initializer is not null)
-            variableType = InferDeclarationType(variableDeclaration.Initializer, variableDeclaration.Capability, flow);
+            variableType = InferDeclarationType(variableDeclaration.Initializer, variableDeclaration.Capability);
         else
         {
             diagnostics.Add(TypeError.NotImplemented(file, variableDeclaration.NameSpan,
@@ -202,14 +202,14 @@ public class BasicBodyAnalyzer
     }
 
     /// <summary>
-    /// Infer the type of a variable declaration from an expression
+    /// Infer the type of a variable declaration from the initializer expression and an optional
+    /// reference capability.
     /// </summary>
-    private DataType InferDeclarationType(
+    private static DataType InferDeclarationType(
         IExpressionSyntax expression,
-        IReferenceCapabilitySyntax? inferCapability,
-        FlowState flow)
+        IReferenceCapabilitySyntax? inferCapability)
     {
-        var type = InferType(expression, flow);
+        var type = expression.DataType.Assigned();
         if (!type.IsFullyKnown) return DataType.Unknown;
         type = type.ToNonConstantType();
 
@@ -245,14 +245,13 @@ public class BasicBodyAnalyzer
         FlowState flow)
     {
         if (expression is null) return;
-        InferType(expression, flow, implicitRead: true);
-        var actualType = AddImplicitConversionIfNeeded(expression, expectedType, flow);
-        if (!expectedType.IsAssignableFrom(actualType))
-            diagnostics.Add(TypeError.CannotImplicitlyConvert(file, expression, actualType, expectedType));
+        _ = InferType(expression, flow, implicitRead: true);
+        _ = AddImplicitConversionIfNeeded(expression, expectedType, flow);
+        CheckTypeCompatibility(expectedType, expression);
     }
 
     /// <summary>
-    /// Create an implicit conversion if allowed and needed
+    /// Create an implicit conversion if needed and allowed.
     /// </summary>
     private static DataType AddImplicitConversionIfNeeded(
         IExpressionSyntax expression,
@@ -260,12 +259,12 @@ public class BasicBodyAnalyzer
         FlowState flow)
     {
         var fromType = expression.DataType.Assigned();
-        var conversion = ImplicitConversion(expectedType, fromType, expression.ImplicitConversion, flow);
+        var conversion = CreateImplicitConversion(expectedType, fromType, expression.ImplicitConversion, flow);
         if (conversion is not null) expression.AddConversion(conversion);
         return expression.ConvertedDataType.Assigned();
     }
 
-    private static ChainedConversion? ImplicitConversion(
+    private static ChainedConversion? CreateImplicitConversion(
         DataType toType,
         DataType fromType,
         Conversion priorConversion,
@@ -275,17 +274,16 @@ public class BasicBodyAnalyzer
         {
             case (DataType to, DataType from) when from == to:
                 return null;
-            case (OptionalType to, OptionalType from):
+            case (OptionalType { Referent: var to }, OptionalType { Referent: var from }):
                 // Direct subtype
-                if (to.Referent.IsAssignableFrom(from.Referent))
+                if (to.IsAssignableFrom(from))
                     return null;
-                var liftedConversion = ImplicitConversion(to.Referent, from.Referent, IdentityConversion.Instance, flow);
+                var liftedConversion = CreateImplicitConversion(to, from, IdentityConversion.Instance, flow);
                 return liftedConversion is null ? null : new LiftedConversion(liftedConversion, priorConversion);
-            case (OptionalType to, /* non-optional */ DataType from):
-                var nonOptionalTo = to.Referent;
-                if (!nonOptionalTo.IsAssignableFrom(from))
+            case (OptionalType { Referent: var to }, not OptionalType):
+                if (!to.IsAssignableFrom(fromType))
                 {
-                    var conversion = ImplicitConversion(nonOptionalTo, from, priorConversion, flow);
+                    var conversion = CreateImplicitConversion(to, fromType, priorConversion, flow);
                     if (conversion is null) return null; // Not able to convert to the referent type
                     priorConversion = conversion;
                 }
@@ -316,21 +314,20 @@ public class BasicBodyAnalyzer
             case (ObjectType { IsConstReference: true } to, ObjectType { AllowsFreeze: true } from):
             {
                 // Try to recover const
-                // TODO all upcasting at the same time
-                if (!to.BareTypeEquals(from) // Underlying types must match
-                    || !flow.IsIsolated(SharingVariable.Result))
-                    return null;
+                // TODO support upcasting at the same time
+                if (to.DeclaredType == from.DeclaredType && flow.IsIsolated(SharingVariable.Result))
+                    return new RecoverConst(priorConversion);
 
-                return new RecoverConst(priorConversion);
+                return null;
             }
             case (ObjectType { IsIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from):
             {
                 // Try to recover isolation
-                if (!to.BareTypeEquals(from) // Underlying types must match
-                    || !flow.IsIsolated(SharingVariable.Result))
-                    return null;
+                // TODO support upcasting at the same time
+                if (to.DeclaredType == from.DeclaredType && flow.IsIsolated(SharingVariable.Result))
+                    return new RecoverIsolation(priorConversion);
 
-                return new RecoverIsolation(priorConversion);
+                return null;
             }
             default:
                 return null;
@@ -341,10 +338,10 @@ public class BasicBodyAnalyzer
     /// Infer the type of an expression and assign that type to the expression.
     /// </summary>
     /// <param name="expression"></param>
-    /// <param name="sharing"></param>
-    /// <param name="capabilities"></param>
+    /// <param name="flow"></param>
     /// <param name="implicitRead">Whether this expression should implicitly be inferred to be a read.</param>
-    private DataType InferType(
+    [return: NotNullIfNotNull(nameof(expression))]
+    private DataType? InferType(
         IExpressionSyntax? expression,
         FlowState flow,
         bool implicitRead = true)
@@ -354,9 +351,10 @@ public class BasicBodyAnalyzer
             default:
                 throw ExhaustiveMatch.Failed(expression);
             case null:
-                return DataType.Unknown;
+                return null;
             case IIdExpressionSyntax exp:
             {
+                // TODO do not allow `id mut T`
                 var referentType = InferType(exp.Referent, flow);
                 DataType type;
                 if (referentType is ReferenceType referenceType)
@@ -373,33 +371,34 @@ public class BasicBodyAnalyzer
                 {
                     case ISimpleNameExpressionSyntax nameExpression:
                         var symbol = InferNameSymbol(nameExpression);
-                        // Don't need to alias the symbol in capabilities because it will be moved
-                        DataType type;
-                        if (symbol is VariableSymbol variableSymbol)
-                        {
-                            var symbolType = variableSymbol.DataType;
-                            switch (symbolType)
-                            {
-                                case ReferenceType referenceType:
-                                    if (!flow.IsIsolated(variableSymbol))
-                                        diagnostics.Add(TypeError.CannotMoveValue(file, exp));
-
-                                    type = referenceType.With(ReferenceCapability.Isolated);
-                                    flow.Move(variableSymbol);
-                                    break;
-                                case ValueType { Semantics: TypeSemantics.MoveValue } valueType:
-                                    type = valueType;
-                                    break;
-                                case UnknownType:
-                                    type = DataType.Unknown;
-                                    break;
-                                default:
-                                    throw new NotImplementedException("Non-moveable type can't be moved");
-                            }
-                            exp.ReferencedSymbol.Fulfill(variableSymbol);
-                        }
-                        else
+                        if (symbol is not BindingSymbol bindingSymbol)
                             throw new NotImplementedException("Raise error about `move` from non-variable");
+
+                        var type = flow.Type(bindingSymbol);
+                        switch (type)
+                        {
+                            case ReferenceType referenceType:
+                                if (!referenceType.AllowsMove)
+                                    diagnostics.Add(TypeError.NotImplemented(file, exp.Span,
+                                        "Reference capability does not allow moving"));
+                                if (!flow.IsIsolated(bindingSymbol))
+                                    diagnostics.Add(TypeError.CannotMoveValue(file, exp));
+
+                                type = referenceType.With(ReferenceCapability.Isolated);
+                                flow.Move(bindingSymbol);
+                                break;
+                            case ValueType { Semantics: TypeSemantics.MoveValue } valueType:
+                                type = valueType;
+                                break;
+                            case UnknownType:
+                                type = DataType.Unknown;
+                                break;
+                            default:
+                                throw new NotImplementedException("Non-moveable type can't be moved");
+                        }
+                        // Don't need to alias the symbol in flow because it will be moved
+
+                        exp.ReferencedSymbol.Fulfill(bindingSymbol);
 
                         const ExpressionSemantics semantics = ExpressionSemantics.IsolatedReference;
                         nameExpression.Semantics = semantics;
@@ -418,31 +417,33 @@ public class BasicBodyAnalyzer
                 {
                     case ISimpleNameExpressionSyntax nameExpression:
                         var symbol = InferNameSymbol(nameExpression);
-                        // Don't need to alias the symbol in capabilities because it will be moved
-                        DataType type = DataType.Unknown;
-                        if (symbol is BindingSymbol bindingSymbol)
-                        {
-                            var symbolType = bindingSymbol.DataType;
-                            switch (symbolType)
-                            {
-                                case ReferenceType referenceType:
-                                    if (!flow.IsIsolated(bindingSymbol))
-                                        diagnostics.Add(TypeError.CannotFreezeValue(file, exp));
-
-                                    type = referenceType.With(ReferenceCapability.Constant);
-                                    flow.Freeze(bindingSymbol);
-                                    break;
-                                case UnknownType:
-                                    type = DataType.Unknown;
-                                    break;
-                                default:
-                                    throw new NotImplementedException("Non-freezable type can't be frozen.");
-                            }
-
-                            exp.ReferencedSymbol.Fulfill(bindingSymbol);
-                        }
-                        else
+                        if (symbol is not BindingSymbol bindingSymbol)
                             throw new NotImplementedException("Raise error about `freeze` of non-variable");
+
+                        var type = flow.Type(bindingSymbol);
+                        switch (type)
+                        {
+                            case ReferenceType referenceType:
+                                if (!referenceType.AllowsRecoverIsolation)
+                                    diagnostics.Add(TypeError.NotImplemented(file, exp.Span,
+                                        "Reference capability does not allow freezing"));
+                                if (!flow.IsIsolated(bindingSymbol))
+                                    diagnostics.Add(TypeError.CannotFreezeValue(file, exp));
+
+                                type = referenceType.With(ReferenceCapability.Constant);
+                                flow.Freeze(bindingSymbol);
+                                break;
+                            case UnknownType:
+                                type = DataType.Unknown;
+                                break;
+                            default:
+                                throw new NotImplementedException("Non-freezable type can't be frozen.");
+                        }
+                        // Now that it is frozen, alias it
+                        flow.UnionResult(bindingSymbol);
+                        flow.Alias(bindingSymbol);
+
+                        exp.ReferencedSymbol.Fulfill(bindingSymbol);
 
                         const ExpressionSemantics semantics = ExpressionSemantics.ConstReference;
                         nameExpression.Semantics = semantics;
@@ -462,36 +463,32 @@ public class BasicBodyAnalyzer
                     case ISimpleNameExpressionSyntax nameExpression:
                     {
                         var symbol = InferNameSymbol(nameExpression);
-                        DataType type = DataType.Unknown;
-                        if (symbol is VariableSymbol variableSymbol)
-                        {
-                            flow.UnionResult(variableSymbol);
-                            flow.Alias(variableSymbol);
-                            type = flow.Type(variableSymbol);
-                            switch (type)
-                            {
-                                case ReferenceType referenceType:
-                                    if (!referenceType.AllowsWrite)
-                                    {
-                                        diagnostics.Add(TypeError.ExpressionCantBeMutable(file, exp.Referent));
-                                        type = DataType.Unknown;
-                                    }
-                                    else
-                                        type = referenceType.AsMutable();
-
-                                    break;
-                                default:
-                                    throw new NotImplementedException("Non-mutable type can't be borrowed mutably");
-                            }
-
-                            exp.ReferencedSymbol.Fulfill(variableSymbol);
-                        }
-                        else
+                        if (symbol is not BindingSymbol bindingSymbol)
                             throw new NotImplementedException("Raise error about `mut` from non-variable");
-                        const ExpressionSemantics semantics = ExpressionSemantics.MutableReference;
-                        nameExpression.Semantics = semantics;
-                        nameExpression.DataType = type;
 
+                        var type = flow.Type(bindingSymbol);
+                        switch (type)
+                        {
+                            case ReferenceType referenceType:
+                                if (!referenceType.AllowsWrite)
+                                {
+                                    diagnostics.Add(TypeError.ExpressionCantBeMutable(file, exp.Referent));
+                                    type = DataType.Unknown;
+                                }
+                                else
+                                    type = referenceType.AsMutable();
+
+                                break;
+                            default:
+                                throw new NotImplementedException("Non-mutable type can't be borrowed mutably");
+                        }
+
+                        flow.UnionResult(bindingSymbol);
+                        flow.Alias(bindingSymbol);
+                        exp.ReferencedSymbol.Fulfill(bindingSymbol);
+
+                        nameExpression.Semantics = ExpressionSemantics.MutableReference;
+                        nameExpression.DataType = type;
                         return exp.DataType = type;
                     }
                     case IMutateExpressionSyntax:
@@ -503,10 +500,10 @@ public class BasicBodyAnalyzer
                 }
             case IReturnExpressionSyntax exp:
             {
+                if (returnType is null) throw new NotImplementedException("Return statement in field initializer.");
                 if (exp.Value is not null)
                 {
-                    var expectedReturnType = returnType ?? throw new InvalidOperationException("Return statement in field initializer.");
-
+                    var expectedReturnType = returnType;
                     InferType(exp.Value, flow, implicitRead: false);
                     flow.SplitForReturn();
                     AddImplicitConversionIfNeeded(exp.Value, expectedReturnType, flow);
@@ -825,6 +822,7 @@ public class BasicBodyAnalyzer
             case IConversionExpressionSyntax exp:
             {
                 var referentType = InferType(exp.Referent, flow);
+                // TODO shouldn't this be implicit read still (e.g. x as! T should be read only?)
                 var convertToType = typeResolver.Evaluate(exp.ConvertToType, false) ?? DataType.Unknown;
                 if (!ExplicitConversionTypesAreCompatible(exp.Referent, convertToType))
                     diagnostics.Add(TypeError.CannotExplicitlyConvert(file, exp.Referent, referentType, convertToType));
