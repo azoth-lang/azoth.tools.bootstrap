@@ -150,11 +150,13 @@ public class BasicBodyAnalyzer
                 ResolveTypes(variableDeclaration, flow);
                 break;
             case IExpressionStatementSyntax expressionStatement:
+                flow.NewResult();
                 InferType(expressionStatement.Expression, flow);
                 // At the end of the statement, any result reference is discarded
-                flow.Split(SharingVariable.Result);
+                flow.DropCurrentResult();
                 break;
             case IResultStatementSyntax resultStatement:
+                flow.NewResult();
                 var type = InferType(resultStatement.Expression, flow);
                 if (context == StatementContext.BodyLevel)
                     diagnostics.Add(SemanticError.ResultStatementInBody(file, resultStatement.Span));
@@ -170,6 +172,7 @@ public class BasicBodyAnalyzer
         IVariableDeclarationStatementSyntax variableDeclaration,
         FlowState flow)
     {
+        flow.NewResult();
         _ = InferType(variableDeclaration.Initializer, flow);
         DataType variableType;
         if (variableDeclaration.Type is not null)
@@ -196,9 +199,9 @@ public class BasicBodyAnalyzer
         symbolTreeBuilder.Add(symbol);
         flow.Declare(symbol);
         // Union with the initializer result thereby unioning with any references used in the result
-        flow.Union(symbol, SharingVariable.Result);
-        // Split out result for end of statement
-        flow.Split(SharingVariable.Result);
+        flow.UnionWithCurrentResult(symbol);
+        // Drop out result for end of statement
+        flow.DropCurrentResult();
     }
 
     /// <summary>
@@ -239,12 +242,20 @@ public class BasicBodyAnalyzer
         }
     }
 
-    public void CheckType(
-        IExpressionSyntax? expression,
+    public void CheckType(IExpressionSyntax? expression, DataType expectedType)
+    {
+        if (expression is null) return;
+        var flow = new FlowState();
+        flow.NewResult();
+        CheckType(expression, expectedType);
+        flow.DropCurrentResult();
+    }
+
+    private void CheckType(
+        IExpressionSyntax expression,
         DataType expectedType,
         FlowState flow)
     {
-        if (expression is null) return;
         _ = InferType(expression, flow, implicitRead: true);
         _ = AddImplicitConversionIfNeeded(expression, expectedType, flow);
         CheckTypeCompatibility(expectedType, expression);
@@ -315,7 +326,7 @@ public class BasicBodyAnalyzer
             {
                 // Try to recover const
                 // TODO support upcasting at the same time
-                if (to.DeclaredType == from.DeclaredType && flow.IsIsolated(SharingVariable.Result))
+                if (to.DeclaredType == from.DeclaredType && flow.CurrentResultIsIsolated())
                     return new RecoverConst(priorConversion);
 
                 return null;
@@ -324,7 +335,7 @@ public class BasicBodyAnalyzer
             {
                 // Try to recover isolation
                 // TODO support upcasting at the same time
-                if (to.DeclaredType == from.DeclaredType && flow.IsIsolated(SharingVariable.Result))
+                if (to.DeclaredType == from.DeclaredType && flow.CurrentResultIsIsolated())
                     return new RecoverIsolation(priorConversion);
 
                 return null;
@@ -364,6 +375,7 @@ public class BasicBodyAnalyzer
                     diagnostics.Add(TypeError.CannotIdNonReferenceType(file, exp.Span, referentType));
                     type = DataType.Unknown;
                 }
+                // Don't need to alias the symbol or union with result in flow because ids don't matter
                 return exp.DataType = type;
             }
             case IMoveExpressionSyntax exp:
@@ -396,7 +408,7 @@ public class BasicBodyAnalyzer
                             default:
                                 throw new NotImplementedException("Non-moveable type can't be moved");
                         }
-                        // Don't need to alias the symbol in flow because it will be moved
+                        // Don't need to alias the symbol or union with result in flow because it will be moved
 
                         exp.ReferencedSymbol.Fulfill(bindingSymbol);
 
@@ -439,9 +451,9 @@ public class BasicBodyAnalyzer
                             default:
                                 throw new NotImplementedException("Non-freezable type can't be frozen.");
                         }
-                        // Now that it is frozen, alias it
-                        flow.UnionResult(bindingSymbol);
-                        flow.Alias(bindingSymbol);
+                        // Now that it is frozen, union with result to track sharing
+                        // Alias not needed because it is already `const`
+                        flow.UnionWithCurrentResult(bindingSymbol);
 
                         exp.ReferencedSymbol.Fulfill(bindingSymbol);
 
@@ -483,7 +495,7 @@ public class BasicBodyAnalyzer
                                 throw new NotImplementedException("Non-mutable type can't be borrowed mutably");
                         }
 
-                        flow.UnionResult(bindingSymbol);
+                        flow.UnionWithCurrentResult(bindingSymbol);
                         flow.Alias(bindingSymbol);
                         exp.ReferencedSymbol.Fulfill(bindingSymbol);
 
@@ -506,7 +518,7 @@ public class BasicBodyAnalyzer
                 {
                     var expectedReturnType = returnType;
                     InferType(exp.Value, flow, implicitRead: false);
-                    flow.DropAllLocalVariable(); // No longer in scope
+                    flow.DropAllLocalVariables(); // No longer in scope
                     flow.DropIsolatedParameters(); // No longer external reference
                     AddImplicitConversionIfNeeded(exp.Value, expectedReturnType, flow);
                     CheckTypeCompatibility(expectedReturnType, exp.Value);
@@ -528,8 +540,11 @@ public class BasicBodyAnalyzer
             case IBinaryOperatorExpressionSyntax binaryOperatorExpression:
             {
                 var leftType = InferType(binaryOperatorExpression.LeftOperand, flow);
+                var leftResult = flow.CurrentResult;
                 var @operator = binaryOperatorExpression.Operator;
+                flow.NewResult();
                 var rightType = InferType(binaryOperatorExpression.RightOperand, flow);
+                flow.UnionWithCurrentResultAndDrop(leftResult);
 
                 // If either is unknown, then we can't know whether there is a a problem.
                 // Note that the operator could be overloaded
@@ -600,7 +615,7 @@ public class BasicBodyAnalyzer
                 ExpressionSemantics referenceSemantics;
                 if (symbol is VariableSymbol variableSymbol)
                 {
-                    flow.UnionResult(variableSymbol);
+                    flow.UnionWithCurrentResult(variableSymbol);
                     flow.Alias(variableSymbol);
 
                     type = flow.Type(variableSymbol);
@@ -1004,7 +1019,7 @@ public class BasicBodyAnalyzer
             return;
 
         if (context is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
-            || !flow.IsIsolatedExceptResult(symbol))
+            || !flow.IsIsolatedExceptCurrentResult(symbol))
             return;
 
         context.AddConversion(new ImplicitMove(context.ImplicitConversion));
@@ -1024,7 +1039,7 @@ public class BasicBodyAnalyzer
         if (!toType.BareTypeEquals(fromType)) return;
 
         if (context is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
-            || !flow.IsIsolatedExceptResult(symbol))
+            || !flow.IsIsolatedExceptCurrentResult(symbol))
             return;
 
         context.AddConversion(new ImplicitFreeze(context.ImplicitConversion));

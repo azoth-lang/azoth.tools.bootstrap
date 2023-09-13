@@ -32,15 +32,19 @@ public class FlowState
         sharing = new SharingRelation();
     }
 
+    public ResultVariable CurrentResult => sharing.CurrentResult;
+
     public void Declare(BindingSymbol symbol)
     {
         capabilities.Declare(symbol);
         sharing.Declare(symbol);
     }
 
+    public SharingVariable NewResult() => sharing.NewResult();
+
     public void Drop(BindingSymbol symbol) => sharing.Drop(symbol);
 
-    public void DropAllLocalVariable() => sharing.DropAllLocalVariable();
+    public void DropAllLocalVariables() => sharing.DropAllLocalVariables();
 
     public void DropIsolatedParameters() => sharing.DropIsolatedParameters();
 
@@ -57,13 +61,16 @@ public class FlowState
     /// <remarks>This is named for it to be used as <c>flow.Type(symbol)</c></remarks>
     public DataType Type(BindingSymbol? symbol) => capabilities.CurrentType(symbol);
 
-    public void Union(SharingVariable var1, SharingVariable var2) => sharing.Union(var1, var2);
+    public void UnionWithCurrentResult(SharingVariable var) => sharing.UnionWithCurrentResult(var);
 
-    public void UnionResult(BindingSymbol symbol) => sharing.UnionResult(symbol);
+    public void UnionWithCurrentResultAndDrop(ResultVariable variable)
+        => sharing.UnionWithCurrentResultAndDrop(variable);
 
-    public void Split(SharingVariable variable) => sharing.Split(variable);
+    public void DropCurrentResult() => sharing.DropCurrentResult();
 
+    public bool CurrentResultIsIsolated() => sharing.CurrentResultIsolated();
     public bool IsIsolated(SharingVariable variable) => sharing.IsIsolated(variable);
 
-    public bool IsIsolatedExceptResult(SharingVariable variable) => sharing.IsIsolatedExceptResult(variable);
+    public bool IsIsolatedExceptCurrentResult(SharingVariable variable)
+        => sharing.IsIsolatedExceptCurrentResult(variable);
 }

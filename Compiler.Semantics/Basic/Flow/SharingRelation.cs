@@ -23,13 +23,12 @@ public class SharingRelation
     /// </summary>
     private readonly Dictionary<SharingVariable, ISet<SharingVariable>> subsetFor;
 
+    private ResultVariable currentResult = ResultVariable.None;
+
     public SharingRelation()
     {
         sets = new();
-        // Construct a single element set for the result so that it exists when unioning
-        var set = new HashSet<SharingVariable> { SharingVariable.Result };
-        sets.Add(set);
-        subsetFor = new() { { SharingVariable.Result, set } };
+        subsetFor = new();
     }
 
     internal SharingRelation(IEnumerable<FixedSet<SharingVariable>> sets)
@@ -40,6 +39,8 @@ public class SharingRelation
             foreach (var variable in set)
                 subsetFor.Add(variable, set);
     }
+
+    public ResultVariable CurrentResult => currentResult;
 
     /// <summary>
     /// Declare a new variable. Newly created variables are not connected to any others.
@@ -53,11 +54,21 @@ public class SharingRelation
         // No need to track `const` and `id`, they never participate in sharing
         if (capability != ReferenceCapability.Constant
             && capability != ReferenceCapability.Identity)
-        {
-            var set = new HashSet<SharingVariable> { symbol };
-            sets.Add(set);
-            subsetFor.Add(symbol, set);
-        }
+            Declare((SharingVariable)symbol);
+    }
+
+    private void Declare(SharingVariable variable)
+    {
+        var set = new HashSet<SharingVariable> { variable };
+        sets.Add(set);
+        subsetFor.Add(variable, set);
+    }
+
+    public ResultVariable NewResult()
+    {
+        currentResult = currentResult.NextResult();
+        Declare(currentResult);
+        return currentResult;
     }
 
     public void Drop(BindingSymbol symbol)
@@ -76,7 +87,7 @@ public class SharingRelation
         if (set.Count == 0) sets.Remove(set);
     }
 
-    public void DropAllLocalVariable()
+    public void DropAllLocalVariables()
     {
         foreach (var variable in subsetFor.Keys.Where(v => v.IsLocal).ToArray())
             Drop(variable);
@@ -84,11 +95,19 @@ public class SharingRelation
 
     public void DropIsolatedParameters()
     {
-        foreach (var variable in subsetFor.Keys.Where(v => v.DataType is ReferenceType { IsIsolatedReference: true }).ToArray())
+        foreach (var variable in subsetFor.Keys.Where(v => v.SymbolType is ReferenceType { IsIsolatedReference: true }).ToArray())
             Drop(variable);
     }
 
-    public void Union(SharingVariable var1, SharingVariable var2)
+    public void UnionWithCurrentResult(SharingVariable var) => Union(var, currentResult);
+
+    public void UnionWithCurrentResultAndDrop(ResultVariable variable)
+    {
+        UnionWithCurrentResult(variable);
+        Drop(variable);
+    }
+
+    private void Union(SharingVariable var1, SharingVariable var2)
     {
         if (!subsetFor.TryGetValue(var1, out var set1)
             || !subsetFor.TryGetValue(var2, out var set2)
@@ -105,16 +124,12 @@ public class SharingRelation
         smallerSet.Clear();
     }
 
-    public void UnionResult(SharingVariable? var)
-    {
-        if (var is SharingVariable sharingVar)
-            Union(SharingVariable.Result, sharingVar);
-    }
+    public void DropCurrentResult() => Drop(currentResult);
 
     /// <summary>
     /// Split the given variable out from sharing with the other variables it is connected to.
     /// </summary>
-    public void Split(SharingVariable variable)
+    private void Split(SharingVariable variable)
     {
         if (!subsetFor.TryGetValue(variable, out var set)
             || set.Count == 1)
@@ -126,13 +141,15 @@ public class SharingRelation
         subsetFor[variable] = newSet;
     }
 
+    public bool CurrentResultIsolated() => IsIsolated(currentResult);
+
     public bool IsIsolated(SharingVariable variable)
         => subsetFor.TryGetValue(variable, out var set) && set.Count == 1;
 
-    public bool IsIsolatedExceptResult(SharingVariable variable)
+    public bool IsIsolatedExceptCurrentResult(SharingVariable variable)
         => subsetFor.TryGetValue(variable, out var set)
            && set.Count <= 2
-           && set.Except(SharingVariable.Result).Count() == 1;
+           && set.Except(currentResult).Count() == 1;
 
     public SharingRelationSnapshot Snapshot() => new(sets);
 

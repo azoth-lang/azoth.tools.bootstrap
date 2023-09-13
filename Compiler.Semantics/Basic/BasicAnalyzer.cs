@@ -1,7 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Framework;
@@ -92,7 +91,7 @@ public class BasicAnalyzer
                 if (field.Initializer is not null)
                 {
                     var resolver = new BasicBodyAnalyzer(field, symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics);
-                    resolver.CheckType(field.Initializer, field.Symbol.Result.DataType, new FlowState());
+                    resolver.CheckType(field.Initializer, field.Symbol.Result.DataType);
                 }
                 break;
             case IConstructorDeclarationSyntax constructor:
