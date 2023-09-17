@@ -22,7 +22,7 @@ internal class VTable
     private IMethodDeclaration LookupMethod(MethodSignature signature)
     {
         foreach (var method in Class.Members.OfType<IMethodDeclaration>())
-            if (methodSignatures[method.Symbol] == signature)
+            if (methodSignatures[method.Symbol].EqualsOrOverrides(signature))
                 return method;
         throw new InvalidOperationException($"No method found for {signature} on {Class}");
     }

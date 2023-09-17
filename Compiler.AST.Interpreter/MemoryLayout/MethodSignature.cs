@@ -27,6 +27,16 @@ internal class MethodSignature : IEquatable<MethodSignature>
         hashCode = HashCode.Combine(Name, SelfDataType, ParameterDataTypes, ReturnDataType);
     }
 
+    public bool EqualsOrOverrides(MethodSignature other)
+    {
+        if (ReferenceEquals(this, other)) return true;
+        return Name.Equals(other.Name)
+                && other.SelfDataType.IsAssignableFrom(SelfDataType)
+                && ParameterDataTypes.Equals(other.ParameterDataTypes)
+                && ReturnDataType.Equals(other.ReturnDataType);
+    }
+
+    #region Equality
     public bool Equals(MethodSignature? other)
     {
         if (other is null) return false;
@@ -46,6 +56,7 @@ internal class MethodSignature : IEquatable<MethodSignature>
 
     public static bool operator !=(MethodSignature? left, MethodSignature? right)
         => !Equals(left, right);
+    #endregion
 
     public override string ToString()
         => $"{Name}({string.Join(", ", ParameterDataTypes.Prepend(SelfDataType).Select(t => t.ToILString()))}) -> {ReturnDataType.ToILString()}";
