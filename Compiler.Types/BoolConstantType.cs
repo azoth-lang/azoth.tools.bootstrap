@@ -20,6 +20,7 @@ public sealed class BoolConstantType : BoolType
 
     public BoolConstantType And(BoolConstantType other) => Value && other.Value;
     public BoolConstantType Or(BoolConstantType other) => Value || other.Value;
+    public BoolConstantType Not() => !Value;
     public BoolConstantType Equals(BoolConstantType other) => Value == other.Value;
     public BoolConstantType NotEquals(BoolConstantType other) => Value != other.Value;
 

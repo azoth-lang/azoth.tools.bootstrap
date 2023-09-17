@@ -611,6 +611,7 @@ public class BasicBodyAnalyzer
             }
             case ISimpleNameExpressionSyntax exp:
             {
+                // Errors reported by InferNameSymbol
                 var symbol = InferNameSymbol(exp);
                 DataType type;
                 ExpressionSemantics referenceSemantics;
@@ -638,48 +639,76 @@ public class BasicBodyAnalyzer
             case IUnaryOperatorExpressionSyntax exp:
             {
                 var @operator = exp.Operator;
+                var operandType = InferType(exp.Operand, flow);
+                DataType expType;
                 switch (@operator)
                 {
                     default:
                         throw ExhaustiveMatch.Failed(@operator);
                     case UnaryOperator.Not:
-                        CheckType(exp.Operand, DataType.Bool, flow);
-                        exp.DataType = DataType.Bool;
+                        if (operandType is BoolConstantType boolType)
+                            expType = boolType.Not();
+                        else
+                        {
+                            expType = DataType.Bool;
+                            _ = AddImplicitConversionIfNeeded(exp.Operand, expType, flow);
+                            CheckTypeCompatibility(expType, exp.Operand);
+                        }
                         break;
                     case UnaryOperator.Minus:
-                    case UnaryOperator.Plus:
-                        var operandType = InferType(exp.Operand, flow);
                         switch (operandType)
                         {
                             case IntegerConstantType integerType:
-                                exp.DataType = integerType;
+                                expType = integerType.Negate();
                                 break;
                             case FixedSizeIntegerType sizedIntegerType:
-                                // TODO upgrade the size
-                                exp.DataType = sizedIntegerType;
+                                expType = sizedIntegerType.WithSign();
                                 break;
                             case BigIntegerType:
                                 // Even if unsigned before, it is signed now
-                                exp.DataType = DataType.Int;
+                                expType = DataType.Int;
                                 break;
-                            case UnknownType _:
-                                exp.DataType = DataType.Unknown;
+                            case UnknownType:
+                                expType = DataType.Unknown;
                                 break;
                             default:
                                 diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandOfType(file,
                                     exp.Span, @operator, operandType));
-                                exp.DataType = DataType.Unknown;
+                                expType = DataType.Unknown;
+                                break;
+                        }
+                        break;
+                    case UnaryOperator.Plus:
+                        switch (operandType)
+                        {
+                            case NumericType:
+                            case UnknownType _:
+                                expType = operandType;
+                                break;
+                            default:
+                                diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandOfType(file,
+                                    exp.Span, @operator, operandType));
+                                expType = DataType.Unknown;
                                 break;
                         }
                         break;
                 }
-
-                return exp.ConvertedDataType.Assigned();
+                return exp.DataType = expType;
             }
             case INewObjectExpressionSyntax exp:
             {
-                var argumentTypes = exp.Arguments.Select(arg => InferType(arg, flow)).ToFixedList();
-                // TODO handle named constructors here
+                // Give each argument a distinct result, then union them all
+                var argumentTypes = new List<DataType>();
+                var argumentResults = new List<ResultVariable>();
+                foreach (var argument in exp.Arguments)
+                {
+                    argumentTypes.Add(InferType(argument, flow));
+                    argumentResults.Add(flow.CurrentResult);
+                    flow.NewResult();
+                }
+                foreach (var result in argumentResults)
+                    flow.UnionWithCurrentResultAndDrop(result);
+
                 var constructingType = typeResolver.EvaluateBareType(exp.Type);
                 if (!constructingType.IsFullyKnown)
                 {
@@ -688,11 +717,10 @@ public class BasicBodyAnalyzer
                     return exp.DataType = DataType.Unknown;
                 }
 
-                // TODO handle null typesymbol
-                var typeSymbol = exp.Type.ReferencedSymbol.Result ?? throw new InvalidOperationException();
+                var typeSymbol = exp.Type.ReferencedSymbol.Result ?? throw new NotImplementedException();
                 DataType constructedType;
                 var constructorSymbols = symbolTrees.Children(typeSymbol).OfType<ConstructorSymbol>().ToFixedSet();
-                constructorSymbols = SelectOverload(constructorSymbols, argumentTypes);
+                constructorSymbols = SelectOverload(constructorSymbols, argumentTypes.ToFixedList());
                 switch (constructorSymbols.Count)
                 {
                     case 0:
@@ -718,7 +746,6 @@ public class BasicBodyAnalyzer
                         constructedType = DataType.Unknown;
                         break;
                 }
-
                 return exp.DataType = constructedType;
             }
             case IForeachExpressionSyntax exp:
@@ -730,9 +757,14 @@ public class BasicBodyAnalyzer
                     exp.DeclarationNumber.Result, exp.IsMutableBinding, variableType, false);
                 exp.Symbol.Fulfill(symbol);
                 symbolTreeBuilder.Add(symbol);
+                flow.Declare(symbol);
+                // Union with the result of the `in` expression
+                flow.UnionWithCurrentResult(symbol);
 
                 // TODO check the break types
                 InferBlockType(exp.Block, flow);
+
+                flow.Drop(symbol);
                 // TODO assign correct type to the expression
                 exp.Semantics = ExpressionSemantics.Void;
                 return exp.DataType = DataType.Void;
@@ -740,6 +772,9 @@ public class BasicBodyAnalyzer
             case IWhileExpressionSyntax exp:
             {
                 CheckType(exp.Condition, DataType.Bool, flow);
+                // Condition expression result is complete
+                flow.DropCurrentResult();
+                flow.NewResult();
                 InferBlockType(exp.Block, flow);
                 // TODO assign correct type to the expression
                 exp.Semantics = ExpressionSemantics.Void;
@@ -759,26 +794,40 @@ public class BasicBodyAnalyzer
                 return exp.ConvertedDataType.Assigned();
             }
             case IIfExpressionSyntax exp:
+            {
                 CheckType(exp.Condition, DataType.Bool, flow);
-                InferBlockType(exp.ThenBlock, flow);
-                switch (exp.ElseClause)
+                flow.DropCurrentResult();
+                flow.NewResult();
+                var elseClause = exp.ElseClause;
+                FlowState? elseFlow = null;
+                if (elseClause is not null) elseFlow = flow.Copy();
+                var thenType = InferBlockType(exp.ThenBlock, flow);
+                DataType? elseType = null;
+                switch (elseClause)
                 {
                     default:
-                        throw ExhaustiveMatch.Failed(exp.ElseClause);
+                        throw ExhaustiveMatch.Failed(elseClause);
                     case null:
                         break;
                     case IIfExpressionSyntax _:
                     case IBlockExpressionSyntax _:
-                        var elseExpression = (IExpressionSyntax)exp.ElseClause;
-                        InferType(elseExpression, flow);
+                        var elseExpression = (IExpressionSyntax)elseClause;
+                        elseType = InferType(elseExpression, elseFlow!);
                         break;
                     case IResultStatementSyntax resultStatement:
-                        InferType(resultStatement.Expression, flow);
+                        elseType = InferType(resultStatement.Expression, elseFlow!);
                         break;
                 }
-                // TODO assign a type to the expression
-                exp.Semantics = ExpressionSemantics.Void;
-                return exp.DataType = DataType.Void;
+                DataType expType;
+                if (elseType is null)
+                    expType = thenType.ToOptional();
+                else
+                    // TODO unify the two types
+                    expType = thenType;
+                // TODO correct reference semantics?
+                exp.Semantics = expType.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
+                return exp.DataType = expType;
+            }
             case IQualifiedNameExpressionSyntax exp:
             {
                 // Don't wrap the self expression in a share expression for field access
@@ -1249,39 +1298,52 @@ public class BasicBodyAnalyzer
     {
         switch (inExpression)
         {
-            case IBinaryOperatorExpressionSyntax binaryExpression
-                when binaryExpression.Operator is BinaryOperator.DotDot
+            case IBinaryOperatorExpressionSyntax
+            {
+                Operator: BinaryOperator.DotDot
                     or BinaryOperator.LessThanDotDot
                     or BinaryOperator.DotDotLessThan
-                    or BinaryOperator.LessThanDotDotLessThan:
-                var leftType = InferType(binaryExpression.LeftOperand, flow);
-                var rightType = InferType(binaryExpression.RightOperand, flow);
+                    or BinaryOperator.LessThanDotDotLessThan
+            } binaryExpression:
+                var leftOperand = binaryExpression.LeftOperand;
+                var leftType = InferType(leftOperand, flow);
+                var leftResult = flow.CurrentResult;
+                flow.NewResult();
+                var rightOperand = binaryExpression.RightOperand;
+                var rightType = InferType(rightOperand, flow);
+                flow.UnionWithCurrentResultAndDrop(leftResult);
+
                 if (!leftType.IsFullyKnown || !rightType.IsFullyKnown)
                     return inExpression.DataType = DataType.Unknown;
 
-                var assumedType = declaredType;
-                if (assumedType is null)
-                {
-                    if (leftType is IntegerConstantType)
-                        assumedType = rightType.ToNonConstantType();
-                    else if (rightType is IntegerConstantType)
-                        assumedType = leftType.ToNonConstantType();
-                }
-                var type = assumedType;
-                if (assumedType is not null)
-                {
-                    AddImplicitConversionIfNeeded(binaryExpression.LeftOperand, assumedType, flow);
-                    AddImplicitConversionIfNeeded(binaryExpression.RightOperand, assumedType, flow);
-                }
+                DataType expType;
+                if (leftType is IntegerConstantType left && rightType is IntegerConstantType right)
+                    if (declaredType is not null)
+                    {
+                        AddImplicitConversionIfNeeded(leftOperand, declaredType, flow);
+                        CheckTypeCompatibility(declaredType, leftOperand);
+                        AddImplicitConversionIfNeeded(rightOperand, declaredType, flow);
+                        CheckTypeCompatibility(declaredType, rightOperand);
+                        expType = declaredType;
+                    }
+                    else
+                        expType = left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt;
                 else
-                {
-                    var compatible = AddNumericOperatorImplicitConversions(binaryExpression.LeftOperand,
-                        binaryExpression.RightOperand, flow);
-                    type = compatible ? leftType : DataType.Unknown;
-                }
+                    expType = InferNumericOperatorType(leftOperand, rightOperand, flow);
 
-                inExpression.Semantics = ExpressionSemantics.CopyValue; // Treat ranges as structs
-                return inExpression.DataType = type!;
+                if (expType == DataType.Unknown)
+                    diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandsOfType(file,
+                        binaryExpression.Span, binaryExpression.Operator, leftType, rightType));
+
+                binaryExpression.Semantics = ExpressionSemantics.CopyValue; // Treat ranges as structs
+                binaryExpression.DataType = expType;
+
+                var assumedType = declaredType ?? expType.ToNonConstantType();
+
+                AddImplicitConversionIfNeeded(binaryExpression, assumedType, flow);
+                CheckTypeCompatibility(assumedType, binaryExpression);
+
+                return binaryExpression.ConvertedDataType.Assigned();
             default:
                 return InferType(inExpression, flow);
         }
@@ -1367,27 +1429,6 @@ public class BasicBodyAnalyzer
         AddImplicitConversionIfNeeded(leftOperand, commonType, flow);
         AddImplicitConversionIfNeeded(rightOperand, commonType, flow);
         return DataType.Bool;
-    }
-
-    /// <summary>
-    /// Try to find a common numeric type and add implicit conversions to both sides of the operator
-    /// if necessary.
-    /// </summary>
-    // TODO remove method
-    private static bool AddNumericOperatorImplicitConversions(
-        IExpressionSyntax leftOperand,
-        IExpressionSyntax rightOperand,
-        FlowState flow)
-    {
-        var leftType = leftOperand.DataType.Assigned();
-        var rightType = rightOperand.DataType.Assigned();
-        var commonType = leftType.NumericOperatorCommonType(rightType);
-        if (commonType is null)
-            return false;
-
-        AddImplicitConversionIfNeeded(leftOperand, commonType, flow);
-        AddImplicitConversionIfNeeded(rightOperand, commonType, flow);
-        return true;
     }
 
     /// <summary>

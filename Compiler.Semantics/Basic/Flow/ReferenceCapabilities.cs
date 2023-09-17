@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// A collection of reference capabilities assigned to symbols used to track flow sensitive
 /// reference capabilities.
 /// </summary>
-public class ReferenceCapabilities
+public sealed class ReferenceCapabilities
 {
     private readonly Dictionary<BindingSymbol, ReferenceCapability> currentCapabilities;
 
@@ -22,6 +22,8 @@ public class ReferenceCapabilities
     {
         this.currentCapabilities = new(currentCapabilities);
     }
+
+    public ReferenceCapabilities Copy() => new(currentCapabilities);
 
     public void Declare(BindingSymbol symbol)
     {

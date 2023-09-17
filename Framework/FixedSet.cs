@@ -9,12 +9,11 @@ namespace Azoth.Tools.Bootstrap.Framework;
 // These attributes make it so FixedSet<T> is displayed nicely in the debugger similar to Set<T>
 [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
 [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
-public class FixedSet<T> : IReadOnlyCollection<T>, IEquatable<FixedSet<T>>
+public class FixedSet<T> : IReadOnlySet<T>, IEquatable<FixedSet<T>>
 {
     public static readonly FixedSet<T> Empty = new FixedSet<T>(Enumerable.Empty<T>());
 
-    // There is no IReadOnlySet interface, must use ISet
-    private readonly ISet<T> items;
+    private readonly IReadOnlySet<T> items;
 
     [DebuggerStepThrough]
     public FixedSet(IEnumerable<T> items)
@@ -45,6 +44,20 @@ public class FixedSet<T> : IReadOnlyCollection<T>, IEquatable<FixedSet<T>>
         return hash.ToHashCode();
     }
     #endregion
+
+    public bool Contains(T item) => items.Contains(item);
+
+    public bool IsProperSubsetOf(IEnumerable<T> other) => items.IsProperSubsetOf(other);
+
+    public bool IsProperSupersetOf(IEnumerable<T> other) => items.IsProperSupersetOf(other);
+
+    public bool IsSubsetOf(IEnumerable<T> other) => items.IsSubsetOf(other);
+
+    public bool IsSupersetOf(IEnumerable<T> other) => items.IsSupersetOf(other);
+
+    public bool Overlaps(IEnumerable<T> other) => items.Overlaps(other);
+
+    public bool SetEquals(IEnumerable<T> other) => items.SetEquals(other);
 }
 
 public static class FixedSet

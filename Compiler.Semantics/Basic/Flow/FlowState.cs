@@ -9,30 +9,29 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// </summary>
 /// <remarks>Flow is based of of <see cref="BindingSymbol"/> because you can do things like change
 /// the type of <s>self</s> if it started out isolated.</remarks>
-public class FlowState
+public sealed class FlowState
 {
-    private readonly SharingRelation sharing;
     private readonly ReferenceCapabilities capabilities;
+    private readonly SharingRelation sharing;
 
-    public FlowState(ReferenceCapabilities capabilities, SharingRelation sharing)
+    public FlowState(ReferenceCapabilitiesSnapshot capabilities, SharingRelationSnapshot sharing)
+        : this(capabilities.MutableCopy(), sharing.MutableCopy())
+    {
+    }
+
+    public FlowState() : this(new ReferenceCapabilities(), new SharingRelation())
+    {
+    }
+
+    private FlowState(ReferenceCapabilities capabilities, SharingRelation sharing)
     {
         this.capabilities = capabilities;
         this.sharing = sharing;
     }
 
-    public FlowState(ReferenceCapabilitiesSnapshot capabilities, SharingRelationSnapshot sharing)
-    {
-        this.capabilities = capabilities.MutableCopy();
-        this.sharing = sharing.MutableCopy();
-    }
-
-    public FlowState()
-    {
-        capabilities = new ReferenceCapabilities();
-        sharing = new SharingRelation();
-    }
-
     public ResultVariable CurrentResult => sharing.CurrentResult;
+
+    public FlowState Copy() => new(capabilities.Copy(), sharing.Copy());
 
     public void Declare(BindingSymbol symbol)
     {

@@ -12,10 +12,13 @@ public class SharingRelationSnapshot
 {
     private readonly FixedSet<FixedSet<SharingVariable>> sets;
 
-    internal SharingRelationSnapshot(ISet<ISet<SharingVariable>> sets)
+    internal SharingRelationSnapshot(IEnumerable<IReadOnlySet<SharingVariable>> sets, ResultVariable currentResult)
     {
+        CurrentResult = currentResult;
         this.sets = new(sets.Select(s => s.ToFixedSet()));
     }
 
-    public SharingRelation MutableCopy() => new(sets);
+    public ResultVariable CurrentResult { get; }
+
+    public SharingRelation MutableCopy() => new(sets, CurrentResult);
 }

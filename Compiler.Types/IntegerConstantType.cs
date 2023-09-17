@@ -27,6 +27,7 @@ public sealed class IntegerConstantType : IntegerType
     public IntegerConstantType Subtract(IntegerConstantType right) => new(Value - right.Value);
     public IntegerConstantType Multiply(IntegerConstantType right) => new(Value * right.Value);
     public IntegerConstantType DivideBy(IntegerConstantType right) => new(Value / right.Value);
+    public IntegerConstantType Negate() => new(-Value);
     public BoolConstantType Equals(IntegerConstantType right) => Value == right.Value;
     public BoolConstantType NotEquals(IntegerConstantType right) => Value != right.Value;
     public BoolConstantType LessThan(IntegerConstantType right) => Value < right.Value;

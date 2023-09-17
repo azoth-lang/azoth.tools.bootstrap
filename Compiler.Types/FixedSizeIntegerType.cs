@@ -25,4 +25,16 @@ public sealed class FixedSizeIntegerType : IntegerType
     {
         Bits = Math.Abs(bits);
     }
+
+    /// <summary>
+    /// The current type but signed.
+    /// </summary>
+    /// <remarks>If the current type is already signed then this doesn't change anything. If the
+    /// current type is unsigned, then this returns the next larger integer type.</remarks>
+    public IntegerType WithSign()
+    {
+        if (IsSigned) return this;
+        if (this == Byte) return Int32;
+        return Int;
+    }
 }

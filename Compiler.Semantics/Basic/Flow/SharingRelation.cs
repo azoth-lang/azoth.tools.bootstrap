@@ -12,16 +12,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// relationship is flow sensitive. Note that the sharing relationship is a partition of
 /// the set of variables into disjoint subsets.
 /// </summary>
-public class SharingRelation
+public sealed class SharingRelation
 {
     /// <summary>
     /// All the distinct subsets of variables
     /// </summary>
-    private readonly HashSet<ISet<SharingVariable>> sets;
+    private readonly HashSet<HashSet<SharingVariable>> sets;
     /// <summary>
     /// This is a lookup of what set each variable is contained in.
     /// </summary>
-    private readonly Dictionary<SharingVariable, ISet<SharingVariable>> subsetFor;
+    private readonly Dictionary<SharingVariable, HashSet<SharingVariable>> subsetFor;
 
     private ResultVariable currentResult = ResultVariable.None;
 
@@ -31,8 +31,9 @@ public class SharingRelation
         subsetFor = new();
     }
 
-    internal SharingRelation(IEnumerable<FixedSet<SharingVariable>> sets)
+    internal SharingRelation(IEnumerable<IReadOnlySet<SharingVariable>> sets, ResultVariable currentResult)
     {
+        this.currentResult = currentResult;
         this.sets = new(sets.Select(s => s.ToHashSet()));
         subsetFor = new();
         foreach (var set in this.sets)
@@ -41,6 +42,8 @@ public class SharingRelation
     }
 
     public ResultVariable CurrentResult => currentResult;
+
+    public SharingRelation Copy() => new(sets, CurrentResult);
 
     /// <summary>
     /// Declare a new variable. Newly created variables are not connected to any others.
@@ -151,7 +154,7 @@ public class SharingRelation
            && set.Count <= 2
            && set.Except(currentResult).Count() == 1;
 
-    public SharingRelationSnapshot Snapshot() => new(sets);
+    public SharingRelationSnapshot Snapshot() => new(sets, CurrentResult);
 
     public override string ToString()
         => string.Join(", ", sets.Select(s => $"{{{string.Join(", ", s.Distinct())}}}"));

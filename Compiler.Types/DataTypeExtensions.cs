@@ -90,7 +90,7 @@ public static class DataTypeExtensions
         => type switch
         {
             null => null,
-            UnknownType or NeverType => type,
+            UnknownType or NeverType or VoidType => type,
             _ => new OptionalType(type),
         };
 
