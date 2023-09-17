@@ -28,10 +28,6 @@ public sealed class OptionalType : ValueType
         IsFullyKnown = referent.IsFullyKnown;
     }
 
-    public override string ToSourceCodeString() => $"({Referent.ToSourceCodeString()})?";
-
-    public override string ToILString() => $"({Referent.ToILString()})?";
-
     #region Equals
     public override bool Equals(DataType? other)
     {
@@ -45,4 +41,8 @@ public sealed class OptionalType : ValueType
         // Use the type to give a different hashcode than just the referent
         => HashCode.Combine(typeof(OptionalType), Referent);
     #endregion
+
+    public override string ToSourceCodeString() => $"({Referent.ToSourceCodeString()})?";
+
+    public override string ToILString() => $"({Referent.ToILString()})?";
 }

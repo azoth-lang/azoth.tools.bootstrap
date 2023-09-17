@@ -539,11 +539,13 @@ public class BasicBodyAnalyzer
                 return exp.DataType = exp.Value ? DataType.True : DataType.False;
             case IBinaryOperatorExpressionSyntax binaryOperatorExpression:
             {
-                var leftType = InferType(binaryOperatorExpression.LeftOperand, flow);
+                var leftOperand = binaryOperatorExpression.LeftOperand;
+                var leftType = InferType(leftOperand, flow);
                 var leftResult = flow.CurrentResult;
                 var @operator = binaryOperatorExpression.Operator;
                 flow.NewResult();
-                var rightType = InferType(binaryOperatorExpression.RightOperand, flow);
+                var rightOperand = binaryOperatorExpression.RightOperand;
+                var rightType = InferType(rightOperand, flow);
                 flow.UnionWithCurrentResultAndDrop(leftResult);
 
                 // If either is unknown, then we can't know whether there is a a problem.
@@ -551,60 +553,61 @@ public class BasicBodyAnalyzer
                 if (!leftType.IsFullyKnown || !rightType.IsFullyKnown)
                     return binaryOperatorExpression.DataType = DataType.Unknown;
 
-                // TODO ----------------------------------------------------------------------------
-
-                bool compatible;
-                switch (@operator)
+                DataType type = (leftType, @operator, rightType) switch
                 {
-                    case BinaryOperator.Plus:
-                    case BinaryOperator.Minus:
-                    case BinaryOperator.Asterisk:
-                    case BinaryOperator.Slash:
-                        compatible = NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand, binaryOperatorExpression.RightOperand, flow);
-                        binaryOperatorExpression.DataType = compatible ? leftType : DataType.Unknown;
-                        binaryOperatorExpression.Semantics = ExpressionSemantics.CopyValue;
-                        break;
-                    case BinaryOperator.EqualsEquals:
-                    case BinaryOperator.NotEqual:
-                        compatible = (leftType == DataType.Bool && rightType == DataType.Bool)
-                                     || NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand,
-                                         binaryOperatorExpression.RightOperand, flow)
-                                     || IdOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand,
-                                         binaryOperatorExpression.RightOperand)
-                            /*|| OperatorOverloadDefined(@operator, binaryOperatorExpression.LeftOperand, ref binaryOperatorExpression.RightOperand)*/
-                            ;
-                        binaryOperatorExpression.DataType = DataType.Bool;
-                        binaryOperatorExpression.Semantics = ExpressionSemantics.CopyValue;
-                        break;
-                    case BinaryOperator.LessThan:
-                    case BinaryOperator.LessThanOrEqual:
-                    case BinaryOperator.GreaterThan:
-                    case BinaryOperator.GreaterThanOrEqual:
-                        compatible = (leftType == DataType.Bool && rightType == DataType.Bool)
-                                     || NumericOperatorTypesAreCompatible(binaryOperatorExpression.LeftOperand, binaryOperatorExpression.RightOperand, flow)
-                            /*|| OperatorOverloadDefined(@operator, binaryOperatorExpression.LeftOperand, ref binaryOperatorExpression.RightOperand)*/;
-                        binaryOperatorExpression.DataType = DataType.Bool;
-                        binaryOperatorExpression.Semantics = ExpressionSemantics.CopyValue;
-                        break;
-                    case BinaryOperator.And:
-                    case BinaryOperator.Or:
-                        compatible = leftType == DataType.Bool && rightType == DataType.Bool;
-                        binaryOperatorExpression.DataType = DataType.Bool;
-                        binaryOperatorExpression.Semantics = ExpressionSemantics.CopyValue;
-                        break;
-                    case BinaryOperator.DotDot:
-                    case BinaryOperator.LessThanDotDot:
-                    case BinaryOperator.DotDotLessThan:
-                    case BinaryOperator.LessThanDotDotLessThan:
-                        throw new NotImplementedException("Type analysis of range operators");
-                    default:
-                        throw ExhaustiveMatch.Failed(@operator);
-                }
-                if (!compatible)
+                    (IntegerConstantType left, BinaryOperator.Plus, IntegerConstantType right) => left.Add(right),
+                    (IntegerConstantType left, BinaryOperator.Minus, IntegerConstantType right) => left.Subtract(right),
+                    (IntegerConstantType left, BinaryOperator.Asterisk, IntegerConstantType right) => left.Multiply(right),
+                    (IntegerConstantType left, BinaryOperator.Slash, IntegerConstantType right) => left.DivideBy(right),
+                    (IntegerConstantType left, BinaryOperator.EqualsEquals, IntegerConstantType right) => left.Equals(right),
+                    (IntegerConstantType left, BinaryOperator.NotEqual, IntegerConstantType right) => left.NotEquals(right),
+                    (IntegerConstantType left, BinaryOperator.LessThan, IntegerConstantType right) => left.LessThan(right),
+                    (IntegerConstantType left, BinaryOperator.LessThanOrEqual, IntegerConstantType right) => left.LessThanOrEqual(right),
+                    (IntegerConstantType left, BinaryOperator.GreaterThan, IntegerConstantType right) => left.GreaterThan(right),
+                    (IntegerConstantType left, BinaryOperator.GreaterThanOrEqual, IntegerConstantType right) => left.GreaterThanOrEqual(right),
+
+                    (BoolConstantType left, BinaryOperator.EqualsEquals, BoolConstantType right) => left.Equals(right),
+                    (BoolConstantType left, BinaryOperator.NotEqual, BoolConstantType right) => left.NotEquals(right),
+                    (BoolConstantType left, BinaryOperator.And, BoolConstantType right) => left.And(right),
+                    (BoolConstantType left, BinaryOperator.Or, BoolConstantType right) => left.Or(right),
+
+                    (NumericType, BinaryOperator.Plus, NumericType)
+                        or (NumericType, BinaryOperator.Minus, NumericType)
+                        or (NumericType, BinaryOperator.Asterisk, NumericType)
+                        or (NumericType, BinaryOperator.Slash, NumericType)
+                        => InferNumericOperatorType(leftOperand, rightOperand, flow),
+                    (NumericType, BinaryOperator.EqualsEquals, NumericType)
+                        or (NumericType, BinaryOperator.NotEqual, NumericType)
+                        or (NumericType, BinaryOperator.LessThan, NumericType)
+                        or (NumericType, BinaryOperator.LessThanOrEqual, NumericType)
+                        or (NumericType, BinaryOperator.GreaterThan, NumericType)
+                        or (NumericType, BinaryOperator.GreaterThanOrEqual, NumericType)
+                        => InferComparisonOperatorType(leftOperand, rightOperand, flow),
+
+                    (BoolType, BinaryOperator.EqualsEquals, BoolType)
+                        or (BoolType, BinaryOperator.NotEqual, BoolType)
+                        or (BoolType, BinaryOperator.And, BoolType)
+                        or (BoolType, BinaryOperator.Or, BoolType)
+                        => DataType.Bool,
+
+                    (ReferenceType, BinaryOperator.EqualsEquals, ReferenceType)
+                        or (ReferenceType, BinaryOperator.NotEqual, ReferenceType)
+                        => InferReferenceEqualityOperatorType(leftOperand, rightOperand),
+
+                    (_, BinaryOperator.DotDot, _)
+                        or (_, BinaryOperator.LessThanDotDot, _)
+                        or (_, BinaryOperator.DotDotLessThan, _)
+                        or (_, BinaryOperator.LessThanDotDotLessThan, _)
+                        => throw new NotImplementedException("Type analysis of range operators"),
+                    _ => DataType.Unknown
+                };
+
+                if (type == DataType.Unknown)
                     diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandsOfType(file,
                         binaryOperatorExpression.Span, @operator, leftType, rightType));
 
-                return binaryOperatorExpression.ConvertedDataType.Assigned();
+                binaryOperatorExpression.Semantics = ExpressionSemantics.CopyValue;
+                return binaryOperatorExpression.DataType = type;
             }
             case ISimpleNameExpressionSyntax exp:
             {
@@ -1272,7 +1275,7 @@ public class BasicBodyAnalyzer
                 }
                 else
                 {
-                    var compatible = NumericOperatorTypesAreCompatible(binaryExpression.LeftOperand,
+                    var compatible = AddNumericOperatorImplicitConversions(binaryExpression.LeftOperand,
                         binaryExpression.RightOperand, flow);
                     type = compatible ? leftType : DataType.Unknown;
                 }
@@ -1336,57 +1339,69 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private static bool NumericOperatorTypesAreCompatible(
+    private static DataType InferNumericOperatorType(
         IExpressionSyntax leftOperand,
         IExpressionSyntax rightOperand,
         FlowState flow)
     {
-        var leftType = leftOperand.ConvertedDataType;
-        switch (leftType)
-        {
-            default:
-                // In theory we could just make the default false, but this
-                // way we are forced to note exactly which types this doesn't work on.
-                throw ExhaustiveMatch.Failed(leftType);
-            case IntegerConstantType _:
-                // TODO may need to promote based on size
-                throw new NotImplementedException();
-            //return !IsIntegerType(rightType);
-            case PointerSizedIntegerType integerType:
-                // TODO this isn't right we might need to convert either of them
-                AddImplicitConversionIfNeeded(rightOperand, integerType, flow);
-                return rightOperand.ConvertedDataType is PointerSizedIntegerType;
-            case FixedSizeIntegerType integerType:
-                // TODO this isn't right we might need to convert either of them
-                AddImplicitConversionIfNeeded(rightOperand, integerType, flow);
-                return rightOperand.ConvertedDataType is FixedSizeIntegerType;
-            case BigIntegerType integerType:
-                // TODO this isn't right we might need to convert either of them
-                AddImplicitConversionIfNeeded(rightOperand, integerType, flow);
-                return rightOperand.ConvertedDataType is IntegerType;
-            case OptionalType _:
-                throw new NotImplementedException("Trying to do math on optional type");
-            case NeverType _:
-            case UnknownType _:
-                return true;
-            case ReferenceType _:
-            case GenericParameterType _:
-            case BoolType _:
-            case VoidType _: // This might need a special error message
-                return false;
-        }
+        var leftType = leftOperand.DataType.Assigned();
+        var rightType = rightOperand.DataType.Assigned();
+        var commonType = leftType.NumericOperatorCommonType(rightType);
+        if (commonType is null) return DataType.Unknown;
+
+        AddImplicitConversionIfNeeded(leftOperand, commonType, flow);
+        AddImplicitConversionIfNeeded(rightOperand, commonType, flow);
+        return commonType;
+    }
+
+    private static DataType InferComparisonOperatorType(
+        IExpressionSyntax leftOperand,
+        IExpressionSyntax rightOperand,
+        FlowState flow)
+    {
+        var leftType = leftOperand.DataType.Assigned();
+        var rightType = rightOperand.DataType.Assigned();
+        var commonType = leftType.NumericOperatorCommonType(rightType);
+        if (commonType is null) return DataType.Unknown;
+
+        AddImplicitConversionIfNeeded(leftOperand, commonType, flow);
+        AddImplicitConversionIfNeeded(rightOperand, commonType, flow);
+        return DataType.Bool;
+    }
+
+    /// <summary>
+    /// Try to find a common numeric type and add implicit conversions to both sides of the operator
+    /// if necessary.
+    /// </summary>
+    // TODO remove method
+    private static bool AddNumericOperatorImplicitConversions(
+        IExpressionSyntax leftOperand,
+        IExpressionSyntax rightOperand,
+        FlowState flow)
+    {
+        var leftType = leftOperand.DataType.Assigned();
+        var rightType = rightOperand.DataType.Assigned();
+        var commonType = leftType.NumericOperatorCommonType(rightType);
+        if (commonType is null)
+            return false;
+
+        AddImplicitConversionIfNeeded(leftOperand, commonType, flow);
+        AddImplicitConversionIfNeeded(rightOperand, commonType, flow);
+        return true;
     }
 
     /// <summary>
     /// Check if two expressions are `id` types and comparable with `==` and `!=`.
     /// </summary>
-    private static bool IdOperatorTypesAreCompatible(
+    private static DataType InferReferenceEqualityOperatorType(
         IExpressionSyntax leftOperand,
         IExpressionSyntax rightOperand)
     {
-        return leftOperand.ConvertedDataType is ReferenceType { IsIdentityReference: true } leftType
-            && rightOperand.ConvertedDataType is ReferenceType { IsIdentityReference: true } rightType
-            && (leftType.IsAssignableFrom(rightType) || rightType.IsAssignableFrom(leftType));
+        if (leftOperand.ConvertedDataType is ReferenceType { IsIdentityReference: true } left
+           && rightOperand.ConvertedDataType is ReferenceType { IsIdentityReference: true } right
+           && (left.IsAssignableFrom(right) || right.IsAssignableFrom(left)))
+            return DataType.Bool;
+        return DataType.Unknown;
     }
 
     private static bool ExplicitConversionTypesAreCompatible(IExpressionSyntax expression, DataType convertToType)
@@ -1400,56 +1415,6 @@ public class BasicBodyAnalyzer
             _ => false
         };
     }
-
-    //private bool OperatorOverloadDefined(BinaryOperator @operator, ExpressionSyntax leftOperand, ref ExpressionSyntax rightOperand)
-    //{
-    //    // all other operators are not yet implemented
-    //    if (@operator != BinaryOperator.EqualsEquals)
-    //        return false;
-
-    //    if (!(leftOperand.Type is UserObjectType userObjectType))
-    //        return false;
-    //    var equalityOperators = userObjectType.Symbol.Lookup(SpecialName.OperatorEquals);
-    //    if (equalityOperators.Count != 1)
-    //        return false;
-    //    var equalityOperator = equalityOperators.Single();
-    //    if (!(equalityOperator.Type is FunctionType functionType) || functionType.Arity != 2)
-    //        return false;
-    //    InsertImplicitConversionIfNeeded(ref rightOperand, functionType.ParameterTypes[1]);
-    //    return IsAssignableFrom(functionType.ParameterTypes[1], rightOperand.Type);
-
-    //}
-
-    //// Re-expose type analyzer to BasicAnalyzer
-    //public DataType EvaluateType(ITypeSyntax typeSyntax, bool inferLent)
-    //{
-    //    return typeResolver.Evaluate(typeSyntax);
-    //}
-
-    //private void InferExpressionTypeInInvocation(ExpressionSyntax callee, FixedList<DataType> argumentTypes)
-    //{
-    //    switch (callee)
-    //    {
-    //        case NameSyntax identifierName:
-    //        {
-    //            var symbols = identifierName.LookupInContainingScope();
-    //            symbols = ResolveOverload(symbols, null, argumentTypes);
-    //            AssignReferencedSymbolAndType(identifierName, symbols);
-    //        }
-    //        break;
-    //        case MemberAccessExpressionSyntax memberAccess:
-    //        {
-    //            var left = InferExpressionType(ref memberAccess.Expression);
-    //            var containingSymbol = GetSymbolForType(left);
-    //            var symbols = containingSymbol.Lookup(memberAccess.Member.Name);
-    //            symbols = ResolveOverload(symbols, left, argumentTypes);
-    //            memberAccess.Type = AssignReferencedSymbolAndType(memberAccess.Member, symbols);
-    //        }
-    //        break;
-    //        default:
-    //            throw new NotImplementedException();
-    //    }
-    //}
 
     private static FixedSet<TSymbol> SelectOverload<TSymbol>(
         FixedSet<TSymbol> symbols,

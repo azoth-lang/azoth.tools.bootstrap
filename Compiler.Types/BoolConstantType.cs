@@ -18,6 +18,13 @@ public sealed class BoolConstantType : BoolType
         Value = value;
     }
 
+    public BoolConstantType And(BoolConstantType other) => Value && other.Value;
+    public BoolConstantType Or(BoolConstantType other) => Value || other.Value;
+    public BoolConstantType Equals(BoolConstantType other) => Value == other.Value;
+    public BoolConstantType NotEquals(BoolConstantType other) => Value != other.Value;
+
+    public static implicit operator BoolConstantType(bool value) => value ? True : False;
+
     public override DataType ToNonConstantType() => Bool;
 
     public override string ToSourceCodeString()

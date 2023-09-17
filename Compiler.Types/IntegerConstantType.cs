@@ -20,6 +20,20 @@ public sealed class IntegerConstantType : IntegerType
         Value = value;
     }
 
+    public bool IsUInt16 => Value >= ushort.MinValue && Value <= ushort.MaxValue;
+    public bool IsInt16 => Value >= short.MinValue && Value <= short.MaxValue;
+
+    public IntegerConstantType Add(IntegerConstantType right) => new(Value + right.Value);
+    public IntegerConstantType Subtract(IntegerConstantType right) => new(Value - right.Value);
+    public IntegerConstantType Multiply(IntegerConstantType right) => new(Value * right.Value);
+    public IntegerConstantType DivideBy(IntegerConstantType right) => new(Value / right.Value);
+    public BoolConstantType Equals(IntegerConstantType right) => Value == right.Value;
+    public BoolConstantType NotEquals(IntegerConstantType right) => Value != right.Value;
+    public BoolConstantType LessThan(IntegerConstantType right) => Value < right.Value;
+    public BoolConstantType LessThanOrEqual(IntegerConstantType right) => Value <= right.Value;
+    public BoolConstantType GreaterThan(IntegerConstantType right) => Value > right.Value;
+    public BoolConstantType GreaterThanOrEqual(IntegerConstantType right) => Value >= right.Value;
+
     /// <summary>
     /// The default non-constant type to places values of this type in. For
     /// <see cref="IntegerConstantType"/>, that is <see cref="DataType.Int"/>.
@@ -28,6 +42,23 @@ public sealed class IntegerConstantType : IntegerType
     /// the value. However, that would lead to unexpected behavior in some cases because small
     /// integer constants might produce small fixed size integers leading to overflow.</remarks>
     public override DataType ToNonConstantType() => Int;
+
+    public IntegerType ToSmallestSignedIntegerType()
+    {
+        if (Value > int.MaxValue) return Int;
+        if (Value < int.MinValue) return Int;
+        return Int32;
+    }
+
+
+    public IntegerType ToSmallestUnsignedIntegerType()
+    {
+        if (IsSigned)
+            throw new InvalidOperationException("Cannot convert signed constant to unsigned integer type.");
+        if (Value > uint.MaxValue) return UInt;
+        if (Value > byte.MaxValue) return UInt32;
+        return Byte;
+    }
 
     #region Equals
     public override bool Equals(DataType? other)
