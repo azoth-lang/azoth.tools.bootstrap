@@ -32,6 +32,8 @@ public static class ISyntaxExtensions
             case IClassDeclarationSyntax n:
                 foreach (var child in n.GenericParameters)
                     yield return child;
+                if (n.BaseType is not null)
+                    yield return n.BaseType;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;

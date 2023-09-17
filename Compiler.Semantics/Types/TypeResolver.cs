@@ -93,7 +93,8 @@ public class TypeResolver
     /// <summary>
     /// Evaluate a type that should not have any reference capability.
     /// </summary>
-    /// <remarks>This is used for new expressions and assigned an `id` reference capability to the type.</remarks>
+    /// <remarks>This is used for new expressions and base types. It assigns an `id` reference
+    /// capability to the type.</remarks>
     public DataType EvaluateBareType(ITypeNameSyntax typeSyntax) => EvaluateBareType(typeSyntax, null);
 
     private DataType EvaluateBareType(

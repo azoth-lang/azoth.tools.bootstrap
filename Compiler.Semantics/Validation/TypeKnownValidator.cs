@@ -20,7 +20,8 @@ public class TypeKnownValidator : SyntaxWalker
     {
         switch (syntax)
         {
-            case IClassDeclarationSyntax:
+            case IClassDeclarationSyntax syn:
+                Walk(syn.BaseType);
                 // Don't recur into body, we will see those as separate members
                 return;
             case IConstructorDeclarationSyntax constructorDeclaration:

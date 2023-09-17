@@ -148,6 +148,14 @@ public class EntitySymbolBuilder
 
         var typeParameters = @class.GenericParameters.Select(p => new GenericParameter(p.Name)).ToFixedList();
         var packageName = @class.ContainingNamespaceSymbol.Package!.Name;
+
+        if (@class.BaseType is not null)
+        {
+            var resolver = new TypeResolver(@class.File, diagnostics);
+            var baseType = resolver.EvaluateBareType(@class.BaseType);
+            // TODO include the base type with the declared object type
+        }
+
         var classType = DeclaredObjectType.Create(packageName, @class.ContainingNamespaceName,
             @class.Name, @class.IsConst, typeParameters);
 

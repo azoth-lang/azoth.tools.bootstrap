@@ -161,6 +161,7 @@ public partial interface IClassDeclarationSyntax : INonMemberEntityDeclarationSy
     bool IsMove { get; }
     FixedList<IGenericParameterSyntax> GenericParameters { get; }
     new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
+    ITypeNameSyntax? BaseType { get; }
     FixedList<IMemberDeclarationSyntax> Members { get; }
     ConstructorSymbol? DefaultConstructorSymbol { get; }
 }
