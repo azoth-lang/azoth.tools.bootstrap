@@ -553,6 +553,11 @@ public class InterpreterProcess
         }
         if (method == Intrinsic.RawBoundedListAt)
             return ValueTask.FromResult(self.RawBoundedListValue.At(arguments[0].SizeValue));
+        if (method == Intrinsic.RawBoundedListShrink)
+        {
+            self.RawBoundedListValue.Shrink(arguments[0].SizeValue);
+            return ValueTask.FromResult(AzothValue.None);
+        }
 
         throw new NotImplementedException($"Intrinsic {method}");
     }

@@ -1,6 +1,6 @@
 published class List[T]
 {
-    var items: Raw_Bounded_List[T];
+    var items: mut Raw_Bounded_List[T];
 
     published new()
     {
@@ -50,8 +50,13 @@ published class List[T]
         if new_count <= capacity => return;
         while capacity < new_count { capacity *= 2; }
         let count = .items.count();
-        let new_items = new Raw_Bounded_List[T](capacity);
+        let new_items: mut = new Raw_Bounded_List[T](capacity);
         foreach i in 0..<count { new_items.add(.items.at(i)); }
-        .items = new_items;
+        .items = mut new_items;
+    }
+
+    published fn clear(mut self)
+    {
+        .items.shrink(0);
     }
 }

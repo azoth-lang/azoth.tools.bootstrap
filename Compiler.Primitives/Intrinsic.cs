@@ -33,6 +33,9 @@ public static class Intrinsic
     public static readonly MethodSymbol RawBoundedListAt
         = Find<MethodSymbol>(RawBoundedList, "at");
 
+    public static readonly MethodSymbol RawBoundedListShrink
+        = Find<MethodSymbol>(RawBoundedList, "shrink");
+
     private static IEnumerable<T> Find<T>()
         => SymbolTree.Symbols.OfType<T>();
 
@@ -106,6 +109,7 @@ public static class Intrinsic
     {
         var classType = DeclaredObjectType.Create(@namespace.Package!.Name, @namespace.NamespaceName, "Raw_Bounded_List", false, "T");
         var readClassType = classType.WithRead(classType.GenericParameterDataTypes);
+        var mutClassType = classType.WithMutate(classType.GenericParameterDataTypes);
         var itemType = classType.GenericParameterTypes[0];
         var classSymbol = new ObjectTypeSymbol(@namespace, classType);
         tree.Add(classSymbol);
@@ -128,13 +132,17 @@ public static class Intrinsic
         tree.Add(at);
 
         // published /* unsafe */ fn set(mut self, index: size, T value)
-        var set = new MethodSymbol(classSymbol, "set", readClassType, Params(DataType.Size, itemType),
+        var set = new MethodSymbol(classSymbol, "set", mutClassType, Params(DataType.Size, itemType),
             DataType.Void);
         tree.Add(set);
 
         // published fn add(mut self, value: T);
-        var add = new MethodSymbol(classSymbol, "add", readClassType, Params(itemType), DataType.Void);
+        var add = new MethodSymbol(classSymbol, "add", mutClassType, Params(itemType), DataType.Void);
         tree.Add(add);
+
+        // published fn shrink(mut self, count: size)
+        var shrink = new MethodSymbol(classSymbol, "shrink", mutClassType, Params(DataType.Size), DataType.Void);
+        tree.Add(shrink);
     }
 
     private static FixedList<DataType> Params(params DataType[] types) => types.ToFixedList();

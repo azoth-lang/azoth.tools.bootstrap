@@ -20,4 +20,15 @@ internal class RawBoundedList
     }
 
     public AzothValue At(nuint index) => items[index];
+
+    public void Shrink(nuint count)
+    {
+        if (count > Count) throw new Abort("Cannot increase Raw_Bounded_List size with `shrink`.");
+        var oldCount = Count;
+        Count = count;
+        // To allow the .NET garbage collector to see collect referenced values, clear that part of
+        // the list.
+        for (nuint i = count; i < oldCount; i++)
+            items[i] = AzothValue.None;
+    }
 }
