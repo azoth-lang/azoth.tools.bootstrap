@@ -13,6 +13,8 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
     private DeclaredAnyType() { }
     #endregion
 
+    public override Name? ContainingPackage => null;
+    public override NamespaceName ContainingNamespace => NamespaceName.Global;
     public override TypeName Name => SpecialTypeName.Any;
 
     public override AnyType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
@@ -25,6 +27,8 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
     [SuppressMessage("Performance", "CA1822:Mark members as static",
         Justification = "OO")]
     public AnyType With(ReferenceCapability capability) => new(capability);
+
+    public override bool IsAssignableFrom(DeclaredReferenceType source) => true;
 
     #region Equals
     public override bool Equals(DeclaredReferenceType? other) => ReferenceEquals(this, other);

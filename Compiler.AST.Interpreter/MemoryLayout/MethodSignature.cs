@@ -37,28 +37,16 @@ internal class MethodSignature : IEquatable<MethodSignature>
                && ReturnDataType.Equals(other.ReturnDataType);
     }
 
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as MethodSignature);
-    }
+    public override bool Equals(object? obj) => Equals(obj as MethodSignature);
 
-    public override int GetHashCode()
-    {
-        return hashCode;
-    }
+    public override int GetHashCode() => hashCode;
 
     public static bool operator ==(MethodSignature? left, MethodSignature? right)
-    {
-        return Equals(left, right);
-    }
+        => Equals(left, right);
 
     public static bool operator !=(MethodSignature? left, MethodSignature? right)
-    {
-        return !Equals(left, right);
-    }
+        => !Equals(left, right);
 
     public override string ToString()
-    {
-        return $"{Name}({string.Join(", ", ParameterDataTypes.Prepend(SelfDataType))}) -> {ReturnDataType}";
-    }
+        => $"{Name}({string.Join(", ", ParameterDataTypes.Prepend(SelfDataType).Select(t => t.ToILString()))}) -> {ReturnDataType.ToILString()}";
 }

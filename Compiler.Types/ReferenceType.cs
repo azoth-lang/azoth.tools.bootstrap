@@ -35,6 +35,9 @@ public abstract class ReferenceType : NonEmptyType
 
     public virtual DeclaredReferenceType DeclaredType { get; }
 
+    public Name? ContainingPackage => DeclaredType.ContainingPackage;
+    public NamespaceName ContainingNamespace => DeclaredType.ContainingNamespace;
+
     public virtual TypeName Name => DeclaredType.Name;
 
     public override TypeSemantics Semantics => TypeSemantics.Reference;

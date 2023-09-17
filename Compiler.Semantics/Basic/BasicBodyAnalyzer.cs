@@ -936,6 +936,7 @@ public class BasicBodyAnalyzer
             case ISimpleNameExpressionSyntax exp:
                 exp.Semantics = ExpressionSemantics.CreateReference;
                 var symbol = InferNameSymbol(exp);
+                if (symbol is null) return exp.DataType = DataType.Unknown;
                 if (symbol is VariableSymbol variableSymbol)
                     return exp.DataType = flow.Type(variableSymbol);
 

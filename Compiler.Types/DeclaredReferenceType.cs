@@ -15,9 +15,15 @@ public abstract class DeclaredReferenceType : IEquatable<DeclaredReferenceType>
 {
     public static readonly DeclaredAnyType Any = DeclaredAnyType.Instance;
 
+    public abstract Name? ContainingPackage { get; }
+
+    public abstract NamespaceName ContainingNamespace { get; }
+
     public abstract TypeName Name { get; }
 
     public abstract ReferenceType With(ReferenceCapability capability, FixedList<DataType> typeArguments);
+
+    public abstract bool IsAssignableFrom(DeclaredReferenceType source);
 
     #region MyRegion
     public abstract bool Equals(DeclaredReferenceType? other);

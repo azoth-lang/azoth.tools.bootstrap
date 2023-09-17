@@ -1,6 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using UnaryOperator = Azoth.Tools.Bootstrap.Compiler.Core.Operators.UnaryOperator;
 
@@ -138,5 +139,11 @@ public static class TypeError
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3018, $"Cannot use `{capability.ToSourceString()}` on constant type `{type}`");
+    }
+
+    public static Diagnostic BaseTypeMustBeClass(CodeFile file, Name className, ITypeNameSyntax typeName)
+    {
+        return new(file, typeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3019, $"Class `{className}` cannot have base class `{typeName}` because it is not a class.");
     }
 }

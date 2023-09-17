@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -16,30 +17,27 @@ public static class DataTypeExtensions
     /// </summary>
     public static bool IsAssignableFrom(this DataType target, DataType source)
     {
-        switch (target, source)
+        return (target, source) switch
         {
-            case (_, _) when target.Equals(source):
-            case (UnknownType, _):
-            case (_, UnknownType):
-            case (BoolType, BoolConstantType):
-            case (_, NeverType):
-            case (BigIntegerType { IsSigned: true }, IntegerType):
-            case (BigIntegerType, IntegerType { IsSigned: false }):
-                return true;
-            case (AnyType targetReference, ReferenceType sourceReference):
-                return targetReference.Capability.IsAssignableFrom(sourceReference.Capability);
-            case (ReferenceType, AnyType):
-                return false;
-            case (ObjectType targetReference, ObjectType sourceReference):
-                // TODO account for subtype relationships
-                return targetReference.Capability.IsAssignableFrom(sourceReference.Capability)
-                       && targetReference.Name == sourceReference.Name
-                       && targetReference.ContainingNamespace == sourceReference.ContainingNamespace;
-            case (OptionalType targetOptional, OptionalType sourceOptional):
-                return IsAssignableFrom(targetOptional.Referent, sourceOptional.Referent);
-            default:
-                return false;
-        }
+            (_, _) when target.Equals(source) => true,
+            (UnknownType, _)
+                or (_, UnknownType)
+                or (BoolType, BoolConstantType)
+                or (_, NeverType)
+                or (BigIntegerType { IsSigned: true }, IntegerType)
+                or (BigIntegerType, IntegerType { IsSigned: false })
+                => true,
+            (ReferenceType targetReference, ReferenceType sourceReference)
+                => targetReference.Capability.IsAssignableFrom(sourceReference.Capability)
+                   && (targetReference.DeclaredType.IsAssignableFrom(sourceReference.DeclaredType)
+                       // TODO remove hack to allow string to exist in both primitives and stdlib
+                       || (targetReference.Name == "string" && sourceReference.Name == "string"
+                           && targetReference.ContainingNamespace == NamespaceName.Global
+                           && sourceReference.ContainingNamespace == NamespaceName.Global)),
+            (OptionalType targetOptional, OptionalType sourceOptional)
+                => IsAssignableFrom(targetOptional.Referent, sourceOptional.Referent),
+            _ => false
+        };
     }
 
     /// <summary>

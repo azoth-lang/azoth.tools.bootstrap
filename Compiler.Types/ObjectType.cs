@@ -22,9 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public sealed class ObjectType : ReferenceType
 {
     public new DeclaredObjectType DeclaredType => (DeclaredObjectType)base.DeclaredType;
-    public Name ContainingPackage => DeclaredType.ContainingPackage;
-    public NamespaceName ContainingNamespace => DeclaredType.ContainingNamespace;
-    public override Name Name => DeclaredType.Name;
+
     public FixedList<DataType> TypeArguments { get; }
     public override bool IsFullyKnown { [DebuggerStepThrough] get; }
 

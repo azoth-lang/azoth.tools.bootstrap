@@ -14,30 +14,32 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         NamespaceName containingNamespace,
         Name name,
         bool isConst)
-        => new(containingPackage, containingNamespace, name, isConst, FixedList<GenericParameter>.Empty);
+        => new(containingPackage, containingNamespace, name, isConst, FixedList<GenericParameter>.Empty, FixedSet<DeclaredObjectType>.Empty);
 
     public static DeclaredObjectType Create(
         Name containingPackage,
         NamespaceName containingNamespace,
         Name name,
         bool isConst,
-        FixedList<GenericParameter> genericParameters)
-        => new(containingPackage, containingNamespace, name, isConst, genericParameters);
+        FixedList<GenericParameter> genericParameters,
+        FixedSet<DeclaredObjectType> superTypes)
+        => new(containingPackage, containingNamespace, name, isConst, genericParameters, superTypes);
 
     public static DeclaredObjectType Create(
         Name containingPackage,
         NamespaceName containingNamespace,
         Name name,
         bool isConst,
-        params GenericParameter[] genericParameters) =>
-        new(containingPackage, containingNamespace, name, isConst, FixedList.Create(genericParameters));
+        params GenericParameter[] genericParameters)
+        => new(containingPackage, containingNamespace, name, isConst, FixedList.Create(genericParameters), FixedSet<DeclaredObjectType>.Empty);
 
     private DeclaredObjectType(
         Name containingPackage,
         NamespaceName containingNamespace,
         Name name,
         bool isConst,
-        FixedList<GenericParameter> genericParameters)
+        FixedList<GenericParameter> genericParameters,
+        FixedSet<DeclaredObjectType> superTypes)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
@@ -46,11 +48,12 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         GenericParameters = genericParameters;
         GenericParameterTypes = GenericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList();
         GenericParameterDataTypes = GenericParameterTypes.ToFixedList<DataType>();
+        SuperTypes = superTypes;
     }
 
-    public Name ContainingPackage { get; }
+    public override Name ContainingPackage { get; }
 
-    public NamespaceName ContainingNamespace { get; }
+    public override NamespaceName ContainingNamespace { get; }
 
     public override Name Name { get; }
 
@@ -66,6 +69,8 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
 
     // TODO this is really awkward. There should be a subtype relationship
     public FixedList<DataType> GenericParameterDataTypes { get; }
+
+    public FixedSet<DeclaredObjectType> SuperTypes { get; }
 
     /// <summary>
     /// Make a version of this type for use as the constructor parameter. One issue is
@@ -112,6 +117,10 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
 
     public override ObjectType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
         => ObjectType.Create(capability, this, typeArguments);
+
+    public override bool IsAssignableFrom(DeclaredReferenceType source)
+        => Equals(source)
+           || (source is DeclaredObjectType sourceObjectType && sourceObjectType.SuperTypes.Contains(this));
 
     /// <summary>
     /// Make a version of this type that is the default read reference capability for the type. That

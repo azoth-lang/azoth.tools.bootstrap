@@ -120,13 +120,13 @@ public class TypeResolver
                 case PrimitiveTypeSymbol sym:
                     return sym.DeclaresType;
                 case ObjectTypeSymbol sym:
-                    var bareType = sym.DeclaresType;
+                    var declaredObjectType = sym.DeclaresType;
                     // If capability not provided, then this is for a constructor or something
                     // and reading the value doesn't matter, it exists to name the type.
                     capability ??= ReferenceCapability.Identity;
                     // Compatibility of the capability with the type is not checked here. That
                     // is done on the capability type syntax.
-                    return bareType.With(capability, typeArguments);
+                    return declaredObjectType.With(capability, typeArguments);
                 case GenericParameterTypeSymbol sym:
                     return sym.DeclaresType;
             }

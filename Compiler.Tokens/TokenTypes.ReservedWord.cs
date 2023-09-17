@@ -9,7 +9,7 @@ public partial class TokenTypes
         RegexOptions.ExplicitCapture)]
     private static partial Regex ReservedTypeNamePattern();
 
-    public static readonly IReadOnlyCollection<string> ReservedWords = new HashSet<string>()
+    public static readonly IReadOnlySet<string> ReservedWords = new HashSet<string>()
     {
         // Keywords not yet implemented
         "base",
