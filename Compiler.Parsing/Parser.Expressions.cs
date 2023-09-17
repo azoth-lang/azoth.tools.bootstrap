@@ -120,7 +120,7 @@ public partial class Parser
                 case IAsQuestionKeywordToken _:
                     if (minPrecedence <= OperatorPrecedence.Conversion)
                     {
-                        Tokens.RequiredToken<IBinaryOperatorToken>();
+                        Tokens.RequiredToken<IConversionOperatorToken>();
                         var typeSyntax = ParseType();
                         expression = new ConversionExpressionSyntax(expression, typeSyntax);
                         continue;
