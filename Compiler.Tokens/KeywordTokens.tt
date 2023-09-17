@@ -57,7 +57,7 @@
         //"No",
         //"Throw",
         //"Ref",
-        //"Abstract",
+        "Abstract",
         //"Get",
         //"Set",
         //"Requires",

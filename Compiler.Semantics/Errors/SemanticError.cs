@@ -80,4 +80,10 @@ public static class SemanticError
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             6011, "Statement after result statement is unreachable.");
     }
+
+    public static Diagnostic AbstractMethodNotInAbstractClass(CodeFile file, TextSpan span, Name name)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+            6012, $"Abstract method `{name}` declared in a concrete class.");
+    }
 }

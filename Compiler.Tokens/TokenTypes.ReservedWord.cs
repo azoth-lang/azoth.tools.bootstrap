@@ -5,13 +5,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 public partial class TokenTypes
 {
-    private static readonly Regex ReservedTypeNamePattern = new Regex(@"^(((u?int|float|decimal)\d*)|(u?fixed(\d+\.\d+)?)|(real(\.\d+)?))$",
-        RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+    [GeneratedRegex(@"^(((u?int|float|decimal)\d*)|(u?fixed(\d+\.\d+)?)|(real(\.\d+)?))$",
+        RegexOptions.ExplicitCapture)]
+    private static partial Regex ReservedTypeNamePattern();
 
     public static readonly IReadOnlyCollection<string> ReservedWords = new HashSet<string>()
     {
         // Keywords not yet implemented
-        "abstract",
         "base",
         "delete",
         "ensures",
@@ -95,8 +95,5 @@ public partial class TokenTypes
     /// true for actual type names like `int32`. So values must be
     /// checked for being a keyword before being checked with this function.
     /// </summary>
-    public static bool IsReservedTypeName(string value)
-    {
-        return ReservedTypeNamePattern.IsMatch(value);
-    }
+    public static bool IsReservedTypeName(string value) => ReservedTypeNamePattern().IsMatch(value);
 }

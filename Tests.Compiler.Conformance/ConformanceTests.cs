@@ -35,13 +35,14 @@ public partial class ConformanceTests
         Assert.NotEmpty(GetConformanceTestCases());
     }
 
-    [GeneratedRegex(@"//[ \t]*exit code: (?<exitCode>\d+)", RegexOptions.Compiled)]
+    [GeneratedRegex(@"//[ \t]*exit code: (?<exitCode>\d+)", RegexOptions.ExplicitCapture)]
     private static partial Regex ExitCodePattern();
     private const string ExpectedOutputFileFormat = @"//[ \t]*{0} file: (?<file>[a-zA-Z0-9_.]+)";
     private const string ExpectedOutputFormat = @"\/\*[ \t]*{0}:\r?\n(?<output>(\*+[^/]|[^*])*)\*\/";
-    [GeneratedRegex("//[ \\t]*compile: errors")]
+    [GeneratedRegex("//[ \\t]*compile: errors", RegexOptions.ExplicitCapture)]
     private static partial Regex ExpectCompileErrorsPattern();
-    [GeneratedRegex(@"(?<!^.*//.*)//[ \t]*ERROR(?: x(?<count>\d+))?(?:[ \t].*)?", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?<!^.*//.*)//[ \t]*ERROR( x(?<count>\d+))?([ \t].*)?",
+        RegexOptions.Multiline | RegexOptions.ExplicitCapture)]
     private static partial Regex ErrorPattern();
 
     [Theory]

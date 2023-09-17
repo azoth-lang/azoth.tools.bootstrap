@@ -30,6 +30,8 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
     }
 
     public IAccessModifierToken? AccessModifier { get; }
+    public IAbstractKeywordToken? AbstractModifier { get; }
+    public bool IsAbstract { get; }
     public IConstKeywordToken? ConstModifier { get; }
     public bool IsConst { get; }
     public IMoveKeywordToken? MoveModifier { get; }
@@ -45,6 +47,7 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
         TextSpan headerSpan,
         CodeFile file,
         IAccessModifierToken? accessModifier,
+        IAbstractKeywordToken? abstractModifier,
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
         TextSpan nameSpan,
@@ -55,6 +58,8 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
     {
         ContainingNamespaceName = containingNamespaceName;
         AccessModifier = accessModifier;
+        AbstractModifier = abstractModifier;
+        IsAbstract = AbstractModifier is not null;
         ConstModifier = constModifier;
         IsConst = ConstModifier is not null;
         MoveModifier = moveModifier;

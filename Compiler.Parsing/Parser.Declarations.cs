@@ -164,6 +164,7 @@ public partial class Parser
         ModifierParser modifiers)
     {
         var accessModifier = modifiers.ParseAccessModifier();
+        var abstractModifier = modifiers.ParseAbstractModifier();
         var constModifier = modifiers.ParseConstModifier();
         var moveModifier = modifiers.ParseMoveModifier();
         modifiers.ParseEndOfModifiers();
@@ -175,7 +176,8 @@ public partial class Parser
         var headerSpan = TextSpan.Covering(@class, identifier.Span, generic?.Span);
         var bodyParser = BodyParser();
         return new ClassDeclarationSyntax(ContainingNamespace, headerSpan, File, accessModifier,
-            constModifier, moveModifier, identifier.Span, name, genericParameters, bodyParser.ParseClassBody);
+            abstractModifier, constModifier, moveModifier, identifier.Span, name, genericParameters,
+            bodyParser.ParseClassBody);
     }
 
     private (FixedList<IGenericParameterSyntax> Parameters, TextSpan Span)? AcceptGenericParameters()
@@ -237,6 +239,7 @@ public partial class Parser
         ModifierParser modifiers)
     {
         var accessModifer = modifiers.ParseAccessModifier();
+        var abstractModifier = modifiers.ParseAbstractModifier();
         modifiers.ParseEndOfModifiers();
         var fn = Tokens.Expect<IFunctionKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
@@ -252,8 +255,23 @@ public partial class Parser
         // if no self parameter, it is an associated function
         if (selfParameter is null)
         {
-            var body = bodyParser.ParseFunctionBody();
-            var span = TextSpan.Covering(fn, body.Span);
+            if (abstractModifier is not null)
+                Add(ParseError.AbstractAssociatedFunction(File, abstractModifier.Span));
+            IBodySyntax body;
+            TextSpan span;
+            if (Tokens.Current is IOpenBraceToken)
+            {
+                body = bodyParser.ParseFunctionBody();
+                span = TextSpan.Covering(fn, body.Span);
+            }
+            else
+            {
+                body = new BodySyntax(Tokens.Current.Span.AtStart(), FixedList<IBodyStatementSyntax>.Empty);
+                var semicolon = bodyParser.Tokens.Expect<ISemicolonToken>();
+                span = TextSpan.Covering(fn, semicolon);
+                Add(ParseError.AssociatedFunctionMissingBody(File, span, name));
+            }
+
             return new AssociatedFunctionDeclarationSyntax(declaringType, span, File, accessModifer, identifier.Span, name, namedParameters, returnType, body);
         }
 
@@ -266,6 +284,8 @@ public partial class Parser
         // It is a method that may or may not have a body
         if (Tokens.Current is IOpenBraceToken)
         {
+            if (abstractModifier is not null)
+                Add(ParseError.ConcreteMethodDeclaredAbstract(File, abstractModifier.Span));
             var body = bodyParser.ParseFunctionBody();
             var span = TextSpan.Covering(fn, body.Span);
             return new ConcreteMethodDeclarationSyntax(declaringType, span, File, accessModifer,
@@ -273,6 +293,8 @@ public partial class Parser
         }
         else
         {
+            if (abstractModifier is null)
+                Add(ParseError.AbstractMethodMissingAbstractModifier(File, identifier.Span));
             var semicolon = bodyParser.Tokens.Expect<ISemicolonToken>();
             var span = TextSpan.Covering(fn, semicolon);
             return new AbstractMethodDeclarationSyntax(declaringType, span, File, accessModifer,

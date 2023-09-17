@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class AbstractMethodDeclarationSyntax : MethodDeclarationSyntax
+internal class AbstractMethodDeclarationSyntax : MethodDeclarationSyntax, IAbstractMethodDeclarationSyntax
 {
     public AbstractMethodDeclarationSyntax(
         IClassDeclarationSyntax declaringClass,

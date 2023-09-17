@@ -1,5 +1,6 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -96,5 +97,29 @@ internal static class ParseError
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2012, "Can't freeze expression. Can only freeze a variable.");
+    }
+
+    public static Diagnostic AbstractAssociatedFunction(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2013, "An associated function cannot be abstract.");
+    }
+
+    public static Diagnostic ConcreteMethodDeclaredAbstract(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2014, "A concrete method cannot be abstract.");
+    }
+
+    public static Diagnostic AbstractMethodMissingAbstractModifier(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2015, "An abstract method must be declared `abstract`.");
+    }
+
+    public static Diagnostic AssociatedFunctionMissingBody(CodeFile file, TextSpan span, Name name)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2016, $"Associated function `{name}` is missing a method body.");
     }
 }

@@ -20,10 +20,7 @@ public partial class Parser : RecursiveDescentParser
     /// <summary>
     /// A member parser drops the containingNamespace because there isn't one
     /// </summary>
-    protected Parser BodyParser()
-    {
-        return containingNamespace is null ? this : new Parser(Tokens, null);
-    }
+    protected Parser BodyParser() => containingNamespace is null ? this : new Parser(Tokens, null);
 
     /// <summary>
     /// A nested parser establishes a nested naming context for things parsed by it.

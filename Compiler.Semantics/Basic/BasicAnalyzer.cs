@@ -1,6 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Framework;
@@ -84,8 +85,10 @@ public class BasicAnalyzer
                 resolver.ResolveTypes(method.Body);
                 break;
             }
-            case IAbstractMethodDeclarationSyntax _:
+            case IAbstractMethodDeclarationSyntax method:
                 // has no body, so nothing to resolve
+                if (!method.DeclaringClass.IsAbstract)
+                    diagnostics.Add(SemanticError.AbstractMethodNotInAbstractClass(method.File, method.Span, method.Name));
                 break;
             case IFieldDeclarationSyntax field:
                 if (field.Initializer is not null)

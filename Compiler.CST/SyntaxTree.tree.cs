@@ -153,6 +153,8 @@ public partial interface INonMemberEntityDeclarationSyntax : IEntityDeclarationS
 
 public partial interface IClassDeclarationSyntax : INonMemberEntityDeclarationSyntax
 {
+    IAbstractKeywordToken? AbstractModifier { get; }
+    bool IsAbstract { get; }
     IConstKeywordToken? ConstModifier { get; }
     bool IsConst { get; }
     IMoveKeywordToken? MoveModifier { get; }
