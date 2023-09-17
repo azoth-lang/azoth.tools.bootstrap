@@ -34,22 +34,23 @@ public class LexicalScopesBuilder
     {
         var primitiveSymbols = Primitive.SymbolTree.Symbols
                                         .Where(s => s.ContainingSymbol is null)
-                                        .Select(s => new NonMemberSymbol(s));
+                                        .Select(NonMemberSymbol.ForExternalSymbol);
 
+        // Namespaces in the package need to be created even if they are empty
         var packageNamespaces = package.SymbolTree.Symbols
                                        .OfType<NamespaceSymbol>()
-                                       .Select(s => new NonMemberSymbol(s));
+                                       .Select(NonMemberSymbol.ForPackageNamespace);
 
         var packageSymbols = package.AllEntityDeclarations
                                     .OfType<INonMemberEntityDeclarationSyntax>()
-                                    .Select(d => new NonMemberSymbol(d));
+                                    .Select(NonMemberSymbol.For);
 
         // TODO it might be better to go to the declarations and get their symbols (once that is implemented)
         var referencedSymbols = package.ReferencedPackages
                                        .SelectMany(p => p.SymbolTree.Symbols)
                                        .Concat(Intrinsic.SymbolTree.Symbols)
                                        .Where(s => s.ContainingSymbol is NamespaceOrPackageSymbol)
-                                       .Select(s => new NonMemberSymbol(s));
+                                       .Select(NonMemberSymbol.ForExternalSymbol);
         return primitiveSymbols
                .Concat(packageNamespaces)
                .Concat(packageSymbols)
@@ -60,7 +61,8 @@ public class LexicalScopesBuilder
     private static FixedDictionary<NamespaceName, Namespace> BuildNamespaces(
         FixedList<NonMemberSymbol> declarationSymbols)
     {
-        var namespaces = declarationSymbols.SelectMany(s => s.ContainingNamespace.NamespaceNames()).Distinct();
+        // Use RequiredNamespace so that namespaces in the package will be created even if they are empty
+        var namespaces = declarationSymbols.SelectMany(s => s.RequiredNamespace.NamespaceNames()).Distinct();
         var nsSymbols = new List<Namespace>();
         foreach (var ns in namespaces)
         {
