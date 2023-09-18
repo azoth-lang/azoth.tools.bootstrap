@@ -849,6 +849,9 @@ public class BasicBodyAnalyzer
                 var memberSymbols = symbolTrees.Children(contextSymbol)
                                                .Where(s => s.Name == member.Name).ToFixedList();
                 var type = InferReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
+                if (contextType is NonEmptyType nonEmptyContext)
+                    // resolve generic type fields
+                    type = nonEmptyContext.ReplaceTypeParametersIn(type);
                 var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 member.Semantics = semantics;
                 member.DataType = type;
