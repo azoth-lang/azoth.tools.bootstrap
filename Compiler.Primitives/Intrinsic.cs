@@ -13,7 +13,7 @@ public static class Intrinsic
 
     public static readonly FunctionSymbol PrintUtf8 = Find<FunctionSymbol>("print_utf8");
 
-    public static readonly FunctionSymbol AbortUtf8 = Find<FunctionSymbol>("abort_utf8");
+    public static readonly FunctionSymbol AbortUtf8 = Find<FunctionSymbol>("ABORT_UTF8");
 
     public static readonly ObjectTypeSymbol RawBoundedList
         = Find<ObjectTypeSymbol>("Raw_Bounded_List");
@@ -82,7 +82,7 @@ public static class Intrinsic
         var readUtf8Line = new FunctionSymbol(intrinsicsNamespace, "read_utf8_line", Params(DataType.Size, DataType.Size), DataType.Size);
         tree.Add(readUtf8Line);
 
-        var abortUtf8 = new FunctionSymbol(intrinsicsNamespace, "abort_utf8", Params(DataType.Size, DataType.Size), DataType.Never);
+        var abortUtf8 = new FunctionSymbol(intrinsicsNamespace, "ABORT_UTF8", Params(DataType.Size, DataType.Size), DataType.Never);
         tree.Add(abortUtf8);
 
         BuildSpecializedCollectionSymbols(intrinsicsPackage, tree);

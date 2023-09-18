@@ -26,14 +26,14 @@ published class List[T]
     published fn at(self, index: size) -> T
     {
         let count = .items.count();
-        if index < 0 or index >= count => abort("index out of bounds");
+        if index < 0 or index >= count => ABORT("index out of bounds");
         return .items.at(index);
     }
 
     published fn \set(mut self, index: size, value: T)
     {
         let count = .items.count();
-        if index < 0 or index >= count => abort("index out of bounds");
+        if index < 0 or index >= count => ABORT("index out of bounds");
         .items.\set(index, value);
     }
 

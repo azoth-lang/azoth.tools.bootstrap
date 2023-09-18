@@ -1,4 +1,4 @@
-published fn abort(message: string)
+published fn ABORT(message: string) -> never
 {
-    abort_utf8(message.bytes, message.byte_count);
+    ABORT_UTF8(message.bytes, message.byte_count);
 }
