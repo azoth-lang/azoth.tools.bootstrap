@@ -176,7 +176,7 @@ public class BasicBodyAnalyzer
         _ = InferType(variableDeclaration.Initializer, flow);
         DataType variableType;
         if (variableDeclaration.Type is not null)
-            variableType = typeResolver.Evaluate(variableDeclaration.Type, implicitRead: true);
+            variableType = typeResolver.Evaluate(variableDeclaration.Type);
         else if (variableDeclaration.Initializer is not null)
             variableType = InferDeclarationType(variableDeclaration.Initializer, variableDeclaration.Capability);
         else
@@ -255,7 +255,7 @@ public class BasicBodyAnalyzer
         DataType expectedType,
         FlowState flow)
     {
-        _ = InferType(expression, flow, implicitRead: true);
+        _ = InferType(expression, flow);
         _ = AddImplicitConversionIfNeeded(expression, expectedType, flow);
         CheckTypeCompatibility(expectedType, expression);
     }
@@ -347,14 +347,8 @@ public class BasicBodyAnalyzer
     /// <summary>
     /// Infer the type of an expression and assign that type to the expression.
     /// </summary>
-    /// <param name="expression"></param>
-    /// <param name="flow"></param>
-    /// <param name="implicitRead">Whether this expression should implicitly be inferred to be a read.</param>
     [return: NotNullIfNotNull(nameof(expression))]
-    private DataType? InferType(
-        IExpressionSyntax? expression,
-        FlowState flow,
-        bool implicitRead = true)
+    private DataType? InferType(IExpressionSyntax? expression, FlowState flow)
     {
         switch (expression)
         {
@@ -471,7 +465,7 @@ public class BasicBodyAnalyzer
                 if (exp.Value is not null)
                 {
                     var expectedReturnType = returnType;
-                    InferType(exp.Value, flow, implicitRead: false);
+                    InferType(exp.Value, flow);
                     flow.DropAllLocalVariables(); // No longer in scope
                     flow.DropIsolatedParameters(); // No longer external reference
                     AddImplicitConversionIfNeeded(exp.Value, expectedReturnType, flow);
@@ -701,7 +695,7 @@ public class BasicBodyAnalyzer
             }
             case IForeachExpressionSyntax exp:
             {
-                var declaredType = typeResolver.Evaluate(exp.Type, implicitRead: true);
+                var declaredType = typeResolver.Evaluate(exp.Type);
                 var expressionType = CheckForeachInType(declaredType, exp.InExpression, flow);
                 var variableType = declaredType ?? expressionType.ToNonConstantType();
                 var symbol = new VariableSymbol(containingSymbol, exp.VariableName,
@@ -829,9 +823,8 @@ public class BasicBodyAnalyzer
             case ISelfExpressionSyntax exp:
             {
                 var type = flow.Type(InferSelfSymbol(exp));
-                var referenceSemantics = implicitRead
-                    ? ExpressionSemantics.ReadOnlyReference
-                    : ExpressionSemantics.MutableReference;
+                // TODO is this correct?
+                var referenceSemantics = ExpressionSemantics.MutableReference;
                 exp.Semantics = type.Semantics.ToExpressionSemantics(referenceSemantics);
                 return exp.DataType = type;
             }
@@ -843,7 +836,7 @@ public class BasicBodyAnalyzer
             {
                 var referentType = InferType(exp.Referent, flow);
                 // TODO shouldn't this be implicit read still (e.g. x as! T should be read only?)
-                var convertToType = typeResolver.Evaluate(exp.ConvertToType, false) ?? DataType.Unknown;
+                var convertToType = typeResolver.Evaluate(exp.ConvertToType) ?? DataType.Unknown;
                 if (!ExplicitConversionTypesAreCompatible(exp.Referent, convertToType))
                     diagnostics.Add(TypeError.CannotExplicitlyConvert(file, exp.Referent, referentType, convertToType));
 
@@ -863,7 +856,7 @@ public class BasicBodyAnalyzer
                 throw ExhaustiveMatch.Failed(expression);
             case IQualifiedNameExpressionSyntax exp:
                 // TODO handle mutable self
-                var contextType = InferType(exp.Context, flow, false);
+                var contextType = InferType(exp.Context, flow);
                 DataType type;
                 var member = exp.Member;
                 switch (contextType)
@@ -913,7 +906,7 @@ public class BasicBodyAnalyzer
         switch (invocation.Expression)
         {
             case IQualifiedNameExpressionSyntax exp:
-                var contextType = InferType(exp.Context, flow, implicitRead: false);
+                var contextType = InferType(exp.Context, flow);
                 var name = exp.Member.Name!;
                 if (contextType is not VoidType)
                     return InferMethodInvocationType(invocation, exp.Context, name, argumentTypes, flow);

@@ -123,7 +123,7 @@ public class EntitySymbolBuilder
 
         field.Symbol.BeginFulfilling();
         var resolver = new TypeResolver(field.File, diagnostics);
-        var type = resolver.Evaluate(field.Type, implicitRead: true);
+        var type = resolver.Evaluate(field.Type);
         var symbol = new FieldSymbol(field.DeclaringClass.Symbol.Result, field.Name, field.IsMutableBinding, type);
         field.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);
@@ -195,7 +195,7 @@ public class EntitySymbolBuilder
         var types = new List<DataType>();
         foreach (var parameter in parameters)
         {
-            var type = resolver.Evaluate(parameter.Type, implicitRead: true);
+            var type = resolver.Evaluate(parameter.Type);
             types.Add(type);
         }
 
@@ -215,10 +215,10 @@ public class EntitySymbolBuilder
                     throw ExhaustiveMatch.Failed(parameter);
                 case INamedParameterSyntax namedParameter:
                 {
-                    var type = resolver.Evaluate(namedParameter.Type, implicitRead: true);
+                    var type = resolver.Evaluate(namedParameter.Type);
                     types.Add(type);
+                    break;
                 }
-                break;
                 case IFieldParameterSyntax fieldParameter:
                 {
                     var field = declaringClass.Members.OfType<IFieldDeclarationSyntax>()
@@ -235,8 +235,8 @@ public class EntitySymbolBuilder
                         fieldParameter.ReferencedSymbol.Fulfill(fieldSymbol);
                         types.Add(fieldSymbol.DataType);
                     }
+                    break;
                 }
-                break;
             }
 
         return types.ToFixedList();
@@ -294,7 +294,7 @@ public class EntitySymbolBuilder
         ITypeSyntax? returnTypeSyntax, TypeResolver resolver)
     {
         var returnType = returnTypeSyntax is not null
-            ? resolver.Evaluate(returnTypeSyntax, implicitRead: true) : DataType.Void;
+            ? resolver.Evaluate(returnTypeSyntax) : DataType.Void;
         return returnType;
     }
 }

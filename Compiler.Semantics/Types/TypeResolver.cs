@@ -27,9 +27,8 @@ public class TypeResolver
     }
 
     [return: NotNullIfNotNull(nameof(typeSyntax))]
-    public DataType? Evaluate(ITypeSyntax? typeSyntax, bool implicitRead)
+    public DataType? Evaluate(ITypeSyntax? typeSyntax)
     {
-        // TODO it isn't clear that the implicitRead parameter makes sense
         switch (typeSyntax)
         {
             default:
@@ -52,19 +51,17 @@ public class TypeResolver
             }
             case IOptionalTypeSyntax optionalType:
             {
-                var referent = Evaluate(optionalType.Referent, implicitRead);
+                var referent = Evaluate(optionalType.Referent);
                 return optionalType.NamedType = new OptionalType(referent);
             }
         }
 
-        DataType CreateType(TypeSymbol symbol, FixedList<DataType> typeArguments)
+        static DataType CreateType(TypeSymbol symbol, FixedList<DataType> typeArguments)
         {
             var type = symbol switch
             {
                 PrimitiveTypeSymbol sym => sym.DeclaresType,
-                ObjectTypeSymbol sym => implicitRead
-                    ? sym.DeclaresType.WithRead(typeArguments)
-                    : sym.DeclaresType.WithMutate(typeArguments),
+                ObjectTypeSymbol sym => sym.DeclaresType.WithRead(typeArguments),
                 GenericParameterTypeSymbol sym => sym.DeclaresType,
                 _ => throw ExhaustiveMatch.Failed(symbol)
             };
@@ -134,7 +131,7 @@ public class TypeResolver
     }
 
     private FixedList<DataType> Evaluate(IEnumerable<ITypeSyntax> types)
-        => types.Select(t => Evaluate(t, implicitRead: true)).ToFixedList();
+        => types.Select(t => Evaluate(t)).ToFixedList();
 
     private DataType ResolveType(
         ITypeNameSyntax typeName,
