@@ -1,4 +1,3 @@
-using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using ExhaustiveMatching;
 
@@ -46,13 +45,6 @@ public abstract class ReferenceType : NonEmptyType
     {
         Capability = capability;
         DeclaredType = declaredType;
-    }
-
-    public ReferenceType AsMutable()
-    {
-        if (!Capability.AllowsWrite)
-            throw new InvalidOperationException($"Can't convert '{Capability.ToILString()}' to mutable because it does not allow write.");
-        return With(ReferenceCapability.Mutable);
     }
 
     public override ReferenceType WithoutWrite() => With(Capability.WithoutWrite());

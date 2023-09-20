@@ -52,7 +52,7 @@ published class List[T]
         let count = .items.count();
         let new_items: mut = new Raw_Bounded_List[T](capacity);
         foreach i in 0..<count { new_items.add(.items.at(i)); }
-        .items = mut new_items;
+        .items = new_items;
     }
 
     published fn clear(mut self)

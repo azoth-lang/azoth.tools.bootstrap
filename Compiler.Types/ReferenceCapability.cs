@@ -112,6 +112,17 @@ public sealed class ReferenceCapability
         return ReadOnly;
     }
 
+    /// <summary>
+    /// The reference capability of an alias to this reference.
+    /// </summary>
+    public ReferenceCapability Alias() => this == Isolated ? Mutable : this;
+
+    /// <summary>
+    /// The reference capability if the referenced object were frozen.
+    /// </summary>
+    /// <remarks>`id` references remain `id` otherwise they become `const`.</remarks>
+    public ReferenceCapability Freeze() => this == Identity ? this : Constant;
+
     [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
     public override string ToString()

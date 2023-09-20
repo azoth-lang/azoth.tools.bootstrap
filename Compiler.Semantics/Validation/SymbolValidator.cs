@@ -62,9 +62,6 @@ public class SymbolValidator : SyntaxWalker
             case ITypeNameSyntax syn:
                 CheckReferencedSymbol(syn, syn.ReferencedSymbol);
                 break;
-            case IMutateExpressionSyntax syn:
-                CheckReferencedSymbol(syn, syn.ReferencedSymbol);
-                break;
             case IMoveExpressionSyntax syn:
                 CheckReferencedSymbol(syn, syn.ReferencedSymbol);
                 break;

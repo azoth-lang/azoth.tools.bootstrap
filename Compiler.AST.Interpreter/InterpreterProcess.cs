@@ -438,9 +438,6 @@ public class InterpreterProcess
             case IShareExpression exp:
                 // TODO do share expressions make sense in Azoth?
                 return await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
-            case IBorrowExpression exp:
-                // TODO do borrow expressions make sense in Azoth?
-                return await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
             case ISelfExpression exp:
                 return variables[exp.ReferencedSymbol];
             case IImplicitOptionalConversionExpression exp:

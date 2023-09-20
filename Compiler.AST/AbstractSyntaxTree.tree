@@ -108,7 +108,6 @@ MethodInvocationExpression: InvocationExpression = Context:Expression Referenced
 NameExpression: AssignableExpression = ReferencedSymbol:'NamedBindingSymbol' VariableIsLiveAfter:'Promise<bool>';
 SelfExpression: Expression = ReferencedSymbol:'SelfParameterSymbol' IsImplicit:'bool';
 FieldAccessExpression: AssignableExpression = Context:Expression AccessOperator:'AccessOperator' ReferencedSymbol:'FieldSymbol';
-BorrowExpression: Expression = ReferencedSymbol:'BindingSymbol' Referent:Expression;
 MoveExpression: Expression = ReferencedSymbol:'BindingSymbol' Referent:Expression;
 FreezeExpression: Expression = ReferencedSymbol:'BindingSymbol' Referent:Expression;
 ShareExpression: Expression = ReferencedSymbol:'BindingSymbol' Referent:Expression;

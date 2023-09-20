@@ -219,8 +219,7 @@ public class BasicBodyAnalyzer
         switch (expression)
         {
             case IMoveExpressionSyntax when inferCapability is null:
-            case IMutateExpressionSyntax when inferCapability is null:
-                // If we are explicitly moving or borrowing and no capability is specified, then
+                // If we are explicitly moving and no capability is specified, then
                 // take the mutable type.
                 return type;
             default:
@@ -417,8 +416,6 @@ public class BasicBodyAnalyzer
                         nameExpression.DataType = type;
                         exp.Semantics = semantics;
                         return exp.DataType = type;
-                    case IMutateExpressionSyntax:
-                        throw new NotImplementedException("Raise error about `move mut` expression");
                     case IMoveExpressionSyntax:
                         throw new NotImplementedException("Raise error about `move move` expression");
                     default:
@@ -462,53 +459,10 @@ public class BasicBodyAnalyzer
                         nameExpression.DataType = type;
                         exp.Semantics = semantics;
                         return exp.DataType = type;
-                    case IMutateExpressionSyntax:
-                        throw new NotImplementedException("Raise error about `freeze mut` expression.");
                     case IMoveExpressionSyntax:
                         throw new NotImplementedException("Raise error about `freeze move` expression.");
                     default:
                         throw new NotImplementedException("Tried to freeze expression type that isn't implemented.");
-                }
-            case IMutateExpressionSyntax exp:
-                switch (exp.Referent)
-                {
-                    case ISimpleNameExpressionSyntax nameExpression:
-                    {
-                        var symbol = InferNameSymbol(nameExpression);
-                        if (symbol is not BindingSymbol bindingSymbol)
-                            throw new NotImplementedException("Raise error about `mut` from non-variable");
-
-                        var type = flow.Type(bindingSymbol);
-                        switch (type)
-                        {
-                            case ReferenceType referenceType:
-                                if (!referenceType.AllowsWrite)
-                                {
-                                    diagnostics.Add(TypeError.ExpressionCantBeMutable(file, exp.Referent));
-                                    type = DataType.Unknown;
-                                }
-                                else
-                                    type = referenceType.AsMutable();
-
-                                break;
-                            default:
-                                throw new NotImplementedException("Non-mutable type can't be borrowed mutably");
-                        }
-
-                        flow.UnionWithCurrentResult(bindingSymbol);
-                        flow.Alias(bindingSymbol);
-                        exp.ReferencedSymbol.Fulfill(bindingSymbol);
-
-                        nameExpression.Semantics = ExpressionSemantics.MutableReference;
-                        nameExpression.DataType = type;
-                        return exp.DataType = type;
-                    }
-                    case IMutateExpressionSyntax:
-                        throw new NotImplementedException("Raise error about `mut mut` expression");
-                    case IMoveExpressionSyntax:
-                        throw new NotImplementedException("Raise error about `mut move` expression");
-                    default:
-                        throw new NotImplementedException("Tried to mutate expression type that isn't implemented");
                 }
             case IReturnExpressionSyntax exp:
             {
@@ -621,11 +575,8 @@ public class BasicBodyAnalyzer
                     flow.Alias(variableSymbol);
 
                     type = flow.Type(variableSymbol);
-                    if (implicitRead) type = type.WithoutWrite();
-
-                    referenceSemantics = implicitRead
-                        ? ExpressionSemantics.ReadOnlyReference
-                        : ExpressionSemantics.MutableReference;
+                    // TODO is this right?
+                    referenceSemantics = ExpressionSemantics.MutableReference;
                 }
                 else
                 {

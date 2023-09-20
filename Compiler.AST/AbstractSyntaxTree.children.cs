@@ -157,9 +157,6 @@ public static class IAbstractSyntaxExtensions
             case IFieldAccessExpression n:
                 yield return n.Context;
                 yield break;
-            case IBorrowExpression n:
-                yield return n.Referent;
-                yield break;
             case IMoveExpression n:
                 yield return n.Referent;
                 yield break;

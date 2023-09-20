@@ -226,7 +226,6 @@ internal class ASTBuilder
             IBinaryOperatorExpressionSyntax syn => BuildBinaryOperatorExpression(syn),
             IBlockExpressionSyntax syn => BuildBlockExpression(syn),
             IBoolLiteralExpressionSyntax syn => BuildBoolLiteralExpression(syn),
-            IMutateExpressionSyntax syn => BuildBorrowExpression(syn),
             IBreakExpressionSyntax syn => BuildBreakExpression(syn),
             IQualifiedNameExpressionSyntax syn => BuildFieldAccessExpression(syn),
             IForeachExpressionSyntax syn => BuildForeachExpression(syn),
@@ -319,15 +318,6 @@ internal class ASTBuilder
         var semantics = syn.Semantics.Assigned();
         var value = syn.Value;
         return new BoolLiteralExpression(syn.Span, type, semantics, value);
-    }
-
-    private static IBorrowExpression BuildBorrowExpression(IMutateExpressionSyntax syn)
-    {
-        var type = syn.DataType ?? throw new InvalidOperationException();
-        var semantics = syn.Semantics.Assigned();
-        var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
-        var referent = BuildExpression(syn.Referent);
-        return new BorrowExpression(syn.Span, type, semantics, referencedSymbol, referent);
     }
 
     private static IBreakExpression BuildBreakExpression(IBreakExpressionSyntax syn)

@@ -338,14 +338,6 @@ public partial class Parser
                 // implicit self, don't consume the '.' it will be parsed next
                 return new SelfExpressionSyntax(dot.Span.AtStart(), true);
             }
-            case IMutableKeywordToken _:
-            {
-                var mut = Tokens.Required<IMutableKeywordToken>();
-                // `mut` is like a unary operator
-                var expression = ParseExpression(OperatorPrecedence.Unary);
-                var span = TextSpan.Covering(mut, expression.Span);
-                return new MutateExpressionSyntax(span, expression);
-            }
             case IIdKeywordToken _:
             {
                 var id = Tokens.Required<IIdKeywordToken>();

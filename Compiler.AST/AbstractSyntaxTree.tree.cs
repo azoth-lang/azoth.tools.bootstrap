@@ -270,7 +270,6 @@ public partial interface IExpressionStatement : IBodyStatement
     typeof(IImplicitConversionExpression),
     typeof(IInvocationExpression),
     typeof(ISelfExpression),
-    typeof(IBorrowExpression),
     typeof(IMoveExpression),
     typeof(IFreezeExpression),
     typeof(IShareExpression),
@@ -460,12 +459,6 @@ public partial interface IFieldAccessExpression : IAssignableExpression
     IExpression Context { get; }
     AccessOperator AccessOperator { get; }
     FieldSymbol ReferencedSymbol { get; }
-}
-
-public partial interface IBorrowExpression : IExpression
-{
-    BindingSymbol ReferencedSymbol { get; }
-    IExpression Referent { get; }
 }
 
 public partial interface IMoveExpression : IExpression

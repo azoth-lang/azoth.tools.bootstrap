@@ -93,12 +93,6 @@ public static class TypeError
             3010, $"Type can't be made mutable because it was declared immutable `{file.Code[expression.Span]}`");
     }
 
-    public static Diagnostic ExpressionCantBeMutable(CodeFile file, IExpressionSyntax expression)
-    {
-        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3011, $"Expression can't be made mutable `{file.Code[expression.Span]}`");
-    }
-
     public static Diagnostic ReturnExpressionMustHaveValue(CodeFile file, in TextSpan span, DataType returnType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,

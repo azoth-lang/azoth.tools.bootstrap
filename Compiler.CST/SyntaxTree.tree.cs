@@ -385,7 +385,6 @@ public partial interface IExpressionStatementSyntax : IBodyStatementSyntax
     typeof(IReturnExpressionSyntax),
     typeof(IInvocationExpressionSyntax),
     typeof(ISelfExpressionSyntax),
-    typeof(IMutateExpressionSyntax),
     typeof(IMoveExpressionSyntax),
     typeof(IFreezeExpressionSyntax))]
 public partial interface IExpressionSyntax : ISyntax
@@ -552,12 +551,6 @@ public partial interface IQualifiedNameExpressionSyntax : INameExpressionSyntax
     IExpressionSyntax Context { get; }
     AccessOperator AccessOperator { get; }
     ISimpleNameExpressionSyntax Member { get; }
-}
-
-public partial interface IMutateExpressionSyntax : IExpressionSyntax
-{
-    IExpressionSyntax Referent { get; }
-    Promise<BindingSymbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IMoveExpressionSyntax : IExpressionSyntax

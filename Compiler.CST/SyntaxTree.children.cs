@@ -204,9 +204,6 @@ public static class ISyntaxExtensions
                 yield return n.Context;
                 yield return n.Member;
                 yield break;
-            case IMutateExpressionSyntax n:
-                yield return n.Referent;
-                yield break;
             case IMoveExpressionSyntax n:
                 yield return n.Referent;
                 yield break;

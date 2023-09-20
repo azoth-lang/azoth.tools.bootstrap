@@ -28,7 +28,8 @@ public sealed class ReferenceCapabilities
     public void Declare(BindingSymbol symbol)
     {
         if (symbol.DataType is ReferenceType referenceType)
-            currentCapabilities.Add(symbol, referenceType.Capability);
+            // Alias all references because when used, an alias will exist
+            currentCapabilities.Add(symbol, referenceType.Capability.Alias());
 
         // Other types don't have capabilities and don't need to be tracked
     }
@@ -57,11 +58,8 @@ public sealed class ReferenceCapabilities
     public void Alias(BindingSymbol? symbol)
     {
         if (symbol?.DataType is ReferenceType)
-        {
-            var capability = currentCapabilities[symbol];
-            if (capability == ReferenceCapability.Isolated)
-                currentCapabilities[symbol] = ReferenceCapability.Mutable;
-        }
+            currentCapabilities[symbol] = currentCapabilities[symbol].Alias();
+
         // Other types don't have capabilities and don't need to be tracked
     }
 
@@ -71,22 +69,16 @@ public sealed class ReferenceCapabilities
     public void Move(BindingSymbol? symbol)
     {
         if (symbol?.DataType is ReferenceType)
-        {
-            var capability = currentCapabilities[symbol];
-            if (capability != ReferenceCapability.Identity)
-                currentCapabilities[symbol] = ReferenceCapability.Identity;
-        }
+            currentCapabilities[symbol] = ReferenceCapability.Identity;
+
         // Other types don't have capabilities and don't need to be tracked
     }
 
     public void Freeze(BindingSymbol symbol)
     {
         if (symbol.DataType is ReferenceType)
-        {
-            var capability = currentCapabilities[symbol];
-            if (capability != ReferenceCapability.Identity)
-                currentCapabilities[symbol] = ReferenceCapability.Constant;
-        }
+            currentCapabilities[symbol] = currentCapabilities[symbol].Freeze();
+
         // Other types don't have capabilities and don't need to be tracked
     }
 
