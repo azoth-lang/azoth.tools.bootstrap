@@ -19,34 +19,21 @@ public static class Arbitrary
         => Arb.From(GenPsuedoTokenList(), Arb.Shrink);
 
     private static Gen<List<PsuedoToken>> GenPsuedoTokenList()
-        => Gen.Sized(size => GenPsuedoTokenList(size, size));
+        => Gen.Sized(size => GenAppendedPsuedoTokens(size)
+                                .Select(tokens => tokens.ToEnumerable().ToList()));
 
-    private static Gen<List<PsuedoToken>> GenPsuedoTokenList(int size, int length)
+    private static Gen<AppendedToken> GenAppendedPsuedoTokens(int length)
     {
-        Requires.Positive(nameof(size), size);
-        Requires.Positive(nameof(length), length);
-        if (length == 0)
-            return Gen.Fresh(() => new List<PsuedoToken>());
+        if (length <= 0)
+            return Gen.Constant(AppendedToken.Empty);
 
-        return GenPsuedoTokenList(size, length - 1).Select(list => AppendPsuedoToken(size, list));
-    }
-
-    private static List<PsuedoToken> AppendPsuedoToken(
-        int size,
-        List<PsuedoToken> tokens)
-    {
-        var lastToken = tokens.LastOrDefault();
-        // TODO this is a huge hack calling Sample() FIX IT!
-        var token = GenPsuedoToken().Where(t =>
-        {
-            if (lastToken is null)
-                return true;
-
-            return !SeparateTokens(lastToken, t);
-
-        }).Sample(size, 1).Single();
-        tokens.Add(token);
-        return tokens;
+        return GenAppendedPsuedoTokens(length - 1).SelectMany(tokens =>
+            {
+                var token = GenPsuedoToken();
+                if (tokens.LastToken is { } lastToken)
+                    token = token.Where(t => !SeparateTokens(lastToken, t));
+                return token;
+            }, (tokens, token) => tokens.Append(token));
     }
 
     private static bool SeparateTokens(PsuedoToken t1, PsuedoToken t2)
@@ -83,9 +70,9 @@ public static class Arbitrary
             default:
                 if (typeof(IKeywordToken).IsAssignableFrom(t1.TokenType)
                     || typeof(IIdentifierToken).IsAssignableFrom(t1.TokenType))
-                    return typeof(IIdentifierToken).IsAssignableFrom(t2.TokenType)
+                    return typeof(IBareIdentifierToken).IsAssignableFrom(t2.TokenType)
                            || typeof(IKeywordToken).IsAssignableFrom(t2.TokenType)
-                           || t2.TokenType == typeof(IIntegerLiteralToken);
+                           || t2.TokenType.IsAssignableTo(typeof(IIntegerLiteralToken));
                 if (t1.TokenType == typeof(IIntegerLiteralToken))
                     return t2.TokenType == typeof(IIntegerLiteralToken);
                 if (t1.TokenType == typeof(IWhitespaceToken))
@@ -113,14 +100,14 @@ public static class Arbitrary
     }
 
     private static Gen<string> GenRegex(string pattern)
+        => Arb.Default.Int32().Generator.Select(seed => GenRegex(pattern, seed));
+
+    private static string GenRegex(string pattern, int seed)
     {
-        return Gen.Sized(size =>
-        {
-            var xegar = new Xeger(pattern);
-            var count = size < 1 ? 1 : size;
-            return Gen.Elements(Enumerable.Range(1, count).Select(i => xegar.Generate()))
-                      .Resize(count);
-        });
+        var random = new System.Random(seed);
+        // TODO don't reparse the pattern each time
+        var xegar = new Xeger(pattern, random);
+        return xegar.Generate();
     }
 
     private static Gen<PsuedoToken> GenWhitespace()
@@ -139,7 +126,7 @@ public static class Arbitrary
 
     private static Gen<PsuedoToken> GenBareIdentifier()
     {
-        return GenRegex(@"[a-zA-Z_][a-zA-Z_0-9]*")
+        return GenRegex("[a-zA-Z_][a-zA-Z_0-9]*")
                .Where(s => !Symbols.ContainsKey(s)) // don't emit keywords
                .Select(s => new PsuedoToken(typeof(IBareIdentifierToken), s, s));
     }
@@ -148,12 +135,12 @@ public static class Arbitrary
     {
         return GenRegex(@"\\[a-zA-Z_0-9]+")
                .Where(s => !Symbols.ContainsKey(s)) // don't emit keywords
-               .Select(s => new PsuedoToken(typeof(IEscapedIdentifierToken), s, s.Substring(1)));
+               .Select(s => new PsuedoToken(typeof(IEscapedIdentifierToken), s, s[1..]));
     }
 
     private static Gen<PsuedoToken> GenIntegerLiteral()
     {
-        return GenRegex(@"0|[1-9][0-9]*")
+        return GenRegex("0|[1-9][0-9]*")
             .Select(s => new PsuedoToken(typeof(IIntegerLiteralToken), s, BigInteger.Parse(s, CultureInfo.InvariantCulture)));
     }
 
@@ -309,4 +296,14 @@ public static class Arbitrary
         //{ "_", typeof(IUnderscoreKeywordToken) },
         //{ "external", typeof(IExternalKeywordToken) },
     }.ToFixedDictionary();
+
+    private readonly record struct AppendedToken(IEnumerable<PsuedoToken> Items, PsuedoToken? LastToken)
+    {
+        public static readonly AppendedToken Empty = new(Enumerable.Empty<PsuedoToken>(), null);
+
+        public AppendedToken Append(PsuedoToken token) => new(ToEnumerable(), token);
+
+        public IEnumerable<PsuedoToken> ToEnumerable()
+            => LastToken is { } token ? Items.Append(token) : Items;
+    }
 }
