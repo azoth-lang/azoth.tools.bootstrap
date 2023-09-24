@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
+namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout.BoundedLists;
 
 internal class RawBoundedList
 {
