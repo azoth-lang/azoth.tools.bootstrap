@@ -11,7 +11,6 @@ internal readonly struct AzothValue
 {
     [FieldOffset(0)] public readonly AzothObject ObjectValue;
     [FieldOffset(0)] public readonly BigInteger IntValue;
-    [FieldOffset(0)] public readonly byte[] BytesValue;
     [FieldOffset(0)] public readonly IRawBoundedList RawBoundedListValue;
     [FieldOffset(0)] private readonly ValueType value;
 
@@ -28,7 +27,6 @@ internal readonly struct AzothValue
 
     public static AzothValue Object(AzothObject value) => new(value);
     public static AzothValue Int(BigInteger value) => new(value);
-    public static AzothValue Bytes(byte[] value) => new(value);
     public static AzothValue RawBoundedList(IRawBoundedList value) => new(value);
     public static AzothValue Bool(bool value) => new(value);
     public static AzothValue Byte(byte value) => new(value);
@@ -47,10 +45,6 @@ internal readonly struct AzothValue
     private AzothValue(BigInteger value)
     {
         IntValue = value;
-    }
-    private AzothValue(byte[] value)
-    {
-        BytesValue = value;
     }
     private AzothValue(IRawBoundedList value)
     {
