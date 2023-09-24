@@ -30,8 +30,4 @@
     <ProjectReference Include="..\Compiler.AST\Compiler.AST.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="MemoryLayout\BoundedLists\" />
-  </ItemGroup>
-
 </Project>

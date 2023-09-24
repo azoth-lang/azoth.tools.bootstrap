@@ -527,9 +527,7 @@ public class InterpreterProcess
     private static ValueTask<AzothValue> CallIntrinsicAsync(ConstructorSymbol constructor, List<AzothValue> arguments)
     {
         if (constructor == Intrinsic.NewRawBoundedList)
-        {
             return ValueTask.FromResult(AzothValue.RawBoundedList(arguments[0].SizeValue));
-        }
 
         throw new NotImplementedException($"Intrinsic {constructor}");
     }
