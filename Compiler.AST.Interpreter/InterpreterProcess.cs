@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
+using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout.BoundedLists;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -527,7 +528,16 @@ public class InterpreterProcess
     private static ValueTask<AzothValue> CallIntrinsicAsync(ConstructorSymbol constructor, List<AzothValue> arguments)
     {
         if (constructor == Intrinsic.NewRawBoundedList)
-            return ValueTask.FromResult(AzothValue.RawBoundedList(arguments[0].SizeValue));
+        {
+            var listType = constructor.ContainingSymbol.DeclaresType.GenericParameterTypes[0];
+            nuint capacity = arguments[0].SizeValue;
+            IRawBoundedList list;
+            if (listType == DataType.Byte)
+                list = new RawBoundedByteList(capacity);
+            else
+                list = new RawBoundedList(capacity);
+            return ValueTask.FromResult(AzothValue.RawBoundedList(list));
+        }
 
         throw new NotImplementedException($"Intrinsic {constructor}");
     }

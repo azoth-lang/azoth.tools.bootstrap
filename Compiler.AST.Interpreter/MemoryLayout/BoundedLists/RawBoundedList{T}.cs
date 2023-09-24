@@ -1,6 +1,6 @@
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout.BoundedLists;
 
-internal abstract class RawBoundedList<T>
+internal abstract class RawBoundedList<T> : IRawBoundedList
     where T : struct
 {
     protected RawBoundedList(nuint capacity, bool clearValues)

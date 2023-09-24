@@ -12,7 +12,7 @@ internal readonly struct AzothValue
     [FieldOffset(0)] public readonly AzothObject ObjectValue;
     [FieldOffset(0)] public readonly BigInteger IntValue;
     [FieldOffset(0)] public readonly byte[] BytesValue;
-    [FieldOffset(0)] public readonly RawBoundedList RawBoundedListValue;
+    [FieldOffset(0)] public readonly IRawBoundedList RawBoundedListValue;
     [FieldOffset(0)] private readonly ValueType value;
 
     public bool IsNone => value.Struct is null;
@@ -29,7 +29,7 @@ internal readonly struct AzothValue
     public static AzothValue Object(AzothObject value) => new(value);
     public static AzothValue Int(BigInteger value) => new(value);
     public static AzothValue Bytes(byte[] value) => new(value);
-    public static AzothValue RawBoundedList(nuint capacity) => new(new RawBoundedList(capacity));
+    public static AzothValue RawBoundedList(IRawBoundedList value) => new(value);
     public static AzothValue Bool(bool value) => new(value);
     public static AzothValue Byte(byte value) => new(value);
     public static AzothValue I32(int value) => new(value);
@@ -52,7 +52,7 @@ internal readonly struct AzothValue
     {
         BytesValue = value;
     }
-    private AzothValue(RawBoundedList value)
+    private AzothValue(IRawBoundedList value)
     {
         RawBoundedListValue = value;
     }
