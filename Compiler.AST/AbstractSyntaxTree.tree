@@ -94,10 +94,14 @@ ReturnExpression: Expression = Value:Expression?;
 
 // ---------- Implicit Conversion Expressions
 ImplicitConversionExpression: Expression = Expression DataType:'DataType';
-ImplicitImmutabilityConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'ObjectType';
+//ImplicitImmutabilityConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'ObjectType';
 ImplicitNumericConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'NumericType';
 ImplicitOptionalConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'OptionalType';
 ImplicitLiftedConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'OptionalType';
+
+// ----------- Explicit Conversion Expressions
+ExplicitConversionExpression: Expression = Expression IsOptional:'bool' DataType:'DataType';
+ExplicitNumericConversionExpression: ExplicitConversionExpression = Expression ConvertToType:'NumericType';
 
 // ---------- Invocation Expressions
 InvocationExpression: Expression = ReferencedSymbol:'InvocableSymbol' Arguments:Expression*;

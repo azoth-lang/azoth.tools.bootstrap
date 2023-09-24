@@ -268,6 +268,7 @@ public partial interface IExpressionStatement : IBodyStatement
     typeof(INextExpression),
     typeof(IReturnExpression),
     typeof(IImplicitConversionExpression),
+    typeof(IExplicitConversionExpression),
     typeof(IInvocationExpression),
     typeof(ISelfExpression),
     typeof(IMoveExpression),
@@ -393,18 +394,12 @@ public partial interface IReturnExpression : IExpression
 }
 
 [Closed(
-    typeof(IImplicitImmutabilityConversionExpression),
     typeof(IImplicitNumericConversionExpression),
     typeof(IImplicitOptionalConversionExpression),
     typeof(IImplicitLiftedConversionExpression))]
 public partial interface IImplicitConversionExpression : IExpression
 {
     IExpression Expression { get; }
-}
-
-public partial interface IImplicitImmutabilityConversionExpression : IImplicitConversionExpression
-{
-    ObjectType ConvertToType { get; }
 }
 
 public partial interface IImplicitNumericConversionExpression : IImplicitConversionExpression
@@ -420,6 +415,19 @@ public partial interface IImplicitOptionalConversionExpression : IImplicitConver
 public partial interface IImplicitLiftedConversionExpression : IImplicitConversionExpression
 {
     OptionalType ConvertToType { get; }
+}
+
+[Closed(
+    typeof(IExplicitNumericConversionExpression))]
+public partial interface IExplicitConversionExpression : IExpression
+{
+    IExpression Expression { get; }
+    bool IsOptional { get; }
+}
+
+public partial interface IExplicitNumericConversionExpression : IExplicitConversionExpression
+{
+    NumericType ConvertToType { get; }
 }
 
 [Closed(

@@ -2,7 +2,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 
 public enum BinaryOperator
 {
-    Plus,
+    Plus = 1,
     Minus,
     Asterisk,
     Slash,

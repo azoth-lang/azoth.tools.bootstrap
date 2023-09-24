@@ -120,9 +120,9 @@ public partial class Parser
                 case IAsQuestionKeywordToken _:
                     if (minPrecedence <= OperatorPrecedence.Conversion)
                     {
-                        Tokens.RequiredToken<IConversionOperatorToken>();
+                        var conversionOperator = BuildConversionOperator(Tokens.RequiredToken<IConversionOperatorToken>());
                         var typeSyntax = ParseType();
-                        expression = new ConversionExpressionSyntax(expression, typeSyntax);
+                        expression = new ConversionExpressionSyntax(expression, conversionOperator, typeSyntax);
                         continue;
                     }
                     break;
@@ -213,6 +213,17 @@ public partial class Parser
             IDotToken _ => AccessOperator.Standard,
             IQuestionDotToken _ => AccessOperator.Conditional,
             _ => throw ExhaustiveMatch.Failed(accessOperatorToken)
+        };
+    }
+
+    private static ConversionOperator BuildConversionOperator(IConversionOperatorToken conversionOperatorToken)
+    {
+        return conversionOperatorToken switch
+        {
+            IAsKeywordToken _ => ConversionOperator.Safe,
+            IAsExclamationKeywordToken _ => ConversionOperator.Aborting,
+            IAsQuestionKeywordToken _ => ConversionOperator.Optional,
+            _ => throw ExhaustiveMatch.Failed(conversionOperatorToken)
         };
     }
 

@@ -835,11 +835,11 @@ public class BasicBodyAnalyzer
             case IConversionExpressionSyntax exp:
             {
                 var referentType = InferType(exp.Referent, flow);
-                // TODO shouldn't this be implicit read still (e.g. x as! T should be read only?)
-                var convertToType = typeResolver.Evaluate(exp.ConvertToType) ?? DataType.Unknown;
-                if (!ExplicitConversionTypesAreCompatible(exp.Referent, convertToType))
+                var convertToType = typeResolver.Evaluate(exp.ConvertToType);
+                if (!ExplicitConversionTypesAreCompatible(exp.Referent, exp.Operator == ConversionOperator.Safe, convertToType))
                     diagnostics.Add(TypeError.CannotExplicitlyConvert(file, exp.Referent, referentType, convertToType));
-
+                if (exp.Operator == ConversionOperator.Optional)
+                    convertToType = convertToType.ToOptional();
                 exp.Semantics = exp.Referent.ConvertedSemantics!;
                 return exp.DataType = convertToType;
             }
@@ -1393,14 +1393,20 @@ public class BasicBodyAnalyzer
         return DataType.Unknown;
     }
 
-    private static bool ExplicitConversionTypesAreCompatible(IExpressionSyntax expression, DataType convertToType)
+    private static bool ExplicitConversionTypesAreCompatible(IExpressionSyntax expression, bool safeOnly, DataType convertToType)
     {
         return (expression.ConvertedDataType, convertToType) switch
         {
-            // TODO add type for int and uint (currently just using int32)
+            // Safe conversions
             (BoolType, IntegerType) => true,
             (IntegerType { IsSigned: false }, BigIntegerType) => true,
             (IntegerType, BigIntegerType { IsSigned: true }) => true,
+            (FixedSizeIntegerType from, FixedSizeIntegerType to)
+                when from.Bits < to.Bits || (from.Bits == to.Bits && from.IsSigned == to.IsSigned)
+                => true,
+            // TODO conversions for constants
+            // Unsafe conversions
+            (IntegerType, IntegerType) => !safeOnly,
             _ => false
         };
     }

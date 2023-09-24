@@ -28,14 +28,14 @@ public static partial class TokenTypes
             string keyword = tokenTypeName switch
             {
                 // Some exceptions to the normal rule
-                "FunctionKeywordToken" => "fn",
-                "SelfTypeKeywordToken" => "Self",
-                "IsolatedKeywordToken" => "iso",
-                "MutableKeywordToken" => "mut",
-                "AnyKeywordToken" => "Any",
-                "TypeKeywordToken" => "Type",
-                "AsExclamationToken" => "as!",
-                "AsQuestion" => "as?",
+                nameof(FunctionKeywordToken) => "fn",
+                //nameof(SelfTypeKeywordToken) => "Self",
+                nameof(IsolatedKeywordToken) => "iso",
+                nameof(MutableKeywordToken) => "mut",
+                nameof(AnyKeywordToken) => "Any",
+                //nameof(TypeKeywordToken) => "Type",
+                nameof(AsExclamationKeywordToken) => "as!",
+                nameof(AsQuestionKeywordToken) => "as?",
                 "UnderscoreKeywordToken" => "_",
                 _ => tokenTypeName[..^KeywordTokenLength]
                                   .ToLower(CultureInfo.InvariantCulture)

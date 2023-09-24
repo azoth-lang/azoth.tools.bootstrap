@@ -106,7 +106,7 @@ AssignmentExpression: Expression = LeftOperand:AssignableExpression Operator:'As
 BinaryOperatorExpression: Expression = LeftOperand:Expression Operator:'BinaryOperator' RightOperand:Expression;
 UnaryOperatorExpression: Expression = Fixity:'UnaryOperatorFixity' Operator:'UnaryOperator' Operand:Expression;
 IdExpression: Expression = Referent:Expression;
-ConversionExpression: Expression = Referent:Expression ConvertToType:Type;
+ConversionExpression: Expression = Referent:Expression Operator:'ConversionOperator' ConvertToType:Type;
 
 // ---------- Control Flow Expressions
 IfExpression: Expression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;

@@ -225,6 +225,13 @@ public class Lexer
                 case '≠':
                     yield return TokenFactory.NotEqual(SymbolSpan());
                     break;
+                case '!' when NextChar() is '=':
+                {
+                    var span = SymbolSpan(2);
+                    diagnostics.Add(LexError.CStyleNotEquals(file, span));
+                    yield return TokenFactory.NotEqual(span);
+                    break;
+                }
                 case '>':
                     if (NextChar() is '=')
                         // it is `>=`
@@ -322,12 +329,6 @@ public class Lexer
 
                         yield return NewIdentifierOrKeywordToken();
                     }
-                    else if (currentChar == '!' && NextChar() is '=')
-                    {
-                        var span = SymbolSpan(2);
-                        diagnostics.Add(LexError.CStyleNotEquals(file, span));
-                        yield return TokenFactory.NotEqual(span);
-                    }
                     else
                         yield return NewUnexpectedCharacter();
 
@@ -355,25 +356,29 @@ public class Lexer
         {
             var span = TokenSpan();
             var value = code[span];
+
+            // Check for keywords with ! or ? after
+            var nextChar = tokenEnd < text.Length ? text[tokenEnd] : '\0';
+            if (nextChar is '?' or '!')
+            {
+                var extendedValue = value + nextChar;
+                if (TokenTypes.KeywordFactories.TryGetValue(extendedValue, out var extendedKeywordFactory))
+                {
+                    tokenEnd += 1;
+                    return extendedKeywordFactory(TokenSpan());
+                }
+            }
+
+            // Standard keywords
             if (TokenTypes.KeywordFactories.TryGetValue(value, out var keywordFactory))
                 return keywordFactory(span);
 
+            // Continue and reserved words
             if (value == "continue")
                 diagnostics.Add(LexError.ContinueInsteadOfNext(file, span));
             else if (TokenTypes.ReservedWords.Contains(value)
                      || TokenTypes.IsReservedTypeName(value))
                 diagnostics.Add(LexError.ReservedWord(file, span, value));
-
-            var nextChar = tokenEnd < text.Length ? text[tokenEnd] : '\0';
-            if (nextChar is '?' or '!')
-            {
-                var extendedValue = value + nextChar;
-                if (TokenTypes.KeywordFactories.TryGetValue(extendedValue, out keywordFactory))
-                {
-                    tokenEnd += 1;
-                    return keywordFactory(TokenSpan());
-                }
-            }
 
             return TokenFactory.BareIdentifier(span, value);
         }

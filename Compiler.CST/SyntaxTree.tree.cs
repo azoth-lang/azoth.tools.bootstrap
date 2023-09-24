@@ -475,6 +475,7 @@ public partial interface IIdExpressionSyntax : IExpressionSyntax
 public partial interface IConversionExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
+    ConversionOperator Operator { get; }
     ITypeSyntax ConvertToType { get; }
 }
 

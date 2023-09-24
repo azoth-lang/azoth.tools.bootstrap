@@ -200,14 +200,14 @@ public class InterpreterProcess
         switch (expression)
         {
             default:
-                throw new NotImplementedException($"Can't interpret {expression.GetType().Name}");
+                throw ExhaustiveMatch.Failed(expression);
             case IIdExpression exp:
                 return await ExecuteAsync(exp.Referent, variables);
             case IMoveExpression exp:
                 return await ExecuteAsync(exp.Referent, variables);
             case IFreezeExpression exp:
                 return await ExecuteAsync(exp.Referent, variables);
-            case INoneLiteralExpression:
+            case INoneLiteralExpression _:
                 return AzothValue.None;
             case IReturnExpression exp:
                 if (exp.Value is null) throw new Return();
@@ -215,7 +215,12 @@ public class InterpreterProcess
             case IImplicitNumericConversionExpression exp:
             {
                 var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
-                return value.Convert(exp.Expression.DataType, exp.ConvertToType);
+                return value.Convert(exp.Expression.DataType, exp.ConvertToType, false);
+            }
+            case IExplicitNumericConversionExpression exp:
+            {
+                var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
+                return value.Convert(exp.Expression.DataType, exp.ConvertToType, exp.IsOptional);
             }
             case IIntegerLiteralExpression exp:
                 return AzothValue.Int(exp.Value);
@@ -295,7 +300,7 @@ public class InterpreterProcess
             case IBreakExpression exp:
                 if (exp.Value is null) throw new Break();
                 throw new Break(await ExecuteAsync(exp.Value, variables).ConfigureAwait(false));
-            case INextExpression:
+            case INextExpression _:
                 throw new Next();
             case IAssignmentExpression exp:
             {
@@ -493,6 +498,13 @@ public class InterpreterProcess
             }
             case IRecoverExpression exp:
                 return await ExecuteAsync(exp.Value, variables).ConfigureAwait(false);
+            case IImplicitLiftedConversionExpression exp:
+            {
+                var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
+                if (value.IsNone) return value;
+                // TODO handle other lifted conversions
+                return value.Convert(exp.Expression.DataType, (NumericType)exp.ConvertToType.Referent, false);
+            }
         }
     }
 

@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 
 internal static class Operations
 {
-    public static AzothValue Convert(this AzothValue value, DataType from, NumericType to)
+    public static AzothValue Convert(this AzothValue value, DataType from, NumericType to, bool isOptional)
     {
         if (from is IntegerConstantType)
         {
@@ -54,8 +54,27 @@ internal static class Operations
             if (to == DataType.Int) return AzothValue.Int(value.OffsetValue);
         }
 
-        if (from == DataType.UInt)
+        if (from == DataType.Int || from == DataType.UInt)
+        {
             if (to == DataType.Int) return value;
+
+            var fromValue = value.IntValue;
+            if (to is FixedSizeIntegerType fixedSizeIntegerType)
+            {
+                var isSigned = fromValue.Sign < 0;
+                if (isSigned && (!fixedSizeIntegerType.IsSigned
+                                 || fromValue.GetBitLength() > fixedSizeIntegerType.Bits))
+                {
+                    if (isOptional) return AzothValue.None;
+                    throw new Abort($"Cannot convert value {fromValue} to {to.ToILString()}");
+                }
+            }
+            if (to == DataType.Byte) return AzothValue.Byte((byte)value.IntValue);
+            if (to == DataType.Int32) return AzothValue.I32((int)value.IntValue);
+            if (to == DataType.UInt32) return AzothValue.U32((uint)value.IntValue);
+            if (to == DataType.Offset) return AzothValue.Offset((nint)(long)value.IntValue);
+            if (to == DataType.Size) return AzothValue.Size((nuint)(ulong)value.IntValue);
+        }
 
         throw new NotImplementedException($"Conversion from {from.ToILString()} to {to.ToILString()}");
     }

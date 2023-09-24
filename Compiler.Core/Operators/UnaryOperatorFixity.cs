@@ -2,6 +2,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 
 public enum UnaryOperatorFixity
 {
-    Prefix,
+    Prefix = 1,
     Postfix
 }

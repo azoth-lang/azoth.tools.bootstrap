@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
+using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
@@ -216,7 +217,7 @@ internal class ASTBuilder
         };
     }
 
-    [return: NotNullIfNotNull("expressionSyntax")]
+    [return: NotNullIfNotNull(nameof(expressionSyntax))]
     private static IExpression? BuildExpression(IExpressionSyntax? expressionSyntax)
     {
         if (expressionSyntax is null) return null;
@@ -380,7 +381,7 @@ internal class ASTBuilder
         return new IfExpression(syn.Span, type, semantics, condition, thenBlock, elseClause);
     }
 
-    [return: NotNullIfNotNull("syn")]
+    [return: NotNullIfNotNull(nameof(elseClause))]
     private static IElseClause? BuildElseClause(IElseClauseSyntax? elseClause)
     {
         return elseClause switch
@@ -582,10 +583,17 @@ internal class ASTBuilder
         return new FreezeExpression(expressionSyntax.Span, convertToType, semantics, referencedSymbol, expression);
     }
 
-    private static IImplicitNumericConversionExpression BuildConversionExpression(IConversionExpressionSyntax syn)
+    private static IExpression BuildConversionExpression(IConversionExpressionSyntax syn)
     {
-        // TODO replace hack with a proper implementation
         var referent = BuildExpression(syn.Referent);
-        return BuildImplicitNumericConversionExpression(referent, syn);
+        if (syn.Operator == ConversionOperator.Safe)
+            return BuildImplicitNumericConversionExpression(referent, syn);
+
+        // TODO support non-numeric conversions
+        var semantics = syn.ConvertedSemantics!.Value;
+        var expressionType = syn.DataType!;
+        var isOptional = syn.Operator == ConversionOperator.Optional;
+        var convertToType = (NumericType)syn.ConvertToType.NamedType!;
+        return new ExplicitNumericConversion(syn.Span, expressionType, semantics, referent, isOptional, convertToType);
     }
 }
