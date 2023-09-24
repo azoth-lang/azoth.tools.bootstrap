@@ -16,7 +16,6 @@ internal abstract class RawBoundedList<T> : IRawBoundedList
     private readonly bool clearValues;
 
     public abstract void Add(AzothValue value);
-
     protected void AddValue(T value)
     {
         if (Count >= Capacity)
@@ -25,8 +24,10 @@ internal abstract class RawBoundedList<T> : IRawBoundedList
     }
 
     public abstract AzothValue At(nuint index);
-
     public T ValueAt(nuint index) => items[index];
+
+    public abstract void Set(nuint index, AzothValue value);
+    public void SetValue(nuint index, T value) => items[index] = value;
 
     public void Shrink(nuint count)
     {

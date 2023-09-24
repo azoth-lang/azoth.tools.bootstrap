@@ -33,6 +33,9 @@ public static class Intrinsic
     public static readonly MethodSymbol RawBoundedListAt
         = Find<MethodSymbol>(RawBoundedList, "at");
 
+    public static readonly MethodSymbol RawBoundedListSet
+        = Find<MethodSymbol>(RawBoundedList, "set");
+
     public static readonly MethodSymbol RawBoundedListShrink
         = Find<MethodSymbol>(RawBoundedList, "shrink");
 

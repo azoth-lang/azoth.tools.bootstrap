@@ -4,7 +4,8 @@ internal interface IRawBoundedList
 {
     public nuint Count { get; }
     public nuint Capacity { get; }
-    void Add(AzothValue value);
+    public void Add(AzothValue value);
     public AzothValue At(nuint index);
-    void Shrink(nuint count);
+    public void Set(nuint index, AzothValue value);
+    public void Shrink(nuint count);
 }
