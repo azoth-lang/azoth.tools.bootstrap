@@ -11,9 +11,9 @@ public static class Intrinsic
 {
     public static readonly FixedSymbolTree SymbolTree = DefineIntrinsicSymbols();
 
-    public static readonly FunctionSymbol PrintUtf8 = Find<FunctionSymbol>("print_utf8");
+    public static readonly FunctionSymbol PrintRawUtf8Bytes = Find<FunctionSymbol>("print_raw_utf8_bytes");
 
-    public static readonly FunctionSymbol AbortUtf8 = Find<FunctionSymbol>("ABORT_UTF8");
+    public static readonly FunctionSymbol AbortRawUtf8Bytes = Find<FunctionSymbol>("ABORT_RAW_UTF8_BYTES");
 
     public static readonly ObjectTypeSymbol RawBoundedList
         = Find<ObjectTypeSymbol>("Raw_Bounded_List");
@@ -57,44 +57,25 @@ public static class Intrinsic
 
         var intrinsicsNamespace = new NamespaceSymbol(intrinsicsPackage, "intrinsics");
 
-        // params: length
-        var memAllocate = new FunctionSymbol(intrinsicsNamespace, "mem_allocate", Params(DataType.Size), DataType.Size);
-        tree.Add(memAllocate);
+        var rawBoundedListType = BuildSpecializedCollectionSymbols(intrinsicsPackage, tree);
+        var readBytesType = rawBoundedListType.WithRead(DataType.Byte.Yield().ToFixedList<DataType>());
 
-        // params: ptr
-        var memDeallocate = new FunctionSymbol(intrinsicsNamespace, "mem_deallocate", Params(DataType.Size));
-        tree.Add(memDeallocate);
+        // fn print_raw_utf8_bytes(bytes: Raw_Bounded_List[byte], start: size, byte_count: size)
+        var print = new FunctionSymbol(intrinsicsNamespace, "print_raw_utf8_bytes", Params(readBytesType, DataType.Size, DataType.Size));
+        tree.Add(print);
 
-        // params: from_ptr, to_ptr, length
-        var memCopy = new FunctionSymbol(intrinsicsNamespace, "mem_copy", Params(DataType.Size, DataType.Size, DataType.Size));
-        tree.Add(memCopy);
+        // fn read_raw_utf8_bytes_line(bytes: mut Raw_Bounded_List[byte], start: size) -> size
+        var readLine = new FunctionSymbol(intrinsicsNamespace, "read_raw_utf8_bytes_line", Params(DataType.Size, DataType.Size), DataType.Size);
+        tree.Add(readLine);
 
-        // params: from_ptr, value
-        var memSetByte = new FunctionSymbol(intrinsicsNamespace, "mem_set_byte", Params(DataType.Size, DataType.Byte));
-        tree.Add(memSetByte);
-
-        // params: ptr
-        var memGetByte = new FunctionSymbol(intrinsicsNamespace, "mem_get_byte", Params(DataType.Size), DataType.Byte);
-        tree.Add(memGetByte);
-
-        // params: ptr, length
-        var printUtf8 = new FunctionSymbol(intrinsicsNamespace, "print_utf8", Params(DataType.Size, DataType.Size));
-        tree.Add(printUtf8);
-
-        // params: ptr, length
-        var readUtf8Line = new FunctionSymbol(intrinsicsNamespace, "read_utf8_line", Params(DataType.Size, DataType.Size), DataType.Size);
-        tree.Add(readUtf8Line);
-
-        var abortUtf8 = new FunctionSymbol(intrinsicsNamespace, "ABORT_UTF8", Params(DataType.Size, DataType.Size), DataType.Never);
-        tree.Add(abortUtf8);
-
-        BuildSpecializedCollectionSymbols(intrinsicsPackage, tree);
-
+        // fn ABORT_RAW_UTF8_BYTES(bytes: Raw_Bounded_List[byte], start: size, byte_count: size) -> never
+        var abort = new FunctionSymbol(intrinsicsNamespace, "ABORT_RAW_UTF8_BYTES", Params(readBytesType, DataType.Size, DataType.Size), DataType.Never);
+        tree.Add(abort);
 
         return tree.Build();
     }
 
-    private static void BuildSpecializedCollectionSymbols(
+    private static DeclaredObjectType BuildSpecializedCollectionSymbols(
         PackageSymbol intrinsicsPackage,
         SymbolTreeBuilder tree)
     {
@@ -105,10 +86,10 @@ public static class Intrinsic
         tree.Add(collectionsNamespace);
         tree.Add(specializedNamespace);
 
-        BuildRawBoundedListSymbol(tree, specializedNamespace);
+        return BuildRawBoundedListSymbol(tree, specializedNamespace);
     }
 
-    private static void BuildRawBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
+    private static DeclaredObjectType BuildRawBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
     {
         var classType = DeclaredObjectType.Create(@namespace.Package!.Name, @namespace.NamespaceName, "Raw_Bounded_List", false, "T");
         var readClassType = classType.WithRead(classType.GenericParameterDataTypes);
@@ -146,6 +127,8 @@ public static class Intrinsic
         // published fn shrink(mut self, count: size)
         var shrink = new MethodSymbol(classSymbol, "shrink", mutClassType, Params(DataType.Size), DataType.Void);
         tree.Add(shrink);
+
+        return classType;
     }
 
     private static FixedList<DataType> Params(params DataType[] types) => types.ToFixedList();

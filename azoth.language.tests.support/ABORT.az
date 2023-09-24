@@ -1,4 +1,4 @@
-published fn ABORT(message: string) -> never
+published /*safe*/ fn ABORT(message: string) -> never
 {
-    ABORT_UTF8(message.bytes, message.byte_count);
+    unsafe (ABORT_RAW_UTF8_BYTES(message.raw_bytes(), message.start, message.byte_count));
 }

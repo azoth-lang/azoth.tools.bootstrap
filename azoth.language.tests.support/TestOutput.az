@@ -1,29 +1,25 @@
 published class TestOutput
 {
-    published fn write(mut self, value: string)
+    let newline: const string;
+
+    public new()
     {
-        unsafe
-        {
-            print_utf8(value.bytes, value.byte_count);
-        }
+        .newline = "\n";
+    }
+
+    published /*safe*/ fn write(mut self, value: string)
+    {
+        unsafe (print_raw_utf8_bytes(value.raw_bytes(), value.start, value.byte_count));
     }
 
     published fn write_line(mut self, line: string)
     {
-        unsafe
-        {
-            print_utf8(line.bytes, line.byte_count);
-            let newline: string = "\n";
-            print_utf8(newline.bytes, newline.byte_count);
-        }
+        .write(line);
+        .write_line();
     }
 
     published fn write_line(mut self)
     {
-        unsafe
-        {
-            let newline: string = "\n";
-            print_utf8(newline.bytes, newline.byte_count);
-        }
+        .write(.newline);
     }
 }

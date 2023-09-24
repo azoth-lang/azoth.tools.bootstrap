@@ -1,27 +1,25 @@
-// published copy struct string
-// {
-//     public let bytes: const Raw_Array[byte];
-
-//     public new(.bytes) { }
-
-//     published implicit operator "_"(value: const Raw_Array[byte]) -> string
-//     {
-//         return new string(value);
-//     }
-// }
-
+// TODO replace with `ref[C] struct`
 published class string
 {
-    published let byte_count: size; // TODO this should just be the count of the byte array i.e. `bytes.count`
-    public let bytes: size; // raw pointer hidden as a size
+    /// The index of the start of the string data in `bytes`.
+    public let start: size;
+    /// The number of bytes in the string when encoded in UTF8.
+    published let byte_count: size;
+    // TODO use iref var?
+    var bytes: mut Raw_Bounded_List[byte];
 
-    // Constructor is private because it uses low level pointer functionality
-    // The language will bypass access rules to call it for string constants,
-    // but give them a type of `String$forever`
-    /* unsafe */ new(byte_count: size, bytes: size)
+    // Constructor is private because this is a temporary way of constructing strings for constants
+    // TODO parameter type doesn't make sense for string literals
+    /* unsafe */ new(bytes: mut Raw_Bounded_List[byte], start: size, byte_count: size)
     {
-        self.byte_count = byte_count;
-        self.bytes = bytes;
+        .bytes = bytes;
+        .start = start;
+        .byte_count = byte_count;
+    }
+
+    public fn raw_bytes(self) -> Raw_Bounded_List[byte]
+    {
+        return .bytes;
     }
 
     // Once it is supported, this should be a copy constructor
@@ -78,5 +76,10 @@ published class string
     //         // }
     //         return new String(total_length, new_bytes);
     //     }
+    // }
+
+    // published implicit operator "_"(value: const Raw_Array[byte]) -> string
+    // {
+    //     return new string(value);
     // }
 }

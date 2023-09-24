@@ -69,18 +69,7 @@ public class InterpreterProcess
             var entryPoint = package.EntryPoint!;
             var arguments = new List<AzothValue>();
             foreach (var parameterType in entryPoint.Symbol.ParameterDataTypes)
-                if (parameterType is ObjectType { Name.Text: "TestOutput" })
-                {
-                    var testOutputDeclaration = classes.Values.SingleOrDefault(c => c.Symbol.Name == "TestOutput");
-                    if (testOutputDeclaration is null)
-                        throw new InvalidOperationException("No TestOutput type declared");
-                    var @class = classes[testOutputDeclaration.Symbol];
-                    var vTable = vTables.GetOrAdd(@class, CreateVTable);
-                    var testOutput = AzothValue.Object(new AzothObject(vTable));
-                    arguments.Add(testOutput);
-                }
-                else
-                    throw new InvalidOperationException($"Parameter to main of type {parameterType.ToILString()} not supported");
+                arguments.Add(await ConstructMainParameterAsync(parameterType));
 
             var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
             // Flush any buffered output
@@ -100,6 +89,21 @@ public class InterpreterProcess
         }
     }
 
+    private async Task<AzothValue> ConstructMainParameterAsync(DataType parameterType)
+    {
+        if (parameterType is not ObjectType { TypeArguments.Count: 0 } type)
+            throw new InvalidOperationException(
+                $"Parameter to main of type {parameterType.ToILString()} not supported");
+
+        // TODO further restrict what can be passed to main
+
+        var @class = classes.Values.Single(c => c.Symbol.DeclaresType == type.DeclaredType);
+        var constructorSymbol = @class.DefaultConstructorSymbol
+            ?? @class.Members.OfType<IConstructorDeclaration>().Select(c => c.Symbol)
+                     .Single(c => c.Arity == 0);
+        return await ConstructClass(@class, constructorSymbol, Enumerable.Empty<AzothValue>());
+    }
+
     private async Task<AzothValue> CallFunctionAsync(IConcreteFunctionInvocableDeclaration function, IEnumerable<AzothValue> arguments)
     {
         try
@@ -116,6 +120,21 @@ public class InterpreterProcess
         {
             return @return.Value;
         }
+    }
+
+    private async Task<AzothValue> ConstructClass(
+        IClassDeclaration @class,
+        ConstructorSymbol constructorSymbol,
+        IEnumerable<AzothValue> arguments)
+    {
+        var vTable = vTables.GetOrAdd(@class, CreateVTable);
+        var self = AzothValue.Object(new AzothObject(vTable));
+        // TODO run field initializers
+        var constructor = constructors[constructorSymbol];
+        // Default constructor is null
+        if (constructor is null)
+            return CallDefaultConstructor(@class, self);
+        return await CallConstructorAsync(constructor, self, arguments).ConfigureAwait(false);
     }
 
     private async ValueTask<AzothValue> CallConstructorAsync(
@@ -150,6 +169,18 @@ public class InterpreterProcess
         }
     }
 
+    /// <summary>
+    /// Call the implicit default constructor for a type that has no constructors.
+    /// </summary>
+    private static AzothValue CallDefaultConstructor(IClassDeclaration @class, AzothValue self)
+    {
+        // Initialize fields to default values
+        var fields = @class.Members.OfType<IFieldDeclaration>();
+        foreach (var field in fields)
+            self.ObjectValue[field.Symbol.Name] = new AzothValue();
+        return self;
+    }
+
     private async ValueTask<AzothValue> CallMethodAsync(
         IMethodDeclaration method,
         AzothValue self,
@@ -175,12 +206,12 @@ public class InterpreterProcess
         }
     }
 
-    private async ValueTask ExecuteAsync(IStatement statement, LocalVariableScope variables)
+    private async ValueTask<AzothValue> ExecuteAsync(IStatement statement, LocalVariableScope variables)
     {
         switch (statement)
         {
             default:
-                throw new NotImplementedException($"Can't interpret {statement.GetType().Name}");
+                throw ExhaustiveMatch.Failed(statement);
             case IExpressionStatement s:
                 await ExecuteAsync(s.Expression, variables).ConfigureAwait(false);
                 break;
@@ -190,9 +221,12 @@ public class InterpreterProcess
                     ? AzothValue.None
                     : await ExecuteAsync(d.Initializer, variables).ConfigureAwait(false);
                 variables.Add(d.Symbol, initialValue);
+                break;
             }
-            break;
+            case IResultStatement r:
+                return await ExecuteAsync(r.Expression, variables).ConfigureAwait(false);
         }
+        return AzothValue.None;
     }
 
     private async ValueTask<AzothValue> ExecuteAsync(IExpression expression, LocalVariableScope variables)
@@ -248,13 +282,14 @@ public class InterpreterProcess
             case IBlockExpression block:
             {
                 var blockVariables = new LocalVariableScope(variables);
+                AzothValue lastValue = AzothValue.None;
                 foreach (var statement in block.Statements)
                 {
                     if (statement is IResultStatement resultStatement)
                         return await ExecuteAsync(resultStatement.Expression, blockVariables).ConfigureAwait(false);
-                    await ExecuteAsync(statement, blockVariables).ConfigureAwait(false);
+                    lastValue = await ExecuteAsync(statement, blockVariables).ConfigureAwait(false);
                 }
-                return AzothValue.None;
+                return lastValue;
             }
             case ILoopExpression exp:
                 try
@@ -425,21 +460,7 @@ public class InterpreterProcess
                 if (objectTypeSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(constructorSymbol, arguments).ConfigureAwait(false);
                 var @class = classes[objectTypeSymbol];
-                var vTable = vTables.GetOrAdd(@class, CreateVTable);
-                var self = AzothValue.Object(new AzothObject(vTable));
-                // TODO run field initializers
-                var constructor = constructors[constructorSymbol];
-                // Default constructor is null
-                if (constructor is null)
-                {
-                    // Initialize fields to default values
-                    var fields = @class.Members.OfType<IFieldDeclaration>();
-                    foreach (var field in fields)
-                        self.ObjectValue[field.Symbol.Name] = new AzothValue();
-
-                    return self;
-                }
-                return await CallConstructorAsync(constructor, self, arguments).ConfigureAwait(false);
+                return await ConstructClass(@class, constructorSymbol, arguments);
             }
             case IShareExpression exp:
                 // TODO do share expressions make sense in Azoth?
@@ -510,31 +531,44 @@ public class InterpreterProcess
 
     private async ValueTask<AzothValue> ConstructStringAsync(string value)
     {
+        var bytes = new RawBoundedByteList(Encoding.UTF8.GetBytes(value));
         var arguments = new List<AzothValue>
         {
-            AzothValue.Size((nuint) value.Length),
-            AzothValue.Bytes(Encoding.UTF8.GetBytes(value))
+            // bytes: const Raw_Bounded_List[byte]
+            AzothValue.RawBoundedList(bytes),
+            // start: size
+            AzothValue.Size(0),
+            // byte_count: size
+            AzothValue.Size(bytes.Count),
         };
-        var @class = stringClass;
-        var vTable = vTables.GetOrAdd(@class, CreateVTable);
+        var vTable = vTables.GetOrAdd(stringClass, CreateVTable);
         var self = AzothValue.Object(new AzothObject(vTable));
         return await CallConstructorAsync(stringConstructor, self, arguments).ConfigureAwait(false);
     }
 
     private async ValueTask<AzothValue> CallIntrinsicAsync(FunctionSymbol function, List<AzothValue> arguments)
     {
-        if (function == Intrinsic.PrintUtf8)
+        if (function == Intrinsic.PrintRawUtf8Bytes)
         {
-            var str = Encoding.UTF8.GetString(arguments[0].BytesValue, 0, (int)arguments[1].SizeValue);
+            string str = RawUtf8BytesToString(arguments);
             await standardOutputWriter.WriteAsync(str).ConfigureAwait(false);
             return AzothValue.None;
         }
-        if (function == Intrinsic.AbortUtf8)
+        if (function == Intrinsic.AbortRawUtf8Bytes)
         {
-            var message = Encoding.UTF8.GetString(arguments[0].BytesValue, 0, (int)arguments[1].SizeValue);
+            string message = RawUtf8BytesToString(arguments);
             throw new Abort(message);
         }
         throw new NotImplementedException($"Intrinsic {function}");
+    }
+
+    private static string RawUtf8BytesToString(List<AzothValue> arguments)
+    {
+        var bytes = (RawBoundedByteList)arguments[0].RawBoundedListValue;
+        var start = arguments[1].SizeValue;
+        var byteCount = arguments[2].SizeValue;
+        var message = bytes.Utf8GetString(start, byteCount);
+        return message;
     }
 
     private static ValueTask<AzothValue> CallIntrinsicAsync(ConstructorSymbol constructor, List<AzothValue> arguments)

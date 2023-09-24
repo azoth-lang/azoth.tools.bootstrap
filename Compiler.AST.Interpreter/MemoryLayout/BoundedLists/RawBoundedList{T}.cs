@@ -1,3 +1,5 @@
+using System;
+
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout.BoundedLists;
 
 internal abstract class RawBoundedList<T> : IRawBoundedList
@@ -10,10 +12,20 @@ internal abstract class RawBoundedList<T> : IRawBoundedList
         this.clearValues = clearValues;
     }
 
+    protected RawBoundedList(T[] items, nuint count, bool clearValues)
+    {
+        if ((int)count > items.Length)
+            throw new ArgumentOutOfRangeException(nameof(count), count, "Must be less than or equal to capacity");
+        this.items = items;
+        Count = count;
+        this.clearValues = clearValues;
+    }
+
     public nuint Count { get; private set; }
     public nuint Capacity => (nuint)items.Length;
     private readonly T[] items;
     private readonly bool clearValues;
+    protected ReadOnlySpan<T> AsSpan() => items;
 
     public abstract void Add(AzothValue value);
     protected void AddValue(T value)
