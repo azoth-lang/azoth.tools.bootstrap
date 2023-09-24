@@ -21,9 +21,6 @@ internal class IntegerLiteralToken : Token, IIntegerLiteralToken
 
 public static partial class TokenFactory
 {
-
     public static IIntegerLiteralToken IntegerLiteral(TextSpan span, BigInteger value)
-    {
-        return new IntegerLiteralToken(span, value);
-    }
+        => new IntegerLiteralToken(span, value);
 }

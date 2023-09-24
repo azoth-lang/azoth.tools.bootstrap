@@ -86,12 +86,11 @@ public static class Arbitrary
                     return typeof(IIdentifierToken).IsAssignableFrom(t2.TokenType)
                            || typeof(IKeywordToken).IsAssignableFrom(t2.TokenType)
                            || t2.TokenType == typeof(IIntegerLiteralToken);
-                else if (t1.TokenType == typeof(IIntegerLiteralToken))
+                if (t1.TokenType == typeof(IIntegerLiteralToken))
                     return t2.TokenType == typeof(IIntegerLiteralToken);
-                else if (t1.TokenType == typeof(IWhitespaceToken))
+                if (t1.TokenType == typeof(IWhitespaceToken))
                     return t2.TokenType == typeof(IWhitespaceToken);
-                else
-                    return false;
+                return false;
         }
     }
 
@@ -300,6 +299,8 @@ public static class Arbitrary
         { "next", typeof(INextKeywordToken) },
         //{ "override", typeof(IOverrideKeywordToken) },
         { "as", typeof(IAsKeywordToken) },
+        // TODO as!
+        // TODO as?
         { "Any", typeof(IAnyKeywordToken) },
         { "never", typeof(INeverKeywordToken) },
         //{ "float", typeof(IFloatKeywordToken) },

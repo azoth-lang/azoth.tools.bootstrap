@@ -22,10 +22,7 @@ public class PsuedoToken
         Value = value;
     }
 
-    public static PsuedoToken EndOfFile()
-    {
-        return new PsuedoToken(typeof(IEndOfFileToken), "");
-    }
+    public static PsuedoToken EndOfFile() => new(typeof(IEndOfFileToken), "");
 
     public static PsuedoToken For(IToken token, CodeText code)
     {

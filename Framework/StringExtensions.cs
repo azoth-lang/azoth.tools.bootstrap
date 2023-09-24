@@ -4,9 +4,10 @@ using System.Text.RegularExpressions;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
-public static class StringExtensions
+public static partial class StringExtensions
 {
-    private static readonly Regex LineEndings = new Regex(@"\r\n|\n\r|\n|\r", RegexOptions.Compiled);
+    [GeneratedRegex(@"\r\n|\n\r|\n|\r", RegexOptions.ExplicitCapture)]
+    private static partial Regex LineEndings();
 
     public static string Repeat(this string input, int count)
     {
@@ -19,9 +20,7 @@ public static class StringExtensions
     }
 
     public static string NormalizeLineEndings(this string input, string lineEnding)
-    {
-        return LineEndings.Replace(input, lineEnding);
-    }
+        => LineEndings().Replace(input, lineEnding);
 
     public static string Escape(this string input)
     {
