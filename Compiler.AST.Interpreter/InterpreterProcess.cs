@@ -45,7 +45,7 @@ public class InterpreterProcess
         classes = allDeclarations.OfType<IClassDeclaration>()
                                  .ToFixedDictionary(c => c.Symbol);
         stringClass = classes.Values.Single(c => c.Symbol.Name == "string");
-        stringConstructor = stringClass.Members.OfType<IConstructorDeclaration>().Single();
+        stringConstructor = stringClass.Members.OfType<IConstructorDeclaration>().Single(c => c.Parameters.Count == 3);
         var defaultConstructorSymbols = allDeclarations
                                         .OfType<IClassDeclaration>()
                                         .Select(c => c.DefaultConstructorSymbol).WhereNotNull();

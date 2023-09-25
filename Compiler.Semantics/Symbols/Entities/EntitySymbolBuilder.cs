@@ -167,6 +167,7 @@ public class EntitySymbolBuilder
         @class.Symbol.Fulfill(classSymbol);
         symbolTree.Add(classSymbol);
 
+        // TODO the generic parameter symbols are needed while evaluating base types
         BuildGenericParameterSymbols(@class, classSymbol);
         @class.CreateDefaultConstructor(symbolTree);
         return;
