@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Tests.Unit.Helpers;
@@ -120,6 +119,7 @@ public static class Arbitrary
 
     private static Gen<string> GenRegex(string pattern)
     {
+        // TODO use ScaleSize instead
         return Gen.Sized(size =>
         {
             size = Math.Max(size, 1);
@@ -137,8 +137,9 @@ public static class Arbitrary
 
     private static Gen<PsuedoToken> GenWhitespace()
     {
-        return GenRegex("[ \t\n\r]")
-            .Select(s => new PsuedoToken(typeof(IWhitespaceToken), s));
+        var whitespaceChar = Gen.Elements(' ', '\t', '\n', '\r');
+        return whitespaceChar.NonEmptyListOf()
+            .Select(chars => new PsuedoToken(typeof(IWhitespaceToken), string.Concat(chars)));
     }
 
     private static Gen<PsuedoToken> GenComment()
@@ -165,8 +166,8 @@ public static class Arbitrary
 
     private static Gen<PsuedoToken> GenIntegerLiteral()
     {
-        return GenRegex("0|[1-9][0-9]*")
-            .Select(s => new PsuedoToken(typeof(IIntegerLiteralToken), s, BigInteger.Parse(s, CultureInfo.InvariantCulture)));
+        return Arb.Default.BigInt().Generator.Where(v => v > 0)
+            .Select(v => new PsuedoToken(typeof(IIntegerLiteralToken), v.ToString(CultureInfo.InvariantCulture), v));
     }
 
     private static Gen<PsuedoToken> GenStringLiteral()
@@ -195,8 +196,8 @@ public static class Arbitrary
         { "}", typeof(ICloseBraceToken) },
         { "(", typeof(IOpenParenToken) },
         { ")", typeof(ICloseParenToken) },
-        //{ "[", typeof(IOpenBracketToken) },
-        //{ "]", typeof(ICloseBracketToken) },
+        { "[", typeof(IOpenBracketToken) },
+        { "]", typeof(ICloseBracketToken) },
         { ";", typeof(ISemicolonToken) },
         { ",", typeof(ICommaToken) },
         { ".", typeof(IDotToken) },
@@ -246,12 +247,14 @@ public static class Arbitrary
         { "void", typeof(IVoidKeywordToken) },
         //{ "int8", typeof(IInt8KeywordToken) },
         //{ "int16", typeof(IInt16KeywordToken) },
-        { "int", typeof(IIntKeywordToken) },
+        //{ "int32", typeof(IInt32KeywordToken) },
         //{ "int64", typeof(IInt64KeywordToken) },
+        { "int", typeof(IIntKeywordToken) },
         { "byte", typeof(IByteKeywordToken) },
         //{ "uint16", typeof(IUInt16KeywordToken) },
-        { "uint", typeof(IUIntKeywordToken) },
+        //{ "uint32", typeof(IUInt32KeywordToken) },
         //{ "uint64", typeof(IUInt64KeywordToken) },
+        { "uint", typeof(IUIntKeywordToken) },
         { "bool", typeof(IBoolKeywordToken) },
         { "return", typeof(IReturnKeywordToken) },
         { "class", typeof(IClassKeywordToken) },
@@ -311,15 +314,16 @@ public static class Arbitrary
         { "next", typeof(INextKeywordToken) },
         //{ "override", typeof(IOverrideKeywordToken) },
         { "as", typeof(IAsKeywordToken) },
-        // TODO as!
-        // TODO as?
+        { "as!", typeof(IAsExclamationKeywordToken) },
+        { "as?", typeof(IAsQuestionKeywordToken) },
         { "Any", typeof(IAnyKeywordToken) },
         { "never", typeof(INeverKeywordToken) },
-        //{ "float", typeof(IFloatKeywordToken) },
+        //{ "float16", typeof(IFloat16KeywordToken) },
         //{ "float32", typeof(IFloat32KeywordToken) },
         { "offset", typeof(IOffsetKeywordToken) },
         //{ "_", typeof(IUnderscoreKeywordToken) },
         //{ "external", typeof(IExternalKeywordToken) },
+        { "freeze", typeof(IFreezeKeywordToken) },
     }.ToFixedDictionary();
 
     private readonly record struct AppendedToken(IEnumerable<PsuedoToken> Items, PsuedoToken? LastToken)
