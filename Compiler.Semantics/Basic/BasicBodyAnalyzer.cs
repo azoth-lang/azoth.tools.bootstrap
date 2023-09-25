@@ -775,10 +775,7 @@ public class BasicBodyAnalyzer
             }
             case IQualifiedNameExpressionSyntax exp:
             {
-                // Don't wrap the self expression in a share expression for field access
-                var isSelfField = exp.Context is ISelfExpressionSyntax;
-                // TODO properly handle mutable self
-                var contextType = InferType(exp.Context, flow/*, !isSelfField*/);
+                var contextType = InferType(exp.Context, flow);
                 var member = exp.Member;
                 var contextSymbol = contextType is VoidType && exp.Context is INameExpressionSyntax context
                     ? context.ReferencedSymbol.Result
@@ -790,13 +787,15 @@ public class BasicBodyAnalyzer
                     exp.Semantics ??= ExpressionSemantics.CopyValue;
                     return exp.DataType = DataType.Unknown;
                 }
-                // TODO Deal with no context symbol
                 var memberSymbols = symbolTrees.Children(contextSymbol)
                                                .Where(s => s.Name == member.Name).ToFixedList();
                 var type = InferReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
                 if (contextType is NonEmptyType nonEmptyContext)
                     // resolve generic type fields
                     type = nonEmptyContext.ReplaceTypeParametersIn(type);
+                // If there could be no write aliases, then the current result does not share with anything
+                if (!type.AllowsWriteAliases)
+                    flow.SplitCurrentResult();
                 var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 member.Semantics = semantics;
                 member.DataType = type;
@@ -822,7 +821,14 @@ public class BasicBodyAnalyzer
             }
             case ISelfExpressionSyntax exp:
             {
-                var type = flow.Type(InferSelfSymbol(exp));
+                // InferSelfSymbol reports diagnostics and returns null if there is a problem
+                var selfSymbol = InferSelfSymbol(exp);
+                if (selfSymbol is not null)
+                {
+                    flow.UnionWithCurrentResult(selfSymbol);
+                    flow.Alias(selfSymbol);
+                }
+                var type = flow.Type(selfSymbol);
                 // TODO is this correct?
                 var referenceSemantics = ExpressionSemantics.MutableReference;
                 exp.Semantics = type.Semantics.ToExpressionSemantics(referenceSemantics);
@@ -978,8 +984,12 @@ public class BasicBodyAnalyzer
                     CheckTypeCompatibility(type, arg);
                 }
 
-                invocation.DataType = contextType.ReplaceTypeParametersIn(methodSymbol.ReturnDataType);
-                AssignInvocationSemantics(invocation, invocation.DataType);
+                var returnDataType = methodSymbol.ReturnDataType;
+                invocation.DataType = contextType.ReplaceTypeParametersIn(returnDataType);
+                AssignInvocationSemantics(invocation, returnDataType);
+                // If there could be no write aliases, then the current result does not share with anything
+                if (!returnDataType.AllowsWriteAliases)
+                    flow.SplitCurrentResult();
                 break;
             default:
                 diagnostics.Add(NameBindingError.AmbiguousMethodCall(file, invocation.Span));
@@ -1068,8 +1078,12 @@ public class BasicBodyAnalyzer
                     CheckTypeCompatibility(parameterDataType, arg);
                 }
 
-                invocation.DataType = functionSymbol.ReturnDataType;
-                AssignInvocationSemantics(invocation, functionSymbol.ReturnDataType);
+                var returnType = functionSymbol.ReturnDataType;
+                invocation.DataType = returnType;
+                AssignInvocationSemantics(invocation, returnType);
+                // If there could be no write aliases, then the current result does not share with anything
+                if (!returnType.AllowsWriteAliases)
+                    flow.SplitCurrentResult();
                 break;
             default:
                 diagnostics.Add(NameBindingError.AmbiguousFunctionCall(file, invocation.Span));

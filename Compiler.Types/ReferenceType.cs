@@ -16,6 +16,8 @@ public abstract class ReferenceType : NonEmptyType
 
     public bool AllowsWrite => Capability.AllowsWrite;
 
+    public override bool AllowsWriteAliases => Capability.AllowsWriteAliases;
+
     /// <summary>
     /// Does this reference allow it to be recovered to isolated if reference sharing permits.
     /// </summary>

@@ -54,7 +54,8 @@ public sealed class SharingRelation
         if (symbol.DataType is not ReferenceType referenceType) return;
 
         var capability = referenceType.Capability;
-        // No need to track `const` and `id`, they never participate in sharing
+        // No need to track `const` and `id`, they never participate in sharing because they don't
+        // allow any write aliases. (Can't use AllowsWriteAliases here because of `iso`.)
         if (capability != ReferenceCapability.Constant
             && capability != ReferenceCapability.Identity)
             Declare((SharingVariable)symbol);
@@ -128,6 +129,8 @@ public sealed class SharingRelation
     }
 
     public void DropCurrentResult() => Drop(currentResult);
+
+    public void SplitCurrentResult() => Split(CurrentResult);
 
     /// <summary>
     /// Split the given variable out from sharing with the other variables it is connected to.

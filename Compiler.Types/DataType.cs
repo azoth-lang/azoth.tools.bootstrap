@@ -57,6 +57,12 @@ public abstract class DataType : IEquatable<DataType>
     public abstract bool IsFullyKnown { get; }
 
     /// <summary>
+    /// Whether this type in some way allows there to be write aliases to the to reachable object
+    /// graph.
+    /// </summary>
+    public virtual bool AllowsWriteAliases => false;
+
+    /// <summary>
     /// The semantics of values of this type.
     /// </summary>
     public abstract TypeSemantics Semantics { get; }

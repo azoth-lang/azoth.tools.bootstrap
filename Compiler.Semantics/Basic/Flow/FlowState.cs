@@ -49,7 +49,12 @@ public sealed class FlowState
 
     public void Move(BindingSymbol symbol) => capabilities.Move(symbol);
 
-    public void Freeze(BindingSymbol symbol) => capabilities.Freeze(symbol);
+    public void Freeze(BindingSymbol symbol)
+    {
+        capabilities.Freeze(symbol);
+        // Constants aren't tracked, this symbol is `const` now
+        sharing.Drop(symbol);
+    }
 
     // TODO maybe this happens as part of Union?
     public void Alias(BindingSymbol symbol) => capabilities.Alias(symbol);
@@ -66,6 +71,8 @@ public sealed class FlowState
         => sharing.UnionWithCurrentResultAndDrop(variable);
 
     public void DropCurrentResult() => sharing.DropCurrentResult();
+
+    public void SplitCurrentResult() => sharing.SplitCurrentResult();
 
     public bool CurrentResultIsIsolated() => sharing.CurrentResultIsolated();
     public bool IsIsolated(SharingVariable variable) => sharing.IsIsolated(variable);
