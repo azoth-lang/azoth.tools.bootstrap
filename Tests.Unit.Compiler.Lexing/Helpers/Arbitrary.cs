@@ -16,7 +16,20 @@ public static class Arbitrary
     public static Arbitrary<PsuedoToken> PsuedoToken() => Arb.From(GenPsuedoToken());
 
     public static Arbitrary<List<PsuedoToken>> PsuedoTokenList()
-        => Arb.From(GenPsuedoTokenList(), Arb.Shrink);
+        => Arb.From(GenPsuedoTokenList(), ShrinkTokens);
+
+    /// <summary>
+    /// Shrink a list of tokens by taking a prefix or suffix of the list.
+    /// </summary>
+    /// <remarks>The default list shrink removes items from the middle too.</remarks>
+    private static IEnumerable<List<PsuedoToken>> ShrinkTokens(List<PsuedoToken> tokens)
+    {
+        foreach (var newSize in Arb.Shrink(tokens.Count).Where(size => size > 0))
+        {
+            yield return tokens.Take(newSize).ToList();
+            yield return tokens.TakeLast(newSize).ToList();
+        }
+    }
 
     private static Gen<List<PsuedoToken>> GenPsuedoTokenList()
         => Gen.Sized(size => GenAppendedPsuedoTokens(size)
@@ -36,6 +49,9 @@ public static class Arbitrary
             }, (tokens, token) => tokens.Append(token));
     }
 
+    /// <summary>
+    /// Returns <see langword="true"/> if the two tokens need to be separated from each other.
+    /// </summary>
     private static bool SeparateTokens(PsuedoToken t1, PsuedoToken t2)
     {
         switch (t1.Text)
@@ -67,6 +83,9 @@ public static class Arbitrary
             case ":":
                 // TODO actually ':',':' is fine. It is really the three token sequence ':',':','.' that is the problem
                 return t2.Text == ":";
+            case "as"
+                when t2.Text is "?" or "?." or "??":
+                return true;
             default:
                 if (typeof(IKeywordToken).IsAssignableFrom(t1.TokenType)
                     || typeof(IIdentifierToken).IsAssignableFrom(t1.TokenType))
@@ -100,7 +119,13 @@ public static class Arbitrary
     }
 
     private static Gen<string> GenRegex(string pattern)
-        => Arb.Default.Int32().Generator.Select(seed => GenRegex(pattern, seed));
+    {
+        return Gen.Sized(size =>
+        {
+            size = Math.Max(size, 1);
+            return Arb.Default.Int32().Generator.Select(seed => GenRegex(pattern, seed)).Resize(size);
+        });
+    }
 
     private static string GenRegex(string pattern, int seed)
     {
