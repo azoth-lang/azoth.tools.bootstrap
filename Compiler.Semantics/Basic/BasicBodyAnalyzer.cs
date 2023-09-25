@@ -705,9 +705,11 @@ public class BasicBodyAnalyzer
                 flow.Declare(symbol);
                 // Union with the result of the `in` expression
                 flow.UnionWithCurrentResult(symbol);
+                flow.DropCurrentResult(); // Don't mix the foreach expression into the block
 
                 // TODO check the break types
                 InferBlockType(exp.Block, flow);
+                flow.DropCurrentResult();
 
                 flow.Drop(symbol);
                 // TODO assign correct type to the expression

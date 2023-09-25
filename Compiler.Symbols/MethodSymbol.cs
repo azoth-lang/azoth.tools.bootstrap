@@ -41,5 +41,9 @@ public sealed class MethodSymbol : FunctionOrMethodSymbol
         => HashCode.Combine(Name, SelfDataType, ParameterDataTypes, ReturnDataType);
 
     public override string ToILString()
-        => $"{ContainingSymbol.ToILString()}::{Name}({string.Join(", ", ParameterDataTypes.Select(d => d.ToILString()))}) -> {ReturnDataType.ToILString()}";
+    {
+        var selfCapability = SelfDataType is ReferenceType referenceType ? referenceType.Capability.ToILString() + " " : "";
+        string parameters = string.Join(", ", ParameterDataTypes.Select(d => d.ToILString()).Prepend($"{selfCapability}self"));
+        return $"{ContainingSymbol.ToILString()}::{Name}({parameters}) -> {ReturnDataType.ToILString()}";
+    }
 }

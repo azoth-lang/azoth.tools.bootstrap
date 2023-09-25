@@ -15,4 +15,6 @@ public readonly struct ResultVariable
 
     public static implicit operator SharingVariable(ResultVariable variable)
         => new SharingVariable(variable.result);
+
+    public override string ToString() => $"⧼result{result}⧽";
 }
