@@ -33,10 +33,10 @@ public static class SemanticError
             6003, $"Variable binding can't shadow. Shadowed binding used at {useSpan}");
     }
 
-    public static Diagnostic VariableMayAlreadyBeAssigned(CodeFile file, TextSpan span, Name name)
+    public static Diagnostic MayAlreadyBeAssigned(CodeFile file, TextSpan span, Name name)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            6004, $"Variable `{name}` declared with `let` may already be assigned");
+            6004, $"Variable or field `{name}` declared with `let` may already be assigned");
     }
 
     public static Diagnostic VariableMayNotHaveBeenAssigned(CodeFile file, TextSpan span, Name name)
@@ -66,7 +66,7 @@ public static class SemanticError
     public static Diagnostic NoStringTypeDefined(CodeFile file)
     {
         return new(file, new TextSpan(0, 0), DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            6009, "Could not find a `String` type. A `String` type must be defined in the global namespace.");
+            6009, "Could not find a `String` type. A `String` type must be defined in the global namespace");
     }
 
     public static Diagnostic ResultStatementInBody(CodeFile file, TextSpan span)
@@ -78,12 +78,18 @@ public static class SemanticError
     public static Diagnostic StatementAfterResult(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            6011, "Statement after result statement is unreachable.");
+            6011, "Statement after result statement is unreachable");
     }
 
     public static Diagnostic AbstractMethodNotInAbstractClass(CodeFile file, TextSpan span, Name name)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            6012, $"Abstract method `{name}` declared in a concrete class.");
+            6012, $"Abstract method `{name}` declared in a concrete class");
+    }
+
+    public static Diagnostic CannotAssignImmutableField(CodeFile file, TextSpan span, Name name)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+            6013, $"Field `{name}` declared with `let` cannot be assigned");
     }
 }

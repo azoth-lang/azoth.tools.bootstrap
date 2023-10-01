@@ -872,6 +872,7 @@ public class BasicBodyAnalyzer
                         diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(file, expression.Span, contextReferenceType));
                         goto default;
                     case UnknownType:
+                        member.ReferencedSymbol.Fulfill(null);
                         type = DataType.Unknown;
                         break;
                     default:
@@ -883,6 +884,12 @@ public class BasicBodyAnalyzer
                         type = InferReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
                         break;
                 }
+
+                // Check for assigning into fields (self is handled by binding mutability analysis)
+                if (exp.Context is not ISelfExpressionSyntax
+                    && member.ReferencedSymbol.Result is BindingSymbol { IsMutableBinding: false, Name: Name name })
+                    diagnostics.Add(SemanticError.CannotAssignImmutableField(file, exp.Span, name));
+
                 type = type.AccessedVia(contextType);
                 member.DataType = type;
                 var semantics = member.Semantics ??= ExpressionSemantics.CreateReference;

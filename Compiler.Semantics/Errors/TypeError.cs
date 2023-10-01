@@ -138,13 +138,13 @@ public static class TypeError
     public static Diagnostic BaseTypeMustBeClass(CodeFile file, Name className, ITypeNameSyntax typeName)
     {
         return new(file, typeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3019, $"Class `{className}` cannot have base class `{typeName}` because it is not a class.");
+            3019, $"Class `{className}` cannot have base class `{typeName}` because it is not a class");
     }
 
     public static Diagnostic InvalidConstructorSelfParameterCapability(CodeFile file, IReferenceCapabilitySyntax syn)
     {
         var capability = syn.Declared.ToReferenceCapability();
         return new(file, syn.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3020, $"Constructor self parameter cannot have reference capability `{capability.ToSourceString()}`. Only `mut` and read-only are allowed.");
+            3020, $"Constructor self parameter cannot have reference capability `{capability.ToSourceString()}`. Only `mut` and read-only are allowed");
     }
 }

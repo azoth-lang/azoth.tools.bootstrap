@@ -17,13 +17,26 @@ public class BindingFlags
         IExecutableDeclaration declaration,
         ISymbolTree symbolTree,
         bool defaultValue)
-        => new BindingFlags(declaration, symbolTree, defaultValue);
-
-    private BindingFlags(IExecutableDeclaration declaration, ISymbolTree symbolTree, bool defaultValue)
     {
-        var invocableSymbol = declaration.Symbol;
-        symbolMap = symbolTree.Children(invocableSymbol).Cast<BindingSymbol>().Enumerate().ToFixedDictionary();
-        flags = new BitArray(symbolMap.Count, defaultValue);
+        var executableSymbol = declaration.Symbol;
+        var symbolMap = symbolTree.Children(executableSymbol).Cast<BindingSymbol>().Enumerate().ToFixedDictionary();
+        var flags = new BitArray(symbolMap.Count, defaultValue);
+        return new(symbolMap, flags);
+    }
+
+    public static BindingFlags ForVariablesAndFields(
+        IExecutableDeclaration declaration,
+        ISymbolTree symbolTree,
+        bool defaultValue)
+    {
+        var executableSymbol = declaration.Symbol;
+        var variables = symbolTree.Children(executableSymbol).Cast<BindingSymbol>();
+        var fields = executableSymbol.ContainingSymbol is ObjectTypeSymbol containingObjectTypeSymbol
+            ? symbolTree.Children(containingObjectTypeSymbol).OfType<FieldSymbol>()
+            : Enumerable.Empty<FieldSymbol>();
+        var symbolMap = variables.Concat(fields).Enumerate().ToFixedDictionary();
+        var flags = new BitArray(symbolMap.Count, defaultValue);
+        return new(symbolMap, flags);
     }
 
     private BindingFlags(

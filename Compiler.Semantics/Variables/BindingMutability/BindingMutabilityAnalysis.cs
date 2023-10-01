@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.BindingMutability;
@@ -30,22 +31,31 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<BindingFlags>
     public BindingFlags StartState()
     {
         // All variables start definitely unassigned
-        var definitelyUnassigned = BindingFlags.ForVariables(declaration, symbolTree, true);
+        var definitelyUnassigned = BindingFlags.ForVariablesAndFields(declaration, symbolTree, true);
         if (declaration is IInvocableDeclaration invocable)
         {
             // All parameters are assigned
             var namedParameters = invocable.Parameters.OfType<INamedParameter>();
             var parameterSymbols = namedParameters.Select(p => p.Symbol);
             definitelyUnassigned = definitelyUnassigned.Set(parameterSymbols, false);
+
             if (invocable is IConcreteMethodDeclaration method)
             {
+                // self parameter is assigned
                 var selfParameterSymbol = method.SelfParameter.Symbol;
                 definitelyUnassigned = definitelyUnassigned.Set(selfParameterSymbol, false);
+                // fields are assigned
+                var classSymbol = method.DeclaringClass.Symbol;
+                var fieldSymbols = symbolTree.Children(classSymbol).OfType<FieldSymbol>();
+                definitelyUnassigned = definitelyUnassigned.Set(fieldSymbols, false);
             }
             if (invocable is IConstructorDeclaration constructor)
             {
+                // self parameter is assigned
                 var selfParameterSymbol = constructor.SelfParameter.Symbol;
                 definitelyUnassigned = definitelyUnassigned.Set(selfParameterSymbol, false);
+                // fields are not assigned
+                // TODO does this depend on field initializers
             }
         }
         return definitelyUnassigned;
@@ -58,11 +68,21 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<BindingFlags>
         switch (assignmentExpression.LeftOperand)
         {
             case INameExpression identifier:
+            {
                 var symbol = identifier.ReferencedSymbol;
                 if (!symbol.IsMutableBinding && definitelyUnassigned[symbol] == false)
-                    diagnostics.Add(SemanticError.VariableMayAlreadyBeAssigned(file, identifier.Span, identifier.ReferencedSymbol.Name));
+                    diagnostics.Add(SemanticError.MayAlreadyBeAssigned(file, identifier.Span,
+                        symbol.Name));
                 return definitelyUnassigned.Set(symbol, false);
-            case IFieldAccessExpression _:
+            }
+            case IFieldAccessExpression fieldAccess:
+                if (fieldAccess.Context is ISelfExpression)
+                {
+                    var symbol = fieldAccess.ReferencedSymbol;
+                    if (!symbol.IsMutableBinding && definitelyUnassigned[symbol] == false)
+                        diagnostics.Add(SemanticError.MayAlreadyBeAssigned(file, fieldAccess.Span, symbol.Name));
+                    definitelyUnassigned = definitelyUnassigned.Set(symbol, false);
+                }
                 return definitelyUnassigned;
             default:
                 throw new NotImplementedException("Complex assignments not yet implemented");
