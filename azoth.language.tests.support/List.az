@@ -2,12 +2,12 @@ published class List[T]
 {
     var items: mut Raw_Bounded_List[T];
 
-    published new()
+    published new(mut self)
     {
         .items = new Raw_Bounded_List[T](2);
     }
 
-    published new(var capacity: size)
+    published new(mut self, var capacity: size)
     {
         if capacity < 2 => capacity = 2;
         .items = new Raw_Bounded_List[T](capacity);

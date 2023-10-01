@@ -74,7 +74,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
                 Walk(concreteMethod.Body, containingScope);
                 return;
             case IConstructorDeclarationSyntax constructor:
-                Walk(constructor.ImplicitSelfParameter, containingScope);
+                Walk(constructor.SelfParameter, containingScope);
                 foreach (var parameter in constructor.Parameters)
                     Walk(parameter, containingScope);
                 containingScope = BuildBodyScope(constructor.Parameters, containingScope);

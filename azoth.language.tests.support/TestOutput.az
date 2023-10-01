@@ -2,7 +2,7 @@ published class TestOutput
 {
     let newline: const string;
 
-    public new()
+    public new(mut self)
     {
         .newline = "\n";
     }

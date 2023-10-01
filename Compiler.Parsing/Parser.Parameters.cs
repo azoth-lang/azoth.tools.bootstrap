@@ -28,23 +28,19 @@ public partial class Parser
         {
             case ICapabilityToken:
             case ISelfKeywordToken:
-            {
-                var span = Tokens.Current.Span;
-                var referenceCapability = ParseReferenceCapability()
-                    ?? ReferenceCapabilitySyntax.ImplicitReadOnly(Tokens.Current.Span.AtStart());
-                var selfSpan = Tokens.Expect<ISelfKeywordToken>();
-                span = TextSpan.Covering(span, selfSpan);
-                return new SelfParameterSyntax(span, referenceCapability);
-            }
+                return ParseSelfParameter();
             default:
                 return ParseFunctionParameter();
         }
     }
 
-    public IConstructorParameterSyntax ParseConstructorParameter()
+    public IParameterSyntax ParseConstructorParameter()
     {
         switch (Tokens.Current)
         {
+            case ICapabilityToken:
+            case ISelfKeywordToken:
+                return ParseSelfParameter();
             case IDotToken _:
             {
                 var dot = Tokens.Expect<IDotToken>();
@@ -59,5 +55,15 @@ public partial class Parser
             default:
                 return ParseFunctionParameter();
         }
+    }
+
+    private ISelfParameterSyntax ParseSelfParameter()
+    {
+        var span = Tokens.Current.Span;
+        var referenceCapability = ParseReferenceCapability()
+                                  ?? ReferenceCapabilitySyntax.ImplicitReadOnly(Tokens.Current.Span.AtStart());
+        var selfSpan = Tokens.Expect<ISelfKeywordToken>();
+        span = TextSpan.Covering(span, selfSpan);
+        return new SelfParameterSyntax(span, referenceCapability);
     }
 }

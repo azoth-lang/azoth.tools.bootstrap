@@ -50,7 +50,7 @@ MemberDeclaration: EntityDeclaration = DeclaringClass:'IClassDeclarationSyntax';
 MethodDeclaration: MemberDeclaration, InvocableDeclaration = Name:'Name' SelfParameter Parameters:NamedParameter* ReturnType:Type? Symbol:'AcyclicPromise<MethodSymbol>';
 AbstractMethodDeclaration: MethodDeclaration = SelfParameter Parameters:NamedParameter* ReturnType:Type?;
 ConcreteMethodDeclaration: MethodDeclaration, ConcreteInvocableDeclaration = SelfParameter Parameters:NamedParameter* ReturnType:Type? Body;
-ConstructorDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = ImplicitSelfParameter:SelfParameter Parameters:ConstructorParameter* Body Symbol:'AcyclicPromise<ConstructorSymbol>';
+ConstructorDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = SelfParameter Parameters:ConstructorParameter* Body Symbol:'AcyclicPromise<ConstructorSymbol>';
 FieldDeclaration: MemberDeclaration, Binding = Name:'Name' Type Symbol:'AcyclicPromise<FieldSymbol>' Initializer:Expression?;
 AssociatedFunctionDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* ReturnType:Type? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
@@ -59,12 +59,10 @@ GenericParameter = Name:'Name' Symbol:'Promise<GenericParameterTypeSymbol>';
 
 // ---------- Parameters --------------
 Parameter = Name:'Name'? DataType:'IPromise<DataType>' Unused:'bool';
-/// A parameter that can be declared in a constructor
+/// A non-self parameter that can be declared in a constructor
 ConstructorParameter: Parameter;
-/// A parameter that creates a binding, i.e. a named or self parameter
-BindingParameter: Parameter, Binding;
-NamedParameter: Parameter, ConstructorParameter, BindingParameter, LocalBinding = Name:'Name' DeclarationNumber:'Promise<int?>' Type Symbol:'Promise<VariableSymbol>' DefaultValue:Expression?;
-SelfParameter: Parameter, BindingParameter = Capability:ReferenceCapability Symbol:'Promise<SelfParameterSymbol>';
+NamedParameter: Parameter, ConstructorParameter, LocalBinding = Name:'Name' DeclarationNumber:'Promise<int?>' Type Symbol:'Promise<VariableSymbol>' DefaultValue:Expression?;
+SelfParameter: Parameter = Capability:ReferenceCapability Symbol:'Promise<SelfParameterSymbol>';
 FieldParameter: Parameter, ConstructorParameter = ReferencedSymbol:'Promise<FieldSymbol?>' DefaultValue:Expression?;
 
 // ---------- Function Parts

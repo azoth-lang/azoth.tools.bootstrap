@@ -71,7 +71,7 @@ public class BasicBodyAnalyzer
         : this(containingDeclaration,
             containingDeclaration.Parameters.OfType<INamedParameterSyntax>()
                                  .Select(p => p.Symbol.Result)
-                                 .Prepend<BindingSymbol>(containingDeclaration.ImplicitSelfParameter.Symbol.Result),
+                                 .Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
             symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
     { }
 

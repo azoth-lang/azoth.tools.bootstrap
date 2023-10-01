@@ -106,7 +106,7 @@ internal class ASTBuilder
     {
         var symbol = syn.Symbol.Result;
         var nameSpan = syn.NameSpan;
-        var selfParameter = BuildParameter(syn.ImplicitSelfParameter);
+        var selfParameter = BuildParameter(syn.SelfParameter);
         var parameters = syn.Parameters.Select(BuildParameter).ToFixedList();
         var body = BuildBody(syn.Body);
         return new ConstructorDeclaration(syn.File, syn.Span, declaringClass, symbol, nameSpan, selfParameter, parameters, body);

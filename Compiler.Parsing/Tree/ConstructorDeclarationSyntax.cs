@@ -1,3 +1,4 @@
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -11,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConstructorDeclarationSyntax
 {
     public IClassDeclarationSyntax DeclaringClass { get; }
-    public ISelfParameterSyntax ImplicitSelfParameter { get; }
+    public ISelfParameterSyntax SelfParameter { get; }
     public new FixedList<IConstructorParameterSyntax> Parameters { get; }
     public virtual IBodySyntax Body { get; }
     public new AcyclicPromise<ConstructorSymbol> Symbol { get; }
@@ -23,14 +24,14 @@ internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConst
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
         Name? name,
-        ISelfParameterSyntax implicitSelfParameter,
+        ISelfParameterSyntax selfParameter,
         FixedList<IConstructorParameterSyntax> parameters,
         IBodySyntax body)
         : base(span, file, accessModifier, nameSpan, name, parameters,
             new AcyclicPromise<ConstructorSymbol>())
     {
         DeclaringClass = declaringType;
-        ImplicitSelfParameter = implicitSelfParameter;
+        SelfParameter = selfParameter;
         Parameters = parameters;
         Body = body;
         Symbol = (AcyclicPromise<ConstructorSymbol>)base.Symbol;
@@ -38,8 +39,7 @@ internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConst
 
     public override string ToString()
     {
-        return Name is null
-            ? $"new({string.Join(", ", Parameters)})"
-            : $"new {Name}({string.Join(", ", Parameters)})";
+        var parameters = string.Join(", ", Parameters.Prepend<IParameterSyntax>(SelfParameter));
+        return Name is null ? $"new({parameters})" : $"new {Name}({parameters})";
     }
 }

@@ -68,8 +68,7 @@ public partial interface IBlockOrResultSyntax : IElseClauseSyntax
 
 [Closed(
     typeof(ILocalBindingSyntax),
-    typeof(IFieldDeclarationSyntax),
-    typeof(IBindingParameterSyntax))]
+    typeof(IFieldDeclarationSyntax))]
 public partial interface IBindingSyntax : ISyntax
 {
     bool IsMutableBinding { get; }
@@ -207,7 +206,7 @@ public partial interface IConcreteMethodDeclarationSyntax : IMethodDeclarationSy
 
 public partial interface IConstructorDeclarationSyntax : IMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
 {
-    ISelfParameterSyntax ImplicitSelfParameter { get; }
+    ISelfParameterSyntax SelfParameter { get; }
     new AcyclicPromise<ConstructorSymbol> Symbol { get; }
 }
 
@@ -235,7 +234,6 @@ public partial interface IGenericParameterSyntax : ISyntax
 
 [Closed(
     typeof(IConstructorParameterSyntax),
-    typeof(IBindingParameterSyntax),
     typeof(INamedParameterSyntax),
     typeof(ISelfParameterSyntax),
     typeof(IFieldParameterSyntax))]
@@ -253,14 +251,7 @@ public partial interface IConstructorParameterSyntax : IParameterSyntax
 {
 }
 
-[Closed(
-    typeof(INamedParameterSyntax),
-    typeof(ISelfParameterSyntax))]
-public partial interface IBindingParameterSyntax : IParameterSyntax, IBindingSyntax
-{
-}
-
-public partial interface INamedParameterSyntax : IParameterSyntax, IConstructorParameterSyntax, IBindingParameterSyntax, ILocalBindingSyntax
+public partial interface INamedParameterSyntax : IParameterSyntax, IConstructorParameterSyntax, ILocalBindingSyntax
 {
     new Name Name { get; }
     Promise<int?> DeclarationNumber { get; }
@@ -269,10 +260,10 @@ public partial interface INamedParameterSyntax : IParameterSyntax, IConstructorP
     IExpressionSyntax? DefaultValue { get; }
 }
 
-public partial interface ISelfParameterSyntax : IParameterSyntax, IBindingParameterSyntax
+public partial interface ISelfParameterSyntax : IParameterSyntax
 {
     IReferenceCapabilitySyntax Capability { get; }
-    new Promise<SelfParameterSymbol> Symbol { get; }
+    Promise<SelfParameterSymbol> Symbol { get; }
 }
 
 public partial interface IFieldParameterSyntax : IParameterSyntax, IConstructorParameterSyntax

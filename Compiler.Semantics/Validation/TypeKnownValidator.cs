@@ -26,7 +26,7 @@ public class TypeKnownValidator : SyntaxWalker
                 return;
             case IConstructorDeclarationSyntax constructorDeclaration:
                 WalkChildren(constructorDeclaration);
-                constructorDeclaration.ImplicitSelfParameter.Symbol.Result.DataType.Known();
+                constructorDeclaration.SelfParameter.Symbol.Result.DataType.Known();
                 constructorDeclaration.Symbol.Result.ReturnDataType.Known();
                 return;
             case IMethodDeclarationSyntax methodDeclaration:

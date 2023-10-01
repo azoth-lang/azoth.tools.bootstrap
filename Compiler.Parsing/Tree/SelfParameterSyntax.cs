@@ -8,10 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class SelfParameterSyntax : ParameterSyntax, ISelfParameterSyntax
 {
-    public bool IsMutableBinding => false;
     public IReferenceCapabilitySyntax Capability { get; }
     public Promise<SelfParameterSymbol> Symbol { get; } = new Promise<SelfParameterSymbol>();
-    IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
     public override IPromise<DataType> DataType { get; }
     public SelfParameterSyntax(TextSpan span, IReferenceCapabilitySyntax capability)
         : base(span, null)

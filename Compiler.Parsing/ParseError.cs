@@ -122,4 +122,10 @@ internal static class ParseError
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2016, $"Associated function `{name}` is missing a method body.");
     }
+
+    public static Diagnostic MissingSelfParameter(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2017, $"Constructor is missing a self parameter.");
+    }
 }

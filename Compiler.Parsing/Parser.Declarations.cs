@@ -314,16 +314,33 @@ public partial class Parser
         var identifier = Tokens.AcceptToken<IIdentifierToken>();
         var name = identifier is null ? null : (Name)identifier.Value;
         var bodyParser = BodyParser();
-        // Implicit self parameter is taken to be after the current token which is expected to be `(`
-        var selfParameterLocation = Tokens.Current.Span.AtEnd();
-        var selfReferenceCapability = new ReferenceCapabilitySyntax(selfParameterLocation, Enumerable.Empty<ICapabilityToken>(), DeclaredReferenceCapability.Mutable);
-        var selfParameter = new SelfParameterSyntax(selfParameterLocation, selfReferenceCapability);
+        // Self parameter is expected to be after the current token which is expected to be `(`
+        var expectedSelfParameterLocation = Tokens.Current.Span.AtEnd();
         var parameters = bodyParser.ParseParameters(bodyParser.ParseConstructorParameter);
+
+        var selfParameter = parameters.OfType<ISelfParameterSyntax>().FirstOrDefault();
+        var constructorParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>()).Cast<IConstructorParameterSyntax>()
+                                        .ToFixedList();
+
+        if (selfParameter is null)
+        {
+            Add(ParseError.MissingSelfParameter(File, expectedSelfParameterLocation));
+            // For simplicity of downstream code, make up a fake self parameter
+            var selfReferenceCapability = new ReferenceCapabilitySyntax(expectedSelfParameterLocation,
+                Enumerable.Empty<ICapabilityToken>(), DeclaredReferenceCapability.Mutable);
+            selfParameter = new SelfParameterSyntax(expectedSelfParameterLocation, selfReferenceCapability);
+        }
+        else if (parameters[0] is not ISelfParameterSyntax)
+            Add(ParseError.SelfParameterMustBeFirst(File, selfParameter.Span));
+
+        foreach (var extraSelfParameter in parameters.OfType<ISelfParameterSyntax>().Skip(1))
+            Add(ParseError.ExtraSelfParameter(File, extraSelfParameter.Span));
+
         var body = bodyParser.ParseFunctionBody();
         // For now, just say constructors have no annotations
         var span = TextSpan.Covering(newKeywordSpan, body.Span);
         return new ConstructorDeclarationSyntax(declaringType, span, File, accessModifer,
-            TextSpan.Covering(newKeywordSpan, identifier?.Span), name, selfParameter, parameters, body);
+            TextSpan.Covering(newKeywordSpan, identifier?.Span), name, selfParameter, constructorParameters, body);
     }
     #endregion
 }

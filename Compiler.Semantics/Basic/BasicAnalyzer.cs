@@ -99,7 +99,7 @@ public class BasicAnalyzer
                 break;
             case IConstructorDeclarationSyntax constructor:
             {
-                var resolver = new BasicBodyAnalyzer(constructor, symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, constructor.ImplicitSelfParameter.Symbol.Result.DataType);
+                var resolver = new BasicBodyAnalyzer(constructor, symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, constructor.SelfParameter.Symbol.Result.DataType);
                 resolver.ResolveTypes(constructor.Body);
                 break;
             }
