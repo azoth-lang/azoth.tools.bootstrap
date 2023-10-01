@@ -1,20 +1,20 @@
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
+/// <summary>
+/// A "variable" representing a temporary result in an expression.
+/// </summary>
 public readonly struct ResultVariable
 {
     public static readonly ResultVariable First = new(0);
 
-    private readonly long result;
+    public readonly long Number;
 
-    private ResultVariable(long resultNumber)
+    private ResultVariable(long number)
     {
-        result = resultNumber;
+        Number = number;
     }
 
-    public ResultVariable NextResult() => new(result + 1);
+    public ResultVariable NextResult() => new(Number + 1);
 
-    public static implicit operator SharingVariable(ResultVariable variable)
-        => new SharingVariable(variable.result);
-
-    public override string ToString() => $"⧼result{result}⧽";
+    public override string ToString() => $"⧼result{Number}⧽";
 }

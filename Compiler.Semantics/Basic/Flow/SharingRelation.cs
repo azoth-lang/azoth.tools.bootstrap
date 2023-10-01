@@ -88,6 +88,9 @@ public sealed class SharingRelation
             Declare((SharingVariable)symbol);
     }
 
+    public void Declare(ExternalReference externalReference)
+        => Declare((SharingVariable)externalReference);
+
     private void Declare(SharingVariable variable)
     {
         var set = new SharingSet(variable);
@@ -123,24 +126,13 @@ public sealed class SharingRelation
         return set;
     }
 
-    public void DropAllLocalVariables()
+    public void DropAllLocalVariablesAndParameters()
     {
-        foreach (var variable in subsetFor.Keys.Where(v => v.IsLocal).ToArray())
+        foreach (var variable in subsetFor.Keys.Where(v => v.IsLocal || v.IsParameter).ToArray())
             Drop(variable);
     }
 
-    public void DropIsolatedParameters()
-    {
-        foreach (var variable in subsetFor.Keys.Where(v => v.SymbolType is ReferenceType { IsIsolatedReference: true }).ToArray())
-            Drop(variable);
-    }
-
-    public void UnionWithCurrentResult(SharingVariable var)
-    {
-        var result = currentResult
-            ?? throw new InvalidOperationException("Cannot union with current result because there is no current result.");
-        Union(var, result);
-    }
+    public void UnionWithCurrentResult(SharingVariable var) => Union(var, CurrentResult);
 
     public void UnionWithCurrentResultAndDrop(ResultVariable variable)
     {
@@ -148,7 +140,7 @@ public sealed class SharingRelation
         Drop(variable);
     }
 
-    private void Union(SharingVariable var1, SharingVariable var2)
+    public void Union(SharingVariable var1, SharingVariable var2)
     {
         if (!subsetFor.TryGetValue(var1, out var set1)
             || !subsetFor.TryGetValue(var2, out var set2)

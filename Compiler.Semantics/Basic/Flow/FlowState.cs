@@ -44,13 +44,13 @@ public sealed class FlowState
     public void Drop(BindingSymbol symbol) => RemoveRestrictions(sharing.Drop(symbol));
 
     /// <summary>
-    /// Drop all local variables and all isolated parameters in preparation for a return from the
-    /// function or method.
+    /// Drop all local variables and parameters in preparation for a return from the function or
+    /// method.
     /// </summary>
+    /// <remarks>External references will ensure that parameters are incorrectly treated as isolated.</remarks>
     public void DropBindingsForReturn()
     {
-        sharing.DropAllLocalVariables();
-        sharing.DropIsolatedParameters();
+        sharing.DropAllLocalVariablesAndParameters();
         // So many sets can be modified, just go through all of them and remove restrictions
         foreach (var set in sharing.SharingSets)
             RemoveRestrictions(set);
