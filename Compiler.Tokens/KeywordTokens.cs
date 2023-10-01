@@ -15,8 +15,15 @@ public static partial class TokenTypes
         typeof(VarKeywordToken),
         typeof(VoidKeywordToken),
         typeof(IntKeywordToken),
+        typeof(Int8KeywordToken),
+        typeof(Int16KeywordToken),
+        typeof(Int32KeywordToken),
+        typeof(Int64KeywordToken),
         typeof(UIntKeywordToken),
         typeof(ByteKeywordToken),
+        typeof(UInt16KeywordToken),
+        typeof(UInt32KeywordToken),
+        typeof(UInt64KeywordToken),
         typeof(SizeKeywordToken),
         typeof(OffsetKeywordToken),
         typeof(BoolKeywordToken),
@@ -79,11 +86,32 @@ public static partial class TokenFactory
     public static IIntKeywordToken IntKeyword(TextSpan span)
         => new IntKeywordToken(span);
 
+    public static IInt8KeywordToken Int8Keyword(TextSpan span)
+        => new Int8KeywordToken(span);
+
+    public static IInt16KeywordToken Int16Keyword(TextSpan span)
+        => new Int16KeywordToken(span);
+
+    public static IInt32KeywordToken Int32Keyword(TextSpan span)
+        => new Int32KeywordToken(span);
+
+    public static IInt64KeywordToken Int64Keyword(TextSpan span)
+        => new Int64KeywordToken(span);
+
     public static IUIntKeywordToken UIntKeyword(TextSpan span)
         => new UIntKeywordToken(span);
 
     public static IByteKeywordToken ByteKeyword(TextSpan span)
         => new ByteKeywordToken(span);
+
+    public static IUInt16KeywordToken UInt16Keyword(TextSpan span)
+        => new UInt16KeywordToken(span);
+
+    public static IUInt32KeywordToken UInt32Keyword(TextSpan span)
+        => new UInt32KeywordToken(span);
+
+    public static IUInt64KeywordToken UInt64Keyword(TextSpan span)
+        => new UInt64KeywordToken(span);
 
     public static ISizeKeywordToken SizeKeyword(TextSpan span)
         => new SizeKeywordToken(span);
@@ -211,8 +239,15 @@ public static partial class TokenFactory
     typeof(IVarKeywordToken),
     typeof(IVoidKeywordToken),
     typeof(IIntKeywordToken),
+    typeof(IInt8KeywordToken),
+    typeof(IInt16KeywordToken),
+    typeof(IInt32KeywordToken),
+    typeof(IInt64KeywordToken),
     typeof(IUIntKeywordToken),
     typeof(IByteKeywordToken),
+    typeof(IUInt16KeywordToken),
+    typeof(IUInt32KeywordToken),
+    typeof(IUInt64KeywordToken),
     typeof(ISizeKeywordToken),
     typeof(IOffsetKeywordToken),
     typeof(IBoolKeywordToken),
@@ -309,6 +344,42 @@ internal partial class IntKeywordToken : Token, IIntKeywordToken
     }
 }
 
+public partial interface IInt8KeywordToken : IKeywordToken { }
+internal partial class Int8KeywordToken : Token, IInt8KeywordToken
+{
+    public Int8KeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IInt16KeywordToken : IKeywordToken { }
+internal partial class Int16KeywordToken : Token, IInt16KeywordToken
+{
+    public Int16KeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IInt32KeywordToken : IKeywordToken { }
+internal partial class Int32KeywordToken : Token, IInt32KeywordToken
+{
+    public Int32KeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IInt64KeywordToken : IKeywordToken { }
+internal partial class Int64KeywordToken : Token, IInt64KeywordToken
+{
+    public Int64KeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
 public partial interface IUIntKeywordToken : IKeywordToken { }
 internal partial class UIntKeywordToken : Token, IUIntKeywordToken
 {
@@ -322,6 +393,33 @@ public partial interface IByteKeywordToken : IKeywordToken { }
 internal partial class ByteKeywordToken : Token, IByteKeywordToken
 {
     public ByteKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IUInt16KeywordToken : IKeywordToken { }
+internal partial class UInt16KeywordToken : Token, IUInt16KeywordToken
+{
+    public UInt16KeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IUInt32KeywordToken : IKeywordToken { }
+internal partial class UInt32KeywordToken : Token, IUInt32KeywordToken
+{
+    public UInt32KeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IUInt64KeywordToken : IKeywordToken { }
+internal partial class UInt64KeywordToken : Token, IUInt64KeywordToken
+{
+    public UInt64KeywordToken(TextSpan span)
         : base(span)
     {
     }

@@ -24,9 +24,6 @@ public partial class TokenTypes
         "get",
         "implicit",
         "init",
-        "int8",
-        "int16",
-        "int64",
         "invariant",
         "match",
         "may",
@@ -44,8 +41,6 @@ public partial class TokenTypes
         "throw",
         "Tuple",
         "Type",
-        "uint16",
-        "uint64",
         "uninitialized",
         "where",
 

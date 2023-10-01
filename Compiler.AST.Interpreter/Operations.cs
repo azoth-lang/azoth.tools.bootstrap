@@ -11,13 +11,19 @@ internal static class Operations
     {
         if (from is IntegerConstantType)
         {
-            if (to == DataType.Byte) return AzothValue.Byte((byte)value.IntValue);
-            if (to == DataType.Int32) return AzothValue.I32((int)value.IntValue);
-            if (to == DataType.UInt32) return AzothValue.U32((uint)value.IntValue);
-            if (to == DataType.Offset) return AzothValue.Offset((nint)(long)value.IntValue);
-            if (to == DataType.Size) return AzothValue.Size((nuint)(ulong)value.IntValue);
             if (to == DataType.Int) return AzothValue.Int(value.IntValue);
             if (to == DataType.UInt) return AzothValue.Int(value.IntValue);
+
+            if (to == DataType.Int8) return AzothValue.I8((sbyte)value.IntValue);
+            if (to == DataType.Byte) return AzothValue.Byte((byte)value.IntValue);
+            if (to == DataType.Int16) return AzothValue.I16((short)value.IntValue);
+            if (to == DataType.UInt16) return AzothValue.U16((ushort)value.IntValue);
+            if (to == DataType.Int32) return AzothValue.I32((int)value.IntValue);
+            if (to == DataType.UInt32) return AzothValue.U32((uint)value.IntValue);
+            if (to == DataType.Int64) return AzothValue.I64((long)value.IntValue);
+            if (to == DataType.UInt64) return AzothValue.U64((ulong)value.IntValue);
+            if (to == DataType.Offset) return AzothValue.Offset((nint)(long)value.IntValue);
+            if (to == DataType.Size) return AzothValue.Size((nuint)(ulong)value.IntValue);
         }
 
         if (from is BoolType)
@@ -69,9 +75,15 @@ internal static class Operations
                     throw new Abort($"Cannot convert value {fromValue} to {to.ToILString()}");
                 }
             }
+
+            if (to == DataType.Int8) return AzothValue.I8((sbyte)value.IntValue);
             if (to == DataType.Byte) return AzothValue.Byte((byte)value.IntValue);
+            if (to == DataType.Int16) return AzothValue.I16((short)value.IntValue);
+            if (to == DataType.UInt16) return AzothValue.U16((ushort)value.IntValue);
             if (to == DataType.Int32) return AzothValue.I32((int)value.IntValue);
             if (to == DataType.UInt32) return AzothValue.U32((uint)value.IntValue);
+            if (to == DataType.Int64) return AzothValue.I64((long)value.IntValue);
+            if (to == DataType.UInt64) return AzothValue.U64((ulong)value.IntValue);
             if (to == DataType.Offset) return AzothValue.Offset((nint)(long)value.IntValue);
             if (to == DataType.Size) return AzothValue.Size((nuint)(ulong)value.IntValue);
         }

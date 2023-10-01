@@ -118,9 +118,19 @@ public partial class Parser
             INeverKeywordToken _ => SpecialTypeName.Never,
             IBoolKeywordToken _ => SpecialTypeName.Bool,
             IAnyKeywordToken _ => SpecialTypeName.Any,
-            IByteKeywordToken _ => SpecialTypeName.Byte,
+
             IIntKeywordToken _ => SpecialTypeName.Int,
             IUIntKeywordToken _ => SpecialTypeName.UInt,
+
+            IInt8KeywordToken _ => SpecialTypeName.Int8,
+            IByteKeywordToken _ => SpecialTypeName.Byte,
+            IInt16KeywordToken _ => SpecialTypeName.Int16,
+            IUInt16KeywordToken _ => SpecialTypeName.UInt16,
+            IInt32KeywordToken _ => SpecialTypeName.Int32,
+            IUInt32KeywordToken _ => SpecialTypeName.UInt32,
+            IInt64KeywordToken _ => SpecialTypeName.Int64,
+            IUInt64KeywordToken _ => SpecialTypeName.UInt64,
+
             ISizeKeywordToken _ => SpecialTypeName.Size,
             IOffsetKeywordToken _ => SpecialTypeName.Offset,
             _ => throw ExhaustiveMatch.Failed(keyword)

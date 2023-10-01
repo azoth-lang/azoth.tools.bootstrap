@@ -22,11 +22,16 @@ public abstract class DataType : IEquatable<DataType>
     public static readonly BoolType Bool = BoolType.Instance;
     public static readonly BoolConstantType True = BoolConstantType.True;
     public static readonly BoolConstantType False = BoolConstantType.False;
-    public static readonly FixedSizeIntegerType Byte = FixedSizeIntegerType.Byte;
     public static readonly BigIntegerType Int = BigIntegerType.Int;
     public static readonly BigIntegerType UInt = BigIntegerType.UInt;
+    public static readonly FixedSizeIntegerType Int8 = FixedSizeIntegerType.Int8;
+    public static readonly FixedSizeIntegerType Byte = FixedSizeIntegerType.Byte;
+    public static readonly FixedSizeIntegerType Int16 = FixedSizeIntegerType.Int16;
+    public static readonly FixedSizeIntegerType UInt16 = FixedSizeIntegerType.UInt16;
     public static readonly FixedSizeIntegerType Int32 = FixedSizeIntegerType.Int32;
     public static readonly FixedSizeIntegerType UInt32 = FixedSizeIntegerType.UInt32;
+    public static readonly FixedSizeIntegerType Int64 = FixedSizeIntegerType.Int64;
+    public static readonly FixedSizeIntegerType UInt64 = FixedSizeIntegerType.UInt64;
     public static readonly PointerSizedIntegerType Size = PointerSizedIntegerType.Size;
     public static readonly PointerSizedIntegerType Offset = PointerSizedIntegerType.Offset;
 

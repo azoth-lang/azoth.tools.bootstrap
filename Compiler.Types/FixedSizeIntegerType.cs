@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -8,22 +9,35 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class FixedSizeIntegerType : IntegerType
 {
-    //internal new static readonly FixedSizeIntegerType Int8 = new("int8", -8);
+    internal new static readonly FixedSizeIntegerType Int8 = new(SpecialTypeName.Int8, -8);
     internal new static readonly FixedSizeIntegerType Byte = new(SpecialTypeName.Byte, 8);
-    //internal new static readonly FixedSizeIntegerType Int16 = new("int16", -16);
-    //internal new static readonly FixedSizeIntegerType UInt16 = new("uint16", 16);
+    internal new static readonly FixedSizeIntegerType Int16 = new(SpecialTypeName.Int16, -16);
+    internal new static readonly FixedSizeIntegerType UInt16 = new(SpecialTypeName.UInt16, 16);
     internal new static readonly FixedSizeIntegerType Int32 = new(SpecialTypeName.Int32, -32);
     internal new static readonly FixedSizeIntegerType UInt32 = new(SpecialTypeName.UInt32, 32);
-    //internal new static readonly FixedSizeIntegerType Int64 = new("int64", -64);
-    //internal new static readonly FixedSizeIntegerType UInt64 = new("uint64", 64);
+    internal new static readonly FixedSizeIntegerType Int64 = new(SpecialTypeName.Int64, -64);
+    internal new static readonly FixedSizeIntegerType UInt64 = new(SpecialTypeName.UInt64, 64);
 
     public int Bits { get; }
     public override bool IsFullyKnown => true;
+    public BigInteger MaxValue;
+    public BigInteger MinValue;
 
     private FixedSizeIntegerType(SpecialTypeName name, int bits)
         : base(name, bits < 0)
     {
         Bits = Math.Abs(bits);
+        if (IsSigned)
+        {
+            var powerOf2 = BigInteger.Pow(2, Bits - 1);
+            MinValue = -powerOf2;
+            MaxValue = powerOf2 - 1;
+        }
+        else
+        {
+            MinValue = 0;
+            MaxValue = BigInteger.Pow(2, Bits);
+        }
     }
 
     /// <summary>
@@ -37,4 +51,6 @@ public sealed class FixedSizeIntegerType : IntegerType
         if (this == Byte) return Int32;
         return Int;
     }
+
+    private static readonly BigInteger Two = 2;
 }

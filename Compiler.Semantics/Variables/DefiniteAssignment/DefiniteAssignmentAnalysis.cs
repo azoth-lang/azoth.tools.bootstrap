@@ -23,7 +23,7 @@ internal class DefiniteAssignmentAnalysis : IForwardDataFlowAnalysis<BindingFlag
     {
         this.declaration = declaration;
         this.symbolTree = symbolTree;
-        this.file = declaration.File;
+        file = declaration.File;
         this.diagnostics = diagnostics;
     }
 
@@ -76,7 +76,5 @@ internal class DefiniteAssignmentAnalysis : IForwardDataFlowAnalysis<BindingFlag
     public BindingFlags VariableDeclaration(
         IForeachExpression foreachExpression,
         BindingFlags definitelyAssigned)
-    {
-        return definitelyAssigned.Set(foreachExpression.Symbol, true);
-    }
+        => definitelyAssigned.Set(foreachExpression.Symbol, true);
 }

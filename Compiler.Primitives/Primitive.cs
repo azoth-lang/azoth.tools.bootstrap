@@ -19,11 +19,16 @@ public static class Primitive
         // Simple Types
         BuildBoolSymbol(tree);
 
-        BuildIntegerTypeSymbol(tree, DataType.Byte, stringType);
         BuildIntegerTypeSymbol(tree, DataType.Int, stringType);
         BuildIntegerTypeSymbol(tree, DataType.UInt, stringType);
+        BuildIntegerTypeSymbol(tree, DataType.Int8, stringType);
+        BuildIntegerTypeSymbol(tree, DataType.Byte, stringType);
+        BuildIntegerTypeSymbol(tree, DataType.Int16, stringType);
+        BuildIntegerTypeSymbol(tree, DataType.UInt16, stringType);
         BuildIntegerTypeSymbol(tree, DataType.Int32, stringType);
         BuildIntegerTypeSymbol(tree, DataType.UInt32, stringType);
+        BuildIntegerTypeSymbol(tree, DataType.Int64, stringType);
+        BuildIntegerTypeSymbol(tree, DataType.UInt64, stringType);
 
         BuildIntegerTypeSymbol(tree, DataType.Size, stringType);
         BuildIntegerTypeSymbol(tree, DataType.Offset, stringType);

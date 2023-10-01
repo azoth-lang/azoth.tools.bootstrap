@@ -14,11 +14,16 @@ public sealed class SpecialTypeName : TypeName
     public static readonly SpecialTypeName Never = new("never");
     public static readonly SpecialTypeName Bool = new("bool");
     public static readonly SpecialTypeName Any = new("Any");
-    public static readonly SpecialTypeName Byte = new("byte");
     public static readonly SpecialTypeName Int = new("int");
     public static readonly SpecialTypeName UInt = new("uint");
+    public static readonly SpecialTypeName Int8 = new("int8");
+    public static readonly SpecialTypeName Byte = new("byte");
+    public static readonly SpecialTypeName Int16 = new("int16");
+    public static readonly SpecialTypeName UInt16 = new("uint16");
     public static readonly SpecialTypeName Int32 = new("int32");
     public static readonly SpecialTypeName UInt32 = new("uint32");
+    public static readonly SpecialTypeName Int64 = new("int64");
+    public static readonly SpecialTypeName UInt64 = new("uint64");
     public static readonly SpecialTypeName Size = new("size");
     public static readonly SpecialTypeName Offset = new("offset");
     #endregion

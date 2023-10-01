@@ -20,8 +20,8 @@ public sealed class IntegerConstantType : IntegerType
         Value = value;
     }
 
-    public bool IsUInt16 => Value >= ushort.MinValue && Value <= ushort.MaxValue;
-    public bool IsInt16 => Value >= short.MinValue && Value <= short.MaxValue;
+    public bool IsUInt16 => Value >= UInt16.MinValue && Value <= UInt16.MaxValue;
+    public bool IsInt16 => Value >= Int16.MinValue && Value <= Int16.MaxValue;
 
     public IntegerConstantType Add(IntegerConstantType right) => new(Value + right.Value);
     public IntegerConstantType Subtract(IntegerConstantType right) => new(Value - right.Value);
@@ -46,9 +46,15 @@ public sealed class IntegerConstantType : IntegerType
 
     public IntegerType ToSmallestSignedIntegerType()
     {
-        if (Value > int.MaxValue) return Int;
-        if (Value < int.MinValue) return Int;
-        return Int32;
+        if (Value > Int64.MaxValue) return Int;
+        if (Value > Int32.MaxValue) return Int64;
+        if (Value > Int16.MaxValue) return Int32;
+        if (Value > Int8.MaxValue) return Int16;
+        if (Value < Int64.MinValue) return Int;
+        if (Value < Int32.MinValue) return Int64;
+        if (Value < Int16.MinValue) return Int32;
+        if (Value < Int8.MinValue) return Int16;
+        return Int8;
     }
 
 
@@ -56,8 +62,10 @@ public sealed class IntegerConstantType : IntegerType
     {
         if (IsSigned)
             throw new InvalidOperationException("Cannot convert signed constant to unsigned integer type.");
-        if (Value > uint.MaxValue) return UInt;
-        if (Value > byte.MaxValue) return UInt32;
+        if (Value > Int64.MaxValue) return UInt;
+        if (Value > Int32.MaxValue) return UInt64;
+        if (Value > Int16.MaxValue) return UInt32;
+        if (Value > Byte.MaxValue) return UInt16;
         return Byte;
     }
 
