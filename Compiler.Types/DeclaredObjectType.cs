@@ -102,8 +102,10 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         foreach (var parameterType in parameterTypes)
             switch (parameterType)
             {
+                case ReferenceType { IsLentReference: true }:
                 case ReferenceType { IsConstReference: true }:
                 case ReferenceType { IsIsolatedReference: true }:
+                case OptionalType { Referent: ReferenceType { IsLentReference: true } }:
                 case OptionalType { Referent: ReferenceType { IsConstReference: true } }:
                 case OptionalType { Referent: ReferenceType { IsIsolatedReference: true } }:
                 case SimpleType:

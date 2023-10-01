@@ -24,14 +24,11 @@ public partial class Parser
 
     public IParameterSyntax ParseMethodParameter()
     {
-        switch (Tokens.Current)
+        return Tokens.Current switch
         {
-            case ICapabilityToken:
-            case ISelfKeywordToken:
-                return ParseSelfParameter();
-            default:
-                return ParseFunctionParameter();
-        }
+            ICapabilityToken or ISelfKeywordToken => ParseSelfParameter(),
+            _ => ParseFunctionParameter(),
+        };
     }
 
     public IParameterSyntax ParseConstructorParameter()

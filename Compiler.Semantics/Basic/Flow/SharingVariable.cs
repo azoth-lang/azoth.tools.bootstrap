@@ -10,32 +10,33 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// </summary>
 public readonly struct SharingVariable : IEquatable<SharingVariable>
 {
-    private readonly BindingSymbol? symbol;
     private readonly long result;
 
     public SharingVariable(BindingSymbol symbol)
     {
-        this.symbol = symbol;
+        Symbol = symbol;
         result = default;
     }
 
     public SharingVariable(long resultNumber)
     {
-        symbol = null;
+        Symbol = null;
         result = resultNumber;
     }
 
-    public bool IsLocal => symbol is VariableSymbol { IsLocal: true };
-    public DataType? SymbolType => symbol?.DataType;
+    public bool IsLocal => Symbol is VariableSymbol { IsLocal: true };
+    public bool IsResult => SymbolType is null;
+    public DataType? SymbolType => Symbol?.DataType;
+    public BindingSymbol? Symbol { get; }
 
     #region Equals
     public bool Equals(SharingVariable other)
-        => Equals(symbol, other.symbol) && result == other.result;
+        => Equals(Symbol, other.Symbol) && result == other.result;
 
     public override bool Equals(object? obj)
         => obj is SharingVariable other && Equals(other);
 
-    public override int GetHashCode() => HashCode.Combine(symbol, result);
+    public override int GetHashCode() => HashCode.Combine(Symbol, result);
 
     public static bool operator ==(SharingVariable left, SharingVariable right)
         => left.Equals(right);
@@ -50,5 +51,5 @@ public readonly struct SharingVariable : IEquatable<SharingVariable>
     public static implicit operator SharingVariable?(BindingSymbol? symbol)
         => symbol is null ? null : new(symbol);
 
-    public override string ToString() => symbol?.ToString() ?? $"⧼result{result}⧽";
+    public override string ToString() => Symbol?.ToString() ?? $"⧼result{result}⧽";
 }

@@ -120,6 +120,7 @@ public class BasicBodyAnalyzer
             capabilities.Declare(parameterSymbol);
             sharing.Declare(parameterSymbol);
         }
+        // TODO assume sharing between parameters unless const, iso, or lent
         parameterCapabilities = capabilities.Snapshot();
         parameterSharing = sharing.Snapshot();
     }
@@ -324,8 +325,8 @@ public class BasicBodyAnalyzer
             case (ObjectType { IsConstReference: true } to, ObjectType { AllowsFreeze: true } from):
             {
                 // Try to recover const
-                // TODO support upcasting at the same time
-                if (to.DeclaredType == from.DeclaredType && flow.CurrentResultIsIsolated())
+                if (to.DeclaredType.IsAssignableFrom(from.DeclaredType)
+                    && (flow.CurrentResultIsIsolated() || flow.LendCurrentResultConst()))
                     return new RecoverConst(priorConversion);
 
                 return null;
@@ -333,8 +334,7 @@ public class BasicBodyAnalyzer
             case (ObjectType { IsIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from):
             {
                 // Try to recover isolation
-                // TODO support upcasting at the same time
-                if (to.DeclaredType == from.DeclaredType && flow.CurrentResultIsIsolated())
+                if (to.DeclaredType.IsAssignableFrom(from.DeclaredType) && flow.CurrentResultIsIsolated())
                     return new RecoverIsolation(priorConversion);
 
                 return null;
@@ -466,8 +466,8 @@ public class BasicBodyAnalyzer
                 {
                     var expectedReturnType = returnType;
                     InferType(exp.Value, flow);
-                    flow.DropAllLocalVariables(); // No longer in scope
-                    flow.DropIsolatedParameters(); // No longer external reference
+                    // local variables are no longer in scope and isolated parameters have no external references
+                    flow.DropBindingsForReturn();
                     AddImplicitConversionIfNeeded(exp.Value, expectedReturnType, flow);
                     CheckTypeCompatibility(expectedReturnType, exp.Value);
                 }
@@ -1049,7 +1049,7 @@ public class BasicBodyAnalyzer
         FlowState flow)
     {
         if (selfParamType is not ReferenceType { IsConstReference: true } toType
-            || context.DataType is not ReferenceType { AllowsFreeze: true } fromType)
+            || context.ConvertedDataType is not ReferenceType { AllowsFreeze: true } fromType)
             return;
 
         // TODO allow upcasting
@@ -1485,7 +1485,7 @@ public class BasicBodyAnalyzer
         };
     }
 
-    private TypeSymbol? LookupSymbolForType(ObjectType objectType)
+    private TypeSymbol LookupSymbolForType(ObjectType objectType)
     {
         var contextSymbols = symbolTrees.Packages.SafeCast<Symbol>();
         foreach (var name in objectType.ContainingNamespace.Segments)
@@ -1494,7 +1494,7 @@ public class BasicBodyAnalyzer
                                            .Where(s => s.Name == name);
         }
 
-        return contextSymbols.SelectMany(c => symbolTrees.Children(c)).OfType<TypeSymbol>()
+        return contextSymbols.SelectMany(symbolTrees.Children).OfType<TypeSymbol>()
                              .Single(s => s.Name == objectType.Name);
     }
 }

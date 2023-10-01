@@ -41,11 +41,20 @@ public sealed class FlowState
 
     public SharingVariable NewResult() => sharing.NewResult();
 
-    public void Drop(BindingSymbol symbol) => sharing.Drop(symbol);
+    public void Drop(BindingSymbol symbol) => RemoveRestrictions(sharing.Drop(symbol));
 
-    public void DropAllLocalVariables() => sharing.DropAllLocalVariables();
-
-    public void DropIsolatedParameters() => sharing.DropIsolatedParameters();
+    /// <summary>
+    /// Drop all local variables and all isolated parameters in preparation for a return from the
+    /// function or method.
+    /// </summary>
+    public void DropBindingsForReturn()
+    {
+        sharing.DropAllLocalVariables();
+        sharing.DropIsolatedParameters();
+        // So many sets can be modified, just go through all of them and remove restrictions
+        foreach (var set in sharing.SharingSets)
+            RemoveRestrictions(set);
+    }
 
     public void Move(BindingSymbol symbol) => capabilities.Move(symbol);
 
@@ -53,7 +62,7 @@ public sealed class FlowState
     {
         capabilities.Freeze(symbol);
         // Constants aren't tracked, this symbol is `const` now
-        sharing.Drop(symbol);
+        Drop(symbol);
     }
 
     // TODO maybe this happens as part of Union?
@@ -70,13 +79,38 @@ public sealed class FlowState
     public void UnionWithCurrentResultAndDrop(ResultVariable variable)
         => sharing.UnionWithCurrentResultAndDrop(variable);
 
-    public void DropCurrentResult() => sharing.DropCurrentResult();
+    public void DropCurrentResult() => RemoveRestrictions(sharing.Drop(sharing.CurrentResult));
 
     public void SplitCurrentResult() => sharing.SplitCurrentResult();
 
-    public bool CurrentResultIsIsolated() => sharing.CurrentResultIsolated();
+    public bool CurrentResultIsIsolated() => sharing.IsIsolated(sharing.CurrentResult);
     public bool IsIsolated(SharingVariable variable) => sharing.IsIsolated(variable);
 
     public bool IsIsolatedExceptCurrentResult(SharingVariable variable)
         => sharing.IsIsolatedExceptCurrentResult(variable);
+
+    /// <summary>
+    /// Mark the current result as being lent const.
+    /// </summary>
+    /// <remarks>Because the current result must be at least temporarily const, all references in
+    /// the sharing set must now not allow mutation.</remarks>
+    public bool LendCurrentResultConst()
+    {
+        foreach (var affectedSymbol in sharing.RestrictWrite(sharing.CurrentResult))
+            capabilities.RestrictWrite(affectedSymbol);
+        return true;
+    }
+
+    /// <summary>
+    /// Remove restrictions on symbols in the set if allowed.
+    /// </summary>
+    private void RemoveRestrictions(IReadOnlySharingSet? sharingSet)
+    {
+        if (sharingSet is null) return;
+        if (sharingSet.IsWriteRestricted) return;
+
+        foreach (var variable in sharingSet)
+            if (variable.Symbol is not null)
+                capabilities.RemoveWriteRestriction(variable.Symbol);
+    }
 }

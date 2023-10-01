@@ -10,12 +10,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// </summary>
 public class SharingRelationSnapshot
 {
-    private readonly FixedSet<FixedSet<SharingVariable>> sets;
+    private readonly FixedSet<SharingSetSnapshot> sets;
 
-    internal SharingRelationSnapshot(IEnumerable<IReadOnlySet<SharingVariable>> sets, ResultVariable currentResult)
+    internal SharingRelationSnapshot(IEnumerable<SharingSet> sets, ResultVariable currentResult)
     {
         CurrentResult = currentResult;
-        this.sets = new(sets.Select(s => s.ToFixedSet()));
+        this.sets = new(sets.Select(s => s.Snapshot()));
     }
 
     public ResultVariable CurrentResult { get; }

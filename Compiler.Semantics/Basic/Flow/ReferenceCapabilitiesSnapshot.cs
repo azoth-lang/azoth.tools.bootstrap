@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
@@ -11,10 +10,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// </summary>
 public class ReferenceCapabilitiesSnapshot
 {
-    private readonly FixedDictionary<BindingSymbol, ReferenceCapability> currentCapabilities;
+    private readonly FixedDictionary<BindingSymbol, ModifiedCapability> currentCapabilities;
 
     internal ReferenceCapabilitiesSnapshot(
-        IDictionary<BindingSymbol, ReferenceCapability> currentCapabilities)
+        IDictionary<BindingSymbol, ModifiedCapability> currentCapabilities)
     {
         this.currentCapabilities = currentCapabilities.ToFixedDictionary();
     }

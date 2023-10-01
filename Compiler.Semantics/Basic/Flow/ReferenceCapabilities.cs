@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// </summary>
 public sealed class ReferenceCapabilities
 {
-    private readonly Dictionary<BindingSymbol, ReferenceCapability> currentCapabilities;
+    private readonly Dictionary<BindingSymbol, ModifiedCapability> currentCapabilities;
 
     public ReferenceCapabilities()
     {
@@ -18,7 +18,7 @@ public sealed class ReferenceCapabilities
     }
 
     internal ReferenceCapabilities(
-        IReadOnlyDictionary<BindingSymbol, ReferenceCapability> currentCapabilities)
+        IReadOnlyDictionary<BindingSymbol, ModifiedCapability> currentCapabilities)
     {
         this.currentCapabilities = new(currentCapabilities);
     }
@@ -37,7 +37,7 @@ public sealed class ReferenceCapabilities
     public ReferenceCapability? For(BindingSymbol? symbol)
     {
         if (symbol?.DataType is ReferenceType)
-            return currentCapabilities[symbol];
+            return currentCapabilities[symbol].CurrentCapability;
 
         // Other types don't have capabilities and don't need to be tracked
         return null;
@@ -46,7 +46,7 @@ public sealed class ReferenceCapabilities
     public DataType CurrentType(BindingSymbol? symbol)
     {
         if (symbol?.DataType is ReferenceType referenceType)
-            return referenceType.With(currentCapabilities[symbol]);
+            return referenceType.With(currentCapabilities[symbol].CurrentCapability);
 
         // Other types don't have capabilities and don't need to be tracked
         return symbol?.DataType ?? DataType.Unknown;
@@ -78,6 +78,22 @@ public sealed class ReferenceCapabilities
     {
         if (symbol.DataType is ReferenceType)
             currentCapabilities[symbol] = currentCapabilities[symbol].Freeze();
+
+        // Other types don't have capabilities and don't need to be tracked
+    }
+
+    public void RestrictWrite(BindingSymbol symbol)
+    {
+        if (symbol.DataType is ReferenceType)
+            currentCapabilities[symbol] = currentCapabilities[symbol].RestrictWrite();
+
+        // Other types don't have capabilities and don't need to be tracked
+    }
+
+    public void RemoveWriteRestriction(BindingSymbol symbol)
+    {
+        if (symbol.DataType is ReferenceType)
+            currentCapabilities[symbol] = currentCapabilities[symbol].RemoveWriteRestriction();
 
         // Other types don't have capabilities and don't need to be tracked
     }

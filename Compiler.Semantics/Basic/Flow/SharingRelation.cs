@@ -17,11 +17,11 @@ public sealed class SharingRelation
     /// <summary>
     /// All the distinct subsets of variables
     /// </summary>
-    private readonly HashSet<HashSet<SharingVariable>> sets;
+    private readonly HashSet<SharingSet> sets;
     /// <summary>
     /// This is a lookup of what set each variable is contained in.
     /// </summary>
-    private readonly Dictionary<SharingVariable, HashSet<SharingVariable>> subsetFor;
+    private readonly Dictionary<SharingVariable, SharingSet> subsetFor;
 
     private ResultVariable currentResult = ResultVariable.None;
 
@@ -31,10 +31,20 @@ public sealed class SharingRelation
         subsetFor = new();
     }
 
-    internal SharingRelation(IEnumerable<IReadOnlySet<SharingVariable>> sets, ResultVariable currentResult)
+    internal SharingRelation(IEnumerable<SharingSetSnapshot> sets, ResultVariable currentResult)
     {
         this.currentResult = currentResult;
-        this.sets = new(sets.Select(s => s.ToHashSet()));
+        this.sets = new(sets.Select(s => s.MutableCopy()));
+        subsetFor = new();
+        foreach (var set in this.sets)
+            foreach (var variable in set)
+                subsetFor.Add(variable, set);
+    }
+
+    private SharingRelation(IEnumerable<SharingSet> sets, ResultVariable currentResult)
+    {
+        this.currentResult = currentResult;
+        this.sets = new(sets);
         subsetFor = new();
         foreach (var set in this.sets)
             foreach (var variable in set)
@@ -42,6 +52,22 @@ public sealed class SharingRelation
     }
 
     public ResultVariable CurrentResult => currentResult;
+
+    public IEnumerable<IReadOnlySharingSet> SharingSets => sets;
+
+    /// <summary>
+    /// Restrict write to the sharing set of the variable via the variable.
+    /// </summary>
+    /// <returns>The set of affected symbols.</returns>
+    public IEnumerable<BindingSymbol> RestrictWrite(SharingVariable variable)
+    {
+        if (subsetFor.TryGetValue(variable, out var set))
+        {
+            set.RestrictWrite(variable);
+            return set.Select(v => v.Symbol).WhereNotNull();
+        }
+        return Enumerable.Empty<BindingSymbol>();
+    }
 
     public SharingRelation Copy() => new(sets, CurrentResult);
 
@@ -63,7 +89,7 @@ public sealed class SharingRelation
 
     private void Declare(SharingVariable variable)
     {
-        var set = new HashSet<SharingVariable> { variable };
+        var set = new SharingSet(variable);
         sets.Add(set);
         subsetFor.Add(variable, set);
     }
@@ -75,20 +101,24 @@ public sealed class SharingRelation
         return currentResult;
     }
 
-    public void Drop(BindingSymbol symbol)
+    public IReadOnlySharingSet? Drop(BindingSymbol symbol)
     {
         var variable = (SharingVariable)symbol;
-        Drop(variable);
+        return Drop(variable);
     }
 
-    private void Drop(SharingVariable variable)
+
+    public IReadOnlySharingSet? Drop(ResultVariable result) => Drop((SharingVariable)result);
+
+    private IReadOnlySharingSet? Drop(SharingVariable variable)
     {
         if (!subsetFor.TryGetValue(variable, out var set))
-            return;
+            return null;
 
         set.Remove(variable);
         subsetFor.Remove(variable);
         if (set.Count == 0) sets.Remove(set);
+        return set;
     }
 
     public void DropAllLocalVariables()
@@ -128,8 +158,6 @@ public sealed class SharingRelation
         smallerSet.Clear();
     }
 
-    public void DropCurrentResult() => Drop(currentResult);
-
     public void SplitCurrentResult() => Split(CurrentResult);
 
     /// <summary>
@@ -142,12 +170,10 @@ public sealed class SharingRelation
             return;
 
         set.Remove(variable);
-        var newSet = new HashSet<SharingVariable> { variable };
+        var newSet = new SharingSet(variable);
         sets.Add(newSet);
         subsetFor[variable] = newSet;
     }
-
-    public bool CurrentResultIsolated() => IsIsolated(currentResult);
 
     public bool IsIsolated(SharingVariable variable)
         => subsetFor.TryGetValue(variable, out var set) && set.Count == 1;

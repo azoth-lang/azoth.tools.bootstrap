@@ -9,11 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public abstract class ReferenceType : NonEmptyType
 {
     public ReferenceCapability Capability { get; }
-    public bool IsReadOnlyReference => Capability == ReferenceCapability.ReadOnly;
-    public bool IsConstReference => Capability == ReferenceCapability.Constant;
-    public bool IsIsolatedReference => Capability == ReferenceCapability.Isolated;
+    public bool IsReadOnlyReference => Capability.IsReadOnly;
+    public bool IsConstReference => Capability.IsConstant;
+    public bool IsIsolatedReference => Capability.IsIsolated;
     public bool IsIdentityReference => Capability == ReferenceCapability.Identity;
-
+    public bool IsLentReference => Capability.IsLent;
     public bool IsInitReference => Capability.IsInit;
     public override bool AllowsWrite => Capability.AllowsWrite;
 
