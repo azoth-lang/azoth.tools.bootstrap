@@ -60,72 +60,78 @@ internal static class ParseError
     public static Diagnostic CantMoveOutOfExpression(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2006, "Can't move out of expression. Can only move out of variable.");
+            2006, "Can't move out of expression. Can only move out of variable");
     }
 
     public static Diagnostic ResultStatementInBody(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2007, "Result statements can't appear directly in function or method bodies. Must be in block expression.");
+            2007, "Result statements can't appear directly in function or method bodies. Must be in block expression");
     }
 
     public static Diagnostic ExtraSelfParameter(CodeFile file, in TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2008, "There can be only one self parameter to a method.");
+            2008, "There can be only one self parameter to a method");
     }
 
     public static Diagnostic SelfParameterMustBeFirst(CodeFile file, in TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2009, "Self parameter must be the first parameter.");
+            2009, "Self parameter must be the first parameter");
     }
 
     public static Diagnostic CantAssignIntoExpression(CodeFile file, in TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2010, "Expression can not appear on the left hand side of an assignment.");
+            2010, "Expression can not appear on the left hand side of an assignment");
     }
 
     public static Diagnostic MissingType(CodeFile file, in TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2011, "Variable type and capability missing.");
+            2011, "Variable type and capability missing");
     }
 
     public static Diagnostic CantFreezeExpression(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2012, "Can't freeze expression. Can only freeze a variable.");
+            2012, "Can't freeze expression. Can only freeze a variable");
     }
 
     public static Diagnostic AbstractAssociatedFunction(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2013, "An associated function cannot be abstract.");
+            2013, "An associated function cannot be abstract");
     }
 
     public static Diagnostic ConcreteMethodDeclaredAbstract(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2014, "A concrete method cannot be abstract.");
+            2014, "A concrete method cannot be abstract");
     }
 
     public static Diagnostic AbstractMethodMissingAbstractModifier(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2015, "An abstract method must be declared `abstract`.");
+            2015, "An abstract method must be declared `abstract`");
     }
 
     public static Diagnostic AssociatedFunctionMissingBody(CodeFile file, TextSpan span, Name name)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2016, $"Associated function `{name}` is missing a method body.");
+            2016, $"Associated function `{name}` is missing a method body");
     }
 
     public static Diagnostic MissingSelfParameter(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2017, $"Constructor is missing a self parameter.");
+            2017, "Constructor is missing a self parameter");
+    }
+
+    public static Diagnostic LentId(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2018, "Cannot declare `lent id` capability, use `id` instead");
     }
 }

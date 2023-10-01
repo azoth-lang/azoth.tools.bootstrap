@@ -11,9 +11,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 public enum DeclaredReferenceCapability
 {
     Isolated = 1,
+    LentIsolated,
     Mutable,
+    LentMutable,
     ReadOnly, // read-only from this reference, possibly writable from others
+    LentReadOnly,
     Constant,
+    LentConstant,
     Identity
 }
 
@@ -23,12 +27,18 @@ public static class DeclaredReferenceCapabilityExtensions
         => capability switch
         {
             DeclaredReferenceCapability.Isolated => ReferenceCapability.Isolated,
-
-            DeclaredReferenceCapability.Constant => ReferenceCapability.Constant,
-            DeclaredReferenceCapability.Identity => ReferenceCapability.Identity,
+            DeclaredReferenceCapability.LentIsolated => ReferenceCapability.LentIsolated,
 
             DeclaredReferenceCapability.Mutable => ReferenceCapability.Mutable,
+            DeclaredReferenceCapability.LentMutable => ReferenceCapability.LentMutable,
+
             DeclaredReferenceCapability.ReadOnly => ReferenceCapability.ReadOnly,
+            DeclaredReferenceCapability.LentReadOnly => ReferenceCapability.LentReadOnly,
+
+            DeclaredReferenceCapability.Constant => ReferenceCapability.Constant,
+            DeclaredReferenceCapability.LentConstant => ReferenceCapability.LentConstant,
+
+            DeclaredReferenceCapability.Identity => ReferenceCapability.Identity,
             _ => throw ExhaustiveMatch.Failed(capability),
         };
 }

@@ -31,56 +31,38 @@ public static class EnumerableExtensions
 
     [DebuggerStepThrough]
     public static FixedList<T> ToFixedList<T>(this IEnumerable<T> values)
-    {
-        return new FixedList<T>(values);
-    }
+        => new FixedList<T>(values);
 
     [DebuggerStepThrough]
-    public static FixedSet<T> ToFixedSet<T>(this IEnumerable<T> values)
-    {
-        return new FixedSet<T>(values);
-    }
+    public static FixedSet<T> ToFixedSet<T>(this IEnumerable<T> values) => new(values);
 
     [DebuggerStepThrough]
     public static IEnumerable<TResult> CrossJoin<TFirst, TSecond, TResult>(
         this IEnumerable<TFirst> first,
         IEnumerable<TSecond> second,
         Func<TFirst, TSecond, TResult> resultSelector)
-    {
-        return first.SelectMany(_ => second, resultSelector);
-    }
+        => first.SelectMany(_ => second, resultSelector);
 
     [DebuggerStepThrough]
     public static IEnumerable<(TFirst, TSecond)> CrossJoin<TFirst, TSecond>(
         this IEnumerable<TFirst> first,
         IEnumerable<TSecond> second)
-    {
-        return first.SelectMany(_ => second, (f, s) => (f, s));
-    }
+        => first.SelectMany(_ => second, (f, s) => (f, s));
 
     [DebuggerStepThrough]
     public static IEnumerable<(T Value, int Index)> Enumerate<T>(this IEnumerable<T> source)
-    {
-        return source.Select((v, i) => (v, i));
-    }
+        => source.Select((v, i) => (v, i));
 
     [DebuggerStepThrough]
-    public static Queue<T> ToQueue<T>(this IEnumerable<T> source)
-    {
-        return new Queue<T>(source);
-    }
+    public static Queue<T> ToQueue<T>(this IEnumerable<T> source) => new(source);
 
     [DebuggerStepThrough]
     public static IEnumerable<T> SelectMany<T>(this IEnumerable<IEnumerable<T>> source)
-    {
-        return source.SelectMany(items => items);
-    }
+        => source.SelectMany(items => items);
 
     [DebuggerStepThrough]
     public static IEnumerable<T> Except<T>(this IEnumerable<T> source, T value)
-    {
-        return source.Except(value.Yield());
-    }
+        => source.Except(value.Yield());
 
     /// <summary>
     /// Performs an implicit cast. This is useful when C# is having trouble getting the correct type.
@@ -88,13 +70,11 @@ public static class EnumerableExtensions
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IEnumerable<T> SafeCast<T>(this IEnumerable<T> source)
-    {
         // When the source implements multiple IEnumerable<T> and the next
         // Linq function takes IEnumerable (not generic) this shim
         // is needed to force the call to the correct GetEnumerator().
         // A Linq function that takes IEnumerable is OfType<T>()
-        return new ImplicitCastEnumerable<T>(source);
-    }
+        => new ImplicitCastEnumerable<T>(source);
 
     private class ImplicitCastEnumerable<T> : IEnumerable<T>
     {
@@ -105,37 +85,24 @@ public static class EnumerableExtensions
             this.source = source;
         }
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            return source.GetEnumerator();
-        }
+        public IEnumerator<T> GetEnumerator() => source.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return source.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => source.GetEnumerator();
     }
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool AnyTrue(this IEnumerable<bool> values)
-    {
-        return values.Any(v => v);
-    }
+    public static bool AnyTrue(this IEnumerable<bool> values) => values.Any(v => v);
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> values)
         where T : class
-    {
-        return values.Where(v => !(v is null))!;
-    }
+        => values.Where(v => v is not null)!;
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> values)
         where T : struct
-    {
-        return values.Where(v => !(v is null)).Select(v => v!.Value);
-    }
+        => values.Where(v => v is not null).Select(v => v!.Value);
 }

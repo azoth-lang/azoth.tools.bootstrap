@@ -178,10 +178,14 @@ public class TypeResolver
                 referenceCapability = ReferenceCapability.InitMutable;
                 break;
             case DeclaredReferenceCapability.Isolated:
+            case DeclaredReferenceCapability.LentIsolated:
+            case DeclaredReferenceCapability.LentMutable:
                 diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, capability));
                 referenceCapability = ReferenceCapability.InitMutable;
                 break;
+            case DeclaredReferenceCapability.LentReadOnly:
             case DeclaredReferenceCapability.Constant:
+            case DeclaredReferenceCapability.LentConstant:
             case DeclaredReferenceCapability.Identity:
                 diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, capability));
                 referenceCapability = ReferenceCapability.InitReadOnly;
