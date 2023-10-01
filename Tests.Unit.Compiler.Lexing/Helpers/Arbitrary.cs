@@ -282,7 +282,7 @@ public static class Arbitrary
         //{ "shared", typeof(ISharedKeywordToken) },
         { "const", typeof(IConstKeywordToken)},
         { "id", typeof(IIdKeywordToken) },
-        //{ "lent", typeof(ILentKeywordToken) },
+        { "lent", typeof(ILentKeywordToken) },
         { "self", typeof(ISelfKeywordToken) },
         //{ "Type", typeof(ITypeKeywordToken) },
         { "true", typeof(ITrueKeywordToken) },

@@ -35,6 +35,7 @@ public static partial class TokenTypes
         typeof(IsolatedKeywordToken),
         typeof(ConstKeywordToken),
         typeof(IdKeywordToken),
+        typeof(LentKeywordToken),
         typeof(NamespaceKeywordToken),
         typeof(UsingKeywordToken),
         typeof(ForeachKeywordToken),
@@ -145,6 +146,9 @@ public static partial class TokenFactory
 
     public static IIdKeywordToken IdKeyword(TextSpan span)
         => new IdKeywordToken(span);
+
+    public static ILentKeywordToken LentKeyword(TextSpan span)
+        => new LentKeywordToken(span);
 
     public static INamespaceKeywordToken NamespaceKeyword(TextSpan span)
         => new NamespaceKeywordToken(span);
@@ -259,6 +263,7 @@ public static partial class TokenFactory
     typeof(IIsolatedKeywordToken),
     typeof(IConstKeywordToken),
     typeof(IIdKeywordToken),
+    typeof(ILentKeywordToken),
     typeof(INamespaceKeywordToken),
     typeof(IUsingKeywordToken),
     typeof(IForeachKeywordToken),
@@ -519,6 +524,15 @@ public partial interface IIdKeywordToken : IKeywordToken { }
 internal partial class IdKeywordToken : Token, IIdKeywordToken
 {
     public IdKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface ILentKeywordToken : IKeywordToken { }
+internal partial class LentKeywordToken : Token, ILentKeywordToken
+{
+    public LentKeywordToken(TextSpan span)
         : base(span)
     {
     }
