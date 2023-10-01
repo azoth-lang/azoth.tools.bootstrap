@@ -72,6 +72,17 @@ public class LexerTests
         diagnostic.AssertError(1007, 0, word.Length);
     }
 
+    [Fact]
+    public void UInt8_as_byte()
+    {
+        const string word = "uint8";
+        var result = Lex(word);
+        var token = result.AssertSingleToken();
+        token.AssertIs<IByteKeywordToken>(0, word.Length);
+        var diagnostic = result.AssertSingleDiagnostic();
+        diagnostic.AssertError(1010, 0, word.Length);
+    }
+
     [Theory]
     // Keywords
     [InlineData("class")]

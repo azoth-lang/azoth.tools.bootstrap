@@ -373,7 +373,12 @@ public class Lexer
             if (TokenTypes.KeywordFactories.TryGetValue(value, out var keywordFactory))
                 return keywordFactory(span);
 
-            // Continue and reserved words
+            // Reserved words
+            if (value == "uint8")
+            {
+                diagnostics.Add(LexError.UInt8InsteadOfByte(file, span));
+                return TokenTypes.KeywordFactories["byte"](span);
+            }
             if (value == "continue")
                 diagnostics.Add(LexError.ContinueInsteadOfNext(file, span));
             else if (TokenTypes.ReservedWords.Contains(value)
