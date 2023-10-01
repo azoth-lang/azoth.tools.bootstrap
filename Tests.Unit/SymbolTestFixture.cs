@@ -78,7 +78,7 @@ public abstract class SymbolTestFixture
         return new MethodSymbol(
             containing ?? mother.ContainingSymbol,
             Name(name) ?? mother.Name,
-            self ?? mother.SelfDataType,
+            self ?? mother.SelfParameterType,
             @params ?? mother.ParameterDataTypes,
             @return ?? mother.ReturnDataType);
     }

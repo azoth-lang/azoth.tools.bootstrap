@@ -14,7 +14,8 @@ public abstract class ReferenceType : NonEmptyType
     public bool IsIsolatedReference => Capability == ReferenceCapability.Isolated;
     public bool IsIdentityReference => Capability == ReferenceCapability.Identity;
 
-    public bool AllowsWrite => Capability.AllowsWrite;
+    public bool IsInitReference => Capability.IsInit;
+    public override bool AllowsWrite => Capability.AllowsWrite;
 
     public override bool AllowsWriteAliases => Capability.AllowsWriteAliases;
 

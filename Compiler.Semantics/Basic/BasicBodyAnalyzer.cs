@@ -863,13 +863,12 @@ public class BasicBodyAnalyzer
             default:
                 throw ExhaustiveMatch.Failed(expression);
             case IQualifiedNameExpressionSyntax exp:
-                // TODO handle mutable self
                 var contextType = InferType(exp.Context, flow);
                 DataType type;
                 var member = exp.Member;
                 switch (contextType)
                 {
-                    case ReferenceType { AllowsWrite: false } contextReferenceType:
+                    case ReferenceType { AllowsWrite: false, IsInitReference: false } contextReferenceType:
                         diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(file, expression.Span, contextReferenceType));
                         goto default;
                     case UnknownType:
@@ -884,6 +883,7 @@ public class BasicBodyAnalyzer
                         type = InferReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
                         break;
                 }
+                type = type.AccessedVia(contextType);
                 member.DataType = type;
                 var semantics = member.Semantics ??= ExpressionSemantics.CreateReference;
                 exp.Semantics = semantics;
@@ -973,7 +973,7 @@ public class BasicBodyAnalyzer
                 // Since a method has been resolved, this must not be an empty type
                 var contextType = (NonEmptyType)context.DataType.Known();
 
-                var selfParamType = contextType.ReplaceTypeParametersIn(methodSymbol.SelfDataType);
+                var selfParamType = contextType.ReplaceTypeParametersIn(methodSymbol.SelfParameterType);
                 AddImplicitConversionIfNeeded(context, selfParamType, flow);
                 AddImplicitMoveIfNeeded(context, selfParamType, flow);
                 AddImplicitFreezeIfNeeded(context, selfParamType, flow);

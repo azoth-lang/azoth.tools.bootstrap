@@ -57,6 +57,11 @@ public abstract class DataType : IEquatable<DataType>
     public abstract bool IsFullyKnown { get; }
 
     /// <summary>
+    /// Whether this type allows for writing to instances of it.
+    /// </summary>
+    public virtual bool AllowsWrite => false;
+
+    /// <summary>
     /// Whether this type in some way allows there to be write aliases to the to reachable object
     /// graph.
     /// </summary>
@@ -78,6 +83,13 @@ public abstract class DataType : IEquatable<DataType>
     /// Returns the same type except with any mutability removed.
     /// </summary>
     public virtual DataType WithoutWrite() => this;
+
+    /// <summary>
+    /// Return the type for when this a value of this type is accessed via a type of the given value.
+    /// </summary>
+    /// <remarks>This can restrict the ability to write to the value.</remarks>
+    public DataType AccessedVia(DataType contextType)
+        => contextType.AllowsWrite ? this : WithoutWrite();
 
     [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member

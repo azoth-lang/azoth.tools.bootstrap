@@ -99,7 +99,7 @@ public static class Intrinsic
         tree.Add(classSymbol);
 
         // published new(.capacity) {...}
-        var constructor = new ConstructorSymbol(classSymbol, null, Params(DataType.Size));
+        var constructor = new ConstructorSymbol(classSymbol, null, mutClassType, Params(DataType.Size));
         tree.Add(constructor);
 
         // published fn capacity() -> size;

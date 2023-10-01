@@ -9,8 +9,8 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.BindingMutability;
 
 /// <summary>
-/// Uses a data flow analysis of variables that are definitely unassigned to
-/// determine if binding mutability is violated.
+/// Uses a data flow analysis of variables that are definitely unassigned to determine if binding
+/// mutability is violated.
 /// </summary>
 public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<VariableFlags>
 {
@@ -62,9 +62,7 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<VariableFlags>
     public VariableFlags IdentifierName(
         INameExpression nameExpression,
         VariableFlags definitelyUnassigned)
-    {
-        return definitelyUnassigned;
-    }
+        => definitelyUnassigned;
 
     public VariableFlags VariableDeclaration(
         IVariableDeclarationStatement variableDeclaration,
@@ -78,7 +76,5 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<VariableFlags>
     public VariableFlags VariableDeclaration(
         IForeachExpression foreachExpression,
         VariableFlags definitelyUnassigned)
-    {
-        return definitelyUnassigned.Set(foreachExpression.Symbol, false);
-    }
+        => definitelyUnassigned.Set(foreachExpression.Symbol, false);
 }

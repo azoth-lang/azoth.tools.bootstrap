@@ -17,7 +17,5 @@ public class BindingMutabilityAnalyzer : IForwardDataFlowAnalyzer<VariableFlags>
         IExecutableDeclaration declaration,
         ISymbolTree symbolTree,
         Diagnostics diagnostics)
-    {
-        return new BindingMutabilityAnalysis(declaration, symbolTree, diagnostics);
-    }
+        => new BindingMutabilityAnalysis(declaration, symbolTree, diagnostics);
 }

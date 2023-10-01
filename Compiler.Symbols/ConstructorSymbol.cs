@@ -9,21 +9,24 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class ConstructorSymbol : InvocableSymbol
 {
     public override ObjectTypeSymbol ContainingSymbol { get; }
+    public ObjectType SelfParameterType { get; }
     public override ObjectType ReturnDataType { get; }
 
     public ConstructorSymbol(
         ObjectTypeSymbol containingSymbol,
         Name? name,
+        ObjectType selfParameterType,
         FixedList<DataType> parameterDataTypes)
         : base(containingSymbol, name, parameterDataTypes,
             containingSymbol.DeclaresType.ToDefaultConstructorReturn())
     {
         ContainingSymbol = containingSymbol;
-        ReturnDataType = containingSymbol.DeclaresType.ToConstructorReturn(parameterDataTypes);
+        SelfParameterType = selfParameterType;
+        ReturnDataType = containingSymbol.DeclaresType.ToConstructorReturn(selfParameterType, parameterDataTypes);
     }
 
     public static ConstructorSymbol CreateDefault(ObjectTypeSymbol containingSymbol)
-        => new(containingSymbol, null, FixedList<DataType>.Empty);
+        => new(containingSymbol, null, containingSymbol.DeclaresType.ToDefaultConstructorSelf(), FixedList<DataType>.Empty);
 
     public override bool Equals(Symbol? other)
     {

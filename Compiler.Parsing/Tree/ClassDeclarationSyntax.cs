@@ -7,7 +7,6 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -83,9 +82,8 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
         if (DefaultConstructorSymbol is not null)
             throw new InvalidOperationException($"Can't {nameof(CreateDefaultConstructor)} twice");
 
-        var constructedType = Symbol.Result.DeclaresType;
-        var constructorSymbol = new ConstructorSymbol(Symbol.Result, null, FixedList<DataType>.Empty);
-        var selfParameterSymbol = new SelfParameterSymbol(constructorSymbol, constructedType.ToConstructorSelf());
+        var constructorSymbol = ConstructorSymbol.CreateDefault(Symbol.Result);
+        var selfParameterSymbol = new SelfParameterSymbol(constructorSymbol, constructorSymbol.SelfParameterType);
 
         symbolTree.Add(constructorSymbol);
         symbolTree.Add(selfParameterSymbol);

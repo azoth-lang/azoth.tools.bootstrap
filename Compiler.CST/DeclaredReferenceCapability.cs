@@ -6,7 +6,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 /// <summary>
 /// The reference capability a type was declared with.
 /// </summary>
-// TODO maybe this should be melded with ReferenceCapability
+/// <remarks>This is distinct from <see cref="ReferenceCapability"/> because that type supports
+/// additional capabilities that cannot be directly declared.</remarks>
 public enum DeclaredReferenceCapability
 {
     Isolated = 1,

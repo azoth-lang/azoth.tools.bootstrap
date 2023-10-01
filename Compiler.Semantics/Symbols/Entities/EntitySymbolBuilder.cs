@@ -96,7 +96,7 @@ public class EntitySymbolBuilder
         var parameterTypes = ResolveParameterTypes(resolver, constructor.Parameters, constructor.DeclaringClass);
 
         var declaringClassSymbol = constructor.DeclaringClass.Symbol.Result;
-        var symbol = new ConstructorSymbol(declaringClassSymbol, constructor.Name, parameterTypes);
+        var symbol = new ConstructorSymbol(declaringClassSymbol, constructor.Name, selfParameterType, parameterTypes);
         constructor.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);
         BuildSelfParameterSymbol(symbol, constructor.SelfParameter, selfParameterType);
@@ -269,14 +269,13 @@ public class EntitySymbolBuilder
         }
     }
 
-    // TODO: merge with ResolveMethodSelfParameterType?
     private static ObjectType ResolveConstructorSelfParameterType(
-        TypeResolver typeResolver,
-        ISelfParameterSyntax constructorSelfParameter,
+        TypeResolver resolver,
+        ISelfParameterSyntax selfParameter,
         IClassDeclarationSyntax declaringClass)
     {
         var selfType = declaringClass.Symbol.Result.DeclaresType;
-        return selfType.ToConstructorSelf();
+        return resolver.EvaluateConstructorSelfParameterType(selfType, selfParameter.Capability, selfType.GenericParameterDataTypes);
     }
 
     private static ObjectType ResolveMethodSelfParameterType(
@@ -285,7 +284,7 @@ public class EntitySymbolBuilder
         IClassDeclarationSyntax declaringClass)
     {
         var selfType = declaringClass.Symbol.Result.DeclaresType;
-        return resolver.Evaluate(selfType, selfParameter.Capability, selfType.GenericParameterDataTypes);
+        return resolver.EvaluateMethodSelfParameterType(selfType, selfParameter.Capability, selfType.GenericParameterDataTypes);
     }
 
     private void BuildSelfParameterSymbol(

@@ -73,13 +73,12 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     public FixedSet<DeclaredObjectType> SuperTypes { get; }
 
     /// <summary>
-    /// Make a version of this type for use as the constructor parameter. One issue is
-    /// that it should be mutable even if the type is declared const.
+    /// Make a version of this type for use as the default constructor parameter.
     /// </summary>
-    /// <remarks>This is always `mut` because the type can be mutated inside the constructor.</remarks>
-    public ObjectType ToConstructorSelf()
-        // TODO does this need to be `init`?
-        => With(ReferenceCapability.Mutable, GenericParameterDataTypes);
+    /// <remarks>This is always `init mut` because the type is being initialized and can be mutated
+    /// inside the constructor via field initializers.</remarks>
+    public ObjectType ToDefaultConstructorSelf()
+        => With(ReferenceCapability.InitMutable, GenericParameterDataTypes);
 
     /// <summary>
     /// Make a version of this type for use as the return type of the default constructor.
@@ -94,9 +93,12 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// </summary>
     /// <remarks>The capability of the return type is restricted by the parameter types because the
     /// newly constructed object could contain references to them.</remarks>
-    public ObjectType ToConstructorReturn(IEnumerable<DataType> parameterTypes)
+    public ObjectType ToConstructorReturn(ReferenceType selfParameterType, IEnumerable<DataType> parameterTypes)
     {
         if (IsConst) return With(ReferenceCapability.Constant, GenericParameterDataTypes);
+        // Read only self constructors cannot return `mut` or `iso`
+        if (!selfParameterType.AllowsWrite)
+            return With(ReferenceCapability.ReadOnly, GenericParameterDataTypes);
         foreach (var parameterType in parameterTypes)
             switch (parameterType)
             {

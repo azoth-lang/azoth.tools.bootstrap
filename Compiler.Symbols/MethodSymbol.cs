@@ -10,19 +10,19 @@ public sealed class MethodSymbol : FunctionOrMethodSymbol
 {
     public override TypeSymbol ContainingSymbol { get; }
     public override Name Name { get; }
-    public DataType SelfDataType { get; }
+    public DataType SelfParameterType { get; }
 
     public MethodSymbol(
         TypeSymbol containingSymbol,
         Name name,
-        DataType selfDataType,
+        DataType selfParameterType,
         FixedList<DataType> parameterDataTypes,
         DataType returnDataType)
         : base(containingSymbol, name, parameterDataTypes, returnDataType)
     {
         ContainingSymbol = containingSymbol;
         Name = name;
-        SelfDataType = selfDataType;
+        SelfParameterType = selfParameterType;
     }
 
     public override bool Equals(Symbol? other)
@@ -32,17 +32,17 @@ public sealed class MethodSymbol : FunctionOrMethodSymbol
         return other is MethodSymbol otherMethod
                && ContainingSymbol == otherMethod.ContainingSymbol
                && Name == otherMethod.Name
-               && SelfDataType == otherMethod.SelfDataType
+               && SelfParameterType == otherMethod.SelfParameterType
                && ParameterDataTypes.SequenceEqual(otherMethod.ParameterDataTypes)
                && ReturnDataType == otherMethod.ReturnDataType;
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(Name, SelfDataType, ParameterDataTypes, ReturnDataType);
+        => HashCode.Combine(Name, SelfParameterType, ParameterDataTypes, ReturnDataType);
 
     public override string ToILString()
     {
-        var selfCapability = SelfDataType is ReferenceType referenceType ? referenceType.Capability.ToILString() + " " : "";
+        var selfCapability = SelfParameterType is ReferenceType referenceType ? referenceType.Capability.ToILString() + " " : "";
         string parameters = string.Join(", ", ParameterDataTypes.Select(d => d.ToILString()).Prepend($"{selfCapability}self"));
         return $"{ContainingSymbol.ToILString()}::{Name}({parameters}) -> {ReturnDataType.ToILString()}";
     }
