@@ -40,7 +40,7 @@ MemberDeclaration: Declaration = DeclaringClass:'IClassDeclaration';
 MethodDeclaration: MemberDeclaration = Symbol:'MethodSymbol' SelfParameter Parameters:NamedParameter*;
 AbstractMethodDeclaration: MethodDeclaration = SelfParameter Parameters:NamedParameter*;
 ConcreteMethodDeclaration: MethodDeclaration, ConcreteInvocableDeclaration = Symbol:'MethodSymbol' SelfParameter Parameters:NamedParameter* Body;
-ConstructorDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = Symbol:'ConstructorSymbol' ImplicitSelfParameter:SelfParameter Parameters:ConstructorParameter* Body;
+ConstructorDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = Symbol:'ConstructorSymbol' SelfParameter Parameters:ConstructorParameter* Body;
 FieldDeclaration: MemberDeclaration, ExecutableDeclaration, Binding = Symbol:'FieldSymbol';
 AssociatedFunctionDeclaration: MemberDeclaration, ConcreteFunctionInvocableDeclaration = Symbol:'FunctionSymbol' Parameters:NamedParameter* Body;
 

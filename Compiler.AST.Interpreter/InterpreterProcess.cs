@@ -145,7 +145,7 @@ public class InterpreterProcess
         try
         {
             var variables = new LocalVariableScope();
-            variables.Add(constructor.ImplicitSelfParameter.Symbol, self);
+            variables.Add(constructor.SelfParameter.Symbol, self);
             foreach (var (arg, parameter) in arguments.Zip(constructor.Parameters))
                 switch (parameter)
                 {

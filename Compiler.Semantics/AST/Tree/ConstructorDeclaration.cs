@@ -1,3 +1,4 @@
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -9,7 +10,7 @@ internal class ConstructorDeclaration : InvocableDeclaration, IConstructorDeclar
 {
     public IClassDeclaration DeclaringClass { get; }
     public new ConstructorSymbol Symbol { get; }
-    public ISelfParameter ImplicitSelfParameter { get; }
+    public ISelfParameter SelfParameter { get; }
     public IBody Body { get; }
 
     public ConstructorDeclaration(
@@ -18,13 +19,13 @@ internal class ConstructorDeclaration : InvocableDeclaration, IConstructorDeclar
         IClassDeclaration declaringClass,
         ConstructorSymbol symbol,
         TextSpan nameSpan,
-        ISelfParameter implicitSelfParameter,
+        ISelfParameter selfParameter,
         FixedList<IConstructorParameter> parameters,
         IBody body)
         : base(file, span, symbol, nameSpan, parameters)
     {
         Symbol = symbol;
-        ImplicitSelfParameter = implicitSelfParameter;
+        SelfParameter = selfParameter;
         Body = body;
         DeclaringClass = declaringClass;
     }
@@ -32,6 +33,7 @@ internal class ConstructorDeclaration : InvocableDeclaration, IConstructorDeclar
     public override string ToString()
     {
         var name = Symbol.Name is null ? $" {Symbol.Name}" : "";
-        return $"{Symbol.ContainingSymbol}::new{name}({string.Join(", ", Parameters)})";
+        var parameters = string.Join(", ", Parameters.Prepend<IParameter>(SelfParameter));
+        return $"{Symbol.ContainingSymbol}::new{name}({parameters})";
     }
 }

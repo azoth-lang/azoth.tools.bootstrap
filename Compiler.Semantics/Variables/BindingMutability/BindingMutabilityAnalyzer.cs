@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.BindingMutability;
 public class BindingMutabilityAnalyzer : IForwardDataFlowAnalyzer<VariableFlags>
 {
     #region Singleton
-    public static readonly BindingMutabilityAnalyzer Instance = new BindingMutabilityAnalyzer();
+    public static readonly BindingMutabilityAnalyzer Instance = new();
 
     private BindingMutabilityAnalyzer() { }
     #endregion

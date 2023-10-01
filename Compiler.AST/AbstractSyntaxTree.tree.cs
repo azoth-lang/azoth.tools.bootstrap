@@ -159,7 +159,7 @@ public partial interface IConcreteMethodDeclaration : IMethodDeclaration, IConcr
 public partial interface IConstructorDeclaration : IMemberDeclaration, IConcreteInvocableDeclaration
 {
     new ConstructorSymbol Symbol { get; }
-    ISelfParameter ImplicitSelfParameter { get; }
+    ISelfParameter SelfParameter { get; }
 }
 
 public partial interface IFieldDeclaration : IMemberDeclaration, IExecutableDeclaration, IBinding

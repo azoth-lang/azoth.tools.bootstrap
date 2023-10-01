@@ -36,7 +36,7 @@ public static class IAbstractSyntaxExtensions
                 yield return n.Body;
                 yield break;
             case IConstructorDeclaration n:
-                yield return n.ImplicitSelfParameter;
+                yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
                 yield return n.Body;
