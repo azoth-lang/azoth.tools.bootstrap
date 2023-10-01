@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
@@ -23,7 +23,7 @@ public sealed class SharingRelation
     /// </summary>
     private readonly Dictionary<SharingVariable, SharingSet> subsetFor;
 
-    private ResultVariable currentResult = ResultVariable.None;
+    private ResultVariable? currentResult;
 
     public SharingRelation()
     {
@@ -31,7 +31,7 @@ public sealed class SharingRelation
         subsetFor = new();
     }
 
-    internal SharingRelation(IEnumerable<SharingSetSnapshot> sets, ResultVariable currentResult)
+    internal SharingRelation(IEnumerable<SharingSetSnapshot> sets, ResultVariable? currentResult)
     {
         this.currentResult = currentResult;
         this.sets = new(sets.Select(s => s.MutableCopy()));
@@ -41,7 +41,7 @@ public sealed class SharingRelation
                 subsetFor.Add(variable, set);
     }
 
-    private SharingRelation(IEnumerable<SharingSet> sets, ResultVariable currentResult)
+    private SharingRelation(IEnumerable<SharingSet> sets, ResultVariable? currentResult)
     {
         this.currentResult = currentResult;
         this.sets = new(sets);
@@ -51,7 +51,8 @@ public sealed class SharingRelation
                 subsetFor.Add(variable, set);
     }
 
-    public ResultVariable CurrentResult => currentResult;
+    public ResultVariable CurrentResult => currentResult
+        ?? throw new InvalidOperationException("Cannot access current result because there is no current result.");
 
     public IEnumerable<IReadOnlySharingSet> SharingSets => sets;
 
@@ -69,7 +70,7 @@ public sealed class SharingRelation
         return Enumerable.Empty<BindingSymbol>();
     }
 
-    public SharingRelation Copy() => new(sets, CurrentResult);
+    public SharingRelation Copy() => new(sets, currentResult);
 
     /// <summary>
     /// Declare a new variable. Newly created variables are not connected to any others.
@@ -96,9 +97,10 @@ public sealed class SharingRelation
 
     public ResultVariable NewResult()
     {
-        currentResult = currentResult.NextResult();
-        Declare(currentResult);
-        return currentResult;
+        var newResult = currentResult?.NextResult() ?? ResultVariable.First;
+        Declare(newResult);
+        currentResult = newResult;
+        return newResult;
     }
 
     public IReadOnlySharingSet? Drop(BindingSymbol symbol)
@@ -133,7 +135,12 @@ public sealed class SharingRelation
             Drop(variable);
     }
 
-    public void UnionWithCurrentResult(SharingVariable var) => Union(var, currentResult);
+    public void UnionWithCurrentResult(SharingVariable var)
+    {
+        var result = currentResult
+            ?? throw new InvalidOperationException("Cannot union with current result because there is no current result.");
+        Union(var, result);
+    }
 
     public void UnionWithCurrentResultAndDrop(ResultVariable variable)
     {
@@ -181,9 +188,9 @@ public sealed class SharingRelation
     public bool IsIsolatedExceptCurrentResult(SharingVariable variable)
         => subsetFor.TryGetValue(variable, out var set)
            && set.Count <= 2
-           && set.Except(currentResult).Count() == 1;
+           && set.Except(CurrentResult).Count() == 1;
 
-    public SharingRelationSnapshot Snapshot() => new(sets, CurrentResult);
+    public SharingRelationSnapshot Snapshot() => new(sets, currentResult);
 
     public override string ToString()
         => string.Join(", ", sets.Select(s => $"{{{string.Join(", ", s.Distinct())}}}"));

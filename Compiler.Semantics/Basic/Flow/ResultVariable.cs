@@ -2,11 +2,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
 public readonly struct ResultVariable
 {
-    public static readonly ResultVariable None = new(-1);
+    public static readonly ResultVariable First = new(0);
 
     private readonly long result;
 
-    public ResultVariable(long resultNumber)
+    private ResultVariable(long resultNumber)
     {
         result = resultNumber;
     }
