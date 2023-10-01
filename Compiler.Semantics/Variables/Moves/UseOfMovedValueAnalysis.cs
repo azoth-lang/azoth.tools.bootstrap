@@ -17,7 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Moves;
 /// its value moved. Variables not yet declared or assigned vacuously haven't
 /// been moved from.
 /// </summary>
-public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<VariableFlags>
+public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags>
 {
     private readonly IExecutableDeclaration declaration;
     private readonly ISymbolTree symbolTree;
@@ -35,13 +35,13 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<VariableFlags>
         this.diagnostics = diagnostics;
     }
 
-    public VariableFlags StartState()
+    public BindingFlags StartState()
         // All variables start without possibly having their values moved out of them
-        => new(declaration, symbolTree, false);
+        => BindingFlags.ForVariables(declaration, symbolTree, false);
 
-    public VariableFlags Assignment(
+    public BindingFlags Assignment(
         IAssignmentExpression assignmentExpression,
-        VariableFlags possiblyMoved)
+        BindingFlags possiblyMoved)
     {
         switch (assignmentExpression.LeftOperand)
         {
@@ -56,9 +56,9 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<VariableFlags>
         }
     }
 
-    public VariableFlags IdentifierName(
+    public BindingFlags IdentifierName(
         INameExpression nameExpression,
-        VariableFlags possiblyMoved)
+        BindingFlags possiblyMoved)
     {
         var symbol = nameExpression.ReferencedSymbol;
         if (possiblyMoved[symbol] == true)
@@ -91,15 +91,15 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<VariableFlags>
         }
     }
 
-    public VariableFlags VariableDeclaration(
+    public BindingFlags VariableDeclaration(
         IVariableDeclarationStatement variableDeclaration,
-        VariableFlags possiblyMoved)
+        BindingFlags possiblyMoved)
         // No affect on state since it should already be false
         => possiblyMoved;
 
-    public VariableFlags VariableDeclaration(
+    public BindingFlags VariableDeclaration(
         IForeachExpression foreachExpression,
-        VariableFlags possiblyMoved)
+        BindingFlags possiblyMoved)
         // No affect on state since it should already be false
         => possiblyMoved;
 }

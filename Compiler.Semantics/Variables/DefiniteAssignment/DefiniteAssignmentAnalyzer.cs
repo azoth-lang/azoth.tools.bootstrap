@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.DefiniteAssignment;
 
-public class DefiniteAssignmentAnalyzer : IForwardDataFlowAnalyzer<VariableFlags>
+public class DefiniteAssignmentAnalyzer : IForwardDataFlowAnalyzer<BindingFlags>
 {
     #region Singleton
     public static readonly DefiniteAssignmentAnalyzer Instance = new DefiniteAssignmentAnalyzer();
@@ -13,7 +13,7 @@ public class DefiniteAssignmentAnalyzer : IForwardDataFlowAnalyzer<VariableFlags
     private DefiniteAssignmentAnalyzer() { }
     #endregion
 
-    public IForwardDataFlowAnalysis<VariableFlags> BeginAnalysis(
+    public IForwardDataFlowAnalysis<BindingFlags> BeginAnalysis(
         IExecutableDeclaration declaration,
         ISymbolTree symbolTree,
         Diagnostics diagnostics)

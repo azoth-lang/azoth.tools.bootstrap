@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Liveness;
 
-public class LivenessAnalyzer : IBackwardDataFlowAnalyzer<VariableFlags>
+public class LivenessAnalyzer : IBackwardDataFlowAnalyzer<BindingFlags>
 {
     #region Singleton
     public static readonly LivenessAnalyzer Instance = new();
@@ -13,7 +13,7 @@ public class LivenessAnalyzer : IBackwardDataFlowAnalyzer<VariableFlags>
     private LivenessAnalyzer() { }
     #endregion
 
-    public IBackwardDataFlowAnalysis<VariableFlags> BeginAnalysis(
+    public IBackwardDataFlowAnalysis<BindingFlags> BeginAnalysis(
         IExecutableDeclaration declaration,
         ISymbolTree symbolTree,
         Diagnostics _)

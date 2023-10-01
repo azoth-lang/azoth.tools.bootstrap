@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.BindingMutability;
 
-public class BindingMutabilityAnalyzer : IForwardDataFlowAnalyzer<VariableFlags>
+public class BindingMutabilityAnalyzer : IForwardDataFlowAnalyzer<BindingFlags>
 {
     #region Singleton
     public static readonly BindingMutabilityAnalyzer Instance = new();
@@ -13,7 +13,7 @@ public class BindingMutabilityAnalyzer : IForwardDataFlowAnalyzer<VariableFlags>
     private BindingMutabilityAnalyzer() { }
     #endregion
 
-    public IForwardDataFlowAnalysis<VariableFlags> BeginAnalysis(
+    public IForwardDataFlowAnalysis<BindingFlags> BeginAnalysis(
         IExecutableDeclaration declaration,
         ISymbolTree symbolTree,
         Diagnostics diagnostics)

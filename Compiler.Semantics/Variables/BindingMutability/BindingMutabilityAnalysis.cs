@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.BindingMutability;
 /// Uses a data flow analysis of variables and fields that are definitely unassigned to determine if
 /// binding mutability is violated.
 /// </summary>
-public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<VariableFlags>
+public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<BindingFlags>
 {
     private readonly IExecutableDeclaration declaration;
     private readonly ISymbolTree symbolTree;
@@ -27,10 +27,10 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<VariableFlags>
         this.diagnostics = diagnostics;
     }
 
-    public VariableFlags StartState()
+    public BindingFlags StartState()
     {
         // All variables start definitely unassigned
-        var definitelyUnassigned = new VariableFlags(declaration, symbolTree, true);
+        var definitelyUnassigned = BindingFlags.ForVariables(declaration, symbolTree, true);
         if (declaration is IInvocableDeclaration invocable)
         {
             // All parameters are assigned
@@ -51,9 +51,9 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<VariableFlags>
         return definitelyUnassigned;
     }
 
-    public VariableFlags Assignment(
+    public BindingFlags Assignment(
         IAssignmentExpression assignmentExpression,
-        VariableFlags definitelyUnassigned)
+        BindingFlags definitelyUnassigned)
     {
         switch (assignmentExpression.LeftOperand)
         {
@@ -69,22 +69,22 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<VariableFlags>
         }
     }
 
-    public VariableFlags IdentifierName(
+    public BindingFlags IdentifierName(
         INameExpression nameExpression,
-        VariableFlags definitelyUnassigned)
+        BindingFlags definitelyUnassigned)
         => definitelyUnassigned;
 
-    public VariableFlags VariableDeclaration(
+    public BindingFlags VariableDeclaration(
         IVariableDeclarationStatement variableDeclaration,
-        VariableFlags definitelyUnassigned)
+        BindingFlags definitelyUnassigned)
     {
         if (variableDeclaration.Initializer is null)
             return definitelyUnassigned;
         return definitelyUnassigned.Set(variableDeclaration.Symbol, false);
     }
 
-    public VariableFlags VariableDeclaration(
+    public BindingFlags VariableDeclaration(
         IForeachExpression foreachExpression,
-        VariableFlags definitelyUnassigned)
+        BindingFlags definitelyUnassigned)
         => definitelyUnassigned.Set(foreachExpression.Symbol, false);
 }

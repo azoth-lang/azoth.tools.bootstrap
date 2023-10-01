@@ -8,19 +8,25 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 
-public class VariableFlags
+public class BindingFlags
 {
     private readonly FixedDictionary<BindingSymbol, int> symbolMap;
     private readonly BitArray flags;
 
-    public VariableFlags(IExecutableDeclaration declaration, ISymbolTree symbolTree, bool defaultValue)
+    public static BindingFlags ForVariables(
+        IExecutableDeclaration declaration,
+        ISymbolTree symbolTree,
+        bool defaultValue)
+        => new BindingFlags(declaration, symbolTree, defaultValue);
+
+    private BindingFlags(IExecutableDeclaration declaration, ISymbolTree symbolTree, bool defaultValue)
     {
         var invocableSymbol = declaration.Symbol;
         symbolMap = symbolTree.Children(invocableSymbol).Cast<BindingSymbol>().Enumerate().ToFixedDictionary();
         flags = new BitArray(symbolMap.Count, defaultValue);
     }
 
-    public VariableFlags(
+    private BindingFlags(
         FixedDictionary<BindingSymbol, int> symbolMap,
         BitArray flags)
     {
@@ -34,7 +40,7 @@ public class VariableFlags
     /// </summary>
     public bool? this[BindingSymbol symbol] => symbolMap.TryGetValue(symbol, out var i) ? flags[i] : null;
 
-    public VariableFlags Set(BindingSymbol symbol, bool value)
+    public BindingFlags Set(BindingSymbol symbol, bool value)
     {
         // TODO if setting to the current value, don't need to clone
         var newFlags = Clone();
@@ -42,7 +48,7 @@ public class VariableFlags
         return newFlags;
     }
 
-    public VariableFlags Set(IEnumerable<BindingSymbol> symbols, bool value)
+    public BindingFlags Set(IEnumerable<BindingSymbol> symbols, bool value)
     {
         // TODO if setting to the current value, don't need to clone
         var newFlags = Clone();
@@ -52,5 +58,5 @@ public class VariableFlags
         return newFlags;
     }
 
-    private VariableFlags Clone() => new(symbolMap, (BitArray)flags.Clone());
+    private BindingFlags Clone() => new(symbolMap, (BitArray)flags.Clone());
 }

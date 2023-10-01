@@ -9,7 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.DefiniteAssignment;
 
 // TODO check definite assignment of fields in constructors
-internal class DefiniteAssignmentAnalysis : IForwardDataFlowAnalysis<VariableFlags>
+internal class DefiniteAssignmentAnalysis : IForwardDataFlowAnalysis<BindingFlags>
 {
     private readonly IExecutableDeclaration declaration;
     private readonly ISymbolTree symbolTree;
@@ -27,9 +27,9 @@ internal class DefiniteAssignmentAnalysis : IForwardDataFlowAnalysis<VariableFla
         this.diagnostics = diagnostics;
     }
 
-    public VariableFlags StartState()
+    public BindingFlags StartState()
     {
-        var definitelyAssigned = new VariableFlags(declaration, symbolTree, false);
+        var definitelyAssigned = BindingFlags.ForVariables(declaration, symbolTree, false);
         if (declaration is IInvocableDeclaration invocable)
         {
             // All parameters are assigned
@@ -40,9 +40,9 @@ internal class DefiniteAssignmentAnalysis : IForwardDataFlowAnalysis<VariableFla
         return definitelyAssigned;
     }
 
-    public VariableFlags Assignment(
+    public BindingFlags Assignment(
         IAssignmentExpression assignmentExpression,
-        VariableFlags definitelyAssigned)
+        BindingFlags definitelyAssigned)
     {
         return assignmentExpression.LeftOperand switch
         {
@@ -53,9 +53,9 @@ internal class DefiniteAssignmentAnalysis : IForwardDataFlowAnalysis<VariableFla
         };
     }
 
-    public VariableFlags IdentifierName(
+    public BindingFlags IdentifierName(
         INameExpression nameExpression,
-        VariableFlags definitelyAssigned)
+        BindingFlags definitelyAssigned)
     {
         if (definitelyAssigned[nameExpression.ReferencedSymbol] == false)
             diagnostics.Add(SemanticError.VariableMayNotHaveBeenAssigned(file,
@@ -64,18 +64,18 @@ internal class DefiniteAssignmentAnalysis : IForwardDataFlowAnalysis<VariableFla
         return definitelyAssigned;
     }
 
-    public VariableFlags VariableDeclaration(
+    public BindingFlags VariableDeclaration(
         IVariableDeclarationStatement variableDeclaration,
-        VariableFlags definitelyAssigned)
+        BindingFlags definitelyAssigned)
     {
         if (variableDeclaration.Initializer is null)
             return definitelyAssigned;
         return definitelyAssigned.Set(variableDeclaration.Symbol, true);
     }
 
-    public VariableFlags VariableDeclaration(
+    public BindingFlags VariableDeclaration(
         IForeachExpression foreachExpression,
-        VariableFlags definitelyAssigned)
+        BindingFlags definitelyAssigned)
     {
         return definitelyAssigned.Set(foreachExpression.Symbol, true);
     }

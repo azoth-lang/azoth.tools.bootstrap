@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Moves;
 
-public class UseOfMovedValueAnalyzer : IForwardDataFlowAnalyzer<VariableFlags>
+public class UseOfMovedValueAnalyzer : IForwardDataFlowAnalyzer<BindingFlags>
 {
     #region Singleton
     public static readonly UseOfMovedValueAnalyzer Instance = new UseOfMovedValueAnalyzer();
@@ -13,7 +13,7 @@ public class UseOfMovedValueAnalyzer : IForwardDataFlowAnalyzer<VariableFlags>
     private UseOfMovedValueAnalyzer() { }
     #endregion
 
-    public IForwardDataFlowAnalysis<VariableFlags> BeginAnalysis(
+    public IForwardDataFlowAnalysis<BindingFlags> BeginAnalysis(
         IExecutableDeclaration declaration,
         ISymbolTree symbolTree,
         Diagnostics diagnostics)

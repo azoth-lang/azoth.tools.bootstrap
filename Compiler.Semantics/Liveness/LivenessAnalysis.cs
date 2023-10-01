@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Liveness;
 
-public class LivenessAnalysis : IBackwardDataFlowAnalysis<VariableFlags>
+public class LivenessAnalysis : IBackwardDataFlowAnalysis<BindingFlags>
 {
     private readonly IExecutableDeclaration declaration;
     private readonly ISymbolTree symbolTree;
@@ -18,11 +18,11 @@ public class LivenessAnalysis : IBackwardDataFlowAnalysis<VariableFlags>
         this.symbolTree = symbolTree;
     }
 
-    public VariableFlags StartState() => new(declaration, symbolTree, false);
+    public BindingFlags StartState() => BindingFlags.ForVariables(declaration, symbolTree, false);
 
-    public VariableFlags Assignment(
+    public BindingFlags Assignment(
         IAssignmentExpression assignmentExpression,
-        VariableFlags liveVariables)
+        BindingFlags liveVariables)
     {
         switch (assignmentExpression.LeftOperand)
         {
@@ -39,25 +39,25 @@ public class LivenessAnalysis : IBackwardDataFlowAnalysis<VariableFlags>
         }
     }
 
-    public VariableFlags IdentifierName(
+    public BindingFlags IdentifierName(
         INameExpression nameExpression,
-        VariableFlags liveVariables)
+        BindingFlags liveVariables)
     {
         SetLiveness(nameExpression.ReferencedSymbol, nameExpression.VariableIsLiveAfter, liveVariables);
         return liveVariables.Set(nameExpression.ReferencedSymbol, true);
     }
 
-    public VariableFlags VariableDeclaration(
+    public BindingFlags VariableDeclaration(
         IVariableDeclarationStatement variableDeclaration,
-        VariableFlags liveVariables)
+        BindingFlags liveVariables)
     {
         SetLiveness(variableDeclaration.Symbol, variableDeclaration.VariableIsLiveAfter, liveVariables);
         return liveVariables.Set(variableDeclaration.Symbol, false);
     }
 
-    public VariableFlags VariableDeclaration(
+    public BindingFlags VariableDeclaration(
         IForeachExpression foreachExpression,
-        VariableFlags liveVariables)
+        BindingFlags liveVariables)
     {
         SetLiveness(foreachExpression.Symbol, foreachExpression.VariableIsLiveAfterAssignment, liveVariables);
         return liveVariables.Set(foreachExpression.Symbol, false);
@@ -66,7 +66,7 @@ public class LivenessAnalysis : IBackwardDataFlowAnalysis<VariableFlags>
     private static void SetLiveness(
         NamedBindingSymbol symbol,
         Promise<bool> promise,
-        VariableFlags liveVariables)
+        BindingFlags liveVariables)
     {
         var isLiveAfter = liveVariables[symbol]
                           ?? throw new Exception($"No liveness data for variable {symbol}");
