@@ -80,11 +80,14 @@ public sealed class FlowState
         => sharing.Union(var, sharing.CurrentResult);
 
     public void UnionWithCurrentResultAndDrop(ResultVariable variable)
-        => sharing.UnionWithCurrentResultAndDrop(variable);
+    {
+        sharing.Union(variable, sharing.CurrentResult);
+        sharing.Drop(variable);
+    }
 
     public void DropCurrentResult() => RemoveRestrictions(sharing.Drop(sharing.CurrentResult));
 
-    public void SplitCurrentResult() => sharing.SplitCurrentResult();
+    public void SplitCurrentResult() => sharing.Split(sharing.CurrentResult);
 
     public bool IsIsolated(BindingVariable variable) => sharing.IsIsolated(variable);
     public bool IsIsolated(ISharingVariable variable) => sharing.IsIsolated(variable);

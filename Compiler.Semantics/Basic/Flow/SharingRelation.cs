@@ -22,9 +22,11 @@ public sealed class SharingRelation
     /// </summary>
     private readonly Dictionary<ISharingVariable, SharingSet> subsetFor;
 
+    // TODO current result along different branches of if conflict?
     private ResultVariable? currentResult;
 
-    public ImplicitLend? CurrentLend { get; private set; }
+    // TODO current lend along different branches of if conflict?
+    private ImplicitLend? currentLend;
 
     public SharingRelation()
     {
@@ -32,9 +34,13 @@ public sealed class SharingRelation
         subsetFor = new();
     }
 
-    internal SharingRelation(IEnumerable<SharingSetSnapshot> sets, ResultVariable? currentResult)
+    internal SharingRelation(
+        IEnumerable<SharingSetSnapshot> sets,
+        ResultVariable? currentResult,
+        ImplicitLend? currentLend)
     {
         this.currentResult = currentResult;
+        this.currentLend = currentLend;
         this.sets = new(sets.Select(s => s.MutableCopy()));
         subsetFor = new();
         foreach (var set in this.sets)
@@ -134,7 +140,6 @@ public sealed class SharingRelation
 
     public IReadOnlySharingSet? Drop(BindingVariable variable) => Drop((ISharingVariable)variable);
 
-
     public IReadOnlySharingSet? Drop(ResultVariable result) => Drop((ISharingVariable)result);
 
     private IReadOnlySharingSet? Drop(ISharingVariable variable)
@@ -152,12 +157,6 @@ public sealed class SharingRelation
     {
         foreach (var variable in subsetFor.Keys.Where(v => v.IsVariableOrParameter).ToArray())
             Drop(variable);
-    }
-
-    public void UnionWithCurrentResultAndDrop(ResultVariable variable)
-    {
-        Union(variable, CurrentResult);
-        Drop(variable);
     }
 
     public void Union(ISharingVariable var1, BindingVariable var2)
@@ -180,12 +179,10 @@ public sealed class SharingRelation
         smallerSet.Clear();
     }
 
-    public void SplitCurrentResult() => Split(CurrentResult);
-
     /// <summary>
     /// Split the given variable out from sharing with the other variables it is connected to.
     /// </summary>
-    private void Split(ISharingVariable variable)
+    public void Split(ResultVariable variable)
     {
         if (!subsetFor.TryGetValue(variable, out var set)
             || set.Count == 1)
@@ -204,13 +201,11 @@ public sealed class SharingRelation
         => subsetFor.TryGetValue(variable, out var set)
            && set.IsIsolatedExcept(result);
 
-    public SharingRelationSnapshot Snapshot() => new(sets, currentResult);
+    public SharingRelationSnapshot Snapshot() => new(sets, currentResult, currentLend);
 
     public override string ToString()
         => string.Join(", ", sets.Select(s => $"{{{string.Join(", ", s.Distinct())}}}"));
 
     private ImplicitLend NewLend(bool restrictWrite)
-        => CurrentLend = new ImplicitLend(CurrentLend, restrictWrite);
-
-
+        => currentLend = new ImplicitLend(currentLend, restrictWrite);
 }

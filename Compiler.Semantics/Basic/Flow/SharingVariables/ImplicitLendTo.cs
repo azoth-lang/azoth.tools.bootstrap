@@ -6,7 +6,7 @@ public class ImplicitLendTo : ISharingVariable
 {
     public ImplicitLend ImplicitLend { get; }
     public bool IsVariableOrParameter => false;
-    public bool IsResult => false;
+
     /// <remarks>The to side is NOT affected by any restrictions.</remarks>
     public bool RestrictsWrite => false;
 

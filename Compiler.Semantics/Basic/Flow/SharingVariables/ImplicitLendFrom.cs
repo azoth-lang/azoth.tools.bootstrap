@@ -6,7 +6,7 @@ internal class ImplicitLendFrom : ISharingVariable
 {
     public ImplicitLend ImplicitLend { get; }
     public bool IsVariableOrParameter => false;
-    public bool IsResult => false;
+
     /// <remarks>The from side is affected by any restrictions.</remarks>
     public bool RestrictsWrite => ImplicitLend.RestrictWrite;
 

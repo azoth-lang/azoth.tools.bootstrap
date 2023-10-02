@@ -28,7 +28,6 @@ public sealed class ExternalReference : ISharingVariable
     private readonly ulong number;
 
     public bool IsVariableOrParameter => false;
-    public bool IsResult => false;
     public bool RestrictsWrite => false;
 
     private ExternalReference(uint number)
