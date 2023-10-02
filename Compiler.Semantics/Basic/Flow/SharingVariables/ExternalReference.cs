@@ -1,36 +1,48 @@
 using System;
+using System.Collections.Concurrent;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 
 /// <summary>
 /// Represents the possibility that there are external references to parameters of a method.
 /// </summary>
-public readonly struct ExternalReference
+public sealed class ExternalReference : ISharingVariable
 {
-    public static readonly ExternalReference NonParameters = new(-1);
+    #region Cache
+    private static readonly ConcurrentDictionary<uint, ExternalReference> Cache = new();
 
-    public static ExternalReference CreateLentParameter(long number)
+    private static ExternalReference Create(uint number) => Cache.GetOrAdd(number, Factory);
+
+    private static ExternalReference Factory(uint number) => new(number);
+    #endregion
+
+    public static readonly ExternalReference NonParameters = new(0);
+
+    public static ExternalReference CreateLentParameter(uint number)
     {
-        if (number <= 0)
+        if (number == 0)
             throw new ArgumentOutOfRangeException(nameof(number), "Lent group numbers must be > 0.");
-        return new ExternalReference(-number - 1);
+        return Create(number);
     }
 
-    public long Number => -Id - 1;
+    private readonly ulong number;
 
-    public long Id { get; }
+    public bool IsVariableOrParameter => false;
+    public bool IsResult => false;
 
-    private ExternalReference(long id)
+    private ExternalReference(uint number)
     {
-        Id = id;
+        this.number = number;
     }
 
-    public override string ToString() => ToString(Id);
+    #region Equality
+    public bool Equals(ISharingVariable? other) =>
+        other is ExternalReference externalReference && number == externalReference.number;
 
-    public static string ToString(long number)
-    {
-        if (number >= 0)
-            throw new ArgumentOutOfRangeException(nameof(number), "External reference numbers must be negative");
-        return number == -1 ? "⧼params⧽" : $"⧼lent-param{-number - 1}⧽";
-    }
+    public override bool Equals(object? obj) => obj is ExternalReference other && Equals(other);
+
+    public override int GetHashCode() => HashCode.Combine(number);
+    #endregion
+
+    public override string ToString() => number == 0 ? "⧼params⧽" : $"⧼lent-param{number}⧽";
 }

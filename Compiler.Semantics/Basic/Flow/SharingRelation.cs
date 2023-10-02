@@ -22,7 +22,7 @@ public sealed class SharingRelation
     /// <summary>
     /// This is a lookup of what set each variable is contained in.
     /// </summary>
-    private readonly Dictionary<SharingVariable, SharingSet> subsetFor;
+    private readonly Dictionary<ISharingVariable, SharingSet> subsetFor;
 
     private ResultVariable? currentResult;
 
@@ -61,12 +61,12 @@ public sealed class SharingRelation
     /// Restrict write to the sharing set of the variable via the variable.
     /// </summary>
     /// <returns>The set of affected symbols.</returns>
-    public IEnumerable<BindingSymbol> RestrictWrite(SharingVariable variable)
+    public IEnumerable<BindingSymbol> RestrictWrite(ISharingVariable variable)
     {
         if (subsetFor.TryGetValue(variable, out var set))
         {
             set.RestrictWrite(variable);
-            return set.Select(v => v.Symbol).WhereNotNull();
+            return set.OfType<BindingVariable>().Select(v => v.Symbol);
         }
         return Enumerable.Empty<BindingSymbol>();
     }
@@ -78,7 +78,7 @@ public sealed class SharingRelation
         {
             restrictBySet.RestrictsWriteTo(restrictedSet);
             restrictedSet.RestrictWrite(resultToRestrict);
-            return restrictedSet.Select(v => v.Symbol).WhereNotNull();
+            return restrictedSet.OfType<BindingVariable>().Select(v => v.Symbol);
         }
 
         return Enumerable.Empty<BindingSymbol>();
@@ -89,12 +89,12 @@ public sealed class SharingRelation
     /// <summary>
     /// Declare a new variable. Newly created variables are not connected to any others.
     /// </summary>
-    public void Declare(BindingSymbol symbol)
+    public void Declare(BindingVariable variable)
     {
         // Other types don't participate in sharing
-        if (symbol.DataType is not ReferenceType referenceType) return;
+        if (variable.DataType is not ReferenceType referenceType) return;
 
-        if (subsetFor.TryGetValue(symbol, out _))
+        if (subsetFor.TryGetValue(variable, out _))
             throw new InvalidOperationException("Symbol already declared.");
 
         var capability = referenceType.Capability;
@@ -102,20 +102,17 @@ public sealed class SharingRelation
         // allow any write aliases. (Can't use AllowsWriteAliases here because of `iso`.)
         if (capability != ReferenceCapability.Constant
             && capability != ReferenceCapability.Identity)
-        {
-            var variable = (SharingVariable)symbol;
             Declare(variable, variable.IsLent);
-        }
     }
 
-    public void DeclareLentParameterReference(BindingSymbol variable, int lentParameterNumber)
+    public void DeclareLentParameterReference(BindingVariable variable, uint lentParameterNumber)
     {
         if (!subsetFor.TryGetValue(variable, out var set))
             throw new InvalidOperationException("Cannot declare lent parameter for symbol not in a sharing set.");
 
         var lentParameter = ExternalReference.CreateLentParameter(lentParameterNumber);
         if (subsetFor.TryGetValue(lentParameter, out _))
-            throw new InvalidOperationException($"Lent parameter number {lentParameter.Number} already declared");
+            throw new InvalidOperationException($"Lent parameter {lentParameter} already declared");
 
         set.Declare(lentParameter);
         subsetFor.Add(lentParameter, set);
@@ -129,7 +126,7 @@ public sealed class SharingRelation
         Declare(ExternalReference.NonParameters, false);
     }
 
-    private void Declare(SharingVariable variable, bool isLent)
+    private void Declare(ISharingVariable variable, bool isLent)
     {
         var set = new SharingSet(variable, isLent);
         sets.Add(set);
@@ -144,16 +141,12 @@ public sealed class SharingRelation
         return newResult;
     }
 
-    public IReadOnlySharingSet? Drop(BindingSymbol symbol)
-    {
-        var variable = (SharingVariable)symbol;
-        return Drop(variable);
-    }
+    public IReadOnlySharingSet? Drop(BindingVariable variable) => Drop((ISharingVariable)variable);
 
 
-    public IReadOnlySharingSet? Drop(ResultVariable result) => Drop((SharingVariable)result);
+    public IReadOnlySharingSet? Drop(ResultVariable result) => Drop((ISharingVariable)result);
 
-    private IReadOnlySharingSet? Drop(SharingVariable variable)
+    private IReadOnlySharingSet? Drop(ISharingVariable variable)
     {
         if (!subsetFor.TryGetValue(variable, out var set))
             return null;
@@ -166,11 +159,11 @@ public sealed class SharingRelation
 
     public void DropAllLocalVariablesAndParameters()
     {
-        foreach (var variable in subsetFor.Keys.Where(v => v.IsLocal || v.IsParameter).ToArray())
+        foreach (var variable in subsetFor.Keys.Where(v => v.IsVariableOrParameter).ToArray())
             Drop(variable);
     }
 
-    public void UnionWithCurrentResult(SharingVariable var) => Union(var, CurrentResult);
+    public void UnionWithCurrentResult(ISharingVariable var) => Union(var, CurrentResult);
 
     public void UnionWithCurrentResultAndDrop(ResultVariable variable)
     {
@@ -178,7 +171,10 @@ public sealed class SharingRelation
         Drop(variable);
     }
 
-    public void Union(SharingVariable var1, SharingVariable var2)
+    public void Union(ISharingVariable var1, BindingVariable var2)
+        => Union(var1, (ISharingVariable)var2);
+
+    public void Union(ISharingVariable var1, ISharingVariable var2)
     {
         if (!subsetFor.TryGetValue(var1, out var set1)
             || !subsetFor.TryGetValue(var2, out var set2)
@@ -200,7 +196,7 @@ public sealed class SharingRelation
     /// <summary>
     /// Split the given variable out from sharing with the other variables it is connected to.
     /// </summary>
-    private void Split(SharingVariable variable)
+    private void Split(ISharingVariable variable)
     {
         if (!subsetFor.TryGetValue(variable, out var set)
             || set.Count == 1)
@@ -212,10 +208,10 @@ public sealed class SharingRelation
         subsetFor[variable] = newSet;
     }
 
-    public bool IsIsolated(SharingVariable variable)
+    public bool IsIsolated(ISharingVariable variable)
         => subsetFor.TryGetValue(variable, out var set) && set.Count == 1;
 
-    public bool IsIsolatedExceptCurrentResult(SharingVariable variable)
+    public bool IsIsolatedExceptCurrentResult(ISharingVariable variable)
         => subsetFor.TryGetValue(variable, out var set)
            && set.Count <= 2
            && set.Except(CurrentResult).Count() == 1;

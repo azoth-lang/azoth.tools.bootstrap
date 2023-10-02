@@ -10,27 +10,27 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 public class SharingSet : IReadOnlySharingSet
 {
     public bool IsLent { get; }
-    private readonly HashSet<SharingVariable> variables;
-    private readonly HashSet<SharingVariable> variablesRestrictingWrite;
+    private readonly HashSet<ISharingVariable> variables;
+    private readonly HashSet<ISharingVariable> variablesRestrictingWrite;
     public int Count => variables.Count;
     private bool IsResultSet => variables.Count == 1 && variables.Single().IsResult;
     public bool IsWriteRestricted => variablesRestrictingWrite.Any();
 
-    public SharingSet(bool isLent, FixedSet<SharingVariable> variables, FixedSet<SharingVariable> variablesRestrictingWrite)
+    public SharingSet(bool isLent, FixedSet<ISharingVariable> variables, FixedSet<ISharingVariable> variablesRestrictingWrite)
     {
         IsLent = isLent;
         this.variables = variables.ToHashSet();
         this.variablesRestrictingWrite = variablesRestrictingWrite.ToHashSet();
     }
 
-    public SharingSet(SharingVariable variable, bool isLent)
+    public SharingSet(ISharingVariable variable, bool isLent)
     {
         IsLent = isLent;
-        variables = new HashSet<SharingVariable> { variable };
-        variablesRestrictingWrite = new HashSet<SharingVariable>();
+        variables = new HashSet<ISharingVariable> { variable };
+        variablesRestrictingWrite = new HashSet<ISharingVariable>();
     }
 
-    public IEnumerator<SharingVariable> GetEnumerator() => variables.GetEnumerator();
+    public IEnumerator<ISharingVariable> GetEnumerator() => variables.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
@@ -44,7 +44,7 @@ public class SharingSet : IReadOnlySharingSet
         variables.Add(lentGroup);
     }
 
-    public void Remove(SharingVariable variable)
+    public void Remove(ISharingVariable variable)
     {
         variables.Remove(variable);
         variablesRestrictingWrite.Remove(variable);
@@ -63,7 +63,7 @@ public class SharingSet : IReadOnlySharingSet
     public void RestrictsWriteTo(SharingSet restrictedSet)
         => throw new NotImplementedException();
 
-    public void RestrictWrite(SharingVariable variable) => variablesRestrictingWrite.Add(variable);
+    public void RestrictWrite(ISharingVariable variable) => variablesRestrictingWrite.Add(variable);
 
     public void Clear()
     {

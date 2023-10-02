@@ -1,20 +1,43 @@
+using System;
+using System.Collections.Concurrent;
+
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 
 /// <summary>
 /// A "variable" representing a temporary result in an expression.
 /// </summary>
-public readonly struct ResultVariable
+public sealed class ResultVariable : ISharingVariable
 {
-    public static readonly ResultVariable First = new(0);
+    #region Cache
+    private static readonly ConcurrentDictionary<ulong, ResultVariable> Cache = new();
 
-    public readonly long Number;
+    private static ResultVariable Create(ulong number) => Cache.GetOrAdd(number, Factory);
 
-    private ResultVariable(long number)
+    private static ResultVariable Factory(ulong number) => new(number);
+    #endregion
+
+    public static readonly ResultVariable First = Create(0);
+
+    private readonly ulong number;
+
+    public bool IsVariableOrParameter => false;
+    public bool IsResult => false;
+
+    private ResultVariable(ulong number)
     {
-        Number = number;
+        this.number = number;
     }
 
-    public ResultVariable NextResult() => new(Number + 1);
+    public ResultVariable NextResult() => Create(number + 1);
 
-    public override string ToString() => $"⧼result{Number}⧽";
+    #region Equality
+    public bool Equals(ISharingVariable? other) =>
+        other is ResultVariable resultVariable && number == resultVariable.number;
+
+    public override bool Equals(object? obj) => obj is ResultVariable other && Equals(other);
+
+    public override int GetHashCode() => HashCode.Combine(number);
+    #endregion
+
+    public override string ToString() => $"⧼result{number}⧽";
 }

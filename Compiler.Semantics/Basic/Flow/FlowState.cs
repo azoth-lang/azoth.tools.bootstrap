@@ -1,3 +1,4 @@
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -40,7 +41,7 @@ public sealed class FlowState
         sharing.Declare(symbol);
     }
 
-    public SharingVariable NewResult() => sharing.NewResult();
+    public ResultVariable NewResult() => sharing.NewResult();
 
     public void Drop(BindingSymbol symbol) => RemoveRestrictions(sharing.Drop(symbol));
 
@@ -75,7 +76,7 @@ public sealed class FlowState
     /// <remarks>This is named for it to be used as <c>flow.Type(symbol)</c></remarks>
     public DataType Type(BindingSymbol? symbol) => capabilities.CurrentType(symbol);
 
-    public void UnionWithCurrentResult(SharingVariable var) => sharing.UnionWithCurrentResult(var);
+    public void UnionWithCurrentResult(BindingVariable var) => sharing.UnionWithCurrentResult(var);
 
     public void UnionWithCurrentResultAndDrop(ResultVariable variable)
         => sharing.UnionWithCurrentResultAndDrop(variable);
@@ -85,9 +86,9 @@ public sealed class FlowState
     public void SplitCurrentResult() => sharing.SplitCurrentResult();
 
     public bool CurrentResultIsIsolated() => sharing.IsIsolated(sharing.CurrentResult);
-    public bool IsIsolated(SharingVariable variable) => sharing.IsIsolated(variable);
+    public bool IsIsolated(BindingVariable variable) => sharing.IsIsolated(variable);
 
-    public bool IsIsolatedExceptCurrentResult(SharingVariable variable)
+    public bool IsIsolatedExceptCurrentResult(BindingVariable variable)
         => sharing.IsIsolatedExceptCurrentResult(variable);
 
     /// <summary>
@@ -112,8 +113,7 @@ public sealed class FlowState
         if (sharingSet is null) return;
         if (sharingSet.IsWriteRestricted) return;
 
-        foreach (var variable in sharingSet)
-            if (variable.Symbol is not null)
-                capabilities.RemoveWriteRestriction(variable.Symbol);
+        foreach (var variable in sharingSet.OfType<BindingVariable>())
+            capabilities.RemoveWriteRestriction(variable.Symbol);
     }
 }

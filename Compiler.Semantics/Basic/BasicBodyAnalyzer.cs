@@ -117,7 +117,7 @@ public class BasicBodyAnalyzer
         var capabilities = new ReferenceCapabilities();
         var sharing = new SharingRelation();
         bool nonLentParametersReferenceDeclared = false;
-        var lentParameterNumber = 0;
+        uint lentParameterNumber = 0;
         foreach (var parameterSymbol in parameterSymbols)
         {
             capabilities.Declare(parameterSymbol);
