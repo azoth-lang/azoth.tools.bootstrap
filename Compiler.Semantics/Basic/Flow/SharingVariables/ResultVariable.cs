@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 
 /// <summary>
 /// A "variable" representing a temporary result in an expression.

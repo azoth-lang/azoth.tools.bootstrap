@@ -1,6 +1,6 @@
 using System;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 
 /// <summary>
 /// Represents the possibility that there are external references to parameters of a method.
