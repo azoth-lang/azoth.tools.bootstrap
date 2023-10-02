@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
@@ -25,7 +24,7 @@ public class SharingSet : IReadOnlySharingSet
 
     public SharingSet(SharingVariable variable)
     {
-        IsLent = variable.SymbolType is ReferenceType { IsLentReference: true };
+        IsLent = variable.IsLent;
         variables = new HashSet<SharingVariable> { variable };
         variablesRestrictingWrite = new HashSet<SharingVariable>();
     }
@@ -36,6 +35,13 @@ public class SharingSet : IReadOnlySharingSet
 
     public SharingSetSnapshot Snapshot()
         => new(IsLent, variables.ToFixedSet(), variablesRestrictingWrite.ToFixedSet());
+
+    public void Declare(ExternalReference lentGroup)
+    {
+        if (!IsLent) throw new InvalidOperationException("Cannot declare lent group for non-lent sharing set.");
+
+        variables.Add(lentGroup);
+    }
 
     public void Remove(SharingVariable variable)
     {
@@ -73,4 +79,12 @@ public class SharingSet : IReadOnlySharingSet
 
     public static bool operator !=(SharingSet left, SharingSet right) => !left.Equals(right);
     #endregion
+
+    public override string ToString()
+    {
+        var result = $"Count {variables.Count}";
+        if (IsLent) result += ", lent";
+        if (IsWriteRestricted) result += ", restrict write";
+        return result;
+    }
 }

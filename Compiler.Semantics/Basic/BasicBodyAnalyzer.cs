@@ -116,7 +116,7 @@ public class BasicBodyAnalyzer
         var capabilities = new ReferenceCapabilities();
         var sharing = new SharingRelation();
         bool nonLentGroupDeclared = false;
-        var currentLentGroup = ExternalReference.NonLentGroup; // start value won't be used
+        var currentLentGroup = 0;
         foreach (var parameterSymbol in parameterSymbols)
         {
             capabilities.Declare(parameterSymbol);
@@ -125,18 +125,14 @@ public class BasicBodyAnalyzer
                 continue;
 
             if (capability.IsLent)
-            {
-                currentLentGroup = currentLentGroup.NextLentGroup();
-                sharing.Declare(currentLentGroup);
-                sharing.Union(currentLentGroup, parameterSymbol);
-            }
+                sharing.DeclareLentGroup(parameterSymbol, ++currentLentGroup);
             else if (capability != ReferenceCapability.Isolated
                      && capability != ReferenceCapability.Constant
                      && capability != ReferenceCapability.Identity)
             {
                 if (!nonLentGroupDeclared)
                 {
-                    sharing.Declare(ExternalReference.NonLentGroup);
+                    sharing.DeclareNonLentGroup();
                     nonLentGroupDeclared = true;
                 }
                 sharing.Union(ExternalReference.NonLentGroup, parameterSymbol);

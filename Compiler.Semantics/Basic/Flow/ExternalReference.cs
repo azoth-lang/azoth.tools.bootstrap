@@ -9,14 +9,19 @@ public readonly struct ExternalReference
 {
     public static readonly ExternalReference NonLentGroup = new ExternalReference(-1);
 
+    public static ExternalReference CreateLentGroup(long number)
+    {
+        if (number <= 0)
+            throw new ArgumentOutOfRangeException(nameof(number), "Lent group numbers must be > 0.");
+        return new ExternalReference(-number - 1);
+    }
+
     public long Number { get; }
 
     private ExternalReference(long number)
     {
         Number = number;
     }
-
-    public ExternalReference NextLentGroup() => new(Number - 1);
 
     public override string ToString() => ToString(Number);
 

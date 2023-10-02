@@ -29,6 +29,9 @@ public readonly struct SharingVariable : IEquatable<SharingVariable>
     public bool IsResult => SymbolType is null && number >= 0;
     public DataType? SymbolType => Symbol?.DataType;
     public BindingSymbol? Symbol { get; }
+    public bool IsLent
+        => number < ExternalReference.NonLentGroup.Number
+           || Symbol?.DataType is ReferenceType { IsLentReference: true };
 
     #region Equals
     public bool Equals(SharingVariable other)

@@ -80,6 +80,9 @@ public sealed class SharingRelation
         // Other types don't participate in sharing
         if (symbol.DataType is not ReferenceType referenceType) return;
 
+        if (subsetFor.TryGetValue(symbol, out _))
+            throw new InvalidOperationException("Symbol already declared.");
+
         var capability = referenceType.Capability;
         // No need to track `const` and `id`, they never participate in sharing because they don't
         // allow any write aliases. (Can't use AllowsWriteAliases here because of `iso`.)
@@ -88,8 +91,26 @@ public sealed class SharingRelation
             Declare((SharingVariable)symbol);
     }
 
-    public void Declare(ExternalReference externalReference)
-        => Declare((SharingVariable)externalReference);
+    public void DeclareLentGroup(BindingSymbol variable, int lentGroupNumber)
+    {
+        if (!subsetFor.TryGetValue(variable, out var set))
+            throw new InvalidOperationException("Cannot declare lent group for symbol not in a sharing set.");
+
+        var lentGroup = ExternalReference.CreateLentGroup(lentGroupNumber);
+        if (subsetFor.TryGetValue(lentGroup, out _))
+            throw new InvalidOperationException("Lent group already declared");
+
+        set.Declare(lentGroup);
+        subsetFor.Add(lentGroup, set);
+    }
+
+    public void DeclareNonLentGroup()
+    {
+        if (subsetFor.TryGetValue(ExternalReference.NonLentGroup, out _))
+            throw new InvalidOperationException("Non-lent group already declared.");
+
+        Declare(ExternalReference.NonLentGroup);
+    }
 
     private void Declare(SharingVariable variable)
     {
