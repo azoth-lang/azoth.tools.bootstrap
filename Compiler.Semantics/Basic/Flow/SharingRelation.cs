@@ -100,8 +100,8 @@ public sealed class SharingRelation
         var capability = referenceType.Capability;
         // No need to track `const` and `id`, they never participate in sharing because they don't
         // allow any write aliases. (Can't use AllowsWriteAliases here because of `iso`.)
-        if (capability != ReferenceCapability.Constant
-            && capability != ReferenceCapability.Identity)
+        if (variable.IsLent
+            || (capability != ReferenceCapability.Constant && capability != ReferenceCapability.Identity))
             Declare(variable, variable.IsLent);
     }
 

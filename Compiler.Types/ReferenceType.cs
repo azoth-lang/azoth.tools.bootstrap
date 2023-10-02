@@ -55,12 +55,4 @@ public abstract class ReferenceType : NonEmptyType
     /// Return the same type except with the given reference capability
     /// </summary>
     public abstract ReferenceType With(ReferenceCapability referenceCapability);
-
-    public bool BareTypeEquals(DataType? other)
-    {
-        if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-        return other is ObjectType otherType
-            && DeclaredType == otherType.DeclaredType;
-    }
 }

@@ -1050,8 +1050,7 @@ public class BasicBodyAnalyzer
             || context.DataType is not ReferenceType { AllowsRecoverIsolation: true } fromType)
             return;
 
-        // TODO allow upcasting
-        if (!toType.BareTypeEquals(fromType))
+        if (!toType.DeclaredType.IsAssignableFrom(fromType.DeclaredType))
             return;
 
         if (context is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
@@ -1071,8 +1070,7 @@ public class BasicBodyAnalyzer
             || context.ConvertedDataType is not ReferenceType { AllowsFreeze: true } fromType)
             return;
 
-        // TODO allow upcasting
-        if (!toType.BareTypeEquals(fromType)) return;
+        if (!toType.DeclaredType.IsAssignableFrom(fromType.DeclaredType)) return;
 
         if (context is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
             || !flow.IsIsolatedExceptCurrentResult(symbol))

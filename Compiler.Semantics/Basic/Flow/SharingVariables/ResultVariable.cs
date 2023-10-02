@@ -21,7 +21,7 @@ public sealed class ResultVariable : ISharingVariable
     private readonly ulong number;
 
     public bool IsVariableOrParameter => false;
-    public bool IsResult => false;
+    public bool IsResult => true;
 
     private ResultVariable(ulong number)
     {
