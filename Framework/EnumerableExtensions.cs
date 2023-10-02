@@ -31,10 +31,11 @@ public static class EnumerableExtensions
 
     [DebuggerStepThrough]
     public static FixedList<T> ToFixedList<T>(this IEnumerable<T> values)
-        => new FixedList<T>(values);
+        => values as FixedList<T> ?? new FixedList<T>(values);
 
     [DebuggerStepThrough]
-    public static FixedSet<T> ToFixedSet<T>(this IEnumerable<T> values) => new(values);
+    public static FixedSet<T> ToFixedSet<T>(this IEnumerable<T> values)
+        => values as FixedSet<T> ?? new(values);
 
     [DebuggerStepThrough]
     public static IEnumerable<TResult> CrossJoin<TFirst, TSecond, TResult>(

@@ -6,4 +6,5 @@ public interface ISharingVariable : IEquatable<ISharingVariable>
 {
     bool IsVariableOrParameter { get; }
     bool IsResult { get; }
+    bool RestrictsWrite { get; }
 }

@@ -76,7 +76,8 @@ public sealed class FlowState
     /// <remarks>This is named for it to be used as <c>flow.Type(symbol)</c></remarks>
     public DataType Type(BindingSymbol? symbol) => capabilities.CurrentType(symbol);
 
-    public void UnionWithCurrentResult(BindingVariable var) => sharing.UnionWithCurrentResult(var);
+    public void UnionWithCurrentResult(BindingVariable var)
+        => sharing.Union(var, sharing.CurrentResult);
 
     public void UnionWithCurrentResultAndDrop(ResultVariable variable)
         => sharing.UnionWithCurrentResultAndDrop(variable);
@@ -85,24 +86,23 @@ public sealed class FlowState
 
     public void SplitCurrentResult() => sharing.SplitCurrentResult();
 
-    public bool CurrentResultIsIsolated() => sharing.IsIsolated(sharing.CurrentResult);
     public bool IsIsolated(BindingVariable variable) => sharing.IsIsolated(variable);
+    public bool IsIsolated(ISharingVariable variable) => sharing.IsIsolated(variable);
 
     public bool IsIsolatedExceptCurrentResult(BindingVariable variable)
-        => sharing.IsIsolatedExceptCurrentResult(variable);
+        => sharing.IsIsolatedExcept(variable, sharing.CurrentResult);
 
     /// <summary>
-    /// Mark the current result as being lent const.
+    /// Mark the result as being lent const.
     /// </summary>
     /// <remarks>Because the current result must be at least temporarily const, all references in
     /// the sharing set must now not allow mutation.</remarks>
-    public bool LendCurrentResultConst()
+    public ResultVariable LendConst(ResultVariable result)
     {
-        var currentResult = sharing.CurrentResult;
-        var lentResult = sharing.NewResult(lent: true);
-        foreach (var affectedSymbol in sharing.RestrictWrite(currentResult, lentResult))
-            capabilities.RestrictWrite(affectedSymbol);
-        return true;
+        var newResult = sharing.LendConst(result);
+        foreach (var variable in sharing.SharingSet(result).OfType<BindingVariable>())
+            capabilities.RestrictWrite(variable.Symbol);
+        return newResult;
     }
 
     /// <summary>

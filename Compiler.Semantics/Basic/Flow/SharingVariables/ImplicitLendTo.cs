@@ -1,0 +1,28 @@
+using System;
+
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
+
+public class ImplicitLendTo : ISharingVariable
+{
+    public ImplicitLend ImplicitLend { get; }
+    public bool IsVariableOrParameter => false;
+    public bool IsResult => false;
+    /// <remarks>The to side is NOT affected by any restrictions.</remarks>
+    public bool RestrictsWrite => false;
+
+    public ImplicitLendTo(ImplicitLend implicitLend)
+    {
+        ImplicitLend = implicitLend;
+    }
+
+    #region Equality
+    public bool Equals(ISharingVariable? other) =>
+        other is ImplicitLendTo lendTo && ImplicitLend.Equals(lendTo.ImplicitLend);
+
+    public override bool Equals(object? obj) => obj is ImplicitLendTo other && Equals(other);
+
+    public override int GetHashCode() => HashCode.Combine(typeof(ImplicitLendTo), ImplicitLend);
+    #endregion
+
+    public override string ToString() => $"⧼lend-to{ImplicitLend.Number}⧽";
+}

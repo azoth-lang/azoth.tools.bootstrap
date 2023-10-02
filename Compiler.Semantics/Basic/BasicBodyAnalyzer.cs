@@ -208,7 +208,8 @@ public class BasicBodyAnalyzer
 
         if (variableDeclaration.Initializer is not null)
         {
-            var initializerType = AddImplicitConversionIfNeeded(variableDeclaration.Initializer, variableType, flow);
+            var expressionResult = new ExpressionResult(variableDeclaration.Initializer, flow.CurrentResult);
+            var initializerType = AddImplicitConversionIfNeeded(expressionResult, variableType, flow);
             if (!variableType.IsAssignableFrom(initializerType))
                 diagnostics.Add(TypeError.CannotImplicitlyConvert(file, variableDeclaration.Initializer, initializerType, variableType));
         }
@@ -275,7 +276,8 @@ public class BasicBodyAnalyzer
         FlowState flow)
     {
         _ = InferType(expression, flow);
-        _ = AddImplicitConversionIfNeeded(expression, expectedType, flow);
+        var expressionResult = new ExpressionResult(expression, flow.CurrentResult);
+        _ = AddImplicitConversionIfNeeded(expressionResult, expectedType, flow);
         CheckTypeCompatibility(expectedType, expression);
     }
 
@@ -283,22 +285,45 @@ public class BasicBodyAnalyzer
     /// Create an implicit conversion if needed and allowed.
     /// </summary>
     private static DataType AddImplicitConversionIfNeeded(
-        IExpressionSyntax expression,
+        ExpressionResult expression,
+        ParameterType expectedType,
+        FlowState flow)
+    {
+        var syntax = expression.Syntax;
+        var conversion = CreateImplicitConversion(expectedType.Type, expectedType.IsLentBinding,
+            expression.Type, expression.Result, syntax.ImplicitConversion, flow,
+            out var newResult);
+        if (conversion is not null) syntax.AddConversion(conversion);
+        expression.Result = newResult;
+        return syntax.ConvertedDataType.Assigned();
+    }
+
+    /// <summary>
+    /// Create an implicit conversion if needed and allowed.
+    /// </summary>
+    private static DataType AddImplicitConversionIfNeeded(
+        ExpressionResult expression,
         DataType expectedType,
         FlowState flow)
     {
-        var fromType = expression.DataType.Assigned();
-        var conversion = CreateImplicitConversion(expectedType, fromType, expression.ImplicitConversion, flow);
-        if (conversion is not null) expression.AddConversion(conversion);
-        return expression.ConvertedDataType.Assigned();
+        var syntax = expression.Syntax;
+        var conversion = CreateImplicitConversion(expectedType, false,
+            expression.Type, expression.Result, syntax.ImplicitConversion, flow, out var newResult);
+        if (conversion is not null) syntax.AddConversion(conversion);
+        expression.Result = newResult;
+        return syntax.ConvertedDataType.Assigned();
     }
 
     private static ChainedConversion? CreateImplicitConversion(
         DataType toType,
+        bool toLentBinding,
         DataType fromType,
+        ResultVariable fromResult,
         Conversion priorConversion,
-        FlowState flow)
+        FlowState flow,
+        out ResultVariable newResult)
     {
+        newResult = fromResult;
         switch (toType, fromType)
         {
             case (DataType to, DataType from) when from == to:
@@ -307,12 +332,12 @@ public class BasicBodyAnalyzer
                 // Direct subtype
                 if (to.IsAssignableFrom(from))
                     return null;
-                var liftedConversion = CreateImplicitConversion(to, from, IdentityConversion.Instance, flow);
+                var liftedConversion = CreateImplicitConversion(to, toLentBinding, from, fromResult, IdentityConversion.Instance, flow, out newResult);
                 return liftedConversion is null ? null : new LiftedConversion(liftedConversion, priorConversion);
             case (OptionalType { Referent: var to }, not OptionalType):
                 if (!to.IsAssignableFrom(fromType))
                 {
-                    var conversion = CreateImplicitConversion(to, fromType, priorConversion, flow);
+                    var conversion = CreateImplicitConversion(to, toLentBinding, fromType, fromResult, priorConversion, flow, out newResult);
                     if (conversion is null) return null; // Not able to convert to the referent type
                     priorConversion = conversion;
                 }
@@ -344,16 +369,20 @@ public class BasicBodyAnalyzer
                 when to.DeclaredType.IsAssignableFrom(from.DeclaredType):
             {
                 // Try to recover const
-                if (flow.CurrentResultIsIsolated()
-                    /*|| (to.IsLentReference && flow.LendCurrentResultConst())*/)
+                if (flow.IsIsolated(fromResult))
                     return new RecoverConst(priorConversion);
+                if (toLentBinding)
+                {
+                    newResult = flow.LendConst(fromResult);
+                    return new RecoverConst(priorConversion);
+                }
 
                 return null;
             }
             case (ObjectType { IsIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from):
             {
                 // Try to recover isolation
-                if (to.DeclaredType.IsAssignableFrom(from.DeclaredType) && flow.CurrentResultIsIsolated())
+                if (to.DeclaredType.IsAssignableFrom(from.DeclaredType) && flow.IsIsolated(fromResult))
                     return new RecoverIsolation(priorConversion);
 
                 return null;
@@ -367,6 +396,7 @@ public class BasicBodyAnalyzer
     /// Infer the type of an expression and assign that type to the expression.
     /// </summary>
     [return: NotNullIfNotNull(nameof(expression))]
+    // TODO change this to return `ExpressionResult?`
     private DataType? InferType(IExpressionSyntax? expression, FlowState flow)
     {
         switch (expression)
@@ -486,9 +516,10 @@ public class BasicBodyAnalyzer
                 if (exp.Value is not null)
                 {
                     InferType(exp.Value, flow);
+                    var expressionResult = new ExpressionResult(exp.Value, flow.CurrentResult);
                     // local variables are no longer in scope and isolated parameters have no external references
                     flow.DropBindingsForReturn();
-                    AddImplicitConversionIfNeeded(exp.Value, expectedType, flow);
+                    AddImplicitConversionIfNeeded(expressionResult, expectedType, flow);
                     CheckTypeCompatibility(expectedType, exp.Value);
                 }
                 else if (expectedType == DataType.Never)
@@ -509,12 +540,12 @@ public class BasicBodyAnalyzer
             {
                 var leftOperand = binaryOperatorExpression.LeftOperand;
                 var leftType = InferType(leftOperand, flow);
-                var leftResult = flow.CurrentResult;
+                var leftResult = new ExpressionResult(leftOperand, flow.CurrentResult);
                 var @operator = binaryOperatorExpression.Operator;
                 flow.NewResult();
                 var rightOperand = binaryOperatorExpression.RightOperand;
                 var rightType = InferType(rightOperand, flow);
-                flow.UnionWithCurrentResultAndDrop(leftResult);
+                var rightResult = new ExpressionResult(rightOperand, flow.CurrentResult);
 
                 // If either is unknown, then we can't know whether there is a a problem.
                 // Note that the operator could be overloaded
@@ -543,14 +574,14 @@ public class BasicBodyAnalyzer
                         or (NumericType, BinaryOperator.Minus, NumericType)
                         or (NumericType, BinaryOperator.Asterisk, NumericType)
                         or (NumericType, BinaryOperator.Slash, NumericType)
-                        => InferNumericOperatorType(leftOperand, rightOperand, flow),
+                        => InferNumericOperatorType(leftResult, rightResult, flow),
                     (NumericType, BinaryOperator.EqualsEquals, NumericType)
                         or (NumericType, BinaryOperator.NotEqual, NumericType)
                         or (NumericType, BinaryOperator.LessThan, NumericType)
                         or (NumericType, BinaryOperator.LessThanOrEqual, NumericType)
                         or (NumericType, BinaryOperator.GreaterThan, NumericType)
                         or (NumericType, BinaryOperator.GreaterThanOrEqual, NumericType)
-                        => InferComparisonOperatorType(leftOperand, rightOperand, flow),
+                        => InferComparisonOperatorType(leftResult, rightResult, flow),
 
                     (BoolType, BinaryOperator.EqualsEquals, BoolType)
                         or (BoolType, BinaryOperator.NotEqual, BoolType)
@@ -569,6 +600,10 @@ public class BasicBodyAnalyzer
                         => throw new NotImplementedException("Type analysis of range operators"),
                     _ => DataType.Unknown
                 };
+
+                flow.NewResult();
+                flow.UnionWithCurrentResultAndDrop(leftResult.Result);
+                flow.UnionWithCurrentResultAndDrop(rightResult.Result);
 
                 if (type == DataType.Unknown)
                     diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandsOfType(file,
@@ -616,7 +651,8 @@ public class BasicBodyAnalyzer
                         else
                         {
                             expType = DataType.Bool;
-                            _ = AddImplicitConversionIfNeeded(exp.Operand, expType, flow);
+                            var expressionResult = new ExpressionResult(exp.Operand, flow.CurrentResult);
+                            _ = AddImplicitConversionIfNeeded(expressionResult, expType, flow);
                             CheckTypeCompatibility(expType, exp.Operand);
                         }
                         break;
@@ -662,18 +698,7 @@ public class BasicBodyAnalyzer
             }
             case INewObjectExpressionSyntax exp:
             {
-                // Give each argument a distinct result, then union them all
-                var argumentTypes = new List<DataType>();
-                var argumentResults = new List<ResultVariable>();
-                foreach (var argument in exp.Arguments)
-                {
-                    argumentTypes.Add(InferType(argument, flow));
-                    argumentResults.Add(flow.CurrentResult);
-                    flow.NewResult();
-                }
-                foreach (var result in argumentResults)
-                    flow.UnionWithCurrentResultAndDrop(result);
-
+                var arguments = InferArgumentTypes(exp.Arguments, flow);
                 var constructingType = typeResolver.EvaluateBareType(exp.Type);
                 if (!constructingType.IsFullyKnown)
                 {
@@ -685,7 +710,7 @@ public class BasicBodyAnalyzer
                 var typeSymbol = exp.Type.ReferencedSymbol.Result ?? throw new NotImplementedException();
                 DataType constructedType;
                 var constructorSymbols = symbolTrees.Children(typeSymbol).OfType<ConstructorSymbol>().ToFixedSet();
-                constructorSymbols = SelectOverload(constructorSymbols, argumentTypes.ToFixedList());
+                constructorSymbols = SelectOverload(constructorSymbols, arguments);
                 switch (constructorSymbols.Count)
                 {
                     case 0:
@@ -697,12 +722,10 @@ public class BasicBodyAnalyzer
                         var constructorSymbol = constructorSymbols.Single();
                         exp.ReferencedSymbol.Fulfill(constructorSymbol);
                         var contextType = (NonEmptyType)constructingType;
-                        foreach (var (arg, parameterDataType) in exp.Arguments
-                            .Zip(constructorSymbol.ParameterTypes.Select(contextType.ReplaceTypeParametersIn)))
-                        {
-                            AddImplicitConversionIfNeeded(arg, parameterDataType.Type, flow);
-                            CheckTypeCompatibility(parameterDataType.Type, arg);
-                        }
+                        var expectedArgumentTypes =
+                            constructorSymbol.ParameterTypes.Select(contextType.ReplaceTypeParametersIn);
+                        CheckTypes(arguments, expectedArgumentTypes, flow);
+                        UnionWithCurrentResultAndDrop(arguments, flow);
                         constructedType = contextType.ReplaceTypeParametersIn(constructorSymbol.ReturnType);
                         break;
                     default:
@@ -832,7 +855,8 @@ public class BasicBodyAnalyzer
             {
                 var left = InferAssignmentTargetType(exp.LeftOperand, flow);
                 InferType(exp.RightOperand, flow);
-                AddImplicitConversionIfNeeded(exp.RightOperand, left, flow);
+                var expressionResult = new ExpressionResult(exp.RightOperand, flow.CurrentResult);
+                AddImplicitConversionIfNeeded(expressionResult, left, flow);
                 var right = exp.RightOperand.ConvertedDataType.Assigned();
                 if (!left.IsAssignableFrom(right))
                     diagnostics.Add(TypeError.CannotImplicitlyConvert(file,
@@ -871,6 +895,42 @@ public class BasicBodyAnalyzer
                 return exp.DataType = convertToType;
             }
         }
+    }
+
+    private ArgumentResults InferArgumentTypes(FixedList<IExpressionSyntax> arguments, FlowState flow)
+        => InferArgumentTypes(null, arguments, flow);
+
+    private ArgumentResults InferArgumentTypes(
+        ExpressionResult? selfArgument,
+        FixedList<IExpressionSyntax> arguments,
+        FlowState flow)
+    {
+        // Give each argument a distinct result
+        var inferences = new List<ExpressionResult>();
+        foreach (var argument in arguments)
+        {
+            InferType(argument, flow);
+            inferences.Add(new ExpressionResult(argument, flow.CurrentResult));
+            flow.NewResult();
+        }
+
+        return new ArgumentResults(selfArgument, inferences);
+    }
+
+    private void CheckTypes(ArgumentResults arguments, IEnumerable<ParameterType> expectedTypes, FlowState flow)
+    {
+        foreach (var (arg, parameterDataType) in arguments.Expressions.Zip(expectedTypes))
+        {
+            AddImplicitConversionIfNeeded(arg, parameterDataType, flow);
+            CheckTypeCompatibility(parameterDataType.Type, arg.Syntax);
+            // TODO update the expression result
+        }
+    }
+
+    private static void UnionWithCurrentResultAndDrop(ArgumentResults arguments, FlowState flow)
+    {
+        foreach (var arg in arguments.Expressions)
+            flow.UnionWithCurrentResultAndDrop(arg.Result);
     }
 
     private DataType InferAssignmentTargetType(
@@ -935,15 +995,18 @@ public class BasicBodyAnalyzer
         // * Namespaced function invocation
         // * Method invocation
 
-        var argumentTypes = invocation.Arguments.Select(arg => InferType(arg, flow)).ToFixedList();
+        ArgumentResults argumentResults;
         var functionSymbols = FixedSet<FunctionSymbol>.Empty;
         switch (invocation.Expression)
         {
             case IQualifiedNameExpressionSyntax exp:
                 var contextType = InferType(exp.Context, flow);
+                var selfExpressionResult = new ExpressionResult(exp.Context, flow.CurrentResult);
+                // Make sure to infer argument type *after* the context type
+                argumentResults = InferArgumentTypes(selfExpressionResult, invocation.Arguments, flow);
                 var name = exp.Member.Name!;
                 if (contextType is not VoidType)
-                    return InferMethodInvocationType(invocation, exp.Context, name, argumentTypes, flow);
+                    return InferMethodInvocationType(invocation, exp.Context, name, argumentResults, flow);
                 if (exp.Context is INameExpressionSyntax { ReferencedSymbol.Result: Symbol contextSymbol })
                 {
                     functionSymbols = symbolTrees.Children(contextSymbol).OfType<FunctionSymbol>()
@@ -954,6 +1017,7 @@ public class BasicBodyAnalyzer
                 exp.Member.Semantics = ExpressionSemantics.Void;
                 break;
             case ISimpleNameExpressionSyntax exp:
+                argumentResults = InferArgumentTypes(invocation.Arguments, flow);
                 functionSymbols = exp.LookupInContainingScope()
                                     .Select(p => p.As<FunctionSymbol>())
                                     .WhereNotNull()
@@ -963,14 +1027,14 @@ public class BasicBodyAnalyzer
                 throw new NotImplementedException("Invocation of expression");
         }
 
-        return InferFunctionInvocationType(invocation, functionSymbols, argumentTypes, flow);
+        return InferFunctionInvocationType(invocation, functionSymbols, argumentResults, flow);
     }
 
     private DataType InferMethodInvocationType(
         IInvocationExpressionSyntax invocation,
         IExpressionSyntax context,
         Name methodName,
-        FixedList<DataType> argumentTypes,
+        ArgumentResults arguments,
         FlowState flow)
     {
         // If it is unknown, we already reported an error
@@ -983,7 +1047,7 @@ public class BasicBodyAnalyzer
         var contextSymbol = LookupSymbolForType(context.DataType.Known());
         var methodSymbols = symbolTrees.Children(contextSymbol!).OfType<MethodSymbol>()
                                        .Where(s => s.Name == methodName).ToFixedList();
-        methodSymbols = SelectMethodOverload(context.DataType.Known(), methodSymbols, argumentTypes);
+        methodSymbols = SelectMethodOverload(context.DataType.Known(), methodSymbols, arguments);
 
         switch (methodSymbols.Count)
         {
@@ -999,19 +1063,14 @@ public class BasicBodyAnalyzer
                 // Since a method has been resolved, this must not be an empty type
                 var contextType = (NonEmptyType)context.DataType.Known();
 
-                var selfParamType = contextType.ReplaceTypeParametersIn(methodSymbol.SelfParameterType).Type;
-                AddImplicitConversionIfNeeded(context, selfParamType, flow);
+                var selfParamType = contextType.ReplaceTypeParametersIn(methodSymbol.SelfParameterType);
+                AddImplicitConversionIfNeeded(arguments.SelfArgument!, selfParamType, flow);
                 AddImplicitMoveIfNeeded(context, selfParamType, flow);
                 AddImplicitFreezeIfNeeded(context, selfParamType, flow);
-                CheckTypeCompatibility(selfParamType, context);
-
-                foreach (var (arg, parameterType) in invocation.Arguments
-                    .Zip(methodSymbol.ParameterTypes.Select(contextType.ReplaceTypeParametersIn)))
-                {
-                    AddImplicitConversionIfNeeded(arg, parameterType.Type, flow);
-                    CheckTypeCompatibility(parameterType.Type, arg);
-                }
-
+                CheckTypeCompatibility(selfParamType.Type, context);
+                var expectedArgumentTypes = methodSymbol.ParameterTypes.Select(contextType.ReplaceTypeParametersIn);
+                CheckTypes(arguments, expectedArgumentTypes, flow);
+                UnionWithCurrentResultAndDrop(arguments, flow);
                 var returnType = methodSymbol.ReturnType;
                 invocation.DataType = contextType.ReplaceTypeParametersIn(returnType.Type);
                 AssignInvocationSemantics(invocation, returnType.Type);
@@ -1043,10 +1102,14 @@ public class BasicBodyAnalyzer
 
     private static void AddImplicitMoveIfNeeded(
         IExpressionSyntax context,
-        DataType selfParamType,
+        ParameterType selfParamType,
         FlowState flow)
     {
-        if (selfParamType is not ReferenceType { IsIsolatedReference: true } toType
+        // Implicit freezes never happen if the parameter is lent. `lent` is an explicit request not
+        // to force the caller to have `iso`.
+        if (selfParamType.IsLentBinding) return;
+
+        if (selfParamType.Type is not ReferenceType { IsIsolatedReference: true } toType
             || context.DataType is not ReferenceType { AllowsRecoverIsolation: true } fromType)
             return;
 
@@ -1063,10 +1126,14 @@ public class BasicBodyAnalyzer
 
     private static void AddImplicitFreezeIfNeeded(
         IExpressionSyntax context,
-        DataType selfParamType,
+        ParameterType selfParamType,
         FlowState flow)
     {
-        if (selfParamType is not ReferenceType { IsConstReference: true } toType
+        // Implicit freezes never happen if the parameter is lent. `lent` is an explicit request not
+        // to force the caller to have `const`
+        if (selfParamType.IsLentBinding) return;
+
+        if (selfParamType.Type is not ReferenceType { IsConstReference: true } toType
             || context.ConvertedDataType is not ReferenceType { AllowsFreeze: true } fromType)
             return;
 
@@ -1083,10 +1150,10 @@ public class BasicBodyAnalyzer
     private DataType InferFunctionInvocationType(
         IInvocationExpressionSyntax invocation,
         FixedSet<FunctionSymbol> functionSymbols,
-        FixedList<DataType> argumentTypes,
+        ArgumentResults arguments,
         FlowState flow)
     {
-        functionSymbols = SelectOverload(functionSymbols, argumentTypes);
+        functionSymbols = SelectOverload(functionSymbols, arguments);
         switch (functionSymbols.Count)
         {
             case 0:
@@ -1098,12 +1165,8 @@ public class BasicBodyAnalyzer
             case 1:
                 var functionSymbol = functionSymbols.Single();
                 invocation.ReferencedSymbol.Fulfill(functionSymbol);
-                foreach (var (arg, parameterType) in invocation.Arguments.Zip(functionSymbol.ParameterTypes))
-                {
-                    AddImplicitConversionIfNeeded(arg, parameterType.Type, flow);
-                    CheckTypeCompatibility(parameterType.Type, arg);
-                }
-
+                CheckTypes(arguments, functionSymbol.ParameterTypes, flow);
+                UnionWithCurrentResultAndDrop(arguments, flow);
                 var returnType = functionSymbol.ReturnType.Type;
                 invocation.DataType = returnType;
                 AssignInvocationSemantics(invocation, returnType);
@@ -1295,11 +1358,11 @@ public class BasicBodyAnalyzer
             } binaryExpression:
                 var leftOperand = binaryExpression.LeftOperand;
                 var leftType = InferType(leftOperand, flow);
-                var leftResult = flow.CurrentResult;
+                var leftResult = new ExpressionResult(leftOperand, flow.CurrentResult);
                 flow.NewResult();
                 var rightOperand = binaryExpression.RightOperand;
                 var rightType = InferType(rightOperand, flow);
-                flow.UnionWithCurrentResultAndDrop(leftResult);
+                var rightResult = new ExpressionResult(rightOperand, flow.CurrentResult);
 
                 if (!leftType.IsFullyKnown || !rightType.IsFullyKnown)
                     return inExpression.DataType = DataType.Unknown;
@@ -1308,16 +1371,20 @@ public class BasicBodyAnalyzer
                 if (leftType is IntegerConstantType left && rightType is IntegerConstantType right)
                     if (declaredType is not null)
                     {
-                        AddImplicitConversionIfNeeded(leftOperand, declaredType, flow);
+                        AddImplicitConversionIfNeeded(leftResult, declaredType, flow);
                         CheckTypeCompatibility(declaredType, leftOperand);
-                        AddImplicitConversionIfNeeded(rightOperand, declaredType, flow);
+                        AddImplicitConversionIfNeeded(rightResult, declaredType, flow);
                         CheckTypeCompatibility(declaredType, rightOperand);
                         expType = declaredType;
                     }
                     else
                         expType = left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt;
                 else
-                    expType = InferNumericOperatorType(leftOperand, rightOperand, flow);
+                    expType = InferNumericOperatorType(leftResult, rightResult, flow);
+
+                flow.NewResult();
+                flow.UnionWithCurrentResultAndDrop(leftResult.Result);
+                flow.UnionWithCurrentResultAndDrop(rightResult.Result);
 
                 if (expType == DataType.Unknown)
                     diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandsOfType(file,
@@ -1328,7 +1395,8 @@ public class BasicBodyAnalyzer
 
                 var assumedType = declaredType ?? expType.ToNonConstantType();
 
-                AddImplicitConversionIfNeeded(binaryExpression, assumedType, flow);
+                var binaryResult = new ExpressionResult(binaryExpression, flow.CurrentResult);
+                AddImplicitConversionIfNeeded(binaryResult, assumedType, flow);
                 CheckTypeCompatibility(assumedType, binaryExpression);
 
                 return binaryExpression.ConvertedDataType.Assigned();
@@ -1390,12 +1458,12 @@ public class BasicBodyAnalyzer
     }
 
     private static DataType InferNumericOperatorType(
-        IExpressionSyntax leftOperand,
-        IExpressionSyntax rightOperand,
+        ExpressionResult leftOperand,
+        ExpressionResult rightOperand,
         FlowState flow)
     {
-        var leftType = leftOperand.DataType.Assigned();
-        var rightType = rightOperand.DataType.Assigned();
+        var leftType = leftOperand.Type.Assigned();
+        var rightType = rightOperand.Type.Assigned();
         var commonType = leftType.NumericOperatorCommonType(rightType);
         if (commonType is null) return DataType.Unknown;
 
@@ -1405,12 +1473,12 @@ public class BasicBodyAnalyzer
     }
 
     private static DataType InferComparisonOperatorType(
-        IExpressionSyntax leftOperand,
-        IExpressionSyntax rightOperand,
+        ExpressionResult leftOperand,
+        ExpressionResult rightOperand,
         FlowState flow)
     {
-        var leftType = leftOperand.DataType.Assigned();
-        var rightType = rightOperand.DataType.Assigned();
+        var leftType = leftOperand.Type.Assigned();
+        var rightType = rightOperand.Type.Assigned();
         var commonType = leftType.NumericOperatorCommonType(rightType);
         if (commonType is null) return DataType.Unknown;
 
@@ -1453,13 +1521,13 @@ public class BasicBodyAnalyzer
 
     private static FixedSet<TSymbol> SelectOverload<TSymbol>(
         FixedSet<TSymbol> symbols,
-        FixedList<DataType> argumentTypes)
+        ArgumentResults argumentTypes)
         where TSymbol : InvocableSymbol
     {
         // Filter down to symbols that could possible match
         symbols = symbols.Where(s =>
         {
-            if (s.Arity != argumentTypes.Count) return false;
+            if (s.Arity != argumentTypes.Expressions.Count) return false;
             // TODO check compatibility over argument types
             return true;
         }).ToFixedSet();
@@ -1470,12 +1538,12 @@ public class BasicBodyAnalyzer
     private static FixedList<MethodSymbol> SelectMethodOverload(
         DataType selfType,
         FixedList<MethodSymbol> symbols,
-        FixedList<DataType> argumentTypes)
+        ArgumentResults arguments)
     {
         // Filter down to symbols that could possible match
         symbols = symbols.Where(s =>
         {
-            if (s.Arity != argumentTypes.Count) return false;
+            if (s.Arity != arguments.Expressions.Count) return false;
             // TODO check compatibility of self type
             _ = selfType;
             // TODO check compatibility over argument types

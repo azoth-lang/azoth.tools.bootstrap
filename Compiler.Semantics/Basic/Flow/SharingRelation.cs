@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
@@ -25,6 +23,8 @@ public sealed class SharingRelation
     private readonly Dictionary<ISharingVariable, SharingSet> subsetFor;
 
     private ResultVariable? currentResult;
+
+    public ImplicitLend? CurrentLend { get; private set; }
 
     public SharingRelation()
     {
@@ -57,31 +57,22 @@ public sealed class SharingRelation
 
     public IEnumerable<IReadOnlySharingSet> SharingSets => sets;
 
-    /// <summary>
-    /// Restrict write to the sharing set of the variable via the variable.
-    /// </summary>
-    /// <returns>The set of affected symbols.</returns>
-    public IEnumerable<BindingSymbol> RestrictWrite(ISharingVariable variable)
+    public IReadOnlySharingSet SharingSet(ResultVariable variable)
     {
-        if (subsetFor.TryGetValue(variable, out var set))
-        {
-            set.RestrictWrite(variable);
-            return set.OfType<BindingVariable>().Select(v => v.Symbol);
-        }
-        return Enumerable.Empty<BindingSymbol>();
+        if (!subsetFor.TryGetValue(variable, out var set))
+            throw new InvalidOperationException("Result no longer declared.");
+
+        return set;
     }
 
-    public IEnumerable<BindingSymbol> RestrictWrite(ResultVariable resultToRestrict, ResultVariable restrictBy)
+    public ResultVariable LendConst(ResultVariable result)
     {
-        if (subsetFor.TryGetValue(resultToRestrict, out var restrictedSet)
-            && subsetFor.TryGetValue(restrictBy, out var restrictBySet))
-        {
-            restrictBySet.RestrictsWriteTo(restrictedSet);
-            restrictedSet.RestrictWrite(resultToRestrict);
-            return restrictedSet.OfType<BindingVariable>().Select(v => v.Symbol);
-        }
-
-        return Enumerable.Empty<BindingSymbol>();
+        _ = SharingSet(result);
+        var borrowingResult = NewResult(lent: true);
+        var lend = NewLend(restrictWrite: true);
+        Union(result, lend.From);
+        Union(borrowingResult, lend.To);
+        return borrowingResult;
     }
 
     public SharingRelation Copy() => new(sets, currentResult);
@@ -163,11 +154,9 @@ public sealed class SharingRelation
             Drop(variable);
     }
 
-    public void UnionWithCurrentResult(ISharingVariable var) => Union(var, CurrentResult);
-
     public void UnionWithCurrentResultAndDrop(ResultVariable variable)
     {
-        UnionWithCurrentResult(variable);
+        Union(variable, CurrentResult);
         Drop(variable);
     }
 
@@ -209,15 +198,19 @@ public sealed class SharingRelation
     }
 
     public bool IsIsolated(ISharingVariable variable)
-        => subsetFor.TryGetValue(variable, out var set) && set.Count == 1;
+        => subsetFor.TryGetValue(variable, out var set) && set.IsIsolated;
 
-    public bool IsIsolatedExceptCurrentResult(ISharingVariable variable)
+    public bool IsIsolatedExcept(ISharingVariable variable, ResultVariable result)
         => subsetFor.TryGetValue(variable, out var set)
-           && set.Count <= 2
-           && set.Except(CurrentResult).Count() == 1;
+           && set.IsIsolatedExcept(result);
 
     public SharingRelationSnapshot Snapshot() => new(sets, currentResult);
 
     public override string ToString()
         => string.Join(", ", sets.Select(s => $"{{{string.Join(", ", s.Distinct())}}}"));
+
+    private ImplicitLend NewLend(bool restrictWrite)
+        => CurrentLend = new ImplicitLend(CurrentLend, restrictWrite);
+
+
 }

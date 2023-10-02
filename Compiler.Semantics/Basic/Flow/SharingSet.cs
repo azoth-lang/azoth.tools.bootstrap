@@ -11,31 +11,31 @@ public class SharingSet : IReadOnlySharingSet
 {
     public bool IsLent { get; }
     private readonly HashSet<ISharingVariable> variables;
-    private readonly HashSet<ISharingVariable> variablesRestrictingWrite;
     public int Count => variables.Count;
-    private bool IsResultSet => variables.Count == 1 && variables.Single().IsResult;
-    public bool IsWriteRestricted => variablesRestrictingWrite.Any();
+    public bool IsWriteRestricted => variables.Any(v => v.RestrictsWrite);
+    public bool IsIsolated => variables.Count == 1;
 
-    public SharingSet(bool isLent, FixedSet<ISharingVariable> variables, FixedSet<ISharingVariable> variablesRestrictingWrite)
+    public SharingSet(bool isLent, FixedSet<ISharingVariable> variables)
     {
         IsLent = isLent;
         this.variables = variables.ToHashSet();
-        this.variablesRestrictingWrite = variablesRestrictingWrite.ToHashSet();
     }
 
     public SharingSet(ISharingVariable variable, bool isLent)
     {
         IsLent = isLent;
         variables = new HashSet<ISharingVariable> { variable };
-        variablesRestrictingWrite = new HashSet<ISharingVariable>();
     }
+
+    public bool IsIsolatedExcept(ResultVariable result)
+        => variables.Count <= 2 && variables.Except(result).Count() == 1;
 
     public IEnumerator<ISharingVariable> GetEnumerator() => variables.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public SharingSetSnapshot Snapshot()
-        => new(IsLent, variables.ToFixedSet(), variablesRestrictingWrite.ToFixedSet());
+        => new(IsLent, variables.ToFixedSet());
 
     public void Declare(ExternalReference lentGroup)
     {
@@ -44,32 +44,17 @@ public class SharingSet : IReadOnlySharingSet
         variables.Add(lentGroup);
     }
 
-    public void Remove(ISharingVariable variable)
-    {
-        variables.Remove(variable);
-        variablesRestrictingWrite.Remove(variable);
-    }
+    public void Remove(ISharingVariable variable) => variables.Remove(variable);
 
     public void UnionWith(SharingSet smallerSet)
     {
-        if ((IsLent && !smallerSet.IsResultSet)
-            || (smallerSet.IsLent && !IsResultSet))
-            throw new InvalidOperationException("Cannot union two sharing sets if either is lent unless they are result sets.");
+        if ((IsLent && !smallerSet.IsIsolated)
+            || (smallerSet.IsLent && !IsIsolated))
+            throw new InvalidOperationException("Cannot union two sharing sets if either is lent unless they are isolated sets.");
         variables.UnionWith(smallerSet.variables);
-        variablesRestrictingWrite.UnionWith(smallerSet.variablesRestrictingWrite);
-
     }
 
-    public void RestrictsWriteTo(SharingSet restrictedSet)
-        => throw new NotImplementedException();
-
-    public void RestrictWrite(ISharingVariable variable) => variablesRestrictingWrite.Add(variable);
-
-    public void Clear()
-    {
-        variables.Clear();
-        variablesRestrictingWrite.Clear();
-    }
+    public void Clear() => variables.Clear();
 
     #region Equals
     public bool Equals(SharingSet? other)

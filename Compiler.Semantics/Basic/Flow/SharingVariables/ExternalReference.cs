@@ -29,6 +29,7 @@ public sealed class ExternalReference : ISharingVariable
 
     public bool IsVariableOrParameter => false;
     public bool IsResult => false;
+    public bool RestrictsWrite => false;
 
     private ExternalReference(uint number)
     {

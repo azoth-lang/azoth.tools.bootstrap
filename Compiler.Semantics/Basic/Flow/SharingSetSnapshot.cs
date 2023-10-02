@@ -7,14 +7,12 @@ public class SharingSetSnapshot
 {
     public bool IsLent { get; }
     public FixedSet<ISharingVariable> Variables { get; }
-    public FixedSet<ISharingVariable> VariablesRestrictingWrite { get; }
 
-    public SharingSetSnapshot(bool isLent, FixedSet<ISharingVariable> variables, FixedSet<ISharingVariable> variablesRestrictingWrite)
+    public SharingSetSnapshot(bool isLent, FixedSet<ISharingVariable> variables)
     {
         IsLent = isLent;
         Variables = variables;
-        VariablesRestrictingWrite = variablesRestrictingWrite;
     }
 
-    public SharingSet MutableCopy() => new(IsLent, Variables, VariablesRestrictingWrite);
+    public SharingSet MutableCopy() => new(IsLent, Variables);
 }

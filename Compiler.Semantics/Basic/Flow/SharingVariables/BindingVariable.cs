@@ -9,6 +9,7 @@ public sealed class BindingVariable : ISharingVariable
     public BindingSymbol Symbol { get; }
     public bool IsVariableOrParameter { get; }
     public bool IsResult => false;
+    public bool RestrictsWrite => false;
     public DataType DataType => Symbol.DataType;
     public bool IsLent => Symbol.IsLentBinding;
 
@@ -30,4 +31,6 @@ public sealed class BindingVariable : ISharingVariable
 
     public static implicit operator BindingVariable(BindingSymbol symbol)
         => new BindingVariable(symbol);
+
+    public override string ToString() => Symbol.ToILString();
 }
