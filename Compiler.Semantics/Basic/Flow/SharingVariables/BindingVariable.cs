@@ -10,13 +10,12 @@ public sealed class BindingVariable : ISharingVariable
     public bool IsVariableOrParameter { get; }
     public bool IsResult => false;
     public DataType DataType => Symbol.DataType;
-    public bool IsLent { get; }
+    public bool IsLent => Symbol.IsLentBinding;
 
     public BindingVariable(BindingSymbol symbol)
     {
         Symbol = symbol;
         IsVariableOrParameter = symbol is not FieldSymbol;
-        IsLent = Symbol.DataType is ReferenceType { IsLentReference: true };
     }
 
     #region  Equality

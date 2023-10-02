@@ -7,8 +7,8 @@ public sealed class SelfParameterSymbol : BindingSymbol
 {
     public override InvocableSymbol ContainingSymbol { get; }
 
-    public SelfParameterSymbol(InvocableSymbol containingSymbol, DataType dataType)
-        : base(containingSymbol, null, false, dataType)
+    public SelfParameterSymbol(InvocableSymbol containingSymbol, bool isLent, DataType dataType)
+        : base(containingSymbol, false, isLent, null, dataType)
     {
         if (containingSymbol is FunctionSymbol)
             throw new ArgumentException("Function can't have self parameter", nameof(containingSymbol));
@@ -31,5 +31,8 @@ public sealed class SelfParameterSymbol : BindingSymbol
         => HashCode.Combine(Name, IsMutableBinding, DataType);
 
     public override string ToILString()
-        => $"{ContainingSymbol} {{self: {DataType.ToILString()}}}";
+    {
+        var lent = IsLentBinding ? "lent " : "";
+        return $"{ContainingSymbol} {{{lent}self: {DataType.ToILString()}}}";
+    }
 }

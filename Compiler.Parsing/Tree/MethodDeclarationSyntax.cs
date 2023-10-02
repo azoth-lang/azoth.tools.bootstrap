@@ -14,7 +14,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
     public new Name Name { get; }
     public ISelfParameterSyntax SelfParameter { get; }
     public new FixedList<INamedParameterSyntax> Parameters { get; }
-    public ITypeSyntax? ReturnType { get; }
+    public IReturnSyntax? Return { get; }
     public new AcyclicPromise<MethodSymbol> Symbol { get; }
 
     protected MethodDeclarationSyntax(
@@ -26,7 +26,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
         Name name,
         ISelfParameterSyntax selfParameter,
         FixedList<INamedParameterSyntax> parameters,
-        ITypeSyntax? returnType)
+        IReturnSyntax? @return)
         : base(span, file, accessModifier, nameSpan, name,
             parameters, new AcyclicPromise<MethodSymbol>())
     {
@@ -34,7 +34,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters;
-        ReturnType = returnType;
+        Return = @return;
         Symbol = (AcyclicPromise<MethodSymbol>)base.Symbol;
     }
 }

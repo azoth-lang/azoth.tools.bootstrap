@@ -134,4 +134,16 @@ internal static class ParseError
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2018, "Cannot declare `lent id` capability, use `id` instead");
     }
+
+    public static Diagnostic LentVarNotAllowed(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2019, "Parameter binding cannot be both `lent` and `var`");
+    }
+
+    public static Diagnostic LentFieldParameter(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2020, "Field parameter cannot be `lent`");
+    }
 }

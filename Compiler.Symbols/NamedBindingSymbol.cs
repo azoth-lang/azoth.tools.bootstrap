@@ -13,10 +13,11 @@ public abstract class NamedBindingSymbol : BindingSymbol
 
     protected NamedBindingSymbol(
         Symbol containingSymbol,
-        Name name,
         bool isMutableBinding,
+        bool isLentBinding,
+        Name name,
         DataType dataType)
-        : base(containingSymbol, name, isMutableBinding, dataType)
+        : base(containingSymbol, isMutableBinding, isLentBinding, name, dataType)
     {
         Name = name;
     }

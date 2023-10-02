@@ -61,15 +61,18 @@ public static class Intrinsic
         var readBytesType = rawBoundedListType.WithRead(DataType.Byte.Yield().ToFixedList<DataType>());
 
         // fn print_raw_utf8_bytes(bytes: Raw_Bounded_List[byte], start: size, byte_count: size)
-        var print = new FunctionSymbol(intrinsicsNamespace, "print_raw_utf8_bytes", Params(readBytesType, DataType.Size, DataType.Size));
+        var print = new FunctionSymbol(intrinsicsNamespace, "print_raw_utf8_bytes",
+            Params(readBytesType, DataType.Size, DataType.Size));
         tree.Add(print);
 
         // fn read_raw_utf8_bytes_line(bytes: mut Raw_Bounded_List[byte], start: size) -> size
-        var readLine = new FunctionSymbol(intrinsicsNamespace, "read_raw_utf8_bytes_line", Params(DataType.Size, DataType.Size), DataType.Size);
+        var readLine = new FunctionSymbol(intrinsicsNamespace, "read_raw_utf8_bytes_line",
+            Params(DataType.Size, DataType.Size), ReturnType.Size);
         tree.Add(readLine);
 
         // fn ABORT_RAW_UTF8_BYTES(bytes: Raw_Bounded_List[byte], start: size, byte_count: size) -> never
-        var abort = new FunctionSymbol(intrinsicsNamespace, "ABORT_RAW_UTF8_BYTES", Params(readBytesType, DataType.Size, DataType.Size), DataType.Never);
+        var abort = new FunctionSymbol(intrinsicsNamespace, "ABORT_RAW_UTF8_BYTES",
+            Params(readBytesType, DataType.Size, DataType.Size), ReturnType.Never);
         tree.Add(abort);
 
         return tree.Build();
@@ -92,8 +95,9 @@ public static class Intrinsic
     private static DeclaredObjectType BuildRawBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
     {
         var classType = DeclaredObjectType.Create(@namespace.Package!.Name, @namespace.NamespaceName, "Raw_Bounded_List", false, "T");
-        var readClassType = classType.WithRead(classType.GenericParameterDataTypes);
+        var readClassParamType = new ParameterType(false, classType.WithRead(classType.GenericParameterDataTypes));
         var mutClassType = classType.WithMutate(classType.GenericParameterDataTypes);
+        var mutClassParamType = new ParameterType(false, mutClassType);
         var itemType = classType.GenericParameterTypes[0];
         var classSymbol = new ObjectTypeSymbol(@namespace, classType);
         tree.Add(classSymbol);
@@ -103,33 +107,39 @@ public static class Intrinsic
         tree.Add(constructor);
 
         // published fn capacity() -> size;
-        var capacity = new MethodSymbol(classSymbol, "capacity", readClassType, Params(), DataType.Size);
+        var capacity = new MethodSymbol(classSymbol, "capacity", readClassParamType, Params(), ReturnType.Size);
         tree.Add(capacity);
 
         // Given setters are not implemented, making this a function for now
         // published fn count() -> size
-        var count = new MethodSymbol(classSymbol, "count", readClassType, Params(), DataType.Size);
+        var count = new MethodSymbol(classSymbol, "count", readClassParamType, Params(), ReturnType.Size);
         tree.Add(count);
 
         // published /* unsafe */ fn at(mut self, index: size) -> T
-        var at = new MethodSymbol(classSymbol, "at", readClassType, Params(DataType.Size), itemType);
+        var at = new MethodSymbol(classSymbol, "at", readClassParamType,
+            Params(DataType.Size), Return(itemType));
         tree.Add(at);
 
         // published /* unsafe */ fn set(mut self, index: size, T value)
-        var set = new MethodSymbol(classSymbol, "set", mutClassType, Params(DataType.Size, itemType),
-            DataType.Void);
+        var set = new MethodSymbol(classSymbol, "set", mutClassParamType,
+            Params(DataType.Size, itemType), ReturnType.Void);
         tree.Add(set);
 
         // published fn add(mut self, value: T);
-        var add = new MethodSymbol(classSymbol, "add", mutClassType, Params(itemType), DataType.Void);
+        var add = new MethodSymbol(classSymbol, "add", mutClassParamType,
+            Params(itemType), ReturnType.Void);
         tree.Add(add);
 
         // published fn shrink(mut self, count: size)
-        var shrink = new MethodSymbol(classSymbol, "shrink", mutClassType, Params(DataType.Size), DataType.Void);
+        var shrink = new MethodSymbol(classSymbol, "shrink", mutClassParamType,
+            Params(DataType.Size), ReturnType.Void);
         tree.Add(shrink);
 
         return classType;
     }
 
-    private static FixedList<DataType> Params(params DataType[] types) => types.ToFixedList();
+    private static FixedList<ParameterType> Params(params DataType[] types)
+        => types.Select(t => new ParameterType(false, t)).ToFixedList();
+
+    private static ReturnType Return(DataType type) => new(false, type);
 }

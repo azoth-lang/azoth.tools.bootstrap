@@ -1,3 +1,4 @@
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
@@ -55,8 +56,9 @@ public static class Primitive
         var type = new PrimitiveTypeSymbol(integerType);
         tree.Add(type);
 
-        var remainderMethod = new MethodSymbol(type, "remainder", integerType, Params(integerType), integerType);
-        var displayStringMethod = new MethodSymbol(type, "to_display_string", integerType, Params(), stringType);
+        var integerParamType = new ParameterType(false, integerType);
+        var remainderMethod = new MethodSymbol(type, "remainder", integerParamType, Params(integerType), Return(integerType));
+        var displayStringMethod = new MethodSymbol(type, "to_display_string", integerParamType, Params(), Return(stringType));
 
         tree.Add(remainderMethod);
         tree.Add(displayStringMethod);
@@ -74,5 +76,8 @@ public static class Primitive
         tree.Add(symbol);
     }
 
-    private static FixedList<DataType> Params(params DataType[] types) => types.ToFixedList();
+    private static FixedList<ParameterType> Params(params DataType[] types)
+        => types.Select(t => new ParameterType(false, t)).ToFixedList();
+
+    private static ReturnType Return(DataType type) => new(false, type);
 }

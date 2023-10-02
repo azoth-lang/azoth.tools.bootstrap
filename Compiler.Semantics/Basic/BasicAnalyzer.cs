@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -66,7 +67,7 @@ public class BasicAnalyzer
             case IFunctionDeclarationSyntax function:
             {
                 var resolver = new BasicBodyAnalyzer(function, symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics,
-                    function.Symbol.Result.ReturnDataType);
+                    function.Symbol.Result.ReturnType);
                 resolver.ResolveTypes(function.Body);
                 break;
             }
@@ -74,14 +75,14 @@ public class BasicAnalyzer
             {
                 var resolver = new BasicBodyAnalyzer(associatedFunction, symbolTreeBuilder, symbolTrees,
                     stringSymbol, diagnostics,
-                    associatedFunction.Symbol.Result.ReturnDataType);
+                    associatedFunction.Symbol.Result.ReturnType);
                 resolver.ResolveTypes(associatedFunction.Body);
                 break;
             }
             case IConcreteMethodDeclarationSyntax method:
             {
                 var resolver = new BasicBodyAnalyzer(method, symbolTreeBuilder,
-                    symbolTrees, stringSymbol, diagnostics, method.Symbol.Result.ReturnDataType);
+                    symbolTrees, stringSymbol, diagnostics, method.Symbol.Result.ReturnType);
                 resolver.ResolveTypes(method.Body);
                 break;
             }
@@ -99,7 +100,8 @@ public class BasicAnalyzer
                 break;
             case IConstructorDeclarationSyntax constructor:
             {
-                var resolver = new BasicBodyAnalyzer(constructor, symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, constructor.SelfParameter.Symbol.Result.DataType);
+                ReturnType returnType = new ReturnType(false, constructor.SelfParameter.Symbol.Result.DataType);
+                var resolver = new BasicBodyAnalyzer(constructor, symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType);
                 resolver.ResolveTypes(constructor.Body);
                 break;
             }

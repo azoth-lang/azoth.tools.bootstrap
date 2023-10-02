@@ -80,11 +80,11 @@ public class EntitySymbolBuilder
         var resolver = new TypeResolver(method.File, diagnostics);
         var selfParameterType = ResolveMethodSelfParameterType(resolver, method.SelfParameter, method.DeclaringClass);
         var parameterTypes = ResolveParameterTypes(resolver, method.Parameters, method.DeclaringClass);
-        var returnType = ResolveReturnType(method.ReturnType, resolver);
+        var returnType = ResolveReturnType(method.Return, resolver);
         var symbol = new MethodSymbol(declaringClassSymbol, method.Name, selfParameterType, parameterTypes, returnType);
         method.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);
-        BuildSelfParameterSymbol(symbol, method.SelfParameter, selfParameterType);
+        BuildSelfParameterSymbol(symbol, method.SelfParameter, selfParameterType.Type);
         BuildParameterSymbols(symbol, method.Parameters, parameterTypes);
     }
 
@@ -108,7 +108,7 @@ public class EntitySymbolBuilder
         associatedFunction.Symbol.BeginFulfilling();
         var resolver = new TypeResolver(associatedFunction.File, diagnostics);
         var parameterTypes = ResolveParameterTypes(resolver, associatedFunction.Parameters);
-        var returnType = ResolveReturnType(associatedFunction.ReturnType, resolver);
+        var returnType = ResolveReturnType(associatedFunction.Return, resolver);
         var declaringClassSymbol = associatedFunction.DeclaringClass.Symbol.Result;
         var symbol = new FunctionSymbol(declaringClassSymbol, associatedFunction.Name, parameterTypes, returnType);
         associatedFunction.Symbol.Fulfill(symbol);
@@ -135,7 +135,7 @@ public class EntitySymbolBuilder
         function.Symbol.BeginFulfilling();
         var resolver = new TypeResolver(function.File, diagnostics);
         var parameterTypes = ResolveParameterTypes(resolver, function.Parameters);
-        var returnType = ResolveReturnType(function.ReturnType, resolver);
+        var returnType = ResolveReturnType(function.Return, resolver);
         var symbol = new FunctionSymbol(function.ContainingNamespaceSymbol, function.Name, parameterTypes, returnType);
         function.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);
@@ -189,26 +189,26 @@ public class EntitySymbolBuilder
         }
     }
 
-    private static FixedList<DataType> ResolveParameterTypes(
+    private static FixedList<ParameterType> ResolveParameterTypes(
         TypeResolver resolver,
         IEnumerable<INamedParameterSyntax> parameters)
     {
-        var types = new List<DataType>();
+        var types = new List<ParameterType>();
         foreach (var parameter in parameters)
         {
             var type = resolver.Evaluate(parameter.Type);
-            types.Add(type);
+            types.Add(new ParameterType(parameter.IsLentBinding, type));
         }
 
         return types.ToFixedList();
     }
 
-    private FixedList<DataType> ResolveParameterTypes(
+    private FixedList<ParameterType> ResolveParameterTypes(
         TypeResolver resolver,
         IEnumerable<IConstructorParameterSyntax> parameters,
         IClassDeclarationSyntax declaringClass)
     {
-        var types = new List<DataType>();
+        var types = new List<ParameterType>();
         foreach (var parameter in parameters)
             switch (parameter)
             {
@@ -217,7 +217,7 @@ public class EntitySymbolBuilder
                 case INamedParameterSyntax namedParameter:
                 {
                     var type = resolver.Evaluate(namedParameter.Type);
-                    types.Add(type);
+                    types.Add(new ParameterType(namedParameter.IsLentBinding, type));
                     break;
                 }
                 case IFieldParameterSyntax fieldParameter:
@@ -226,7 +226,7 @@ public class EntitySymbolBuilder
                                               .SingleOrDefault(f => f.Name == fieldParameter.Name);
                     if (field is null)
                     {
-                        types.Add(DataType.Unknown);
+                        types.Add(new ParameterType(false, DataType.Unknown));
                         fieldParameter.ReferencedSymbol.Fulfill(null);
                         throw new NotImplementedException("Report diagnostic about field parameter without matching field");
                     }
@@ -234,7 +234,7 @@ public class EntitySymbolBuilder
                     {
                         var fieldSymbol = BuildFieldSymbol(field);
                         fieldParameter.ReferencedSymbol.Fulfill(fieldSymbol);
-                        types.Add(fieldSymbol.DataType);
+                        types.Add(new ParameterType(false, fieldSymbol.DataType));
                     }
                     break;
                 }
@@ -242,6 +242,12 @@ public class EntitySymbolBuilder
 
         return types.ToFixedList();
     }
+
+    private void BuildParameterSymbols(
+        InvocableSymbol containingSymbol,
+        IEnumerable<IConstructorParameterSyntax> parameters,
+        IEnumerable<ParameterType> parameterTypes)
+        => BuildParameterSymbols(containingSymbol, parameters, parameterTypes.Select(pt => pt.Type));
 
     private void BuildParameterSymbols(
         InvocableSymbol containingSymbol,
@@ -256,8 +262,8 @@ public class EntitySymbolBuilder
                     throw ExhaustiveMatch.Failed(param);
                 case INamedParameterSyntax namedParam:
                 {
-                    var symbol = new VariableSymbol(containingSymbol, namedParam.Name,
-                        namedParam.DeclarationNumber.Result, namedParam.IsMutableBinding, type, true);
+                    var symbol = VariableSymbol.CreateParameter(containingSymbol, namedParam.Name,
+                        namedParam.DeclarationNumber.Result, namedParam.IsMutableBinding, namedParam.IsLentBinding, type);
                     namedParam.Symbol.Fulfill(symbol);
                     symbolTree.Add(symbol);
                 }
@@ -274,17 +280,18 @@ public class EntitySymbolBuilder
         ISelfParameterSyntax selfParameter,
         IClassDeclarationSyntax declaringClass)
     {
-        var selfType = declaringClass.Symbol.Result.DeclaresType;
-        return resolver.EvaluateConstructorSelfParameterType(selfType, selfParameter.Capability, selfType.GenericParameterDataTypes);
+        var declaredType = declaringClass.Symbol.Result.DeclaresType;
+        return resolver.EvaluateConstructorSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterDataTypes);
     }
 
-    private static ObjectType ResolveMethodSelfParameterType(
+    private static ParameterType ResolveMethodSelfParameterType(
         TypeResolver resolver,
         ISelfParameterSyntax selfParameter,
         IClassDeclarationSyntax declaringClass)
     {
-        var selfType = declaringClass.Symbol.Result.DeclaresType;
-        return resolver.EvaluateMethodSelfParameterType(selfType, selfParameter.Capability, selfType.GenericParameterDataTypes);
+        var declaredType = declaringClass.Symbol.Result.DeclaresType;
+        var selfType = resolver.EvaluateMethodSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterDataTypes);
+        return new ParameterType(selfParameter.IsLentBinding, selfType);
     }
 
     private void BuildSelfParameterSymbol(
@@ -292,16 +299,17 @@ public class EntitySymbolBuilder
         ISelfParameterSyntax param,
         DataType type)
     {
-        var symbol = new SelfParameterSymbol(containingSymbol, type);
+        var symbol = new SelfParameterSymbol(containingSymbol, param.IsLentBinding, type);
         param.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);
     }
 
-    private static DataType ResolveReturnType(
-        ITypeSyntax? returnTypeSyntax, TypeResolver resolver)
+    private static ReturnType ResolveReturnType(
+        IReturnSyntax? returnSyntax, TypeResolver resolver)
     {
-        var returnType = returnTypeSyntax is not null
-            ? resolver.Evaluate(returnTypeSyntax) : DataType.Void;
-        return returnType;
+        if (returnSyntax is null)
+            return ReturnType.Void;
+        DataType type = resolver.Evaluate(returnSyntax.Type);
+        return new ReturnType(returnSyntax.IsLent, type);
     }
 }

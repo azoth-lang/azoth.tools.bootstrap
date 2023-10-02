@@ -9,31 +9,32 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 internal class MethodSignature : IEquatable<MethodSignature>
 {
     public Name Name { get; }
-    public DataType SelfDataType { get; }
-    public FixedList<DataType> ParameterDataTypes { get; }
-    public DataType ReturnDataType { get; }
+    public ParameterType SelfType { get; }
+    public FixedList<ParameterType> ParameterTypes { get; }
+    public ReturnType ReturnType { get; }
     private readonly int hashCode;
 
     public MethodSignature(
         Name name,
-        DataType selfDataType,
-        FixedList<DataType> parameterDataTypes,
-        DataType returnDataType)
+        ParameterType selfType,
+        FixedList<ParameterType> parameterTypes,
+        ReturnType returnType)
     {
         Name = name;
-        SelfDataType = selfDataType;
-        ParameterDataTypes = parameterDataTypes;
-        ReturnDataType = returnDataType;
-        hashCode = HashCode.Combine(Name, SelfDataType, ParameterDataTypes, ReturnDataType);
+        SelfType = selfType;
+        ParameterTypes = parameterTypes;
+        ReturnType = returnType;
+        hashCode = HashCode.Combine(Name, SelfType, ParameterTypes, ReturnType);
     }
 
     public bool EqualsOrOverrides(MethodSignature other)
     {
         if (ReferenceEquals(this, other)) return true;
         return Name.Equals(other.Name)
-                && other.SelfDataType.IsAssignableFrom(SelfDataType)
-                && ParameterDataTypes.Equals(other.ParameterDataTypes)
-                && ReturnDataType.Equals(other.ReturnDataType);
+                // TODO what about lent binding?
+                && other.SelfType.Type.IsAssignableFrom(SelfType.Type)
+                && ParameterTypes.Equals(other.ParameterTypes)
+                && ReturnType.Equals(other.ReturnType);
     }
 
     #region Equality
@@ -42,9 +43,9 @@ internal class MethodSignature : IEquatable<MethodSignature>
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return Name.Equals(other.Name)
-               && SelfDataType.Equals(other.SelfDataType)
-               && ParameterDataTypes.Equals(other.ParameterDataTypes)
-               && ReturnDataType.Equals(other.ReturnDataType);
+               && SelfType.Equals(other.SelfType)
+               && ParameterTypes.Equals(other.ParameterTypes)
+               && ReturnType.Equals(other.ReturnType);
     }
 
     public override bool Equals(object? obj) => Equals(obj as MethodSignature);
@@ -59,5 +60,5 @@ internal class MethodSignature : IEquatable<MethodSignature>
     #endregion
 
     public override string ToString()
-        => $"{Name}({string.Join(", ", ParameterDataTypes.Prepend(SelfDataType).Select(t => t.ToILString()))}) -> {ReturnDataType.ToILString()}";
+        => $"{Name}({string.Join(", ", ParameterTypes.Prepend(SelfType).Select(t => t.ToILString()))}) -> {ReturnType.ToILString()}";
 }

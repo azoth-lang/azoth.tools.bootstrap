@@ -31,7 +31,7 @@ internal class AssociatedFunctionDeclaration : InvocableDeclaration, IAssociated
 
     public override string ToString()
     {
-        var returnType = Symbol.ReturnDataType != DataType.Void ? " -> " + Symbol.ReturnDataType.ToILString() : "";
+        var returnType = Symbol.ReturnType != ReturnType.Void ? " -> " + Symbol.ReturnType.ToILString() : "";
         return $"fn {Symbol.Name}({string.Join(", ", Parameters)}){returnType} {Body}";
     }
 }

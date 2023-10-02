@@ -93,19 +93,19 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// </summary>
     /// <remarks>The capability of the return type is restricted by the parameter types because the
     /// newly constructed object could contain references to them.</remarks>
-    public ObjectType ToConstructorReturn(ReferenceType selfParameterType, IEnumerable<DataType> parameterTypes)
+    public ObjectType ToConstructorReturn(ReferenceType selfParameterType, IEnumerable<ParameterType> parameterTypes)
     {
         if (IsConst) return With(ReferenceCapability.Constant, GenericParameterDataTypes);
         // Read only self constructors cannot return `mut` or `iso`
         if (!selfParameterType.AllowsWrite)
             return With(ReferenceCapability.ReadOnly, GenericParameterDataTypes);
         foreach (var parameterType in parameterTypes)
-            switch (parameterType)
+            switch (parameterType.Type)
             {
-                case ReferenceType { IsLentReference: true }:
+                case ReferenceType when parameterType.IsLentBinding:
                 case ReferenceType { IsConstReference: true }:
                 case ReferenceType { IsIsolatedReference: true }:
-                case OptionalType { Referent: ReferenceType { IsLentReference: true } }:
+                case OptionalType { Referent: ReferenceType } when parameterType.IsLentBinding:
                 case OptionalType { Referent: ReferenceType { IsConstReference: true } }:
                 case OptionalType { Referent: ReferenceType { IsIsolatedReference: true } }:
                 case SimpleType:

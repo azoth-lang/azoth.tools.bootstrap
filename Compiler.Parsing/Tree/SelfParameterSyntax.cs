@@ -8,16 +8,22 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class SelfParameterSyntax : ParameterSyntax, ISelfParameterSyntax
 {
+    public bool IsLentBinding { get; }
     public IReferenceCapabilitySyntax Capability { get; }
     public Promise<SelfParameterSymbol> Symbol { get; } = new Promise<SelfParameterSymbol>();
     public override IPromise<DataType> DataType { get; }
-    public SelfParameterSyntax(TextSpan span, IReferenceCapabilitySyntax capability)
+    public SelfParameterSyntax(TextSpan span, bool isLentBinding, IReferenceCapabilitySyntax capability)
         : base(span, null)
     {
         Capability = capability;
+        IsLentBinding = isLentBinding;
         DataType = Symbol.Select(s => s.DataType);
     }
 
     public override string ToString()
-        => Capability.Declared == DeclaredReferenceCapability.ReadOnly ? "self" : Capability + " self";
+    {
+        var lent = IsLentBinding ? "lent " : "";
+        var capability = Capability.Declared == DeclaredReferenceCapability.ReadOnly ? "" : Capability + " ";
+        return $"{lent}{capability}self";
+    }
 }

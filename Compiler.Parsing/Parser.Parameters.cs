@@ -10,36 +10,51 @@ public partial class Parser
 {
     public INamedParameterSyntax ParseFunctionParameter()
     {
-        var span = Tokens.Current.Span;
-        var mutableBinding = Tokens.Accept<IVarKeywordToken>();
+        var lentBinding = Tokens.AcceptToken<ILentKeywordToken>();
+        return ParseFunctionParameter(lentBinding);
+    }
+
+    public INamedParameterSyntax ParseFunctionParameter(ILentKeywordToken? lentBinding)
+    {
+        bool isLentBinding = lentBinding is not null;
+        var mutableBinding = Tokens.AcceptToken<IVarKeywordToken>();
+        bool isMutableBinding = mutableBinding is not null;
+        if (isLentBinding && isMutableBinding)
+            Add(ParseError.LentVarNotAllowed(File, TextSpan.Covering(lentBinding?.Span, mutableBinding?.Span)));
         var identifier = Tokens.RequiredToken<IIdentifierOrUnderscoreToken>();
         var name = identifier.Value;
         Tokens.Expect<IColonToken>();
         var type = ParseType();
         IExpressionSyntax? defaultValue = null;
         if (Tokens.Accept<IEqualsToken>()) defaultValue = ParseExpression();
-        span = TextSpan.Covering(span, type.Span, defaultValue?.Span);
-        return new NamedParameterSyntax(span, mutableBinding, name, type, defaultValue);
+        var span = TextSpan.Covering(lentBinding?.Span, mutableBinding?.Span, type.Span, defaultValue?.Span);
+        return new NamedParameterSyntax(span, isMutableBinding, isLentBinding, name, type, defaultValue);
     }
 
     public IParameterSyntax ParseMethodParameter()
     {
+        var lentBinding = Tokens.AcceptToken<ILentKeywordToken>();
         return Tokens.Current switch
         {
-            ICapabilityToken or ISelfKeywordToken => ParseSelfParameter(),
-            _ => ParseFunctionParameter(),
+            ICapabilityToken or ISelfKeywordToken => ParseSelfParameter(lentBinding),
+            _ => ParseFunctionParameter(lentBinding),
         };
     }
 
     public IParameterSyntax ParseConstructorParameter()
     {
+        var lentBinding = Tokens.AcceptToken<ILentKeywordToken>();
         switch (Tokens.Current)
         {
+
             case ICapabilityToken:
             case ISelfKeywordToken:
-                return ParseSelfParameter();
+                return ParseSelfParameter(lentBinding);
             case IDotToken _:
             {
+                if (lentBinding is not null)
+                    Add(ParseError.LentFieldParameter(File, lentBinding.Span));
+
                 var dot = Tokens.Expect<IDotToken>();
                 var identifier = Tokens.RequiredToken<IIdentifierToken>();
                 var equals = Tokens.AcceptToken<IEqualsToken>();
@@ -50,17 +65,17 @@ public partial class Parser
                 return new FieldParameterSyntax(span, name, defaultValue);
             }
             default:
-                return ParseFunctionParameter();
+                return ParseFunctionParameter(lentBinding);
         }
     }
 
-    private ISelfParameterSyntax ParseSelfParameter()
+    private ISelfParameterSyntax ParseSelfParameter(ILentKeywordToken? lentBinding)
     {
-        var span = Tokens.Current.Span;
+        bool isLentBinding = lentBinding is not null;
         var referenceCapability = ParseReferenceCapability()
                                   ?? ReferenceCapabilitySyntax.ImplicitReadOnly(Tokens.Current.Span.AtStart());
         var selfSpan = Tokens.Expect<ISelfKeywordToken>();
-        span = TextSpan.Covering(span, selfSpan);
-        return new SelfParameterSyntax(span, referenceCapability);
+        var span = TextSpan.Covering(lentBinding?.Span, referenceCapability.Span, selfSpan);
+        return new SelfParameterSyntax(span, isLentBinding, referenceCapability);
     }
 }

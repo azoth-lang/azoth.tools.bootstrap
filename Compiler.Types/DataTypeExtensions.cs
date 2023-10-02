@@ -47,6 +47,13 @@ public static class DataTypeExtensions
     public static DataType Assigned([NotNull] this DataType? type)
         => type ?? throw new InvalidOperationException("Type not assigned.");
 
+    /// <summary>
+    /// Validates that a type as been assigned.
+    /// </summary>
+    [DebuggerHidden]
+    public static ReturnType Assigned([NotNull] this ReturnType? returnType)
+        => returnType ?? throw new InvalidOperationException("ReturnType not assigned.");
+
     [DebuggerHidden]
     public static DataType Known(this DataType? type)
     {
@@ -55,6 +62,18 @@ public static class DataTypeExtensions
 
         return type!;
     }
+
+    [DebuggerHidden]
+    public static ReturnType Known(this ReturnType returnType)
+    {
+        if (!returnType.Type.IsFullyKnown)
+            throw new InvalidOperationException($"Type {returnType.ToILString()} not fully known.");
+
+        return returnType;
+    }
+
+    [DebuggerHidden]
+    public static ReturnType Known(this ReturnType? returnType) => returnType.Assigned().Known();
 
     [DebuggerHidden]
     public static DataType Known(this IPromise<DataType> promise)

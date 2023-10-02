@@ -16,9 +16,9 @@ public sealed class FunctionSymbol : FunctionOrMethodSymbol
     public FunctionSymbol(
         Symbol containingSymbol,
         Name name,
-        FixedList<DataType> parameterDataTypes,
-        DataType returnDataType)
-        : base(containingSymbol, name, parameterDataTypes, returnDataType)
+        FixedList<ParameterType> parameterDataTypes,
+        ReturnType returnType)
+        : base(containingSymbol, name, parameterDataTypes, returnType)
     {
         Name = name;
     }
@@ -26,8 +26,8 @@ public sealed class FunctionSymbol : FunctionOrMethodSymbol
     public FunctionSymbol(
         Symbol containingSymbol,
         Name name,
-        FixedList<DataType> parameterDataTypes)
-        : this(containingSymbol, name, parameterDataTypes, DataType.Void)
+        FixedList<ParameterType> parameterDataTypes)
+        : this(containingSymbol, name, parameterDataTypes, ReturnType.Void)
     {
     }
 
@@ -38,13 +38,13 @@ public sealed class FunctionSymbol : FunctionOrMethodSymbol
         return other is FunctionSymbol otherFunction
                && ContainingSymbol == otherFunction.ContainingSymbol
                && Name == otherFunction.Name
-               && ParameterDataTypes.SequenceEqual(otherFunction.ParameterDataTypes)
-               && ReturnDataType == otherFunction.ReturnDataType;
+               && ParameterTypes.SequenceEqual(otherFunction.ParameterTypes)
+               && ReturnType == otherFunction.ReturnType;
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingSymbol, Name, ParameterDataTypes, ReturnDataType);
+        => HashCode.Combine(ContainingSymbol, Name, ParameterTypes, ReturnType);
 
     public override string ToILString()
-        => $"{ContainingSymbol.ToILString()}.{Name}({string.Join(", ", ParameterDataTypes.Select(d => d.ToILString()))}) -> {ReturnDataType.ToILString()}";
+        => $"{ContainingSymbol.ToILString()}.{Name}({string.Join(", ", ParameterTypes.Select(d => d.ToILString()))}) -> {ReturnType.ToILString()}";
 }

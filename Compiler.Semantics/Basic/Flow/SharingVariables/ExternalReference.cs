@@ -21,7 +21,7 @@ public sealed class ExternalReference : ISharingVariable
     public static ExternalReference CreateLentParameter(uint number)
     {
         if (number == 0)
-            throw new ArgumentOutOfRangeException(nameof(number), "Lent group numbers must be > 0.");
+            throw new ArgumentOutOfRangeException(nameof(number), "Lent parameter numbers must be > 0.");
         return Create(number);
     }
 

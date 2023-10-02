@@ -27,9 +27,8 @@ internal class FunctionDeclarationSyntax : InvocableDeclarationSyntax, IFunction
         }
     }
     public new Name Name { get; }
-
-    public ITypeSyntax? ReturnType { [DebuggerStepThrough] get; }
     public new FixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public IBodySyntax Body { [DebuggerStepThrough] get; }
     public new AcyclicPromise<FunctionSymbol> Symbol { get; }
 
@@ -41,21 +40,21 @@ internal class FunctionDeclarationSyntax : InvocableDeclarationSyntax, IFunction
         TextSpan nameSpan,
         Name name,
         FixedList<INamedParameterSyntax> parameters,
-        ITypeSyntax? returnType,
+        IReturnSyntax? @return,
         IBodySyntax body)
         : base(span, file, accessModifier, nameSpan, name, parameters, new AcyclicPromise<FunctionSymbol>())
     {
         ContainingNamespaceName = containingNamespaceName;
         Name = name;
         Parameters = parameters;
-        ReturnType = returnType;
         Body = body;
+        Return = @return;
         Symbol = (AcyclicPromise<FunctionSymbol>)base.Symbol;
     }
 
     public override string ToString()
     {
-        var returnType = ReturnType is not null ? " -> " + ReturnType : "";
-        return $"fn {Name}({string.Join(", ", Parameters)}){returnType} {Body}";
+        var @return = Return is not null ? Return.ToString() : "";
+        return $"fn {Name}({string.Join(", ", Parameters)}){@return} {Body}";
     }
 }

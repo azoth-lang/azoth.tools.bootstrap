@@ -44,32 +44,6 @@ public sealed class ReferenceCapability
         = new("const", allowsReadAliases: true);
 
     /// <summary>
-    /// A lent reference that has write access and there are no references that can access this
-    /// object while this reference exists.
-    /// </summary>
-    public static readonly ReferenceCapability LentIsolated
-        = new("lent iso", lent: true, allowsWrite: true);
-
-    /// <summary>
-    /// A lent reference that has write access.
-    /// </summary>
-    public static readonly ReferenceCapability LentMutable
-        = new("lent mut", lent: true, allowsWrite: true, allowsWriteAliases: true, allowsReadAliases: true);
-
-    /// <summary>
-    /// A lent reference that has read-only access.
-    /// </summary>
-    public static readonly ReferenceCapability LentReadOnly
-        = new("lent readonly", lent: true, allowsWriteAliases: true, allowsReadAliases: true);
-
-    /// <summary>
-    /// A lent reference has read-only access and there are no references that
-    /// can mutate this object while this reference exists.
-    /// </summary>
-    public static readonly ReferenceCapability LentConstant
-        = new("lent const", lent: true, allowsReadAliases: true);
-
-    /// <summary>
     /// A reference that can be used to identify an object but not read or
     /// write to it.
     /// </summary>
@@ -85,19 +59,15 @@ public sealed class ReferenceCapability
     /// </summary>
     public bool IsInit { get; }
     /// <summary>
-    /// Whether this reference is lent.
-    /// </summary>
-    public bool IsLent { get; }
-    /// <summary>
-    /// Is this either a `const` or `lent const` capability.
+    /// Is this a `const` capability.
     /// </summary>
     public bool IsConstant => !AllowsWrite && AllowsRead && !AllowsWriteAliases;
     /// <summary>
-    /// Is this either an `iso` or `lent iso` capability.
+    /// Is this an `iso` capability.
     /// </summary>
     public bool IsIsolated => AllowsWrite && AllowsRead && !AllowsWriteAliases && !AllowsReadAliases;
     /// <summary>
-    /// Is this either an `T` or `lent T` capability.
+    /// Is this a read only capability.
     /// </summary>
     public bool IsReadOnly => !AllowsWrite && AllowsRead && AllowsWriteAliases && AllowsReadAliases;
     /// <summary>
@@ -139,14 +109,12 @@ public sealed class ReferenceCapability
     private ReferenceCapability(
         string name,
         bool init = false,
-        bool lent = false,
         bool allowsWrite = false,
         bool allowsWriteAliases = false,
         bool allowsRead = true,
         bool allowsReadAliases = false)
     {
         IsInit = init;
-        IsLent = lent;
         AllowsWrite = allowsWrite;
         AllowsWriteAliases = allowsWriteAliases;
         AllowsRead = allowsRead;
@@ -208,7 +176,6 @@ public sealed class ReferenceCapability
     public string ToSourceString()
     {
         if (this == ReadOnly) return "⧼read-only⧽";
-        if (this == LentReadOnly) return "lent ⧼read-only⧽";
         if (this == InitMutable) return "⧼init⧽ mut";
         if (this == InitReadOnly) return "⧼init⧽ ⧼read-only⧽";
         return name;

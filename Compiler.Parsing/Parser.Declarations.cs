@@ -128,11 +128,11 @@ public partial class Parser
         Name name = identifier.Value;
         var bodyParser = BodyParser();
         var parameters = bodyParser.ParseParameters(bodyParser.ParseFunctionParameter);
-        var returnType = ParseReturn();
+        var @return = ParseReturn();
         var body = bodyParser.ParseFunctionBody();
         var span = TextSpan.Covering(fn, body.Span);
         return new FunctionDeclarationSyntax(ContainingNamespace, span, File, accessModifer, identifier.Span,
-            name, parameters, returnType, body);
+            name, parameters, @return, body);
     }
 
     private FixedList<TParameter> ParseParameters<TParameter>(Func<TParameter> parseParameter)
@@ -155,8 +155,16 @@ public partial class Parser
         return new BodySyntax(span, statements.OfType<IBodyStatementSyntax>().ToFixedList());
     }
 
-    private ITypeSyntax? ParseReturn() => Tokens.Accept<IRightArrowToken>() ? ParseType() : null;
-
+    private IReturnSyntax? ParseReturn()
+    {
+        var rightArrow = Tokens.AcceptToken<IRightArrowToken>();
+        if (rightArrow is null)
+            return null;
+        var lent = Tokens.AcceptToken<ILentKeywordToken>();
+        var type = ParseType();
+        var span = TextSpan.Covering(rightArrow.Span, type.Span);
+        return new ReturnSyntax(span, lent is not null, type);
+    }
     #endregion
 
     #region Parse Class Declarations
@@ -248,7 +256,7 @@ public partial class Parser
         Name name = identifier.Value;
         var bodyParser = BodyParser();
         var parameters = bodyParser.ParseParameters(bodyParser.ParseMethodParameter);
-        var returnType = ParseReturn();
+        var @return = ParseReturn();
 
         var selfParameter = parameters.OfType<ISelfParameterSyntax>().FirstOrDefault();
         var namedParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>())
@@ -274,7 +282,7 @@ public partial class Parser
                 Add(ParseError.AssociatedFunctionMissingBody(File, span, name));
             }
 
-            return new AssociatedFunctionDeclarationSyntax(declaringType, span, File, accessModifer, identifier.Span, name, namedParameters, returnType, body);
+            return new AssociatedFunctionDeclarationSyntax(declaringType, span, File, accessModifer, identifier.Span, name, namedParameters, @return, body);
         }
 
         if (parameters[0] is not ISelfParameterSyntax)
@@ -291,7 +299,7 @@ public partial class Parser
             var body = bodyParser.ParseFunctionBody();
             var span = TextSpan.Covering(fn, body.Span);
             return new ConcreteMethodDeclarationSyntax(declaringType, span, File, accessModifer,
-                identifier.Span, name, selfParameter, namedParameters, returnType, body);
+                identifier.Span, name, selfParameter, namedParameters, @return, body);
         }
         else
         {
@@ -300,7 +308,7 @@ public partial class Parser
             var semicolon = bodyParser.Tokens.Expect<ISemicolonToken>();
             var span = TextSpan.Covering(fn, semicolon);
             return new AbstractMethodDeclarationSyntax(declaringType, span, File, accessModifer,
-                identifier.Span, name, selfParameter, namedParameters, returnType);
+                identifier.Span, name, selfParameter, namedParameters, @return);
         }
     }
 
@@ -328,7 +336,7 @@ public partial class Parser
             // For simplicity of downstream code, make up a fake self parameter
             var selfReferenceCapability = new ReferenceCapabilitySyntax(expectedSelfParameterLocation,
                 Enumerable.Empty<ICapabilityToken>(), DeclaredReferenceCapability.Mutable);
-            selfParameter = new SelfParameterSyntax(expectedSelfParameterLocation, selfReferenceCapability);
+            selfParameter = new SelfParameterSyntax(expectedSelfParameterLocation, false, selfReferenceCapability);
         }
         else if (parameters[0] is not ISelfParameterSyntax)
             Add(ParseError.SelfParameterMustBeFirst(File, selfParameter.Span));

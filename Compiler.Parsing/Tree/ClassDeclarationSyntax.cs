@@ -83,7 +83,7 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
             throw new InvalidOperationException($"Can't {nameof(CreateDefaultConstructor)} twice");
 
         var constructorSymbol = ConstructorSymbol.CreateDefault(Symbol.Result);
-        var selfParameterSymbol = new SelfParameterSymbol(constructorSymbol, constructorSymbol.SelfParameterType);
+        var selfParameterSymbol = new SelfParameterSymbol(constructorSymbol, false, constructorSymbol.SelfParameterType);
 
         symbolTree.Add(constructorSymbol);
         symbolTree.Add(selfParameterSymbol);

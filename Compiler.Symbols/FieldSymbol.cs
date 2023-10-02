@@ -13,7 +13,7 @@ public sealed class FieldSymbol : NamedBindingSymbol
         Name name,
         bool isMutableBinding,
         DataType dataType)
-        : base(containingSymbol, name, isMutableBinding, dataType)
+        : base(containingSymbol, isMutableBinding, false, name, dataType)
     {
         ContainingSymbol = containingSymbol;
     }

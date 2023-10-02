@@ -13,7 +13,6 @@ public abstract class ReferenceType : NonEmptyType
     public bool IsConstReference => Capability.IsConstant;
     public bool IsIsolatedReference => Capability.IsIsolated;
     public bool IsIdentityReference => Capability == ReferenceCapability.Identity;
-    public bool IsLentReference => Capability.IsLent;
     public bool IsInitReference => Capability.IsInit;
     public override bool AllowsWrite => Capability.AllowsWrite;
 

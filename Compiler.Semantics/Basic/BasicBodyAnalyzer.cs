@@ -35,7 +35,7 @@ public class BasicBodyAnalyzer
     private readonly SymbolForest symbolTrees;
     private readonly ObjectTypeSymbol? stringSymbol;
     private readonly Diagnostics diagnostics;
-    private readonly DataType? returnType;
+    private readonly ReturnType? returnType;
     private readonly TypeResolver typeResolver;
     private readonly ReferenceCapabilitiesSnapshot parameterCapabilities;
     private readonly SharingRelationSnapshot parameterSharing;
@@ -46,7 +46,7 @@ public class BasicBodyAnalyzer
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
         Diagnostics diagnostics,
-        DataType returnType)
+        ReturnType returnType)
         : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
             symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
     { }
@@ -57,7 +57,7 @@ public class BasicBodyAnalyzer
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
         Diagnostics diagnostics,
-        DataType returnType)
+        ReturnType returnType)
         : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
             symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
     { }
@@ -68,7 +68,7 @@ public class BasicBodyAnalyzer
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
         Diagnostics diagnostics,
-        DataType returnType)
+        ReturnType returnType)
         : this(containingDeclaration,
             containingDeclaration.Parameters.OfType<INamedParameterSyntax>()
                                  .Select(p => p.Symbol.Result)
@@ -82,7 +82,7 @@ public class BasicBodyAnalyzer
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
         Diagnostics diagnostics,
-        DataType returnType)
+        ReturnType returnType)
         : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result).Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
             symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
     { }
@@ -104,7 +104,7 @@ public class BasicBodyAnalyzer
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
         Diagnostics diagnostics,
-        DataType? returnType)
+        ReturnType? returnType)
     {
         file = containingDeclaration.File;
         containingSymbol = (InvocableSymbol)containingDeclaration.Symbol.Result;
@@ -125,7 +125,7 @@ public class BasicBodyAnalyzer
             if (parameterSymbol.DataType is not ReferenceType { Capability: var capability })
                 continue;
 
-            if (capability.IsLent)
+            if (parameterSymbol.IsLentBinding)
                 sharing.DeclareLentParameterReference(parameterSymbol, ++lentParameterNumber);
             else if (capability != ReferenceCapability.Isolated
                      && capability != ReferenceCapability.Constant
@@ -213,8 +213,7 @@ public class BasicBodyAnalyzer
                 diagnostics.Add(TypeError.CannotImplicitlyConvert(file, variableDeclaration.Initializer, initializerType, variableType));
         }
 
-        var symbol = new VariableSymbol(containingSymbol, variableDeclaration.Name,
-            variableDeclaration.DeclarationNumber.Result, variableDeclaration.IsMutableBinding, variableType, isParameter: false);
+        var symbol = VariableSymbol.CreateLocal(containingSymbol, variableDeclaration.IsMutableBinding, variableDeclaration.Name, variableDeclaration.DeclarationNumber.Result, variableType);
         variableDeclaration.Symbol.Fulfill(symbol);
         symbolTreeBuilder.Add(symbol);
         flow.Declare(symbol);
@@ -346,7 +345,7 @@ public class BasicBodyAnalyzer
             {
                 // Try to recover const
                 if (flow.CurrentResultIsIsolated()
-                    || (to.IsLentReference && flow.LendCurrentResultConst()))
+                    /*|| (to.IsLentReference && flow.LendCurrentResultConst())*/)
                     return new RecoverConst(priorConversion);
 
                 return null;
@@ -480,21 +479,22 @@ public class BasicBodyAnalyzer
                 }
             case IReturnExpressionSyntax exp:
             {
-                if (returnType is null)
+                if (returnType is not { } expectedReturnType)
                     throw new NotImplementedException("Return statement in field initializer.");
+
+                var expectedType = expectedReturnType.Type;
                 if (exp.Value is not null)
                 {
-                    var expectedReturnType = returnType;
                     InferType(exp.Value, flow);
                     // local variables are no longer in scope and isolated parameters have no external references
                     flow.DropBindingsForReturn();
-                    AddImplicitConversionIfNeeded(exp.Value, expectedReturnType, flow);
-                    CheckTypeCompatibility(expectedReturnType, exp.Value);
+                    AddImplicitConversionIfNeeded(exp.Value, expectedType, flow);
+                    CheckTypeCompatibility(expectedType, exp.Value);
                 }
-                else if (returnType == DataType.Never)
+                else if (expectedType == DataType.Never)
                     diagnostics.Add(TypeError.CannotReturnFromNeverFunction(file, exp.Span));
-                else if (returnType != DataType.Void)
-                    diagnostics.Add(TypeError.ReturnExpressionMustHaveValue(file, exp.Span, returnType ?? DataType.Unknown));
+                else if (expectedType != DataType.Void)
+                    diagnostics.Add(TypeError.ReturnExpressionMustHaveValue(file, exp.Span, expectedType));
 
                 // Return expressions always have the type Never
                 return exp.DataType;
@@ -698,12 +698,12 @@ public class BasicBodyAnalyzer
                         exp.ReferencedSymbol.Fulfill(constructorSymbol);
                         var contextType = (NonEmptyType)constructingType;
                         foreach (var (arg, parameterDataType) in exp.Arguments
-                            .Zip(constructorSymbol.ParameterDataTypes.Select(contextType.ReplaceTypeParametersIn)))
+                            .Zip(constructorSymbol.ParameterTypes.Select(contextType.ReplaceTypeParametersIn)))
                         {
-                            AddImplicitConversionIfNeeded(arg, parameterDataType, flow);
-                            CheckTypeCompatibility(parameterDataType, arg);
+                            AddImplicitConversionIfNeeded(arg, parameterDataType.Type, flow);
+                            CheckTypeCompatibility(parameterDataType.Type, arg);
                         }
-                        constructedType = contextType.ReplaceTypeParametersIn(constructorSymbol.ReturnDataType);
+                        constructedType = contextType.ReplaceTypeParametersIn(constructorSymbol.ReturnType);
                         break;
                     default:
                         diagnostics.Add(NameBindingError.AmbiguousConstructorCall(file, exp.Span));
@@ -718,8 +718,7 @@ public class BasicBodyAnalyzer
                 var declaredType = typeResolver.Evaluate(exp.Type);
                 var expressionType = CheckForeachInType(declaredType, exp.InExpression, flow);
                 var variableType = declaredType ?? expressionType.ToNonConstantType();
-                var symbol = new VariableSymbol(containingSymbol, exp.VariableName,
-                    exp.DeclarationNumber.Result, exp.IsMutableBinding, variableType, false);
+                var symbol = VariableSymbol.CreateLocal(containingSymbol, exp.IsMutableBinding, exp.VariableName, exp.DeclarationNumber.Result, variableType);
                 exp.Symbol.Fulfill(symbol);
                 symbolTreeBuilder.Add(symbol);
                 flow.Declare(symbol);
@@ -1000,24 +999,24 @@ public class BasicBodyAnalyzer
                 // Since a method has been resolved, this must not be an empty type
                 var contextType = (NonEmptyType)context.DataType.Known();
 
-                var selfParamType = contextType.ReplaceTypeParametersIn(methodSymbol.SelfParameterType);
+                var selfParamType = contextType.ReplaceTypeParametersIn(methodSymbol.SelfParameterType).Type;
                 AddImplicitConversionIfNeeded(context, selfParamType, flow);
                 AddImplicitMoveIfNeeded(context, selfParamType, flow);
                 AddImplicitFreezeIfNeeded(context, selfParamType, flow);
                 CheckTypeCompatibility(selfParamType, context);
 
-                foreach (var (arg, type) in invocation.Arguments
-                    .Zip(methodSymbol.ParameterDataTypes.Select(contextType.ReplaceTypeParametersIn)))
+                foreach (var (arg, parameterType) in invocation.Arguments
+                    .Zip(methodSymbol.ParameterTypes.Select(contextType.ReplaceTypeParametersIn)))
                 {
-                    AddImplicitConversionIfNeeded(arg, type, flow);
-                    CheckTypeCompatibility(type, arg);
+                    AddImplicitConversionIfNeeded(arg, parameterType.Type, flow);
+                    CheckTypeCompatibility(parameterType.Type, arg);
                 }
 
-                var returnDataType = methodSymbol.ReturnDataType;
-                invocation.DataType = contextType.ReplaceTypeParametersIn(returnDataType);
-                AssignInvocationSemantics(invocation, returnDataType);
+                var returnType = methodSymbol.ReturnType;
+                invocation.DataType = contextType.ReplaceTypeParametersIn(returnType.Type);
+                AssignInvocationSemantics(invocation, returnType.Type);
                 // If there could be no write aliases, then the current result does not share with anything
-                if (!returnDataType.AllowsWriteAliases)
+                if (!returnType.Type.AllowsWriteAliases)
                     flow.SplitCurrentResult();
                 break;
             default:
@@ -1101,13 +1100,13 @@ public class BasicBodyAnalyzer
             case 1:
                 var functionSymbol = functionSymbols.Single();
                 invocation.ReferencedSymbol.Fulfill(functionSymbol);
-                foreach (var (arg, parameterDataType) in invocation.Arguments.Zip(functionSymbol.ParameterDataTypes))
+                foreach (var (arg, parameterType) in invocation.Arguments.Zip(functionSymbol.ParameterTypes))
                 {
-                    AddImplicitConversionIfNeeded(arg, parameterDataType, flow);
-                    CheckTypeCompatibility(parameterDataType, arg);
+                    AddImplicitConversionIfNeeded(arg, parameterType.Type, flow);
+                    CheckTypeCompatibility(parameterType.Type, arg);
                 }
 
-                var returnType = functionSymbol.ReturnDataType;
+                var returnType = functionSymbol.ReturnType.Type;
                 invocation.DataType = returnType;
                 AssignInvocationSemantics(invocation, returnType);
                 // If there could be no write aliases, then the current result does not share with anything

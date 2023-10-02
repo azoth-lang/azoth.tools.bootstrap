@@ -27,19 +27,19 @@ public class TypeKnownValidator : SyntaxWalker
             case IConstructorDeclarationSyntax constructorDeclaration:
                 WalkChildren(constructorDeclaration);
                 constructorDeclaration.SelfParameter.Symbol.Result.DataType.Known();
-                constructorDeclaration.Symbol.Result.ReturnDataType.Known();
+                constructorDeclaration.Symbol.Result.ReturnType.Known();
                 return;
             case IMethodDeclarationSyntax methodDeclaration:
                 WalkChildren(methodDeclaration);
-                methodDeclaration.Symbol.Result.ReturnDataType.Known();
+                methodDeclaration.Symbol.Result.ReturnType.Known();
                 return;
             case IFunctionDeclarationSyntax functionDeclaration:
                 WalkChildren(functionDeclaration);
-                functionDeclaration.Symbol.Result.ReturnDataType.Known();
+                functionDeclaration.Symbol.Result.ReturnType.Known();
                 return;
             case IAssociatedFunctionDeclarationSyntax associatedFunctionDeclaration:
                 WalkChildren(associatedFunctionDeclaration);
-                associatedFunctionDeclaration.Symbol.Result.ReturnDataType.Known();
+                associatedFunctionDeclaration.Symbol.Result.ReturnType.Known();
                 return;
             case IParameterSyntax parameter:
                 WalkChildren(parameter);

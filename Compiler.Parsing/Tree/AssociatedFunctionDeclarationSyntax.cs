@@ -13,7 +13,7 @@ internal class AssociatedFunctionDeclarationSyntax : InvocableDeclarationSyntax,
     public IClassDeclarationSyntax DeclaringClass { get; }
     public new Name Name { get; }
     public new FixedList<INamedParameterSyntax> Parameters { get; }
-    public ITypeSyntax? ReturnType { get; }
+    public IReturnSyntax? Return { get; }
     public IBodySyntax Body { get; }
     public new AcyclicPromise<FunctionSymbol> Symbol { get; }
 
@@ -25,21 +25,21 @@ internal class AssociatedFunctionDeclarationSyntax : InvocableDeclarationSyntax,
         TextSpan nameSpan,
         Name name,
         FixedList<INamedParameterSyntax> parameters,
-        ITypeSyntax? returnTypeSyntax,
+        IReturnSyntax? @return,
         IBodySyntax body)
         : base(span, file, accessModifier, nameSpan, name, parameters, new AcyclicPromise<FunctionSymbol>())
     {
         DeclaringClass = declaringClass;
         Name = name;
         Parameters = parameters;
-        ReturnType = returnTypeSyntax;
         Body = body;
+        Return = @return;
         Symbol = (AcyclicPromise<FunctionSymbol>)base.Symbol;
     }
 
     public override string ToString()
     {
-        var returnType = ReturnType is not null ? " -> " + ReturnType : "";
+        var returnType = Return is not null ? Return.ToString() : "";
         return $"fn {Name}({string.Join(", ", Parameters)}){returnType} {Body}";
     }
 }

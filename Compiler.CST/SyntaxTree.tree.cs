@@ -21,6 +21,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(IDeclarationSyntax),
     typeof(IGenericParameterSyntax),
     typeof(IParameterSyntax),
+    typeof(IReturnSyntax),
     typeof(ITypeSyntax),
     typeof(IReferenceCapabilitySyntax),
     typeof(IStatementSyntax),
@@ -169,7 +170,7 @@ public partial interface IFunctionDeclarationSyntax : INonMemberEntityDeclaratio
 {
     new Name Name { get; }
     new FixedList<INamedParameterSyntax> Parameters { get; }
-    ITypeSyntax? ReturnType { get; }
+    IReturnSyntax? Return { get; }
     new AcyclicPromise<FunctionSymbol> Symbol { get; }
 }
 
@@ -191,7 +192,7 @@ public partial interface IMethodDeclarationSyntax : IMemberDeclarationSyntax, II
     new Name Name { get; }
     ISelfParameterSyntax SelfParameter { get; }
     new FixedList<INamedParameterSyntax> Parameters { get; }
-    ITypeSyntax? ReturnType { get; }
+    IReturnSyntax? Return { get; }
     new AcyclicPromise<MethodSymbol> Symbol { get; }
 }
 
@@ -222,7 +223,7 @@ public partial interface IAssociatedFunctionDeclarationSyntax : IMemberDeclarati
 {
     new Name Name { get; }
     new FixedList<INamedParameterSyntax> Parameters { get; }
-    ITypeSyntax? ReturnType { get; }
+    IReturnSyntax? Return { get; }
     new AcyclicPromise<FunctionSymbol> Symbol { get; }
 }
 
@@ -253,6 +254,7 @@ public partial interface IConstructorParameterSyntax : IParameterSyntax
 
 public partial interface INamedParameterSyntax : IParameterSyntax, IConstructorParameterSyntax, ILocalBindingSyntax
 {
+    bool IsLentBinding { get; }
     new Name Name { get; }
     Promise<int?> DeclarationNumber { get; }
     ITypeSyntax Type { get; }
@@ -262,6 +264,7 @@ public partial interface INamedParameterSyntax : IParameterSyntax, IConstructorP
 
 public partial interface ISelfParameterSyntax : IParameterSyntax
 {
+    bool IsLentBinding { get; }
     IReferenceCapabilitySyntax Capability { get; }
     Promise<SelfParameterSymbol> Symbol { get; }
 }
@@ -270,6 +273,12 @@ public partial interface IFieldParameterSyntax : IParameterSyntax, IConstructorP
 {
     Promise<FieldSymbol?> ReferencedSymbol { get; }
     IExpressionSyntax? DefaultValue { get; }
+}
+
+public partial interface IReturnSyntax : ISyntax
+{
+    bool IsLent { get; }
+    ITypeSyntax Type { get; }
 }
 
 public partial interface IBodySyntax : IBodyOrBlockSyntax

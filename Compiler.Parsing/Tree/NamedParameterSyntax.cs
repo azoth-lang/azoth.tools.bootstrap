@@ -10,6 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class NamedParameterSyntax : ParameterSyntax, INamedParameterSyntax
 {
     public bool IsMutableBinding { get; }
+    public bool IsLentBinding { get; }
     public new Name Name { get; }
     public Promise<int?> DeclarationNumber { get; } = new Promise<int?>();
     public Promise<VariableSymbol> Symbol { get; } = new Promise<VariableSymbol>();
@@ -22,6 +23,7 @@ internal class NamedParameterSyntax : ParameterSyntax, INamedParameterSyntax
     public NamedParameterSyntax(
         TextSpan span,
         bool isMutableBinding,
+        bool isLentBinding,
         Name name,
         ITypeSyntax typeSyntax,
         IExpressionSyntax? defaultValue)
@@ -31,12 +33,15 @@ internal class NamedParameterSyntax : ParameterSyntax, INamedParameterSyntax
         Name = name;
         Type = typeSyntax;
         DefaultValue = defaultValue;
+        IsLentBinding = isLentBinding;
         DataType = Symbol.Select(s => s.DataType);
     }
 
     public override string ToString()
     {
+        var lent = IsLentBinding ? "lent " : "";
+        var mutable = IsMutableBinding ? "var " : "";
         var defaultValue = DefaultValue is not null ? " = " + DefaultValue : "";
-        return $"{Name}: {Type}{defaultValue}";
+        return $"{lent}{mutable}{Name}: {Type}{defaultValue}";
     }
 }

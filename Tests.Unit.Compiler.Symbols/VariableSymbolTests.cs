@@ -10,12 +10,13 @@ public class VariableSymbolTests : SymbolTestFixture
     {
         var func = Func();
         var dataType = DataType();
-        var symbol = Variable("foo", func, 42, true, dataType, true);
+        var symbol = Parameter("foo", func, 42, true, true, dataType);
 
         Assert.Equal(func, symbol.ContainingSymbol);
         Assert.Equal(Name("foo"), symbol.Name);
         Assert.Equal(42, symbol.DeclarationNumber);
         Assert.True(symbol.IsMutableBinding);
+        Assert.True(symbol.IsLentBinding);
         Assert.Equal(dataType, symbol.DataType);
         Assert.True(symbol.IsParameter);
     }
@@ -23,8 +24,8 @@ public class VariableSymbolTests : SymbolTestFixture
     [Fact]
     public void Variables_with_same_name_mutability_and_type_are_equal()
     {
-        var varA = Variable("a");
-        var varACopy = Variable(varA);
+        var varA = LocalVariable("a");
+        var varACopy = LocalVariable(varA);
 
         Assert.Equal(varA, varACopy);
     }
@@ -32,8 +33,8 @@ public class VariableSymbolTests : SymbolTestFixture
     [Fact]
     public void Variables_with_different_mutability_are_not_equal()
     {
-        var varA1 = Variable("a", mut: true);
-        var varA2 = Variable(varA1, mut: false);
+        var varA1 = LocalVariable("a", mut: true);
+        var varA2 = LocalVariable(varA1, mut: false);
 
         Assert.NotEqual(varA1, varA2);
     }
@@ -41,8 +42,8 @@ public class VariableSymbolTests : SymbolTestFixture
     [Fact]
     public void Variables_with_different_types_are_not_equal()
     {
-        var varA1 = Variable("a", type: DataType("T1"));
-        var varA2 = Variable(varA1, type: DataType("T2"));
+        var varA1 = LocalVariable("a", type: DataType("T1"));
+        var varA2 = LocalVariable(varA1, type: DataType("T2"));
 
         Assert.NotEqual(varA1, varA2);
     }

@@ -42,28 +42,29 @@ NamespaceDeclaration: NonMemberDeclaration = IsGlobalQualified:'bool' DeclaredNa
 // ---------- Non-Member Entity Declarations
 NonMemberEntityDeclaration: EntityDeclaration, NonMemberDeclaration = Name:'Name';
 ClassDeclaration: NonMemberEntityDeclaration = AbstractModifier:'IAbstractKeywordToken'? IsAbstract:'bool' ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'Name' GenericParameters:GenericParameter* Symbol:'AcyclicPromise<ObjectTypeSymbol>' BaseType:TypeName? Members:MemberDeclaration* DefaultConstructorSymbol:'ConstructorSymbol'?;
-FunctionDeclaration: NonMemberEntityDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* ReturnType:Type? Body Symbol:'AcyclicPromise<FunctionSymbol>';
+FunctionDeclaration: NonMemberEntityDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
 // ---------- Member Declarations
 // Note: by declaring the DeclaringClass property type with quotes, it avoids the system assuming it must represent a child syntax node
 MemberDeclaration: EntityDeclaration = DeclaringClass:'IClassDeclarationSyntax';
-MethodDeclaration: MemberDeclaration, InvocableDeclaration = Name:'Name' SelfParameter Parameters:NamedParameter* ReturnType:Type? Symbol:'AcyclicPromise<MethodSymbol>';
-AbstractMethodDeclaration: MethodDeclaration = SelfParameter Parameters:NamedParameter* ReturnType:Type?;
-ConcreteMethodDeclaration: MethodDeclaration, ConcreteInvocableDeclaration = SelfParameter Parameters:NamedParameter* ReturnType:Type? Body;
+MethodDeclaration: MemberDeclaration, InvocableDeclaration = Name:'Name' SelfParameter Parameters:NamedParameter* Return? Symbol:'AcyclicPromise<MethodSymbol>';
+AbstractMethodDeclaration: MethodDeclaration = SelfParameter Parameters:NamedParameter* Return?;
+ConcreteMethodDeclaration: MethodDeclaration, ConcreteInvocableDeclaration = SelfParameter Parameters:NamedParameter* Return? Body;
 ConstructorDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = SelfParameter Parameters:ConstructorParameter* Body Symbol:'AcyclicPromise<ConstructorSymbol>';
 FieldDeclaration: MemberDeclaration, Binding = Name:'Name' Type Symbol:'AcyclicPromise<FieldSymbol>' Initializer:Expression?;
-AssociatedFunctionDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* ReturnType:Type? Body Symbol:'AcyclicPromise<FunctionSymbol>';
+AssociatedFunctionDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
 // ---------- Type Parameters --------------
 GenericParameter = Name:'Name' Symbol:'Promise<GenericParameterTypeSymbol>';
 
-// ---------- Parameters --------------
+// ---------- Parameters and Return--------------
 Parameter = Name:'Name'? DataType:'IPromise<DataType>' Unused:'bool';
 /// A non-self parameter that can be declared in a constructor
 ConstructorParameter: Parameter;
-NamedParameter: Parameter, ConstructorParameter, LocalBinding = Name:'Name' DeclarationNumber:'Promise<int?>' Type Symbol:'Promise<VariableSymbol>' DefaultValue:Expression?;
-SelfParameter: Parameter = Capability:ReferenceCapability Symbol:'Promise<SelfParameterSymbol>';
+NamedParameter: Parameter, ConstructorParameter, LocalBinding = IsMutableBinding:'bool' IsLentBinding:'bool' Name:'Name' DeclarationNumber:'Promise<int?>' Type Symbol:'Promise<VariableSymbol>' DefaultValue:Expression?;
+SelfParameter: Parameter = IsLentBinding:'bool' Capability:ReferenceCapability Symbol:'Promise<SelfParameterSymbol>';
 FieldParameter: Parameter, ConstructorParameter = ReferencedSymbol:'Promise<FieldSymbol?>' DefaultValue:Expression?;
+Return = IsLent:'bool' Type;
 
 // ---------- Function Parts
 Body: BodyOrBlock = Statements:BodyStatement*;

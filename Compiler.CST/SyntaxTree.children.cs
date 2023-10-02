@@ -40,23 +40,23 @@ public static class ISyntaxExtensions
             case IFunctionDeclarationSyntax n:
                 foreach (var child in n.Parameters)
                     yield return child;
-                if (n.ReturnType is not null)
-                    yield return n.ReturnType;
+                if (n.Return is not null)
+                    yield return n.Return;
                 yield return n.Body;
                 yield break;
             case IAbstractMethodDeclarationSyntax n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
-                if (n.ReturnType is not null)
-                    yield return n.ReturnType;
+                if (n.Return is not null)
+                    yield return n.Return;
                 yield break;
             case IConcreteMethodDeclarationSyntax n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
-                if (n.ReturnType is not null)
-                    yield return n.ReturnType;
+                if (n.Return is not null)
+                    yield return n.Return;
                 yield return n.Body;
                 yield break;
             case IConstructorDeclarationSyntax n:
@@ -73,8 +73,8 @@ public static class ISyntaxExtensions
             case IAssociatedFunctionDeclarationSyntax n:
                 foreach (var child in n.Parameters)
                     yield return child;
-                if (n.ReturnType is not null)
-                    yield return n.ReturnType;
+                if (n.Return is not null)
+                    yield return n.Return;
                 yield return n.Body;
                 yield break;
             case IGenericParameterSyntax n:
@@ -90,6 +90,9 @@ public static class ISyntaxExtensions
             case IFieldParameterSyntax n:
                 if (n.DefaultValue is not null)
                     yield return n.DefaultValue;
+                yield break;
+            case IReturnSyntax n:
+                yield return n.Type;
                 yield break;
             case IBodySyntax n:
                 foreach (var child in n.Statements)

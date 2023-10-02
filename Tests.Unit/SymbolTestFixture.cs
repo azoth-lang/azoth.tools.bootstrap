@@ -22,65 +22,71 @@ public abstract class SymbolTestFixture
     [return: NotNullIfNotNull(nameof(name))]
     protected static Name? Name(string? name = null) => name is null ? null : new Name(name);
 
-    protected FixedList<DataType> Params(int? count = null)
-        => Enumerable.Range(1, count ?? ++unique).Select(_ => Compiler.Types.DataType.Int).ToFixedList<DataType>();
+    protected FixedList<ParameterType> Params(int? count = null)
+        => Enumerable.Range(1, count ?? ++unique).Select(_ => ParameterType.Int).ToFixedList();
 
-    protected static FixedList<DataType> Params(DataType param, params DataType[] @params)
-        => @params.Prepend(param).ToFixedList();
+    protected static FixedList<ParameterType> Params(DataType param, params DataType[] @params)
+        => @params.Prepend(param).Select(t => new ParameterType(false, t)).ToFixedList();
 
-    protected FunctionSymbol Func(string? name = null, NamespaceOrPackageSymbol? ns = null, FixedList<DataType>? @params = null, DataType? @return = null)
+    protected static ParameterType Param(DataType param) => new ParameterType(false, param);
+
+    protected FunctionSymbol Func(
+        string? name = null,
+        NamespaceOrPackageSymbol? ns = null,
+        FixedList<ParameterType>? @params = null,
+        ReturnType? @return = null)
     {
         return new FunctionSymbol(
             ns ?? Namespace(),
             Name(name) ?? DefaultName("func"),
             @params ?? Params(),
-            @return ?? DataType());
+            @return ?? ReturnType());
     }
 
     protected static FunctionSymbol Func(
         FunctionSymbol mother,
         string? name = null,
         NamespaceOrPackageSymbol? ns = null,
-        FixedList<DataType>? @params = null,
-        DataType? @return = null)
+        FixedList<ParameterType>? @params = null,
+        ReturnType? @return = null)
     {
         return new FunctionSymbol(
             ns ?? mother.ContainingSymbol,
             Name(name) ?? mother.Name,
-            @params ?? mother.ParameterDataTypes,
-            @return ?? mother.ReturnDataType);
+            @params ?? mother.ParameterTypes,
+            @return ?? mother.ReturnType);
     }
 
     protected MethodSymbol Method(
         string? name = null,
         ObjectTypeSymbol? containing = null,
-        DataType? self = null,
-        FixedList<DataType>? @params = null,
-        DataType? @return = null)
+        ParameterType? self = null,
+        FixedList<ParameterType>? @params = null,
+        ReturnType? @return = null)
     {
         containing ??= Type();
         return new MethodSymbol(
             containing,
             Name(name) ?? DefaultName("method"),
-            self ?? containing.DeclaresType.With(ReferenceCapability.ReadOnly, FixedList<DataType>.Empty),
+            self ?? new ParameterType(false, containing.DeclaresType.With(ReferenceCapability.ReadOnly, FixedList<DataType>.Empty)),
             @params ?? Params(),
-            @return ?? DataType());
+            @return ?? ReturnType());
     }
 
     protected static MethodSymbol Method(
         MethodSymbol mother,
         string? name = null,
         ObjectTypeSymbol? containing = null,
-        DataType? self = null,
-        FixedList<DataType>? @params = null,
-        DataType? @return = null)
+        ParameterType? self = null,
+        FixedList<ParameterType>? @params = null,
+        ReturnType? @return = null)
     {
         return new MethodSymbol(
             containing ?? mother.ContainingSymbol,
             Name(name) ?? mother.Name,
             self ?? mother.SelfParameterType,
-            @params ?? mother.ParameterDataTypes,
-            @return ?? mother.ReturnDataType);
+            @params ?? mother.ParameterTypes,
+            @return ?? mother.ReturnType);
     }
 
     protected ObjectType DataType(
@@ -99,6 +105,17 @@ public abstract class SymbolTestFixture
             isConst ?? false);
     }
 
+    protected ReturnType ReturnType(
+        string? name = null,
+        Name? containingPackage = null,
+        NamespaceName? containingNamespace = null,
+        bool? isConst = null,
+        ReferenceCapability? referenceCapability = null)
+    {
+        return new ReturnType(false,
+            DataType(name, containingPackage, containingNamespace, isConst, referenceCapability));
+    }
+
     protected ObjectTypeSymbol Type(
         NamespaceOrPackageSymbol? ns = null,
         DeclaredObjectType? dataType = null)
@@ -108,47 +125,62 @@ public abstract class SymbolTestFixture
             dataType ?? DataType().DeclaredType);
     }
 
-    protected VariableSymbol Variable(
+    protected VariableSymbol Parameter(
         string? name = null,
         InvocableSymbol? containing = null,
         int? declaration = null,
         bool? mut = null,
-        DataType? type = null,
-        bool? isParameter = null)
+        bool? lent = null,
+        DataType? type = null)
     {
-        return new VariableSymbol(
+        return VariableSymbol.CreateParameter(
             containing ?? Func(),
             Name(name) ?? DefaultName("variable"),
             declaration ?? ++unique,
             mut ?? true,
-            type ?? DataType(),
-            isParameter ?? false);
+            lent ?? false,
+            type ?? DataType());
     }
 
-    protected static VariableSymbol Variable(
+    protected VariableSymbol LocalVariable(
+        string? name = null,
+        InvocableSymbol? containing = null,
+        int? declaration = null,
+        bool? mut = null,
+        DataType? type = null)
+    {
+        return VariableSymbol.CreateLocal(
+            containing ?? Func(),
+            mut ?? true,
+            Name(name) ?? DefaultName("variable"),
+            declaration ?? ++unique,
+            type ?? DataType());
+    }
+
+    protected static VariableSymbol LocalVariable(
         VariableSymbol mother,
         string? name = null,
         InvocableSymbol? containing = null,
         int? declaration = null,
         bool? mut = null,
-        DataType? type = null,
-        bool? isParameter = null)
+        DataType? type = null)
     {
-        return new VariableSymbol(
+        return VariableSymbol.CreateLocal(
             containing ?? mother.ContainingSymbol,
+            mut ?? mother.IsMutableBinding,
             Name(name) ?? mother.Name,
             declaration ?? mother.DeclarationNumber,
-            mut ?? mother.IsMutableBinding,
-            type ?? mother.DataType,
-            isParameter ?? mother.IsParameter);
+            type ?? mother.DataType);
     }
 
     protected SelfParameterSymbol SelfParam(
         InvocableSymbol? containing = null,
+        bool? lent = null,
         DataType? type = null)
     {
         return new SelfParameterSymbol(
             containing ?? Method(),
+            lent ?? false,
             type ?? DataType());
     }
 }

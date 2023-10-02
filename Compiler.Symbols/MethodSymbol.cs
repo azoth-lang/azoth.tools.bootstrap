@@ -10,15 +10,15 @@ public sealed class MethodSymbol : FunctionOrMethodSymbol
 {
     public override TypeSymbol ContainingSymbol { get; }
     public override Name Name { get; }
-    public DataType SelfParameterType { get; }
+    public ParameterType SelfParameterType { get; }
 
     public MethodSymbol(
         TypeSymbol containingSymbol,
         Name name,
-        DataType selfParameterType,
-        FixedList<DataType> parameterDataTypes,
-        DataType returnDataType)
-        : base(containingSymbol, name, parameterDataTypes, returnDataType)
+        ParameterType selfParameterType,
+        FixedList<ParameterType> parameterTypes,
+        ReturnType returnType)
+        : base(containingSymbol, name, parameterTypes, returnType)
     {
         ContainingSymbol = containingSymbol;
         Name = name;
@@ -33,17 +33,16 @@ public sealed class MethodSymbol : FunctionOrMethodSymbol
                && ContainingSymbol == otherMethod.ContainingSymbol
                && Name == otherMethod.Name
                && SelfParameterType == otherMethod.SelfParameterType
-               && ParameterDataTypes.SequenceEqual(otherMethod.ParameterDataTypes)
-               && ReturnDataType == otherMethod.ReturnDataType;
+               && ParameterTypes.SequenceEqual(otherMethod.ParameterTypes)
+               && ReturnType == otherMethod.ReturnType;
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(Name, SelfParameterType, ParameterDataTypes, ReturnDataType);
+        => HashCode.Combine(Name, SelfParameterType, ParameterTypes, ReturnType);
 
     public override string ToILString()
     {
-        var selfCapability = SelfParameterType is ReferenceType referenceType ? referenceType.Capability.ToILString() + " " : "";
-        string parameters = string.Join(", ", ParameterDataTypes.Select(d => d.ToILString()).Prepend($"{selfCapability}self"));
-        return $"{ContainingSymbol.ToILString()}::{Name}({parameters}) -> {ReturnDataType.ToILString()}";
+        string parameters = string.Join(", ", ParameterTypes.Prepend(SelfParameterType).Select(d => d.ToILString()));
+        return $"{ContainingSymbol.ToILString()}::{Name}({parameters}) -> {ReturnType.ToILString()}";
     }
 }

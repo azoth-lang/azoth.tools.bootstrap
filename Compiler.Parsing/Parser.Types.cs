@@ -1,4 +1,3 @@
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -30,40 +29,29 @@ public partial class Parser
 
     public IReferenceCapabilitySyntax? ParseReferenceCapability()
     {
-        var lentKeyword = Tokens.AcceptToken<ILentKeywordToken>();
-        var tokens = lentKeyword.YieldValue<ICapabilityToken>();
         switch (Tokens.Current)
         {
             case IIsolatedKeywordToken _:
             {
                 var isolatedKeyword = Tokens.RequiredToken<IIsolatedKeywordToken>();
-                return new ReferenceCapabilitySyntax(TextSpan.Covering(lentKeyword?.Span, isolatedKeyword.Span),
-                    tokens.Append(isolatedKeyword), lentKeyword is not null ? LentIsolated : Isolated);
+                return new ReferenceCapabilitySyntax(isolatedKeyword.Span, isolatedKeyword.Yield(), Isolated);
             }
             case IMutableKeywordToken _:
             {
                 var mutableKeyword = Tokens.RequiredToken<IMutableKeywordToken>();
-                return new ReferenceCapabilitySyntax(TextSpan.Covering(lentKeyword?.Span, mutableKeyword.Span),
-                    tokens.Append(mutableKeyword), lentKeyword is not null ? LentMutable : Mutable);
+                return new ReferenceCapabilitySyntax(mutableKeyword.Span, mutableKeyword.Yield(), Mutable);
             }
             case IConstKeywordToken _:
             {
                 var constKeyword = Tokens.RequiredToken<IConstKeywordToken>();
-                return new ReferenceCapabilitySyntax(TextSpan.Covering(lentKeyword?.Span, constKeyword.Span),
-                    tokens.Append(constKeyword), lentKeyword is not null ? LentConstant : Constant);
+                return new ReferenceCapabilitySyntax(constKeyword.Span, constKeyword.Yield(), Constant);
             }
             case IIdKeywordToken _:
             {
                 var idKeyword = Tokens.RequiredToken<IIdKeywordToken>();
-                if (lentKeyword is not null)
-                    Add(ParseError.LentId(File, TextSpan.Covering(lentKeyword.Span, idKeyword.Span)));
-                return new ReferenceCapabilitySyntax(TextSpan.Covering(lentKeyword?.Span, idKeyword.Span),
-                    tokens.Append(idKeyword), Identity);
+                return new ReferenceCapabilitySyntax(idKeyword.Span, idKeyword.Yield(), Identity);
             }
             default:
-                if (lentKeyword is not null)
-                    return new ReferenceCapabilitySyntax(lentKeyword.Span, tokens, LentReadOnly);
-
                 // Could be a readable reference capability, or could be a value type
                 return null;
         }

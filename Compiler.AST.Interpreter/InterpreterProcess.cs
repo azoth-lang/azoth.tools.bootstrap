@@ -68,16 +68,16 @@ public class InterpreterProcess
         {
             var entryPoint = package.EntryPoint!;
             var arguments = new List<AzothValue>();
-            foreach (var parameterType in entryPoint.Symbol.ParameterDataTypes)
-                arguments.Add(await ConstructMainParameterAsync(parameterType));
+            foreach (var parameterType in entryPoint.Symbol.ParameterTypes)
+                arguments.Add(await ConstructMainParameterAsync(parameterType.Type));
 
             var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
             // Flush any buffered output
             await standardOutputWriter.FlushAsync().ConfigureAwait(false);
-            var returnType = entryPoint.Symbol.ReturnDataType;
-            if (returnType == DataType.Void)
+            var returnType = entryPoint.Symbol.ReturnType;
+            if (returnType == ReturnType.Void)
                 exitCode = 0;
-            else if (returnType == DataType.Byte)
+            else if (returnType.Type == DataType.Byte)
                 exitCode = returnValue.ByteValue;
             else
                 throw new InvalidOperationException($"Main function cannot have return type {returnType.ToILString()}");

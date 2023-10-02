@@ -18,15 +18,15 @@ internal class AbstractMethodDeclarationSyntax : MethodDeclarationSyntax, IAbstr
         Name name,
         ISelfParameterSyntax selfParameter,
         FixedList<INamedParameterSyntax> parameters,
-        ITypeSyntax? returnType)
+        IReturnSyntax? @return)
         : base(declaringClass, span, file, accessModifier, nameSpan, name,
-            selfParameter, parameters, returnType)
+            selfParameter, parameters, @return)
     {
     }
 
     public override string ToString()
     {
-        var returnType = ReturnType is not null ? " -> " + ReturnType : "";
-        return $"fn {Name}({string.Join(", ", Parameters.Prepend<IParameterSyntax>(SelfParameter))}){returnType};";
+        var @return = Return is not null ? Return.ToString() : "";
+        return $"fn {Name}({string.Join(", ", Parameters.Prepend<IParameterSyntax>(SelfParameter))}){@return};";
     }
 }

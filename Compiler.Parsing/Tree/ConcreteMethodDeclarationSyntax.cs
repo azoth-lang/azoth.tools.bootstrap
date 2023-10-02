@@ -21,17 +21,17 @@ internal class ConcreteMethodDeclarationSyntax : MethodDeclarationSyntax, IConcr
         Name name,
         ISelfParameterSyntax selfParameter,
         FixedList<INamedParameterSyntax> parameters,
-        ITypeSyntax? returnType,
+        IReturnSyntax? @return,
         IBodySyntax body)
         : base(declaringClass, span, file, accessModifier, nameSpan, name, selfParameter,
-            parameters, returnType)
+            parameters, @return)
     {
         Body = body;
     }
 
     public override string ToString()
     {
-        var returnType = ReturnType is not null ? " -> " + ReturnType : "";
-        return $"fn {Name}({string.Join(", ", Parameters.Prepend<IParameterSyntax>(SelfParameter))}){returnType} {Body}";
+        var @return = Return is not null ? Return.ToString() : "";
+        return $"fn {Name}({string.Join(", ", Parameters.Prepend<IParameterSyntax>(SelfParameter))}){@return} {Body}";
     }
 }

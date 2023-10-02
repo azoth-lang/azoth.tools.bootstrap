@@ -9,19 +9,37 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// </summary>
 public sealed class VariableSymbol : NamedBindingSymbol
 {
+    public static VariableSymbol CreateLocal(
+        InvocableSymbol containingSymbol,
+        bool isMutableBinding,
+        Name name,
+        int? declarationNumber,
+        DataType dataType)
+        => new(containingSymbol, isMutableBinding, false, name, declarationNumber, dataType, false);
+
+    public static VariableSymbol CreateParameter(
+        InvocableSymbol containingSymbol,
+        Name name,
+        int? declarationNumber,
+        bool isMutableBinding,
+        bool isLentBinding,
+        DataType dataType)
+        => new(containingSymbol, isMutableBinding, isLentBinding, name, declarationNumber, dataType, true);
+
     public override InvocableSymbol ContainingSymbol { get; }
     public int? DeclarationNumber { get; }
     public bool IsParameter { get; }
     public bool IsLocal => !IsParameter;
 
-    public VariableSymbol(
+    private VariableSymbol(
         InvocableSymbol containingSymbol,
+        bool isMutableBinding,
+        bool isLentBinding,
         Name name,
         int? declarationNumber,
-        bool isMutableBinding,
         DataType dataType,
         bool isParameter)
-        : base(containingSymbol, name, isMutableBinding, dataType)
+        : base(containingSymbol, isMutableBinding, isLentBinding, name, dataType)
     {
         ContainingSymbol = containingSymbol;
         DeclarationNumber = declarationNumber;

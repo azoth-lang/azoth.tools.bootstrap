@@ -54,14 +54,14 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
             case IFunctionDeclarationSyntax function:
                 foreach (var parameter in function.Parameters)
                     Walk(parameter, containingScope);
-                Walk(function.ReturnType, containingScope);
+                Walk(function.Return, containingScope);
                 containingScope = BuildBodyScope(function.Parameters, containingScope);
                 Walk(function.Body, containingScope);
                 return;
             case IAssociatedFunctionDeclarationSyntax function:
                 foreach (var parameter in function.Parameters)
                     Walk(parameter, containingScope);
-                Walk(function.ReturnType, containingScope);
+                Walk(function.Return, containingScope);
                 containingScope = BuildBodyScope(function.Parameters, containingScope);
                 Walk(function.Body, containingScope);
                 return;
@@ -69,7 +69,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
                 Walk(concreteMethod.SelfParameter, containingScope);
                 foreach (var parameter in concreteMethod.Parameters)
                     Walk(parameter, containingScope);
-                Walk(concreteMethod.ReturnType, containingScope);
+                Walk(concreteMethod.Return, containingScope);
                 containingScope = BuildBodyScope(concreteMethod.Parameters, containingScope);
                 Walk(concreteMethod.Body, containingScope);
                 return;
