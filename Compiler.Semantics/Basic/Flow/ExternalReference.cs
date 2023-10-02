@@ -7,28 +7,30 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// </summary>
 public readonly struct ExternalReference
 {
-    public static readonly ExternalReference NonLentGroup = new ExternalReference(-1);
+    public static readonly ExternalReference NonParameters = new(-1);
 
-    public static ExternalReference CreateLentGroup(long number)
+    public static ExternalReference CreateLentParameter(long number)
     {
         if (number <= 0)
             throw new ArgumentOutOfRangeException(nameof(number), "Lent group numbers must be > 0.");
         return new ExternalReference(-number - 1);
     }
 
-    public long Number { get; }
+    public long Number => -Id - 1;
 
-    private ExternalReference(long number)
+    public long Id { get; }
+
+    private ExternalReference(long id)
     {
-        Number = number;
+        Id = id;
     }
 
-    public override string ToString() => ToString(Number);
+    public override string ToString() => ToString(Id);
 
     public static string ToString(long number)
     {
         if (number >= 0)
             throw new ArgumentOutOfRangeException(nameof(number), "External reference numbers must be negative");
-        return number == -1 ? "⧼parameters⧽" : $"⧼lent{-number - 1}⧽";
+        return number == -1 ? "⧼params⧽" : $"⧼lent-param{-number - 1}⧽";
     }
 }

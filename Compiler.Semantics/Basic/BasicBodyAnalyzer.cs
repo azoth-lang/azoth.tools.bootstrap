@@ -115,8 +115,8 @@ public class BasicBodyAnalyzer
         typeResolver = new TypeResolver(file, diagnostics);
         var capabilities = new ReferenceCapabilities();
         var sharing = new SharingRelation();
-        bool nonLentGroupDeclared = false;
-        var currentLentGroup = 0;
+        bool nonLentParametersReferenceDeclared = false;
+        var lentParameterNumber = 0;
         foreach (var parameterSymbol in parameterSymbols)
         {
             capabilities.Declare(parameterSymbol);
@@ -125,17 +125,17 @@ public class BasicBodyAnalyzer
                 continue;
 
             if (capability.IsLent)
-                sharing.DeclareLentGroup(parameterSymbol, ++currentLentGroup);
+                sharing.DeclareLentParameterReference(parameterSymbol, ++lentParameterNumber);
             else if (capability != ReferenceCapability.Isolated
                      && capability != ReferenceCapability.Constant
                      && capability != ReferenceCapability.Identity)
             {
-                if (!nonLentGroupDeclared)
+                if (!nonLentParametersReferenceDeclared)
                 {
-                    sharing.DeclareNonLentGroup();
-                    nonLentGroupDeclared = true;
+                    sharing.DeclareNonLentParametersReference();
+                    nonLentParametersReferenceDeclared = true;
                 }
-                sharing.Union(ExternalReference.NonLentGroup, parameterSymbol);
+                sharing.Union(ExternalReference.NonParameters, parameterSymbol);
             }
         }
         // TODO assume sharing between parameters unless const, iso, or lent

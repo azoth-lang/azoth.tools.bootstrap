@@ -91,25 +91,25 @@ public sealed class SharingRelation
             Declare((SharingVariable)symbol);
     }
 
-    public void DeclareLentGroup(BindingSymbol variable, int lentGroupNumber)
+    public void DeclareLentParameterReference(BindingSymbol variable, int lentParameterNumber)
     {
         if (!subsetFor.TryGetValue(variable, out var set))
-            throw new InvalidOperationException("Cannot declare lent group for symbol not in a sharing set.");
+            throw new InvalidOperationException("Cannot declare lent parameter for symbol not in a sharing set.");
 
-        var lentGroup = ExternalReference.CreateLentGroup(lentGroupNumber);
-        if (subsetFor.TryGetValue(lentGroup, out _))
-            throw new InvalidOperationException("Lent group already declared");
+        var lentParameter = ExternalReference.CreateLentParameter(lentParameterNumber);
+        if (subsetFor.TryGetValue(lentParameter, out _))
+            throw new InvalidOperationException($"Lent parameter number {lentParameter.Number} already declared");
 
-        set.Declare(lentGroup);
-        subsetFor.Add(lentGroup, set);
+        set.Declare(lentParameter);
+        subsetFor.Add(lentParameter, set);
     }
 
-    public void DeclareNonLentGroup()
+    public void DeclareNonLentParametersReference()
     {
-        if (subsetFor.TryGetValue(ExternalReference.NonLentGroup, out _))
-            throw new InvalidOperationException("Non-lent group already declared.");
+        if (subsetFor.TryGetValue(ExternalReference.NonParameters, out _))
+            throw new InvalidOperationException("Non-lent parameters reference already declared.");
 
-        Declare(ExternalReference.NonLentGroup);
+        Declare(ExternalReference.NonParameters);
     }
 
     private void Declare(SharingVariable variable)

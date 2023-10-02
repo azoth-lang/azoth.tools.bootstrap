@@ -30,7 +30,7 @@ public readonly struct SharingVariable : IEquatable<SharingVariable>
     public DataType? SymbolType => Symbol?.DataType;
     public BindingSymbol? Symbol { get; }
     public bool IsLent
-        => number < ExternalReference.NonLentGroup.Number
+        => number < ExternalReference.NonParameters.Id
            || Symbol?.DataType is ReferenceType { IsLentReference: true };
 
     #region Equals
@@ -59,7 +59,7 @@ public readonly struct SharingVariable : IEquatable<SharingVariable>
         => new SharingVariable(variable.Number);
 
     public static implicit operator SharingVariable(ExternalReference reference)
-        => new SharingVariable(reference.Number);
+        => new SharingVariable(reference.Id);
 
 
     public override string ToString()
