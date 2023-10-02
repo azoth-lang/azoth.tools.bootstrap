@@ -22,9 +22,9 @@ public class SharingSet : IReadOnlySharingSet
         this.variablesRestrictingWrite = variablesRestrictingWrite.ToHashSet();
     }
 
-    public SharingSet(SharingVariable variable)
+    public SharingSet(SharingVariable variable, bool isLent)
     {
-        IsLent = variable.IsLent;
+        IsLent = isLent;
         variables = new HashSet<SharingVariable> { variable };
         variablesRestrictingWrite = new HashSet<SharingVariable>();
     }
@@ -58,6 +58,9 @@ public class SharingSet : IReadOnlySharingSet
         variablesRestrictingWrite.UnionWith(smallerSet.variablesRestrictingWrite);
 
     }
+
+    public void RestrictsWriteTo(SharingSet restrictedSet)
+        => throw new NotImplementedException();
 
     public void RestrictWrite(SharingVariable variable) => variablesRestrictingWrite.Add(variable);
 

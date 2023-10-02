@@ -96,7 +96,9 @@ public sealed class FlowState
     /// the sharing set must now not allow mutation.</remarks>
     public bool LendCurrentResultConst()
     {
-        foreach (var affectedSymbol in sharing.RestrictWrite(sharing.CurrentResult))
+        var currentResult = sharing.CurrentResult;
+        var lentResult = sharing.NewResult(lent: true);
+        foreach (var affectedSymbol in sharing.RestrictWrite(currentResult, lentResult))
             capabilities.RestrictWrite(affectedSymbol);
         return true;
     }

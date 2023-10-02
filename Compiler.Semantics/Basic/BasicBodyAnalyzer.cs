@@ -340,11 +340,12 @@ public class BasicBodyAnalyzer
                 var requireSigned = from.Value < 0;
                 return !requireSigned || to.IsSigned ? new NumericConversion(to, priorConversion) : null;
             }
-            case (ObjectType { IsConstReference: true } to, ObjectType { AllowsFreeze: true } from):
+            case (ObjectType { IsConstReference: true } to, ObjectType { AllowsFreeze: true } from)
+                when to.DeclaredType.IsAssignableFrom(from.DeclaredType):
             {
                 // Try to recover const
-                if (to.DeclaredType.IsAssignableFrom(from.DeclaredType)
-                    && (flow.CurrentResultIsIsolated() || flow.LendCurrentResultConst()))
+                if (flow.CurrentResultIsIsolated()
+                    || (to.IsLentReference && flow.LendCurrentResultConst()))
                     return new RecoverConst(priorConversion);
 
                 return null;

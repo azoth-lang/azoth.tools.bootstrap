@@ -70,6 +70,19 @@ public sealed class SharingRelation
         return Enumerable.Empty<BindingSymbol>();
     }
 
+    public IEnumerable<BindingSymbol> RestrictWrite(ResultVariable resultToRestrict, ResultVariable restrictBy)
+    {
+        if (subsetFor.TryGetValue(resultToRestrict, out var restrictedSet)
+            && subsetFor.TryGetValue(restrictBy, out var restrictBySet))
+        {
+            restrictBySet.RestrictsWriteTo(restrictedSet);
+            restrictedSet.RestrictWrite(resultToRestrict);
+            return restrictedSet.Select(v => v.Symbol).WhereNotNull();
+        }
+
+        return Enumerable.Empty<BindingSymbol>();
+    }
+
     public SharingRelation Copy() => new(sets, currentResult);
 
     /// <summary>
@@ -88,7 +101,10 @@ public sealed class SharingRelation
         // allow any write aliases. (Can't use AllowsWriteAliases here because of `iso`.)
         if (capability != ReferenceCapability.Constant
             && capability != ReferenceCapability.Identity)
-            Declare((SharingVariable)symbol);
+        {
+            var variable = (SharingVariable)symbol;
+            Declare(variable, variable.IsLent);
+        }
     }
 
     public void DeclareLentParameterReference(BindingSymbol variable, int lentParameterNumber)
@@ -109,20 +125,20 @@ public sealed class SharingRelation
         if (subsetFor.TryGetValue(ExternalReference.NonParameters, out _))
             throw new InvalidOperationException("Non-lent parameters reference already declared.");
 
-        Declare(ExternalReference.NonParameters);
+        Declare(ExternalReference.NonParameters, false);
     }
 
-    private void Declare(SharingVariable variable)
+    private void Declare(SharingVariable variable, bool isLent)
     {
-        var set = new SharingSet(variable);
+        var set = new SharingSet(variable, isLent);
         sets.Add(set);
         subsetFor.Add(variable, set);
     }
 
-    public ResultVariable NewResult()
+    public ResultVariable NewResult(bool lent = false)
     {
         var newResult = currentResult?.NextResult() ?? ResultVariable.First;
-        Declare(newResult);
+        Declare(newResult, lent);
         currentResult = newResult;
         return newResult;
     }
@@ -190,7 +206,7 @@ public sealed class SharingRelation
             return;
 
         set.Remove(variable);
-        var newSet = new SharingSet(variable);
+        var newSet = new SharingSet(variable, false);
         sets.Add(newSet);
         subsetFor[variable] = newSet;
     }
