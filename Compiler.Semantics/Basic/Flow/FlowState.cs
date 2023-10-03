@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -58,7 +59,12 @@ public sealed class FlowState
             RemoveRestrictions(set);
     }
 
-    public void Move(BindingSymbol symbol) => capabilities.Move(symbol);
+    public void Move(BindingSymbol symbol)
+    {
+        capabilities.Move(symbol);
+        // Identity aren't tracked, this symbol is `id` now
+        Drop(symbol);
+    }
 
     public void Freeze(BindingSymbol symbol)
     {
@@ -77,7 +83,12 @@ public sealed class FlowState
     public DataType Type(BindingSymbol? symbol) => capabilities.CurrentType(symbol);
 
     public void UnionWithCurrentResult(BindingVariable var)
-        => sharing.Union(var, sharing.CurrentResult);
+    {
+        // If the binding has been frozen or moved, no need to track its
+        if (!var.IsTracked || !capabilities.IsTracked(var.Symbol))
+            return;
+        sharing.Union(var, sharing.CurrentResult);
+    }
 
     public void UnionWithCurrentResultAndDrop(ResultVariable variable)
     {
@@ -103,7 +114,7 @@ public sealed class FlowState
     public ResultVariable LendConst(ResultVariable result)
     {
         var newResult = sharing.LendConst(result);
-        foreach (var variable in sharing.SharingSet(result).OfType<BindingVariable>())
+        foreach (var variable in sharing.ReadSharingSet(result).OfType<BindingVariable>())
             capabilities.RestrictWrite(variable.Symbol);
         return newResult;
     }
@@ -111,9 +122,14 @@ public sealed class FlowState
     /// <summary>
     /// Remove restrictions on symbols in the set if allowed.
     /// </summary>
-    private void RemoveRestrictions(IReadOnlySharingSet? sharingSet)
+    private void RemoveRestrictions(IEnumerable<IReadOnlySharingSet> affectedSets)
     {
-        if (sharingSet is null) return;
+        foreach (var set in affectedSets)
+            RemoveRestrictions(set);
+    }
+
+    private void RemoveRestrictions(IReadOnlySharingSet sharingSet)
+    {
         if (sharingSet.IsWriteRestricted) return;
 
         foreach (var variable in sharingSet.OfType<BindingVariable>())

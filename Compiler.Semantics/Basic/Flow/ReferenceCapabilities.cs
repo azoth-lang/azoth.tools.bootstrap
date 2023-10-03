@@ -99,4 +99,10 @@ public sealed class ReferenceCapabilities
     }
 
     public ReferenceCapabilitiesSnapshot Snapshot() => new(currentCapabilities);
+
+    public bool IsTracked(BindingSymbol symbol)
+    {
+        var capability = For(symbol);
+        return capability != ReferenceCapability.Constant && capability != ReferenceCapability.Identity;
+    }
 }

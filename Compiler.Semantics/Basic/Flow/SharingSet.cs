@@ -14,6 +14,7 @@ public class SharingSet : IReadOnlySharingSet
     public int Count => variables.Count;
     public bool IsWriteRestricted => variables.Any(v => v.RestrictsWrite);
     public bool IsIsolated => variables.Count == 1;
+    public bool IsAlive => variables.Any(v => v.KeepsSetAlive);
 
     public SharingSet(bool isLent, FixedSet<ISharingVariable> variables)
     {

@@ -19,8 +19,5 @@ internal class ResultStatementSyntax : StatementSyntax, IResultStatementSyntax
         Expression = expression;
     }
 
-    public override string ToString()
-    {
-        return $"=> {Expression};";
-    }
+    public override string ToString() => $"=> {Expression};";
 }

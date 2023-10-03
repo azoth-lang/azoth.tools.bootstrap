@@ -491,9 +491,7 @@ public class BasicBodyAnalyzer
                             default:
                                 throw new NotImplementedException("Non-freezable type can't be frozen.");
                         }
-                        // Now that it is frozen, union with result to track sharing
                         // Alias not needed because it is already `const`
-                        flow.UnionWithCurrentResult(bindingSymbol);
 
                         exp.ReferencedSymbol.Fulfill(bindingSymbol);
 

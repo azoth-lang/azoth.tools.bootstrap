@@ -21,8 +21,9 @@ public sealed class ResultVariable : ISharingVariable
     private readonly ulong number;
 
     public bool IsVariableOrParameter => false;
-    public bool IsResult => true;
     public bool RestrictsWrite => false;
+    public bool IsTracked => true;
+    public bool KeepsSetAlive => true;
 
     private ResultVariable(ulong number)
     {

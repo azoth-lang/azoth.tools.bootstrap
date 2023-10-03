@@ -4,8 +4,8 @@ public class ImplicitLend
 {
     public ulong Number { get; }
     public bool RestrictWrite { get; }
-    public ISharingVariable From { get; set; }
-    public ISharingVariable To { get; set; }
+    public ImplicitLendFrom From { get; set; }
+    public ImplicitLendTo To { get; set; }
 
     public ImplicitLend(ImplicitLend? currentLend, bool restrictWrite)
     {

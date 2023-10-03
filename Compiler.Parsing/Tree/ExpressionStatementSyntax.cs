@@ -14,8 +14,5 @@ internal class ExpressionStatementSyntax : StatementSyntax, IExpressionStatement
         Expression = expression;
     }
 
-    public override string ToString()
-    {
-        return Expression+";";
-    }
+    public override string ToString() => Expression + ";";
 }

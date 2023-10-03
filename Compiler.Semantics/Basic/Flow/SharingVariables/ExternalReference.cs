@@ -29,6 +29,8 @@ public sealed class ExternalReference : ISharingVariable
 
     public bool IsVariableOrParameter => false;
     public bool RestrictsWrite => false;
+    public bool IsTracked => true;
+    public bool KeepsSetAlive => false;
 
     private ExternalReference(uint number)
     {

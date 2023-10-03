@@ -2,13 +2,18 @@ using System;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 
+/// <summary>
+/// The reference that is being lent to. That is, the side that is borrowing.
+/// </summary>
 public class ImplicitLendTo : ISharingVariable
 {
     public ImplicitLend ImplicitLend { get; }
     public bool IsVariableOrParameter => false;
-
     /// <remarks>The to side is NOT affected by any restrictions.</remarks>
     public bool RestrictsWrite => false;
+    public bool IsTracked => true;
+    public bool KeepsSetAlive => false;
+    public ImplicitLendFrom From => ImplicitLend.From;
 
     public ImplicitLendTo(ImplicitLend implicitLend)
     {

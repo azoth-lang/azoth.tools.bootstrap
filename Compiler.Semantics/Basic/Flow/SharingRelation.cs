@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
-using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
@@ -63,10 +63,12 @@ public sealed class SharingRelation
 
     public IEnumerable<IReadOnlySharingSet> SharingSets => sets;
 
-    public IReadOnlySharingSet SharingSet(ResultVariable variable)
+    public IReadOnlySharingSet ReadSharingSet(ResultVariable variable) => SharingSet(variable);
+
+    private SharingSet SharingSet(ISharingVariable variable)
     {
         if (!subsetFor.TryGetValue(variable, out var set))
-            throw new InvalidOperationException("Result no longer declared.");
+            throw new InvalidOperationException($"Sharing variable {variable} no longer declared.");
 
         return set;
     }
@@ -76,7 +78,9 @@ public sealed class SharingRelation
         _ = SharingSet(result);
         var borrowingResult = NewResult(lent: true);
         var lend = NewLend(restrictWrite: true);
+        Declare(lend.From, false);
         Union(result, lend.From);
+        Declare(lend.To, true);
         Union(borrowingResult, lend.To);
         return borrowingResult;
     }
@@ -89,17 +93,12 @@ public sealed class SharingRelation
     public void Declare(BindingVariable variable)
     {
         // Other types don't participate in sharing
-        if (variable.DataType is not ReferenceType referenceType) return;
+        if (!variable.IsTracked) return;
 
         if (subsetFor.TryGetValue(variable, out _))
             throw new InvalidOperationException("Symbol already declared.");
 
-        var capability = referenceType.Capability;
-        // No need to track `const` and `id`, they never participate in sharing because they don't
-        // allow any write aliases. (Can't use AllowsWriteAliases here because of `iso`.)
-        if (variable.IsLent
-            || (capability != ReferenceCapability.Constant && capability != ReferenceCapability.Identity))
-            Declare(variable, variable.IsLent);
+        Declare(variable, variable.IsLent);
     }
 
     public void DeclareLentParameterReference(BindingVariable variable, uint lentParameterNumber)
@@ -138,35 +137,41 @@ public sealed class SharingRelation
         return newResult;
     }
 
-    public IReadOnlySharingSet? Drop(BindingVariable variable) => Drop((ISharingVariable)variable);
+    public IEnumerable<IReadOnlySharingSet> Drop(BindingVariable variable) => Drop((ISharingVariable)variable);
 
-    public IReadOnlySharingSet? Drop(ResultVariable result) => Drop((ISharingVariable)result);
+    public IEnumerable<IReadOnlySharingSet> Drop(ResultVariable result) => Drop((ISharingVariable)result);
 
-    private IReadOnlySharingSet? Drop(ISharingVariable variable)
+    private IEnumerable<IReadOnlySharingSet> Drop(ISharingVariable variable)
     {
         if (!subsetFor.TryGetValue(variable, out var set))
-            return null;
+            return Enumerable.Empty<IReadOnlySharingSet>();
 
+        var affectedSets = new HashSet<IReadOnlySharingSet>();
         set.Remove(variable);
         subsetFor.Remove(variable);
+        affectedSets.Add(set);
+        if (!set.IsAlive) affectedSets.AddRange(DropAll(set));
         if (set.Count == 0) sets.Remove(set);
-        return set;
+        if (variable is ImplicitLendTo lendTo)
+            affectedSets.AddRange(Drop(lendTo.From));
+        return affectedSets;
     }
 
-    public void DropAllLocalVariablesAndParameters()
-    {
-        foreach (var variable in subsetFor.Keys.Where(v => v.IsVariableOrParameter).ToArray())
-            Drop(variable);
-    }
+    public FixedSet<IReadOnlySharingSet> DropAllLocalVariablesAndParameters()
+        => DropAll(subsetFor.Keys.Where(v => v.IsVariableOrParameter)).ToFixedSet();
+
+    private IEnumerable<IReadOnlySharingSet> DropAll(IEnumerable<ISharingVariable> sharingVariables)
+        => sharingVariables.ToArray().SelectMany(Drop).Distinct();
 
     public void Union(ISharingVariable var1, BindingVariable var2)
         => Union(var1, (ISharingVariable)var2);
 
     public void Union(ISharingVariable var1, ISharingVariable var2)
     {
-        if (!subsetFor.TryGetValue(var1, out var set1)
-            || !subsetFor.TryGetValue(var2, out var set2)
-            || set1 == set2)
+        if (!var1.IsTracked || !var2.IsTracked) return;
+        var set1 = SharingSet(var1);
+        var set2 = SharingSet(var2);
+        if (set1 == set2)
             return;
 
         var (smallerSet, largerSet) = set1.Count <= set2.Count ? (set1, set2) : (set2, set1);
