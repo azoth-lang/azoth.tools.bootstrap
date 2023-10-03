@@ -139,7 +139,6 @@ public class BasicBodyAnalyzer
                 sharing.Union(ExternalReference.NonParameters, parameterSymbol);
             }
         }
-        // TODO assume sharing between parameters unless const, iso, or lent
         parameterCapabilities = capabilities.Snapshot();
         parameterSharing = sharing.Snapshot();
     }
@@ -209,7 +208,7 @@ public class BasicBodyAnalyzer
         if (variableDeclaration.Initializer is not null)
         {
             var expressionResult = new ExpressionResult(variableDeclaration.Initializer, flow.CurrentResult);
-            var initializerType = AddImplicitConversionIfNeeded(expressionResult, variableType, flow);
+            var initializerType = AddImplicitConversionIfNeeded(expressionResult, variableType, flow).Type;
             if (!variableType.IsAssignableFrom(initializerType))
                 diagnostics.Add(TypeError.CannotImplicitlyConvert(file, variableDeclaration.Initializer, initializerType, variableType));
         }
@@ -284,7 +283,7 @@ public class BasicBodyAnalyzer
     /// <summary>
     /// Create an implicit conversion if needed and allowed.
     /// </summary>
-    private static DataType AddImplicitConversionIfNeeded(
+    private static ExpressionResult AddImplicitConversionIfNeeded(
         ExpressionResult expression,
         ParameterType expectedType,
         FlowState flow)
@@ -294,14 +293,13 @@ public class BasicBodyAnalyzer
             expression.Type, expression.Result, syntax.ImplicitConversion, flow,
             out var newResult);
         if (conversion is not null) syntax.AddConversion(conversion);
-        expression.Result = newResult;
-        return syntax.ConvertedDataType.Assigned();
+        return expression with { Result = newResult };
     }
 
     /// <summary>
     /// Create an implicit conversion if needed and allowed.
     /// </summary>
-    private static DataType AddImplicitConversionIfNeeded(
+    private static ExpressionResult AddImplicitConversionIfNeeded(
         ExpressionResult expression,
         DataType expectedType,
         FlowState flow)
@@ -310,8 +308,7 @@ public class BasicBodyAnalyzer
         var conversion = CreateImplicitConversion(expectedType, false,
             expression.Type, expression.Result, syntax.ImplicitConversion, flow, out var newResult);
         if (conversion is not null) syntax.AddConversion(conversion);
-        expression.Result = newResult;
-        return syntax.ConvertedDataType.Assigned();
+        return expression with { Result = newResult };
     }
 
     private static ChainedConversion? CreateImplicitConversion(

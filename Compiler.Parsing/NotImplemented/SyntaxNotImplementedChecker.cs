@@ -23,42 +23,39 @@ internal class SyntaxNotImplementedChecker : SyntaxWalker
         file = compilationUnit.File;
     }
 
-    public void Check()
-    {
-        WalkNonNull(compilationUnit);
-    }
+    public void Check() => WalkNonNull(compilationUnit);
 
     protected override void WalkNonNull(ISyntax syntax)
     {
         switch (syntax)
         {
             case INamedParameterSyntax syn:
-                if (!(syn.DefaultValue is null))
+                if (syn.DefaultValue is not null)
                     diagnostics.Add(ParseError.NotImplemented(file, syn.DefaultValue.Span, "Default values"));
                 break;
             case IFieldParameterSyntax syn:
-                if (!(syn.DefaultValue is null))
+                if (syn.DefaultValue is not null)
                     diagnostics.Add(ParseError.NotImplemented(file, syn.DefaultValue.Span, "Default values"));
                 break;
             case IConstructorDeclarationSyntax syn:
-                if (!(syn.Name is null))
+                if (syn.Name is not null)
                     diagnostics.Add(ParseError.NotImplemented(file, syn.Span, "Named constructors"));
                 break;
             case IFieldDeclarationSyntax syn:
-                if (!(syn.Initializer is null))
+                if (syn.Initializer is not null)
                     diagnostics.Add(ParseError.NotImplemented(file, syn.Initializer.Span, "Field initializers"));
                 break;
             case IForeachExpressionSyntax syn:
             {
                 var inExpression = syn.InExpression;
-                if (!(inExpression is IBinaryOperatorExpressionSyntax exp)
+                if (inExpression is not IBinaryOperatorExpressionSyntax exp
                     || (exp.Operator != BinaryOperator.DotDot
                         && exp.Operator != BinaryOperator.LessThanDotDot
                         && exp.Operator != BinaryOperator.DotDotLessThan
                         && exp.Operator != BinaryOperator.LessThanDotDotLessThan))
                     diagnostics.Add(ParseError.NotImplemented(file, inExpression.Span, "Foreach in non range expressions"));
             }
-                break;
+            break;
         }
         WalkChildren(syntax);
     }

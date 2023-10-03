@@ -6,7 +6,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
 public record class ExpressionResult(IExpressionSyntax Syntax, ResultVariable Result)
 {
-    public ResultVariable Result { get; set; } = Result;
-
     public DataType Type => Syntax.ConvertedDataType.Assigned();
+
+    public void Deconstruct(out DataType type, out ResultVariable result)
+    {
+        type = Type;
+        result = Result;
+    }
 }
