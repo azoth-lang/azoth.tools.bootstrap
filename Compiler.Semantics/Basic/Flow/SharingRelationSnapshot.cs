@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
@@ -13,13 +12,10 @@ public class SharingRelationSnapshot
 {
     private readonly FixedSet<SharingSetSnapshot> sets;
 
-    internal SharingRelationSnapshot(IEnumerable<SharingSet> sets, ImplicitLend? currentLend)
+    internal SharingRelationSnapshot(IEnumerable<SharingSet> sets)
     {
-        CurrentLend = currentLend;
         this.sets = new(sets.Select(s => s.Snapshot()));
     }
 
-    public ImplicitLend? CurrentLend { get; }
-
-    public SharingRelation MutableCopy() => new(sets, CurrentLend);
+    public SharingRelation MutableCopy() => new(sets);
 }

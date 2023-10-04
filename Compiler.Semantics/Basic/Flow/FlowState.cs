@@ -17,25 +17,31 @@ public sealed class FlowState
     private readonly ReferenceCapabilities capabilities;
     private readonly SharingRelation sharing;
     private readonly ResultVariableFactory resultVariableFactory;
+    private readonly ImplicitLendFactory implicitLendFactory;
 
     public FlowState(ReferenceCapabilitiesSnapshot capabilities, SharingRelationSnapshot sharing)
-        : this(capabilities.MutableCopy(), sharing.MutableCopy(), new ResultVariableFactory())
+        : this(capabilities.MutableCopy(), sharing.MutableCopy(), new(), new())
     {
     }
 
     public FlowState()
-        : this(new ReferenceCapabilities(), new SharingRelation(), new ResultVariableFactory())
+        : this(new ReferenceCapabilities(), new SharingRelation(), new(), new())
     {
     }
 
-    private FlowState(ReferenceCapabilities capabilities, SharingRelation sharing, ResultVariableFactory resultVariableFactory)
+    private FlowState(
+        ReferenceCapabilities capabilities,
+        SharingRelation sharing,
+        ResultVariableFactory resultVariableFactory,
+        ImplicitLendFactory implicitLendFactory)
     {
         this.capabilities = capabilities;
         this.sharing = sharing;
         this.resultVariableFactory = resultVariableFactory;
+        this.implicitLendFactory = implicitLendFactory;
     }
 
-    public FlowState Fork() => new(capabilities.Copy(), sharing.Copy(), resultVariableFactory);
+    public FlowState Fork() => new(capabilities.Copy(), sharing.Copy(), resultVariableFactory, implicitLendFactory);
 
     /// <summary>
     /// Declare the given symbol and combine it with the result variable.
@@ -127,7 +133,7 @@ public sealed class FlowState
     /// the sharing set must now not allow mutation.</remarks>
     public ResultVariable LendConst(ResultVariable result)
     {
-        var newResult = sharing.LendConst(result, resultVariableFactory);
+        var newResult = sharing.LendConst(result, resultVariableFactory, implicitLendFactory);
         foreach (var variable in sharing.ReadSharingSet(result).OfType<BindingVariable>())
             capabilities.RestrictWrite(variable.Symbol);
         return newResult;

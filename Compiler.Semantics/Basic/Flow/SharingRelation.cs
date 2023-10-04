@@ -23,18 +23,14 @@ public sealed class SharingRelation
     /// </summary>
     private readonly Dictionary<ISharingVariable, SharingSet> subsetFor;
 
-    // TODO current lend along different branches of if conflict?
-    private ImplicitLend? currentLend;
-
     public SharingRelation()
     {
         sets = new();
         subsetFor = new();
     }
 
-    internal SharingRelation(IEnumerable<SharingSetSnapshot> sets, ImplicitLend? currentLend)
+    internal SharingRelation(IEnumerable<SharingSetSnapshot> sets)
     {
-        this.currentLend = currentLend;
         this.sets = new(sets.Select(s => s.MutableCopy()));
         subsetFor = new();
         foreach (var set in this.sets)
@@ -64,11 +60,14 @@ public sealed class SharingRelation
         return set;
     }
 
-    public ResultVariable LendConst(ResultVariable result, ResultVariableFactory factory)
+    public ResultVariable LendConst(
+        ResultVariable result,
+        ResultVariableFactory resultVariableFactory,
+        ImplicitLendFactory implicitLendFactory)
     {
         _ = SharingSet(result);
-        var borrowingResult = NewResult(factory, lent: true);
-        var lend = NewLend(restrictWrite: true);
+        var borrowingResult = NewResult(resultVariableFactory, lent: true);
+        var lend = implicitLendFactory.Create(restrictWrite: true);
         Declare(lend.From, false);
         Union(result, lend.From);
         Declare(lend.To, true);
@@ -198,11 +197,8 @@ public sealed class SharingRelation
     public bool IsIsolatedExceptFor(ISharingVariable variable, ResultVariable result)
         => subsetFor.TryGetValue(variable, out var set) && set.IsIsolatedExceptFor(result);
 
-    public SharingRelationSnapshot Snapshot() => new(sets, currentLend);
+    public SharingRelationSnapshot Snapshot() => new(sets);
 
     public override string ToString()
         => string.Join(", ", sets.Select(s => $"{{{string.Join(", ", s.Distinct())}}}"));
-
-    private ImplicitLend NewLend(bool restrictWrite)
-        => currentLend = new ImplicitLend(currentLend, restrictWrite);
 }
