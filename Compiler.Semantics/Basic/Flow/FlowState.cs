@@ -16,23 +16,26 @@ public sealed class FlowState
 {
     private readonly ReferenceCapabilities capabilities;
     private readonly SharingRelation sharing;
+    private readonly ResultVariableFactory resultVariableFactory;
 
     public FlowState(ReferenceCapabilitiesSnapshot capabilities, SharingRelationSnapshot sharing)
-        : this(capabilities.MutableCopy(), sharing.MutableCopy())
+        : this(capabilities.MutableCopy(), sharing.MutableCopy(), new ResultVariableFactory())
     {
     }
 
-    public FlowState() : this(new ReferenceCapabilities(), new SharingRelation())
+    public FlowState()
+        : this(new ReferenceCapabilities(), new SharingRelation(), new ResultVariableFactory())
     {
     }
 
-    private FlowState(ReferenceCapabilities capabilities, SharingRelation sharing)
+    private FlowState(ReferenceCapabilities capabilities, SharingRelation sharing, ResultVariableFactory resultVariableFactory)
     {
         this.capabilities = capabilities;
         this.sharing = sharing;
+        this.resultVariableFactory = resultVariableFactory;
     }
 
-    public FlowState Copy() => new(capabilities.Copy(), sharing.Copy());
+    public FlowState Fork() => new(capabilities.Copy(), sharing.Copy(), resultVariableFactory);
 
     /// <summary>
     /// Declare the given symbol and combine it with the result variable.
@@ -84,7 +87,7 @@ public sealed class FlowState
     {
         var capability = capabilities.Alias(symbol);
         if (symbol.SharingIsTracked(capability))
-            return sharing.NewResult(symbol);
+            return sharing.NewResult(symbol, resultVariableFactory);
         return null;
     }
 
@@ -124,7 +127,7 @@ public sealed class FlowState
     /// the sharing set must now not allow mutation.</remarks>
     public ResultVariable LendConst(ResultVariable result)
     {
-        var newResult = sharing.LendConst(result);
+        var newResult = sharing.LendConst(result, resultVariableFactory);
         foreach (var variable in sharing.ReadSharingSet(result).OfType<BindingVariable>())
             capabilities.RestrictWrite(variable.Symbol);
         return newResult;

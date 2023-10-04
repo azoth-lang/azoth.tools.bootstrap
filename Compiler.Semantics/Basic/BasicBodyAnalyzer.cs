@@ -794,7 +794,7 @@ public class BasicBodyAnalyzer
                 CheckIndependentExpressionType(exp.Condition, DataType.Bool, flow);
                 var elseClause = exp.ElseClause;
                 FlowState? elseFlow = null;
-                if (elseClause is not null) elseFlow = flow.Copy();
+                if (elseClause is not null) elseFlow = flow.Fork();
                 var thenResult = InferBlockType(exp.ThenBlock, flow);
                 ExpressionResult? elseResult = null;
                 switch (elseClause)

@@ -23,9 +23,6 @@ public sealed class SharingRelation
     /// </summary>
     private readonly Dictionary<ISharingVariable, SharingSet> subsetFor;
 
-    // TODO current result along different branches of if conflict?
-    private ResultVariable? currentResult;
-
     // TODO current lend along different branches of if conflict?
     private ImplicitLend? currentLend;
 
@@ -35,12 +32,8 @@ public sealed class SharingRelation
         subsetFor = new();
     }
 
-    internal SharingRelation(
-        IEnumerable<SharingSetSnapshot> sets,
-        ResultVariable? currentResult,
-        ImplicitLend? currentLend)
+    internal SharingRelation(IEnumerable<SharingSetSnapshot> sets, ImplicitLend? currentLend)
     {
-        this.currentResult = currentResult;
         this.currentLend = currentLend;
         this.sets = new(sets.Select(s => s.MutableCopy()));
         subsetFor = new();
@@ -49,9 +42,8 @@ public sealed class SharingRelation
                 subsetFor.Add(variable, set);
     }
 
-    private SharingRelation(IEnumerable<SharingSet> sets, ResultVariable? currentResult)
+    private SharingRelation(IEnumerable<SharingSet> sets)
     {
-        this.currentResult = currentResult;
         this.sets = new(sets);
         subsetFor = new();
         foreach (var set in this.sets)
@@ -72,10 +64,10 @@ public sealed class SharingRelation
         return set;
     }
 
-    public ResultVariable LendConst(ResultVariable result)
+    public ResultVariable LendConst(ResultVariable result, ResultVariableFactory factory)
     {
         _ = SharingSet(result);
-        var borrowingResult = NewResult(lent: true);
+        var borrowingResult = NewResult(factory, lent: true);
         var lend = NewLend(restrictWrite: true);
         Declare(lend.From, false);
         Union(result, lend.From);
@@ -84,7 +76,7 @@ public sealed class SharingRelation
         return borrowingResult;
     }
 
-    public SharingRelation Copy() => new(sets, currentResult);
+    public SharingRelation Copy() => new(sets);
 
     /// <summary>
     /// Declare a new variable. Newly created variables are not connected to any others.
@@ -132,25 +124,25 @@ public sealed class SharingRelation
     }
 
     // TODO remove
-    private ResultVariable NewResult(bool lent = false)
+    private ResultVariable NewResult(ResultVariableFactory resultVariableFactory, bool lent = false)
     {
-        currentResult = currentResult?.NextResult() ?? ResultVariable.First;
-        Declare(currentResult, lent);
-        return currentResult;
+        var result = resultVariableFactory.Create();
+        Declare(result, lent);
+        return result;
     }
 
     /// <summary>
     /// Create a new result inside the set with the given symbol.
     /// </summary>
-    public ResultVariable? NewResult(BindingSymbol symbol)
+    public ResultVariable? NewResult(BindingSymbol symbol, ResultVariableFactory resultVariableFactory)
     {
         if (!symbol.SharingIsTracked()) return null;
         var set = SharingSet(symbol);
 
-        currentResult = currentResult?.NextResult() ?? ResultVariable.First;
-        set.Declare(currentResult);
-        subsetFor.Add(currentResult, set);
-        return currentResult;
+        var result = resultVariableFactory.Create();
+        set.Declare(result);
+        subsetFor.Add(result, set);
+        return result;
     }
 
     public IEnumerable<IReadOnlySharingSet> Drop(BindingVariable variable) => Drop((ISharingVariable)variable);
@@ -206,7 +198,7 @@ public sealed class SharingRelation
     public bool IsIsolatedExceptFor(ISharingVariable variable, ResultVariable result)
         => subsetFor.TryGetValue(variable, out var set) && set.IsIsolatedExceptFor(result);
 
-    public SharingRelationSnapshot Snapshot() => new(sets, currentResult, currentLend);
+    public SharingRelationSnapshot Snapshot() => new(sets, currentLend);
 
     public override string ToString()
         => string.Join(", ", sets.Select(s => $"{{{string.Join(", ", s.Distinct())}}}"));

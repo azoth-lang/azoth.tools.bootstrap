@@ -13,15 +13,13 @@ public class SharingRelationSnapshot
 {
     private readonly FixedSet<SharingSetSnapshot> sets;
 
-    internal SharingRelationSnapshot(IEnumerable<SharingSet> sets, ResultVariable? currentResult, ImplicitLend? currentLend)
+    internal SharingRelationSnapshot(IEnumerable<SharingSet> sets, ImplicitLend? currentLend)
     {
-        CurrentResult = currentResult;
         CurrentLend = currentLend;
         this.sets = new(sets.Select(s => s.Snapshot()));
     }
 
-    public ResultVariable? CurrentResult { get; }
     public ImplicitLend? CurrentLend { get; }
 
-    public SharingRelation MutableCopy() => new(sets, CurrentResult, CurrentLend);
+    public SharingRelation MutableCopy() => new(sets, CurrentLend);
 }
