@@ -71,7 +71,7 @@ public class SemanticAnalyzer
         var stringSymbol = packageSyntax.SymbolTrees
                                         .GlobalSymbols
                                         .OfType<ObjectTypeSymbol>()
-                                        .SingleOrDefault(s => s.Name == "string");
+                                        .SingleOrDefault(s => s.Name == "String");
 
         // Basic Analysis includes: Name Binding, Type Checking, Constant Folding
         BasicAnalyzer.Check(packageSyntax, stringSymbol);

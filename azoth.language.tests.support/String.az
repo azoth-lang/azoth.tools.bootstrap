@@ -1,5 +1,5 @@
 // TODO replace with `ref[C] struct`
-published class string
+published class String
 {
     /// The index of the start of the string data in `bytes`.
     public let start: size;
@@ -78,8 +78,8 @@ published class string
     //     }
     // }
 
-    // published implicit operator "_"(value: const Raw_Array[byte]) -> string
+    // published implicit operator "_"(value: const Raw_Array[byte]) -> String
     // {
-    //     return new string(value);
+    //     return new String(value);
     // }
 }

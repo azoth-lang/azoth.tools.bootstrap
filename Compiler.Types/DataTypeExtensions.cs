@@ -31,7 +31,7 @@ public static class DataTypeExtensions
                 => targetReference.Capability.IsAssignableFrom(sourceReference.Capability)
                    && (targetReference.DeclaredType.IsAssignableFrom(sourceReference.DeclaredType)
                        // TODO remove hack to allow string to exist in both primitives and stdlib
-                       || (targetReference.Name == "string" && sourceReference.Name == "string"
+                       || (targetReference.Name == "String" && sourceReference.Name == "String"
                            && targetReference.ContainingNamespace == NamespaceName.Global
                            && sourceReference.ContainingNamespace == NamespaceName.Global)),
             (OptionalType targetOptional, OptionalType sourceOptional)
