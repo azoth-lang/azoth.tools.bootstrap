@@ -144,9 +144,11 @@ public sealed class SharingRelation
         return result;
     }
 
-    public IEnumerable<IReadOnlySharingSet> Drop(BindingVariable variable) => Drop((ISharingVariable)variable);
+    public IEnumerable<IReadOnlySharingSet> Drop(BindingVariable variable)
+        => Drop((ISharingVariable)variable);
 
-    public IEnumerable<IReadOnlySharingSet> Drop(ResultVariable result) => Drop((ISharingVariable)result);
+    public IEnumerable<IReadOnlySharingSet> Drop(ResultVariable result)
+        => Drop((ISharingVariable)result);
 
     private IEnumerable<IReadOnlySharingSet> Drop(ISharingVariable variable)
     {

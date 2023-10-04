@@ -1095,11 +1095,10 @@ public class BasicBodyAnalyzer
                 CheckTypeCompatibility(selfParamType.Type, selfResult.Syntax);
                 var expectedArgumentTypes = methodSymbol.ParameterTypes.Select(nonEmptySelfArgumentType.ReplaceTypeParametersIn);
                 CheckTypes(arguments, expectedArgumentTypes, flow);
-
+                arguments = arguments with { Self = selfResult };
                 var returnType = methodSymbol.ReturnType;
                 invocation.DataType = nonEmptySelfArgumentType.ReplaceTypeParametersIn(returnType.Type);
                 AssignInvocationSemantics(invocation, invocation.DataType);
-
                 break;
             default:
                 diagnostics.Add(NameBindingError.AmbiguousMethodCall(file, invocation.Span));
