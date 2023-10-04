@@ -147,4 +147,10 @@ public static class TypeError
         return new(file, syn.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3020, $"Constructor self parameter cannot have reference capability `{capability.ToSourceString()}`. Only `mut` and read-only are allowed");
     }
+
+    public static Diagnostic LentIdentity(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+            3019, $"Cannot have `lent` `id`");
+    }
 }

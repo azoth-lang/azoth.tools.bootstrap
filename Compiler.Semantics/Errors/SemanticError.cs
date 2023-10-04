@@ -92,4 +92,10 @@ public static class SemanticError
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             6013, $"Field `{name}` declared with `let` cannot be assigned");
     }
+
+    public static Diagnostic LentConstructorSelf(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+            6014, "Constructor `self` parameter cannot be `lent`");
+    }
 }
