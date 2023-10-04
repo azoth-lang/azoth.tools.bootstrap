@@ -95,7 +95,7 @@ public class BasicAnalyzer
                 if (field.Initializer is not null)
                 {
                     var resolver = new BasicBodyAnalyzer(field, symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics);
-                    resolver.CheckType(field.Initializer, field.Symbol.Result.DataType);
+                    resolver.CheckFieldInitializerType(field.Initializer, field.Symbol.Result.DataType);
                 }
                 break;
             case IConstructorDeclarationSyntax constructor:

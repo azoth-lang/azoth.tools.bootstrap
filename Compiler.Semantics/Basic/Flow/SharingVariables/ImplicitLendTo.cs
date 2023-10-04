@@ -11,7 +11,7 @@ public class ImplicitLendTo : ISharingVariable
     public bool IsVariableOrParameter => false;
     /// <remarks>The to side is NOT affected by any restrictions.</remarks>
     public bool RestrictsWrite => false;
-    public bool IsTracked => true;
+    public bool SharingIsTracked => true;
     public bool KeepsSetAlive => false;
     public ImplicitLendFrom From => ImplicitLend.From;
 

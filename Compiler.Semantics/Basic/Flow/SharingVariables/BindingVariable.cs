@@ -11,19 +11,14 @@ public sealed class BindingVariable : ISharingVariable
     public bool RestrictsWrite => false;
     public DataType DataType => Symbol.DataType;
     public bool IsLent => Symbol.IsLentBinding;
-    public bool IsTracked { get; }
+    public bool SharingIsTracked { get; }
     public bool KeepsSetAlive => true;
 
     public BindingVariable(BindingSymbol symbol)
     {
         Symbol = symbol;
         IsVariableOrParameter = symbol is not FieldSymbol;
-        // No need to track `const` and `id`, they never participate in sharing because they don't
-        // allow any write aliases. (Can't use AllowsWriteAliases here because of `iso`.)
-        IsTracked = Symbol.IsLentBinding
-            || (DataType is ReferenceType { Capability: var capability }
-                && capability != ReferenceCapability.Constant
-                && capability != ReferenceCapability.Identity);
+        SharingIsTracked = symbol.SharingIsTracked();
     }
 
     #region  Equality

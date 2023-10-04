@@ -217,7 +217,6 @@ public partial class ConformanceTests
 
     private static List<ExpectedError> ExpectedCompileErrors(CodeFile codeFile, string code)
     {
-
         return ErrorPattern().Matches(code)
                              .Select(Selector)
                              .OrderBy(e => e.Line)

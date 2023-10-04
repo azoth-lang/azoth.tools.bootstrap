@@ -10,8 +10,5 @@ internal class NoneLiteralExpressionSyntax : LiteralExpressionSyntax, INoneLiter
     {
     }
 
-    public override string ToString()
-    {
-        return "none";
-    }
+    public override string ToString() => "none";
 }

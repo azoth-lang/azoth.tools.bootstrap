@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
@@ -58,13 +59,11 @@ public sealed class SharingRelation
                 subsetFor.Add(variable, set);
     }
 
-    public ResultVariable CurrentResult => currentResult
-        ?? throw new InvalidOperationException("Cannot access current result because there is no current result.");
-
     public IEnumerable<IReadOnlySharingSet> SharingSets => sets;
 
     public IReadOnlySharingSet ReadSharingSet(ResultVariable variable) => SharingSet(variable);
 
+    private SharingSet SharingSet(BindingVariable variable) => SharingSet((ISharingVariable)variable);
     private SharingSet SharingSet(ISharingVariable variable)
     {
         if (!subsetFor.TryGetValue(variable, out var set))
@@ -90,15 +89,18 @@ public sealed class SharingRelation
     /// <summary>
     /// Declare a new variable. Newly created variables are not connected to any others.
     /// </summary>
-    public void Declare(BindingVariable variable)
+    /// <returns>Whether the variable was declared.</returns>
+    public BindingVariable? Declare(BindingSymbol symbol)
     {
         // Other types don't participate in sharing
-        if (!variable.IsTracked) return;
+        if (!symbol.SharingIsTracked()) return null;
 
+        BindingVariable variable = symbol;
         if (subsetFor.TryGetValue(variable, out _))
             throw new InvalidOperationException("Symbol already declared.");
 
         Declare(variable, variable.IsLent);
+        return variable;
     }
 
     public void DeclareLentParameterReference(BindingVariable variable, uint lentParameterNumber)
@@ -129,12 +131,26 @@ public sealed class SharingRelation
         subsetFor.Add(variable, set);
     }
 
-    public ResultVariable NewResult(bool lent = false)
+    // TODO remove
+    private ResultVariable NewResult(bool lent = false)
     {
-        var newResult = currentResult?.NextResult() ?? ResultVariable.First;
-        Declare(newResult, lent);
-        currentResult = newResult;
-        return newResult;
+        currentResult = currentResult?.NextResult() ?? ResultVariable.First;
+        Declare(currentResult, lent);
+        return currentResult;
+    }
+
+    /// <summary>
+    /// Create a new result inside the set with the given symbol.
+    /// </summary>
+    public ResultVariable? NewResult(BindingSymbol symbol)
+    {
+        if (!symbol.SharingIsTracked()) return null;
+        var set = SharingSet(symbol);
+
+        currentResult = currentResult?.NextResult() ?? ResultVariable.First;
+        set.Declare(currentResult);
+        subsetFor.Add(currentResult, set);
+        return currentResult;
     }
 
     public IEnumerable<IReadOnlySharingSet> Drop(BindingVariable variable) => Drop((ISharingVariable)variable);
@@ -168,7 +184,7 @@ public sealed class SharingRelation
 
     public void Union(ISharingVariable var1, ISharingVariable var2)
     {
-        if (!var1.IsTracked || !var2.IsTracked) return;
+        if (!var1.SharingIsTracked || !var2.SharingIsTracked) return;
         var set1 = SharingSet(var1);
         var set2 = SharingSet(var2);
         if (set1 == set2)
@@ -184,27 +200,11 @@ public sealed class SharingRelation
         smallerSet.Clear();
     }
 
-    /// <summary>
-    /// Split the given variable out from sharing with the other variables it is connected to.
-    /// </summary>
-    public void Split(ResultVariable variable)
-    {
-        if (!subsetFor.TryGetValue(variable, out var set)
-            || set.Count == 1)
-            return;
-
-        set.Remove(variable);
-        var newSet = new SharingSet(variable, false);
-        sets.Add(newSet);
-        subsetFor[variable] = newSet;
-    }
-
     public bool IsIsolated(ISharingVariable variable)
         => subsetFor.TryGetValue(variable, out var set) && set.IsIsolated;
 
-    public bool IsIsolatedExcept(ISharingVariable variable, ResultVariable result)
-        => subsetFor.TryGetValue(variable, out var set)
-           && set.IsIsolatedExcept(result);
+    public bool IsIsolatedExceptFor(ISharingVariable variable, ResultVariable result)
+        => subsetFor.TryGetValue(variable, out var set) && set.IsIsolatedExceptFor(result);
 
     public SharingRelationSnapshot Snapshot() => new(sets, currentResult, currentLend);
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -10,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// </summary>
 public sealed class ReferenceCapabilities
 {
-    private readonly Dictionary<BindingSymbol, ModifiedCapability> currentCapabilities;
+    private readonly Dictionary<BindingSymbol, FlowCapability> currentCapabilities;
 
     public ReferenceCapabilities()
     {
@@ -18,7 +19,7 @@ public sealed class ReferenceCapabilities
     }
 
     internal ReferenceCapabilities(
-        IReadOnlyDictionary<BindingSymbol, ModifiedCapability> currentCapabilities)
+        IReadOnlyDictionary<BindingSymbol, FlowCapability> currentCapabilities)
     {
         this.currentCapabilities = new(currentCapabilities);
     }
@@ -27,17 +28,17 @@ public sealed class ReferenceCapabilities
 
     public void Declare(BindingSymbol symbol)
     {
-        if (symbol.DataType is ReferenceType referenceType)
-            // Alias all references because when used, an alias will exist
-            currentCapabilities.Add(symbol, referenceType.Capability.Alias());
+        if (symbol.SharingIsTracked())
+            currentCapabilities.Add(symbol, ((ReferenceType)symbol.DataType).Capability);
 
         // Other types don't have capabilities and don't need to be tracked
     }
 
+
     public ReferenceCapability? For(BindingSymbol? symbol)
     {
-        if (symbol?.DataType is ReferenceType)
-            return currentCapabilities[symbol].CurrentCapability;
+        if (symbol?.SharingIsTracked() ?? false)
+            return currentCapabilities[symbol].Current;
 
         // Other types don't have capabilities and don't need to be tracked
         return null;
@@ -45,8 +46,11 @@ public sealed class ReferenceCapabilities
 
     public DataType CurrentType(BindingSymbol? symbol)
     {
-        if (symbol?.DataType is ReferenceType referenceType)
-            return referenceType.With(currentCapabilities[symbol].CurrentCapability);
+        var current = For(symbol);
+        if (current is not null)
+            return ((ReferenceType)symbol!.DataType).With(current);
+        //if (symbol?.DataType is ReferenceType referenceType)
+        //    return referenceType.With(currentCapabilities[symbol].Current);
 
         // Other types don't have capabilities and don't need to be tracked
         return symbol?.DataType ?? DataType.Unknown;
@@ -55,12 +59,13 @@ public sealed class ReferenceCapabilities
     /// <summary>
     /// Creates an alias of the symbol therefor restricting the capability to no longer be `iso`.
     /// </summary>
-    public void Alias(BindingSymbol? symbol)
+    public ReferenceCapability? Alias(BindingSymbol symbol)
     {
-        if (symbol?.DataType is ReferenceType)
-            currentCapabilities[symbol] = currentCapabilities[symbol].Alias();
+        if (symbol.SharingIsTracked())
+            return (currentCapabilities[symbol] = currentCapabilities[symbol].Alias()).Current;
 
         // Other types don't have capabilities and don't need to be tracked
+        return null;
     }
 
     /// <summary>
@@ -68,7 +73,7 @@ public sealed class ReferenceCapabilities
     /// </summary>
     public void Move(BindingSymbol? symbol)
     {
-        if (symbol?.DataType is ReferenceType)
+        if (symbol?.SharingIsTracked() ?? false)
             currentCapabilities[symbol] = ReferenceCapability.Identity;
 
         // Other types don't have capabilities and don't need to be tracked
@@ -76,7 +81,7 @@ public sealed class ReferenceCapabilities
 
     public void Freeze(BindingSymbol symbol)
     {
-        if (symbol.DataType is ReferenceType)
+        if (symbol.SharingIsTracked())
             currentCapabilities[symbol] = currentCapabilities[symbol].Freeze();
 
         // Other types don't have capabilities and don't need to be tracked
@@ -84,7 +89,7 @@ public sealed class ReferenceCapabilities
 
     public void RestrictWrite(BindingSymbol symbol)
     {
-        if (symbol.DataType is ReferenceType)
+        if (symbol.SharingIsTracked())
             currentCapabilities[symbol] = currentCapabilities[symbol].RestrictWrite();
 
         // Other types don't have capabilities and don't need to be tracked
@@ -92,17 +97,11 @@ public sealed class ReferenceCapabilities
 
     public void RemoveWriteRestriction(BindingSymbol symbol)
     {
-        if (symbol.DataType is ReferenceType)
+        if (symbol.SharingIsTracked())
             currentCapabilities[symbol] = currentCapabilities[symbol].RemoveWriteRestriction();
 
         // Other types don't have capabilities and don't need to be tracked
     }
 
     public ReferenceCapabilitiesSnapshot Snapshot() => new(currentCapabilities);
-
-    public bool IsTracked(BindingSymbol symbol)
-    {
-        var capability = For(symbol);
-        return capability != ReferenceCapability.Constant && capability != ReferenceCapability.Identity;
-    }
 }

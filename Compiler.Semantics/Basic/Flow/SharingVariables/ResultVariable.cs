@@ -22,7 +22,7 @@ public sealed class ResultVariable : ISharingVariable
 
     public bool IsVariableOrParameter => false;
     public bool RestrictsWrite => false;
-    public bool IsTracked => true;
+    public bool SharingIsTracked => true;
     public bool KeepsSetAlive => true;
 
     private ResultVariable(ulong number)

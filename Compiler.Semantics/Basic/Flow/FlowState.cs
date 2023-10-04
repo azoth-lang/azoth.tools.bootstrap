@@ -32,19 +32,28 @@ public sealed class FlowState
         this.sharing = sharing;
     }
 
-    public ResultVariable CurrentResult => sharing.CurrentResult;
-
     public FlowState Copy() => new(capabilities.Copy(), sharing.Copy());
 
-    public void Declare(BindingSymbol symbol)
+    /// <summary>
+    /// Declare the given symbol and combine it with the result variable.
+    /// </summary>
+    /// <remarks>The result variable is dropped as part of this.</remarks>
+    public void Declare(BindingSymbol symbol, ResultVariable? variable)
     {
         capabilities.Declare(symbol);
-        sharing.Declare(symbol);
+        var bindingVariable = sharing.Declare(symbol);
+        if (bindingVariable is not null && variable is not null)
+            sharing.Union(bindingVariable, variable);
+        Drop(variable);
     }
 
-    public ResultVariable NewResult() => sharing.NewResult();
-
     public void Drop(BindingSymbol symbol) => RemoveRestrictions(sharing.Drop(symbol));
+
+    public void Drop(ResultVariable? variable)
+    {
+        if (variable is not null)
+            RemoveRestrictions(sharing.Drop(variable));
+    }
 
     /// <summary>
     /// Drop all local variables and parameters in preparation for a return from the function or
@@ -67,14 +76,17 @@ public sealed class FlowState
     }
 
     public void Freeze(BindingSymbol symbol)
-    {
-        capabilities.Freeze(symbol);
-        // Constants aren't tracked, this symbol is `const` now
-        Drop(symbol);
-    }
+        // Because the symbol could reference `lent` `const` data, it still needs to be tracked
+        // and can't be dropped.
+        => capabilities.Freeze(symbol);
 
-    // TODO maybe this happens as part of Union?
-    public void Alias(BindingSymbol symbol) => capabilities.Alias(symbol);
+    public ResultVariable? Alias(BindingSymbol symbol)
+    {
+        var capability = capabilities.Alias(symbol);
+        if (symbol.SharingIsTracked(capability))
+            return sharing.NewResult(symbol);
+        return null;
+    }
 
     /// <summary>
     /// Gives the current flow type of the symbol.
@@ -82,29 +94,28 @@ public sealed class FlowState
     /// <remarks>This is named for it to be used as <c>flow.Type(symbol)</c></remarks>
     public DataType Type(BindingSymbol? symbol) => capabilities.CurrentType(symbol);
 
-    public void UnionWithCurrentResult(BindingVariable var)
+    /// <summary>
+    /// Combine two <see cref="ResultVariable"/>s into a single sharing set and return a result
+    /// variable representative of the new set.
+    /// </summary>
+    /// <remarks>If two <see cref="ResultVariable"/>s are passed in, one will be dropped.</remarks>
+    public ResultVariable? Combine(ResultVariable? leftVariable, ResultVariable? rightVariable)
     {
-        // If the binding has been frozen or moved, no need to track its
-        if (!var.IsTracked || !capabilities.IsTracked(var.Symbol))
-            return;
-        sharing.Union(var, sharing.CurrentResult);
+        if (leftVariable is null) return rightVariable;
+        if (rightVariable is null) return leftVariable;
+        sharing.Union(leftVariable, rightVariable);
+        Drop(leftVariable);
+        // TODO would it be better to create a new result variable to return instead of reusing this one?
+        return rightVariable;
     }
-
-    public void UnionWithCurrentResultAndDrop(ResultVariable variable)
-    {
-        sharing.Union(variable, sharing.CurrentResult);
-        sharing.Drop(variable);
-    }
-
-    public void DropCurrentResult() => RemoveRestrictions(sharing.Drop(sharing.CurrentResult));
-
-    public void SplitCurrentResult() => sharing.Split(sharing.CurrentResult);
 
     public bool IsIsolated(BindingVariable variable) => sharing.IsIsolated(variable);
-    public bool IsIsolated(ISharingVariable variable) => sharing.IsIsolated(variable);
+    public bool IsIsolated(ISharingVariable? variable)
+        => variable is null || sharing.IsIsolated(variable);
 
-    public bool IsIsolatedExceptCurrentResult(BindingVariable variable)
-        => sharing.IsIsolatedExcept(variable, sharing.CurrentResult);
+    public bool IsIsolatedExceptFor(BindingVariable variable, ResultVariable? resultVariable)
+        => resultVariable is null ? IsIsolated(variable)
+            : sharing.IsIsolatedExceptFor(variable, resultVariable);
 
     /// <summary>
     /// Mark the result as being lent const.

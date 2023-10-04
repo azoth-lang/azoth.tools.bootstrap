@@ -28,7 +28,7 @@ public class SharingSet : IReadOnlySharingSet
         variables = new HashSet<ISharingVariable> { variable };
     }
 
-    public bool IsIsolatedExcept(ResultVariable result)
+    public bool IsIsolatedExceptFor(ResultVariable result)
         => variables.Count <= 2 && variables.Except(result).Count() == 1;
 
     public IEnumerator<ISharingVariable> GetEnumerator() => variables.GetEnumerator();
@@ -44,6 +44,8 @@ public class SharingSet : IReadOnlySharingSet
 
         variables.Add(lentGroup);
     }
+
+    public void Declare(ResultVariable variable) => variables.Add(variable);
 
     public void Remove(ISharingVariable variable) => variables.Remove(variable);
 

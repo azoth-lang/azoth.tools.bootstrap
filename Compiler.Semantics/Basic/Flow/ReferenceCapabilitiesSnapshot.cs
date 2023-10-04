@@ -10,10 +10,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// </summary>
 public class ReferenceCapabilitiesSnapshot
 {
-    private readonly FixedDictionary<BindingSymbol, ModifiedCapability> currentCapabilities;
+    private readonly FixedDictionary<BindingSymbol, FlowCapability> currentCapabilities;
 
     internal ReferenceCapabilitiesSnapshot(
-        IDictionary<BindingSymbol, ModifiedCapability> currentCapabilities)
+        IDictionary<BindingSymbol, FlowCapability> currentCapabilities)
     {
         this.currentCapabilities = currentCapabilities.ToFixedDictionary();
     }

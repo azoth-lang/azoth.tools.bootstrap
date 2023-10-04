@@ -4,13 +4,13 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
-public record class ExpressionResult(IExpressionSyntax Syntax, ResultVariable Result)
+public record class ExpressionResult(IExpressionSyntax Syntax, ResultVariable? Variable = null)
 {
     public DataType Type => Syntax.ConvertedDataType.Assigned();
 
-    public void Deconstruct(out DataType type, out ResultVariable result)
+    public void Deconstruct(out DataType type, out ResultVariable? result)
     {
         type = Type;
-        result = Result;
+        result = Variable;
     }
 }
