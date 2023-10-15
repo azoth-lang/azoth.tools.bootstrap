@@ -48,8 +48,8 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
 
                 containingScope = BuildUsingDirectivesScope(syn.UsingDirectives, containingScope);
                 break;
-            case IClassDeclarationSyntax syn:
-                containingScope = BuildClassScope(syn, containingScope);
+            case ITypeDeclarationSyntax syn:
+                containingScope = BuildTypeScope(syn, containingScope);
                 break;
             case IFunctionDeclarationSyntax function:
                 foreach (var parameter in function.Parameters)
@@ -151,16 +151,16 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         return NestedScope.Create(containingScope, symbolsInScope);
     }
 
-    private static LexicalScope BuildClassScope(
-        IClassDeclarationSyntax @class,
+    private static LexicalScope BuildTypeScope(
+        ITypeDeclarationSyntax typeSyntax,
         LexicalScope containingScope)
     {
         // Only "static" names are in scope. Other names must use `self.`
-        var symbols = @class.Members.OfType<IAssociatedFunctionDeclarationSyntax>()
+        var symbols = typeSyntax.Members.OfType<IAssociatedFunctionDeclarationSyntax>()
                             .GroupBy(m => m.Name, m => m.Symbol)
                             .ToDictionary(e => (TypeName)e.Key, e => e.ToFixedSet<IPromise<Symbol>>());
 
-        foreach (var genericParameter in @class.GenericParameters)
+        foreach (var genericParameter in typeSyntax.GenericParameters)
             symbols.Add(genericParameter.Name, FixedSet.Create<IPromise<Symbol>>(genericParameter.Symbol));
 
         return NestedScope.Create(containingScope, symbols.ToFixedDictionary());

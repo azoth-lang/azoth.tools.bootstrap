@@ -52,7 +52,7 @@ internal class NonMemberSymbol
         ContainingNamespace = containingSymbol?.NamespaceName ?? NamespaceName.Global;
         Name = symbol.Name ?? throw new ArgumentException("Symbol must have a name", nameof(symbol));
         RequiredNamespace = ContainingNamespace;
-        Symbol = AcyclicPromise.ForValue(symbol);
+        Symbol = Promise.ForValue(symbol);
     }
 
     private NonMemberSymbol(NamespaceSymbol ns)
@@ -61,6 +61,6 @@ internal class NonMemberSymbol
         ContainingNamespace = ns.ContainingSymbol.NamespaceName;
         Name = ns.Name;
         RequiredNamespace = ns.NamespaceName;
-        Symbol = AcyclicPromise.ForValue(ns);
+        Symbol = Promise.ForValue(ns);
     }
 }
