@@ -21,11 +21,11 @@ public static class Intrinsic
     public static readonly ConstructorSymbol NewRawBoundedList
         = Find<ConstructorSymbol>(RawBoundedList, null);
 
-    public static readonly MethodSymbol RawBoundedListCapacity
-        = Find<MethodSymbol>(RawBoundedList, "capacity");
+    public static readonly MethodSymbol GetRawBoundedListCapacity
+        = Find<MethodSymbol>(RawBoundedList, "get_capacity");
 
-    public static readonly MethodSymbol RawBoundedListCount
-        = Find<MethodSymbol>(RawBoundedList, "count");
+    public static readonly MethodSymbol GetRawBoundedListCount
+        = Find<MethodSymbol>(RawBoundedList, "get_count");
 
     public static readonly MethodSymbol RawBoundedListAdd
         = Find<MethodSymbol>(RawBoundedList, "add");
@@ -33,8 +33,8 @@ public static class Intrinsic
     public static readonly MethodSymbol RawBoundedListAt
         = Find<MethodSymbol>(RawBoundedList, "at");
 
-    public static readonly MethodSymbol RawBoundedListSet
-        = Find<MethodSymbol>(RawBoundedList, "set");
+    public static readonly MethodSymbol RawBoundedListSetAt
+        = Find<MethodSymbol>(RawBoundedList, "set_at");
 
     public static readonly MethodSymbol RawBoundedListShrink
         = Find<MethodSymbol>(RawBoundedList, "shrink");
@@ -106,13 +106,13 @@ public static class Intrinsic
         var constructor = new ConstructorSymbol(classSymbol, null, mutClassType, Params(DataType.Size));
         tree.Add(constructor);
 
-        // published fn capacity() -> size;
-        var capacity = new MethodSymbol(classSymbol, "capacity", readClassParamType, Params(), ReturnType.Size);
+        // published fn get_capacity() -> size;
+        var capacity = new MethodSymbol(classSymbol, "get_capacity", readClassParamType, Params(), ReturnType.Size);
         tree.Add(capacity);
 
         // Given setters are not implemented, making this a function for now
-        // published fn count() -> size
-        var count = new MethodSymbol(classSymbol, "count", readClassParamType, Params(), ReturnType.Size);
+        // published fn get_count() -> size
+        var count = new MethodSymbol(classSymbol, "get_count", readClassParamType, Params(), ReturnType.Size);
         tree.Add(count);
 
         // published /* unsafe */ fn at(mut self, index: size) -> T
@@ -120,10 +120,11 @@ public static class Intrinsic
             Params(DataType.Size), Return(itemType));
         tree.Add(at);
 
-        // published /* unsafe */ fn set(mut self, index: size, T value)
-        var set = new MethodSymbol(classSymbol, "set", mutClassParamType,
+        // published /* unsafe */ fn set_at(mut self, index: size, T value)
+        // TODO replace with at method returning a `ref var`
+        var setAt = new MethodSymbol(classSymbol, "set_at", mutClassParamType,
             Params(DataType.Size, itemType), ReturnType.Void);
-        tree.Add(set);
+        tree.Add(setAt);
 
         // published fn add(mut self, value: T);
         var add = new MethodSymbol(classSymbol, "add", mutClassParamType,

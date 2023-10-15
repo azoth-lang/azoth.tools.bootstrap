@@ -593,9 +593,9 @@ public class InterpreterProcess
         AzothValue self,
         List<AzothValue> arguments)
     {
-        if (method == Intrinsic.RawBoundedListCapacity)
+        if (method == Intrinsic.GetRawBoundedListCapacity)
             return ValueTask.FromResult(AzothValue.Size(self.RawBoundedListValue.Capacity));
-        if (method == Intrinsic.RawBoundedListCount)
+        if (method == Intrinsic.GetRawBoundedListCount)
             return ValueTask.FromResult(AzothValue.Size(self.RawBoundedListValue.Count));
         if (method == Intrinsic.RawBoundedListAdd)
         {
@@ -604,7 +604,7 @@ public class InterpreterProcess
         }
         if (method == Intrinsic.RawBoundedListAt)
             return ValueTask.FromResult(self.RawBoundedListValue.At(arguments[0].SizeValue));
-        if (method == Intrinsic.RawBoundedListSet)
+        if (method == Intrinsic.RawBoundedListSetAt)
         {
             self.RawBoundedListValue.Set(arguments[0].SizeValue, arguments[1]);
             return ValueTask.FromResult(AzothValue.None);

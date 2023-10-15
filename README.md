@@ -48,6 +48,8 @@ and borrow checking.
 * [ ] Basic Traits? - no generics, classes directly implement like interfaces
 * [ ] `foreach` in Iterator?
 * [ ] `string` as primitive type
+* [x] Use `get_` and `set_` instead of properties. (Avoids conflict with field names and allows for
+  the exploration of the proper types for getters and setters.)
 
 These features should allow a number of basic programs and katas to be implemented. Note that the
 lack of generics will mean that future versions won't be backwards compatible with the standard
