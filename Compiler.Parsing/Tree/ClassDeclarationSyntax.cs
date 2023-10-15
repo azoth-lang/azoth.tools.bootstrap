@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -11,35 +10,12 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSyntax
+internal class ClassDeclarationSyntax : TypeDeclarationSyntax<IClassMemberDeclarationSyntax>, IClassDeclarationSyntax
 {
-    public NamespaceName ContainingNamespaceName { get; }
-
-    private NamespaceOrPackageSymbol? containingNamespaceSymbol;
-    public NamespaceOrPackageSymbol ContainingNamespaceSymbol
-    {
-        get => containingNamespaceSymbol
-               ?? throw new InvalidOperationException($"{ContainingNamespaceSymbol} not yet assigned");
-        set
-        {
-            if (containingNamespaceSymbol is not null)
-                throw new InvalidOperationException($"Can't set {nameof(ContainingNamespaceSymbol)} repeatedly");
-            containingNamespaceSymbol = value;
-        }
-    }
-
-    public IAccessModifierToken? AccessModifier { get; }
     public IAbstractKeywordToken? AbstractModifier { get; }
     public bool IsAbstract { get; }
-    public IConstKeywordToken? ConstModifier { get; }
-    public bool IsConst { get; }
-    public IMoveKeywordToken? MoveModifier { get; }
-    public bool IsMove { get; }
-    public new Name Name { get; }
-    public FixedList<IGenericParameterSyntax> GenericParameters { get; }
-    public new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
     public ITypeNameSyntax? BaseType { get; }
-    public FixedList<IMemberDeclarationSyntax> Members { get; }
+    public override FixedList<IClassMemberDeclarationSyntax> Members { get; }
     public ConstructorSymbol? DefaultConstructorSymbol { get; private set; }
 
     public ClassDeclarationSyntax(
@@ -54,24 +30,17 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
         Name name,
         FixedList<IGenericParameterSyntax> genericParameters,
         ITypeNameSyntax? baseType,
-        Func<IClassDeclarationSyntax, (FixedList<IMemberDeclarationSyntax>, TextSpan)> parseMembers)
-        : base(headerSpan, file, name, nameSpan, new AcyclicPromise<ObjectTypeSymbol>())
+        FixedList<ITypeNameSyntax> superTypes,
+        Func<IClassDeclarationSyntax, (FixedList<IClassMemberDeclarationSyntax>, TextSpan)> parseMembers)
+        : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, moveModifier,
+            nameSpan, name, genericParameters, superTypes)
     {
-        ContainingNamespaceName = containingNamespaceName;
-        AccessModifier = accessModifier;
         AbstractModifier = abstractModifier;
         IsAbstract = AbstractModifier is not null;
-        ConstModifier = constModifier;
-        IsConst = ConstModifier is not null;
-        MoveModifier = moveModifier;
-        IsMove = MoveModifier is not null;
-        Name = name;
-        GenericParameters = genericParameters;
         BaseType = baseType;
         var (members, bodySpan) = parseMembers(this);
         Members = members;
         Span = TextSpan.Covering(headerSpan, bodySpan);
-        Symbol = (AcyclicPromise<ObjectTypeSymbol>)base.Symbol;
     }
 
     public void CreateDefaultConstructor(SymbolTreeBuilder symbolTree)
@@ -95,8 +64,10 @@ internal class ClassDeclarationSyntax : DeclarationSyntax, IClassDeclarationSynt
         var modifiers = "";
         var accessModifier = AccessModifier.ToAccessModifier();
         if (accessModifier != CST.AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
+        if (IsAbstract) modifiers += "abstract ";
         if (IsConst) modifiers += "const ";
         if (IsMove) modifiers += "move ";
-        return $"{modifiers}class {Name} {{ … }}";
+        var generics = GenericParameters.Any() ? $"[{string.Join(", ", GenericParameters)}]" : "";
+        return $"{modifiers}class {Name}{generics} {{ … }}";
     }
 }

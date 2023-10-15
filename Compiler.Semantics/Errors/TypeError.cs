@@ -63,10 +63,10 @@ public static class TypeError
             3005, "Expression must be of type `bool`");
     }
 
-    public static Diagnostic CircularDefinition(CodeFile file, TextSpan span, IClassDeclarationSyntax @class)
+    public static Diagnostic CircularDefinition(CodeFile file, TextSpan span, ITypeDeclarationSyntax type)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3006, $"Declaration of type `{@class.ContainingNamespaceName}.{@class.Name}` is part of a circular definition");
+            3006, $"Declaration of type `{type.ContainingNamespaceName}.{type.Name}` is part of a circular definition");
     }
 
     public static Diagnostic CannotImplicitlyConvert(CodeFile file, ISyntax expression, DataType ofType, DataType toType)
@@ -114,7 +114,7 @@ public static class TypeError
     public static Diagnostic CannotIdNonReferenceType(CodeFile file, in TextSpan span, DataType type)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3015, $"Taking the `id` of the type `{type.ToSourceCodeString()}` is not supported, because it is not a reference typ.");
+            3015, $"Taking the `id` of the type `{type.ToSourceCodeString()}` is not supported, because it is not a reference type");
     }
 
     public static Diagnostic CannotFreezeValue(CodeFile file, IFreezeExpressionSyntax expression)
@@ -151,6 +151,12 @@ public static class TypeError
     public static Diagnostic LentIdentity(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3019, $"Cannot have `lent` `id`");
+            3021, "Cannot have `lent` `id`");
+    }
+
+    public static Diagnostic SuperTypeMustBeClassOrTrait(CodeFile file, Name typeName, ITypeNameSyntax superTypeName)
+    {
+        return new(file, superTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3022, $"Type `{typeName}` cannot have super type `{superTypeName}` because it is not a trait or class");
     }
 }

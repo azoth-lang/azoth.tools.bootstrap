@@ -8,7 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal class ConstructorDeclaration : InvocableDeclaration, IConstructorDeclaration
 {
-    public IClassDeclaration DeclaringClass { get; }
+    public IClassDeclaration DeclaringType { get; }
+    ITypeDeclaration IMemberDeclaration.DeclaringType => DeclaringType;
     public new ConstructorSymbol Symbol { get; }
     public ISelfParameter SelfParameter { get; }
     public IBody Body { get; }
@@ -27,7 +28,7 @@ internal class ConstructorDeclaration : InvocableDeclaration, IConstructorDeclar
         Symbol = symbol;
         SelfParameter = selfParameter;
         Body = body;
-        DeclaringClass = declaringClass;
+        DeclaringType = declaringClass;
     }
 
     public override string ToString()

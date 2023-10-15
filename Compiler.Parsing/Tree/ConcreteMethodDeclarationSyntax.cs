@@ -13,7 +13,7 @@ internal class ConcreteMethodDeclarationSyntax : MethodDeclarationSyntax, IConcr
     public virtual IBodySyntax Body { get; }
 
     public ConcreteMethodDeclarationSyntax(
-        IClassDeclarationSyntax declaringClass,
+        ITypeDeclarationSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -23,7 +23,7 @@ internal class ConcreteMethodDeclarationSyntax : MethodDeclarationSyntax, IConcr
         FixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
         IBodySyntax body)
-        : base(declaringClass, span, file, accessModifier, nameSpan, name, selfParameter,
+        : base(declaringType, span, file, accessModifier, nameSpan, name, selfParameter,
             parameters, @return)
     {
         Body = body;

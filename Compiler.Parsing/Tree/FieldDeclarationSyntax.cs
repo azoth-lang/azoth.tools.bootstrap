@@ -10,6 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class FieldDeclarationSyntax : MemberDeclarationSyntax, IFieldDeclarationSyntax
 {
+    public new IClassDeclarationSyntax DeclaringType { get; }
     public bool IsMutableBinding { get; }
     public new Name Name { get; }
     public new AcyclicPromise<FieldSymbol> Symbol { [DebuggerStepThrough] get; }
@@ -29,6 +30,7 @@ internal class FieldDeclarationSyntax : MemberDeclarationSyntax, IFieldDeclarati
         IExpressionSyntax? initializer)
         : base(declaringClass, span, file, accessModifier, nameSpan, name, new AcyclicPromise<FieldSymbol>())
     {
+        DeclaringType = declaringClass;
         IsMutableBinding = mutableBinding;
         Name = name;
         Type = type;

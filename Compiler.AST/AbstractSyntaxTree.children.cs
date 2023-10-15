@@ -19,6 +19,10 @@ public static class IAbstractSyntaxExtensions
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
+            case ITraitDeclaration n:
+                foreach (var child in n.Members)
+                    yield return child;
+                yield break;
             case IFunctionDeclaration n:
                 foreach (var child in n.Parameters)
                     yield return child;

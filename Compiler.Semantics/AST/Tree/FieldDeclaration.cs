@@ -6,7 +6,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal class FieldDeclaration : Declaration, IFieldDeclaration
 {
-    public IClassDeclaration DeclaringClass { get; }
+    public IClassDeclaration DeclaringType { get; }
+    ITypeDeclaration IMemberDeclaration.DeclaringType => DeclaringType;
     public new FieldSymbol Symbol { get; }
     BindingSymbol IBinding.Symbol => Symbol;
 
@@ -19,7 +20,7 @@ internal class FieldDeclaration : Declaration, IFieldDeclaration
         : base(file, span, symbol, nameSpan)
     {
         Symbol = symbol;
-        DeclaringClass = declaringClass;
+        DeclaringType = declaringClass;
     }
 
     public override string ToString() => Symbol + ";";

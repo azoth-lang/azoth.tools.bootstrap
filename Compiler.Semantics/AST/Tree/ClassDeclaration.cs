@@ -6,10 +6,9 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
-internal class ClassDeclaration : Declaration, IClassDeclaration
+internal class ClassDeclaration : TypeDeclaration<IClassMemberDeclaration>, IClassDeclaration
 {
-    public new ObjectTypeSymbol Symbol { get; }
-    public FixedList<IMemberDeclaration> Members { get; }
+    public override FixedList<IClassMemberDeclaration> Members { get; }
     public ConstructorSymbol? DefaultConstructorSymbol { get; }
 
     public ClassDeclaration(
@@ -18,10 +17,9 @@ internal class ClassDeclaration : Declaration, IClassDeclaration
         ObjectTypeSymbol symbol,
         TextSpan nameSpan,
         ConstructorSymbol? defaultConstructorSymbol,
-        Func<IClassDeclaration, FixedList<IMemberDeclaration>> buildMembers)
+        Func<IClassDeclaration, FixedList<IClassMemberDeclaration>> buildMembers)
         : base(file, span, symbol, nameSpan)
     {
-        Symbol = symbol;
         DefaultConstructorSymbol = defaultConstructorSymbol;
         Members = buildMembers(this);
     }

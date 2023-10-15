@@ -36,6 +36,16 @@ public static class ISyntaxExtensions
                     yield return n.BaseType;
                 foreach (var child in n.Members)
                     yield return child;
+                foreach (var child in n.SuperTypes)
+                    yield return child;
+                yield break;
+            case ITraitDeclarationSyntax n:
+                foreach (var child in n.GenericParameters)
+                    yield return child;
+                foreach (var child in n.SuperTypes)
+                    yield return child;
+                foreach (var child in n.Members)
+                    yield return child;
                 yield break;
             case IFunctionDeclarationSyntax n:
                 foreach (var child in n.Parameters)

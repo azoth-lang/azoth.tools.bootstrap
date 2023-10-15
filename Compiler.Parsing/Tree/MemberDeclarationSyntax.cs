@@ -9,11 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal abstract class MemberDeclarationSyntax : DeclarationSyntax, IMemberDeclarationSyntax
 {
-    public IClassDeclarationSyntax DeclaringClass { get; }
+    public ITypeDeclarationSyntax DeclaringType { get; }
     public IAccessModifierToken? AccessModifier { get; }
 
     protected MemberDeclarationSyntax(
-        IClassDeclarationSyntax declaringClass,
+        ITypeDeclarationSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -22,7 +22,7 @@ internal abstract class MemberDeclarationSyntax : DeclarationSyntax, IMemberDecl
         IPromise<Symbol> symbol)
         : base(span, file, name, nameSpan, symbol)
     {
-        DeclaringClass = declaringClass;
+        DeclaringType = declaringType;
         AccessModifier = accessModifier;
     }
 }

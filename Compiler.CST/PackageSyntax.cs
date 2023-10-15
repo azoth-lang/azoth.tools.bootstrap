@@ -73,7 +73,7 @@ public class PackageSyntax<TReference>
                 case INamespaceDeclarationSyntax syn:
                     declarations.EnqueueRange(syn.Declarations);
                     break;
-                case IClassDeclarationSyntax syn:
+                case ITypeDeclarationSyntax syn:
                     yield return syn;
                     declarations.EnqueueRange(syn.Members);
                     break;

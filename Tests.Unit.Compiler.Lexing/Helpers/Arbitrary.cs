@@ -318,6 +318,7 @@ public static class Arbitrary
         { "as?", typeof(IAsQuestionKeywordToken) },
         { "Any", typeof(IAnyKeywordToken) },
         { "never", typeof(INeverKeywordToken) },
+        { "trait", typeof(ITraitKeywordToken) },
         //{ "float16", typeof(IFloat16KeywordToken) },
         //{ "float32", typeof(IFloat32KeywordToken) },
         { "offset", typeof(IOffsetKeywordToken) },

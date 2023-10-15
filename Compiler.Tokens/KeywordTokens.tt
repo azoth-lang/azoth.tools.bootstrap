@@ -87,7 +87,7 @@
         "And",
         "Or",
         "Not",
-        //"Trait",
+        "Trait",
         //"Float32",
         //"Float64",
         //"Underscore",

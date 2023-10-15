@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class AbstractMethodDeclarationSyntax : MethodDeclarationSyntax, IAbstractMethodDeclarationSyntax
 {
     public AbstractMethodDeclarationSyntax(
-        IClassDeclarationSyntax declaringClass,
+        ITypeDeclarationSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -19,7 +19,7 @@ internal class AbstractMethodDeclarationSyntax : MethodDeclarationSyntax, IAbstr
         ISelfParameterSyntax selfParameter,
         FixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return)
-        : base(declaringClass, span, file, accessModifier, nameSpan, name,
+        : base(declaringType, span, file, accessModifier, nameSpan, name,
             selfParameter, parameters, @return)
     {
     }

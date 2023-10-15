@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal class ConcreteMethodDeclaration : InvocableDeclaration, IConcreteMethodDeclaration
 {
-    public IClassDeclaration DeclaringClass { get; }
+    public ITypeDeclaration DeclaringType { get; }
     public new MethodSymbol Symbol { get; }
     public ISelfParameter SelfParameter { get; }
     public new FixedList<INamedParameter> Parameters { get; }
@@ -18,7 +18,7 @@ internal class ConcreteMethodDeclaration : InvocableDeclaration, IConcreteMethod
     public ConcreteMethodDeclaration(
         CodeFile file,
         TextSpan span,
-        IClassDeclaration declaringClass,
+        ITypeDeclaration declaringType,
         MethodSymbol symbol,
         TextSpan nameSpan,
         ISelfParameter selfParameter,
@@ -31,7 +31,7 @@ internal class ConcreteMethodDeclaration : InvocableDeclaration, IConcreteMethod
         Parameters = parameters;
         SelfParameter = selfParameter;
         Body = body;
-        DeclaringClass = declaringClass;
+        DeclaringType = declaringType;
     }
 
     public override string ToString()

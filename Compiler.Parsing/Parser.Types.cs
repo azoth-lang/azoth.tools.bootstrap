@@ -100,6 +100,9 @@ public partial class Parser
         return new SimpleTypeNameSyntax(identifier.Span, name);
     }
 
+    private FixedList<ITypeNameSyntax> ParseTypeNames()
+        => AcceptManySeparated<ITypeNameSyntax, ICommaToken>(ParseTypeName);
+
     private (FixedList<ITypeSyntax> Arguments, TextSpan Span)? AcceptGenericTypeArguments()
     {
         var openBracket = Tokens.AcceptToken<IOpenBracketToken>();

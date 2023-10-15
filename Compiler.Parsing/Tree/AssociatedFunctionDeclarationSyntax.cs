@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class AssociatedFunctionDeclarationSyntax : InvocableDeclarationSyntax, IAssociatedFunctionDeclarationSyntax
 {
-    public IClassDeclarationSyntax DeclaringClass { get; }
+    public ITypeDeclarationSyntax DeclaringType { get; }
     public new Name Name { get; }
     public new FixedList<INamedParameterSyntax> Parameters { get; }
     public IReturnSyntax? Return { get; }
@@ -18,7 +18,7 @@ internal class AssociatedFunctionDeclarationSyntax : InvocableDeclarationSyntax,
     public new AcyclicPromise<FunctionSymbol> Symbol { get; }
 
     public AssociatedFunctionDeclarationSyntax(
-        IClassDeclarationSyntax declaringClass,
+        ITypeDeclarationSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -29,7 +29,7 @@ internal class AssociatedFunctionDeclarationSyntax : InvocableDeclarationSyntax,
         IBodySyntax body)
         : base(span, file, accessModifier, nameSpan, name, parameters, new AcyclicPromise<FunctionSymbol>())
     {
-        DeclaringClass = declaringClass;
+        DeclaringType = declaringType;
         Name = name;
         Parameters = parameters;
         Body = body;

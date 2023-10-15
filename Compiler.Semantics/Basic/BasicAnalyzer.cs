@@ -88,7 +88,7 @@ public class BasicAnalyzer
             }
             case IAbstractMethodDeclarationSyntax method:
                 // has no body, so nothing to resolve
-                if (!method.DeclaringClass.IsAbstract)
+                if (method.DeclaringType is IClassDeclarationSyntax { IsAbstract: false })
                     diagnostics.Add(SemanticError.AbstractMethodNotInAbstractClass(method.File, method.Span, method.Name));
                 break;
             case IFieldDeclarationSyntax field:
@@ -105,8 +105,8 @@ public class BasicAnalyzer
                 resolver.ResolveTypes(constructor.Body);
                 break;
             }
-            case IClassDeclarationSyntax _:
-                // body of class is processed as separate items
+            case ITypeDeclarationSyntax _:
+                // body of type is processed as separate items
                 break;
         }
     }

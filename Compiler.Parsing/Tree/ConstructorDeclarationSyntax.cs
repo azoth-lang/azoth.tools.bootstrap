@@ -11,14 +11,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConstructorDeclarationSyntax
 {
-    public IClassDeclarationSyntax DeclaringClass { get; }
+    public IClassDeclarationSyntax DeclaringType { get; }
+    ITypeDeclarationSyntax IMemberDeclarationSyntax.DeclaringType => DeclaringType;
     public ISelfParameterSyntax SelfParameter { get; }
     public new FixedList<IConstructorParameterSyntax> Parameters { get; }
     public virtual IBodySyntax Body { get; }
     public new AcyclicPromise<ConstructorSymbol> Symbol { get; }
 
     public ConstructorDeclarationSyntax(
-        IClassDeclarationSyntax declaringType,
+        IClassDeclarationSyntax declaringClass,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -30,7 +31,7 @@ internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConst
         : base(span, file, accessModifier, nameSpan, name, parameters,
             new AcyclicPromise<ConstructorSymbol>())
     {
-        DeclaringClass = declaringType;
+        DeclaringType = declaringClass;
         SelfParameter = selfParameter;
         Parameters = parameters;
         Body = body;

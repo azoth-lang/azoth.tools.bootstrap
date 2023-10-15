@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IMethodDeclarationSyntax
 {
-    public IClassDeclarationSyntax DeclaringClass { get; }
+    public ITypeDeclarationSyntax DeclaringType { get; }
     public new Name Name { get; }
     public ISelfParameterSyntax SelfParameter { get; }
     public new FixedList<INamedParameterSyntax> Parameters { get; }
@@ -18,7 +18,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
     public new AcyclicPromise<MethodSymbol> Symbol { get; }
 
     protected MethodDeclarationSyntax(
-        IClassDeclarationSyntax declaringClass,
+        ITypeDeclarationSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -30,7 +30,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
         : base(span, file, accessModifier, nameSpan, name,
             parameters, new AcyclicPromise<MethodSymbol>())
     {
-        DeclaringClass = declaringClass;
+        DeclaringType = declaringType;
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters;

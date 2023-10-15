@@ -20,7 +20,7 @@ public partial class Parser
         var mutableBinding = Tokens.AcceptToken<IVarKeywordToken>();
         bool isMutableBinding = mutableBinding is not null;
         if (isLentBinding && isMutableBinding)
-            Add(ParseError.LentVarNotAllowed(File, TextSpan.Covering(lentBinding?.Span, mutableBinding?.Span)));
+            Add(ParseError.LentVarNotAllowed(File, TextSpan.Covering(lentBinding!.Span, mutableBinding!.Span)));
         var identifier = Tokens.RequiredToken<IIdentifierOrUnderscoreToken>();
         var name = identifier.Value;
         Tokens.Expect<IColonToken>();

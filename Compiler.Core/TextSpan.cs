@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
@@ -30,12 +31,44 @@ public readonly struct TextSpan : IEquatable<TextSpan>
     }
 
     [System.Diagnostics.Contracts.Pure]
-    public static TextSpan Covering(TextSpan x, TextSpan y)
-        => FromStartEnd(Math.Min(x.Start, y.Start), Math.Max(x.End, y.End));
+    public static TextSpan Covering(TextSpan left, TextSpan right)
+        => FromStartEnd(Math.Min(left.Start, right.Start), Math.Max(left.End, right.End));
+
+    [System.Diagnostics.Contracts.Pure]
+    public static TextSpan Covering(TextSpan left, TextSpan? right)
+    {
+        if (right is not TextSpan y) return left;
+
+        return Covering(left, y);
+    }
+
+    [System.Diagnostics.Contracts.Pure]
+    public static TextSpan Covering(TextSpan? left, TextSpan right)
+    {
+        if (left is not TextSpan x) return right;
+
+        return Covering(x, right);
+    }
+
+    [System.Diagnostics.Contracts.Pure]
+    public static TextSpan? Covering(TextSpan? left, TextSpan? right)
+    {
+        if (left is not TextSpan xNew)
+            return null;
+
+        if (right is not TextSpan yNew)
+            return xNew;
+
+        return Covering(xNew, yNew);
+    }
 
     [System.Diagnostics.Contracts.Pure]
     public static TextSpan Covering(params TextSpan?[] spans)
         => spans.Where(s => s is not null).Cast<TextSpan>().Aggregate(Covering);
+
+    [System.Diagnostics.Contracts.Pure]
+    public static TextSpan? Covering(IEnumerable<TextSpan> spans)
+        => spans.Aggregate(default(TextSpan?), (left, right) => Covering(left, right));
 
     /// <summary>
     /// Returns a zero length span that occurs at the start of the current span

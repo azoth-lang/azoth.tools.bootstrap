@@ -144,26 +144,40 @@ public partial interface INamespaceDeclarationSyntax : INonMemberDeclarationSynt
 }
 
 [Closed(
-    typeof(IClassDeclarationSyntax),
+    typeof(ITypeDeclarationSyntax),
     typeof(IFunctionDeclarationSyntax))]
 public partial interface INonMemberEntityDeclarationSyntax : IEntityDeclarationSyntax, INonMemberDeclarationSyntax
 {
     new Name Name { get; }
 }
 
-public partial interface IClassDeclarationSyntax : INonMemberEntityDeclarationSyntax
+[Closed(
+    typeof(IClassDeclarationSyntax),
+    typeof(ITraitDeclarationSyntax))]
+public partial interface ITypeDeclarationSyntax : INonMemberEntityDeclarationSyntax
 {
-    IAbstractKeywordToken? AbstractModifier { get; }
-    bool IsAbstract { get; }
     IConstKeywordToken? ConstModifier { get; }
     bool IsConst { get; }
     IMoveKeywordToken? MoveModifier { get; }
     bool IsMove { get; }
     FixedList<IGenericParameterSyntax> GenericParameters { get; }
     new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
-    ITypeNameSyntax? BaseType { get; }
+    FixedList<ITypeNameSyntax> SuperTypes { get; }
     FixedList<IMemberDeclarationSyntax> Members { get; }
+}
+
+public partial interface IClassDeclarationSyntax : ITypeDeclarationSyntax
+{
+    IAbstractKeywordToken? AbstractModifier { get; }
+    bool IsAbstract { get; }
+    ITypeNameSyntax? BaseType { get; }
+    new FixedList<IClassMemberDeclarationSyntax> Members { get; }
     ConstructorSymbol? DefaultConstructorSymbol { get; }
+}
+
+public partial interface ITraitDeclarationSyntax : ITypeDeclarationSyntax
+{
+    new FixedList<ITraitMemberDeclarationSyntax> Members { get; }
 }
 
 public partial interface IFunctionDeclarationSyntax : INonMemberEntityDeclarationSyntax, IConcreteInvocableDeclarationSyntax
@@ -175,19 +189,33 @@ public partial interface IFunctionDeclarationSyntax : INonMemberEntityDeclaratio
 }
 
 [Closed(
+    typeof(IClassMemberDeclarationSyntax),
+    typeof(ITraitMemberDeclarationSyntax))]
+public partial interface IMemberDeclarationSyntax : IEntityDeclarationSyntax
+{
+    ITypeDeclarationSyntax DeclaringType { get; }
+}
+
+[Closed(
     typeof(IMethodDeclarationSyntax),
     typeof(IConstructorDeclarationSyntax),
     typeof(IFieldDeclarationSyntax),
     typeof(IAssociatedFunctionDeclarationSyntax))]
-public partial interface IMemberDeclarationSyntax : IEntityDeclarationSyntax
+public partial interface IClassMemberDeclarationSyntax : IMemberDeclarationSyntax
 {
-    IClassDeclarationSyntax DeclaringClass { get; }
+}
+
+[Closed(
+    typeof(IMethodDeclarationSyntax),
+    typeof(IAssociatedFunctionDeclarationSyntax))]
+public partial interface ITraitMemberDeclarationSyntax : IMemberDeclarationSyntax
+{
 }
 
 [Closed(
     typeof(IAbstractMethodDeclarationSyntax),
     typeof(IConcreteMethodDeclarationSyntax))]
-public partial interface IMethodDeclarationSyntax : IMemberDeclarationSyntax, IInvocableDeclarationSyntax
+public partial interface IMethodDeclarationSyntax : IClassMemberDeclarationSyntax, ITraitMemberDeclarationSyntax, IInvocableDeclarationSyntax
 {
     new Name Name { get; }
     ISelfParameterSyntax SelfParameter { get; }
@@ -205,21 +233,23 @@ public partial interface IConcreteMethodDeclarationSyntax : IMethodDeclarationSy
     new FixedList<INamedParameterSyntax> Parameters { get; }
 }
 
-public partial interface IConstructorDeclarationSyntax : IMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
+public partial interface IConstructorDeclarationSyntax : IClassMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
 {
+    new IClassDeclarationSyntax DeclaringType { get; }
     ISelfParameterSyntax SelfParameter { get; }
     new AcyclicPromise<ConstructorSymbol> Symbol { get; }
 }
 
-public partial interface IFieldDeclarationSyntax : IMemberDeclarationSyntax, IBindingSyntax
+public partial interface IFieldDeclarationSyntax : IClassMemberDeclarationSyntax, IBindingSyntax
 {
+    new IClassDeclarationSyntax DeclaringType { get; }
     new Name Name { get; }
     ITypeSyntax Type { get; }
     new AcyclicPromise<FieldSymbol> Symbol { get; }
     IExpressionSyntax? Initializer { get; }
 }
 
-public partial interface IAssociatedFunctionDeclarationSyntax : IMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
+public partial interface IAssociatedFunctionDeclarationSyntax : IClassMemberDeclarationSyntax, ITraitMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
 {
     new Name Name { get; }
     new FixedList<INamedParameterSyntax> Parameters { get; }

@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal class AssociatedFunctionDeclaration : InvocableDeclaration, IAssociatedFunctionDeclaration
 {
-    public IClassDeclaration DeclaringClass { get; }
+    public ITypeDeclaration DeclaringType { get; }
     public new FunctionSymbol Symbol { get; }
     public new FixedList<INamedParameter> Parameters { get; }
     public IBody Body { get; }
@@ -16,7 +16,7 @@ internal class AssociatedFunctionDeclaration : InvocableDeclaration, IAssociated
     public AssociatedFunctionDeclaration(
         CodeFile file,
         TextSpan span,
-        IClassDeclaration declaringClass,
+        ITypeDeclaration declaringType,
         FunctionSymbol symbol,
         TextSpan nameSpan,
         FixedList<INamedParameter> parameters,
@@ -26,7 +26,7 @@ internal class AssociatedFunctionDeclaration : InvocableDeclaration, IAssociated
         Symbol = symbol;
         Parameters = parameters;
         Body = body;
-        DeclaringClass = declaringClass;
+        DeclaringType = declaringType;
     }
 
     public override string ToString()

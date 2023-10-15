@@ -45,8 +45,8 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<BindingFlags>
                 var selfParameterSymbol = method.SelfParameter.Symbol;
                 definitelyUnassigned = definitelyUnassigned.Set(selfParameterSymbol, false);
                 // fields are assigned
-                var classSymbol = method.DeclaringClass.Symbol;
-                var fieldSymbols = symbolTree.Children(classSymbol).OfType<FieldSymbol>();
+                var typeSymbol = method.DeclaringType.Symbol;
+                var fieldSymbols = symbolTree.Children(typeSymbol).OfType<FieldSymbol>();
                 definitelyUnassigned = definitelyUnassigned.Set(fieldSymbols, false);
             }
             if (invocable is IConstructorDeclaration constructor)

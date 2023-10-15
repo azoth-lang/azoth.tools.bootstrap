@@ -35,6 +35,7 @@ internal class ASTBuilder
         return entity switch
         {
             IClassDeclarationSyntax syn => BuildClass(syn),
+            ITraitDeclarationSyntax syn => BuildTrait(syn),
             IFunctionDeclarationSyntax syn => BuildFunction(syn),
             _ => throw ExhaustiveMatch.Failed(entity)
         };
@@ -47,11 +48,21 @@ internal class ASTBuilder
         var defaultConstructorSymbol = syn.DefaultConstructorSymbol;
         return new ClassDeclaration(syn.File, syn.Span, symbol, nameSpan, defaultConstructorSymbol, BuildMembers);
 
-        FixedList<IMemberDeclaration> BuildMembers(IClassDeclaration c)
-            => syn.Members.Select(m => BuildMember(c, m)).ToFixedList();
+        FixedList<IClassMemberDeclaration> BuildMembers(IClassDeclaration c)
+            => syn.Members.Select(m => BuildClassMember(c, m)).ToFixedList();
     }
 
-    private static IMemberDeclaration BuildMember(
+    private static ITraitDeclaration BuildTrait(ITraitDeclarationSyntax syn)
+    {
+        var symbol = syn.Symbol.Result;
+        var nameSpan = syn.NameSpan;
+        return new TraitDeclaration(syn.File, syn.Span, symbol, nameSpan, BuildMembers);
+
+        FixedList<ITraitMemberDeclaration> BuildMembers(ITraitDeclaration t)
+            => syn.Members.Select(m => BuildTraitMember(t, m)).ToFixedList();
+    }
+
+    private static IClassMemberDeclaration BuildClassMember(
         IClassDeclaration declaringClass,
         IMemberDeclarationSyntax member)
     {
@@ -66,30 +77,43 @@ internal class ASTBuilder
         };
     }
 
+    private static ITraitMemberDeclaration BuildTraitMember(
+        ITraitDeclaration declaringTrait,
+        ITraitMemberDeclarationSyntax member)
+    {
+        return member switch
+        {
+            IAssociatedFunctionDeclarationSyntax syn => BuildAssociatedFunction(declaringTrait, syn),
+            IAbstractMethodDeclarationSyntax syn => BuildAbstractMethod(declaringTrait, syn),
+            IConcreteMethodDeclarationSyntax syn => BuildConcreteMethod(declaringTrait, syn),
+            _ => throw ExhaustiveMatch.Failed(member)
+        };
+    }
+
     private static IAssociatedFunctionDeclaration BuildAssociatedFunction(
-        IClassDeclaration declaringClass,
+        ITypeDeclaration declaringType,
         IAssociatedFunctionDeclarationSyntax syn)
     {
         var symbol = syn.Symbol.Result;
         var nameSpan = syn.NameSpan;
         var parameters = syn.Parameters.Select(BuildParameter).ToFixedList();
         var body = BuildBody(syn.Body);
-        return new AssociatedFunctionDeclaration(syn.File, syn.Span, declaringClass, symbol, nameSpan, parameters, body);
+        return new AssociatedFunctionDeclaration(syn.File, syn.Span, declaringType, symbol, nameSpan, parameters, body);
     }
 
     private static IAbstractMethodDeclaration BuildAbstractMethod(
-        IClassDeclaration declaringClass,
+        ITypeDeclaration declaringType,
         IAbstractMethodDeclarationSyntax syn)
     {
         var symbol = syn.Symbol.Result;
         var nameSpan = syn.NameSpan;
         var selfParameter = BuildParameter(syn.SelfParameter);
         var parameters = syn.Parameters.Select(BuildParameter).ToFixedList();
-        return new AbstractMethodDeclaration(syn.File, syn.Span, declaringClass, symbol, nameSpan, selfParameter, parameters);
+        return new AbstractMethodDeclaration(syn.File, syn.Span, declaringType, symbol, nameSpan, selfParameter, parameters);
     }
 
     private static IConcreteMethodDeclaration BuildConcreteMethod(
-        IClassDeclaration declaringClass,
+        ITypeDeclaration declaringType,
         IConcreteMethodDeclarationSyntax syn)
     {
         var symbol = syn.Symbol.Result;
@@ -97,7 +121,7 @@ internal class ASTBuilder
         var selfParameter = BuildParameter(syn.SelfParameter);
         var parameters = syn.Parameters.Select(BuildParameter).ToFixedList();
         var body = BuildBody(syn.Body);
-        return new ConcreteMethodDeclaration(syn.File, syn.Span, declaringClass, symbol, nameSpan, selfParameter, parameters, body);
+        return new ConcreteMethodDeclaration(syn.File, syn.Span, declaringType, symbol, nameSpan, selfParameter, parameters, body);
     }
 
     private static IConstructorDeclaration BuildConstructor(

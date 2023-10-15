@@ -64,6 +64,7 @@ public static partial class TokenTypes
         typeof(AndKeywordToken),
         typeof(OrKeywordToken),
         typeof(NotKeywordToken),
+        typeof(TraitKeywordToken),
     }.AsReadOnly();
 }
 
@@ -234,6 +235,9 @@ public static partial class TokenFactory
     public static INotKeywordToken NotKeyword(TextSpan span)
         => new NotKeywordToken(span);
 
+    public static ITraitKeywordToken TraitKeyword(TextSpan span)
+        => new TraitKeywordToken(span);
+
 }
 
 [Closed(
@@ -291,7 +295,8 @@ public static partial class TokenFactory
     typeof(IAsQuestionKeywordToken),
     typeof(IAndKeywordToken),
     typeof(IOrKeywordToken),
-    typeof(INotKeywordToken))]
+    typeof(INotKeywordToken),
+    typeof(ITraitKeywordToken))]
 public partial interface IKeywordToken : IToken { }
 
 
@@ -785,6 +790,15 @@ public partial interface INotKeywordToken : IKeywordToken { }
 internal partial class NotKeywordToken : Token, INotKeywordToken
 {
     public NotKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface ITraitKeywordToken : IKeywordToken { }
+internal partial class TraitKeywordToken : Token, ITraitKeywordToken
+{
+    public TraitKeywordToken(TextSpan span)
         : base(span)
     {
     }

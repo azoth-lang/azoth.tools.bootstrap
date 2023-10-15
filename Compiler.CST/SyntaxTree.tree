@@ -41,18 +41,22 @@ NamespaceDeclaration: NonMemberDeclaration = IsGlobalQualified:'bool' DeclaredNa
 
 // ---------- Non-Member Entity Declarations
 NonMemberEntityDeclaration: EntityDeclaration, NonMemberDeclaration = Name:'Name';
-ClassDeclaration: NonMemberEntityDeclaration = AbstractModifier:'IAbstractKeywordToken'? IsAbstract:'bool' ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'Name' GenericParameters:GenericParameter* Symbol:'AcyclicPromise<ObjectTypeSymbol>' BaseType:TypeName? Members:MemberDeclaration* DefaultConstructorSymbol:'ConstructorSymbol'?;
+TypeDeclaration: NonMemberEntityDeclaration = ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'Name' GenericParameters:GenericParameter* Symbol:'AcyclicPromise<ObjectTypeSymbol>' SuperTypes:TypeName* Members:MemberDeclaration*;
+ClassDeclaration: TypeDeclaration = AbstractModifier:'IAbstractKeywordToken'? IsAbstract:'bool' ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'Name' GenericParameters:GenericParameter* Symbol:'AcyclicPromise<ObjectTypeSymbol>' BaseType:TypeName? Members:ClassMemberDeclaration* SuperTypes:TypeName* DefaultConstructorSymbol:'ConstructorSymbol'?;
+TraitDeclaration: TypeDeclaration = ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'Name' GenericParameters:GenericParameter* Symbol:'AcyclicPromise<ObjectTypeSymbol>' SuperTypes:TypeName* Members:TraitMemberDeclaration*;
 FunctionDeclaration: NonMemberEntityDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
 // ---------- Member Declarations
-// Note: by declaring the DeclaringClass property type with quotes, it avoids the system assuming it must represent a child syntax node
-MemberDeclaration: EntityDeclaration = DeclaringClass:'IClassDeclarationSyntax';
-MethodDeclaration: MemberDeclaration, InvocableDeclaration = Name:'Name' SelfParameter Parameters:NamedParameter* Return? Symbol:'AcyclicPromise<MethodSymbol>';
+// Note: by declaring the DeclaringType property type with quotes, it avoids the system assuming it must represent a child syntax node
+MemberDeclaration: EntityDeclaration = DeclaringType:'ITypeDeclarationSyntax';
+ClassMemberDeclaration: MemberDeclaration;
+TraitMemberDeclaration: MemberDeclaration;
+MethodDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration = Name:'Name' SelfParameter Parameters:NamedParameter* Return? Symbol:'AcyclicPromise<MethodSymbol>';
 AbstractMethodDeclaration: MethodDeclaration = SelfParameter Parameters:NamedParameter* Return?;
 ConcreteMethodDeclaration: MethodDeclaration, ConcreteInvocableDeclaration = SelfParameter Parameters:NamedParameter* Return? Body;
-ConstructorDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = SelfParameter Parameters:ConstructorParameter* Body Symbol:'AcyclicPromise<ConstructorSymbol>';
-FieldDeclaration: MemberDeclaration, Binding = Name:'Name' Type Symbol:'AcyclicPromise<FieldSymbol>' Initializer:Expression?;
-AssociatedFunctionDeclaration: MemberDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
+ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclarationSyntax' SelfParameter Parameters:ConstructorParameter* Body Symbol:'AcyclicPromise<ConstructorSymbol>';
+FieldDeclaration: ClassMemberDeclaration, Binding = DeclaringType:'IClassDeclarationSyntax' Name:'Name' Type Symbol:'AcyclicPromise<FieldSymbol>' Initializer:Expression?;
+AssociatedFunctionDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, ConcreteInvocableDeclaration = Name:'Name' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
 // ---------- Type Parameters --------------
 GenericParameter = Name:'Name' Symbol:'Promise<GenericParameterTypeSymbol>';

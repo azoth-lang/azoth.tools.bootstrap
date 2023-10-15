@@ -23,21 +23,9 @@ internal abstract class TypeSyntax : Syntax, ITypeSyntax
         }
     }
 
-    /// <summary>
-    /// If an type has been poisoned, then it is errored in some way
-    /// and we won't report errors against it in the future. We may also
-    /// skip it for some processing.
-    /// </summary>
-    public bool Poisoned { get; private set; }
-
     protected TypeSyntax(TextSpan span)
         : base(span)
     {
-    }
-
-    public void Poison()
-    {
-        Poisoned = true;
     }
 
     // Useful for debugging
