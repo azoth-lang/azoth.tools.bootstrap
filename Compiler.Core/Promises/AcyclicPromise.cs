@@ -85,19 +85,13 @@ public class AcyclicPromise<T> : IPromise<T>
     // Useful for debugging
     public override string ToString()
     {
-        switch (state)
+        return state switch
         {
-            default:
-#pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
-                throw ExhaustiveMatch.Failed(state);
-#pragma warning restore CA1065 // Do not raise exceptions in unexpected locations
-            case PromiseState.Pending:
-                return "⧼pending⧽";
-            case PromiseState.InProgress:
-                return "⧼in progress⧽";
-            case PromiseState.Fulfilled:
-                return value?.ToString() ?? "⧼null⧽";
-        }
+            PromiseState.Pending => "⧼pending⧽",
+            PromiseState.InProgress => "⧼in progress⧽",
+            PromiseState.Fulfilled => value?.ToString() ?? "⧼null⧽",
+            _ => throw ExhaustiveMatch.Failed(state)
+        };
     }
 }
 
