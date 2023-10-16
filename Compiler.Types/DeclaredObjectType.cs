@@ -13,57 +13,72 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     public static DeclaredObjectType Create(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
-        string name,
-        bool isConst)
-        => new(containingPackage, containingNamespace, name, isConst, FixedList<GenericParameterType>.Empty, FixedSet<DeclaredObjectType>.Empty);
+        bool isAbstract,
+        bool isConst,
+        bool isClass,
+        string name)
+        => new(containingPackage, containingNamespace, isAbstract, isConst, isClass, name,
+            FixedList<GenericParameterType>.Empty, FixedSet<DeclaredObjectType>.Empty);
 
     public static DeclaredObjectType Create(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
-        string name,
+        bool isAbstract,
         bool isConst,
+        bool isClass,
+        string name,
         FixedList<GenericParameterType> genericParameterTypes,
         FixedSet<DeclaredObjectType> superTypes)
-        => new(containingPackage, containingNamespace, StandardTypeName.Create(name, genericParameterTypes.Count), isConst, genericParameterTypes, superTypes);
+        => new(containingPackage, containingNamespace, isAbstract, isConst, isClass,
+            StandardTypeName.Create(name, genericParameterTypes.Count), genericParameterTypes, superTypes);
 
     public static DeclaredObjectType Create(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
-        StandardTypeName name,
+        bool isAbstract,
         bool isConst,
+        bool isClass,
+        StandardTypeName name,
         FixedList<GenericParameterType> genericParametersTypes,
         FixedSet<DeclaredObjectType> superTypes)
     {
         Requires.That(nameof(genericParametersTypes), name.GenericParameterCount == genericParametersTypes.Count, "Count must match name count");
-        return new(containingPackage, containingNamespace, name, isConst, genericParametersTypes, superTypes);
+        return new(containingPackage, containingNamespace, isAbstract, isConst, isClass, name,
+            genericParametersTypes, superTypes);
     }
-
 
     public static DeclaredObjectType Create(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
-        string name,
+        bool isAbstract,
         bool isConst,
+        bool isClass,
+        string name,
         params GenericParameter[] genericParameters)
     {
         var declaringTypePromise = new Promise<DeclaredObjectType>();
         var genericParametersTypes = genericParameters.Select(p => new GenericParameterType(declaringTypePromise, p)).ToFixedList();
-        return new(containingPackage, containingNamespace, StandardTypeName.Create(name, genericParameters.Length),
-            isConst, genericParametersTypes, FixedSet<DeclaredObjectType>.Empty);
+        return new(containingPackage, containingNamespace, isAbstract, isConst, isClass,
+            StandardTypeName.Create(name, genericParameters.Length), genericParametersTypes,
+            FixedSet<DeclaredObjectType>.Empty);
     }
 
     private DeclaredObjectType(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
-        StandardTypeName name,
+        bool isAbstract,
         bool isConst,
+        bool isClass,
+        StandardTypeName name,
         FixedList<GenericParameterType> genericParametersTypes,
         FixedSet<DeclaredObjectType> superTypes)
+        : base(isAbstract)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
-        Name = name;
         IsConst = isConst;
+        IsClass = isClass;
+        Name = name;
         GenericParameters = genericParametersTypes.Select(t => t.Parameter).ToFixedList();
         GenericParameterTypes = genericParametersTypes;
         GenericParameterDataTypes = GenericParameterTypes.ToFixedList<DataType>();
@@ -86,6 +101,11 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// const.
     /// </summary>
     public bool IsConst { get; }
+
+    /// <summary>
+    /// Whether this type is a `class` (as opposed to a `trait`)
+    /// </summary>
+    public bool IsClass { get; }
 
     public FixedList<GenericParameter> GenericParameters { get; }
 
@@ -172,13 +192,14 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         return other is DeclaredObjectType objectType
             && ContainingPackage == objectType.ContainingPackage
             && ContainingNamespace == objectType.ContainingNamespace
-            && Name == objectType.Name
+            && IsAbstract == objectType.IsAbstract
             && IsConst == objectType.IsConst
+            && Name == objectType.Name
             && GenericParameters.Equals(objectType.GenericParameters);
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingPackage, ContainingNamespace, Name, IsConst, GenericParameters);
+        => HashCode.Combine(ContainingPackage, ContainingNamespace, IsAbstract, IsConst, Name, GenericParameters);
     #endregion
 
     public override string ToString()

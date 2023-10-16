@@ -41,9 +41,12 @@ public sealed class ObjectType : ReferenceType
         ReferenceCapability capability,
         SimpleName containingPackage,
         NamespaceName containingNamespace,
-        string name,
-        bool isConst)
-        => new(capability, DeclaredObjectType.Create(containingPackage, containingNamespace, name, isConst), FixedList<DataType>.Empty);
+        bool isAbstract,
+        bool isConst,
+        bool isClass,
+        string name)
+        => new(capability, DeclaredObjectType.Create(containingPackage, containingNamespace,
+            isAbstract, isConst, isClass, name), FixedList<DataType>.Empty);
 
     /// <summary>
     /// Create a object type for a given class or trait.

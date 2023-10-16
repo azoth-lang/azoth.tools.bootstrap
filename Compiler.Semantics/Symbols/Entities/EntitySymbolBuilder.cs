@@ -177,7 +177,7 @@ public class EntitySymbolBuilder
 
         var superTypes = EvaluateSupertypes(@class, typeDeclarations).ToFixedSet();
         var classType = DeclaredObjectType.Create(packageName, @class.ContainingNamespaceName,
-            @class.Name, @class.IsConst, typeParameters, superTypes);
+            @class.IsAbstract, @class.IsConst, isClass: true, @class.Name, typeParameters, superTypes);
 
         var classSymbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(classSymbol);
@@ -203,7 +203,7 @@ public class EntitySymbolBuilder
 
         var superTypes = EvaluateSupertypes(trait, typeDeclarations).ToFixedSet();
         var traitType = DeclaredObjectType.Create(packageName, trait.ContainingNamespaceName,
-            trait.Name, trait.IsConst, typeParameters, superTypes);
+            isAbstract: true, trait.IsConst, isClass: false, trait.Name, typeParameters, superTypes);
 
         var traitSymbol = new ObjectTypeSymbol(trait.ContainingNamespaceSymbol, traitType);
         trait.Symbol.Fulfill(traitSymbol);
@@ -245,14 +245,18 @@ public class EntitySymbolBuilder
         // TODO error for duplicates
 
         var resolver = new TypeResolver(syn.File, diagnostics, typeDeclarations);
-        if (syn is IClassDeclarationSyntax { BaseTypeName: not null and var baseTypeSyntax })
+        if (syn is IClassDeclarationSyntax { BaseTypeName: not null and var baseTypeName })
         {
-            var baseType = resolver.EvaluateBareType(baseTypeSyntax);
+            var baseType = resolver.EvaluateBareType(baseTypeName);
             if (baseType is ObjectType { DeclaredType: var declaredType })
-                yield
-            return declaredType;
+            {
+                if (!declaredType.IsClass)
+                    diagnostics.Add(TypeError.BaseTypeMustBeClass(syn.File, syn.Name, baseTypeName));
+
+                yield return declaredType;
+            }
             else
-                diagnostics.Add(TypeError.BaseTypeMustBeClass(syn.File, syn.Name, baseTypeSyntax));
+                diagnostics.Add(TypeError.BaseTypeMustBeClass(syn.File, syn.Name, baseTypeName));
         }
 
         foreach (var superTypeSyntax in syn.SupertypeNames)
@@ -261,7 +265,7 @@ public class EntitySymbolBuilder
             if (superType is ObjectType { DeclaredType: var declaredType })
                 yield return declaredType;
             else
-                diagnostics.Add(TypeError.BaseTypeMustBeClass(syn.File, syn.Name, superTypeSyntax));
+                diagnostics.Add(TypeError.SuperTypeMustBeClassOrTrait(syn.File, syn.Name, superTypeSyntax));
         }
     }
 
@@ -429,6 +433,8 @@ public class EntitySymbolBuilder
             symbolBuilder.BuildTypeSymbol(typeDeclaration, this);
             return promise.Result;
         }
+
+        public ITypeDeclarationSyntax this[IPromise<TypeSymbol> symbol] => typeDeclarations[symbol];
 
         #region IEnumerable<ITypeDeclarationSyntax>
         public IEnumerator<ITypeDeclarationSyntax> GetEnumerator() => typeDeclarations.Values.GetEnumerator();

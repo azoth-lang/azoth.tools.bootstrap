@@ -94,7 +94,8 @@ public static class Intrinsic
 
     private static DeclaredObjectType BuildRawBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
     {
-        var classType = DeclaredObjectType.Create(@namespace.Package!.Name, @namespace.NamespaceName, "Raw_Bounded_List", false, "T");
+        var classType = DeclaredObjectType.Create(@namespace.Package!.Name, @namespace.NamespaceName,
+            isAbstract: false, isConst: false, isClass: true, "Raw_Bounded_List", "T");
         var readClassParamType = new ParameterType(false, classType.WithRead(classType.GenericParameterDataTypes));
         var mutClassType = classType.WithMutate(classType.GenericParameterDataTypes);
         var mutClassParamType = new ParameterType(false, mutClassType);

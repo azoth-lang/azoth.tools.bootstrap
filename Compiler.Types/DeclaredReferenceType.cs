@@ -19,7 +19,14 @@ public abstract class DeclaredReferenceType : IEquatable<DeclaredReferenceType>
 
     public abstract NamespaceName ContainingNamespace { get; }
 
+    public bool IsAbstract { get; }
+
     public abstract Name Name { get; }
+
+    protected DeclaredReferenceType(bool isAbstract)
+    {
+        IsAbstract = isAbstract;
+    }
 
     public abstract ReferenceType With(ReferenceCapability capability, FixedList<DataType> typeArguments);
 

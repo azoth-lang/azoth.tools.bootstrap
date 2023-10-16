@@ -715,6 +715,15 @@ public class BasicBodyAnalyzer
                     return new ExpressionResult(exp, resultVariable);
                 }
 
+                if (constructingType is ObjectType { DeclaredType.IsAbstract: true })
+                {
+                    diagnostics.Add(TypeError.CannotConstructAbstractType(file, exp.Type));
+                    exp.ReferencedSymbol.Fulfill(null);
+                    exp.DataType = DataType.Unknown;
+                    resultVariable = CombineResults(arguments, flow);
+                    return new ExpressionResult(exp, resultVariable);
+                }
+
                 var typeSymbol = exp.Type.ReferencedSymbol.Result ?? throw new NotImplementedException();
                 DataType constructedType;
                 var constructorSymbols = symbolTrees.Children(typeSymbol).OfType<ConstructorSymbol>().ToFixedSet();

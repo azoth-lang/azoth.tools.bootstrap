@@ -20,7 +20,8 @@ public class SymbolTests : SymbolTestFixture
     public void Symbol_in_namespace_is_not_global()
     {
         var ns = Namespace();
-        var type = DeclaredObjectType.Create(ns.Package!.Name, ns.Name, "My_Class", false);
+        var type = DeclaredObjectType.Create(ns.Package!.Name, ns.Name, isAbstract: false,
+            isConst: false, isClass: true, "My_Class");
         var symbol = new ObjectTypeSymbol(ns, type);
 
         Assert.False(symbol.IsGlobal);

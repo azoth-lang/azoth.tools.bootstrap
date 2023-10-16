@@ -10,7 +10,7 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
     #region Singleton
     internal static readonly DeclaredAnyType Instance = new();
 
-    private DeclaredAnyType() { }
+    private DeclaredAnyType() : base(true) { }
     #endregion
 
     public override SimpleName? ContainingPackage => null;

@@ -101,8 +101,10 @@ public abstract class SymbolTestFixture
             referenceCapability ?? ReferenceCapability.Constant,
             containingPackage ?? DefaultName("package"),
             containingNamespace ?? NamespaceName.Global,
-            finalName.Text,
-            isConst ?? false);
+            isAbstract: false,
+            isConst ?? false,
+            isClass: true,
+            finalName.Text);
     }
 
     protected ReturnType ReturnType(
