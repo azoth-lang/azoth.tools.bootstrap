@@ -216,7 +216,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         builder.Append(">::");
         builder.Append(ContainingNamespace);
         if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
-        builder.Append(Name);
+        builder.Append(Name.ToBareString());
         if (!GenericParameters.Any()) return;
 
         builder.Append('[');

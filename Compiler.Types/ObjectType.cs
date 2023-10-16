@@ -146,7 +146,7 @@ public sealed class ObjectType : ReferenceType
     {
         builder.Append(ContainingNamespace);
         if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
-        builder.Append(Name);
+        builder.Append(Name.ToBareString());
         if (!TypeArguments.Any()) return;
         builder.Append('[');
         builder.AppendJoin(", ", TypeArguments.Select(toString));

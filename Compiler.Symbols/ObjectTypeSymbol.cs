@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -10,6 +11,7 @@ public sealed class ObjectTypeSymbol : TypeSymbol
 {
     public override PackageSymbol Package { get; }
     public override NamespaceOrPackageSymbol ContainingSymbol { get; }
+    public override StandardTypeName Name { get; }
     public DeclaredObjectType DeclaresType { get; }
 
     public ObjectTypeSymbol(
@@ -20,6 +22,7 @@ public sealed class ObjectTypeSymbol : TypeSymbol
         // TODO check the declared type is in the containing namespace and package
         Package = containingSymbol.Package;
         ContainingSymbol = containingSymbol;
+        Name = declaresType.Name;
         DeclaresType = declaresType;
     }
 
@@ -41,7 +44,7 @@ public sealed class ObjectTypeSymbol : TypeSymbol
     public override string ToILString()
     {
         var genericParametersCount = DeclaresType.GenericParameters.Count;
-        var value = $"{ContainingSymbol.ToILString()}.{Name}";
+        var value = $"{ContainingSymbol.ToILString()}.{Name.ToBareString()}";
         if (genericParametersCount > 0)
             value += $"[{new string(',', genericParametersCount - 1)}]";
         return value;
