@@ -165,15 +165,15 @@ public partial class Parser
         var name = identifier.Value;
         var generic = AcceptGenericParameters();
         var genericParameters = generic?.Parameters ?? FixedList<IGenericParameterSyntax>.Empty;
-        ITypeNameSyntax? baseType = null;
-        if (Tokens.Accept<IColonToken>()) baseType = ParseTypeName();
+        ITypeNameSyntax? baseClass = null;
+        if (Tokens.Accept<IColonToken>()) baseClass = ParseTypeName();
         var superTypes = ParseSuperTypes();
-        var headerSpan = TextSpan.Covering(classKeywordSpan, identifier.Span, generic?.Span, baseType?.Span,
+        var headerSpan = TextSpan.Covering(classKeywordSpan, identifier.Span, generic?.Span, baseClass?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)));
         var bodyParser = BodyParser();
         return new ClassDeclarationSyntax(ContainingNamespace, headerSpan, File, accessModifier,
             abstractModifier, constModifier, moveModifier, identifier.Span, name, genericParameters,
-            baseType, superTypes, bodyParser.ParseClassBody);
+            baseClass, superTypes, bodyParser.ParseClassBody);
     }
 
     private (FixedList<IGenericParameterSyntax> Parameters, TextSpan Span)? AcceptGenericParameters()

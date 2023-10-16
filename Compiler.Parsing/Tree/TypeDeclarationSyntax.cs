@@ -21,7 +21,7 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
     public new StandardTypeName Name { get; }
     public FixedList<IGenericParameterSyntax> GenericParameters { get; }
     public new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
-    public FixedList<ITypeNameSyntax> SuperTypes { get; }
+    public FixedList<ITypeNameSyntax> SupertypeNames { get; }
     public abstract FixedList<TMember> Members { get; }
     FixedList<IMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => members.Value;
     private readonly Lazy<FixedList<IMemberDeclarationSyntax>> members;
@@ -36,7 +36,7 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
         TextSpan nameSpan,
         StandardTypeName name,
         FixedList<IGenericParameterSyntax> genericParameters,
-        FixedList<ITypeNameSyntax> superTypes)
+        FixedList<ITypeNameSyntax> supertypeNames)
         : base(containingNamespaceName, headerSpan, file, name, nameSpan, new AcyclicPromise<ObjectTypeSymbol>())
     {
         AccessModifier = accessModifier;
@@ -46,7 +46,7 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
         IsMove = MoveModifier is not null;
         Name = name;
         GenericParameters = genericParameters;
-        SuperTypes = superTypes;
+        SupertypeNames = supertypeNames;
         Symbol = (AcyclicPromise<ObjectTypeSymbol>)base.Symbol;
         // TODO not sure why SafeCast doesn't work here
         members = new(() => Members.Cast<IMemberDeclarationSyntax>().ToFixedList());

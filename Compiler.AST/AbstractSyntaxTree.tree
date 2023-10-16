@@ -32,9 +32,9 @@ ConcreteFunctionInvocableDeclaration: ConcreteInvocableDeclaration = Symbol:'Fun
 
 // ---------- Non-Member Declarations
 NonMemberDeclaration: Declaration;
-TypeDeclaration: NonMemberDeclaration = Symbol:'ObjectTypeSymbol' Members:MemberDeclaration*;
-ClassDeclaration: TypeDeclaration = Symbol:'ObjectTypeSymbol' Members:ClassMemberDeclaration* DefaultConstructorSymbol:'ConstructorSymbol'?;
-TraitDeclaration: TypeDeclaration = Symbol:'ObjectTypeSymbol' Members:TraitMemberDeclaration*;
+TypeDeclaration: NonMemberDeclaration = Symbol:'ObjectTypeSymbol' Supertypes:TypeDeclaration* Members:MemberDeclaration*;
+ClassDeclaration: TypeDeclaration = BaseClass:ClassDeclaration? Supertypes:TypeDeclaration* Members:ClassMemberDeclaration* DefaultConstructorSymbol:'ConstructorSymbol'?;
+TraitDeclaration: TypeDeclaration = Supertypes:TypeDeclaration* Members:TraitMemberDeclaration*;
 FunctionDeclaration: NonMemberDeclaration, ConcreteFunctionInvocableDeclaration = Symbol:'FunctionSymbol' Parameters:NamedParameter* Body;
 
 // ---------- Member Declarations

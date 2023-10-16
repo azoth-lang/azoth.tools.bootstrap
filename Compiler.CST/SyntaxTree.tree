@@ -41,9 +41,9 @@ NamespaceDeclaration: NonMemberDeclaration = IsGlobalQualified:'bool' DeclaredNa
 
 // ---------- Non-Member Entity Declarations
 NonMemberEntityDeclaration: EntityDeclaration, NonMemberDeclaration = Name:'Name';
-TypeDeclaration: NonMemberEntityDeclaration = ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'StandardTypeName' GenericParameters:GenericParameter* Symbol:'AcyclicPromise<ObjectTypeSymbol>' SuperTypes:TypeName* Members:MemberDeclaration*;
-ClassDeclaration: TypeDeclaration = AbstractModifier:'IAbstractKeywordToken'? IsAbstract:'bool' GenericParameters:GenericParameter* BaseType:TypeName? Members:ClassMemberDeclaration* SuperTypes:TypeName* DefaultConstructorSymbol:'ConstructorSymbol'?;
-TraitDeclaration: TypeDeclaration = GenericParameters:GenericParameter* SuperTypes:TypeName* Members:TraitMemberDeclaration*;
+TypeDeclaration: NonMemberEntityDeclaration = ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'StandardTypeName' GenericParameters:GenericParameter* Symbol:'AcyclicPromise<ObjectTypeSymbol>' SupertypeNames:TypeName* Members:MemberDeclaration*;
+ClassDeclaration: TypeDeclaration = AbstractModifier:'IAbstractKeywordToken'? IsAbstract:'bool' GenericParameters:GenericParameter* BaseTypeName:TypeName? Members:ClassMemberDeclaration* SupertypeNames:TypeName* DefaultConstructorSymbol:'ConstructorSymbol'?;
+TraitDeclaration: TypeDeclaration = GenericParameters:GenericParameter* SupertypeNames:TypeName* Members:TraitMemberDeclaration*;
 FunctionDeclaration: NonMemberEntityDeclaration, ConcreteInvocableDeclaration = Name:'SimpleName' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
 // ---------- Member Declarations

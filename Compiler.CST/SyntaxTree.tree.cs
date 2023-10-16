@@ -163,7 +163,7 @@ public partial interface ITypeDeclarationSyntax : INonMemberEntityDeclarationSyn
     new StandardTypeName Name { get; }
     FixedList<IGenericParameterSyntax> GenericParameters { get; }
     new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
-    FixedList<ITypeNameSyntax> SuperTypes { get; }
+    FixedList<ITypeNameSyntax> SupertypeNames { get; }
     FixedList<IMemberDeclarationSyntax> Members { get; }
 }
 
@@ -171,7 +171,7 @@ public partial interface IClassDeclarationSyntax : ITypeDeclarationSyntax
 {
     IAbstractKeywordToken? AbstractModifier { get; }
     bool IsAbstract { get; }
-    ITypeNameSyntax? BaseType { get; }
+    ITypeNameSyntax? BaseTypeName { get; }
     new FixedList<IClassMemberDeclarationSyntax> Members { get; }
     ConstructorSymbol? DefaultConstructorSymbol { get; }
 }

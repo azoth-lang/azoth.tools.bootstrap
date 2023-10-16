@@ -22,10 +22,10 @@ internal class TraitDeclarationSyntax : TypeDeclarationSyntax<ITraitMemberDeclar
         TextSpan nameSpan,
         string name,
         FixedList<IGenericParameterSyntax> genericParameters,
-        FixedList<ITypeNameSyntax> superTypes,
+        FixedList<ITypeNameSyntax> supertypes,
         Func<ITraitDeclarationSyntax, (FixedList<ITraitMemberDeclarationSyntax>, TextSpan)> parseMembers)
         : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, moveModifier,
-            nameSpan, StandardTypeName.Create(name, genericParameters.Count), genericParameters, superTypes)
+            nameSpan, StandardTypeName.Create(name, genericParameters.Count), genericParameters, supertypes)
     {
         var (members, bodySpan) = parseMembers(this);
         Members = members;

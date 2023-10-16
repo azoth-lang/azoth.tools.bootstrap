@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
@@ -22,41 +23,56 @@ internal class ASTBuilder
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
     public PackageBuilder BuildPackage(PackageSyntax<Package> packageSyntax)
     {
-        var nonMemberDeclarations = packageSyntax.AllEntityDeclarations
-                                                 .OfType<INonMemberEntityDeclarationSyntax>()
-                                                 .Select(BuildNonMemberDeclaration).ToFixedList();
+        var declarationDictionary = new Dictionary<Symbol, Lazy<INonMemberDeclaration>>();
+        foreach (var declaration in packageSyntax.AllEntityDeclarations.OfType<INonMemberEntityDeclarationSyntax>())
+        {
+            declarationDictionary.Add(declaration.Symbol.Result,
+                new(() => BuildNonMemberDeclaration(declaration, declarationDictionary)));
+        }
+
+        var declarations = declarationDictionary.Values.Select(l => l.Value).ToFixedSet();
 
         var symbolTree = packageSyntax.SymbolTree.Build();
-        return new PackageBuilder(nonMemberDeclarations, symbolTree, packageSyntax.Diagnostics, packageSyntax.References);
+        return new PackageBuilder(declarations, symbolTree, packageSyntax.Diagnostics, packageSyntax.References);
     }
 
-    private static INonMemberDeclaration BuildNonMemberDeclaration(INonMemberEntityDeclarationSyntax entity)
+    private static INonMemberDeclaration BuildNonMemberDeclaration(
+        INonMemberEntityDeclarationSyntax entity,
+        IReadOnlyDictionary<Symbol, Lazy<INonMemberDeclaration>> declarations)
     {
         return entity switch
         {
-            IClassDeclarationSyntax syn => BuildClass(syn),
-            ITraitDeclarationSyntax syn => BuildTrait(syn),
+            IClassDeclarationSyntax syn => BuildClass(syn, declarations),
+            ITraitDeclarationSyntax syn => BuildTrait(syn, declarations),
             IFunctionDeclarationSyntax syn => BuildFunction(syn),
             _ => throw ExhaustiveMatch.Failed(entity)
         };
     }
 
-    private static IClassDeclaration BuildClass(IClassDeclarationSyntax syn)
+    private static IClassDeclaration BuildClass(
+        IClassDeclarationSyntax syn,
+        IReadOnlyDictionary<Symbol, Lazy<INonMemberDeclaration>> declarations)
     {
         var symbol = syn.Symbol.Result;
         var nameSpan = syn.NameSpan;
+        var baseClassSymbol = syn.BaseTypeName?.ReferencedSymbol.Result;
+        var baseClass = baseClassSymbol is not null ? (IClassDeclaration)declarations[baseClassSymbol].Value : null;
+        var supertypes = syn.SupertypeNames.Select(n => (ITypeDeclaration)declarations[n.ReferencedSymbol.Result!].Value).ToFixedList();
         var defaultConstructorSymbol = syn.DefaultConstructorSymbol;
-        return new ClassDeclaration(syn.File, syn.Span, symbol, nameSpan, defaultConstructorSymbol, BuildMembers);
+        return new ClassDeclaration(syn.File, syn.Span, symbol, nameSpan, baseClass, supertypes, defaultConstructorSymbol, BuildMembers);
 
         FixedList<IClassMemberDeclaration> BuildMembers(IClassDeclaration c)
             => syn.Members.Select(m => BuildClassMember(c, m)).ToFixedList();
     }
 
-    private static ITraitDeclaration BuildTrait(ITraitDeclarationSyntax syn)
+    private static ITraitDeclaration BuildTrait(
+        ITraitDeclarationSyntax syn,
+        IReadOnlyDictionary<Symbol, Lazy<INonMemberDeclaration>> declarations)
     {
         var symbol = syn.Symbol.Result;
         var nameSpan = syn.NameSpan;
-        return new TraitDeclaration(syn.File, syn.Span, symbol, nameSpan, BuildMembers);
+        var supertypes = syn.SupertypeNames.Select(n => (ITypeDeclaration)declarations[n.ReferencedSymbol.Result!].Value).ToFixedList();
+        return new TraitDeclaration(syn.File, syn.Span, symbol, nameSpan, supertypes, BuildMembers);
 
         FixedList<ITraitMemberDeclaration> BuildMembers(ITraitDeclaration t)
             => syn.Members.Select(m => BuildTraitMember(t, m)).ToFixedList();

@@ -29,7 +29,7 @@ public class SymbolValidator : SyntaxWalker
         {
             case IClassDeclarationSyntax syn:
                 CheckSymbol(syn, syn.Symbol);
-                Walk(syn.BaseType);
+                Walk(syn.BaseTypeName);
                 // Don't recur into body, we will see those as separate members
                 return;
             case IFieldDeclarationSyntax syn:

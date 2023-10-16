@@ -32,17 +32,17 @@ public static class ISyntaxExtensions
             case IClassDeclarationSyntax n:
                 foreach (var child in n.GenericParameters)
                     yield return child;
-                if (n.BaseType is not null)
-                    yield return n.BaseType;
+                if (n.BaseTypeName is not null)
+                    yield return n.BaseTypeName;
                 foreach (var child in n.Members)
                     yield return child;
-                foreach (var child in n.SuperTypes)
+                foreach (var child in n.SupertypeNames)
                     yield return child;
                 yield break;
             case ITraitDeclarationSyntax n:
                 foreach (var child in n.GenericParameters)
                     yield return child;
-                foreach (var child in n.SuperTypes)
+                foreach (var child in n.SupertypeNames)
                     yield return child;
                 foreach (var child in n.Members)
                     yield return child;

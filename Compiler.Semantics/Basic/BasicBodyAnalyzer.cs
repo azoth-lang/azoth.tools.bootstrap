@@ -1072,10 +1072,7 @@ public class BasicBodyAnalyzer
             return new(invocation, CombineResults(arguments, flow));
         }
 
-        var contextSymbol = LookupSymbolForType(selfArgumentType);
-        var methodSymbols = symbolTrees.Children(contextSymbol!).OfType<MethodSymbol>()
-                                       .Where(s => s.Name == methodName).ToFixedList();
-        methodSymbols = SelectMethodOverload(selfArgumentType, methodSymbols, arguments);
+        var methodSymbols = SelectMethodOverload(methodName, selfArgumentType, arguments);
 
         switch (methodSymbols.Count)
         {
@@ -1570,24 +1567,29 @@ public class BasicBodyAnalyzer
         return symbols;
     }
 
-    private static FixedList<MethodSymbol> SelectMethodOverload(
+    private FixedList<MethodSymbol> SelectMethodOverload(
+        SimpleName methodName,
         DataType selfType,
-        FixedList<MethodSymbol> symbols,
         ArgumentResults arguments)
     {
+        if (selfType is not NonEmptyType nonEmptySelfType)
+            return FixedList<MethodSymbol>.Empty;
+
+        var contextSymbol = LookupSymbolForType(selfType);
+        var symbols = symbolTrees.Children(contextSymbol!)
+                                 .OfType<MethodSymbol>().Where(s => s.Name == methodName);
+
         // Filter down to symbols that could possible match
         symbols = symbols.Where(s =>
         {
             if (s.Arity != arguments.Arguments.Count) return false;
             // TODO check compatibility of self type
-            _ = selfType;
             // TODO check compatibility over argument types
-
             return true;
-        }).ToFixedList();
+        });
 
         // TODO Select most specific match
-        return symbols;
+        return symbols.ToFixedList();
     }
 
     private TypeSymbol? LookupSymbolForType(DataType dataType)

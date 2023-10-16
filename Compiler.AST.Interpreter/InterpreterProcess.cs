@@ -129,11 +129,19 @@ public class InterpreterProcess
     {
         var vTable = vTables.GetOrAdd(@class, CreateVTable);
         var self = AzothValue.Object(new AzothObject(vTable));
+        return await CallConstructorAsync(@class, constructorSymbol, self, arguments);
+    }
+
+    private async Task<AzothValue> CallConstructorAsync(
+        IClassDeclaration @class,
+        ConstructorSymbol constructorSymbol,
+        AzothValue self,
+        IEnumerable<AzothValue> arguments)
+    {
         // TODO run field initializers
         var constructor = constructors[constructorSymbol];
         // Default constructor is null
-        if (constructor is null)
-            return CallDefaultConstructor(@class, self);
+        if (constructor is null) return await CallDefaultConstructorAsync(@class, self);
         return await CallConstructorAsync(constructor, self, arguments).ConfigureAwait(false);
     }
 
@@ -172,13 +180,27 @@ public class InterpreterProcess
     /// <summary>
     /// Call the implicit default constructor for a type that has no constructors.
     /// </summary>
-    private static AzothValue CallDefaultConstructor(IClassDeclaration @class, AzothValue self)
+    private async ValueTask<AzothValue> CallDefaultConstructorAsync(IClassDeclaration @class, AzothValue self)
     {
         // Initialize fields to default values
         var fields = @class.Members.OfType<IFieldDeclaration>();
         foreach (var field in fields)
             self.ObjectValue[field.Symbol.Name] = new AzothValue();
+
+        if (@class.BaseClass is IClassDeclaration baseClass)
+        {
+            var noArgConstructorSymbol = NoArgConstructorSymbol(baseClass);
+            await CallConstructorAsync(baseClass, noArgConstructorSymbol, self, Enumerable.Empty<AzothValue>());
+        }
+
         return self;
+    }
+
+    private static ConstructorSymbol NoArgConstructorSymbol(IClassDeclaration baseClass)
+    {
+        return baseClass.DefaultConstructorSymbol
+               ?? baseClass.Members.OfType<IConstructorDeclaration>().Select(c => c.Symbol)
+                           .Single(c => c.Arity == 0);
     }
 
     private async ValueTask<AzothValue> CallMethodAsync(

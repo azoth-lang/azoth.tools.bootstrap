@@ -16,10 +16,16 @@ public static class IAbstractSyntaxExtensions
             default:
                 throw ExhaustiveMatch.Failed(node);
             case IClassDeclaration n:
+                if (n.BaseClass is not null)
+                    yield return n.BaseClass;
+                foreach (var child in n.Supertypes)
+                    yield return child;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case ITraitDeclaration n:
+                foreach (var child in n.Supertypes)
+                    yield return child;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;

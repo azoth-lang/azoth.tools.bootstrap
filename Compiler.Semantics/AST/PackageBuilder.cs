@@ -11,8 +11,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST;
 
 internal class PackageBuilder
 {
-    public FixedList<IDeclaration> AllDeclarations { get; }
-    public FixedList<INonMemberDeclaration> NonMemberDeclarations { get; }
+    public FixedSet<IDeclaration> AllDeclarations { get; }
+    public FixedSet<INonMemberDeclaration> NonMemberDeclarations { get; }
     public FixedSymbolTree SymbolTree { get; }
     public SymbolForest SymbolTrees { get; }
     public Diagnostics Diagnostics { get; }
@@ -21,12 +21,12 @@ internal class PackageBuilder
     public IFunctionDeclaration? EntryPoint { get; set; }
 
     public PackageBuilder(
-        FixedList<INonMemberDeclaration> nonMemberDeclarations,
+        FixedSet<INonMemberDeclaration> nonMemberDeclarations,
         FixedSymbolTree symbolTree,
         Diagnostics diagnostics,
         FixedDictionary<SimpleName, Package> references)
     {
-        AllDeclarations = GetAllDeclarations(nonMemberDeclarations).ToFixedList();
+        AllDeclarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();
         NonMemberDeclarations = nonMemberDeclarations;
         SymbolTree = symbolTree;
         Diagnostics = diagnostics;

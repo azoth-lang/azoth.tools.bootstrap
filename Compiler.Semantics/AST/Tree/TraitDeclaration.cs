@@ -15,8 +15,9 @@ internal class TraitDeclaration : TypeDeclaration<ITraitMemberDeclaration>, ITra
         TextSpan span,
         ObjectTypeSymbol symbol,
         TextSpan nameSpan,
+        FixedList<ITypeDeclaration> supertypes,
         Func<ITraitDeclaration, FixedList<ITraitMemberDeclaration>> buildMembers)
-        : base(file, span, symbol, nameSpan)
+        : base(file, span, symbol, nameSpan, supertypes)
     {
         Members = buildMembers(this);
     }

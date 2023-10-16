@@ -30,19 +30,27 @@ public class SymbolTreeBuilder : ISymbolTree
 
     public IEnumerable<Symbol> Children(Symbol symbol)
     {
-        if (symbol.Package != Package)
-            throw new ArgumentException("Symbol must be for the package of this tree", nameof(symbol));
-
+        RequireForPackage(symbol);
         return symbolChildren.TryGetValue(symbol, out var children)
             ? children : Enumerable.Empty<Symbol>();
     }
 
     public void Add(Symbol symbol)
     {
+        RequireForPackage(symbol);
+        GetOrAdd(symbol);
+    }
+
+    public void AddInherited(TypeSymbol symbol, Symbol inheritedSymbol)
+    {
+        RequireForPackage(symbol);
+        GetOrAdd(symbol).Add(inheritedSymbol);
+    }
+
+    private void RequireForPackage(Symbol symbol)
+    {
         if (symbol.Package != Package)
             throw new ArgumentException("Symbol must be for the package of this tree", nameof(symbol));
-
-        GetOrAdd(symbol);
     }
 
     private ISet<Symbol> GetOrAdd(Symbol symbol)
@@ -71,4 +79,6 @@ public class SymbolTreeBuilder : ISymbolTree
             throw new InvalidOperationException($"Can't build {nameof(PrimitiveSymbolTree)} WITH a package");
         return new(symbolChildren.ToFixedDictionary(e => e.Key, e => e.Value.ToFixedSet()));
     }
+
+
 }

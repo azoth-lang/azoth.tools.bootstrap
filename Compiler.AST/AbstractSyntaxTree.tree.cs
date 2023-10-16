@@ -120,11 +120,13 @@ public partial interface INonMemberDeclaration : IDeclaration
 public partial interface ITypeDeclaration : INonMemberDeclaration
 {
     new ObjectTypeSymbol Symbol { get; }
+    FixedList<ITypeDeclaration> Supertypes { get; }
     FixedList<IMemberDeclaration> Members { get; }
 }
 
 public partial interface IClassDeclaration : ITypeDeclaration
 {
+    IClassDeclaration? BaseClass { get; }
     new FixedList<IClassMemberDeclaration> Members { get; }
     ConstructorSymbol? DefaultConstructorSymbol { get; }
 }

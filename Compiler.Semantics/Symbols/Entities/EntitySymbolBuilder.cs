@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
@@ -35,14 +36,16 @@ public class EntitySymbolBuilder
     private void Build(FixedSet<IEntityDeclarationSyntax> entities)
     {
         // Process all types first because they may be referenced by functions etc.
-        var typeDeclarations = entities.OfType<ITypeDeclarationSyntax>().ToFixedList();
-        var typeSymbolBuilder = new TypeSymbolBuilder(this, typeDeclarations);
+        var typeDeclarations = new TypeSymbolBuilder(this, entities.OfType<ITypeDeclarationSyntax>());
         foreach (var type in typeDeclarations)
-            BuildTypeSymbol(type, typeSymbolBuilder);
+            BuildTypeSymbol(type, typeDeclarations);
 
         // Now resolve all other symbols (type declarations will already have symbols and won't be processed again)
         foreach (var entity in entities)
             BuildNonTypeEntitySymbol(entity);
+
+        var inheritor = new TypeSymbolInheritor(symbolTree, typeDeclarations);
+        inheritor.AddInheritedSymbols();
     }
 
     /// <summary>
@@ -149,29 +152,29 @@ public class EntitySymbolBuilder
         BuildParameterSymbols(symbol, file, function.Parameters, parameterTypes);
     }
 
-    private void BuildTypeSymbol(ITypeDeclarationSyntax type, TypeSymbolBuilder typeSymbolBuilder)
+    private void BuildTypeSymbol(ITypeDeclarationSyntax type, TypeSymbolBuilder typeDeclarations)
     {
         switch (type)
         {
             default:
                 throw ExhaustiveMatch.Failed(type);
             case IClassDeclarationSyntax @class:
-                BuildClassSymbol(@class, typeSymbolBuilder);
+                BuildClassSymbol(@class, typeDeclarations);
                 break;
             case ITraitDeclarationSyntax trait:
-                BuildTraitSymbol(trait, typeSymbolBuilder);
+                BuildTraitSymbol(trait, typeDeclarations);
                 break;
         }
     }
 
-    private void BuildClassSymbol(IClassDeclarationSyntax @class, TypeSymbolBuilder typeSymbolBuilder)
+    private void BuildClassSymbol(IClassDeclarationSyntax @class, TypeSymbolBuilder typeDeclarations)
     {
         if (!@class.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
         var typeParameters = @class.GenericParameters.Select(p => new GenericParameter(p.Name)).ToFixedList();
         var packageName = @class.ContainingNamespaceSymbol.Package!.Name;
 
-        var superTypes = EvaluateSuperTypes(@class, typeSymbolBuilder).ToFixedSet();
+        var superTypes = EvaluateSuperTypes(@class, typeDeclarations).ToFixedSet();
         var classType = DeclaredObjectType.Create(packageName, @class.ContainingNamespaceName,
             @class.Name, @class.IsConst, typeParameters, superTypes);
 
@@ -190,14 +193,14 @@ public class EntitySymbolBuilder
         }
     }
 
-    private void BuildTraitSymbol(ITraitDeclarationSyntax trait, TypeSymbolBuilder typeSymbolBuilder)
+    private void BuildTraitSymbol(ITraitDeclarationSyntax trait, TypeSymbolBuilder typeDeclarations)
     {
         if (!trait.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
         var typeParameters = trait.GenericParameters.Select(p => new GenericParameter(p.Name)).ToFixedList();
         var packageName = trait.ContainingNamespaceSymbol.Package!.Name;
 
-        var superTypes = EvaluateSuperTypes(trait, typeSymbolBuilder).ToFixedSet();
+        var superTypes = EvaluateSuperTypes(trait, typeDeclarations).ToFixedSet();
         var traitType = DeclaredObjectType.Create(packageName, trait.ContainingNamespaceName, trait.Name,
             trait.IsConst, typeParameters, superTypes);
 
@@ -217,12 +220,12 @@ public class EntitySymbolBuilder
 
     private IEnumerable<DeclaredObjectType> EvaluateSuperTypes(
         ITypeDeclarationSyntax syn,
-        TypeSymbolBuilder typeSymbolBuilder)
+        TypeSymbolBuilder typeDeclarations)
     {
         // TODO error for duplicates
 
-        var resolver = new TypeResolver(syn.File, diagnostics, typeSymbolBuilder);
-        if (syn is IClassDeclarationSyntax { BaseType: not null and var baseTypeSyntax })
+        var resolver = new TypeResolver(syn.File, diagnostics, typeDeclarations);
+        if (syn is IClassDeclarationSyntax { BaseTypeName: not null and var baseTypeSyntax })
         {
             var baseType = resolver.EvaluateBareType(baseTypeSyntax);
             if (baseType is ObjectType { DeclaredType: var declaredType })
@@ -232,7 +235,7 @@ public class EntitySymbolBuilder
                 diagnostics.Add(TypeError.BaseTypeMustBeClass(syn.File, syn.Name, baseTypeSyntax));
         }
 
-        foreach (var superTypeSyntax in syn.SuperTypes)
+        foreach (var superTypeSyntax in syn.SupertypeNames)
         {
             var superType = resolver.EvaluateBareType(superTypeSyntax);
             if (superType is ObjectType { DeclaredType: var declaredType })
@@ -399,7 +402,7 @@ public class EntitySymbolBuilder
     }
 
 
-    private class TypeSymbolBuilder : ITypeSymbolBuilder
+    private class TypeSymbolBuilder : ITypeSymbolBuilder, IEnumerable<ITypeDeclarationSyntax>
     {
         private readonly EntitySymbolBuilder symbolBuilder;
         private readonly FixedDictionary<IPromise<TypeSymbol>, ITypeDeclarationSyntax> typeDeclarations;
@@ -417,5 +420,10 @@ public class EntitySymbolBuilder
             symbolBuilder.BuildTypeSymbol(typeDeclaration, this);
             return promise.Result;
         }
+
+        #region IEnumerable<ITypeDeclarationSyntax>
+        public IEnumerator<ITypeDeclarationSyntax> GetEnumerator() => typeDeclarations.Values.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        #endregion
     }
 }

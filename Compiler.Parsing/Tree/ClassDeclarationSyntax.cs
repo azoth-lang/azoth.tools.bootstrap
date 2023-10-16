@@ -14,7 +14,7 @@ internal class ClassDeclarationSyntax : TypeDeclarationSyntax<IClassMemberDeclar
 {
     public IAbstractKeywordToken? AbstractModifier { get; }
     public bool IsAbstract { get; }
-    public ITypeNameSyntax? BaseType { get; }
+    public ITypeNameSyntax? BaseTypeName { get; }
     public override FixedList<IClassMemberDeclarationSyntax> Members { get; }
     public ConstructorSymbol? DefaultConstructorSymbol { get; private set; }
 
@@ -29,15 +29,15 @@ internal class ClassDeclarationSyntax : TypeDeclarationSyntax<IClassMemberDeclar
         TextSpan nameSpan,
         string name,
         FixedList<IGenericParameterSyntax> genericParameters,
-        ITypeNameSyntax? baseType,
-        FixedList<ITypeNameSyntax> superTypes,
+        ITypeNameSyntax? baseTypeName,
+        FixedList<ITypeNameSyntax> supertypesNames,
         Func<IClassDeclarationSyntax, (FixedList<IClassMemberDeclarationSyntax>, TextSpan)> parseMembers)
         : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, moveModifier,
-            nameSpan, StandardTypeName.Create(name, genericParameters.Count), genericParameters, superTypes)
+            nameSpan, StandardTypeName.Create(name, genericParameters.Count), genericParameters, supertypesNames)
     {
         AbstractModifier = abstractModifier;
         IsAbstract = AbstractModifier is not null;
-        BaseType = baseType;
+        BaseTypeName = baseTypeName;
         var (members, bodySpan) = parseMembers(this);
         Members = members;
         Span = TextSpan.Covering(headerSpan, bodySpan);

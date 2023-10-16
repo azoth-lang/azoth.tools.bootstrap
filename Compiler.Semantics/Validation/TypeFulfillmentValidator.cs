@@ -22,7 +22,7 @@ public class TypeFulfillmentValidator : SyntaxWalker
         switch (syntax)
         {
             case IClassDeclarationSyntax syn:
-                Walk(syn.BaseType);
+                Walk(syn.BaseTypeName);
                 // Don't recur into body, we will see those as separate members
                 return;
             case ITypeSyntax type:
