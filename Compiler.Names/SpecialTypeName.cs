@@ -48,5 +48,7 @@ public sealed class SpecialTypeName : Name
     public override int GetHashCode() => HashCode.Combine(typeof(SpecialTypeName), Text);
     #endregion
 
+    public override string ToBareString() => Text;
+
     public override string ToString() => Text;
 }

@@ -49,5 +49,5 @@ internal class ParameterizedTypeSyntax : TypeSyntax, IParameterizedTypeSyntax
         throw new InvalidOperationException($"Can't lookup type name without {nameof(ContainingLexicalScope)}");
     }
 
-    public override string ToString() => $"{Name}[{string.Join(", ", TypeArguments)}]";
+    public override string ToString() => $"{Name.ToBareString()}[{string.Join(", ", TypeArguments)}]";
 }

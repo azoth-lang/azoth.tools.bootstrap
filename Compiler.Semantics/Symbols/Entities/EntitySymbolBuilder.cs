@@ -174,7 +174,7 @@ public class EntitySymbolBuilder
         var typeParameters = @class.GenericParameters.Select(p => new GenericParameter(p.Name)).ToFixedList();
         var packageName = @class.ContainingNamespaceSymbol.Package!.Name;
 
-        var superTypes = EvaluateSuperTypes(@class, typeDeclarations).ToFixedSet();
+        var superTypes = EvaluateSupertypes(@class, typeDeclarations).ToFixedSet();
         var classType = DeclaredObjectType.Create(packageName, @class.ContainingNamespaceName,
             @class.Name, @class.IsConst, typeParameters, superTypes);
 
@@ -200,7 +200,7 @@ public class EntitySymbolBuilder
         var typeParameters = trait.GenericParameters.Select(p => new GenericParameter(p.Name)).ToFixedList();
         var packageName = trait.ContainingNamespaceSymbol.Package!.Name;
 
-        var superTypes = EvaluateSuperTypes(trait, typeDeclarations).ToFixedSet();
+        var superTypes = EvaluateSupertypes(trait, typeDeclarations).ToFixedSet();
         var traitType = DeclaredObjectType.Create(packageName, trait.ContainingNamespaceName, trait.Name,
             trait.IsConst, typeParameters, superTypes);
 
@@ -218,7 +218,7 @@ public class EntitySymbolBuilder
         }
     }
 
-    private IEnumerable<DeclaredObjectType> EvaluateSuperTypes(
+    private IEnumerable<DeclaredObjectType> EvaluateSupertypes(
         ITypeDeclarationSyntax syn,
         TypeSymbolBuilder typeDeclarations)
     {

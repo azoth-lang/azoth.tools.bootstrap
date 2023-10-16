@@ -51,6 +51,9 @@ public abstract partial class Name : IEquatable<Name>
     public static bool operator !=(Name? left, Name? right) => !Equals(left, right);
     #endregion
 
+
+    public abstract string ToBareString();
+
     public abstract override string ToString();
 
     public static implicit operator Name(string text) => new SimpleName(text);
