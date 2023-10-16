@@ -18,7 +18,7 @@ internal abstract class MemberDeclarationSyntax : DeclarationSyntax, IMemberDecl
         CodeFile file,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
-        Name? name,
+        SimpleName? name,
         IPromise<Symbol> symbol)
         : base(span, file, name, nameSpan, symbol)
     {

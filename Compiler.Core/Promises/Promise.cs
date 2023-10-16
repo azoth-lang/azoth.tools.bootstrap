@@ -43,14 +43,6 @@ public class Promise<T> : IPromise<T>
         }
     }
 
-    public IPromise<TSub>? As<TSub>()
-    {
-        if (this is IPromise<TSub> convertedPromise) return convertedPromise;
-        if (IsFulfilled && Result is TSub convertedValue)
-            return new Promise<TSub>(convertedValue);
-        return null;
-    }
-
     // Useful for debugging
     public override string ToString() => IsFulfilled ? value?.ToString() ?? "⧼null⧽" : "⧼pending⧽";
 }

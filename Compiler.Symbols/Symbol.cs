@@ -15,10 +15,10 @@ public abstract class Symbol : IEquatable<Symbol>
 {
     public virtual PackageSymbol? Package { get; }
     public virtual Symbol? ContainingSymbol { get; }
-    public virtual TypeName? Name { get; }
+    public virtual Name? Name { get; }
     public bool IsGlobal => ContainingSymbol == Package;
 
-    private protected Symbol(Symbol? containingSymbol, TypeName? name)
+    private protected Symbol(Symbol? containingSymbol, Name? name)
     {
         Package = containingSymbol?.Package;
         ContainingSymbol = containingSymbol;

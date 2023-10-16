@@ -160,6 +160,7 @@ public partial interface ITypeDeclarationSyntax : INonMemberEntityDeclarationSyn
     bool IsConst { get; }
     IMoveKeywordToken? MoveModifier { get; }
     bool IsMove { get; }
+    new StandardTypeName Name { get; }
     FixedList<IGenericParameterSyntax> GenericParameters { get; }
     new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
     FixedList<ITypeNameSyntax> SuperTypes { get; }
@@ -182,7 +183,7 @@ public partial interface ITraitDeclarationSyntax : ITypeDeclarationSyntax
 
 public partial interface IFunctionDeclarationSyntax : INonMemberEntityDeclarationSyntax, IConcreteInvocableDeclarationSyntax
 {
-    new Name Name { get; }
+    new SimpleName Name { get; }
     new FixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
     new AcyclicPromise<FunctionSymbol> Symbol { get; }
@@ -217,7 +218,7 @@ public partial interface ITraitMemberDeclarationSyntax : IMemberDeclarationSynta
     typeof(IConcreteMethodDeclarationSyntax))]
 public partial interface IMethodDeclarationSyntax : IClassMemberDeclarationSyntax, ITraitMemberDeclarationSyntax, IInvocableDeclarationSyntax
 {
-    new Name Name { get; }
+    new SimpleName Name { get; }
     ISelfParameterSyntax SelfParameter { get; }
     new FixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
@@ -236,6 +237,7 @@ public partial interface IConcreteMethodDeclarationSyntax : IMethodDeclarationSy
 public partial interface IConstructorDeclarationSyntax : IClassMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
 {
     new IClassDeclarationSyntax DeclaringType { get; }
+    new SimpleName? Name { get; }
     ISelfParameterSyntax SelfParameter { get; }
     new AcyclicPromise<ConstructorSymbol> Symbol { get; }
 }
@@ -243,7 +245,7 @@ public partial interface IConstructorDeclarationSyntax : IClassMemberDeclaration
 public partial interface IFieldDeclarationSyntax : IClassMemberDeclarationSyntax, IBindingSyntax
 {
     new IClassDeclarationSyntax DeclaringType { get; }
-    new Name Name { get; }
+    new SimpleName Name { get; }
     ITypeSyntax Type { get; }
     new AcyclicPromise<FieldSymbol> Symbol { get; }
     IExpressionSyntax? Initializer { get; }
@@ -251,7 +253,7 @@ public partial interface IFieldDeclarationSyntax : IClassMemberDeclarationSyntax
 
 public partial interface IAssociatedFunctionDeclarationSyntax : IClassMemberDeclarationSyntax, ITraitMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
 {
-    new Name Name { get; }
+    new SimpleName Name { get; }
     new FixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
     new AcyclicPromise<FunctionSymbol> Symbol { get; }
@@ -259,7 +261,7 @@ public partial interface IAssociatedFunctionDeclarationSyntax : IClassMemberDecl
 
 public partial interface IGenericParameterSyntax : ISyntax
 {
-    Name Name { get; }
+    SimpleName Name { get; }
     Promise<GenericParameterTypeSymbol> Symbol { get; }
 }
 
@@ -270,7 +272,7 @@ public partial interface IGenericParameterSyntax : ISyntax
     typeof(IFieldParameterSyntax))]
 public partial interface IParameterSyntax : ISyntax
 {
-    Name? Name { get; }
+    SimpleName? Name { get; }
     IPromise<DataType> DataType { get; }
     bool Unused { get; }
 }
@@ -285,7 +287,7 @@ public partial interface IConstructorParameterSyntax : IParameterSyntax
 public partial interface INamedParameterSyntax : IParameterSyntax, IConstructorParameterSyntax, ILocalBindingSyntax
 {
     bool IsLentBinding { get; }
-    new Name Name { get; }
+    new SimpleName Name { get; }
     Promise<int?> DeclarationNumber { get; }
     ITypeSyntax Type { get; }
     new Promise<VariableSymbol> Symbol { get; }
@@ -301,6 +303,7 @@ public partial interface ISelfParameterSyntax : IParameterSyntax
 
 public partial interface IFieldParameterSyntax : IParameterSyntax, IConstructorParameterSyntax
 {
+    new SimpleName Name { get; }
     Promise<FieldSymbol?> ReferencedSymbol { get; }
     IExpressionSyntax? DefaultValue { get; }
 }
@@ -329,7 +332,7 @@ public partial interface ITypeSyntax : ISyntax
     typeof(IParameterizedTypeSyntax))]
 public partial interface ITypeNameSyntax : ITypeSyntax, IHasContainingLexicalScope
 {
-    TypeName Name { get; }
+    Name Name { get; }
     Promise<TypeSymbol?> ReferencedSymbol { get; }
 }
 
@@ -339,7 +342,6 @@ public partial interface ISimpleTypeNameSyntax : ITypeNameSyntax
 
 public partial interface IParameterizedTypeSyntax : ITypeNameSyntax
 {
-    new Name Name { get; }
     FixedList<ITypeSyntax> TypeArguments { get; }
 }
 
@@ -382,7 +384,7 @@ public partial interface IBodyStatementSyntax : IStatementSyntax
 public partial interface IVariableDeclarationStatementSyntax : IBodyStatementSyntax, ILocalBindingSyntax
 {
     TextSpan NameSpan { get; }
-    Name Name { get; }
+    SimpleName Name { get; }
     Promise<int?> DeclarationNumber { get; }
     IReferenceCapabilitySyntax? Capability { get; }
     ITypeSyntax? Type { get; }
@@ -437,7 +439,7 @@ public partial interface IBlockExpressionSyntax : IExpressionSyntax, IBlockOrRes
 public partial interface INewObjectExpressionSyntax : IExpressionSyntax
 {
     ITypeNameSyntax Type { get; }
-    Name? ConstructorName { get; }
+    SimpleName? ConstructorName { get; }
     TextSpan? ConstructorNameSpan { get; }
     FixedList<IExpressionSyntax> Arguments { get; }
     Promise<ConstructorSymbol?> ReferencedSymbol { get; }
@@ -529,7 +531,7 @@ public partial interface IWhileExpressionSyntax : IExpressionSyntax
 
 public partial interface IForeachExpressionSyntax : IExpressionSyntax, ILocalBindingSyntax
 {
-    Name VariableName { get; }
+    SimpleName VariableName { get; }
     Promise<int?> DeclarationNumber { get; }
     IExpressionSyntax InExpression { get; }
     ITypeSyntax? Type { get; }
@@ -568,7 +570,7 @@ public partial interface INameExpressionSyntax : IAssignableExpressionSyntax
 
 public partial interface ISimpleNameExpressionSyntax : INameExpressionSyntax, IHasContainingLexicalScope
 {
-    Name? Name { get; }
+    SimpleName? Name { get; }
 }
 
 public partial interface ISelfExpressionSyntax : IExpressionSyntax

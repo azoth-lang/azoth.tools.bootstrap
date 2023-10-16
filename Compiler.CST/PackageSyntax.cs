@@ -30,14 +30,14 @@ public class PackageSyntax<TReference>
     [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
     public FixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
     public FixedSet<IEntityDeclarationSyntax> AllEntityDeclarations { get; }
-    public FixedDictionary<Name, TReference> References { get; }
+    public FixedDictionary<SimpleName, TReference> References { get; }
     public IEnumerable<TReference> ReferencedPackages => References.Values;
     public Diagnostics Diagnostics { get; }
 
     public PackageSyntax(
-        Name name,
+        SimpleName name,
         FixedSet<ICompilationUnitSyntax> compilationUnits,
-        FixedDictionary<Name, TReference> references)
+        FixedDictionary<SimpleName, TReference> references)
     {
         Symbol = new PackageSymbol(name);
         SymbolTree = new SymbolTreeBuilder(Symbol);

@@ -22,7 +22,7 @@ public sealed class GenericParameterType : NonEmptyType
 
     public GenericParameter Parameter { get; }
 
-    public Name Name => Parameter.Name;
+    public StandardTypeName Name => Parameter.Name;
 
     public override bool IsFullyKnown => true;
 

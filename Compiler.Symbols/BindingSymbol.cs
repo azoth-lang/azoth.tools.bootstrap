@@ -11,7 +11,7 @@ public abstract class BindingSymbol : Symbol
 {
     public bool IsMutableBinding { get; }
     public bool IsLentBinding { get; }
-    public override Name? Name { get; }
+    public override SimpleName? Name { get; }
 
     public DataType DataType { get; }
 
@@ -19,7 +19,7 @@ public abstract class BindingSymbol : Symbol
         Symbol containingSymbol,
         bool isMutableBinding,
         bool isLentBinding,
-        Name? name,
+        SimpleName? name,
         DataType dataType)
         : base(containingSymbol, name)
     {

@@ -11,14 +11,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public abstract class InvocableSymbol : Symbol
 {
     public override Symbol ContainingSymbol { get; }
-    public override Name? Name { get; }
+    public override SimpleName? Name { get; }
     public FixedList<ParameterType> ParameterTypes { get; }
     public int Arity => ParameterTypes.Count;
     public ReturnType ReturnType { get; }
 
     protected InvocableSymbol(
         Symbol containingSymbol,
-        Name? name,
+        SimpleName? name,
         FixedList<ParameterType> parameterTypes,
         ReturnType returnType)
         : base(containingSymbol, name)

@@ -18,7 +18,7 @@ internal class NewObjectExpressionSyntax : ExpressionSyntax, INewObjectExpressio
     /// this expression's type could be either an object type, or member type.
     /// </summary>
     public ITypeNameSyntax Type { [DebuggerStepThrough] get; }
-    public Name? ConstructorName { [DebuggerStepThrough] get; }
+    public SimpleName? ConstructorName { [DebuggerStepThrough] get; }
     public TextSpan? ConstructorNameSpan { [DebuggerStepThrough] get; }
     public FixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
     public Promise<ConstructorSymbol?> ReferencedSymbol { [DebuggerStepThrough] get; } = new Promise<ConstructorSymbol?>();
@@ -26,7 +26,7 @@ internal class NewObjectExpressionSyntax : ExpressionSyntax, INewObjectExpressio
     public NewObjectExpressionSyntax(
         TextSpan span,
         ITypeNameSyntax typeSyntax,
-        Name? constructorName,
+        SimpleName? constructorName,
         TextSpan? constructorNameSpan,
         FixedList<IExpressionSyntax> arguments)
         : base(span, ExpressionSemantics.IsolatedReference)

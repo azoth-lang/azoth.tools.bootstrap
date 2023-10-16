@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Shadowing;
 public class VariableBinding
 {
     public bool MutableBinding { get; }
-    public Name Name { get; }
+    public SimpleName Name { get; }
     public TextSpan NameSpan { get; }
     public IReadOnlyList<VariableBinding> WasShadowedBy => wasShadowedBy;
     private readonly List<VariableBinding> wasShadowedBy = new List<VariableBinding>();

@@ -20,7 +20,7 @@ internal abstract class InvocableDeclarationSyntax : DeclarationSyntax, IInvocab
         CodeFile file,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
-        Name? name,
+        SimpleName? name,
         IEnumerable<IConstructorParameterSyntax> parameters,
         IPromise<InvocableSymbol> symbol)
         : base(span, file, name, nameSpan, symbol)

@@ -16,7 +16,7 @@ internal class PackageBuilder
     public FixedSymbolTree SymbolTree { get; }
     public SymbolForest SymbolTrees { get; }
     public Diagnostics Diagnostics { get; }
-    public FixedDictionary<Name, Package> References { get; }
+    public FixedDictionary<SimpleName, Package> References { get; }
     public IEnumerable<Package> ReferencedPackages => References.Values;
     public IFunctionDeclaration? EntryPoint { get; set; }
 
@@ -24,7 +24,7 @@ internal class PackageBuilder
         FixedList<INonMemberDeclaration> nonMemberDeclarations,
         FixedSymbolTree symbolTree,
         Diagnostics diagnostics,
-        FixedDictionary<Name, Package> references)
+        FixedDictionary<SimpleName, Package> references)
     {
         AllDeclarations = GetAllDeclarations(nonMemberDeclarations).ToFixedList();
         NonMemberDeclarations = nonMemberDeclarations;

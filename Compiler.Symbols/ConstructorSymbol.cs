@@ -14,7 +14,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
 
     public ConstructorSymbol(
         ObjectTypeSymbol containingSymbol,
-        Name? name,
+        SimpleName? name,
         ObjectType selfParameterType,
         FixedList<ParameterType> parameterTypes)
         : base(containingSymbol, name, parameterTypes,

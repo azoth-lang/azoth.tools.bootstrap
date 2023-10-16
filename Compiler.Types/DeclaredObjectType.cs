@@ -10,33 +10,46 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public sealed class DeclaredObjectType : DeclaredReferenceType
 {
     public static DeclaredObjectType Create(
-        Name containingPackage,
+        SimpleName containingPackage,
         NamespaceName containingNamespace,
-        Name name,
+        string name,
         bool isConst)
         => new(containingPackage, containingNamespace, name, isConst, FixedList<GenericParameter>.Empty, FixedSet<DeclaredObjectType>.Empty);
 
     public static DeclaredObjectType Create(
-        Name containingPackage,
+        SimpleName containingPackage,
         NamespaceName containingNamespace,
-        Name name,
+        string name,
         bool isConst,
         FixedList<GenericParameter> genericParameters,
         FixedSet<DeclaredObjectType> superTypes)
-        => new(containingPackage, containingNamespace, name, isConst, genericParameters, superTypes);
+        => new(containingPackage, containingNamespace, StandardTypeName.Create(name, genericParameters.Count), isConst, genericParameters, superTypes);
 
     public static DeclaredObjectType Create(
-        Name containingPackage,
+        SimpleName containingPackage,
         NamespaceName containingNamespace,
-        Name name,
+        StandardTypeName name,
+        bool isConst,
+        FixedList<GenericParameter> genericParameters,
+        FixedSet<DeclaredObjectType> superTypes)
+    {
+        Requires.That(nameof(genericParameters), name.GenericParameterCount == genericParameters.Count, "Count must match name count");
+        return new(containingPackage, containingNamespace, name, isConst, genericParameters, superTypes);
+    }
+
+
+    public static DeclaredObjectType Create(
+        SimpleName containingPackage,
+        NamespaceName containingNamespace,
+        string name,
         bool isConst,
         params GenericParameter[] genericParameters)
-        => new(containingPackage, containingNamespace, name, isConst, FixedList.Create(genericParameters), FixedSet<DeclaredObjectType>.Empty);
+        => new(containingPackage, containingNamespace, StandardTypeName.Create(name, genericParameters.Length), isConst, FixedList.Create(genericParameters), FixedSet<DeclaredObjectType>.Empty);
 
     private DeclaredObjectType(
-        Name containingPackage,
+        SimpleName containingPackage,
         NamespaceName containingNamespace,
-        Name name,
+        StandardTypeName name,
         bool isConst,
         FixedList<GenericParameter> genericParameters,
         FixedSet<DeclaredObjectType> superTypes)
@@ -51,11 +64,11 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         SuperTypes = superTypes;
     }
 
-    public override Name ContainingPackage { get; }
+    public override SimpleName ContainingPackage { get; }
 
     public override NamespaceName ContainingNamespace { get; }
 
-    public override Name Name { get; }
+    public override StandardTypeName Name { get; }
 
     /// <summary>
     /// Whether this type was declared `const` meaning that most references should be treated as

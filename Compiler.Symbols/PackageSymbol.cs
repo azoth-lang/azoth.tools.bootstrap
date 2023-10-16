@@ -13,7 +13,7 @@ public class PackageSymbol : NamespaceOrPackageSymbol
 {
     public override PackageSymbol Package => this;
 
-    public PackageSymbol(Name name)
+    public PackageSymbol(SimpleName name)
         : base(null, name) { }
 
     public override bool Equals(Symbol? other)

@@ -130,7 +130,7 @@ internal class ProjectSet : IEnumerable<Project>
         var sourcePaths = Directory.EnumerateFiles(sourceDir, "*.az", SearchOption.AllDirectories);
         // Wait for the references, unfortunately, this requires an ugly loop.
         var referenceTasks = project.References.ToDictionary(r => r.Name, r => projectBuilds[r.Project]);
-        var references = new Dictionary<Name, Package>();
+        var references = new Dictionary<SimpleName, Package>();
         foreach (var referenceTask in referenceTasks)
         {
             var package = await referenceTask.Value.ConfigureAwait(false);
@@ -182,7 +182,7 @@ internal class ProjectSet : IEnumerable<Project>
         var sourcePaths = Directory.EnumerateFiles(sourceDir, "*.az", SearchOption.AllDirectories);
         // Wait for the references, unfortunately, this requires an ugly loop.
         var referenceTasks = project.References.ToDictionary(r => r.Name, r => projectBuilds[r.Project]);
-        var references = new Dictionary<Name, Package>();
+        var references = new Dictionary<SimpleName, Package>();
         foreach (var referenceTask in referenceTasks)
         {
             var package = await referenceTask.Value.ConfigureAwait(false);

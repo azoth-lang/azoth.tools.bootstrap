@@ -10,7 +10,7 @@ public sealed class FieldSymbol : NamedBindingSymbol
 
     public FieldSymbol(
         TypeSymbol containingSymbol,
-        Name name,
+        SimpleName name,
         bool isMutableBinding,
         DataType dataType)
         : base(containingSymbol, isMutableBinding, false, name, dataType)

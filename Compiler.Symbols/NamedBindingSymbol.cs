@@ -9,13 +9,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
     typeof(FieldSymbol))]
 public abstract class NamedBindingSymbol : BindingSymbol
 {
-    public override Name Name { get; }
+    public override SimpleName Name { get; }
 
     protected NamedBindingSymbol(
         Symbol containingSymbol,
         bool isMutableBinding,
         bool isLentBinding,
-        Name name,
+        SimpleName name,
         DataType dataType)
         : base(containingSymbol, isMutableBinding, isLentBinding, name, dataType)
     {

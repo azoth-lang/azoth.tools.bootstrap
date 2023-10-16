@@ -10,30 +10,15 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal abstract class TypeDeclarationSyntax<TMember> : DeclarationSyntax, ITypeDeclarationSyntax
+internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyntax, ITypeDeclarationSyntax
     where TMember : IMemberDeclarationSyntax
 {
-    public NamespaceName ContainingNamespaceName { get; }
-
-    private NamespaceOrPackageSymbol? containingNamespaceSymbol;
-    public NamespaceOrPackageSymbol ContainingNamespaceSymbol
-    {
-        get => containingNamespaceSymbol
-               ?? throw new InvalidOperationException($"{ContainingNamespaceSymbol} not yet assigned");
-        set
-        {
-            if (containingNamespaceSymbol is not null)
-                throw new InvalidOperationException($"Can't set {nameof(ContainingNamespaceSymbol)} repeatedly");
-            containingNamespaceSymbol = value;
-        }
-    }
-
     public IAccessModifierToken? AccessModifier { get; }
     public IConstKeywordToken? ConstModifier { get; }
     public bool IsConst { get; }
     public IMoveKeywordToken? MoveModifier { get; }
     public bool IsMove { get; }
-    public new Name Name { get; }
+    public new StandardTypeName Name { get; }
     public FixedList<IGenericParameterSyntax> GenericParameters { get; }
     public new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
     public FixedList<ITypeNameSyntax> SuperTypes { get; }
@@ -49,12 +34,11 @@ internal abstract class TypeDeclarationSyntax<TMember> : DeclarationSyntax, ITyp
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
         TextSpan nameSpan,
-        Name name,
+        StandardTypeName name,
         FixedList<IGenericParameterSyntax> genericParameters,
         FixedList<ITypeNameSyntax> superTypes)
-        : base(headerSpan, file, name, nameSpan, new AcyclicPromise<ObjectTypeSymbol>())
+        : base(containingNamespaceName, headerSpan, file, name, nameSpan, new AcyclicPromise<ObjectTypeSymbol>())
     {
-        ContainingNamespaceName = containingNamespaceName;
         AccessModifier = accessModifier;
         ConstModifier = constModifier;
         IsConst = ConstModifier is not null;

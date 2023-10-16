@@ -33,10 +33,10 @@ internal class SimpleNameExpressionSyntax : ExpressionSyntax, ISimpleNameExpress
         }
     }
     // A null name means this syntax was generated as an assumed missing name and the name is unknown
-    public Name? Name { get; }
+    public SimpleName? Name { get; }
     public Promise<Symbol?> ReferencedSymbol { get; } = new Promise<Symbol?>();
 
-    public SimpleNameExpressionSyntax(TextSpan span, Name? name)
+    public SimpleNameExpressionSyntax(TextSpan span, SimpleName? name)
         : base(span)
     {
         Name = name;

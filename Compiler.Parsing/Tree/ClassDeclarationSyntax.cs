@@ -27,13 +27,13 @@ internal class ClassDeclarationSyntax : TypeDeclarationSyntax<IClassMemberDeclar
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
         TextSpan nameSpan,
-        Name name,
+        string name,
         FixedList<IGenericParameterSyntax> genericParameters,
         ITypeNameSyntax? baseType,
         FixedList<ITypeNameSyntax> superTypes,
         Func<IClassDeclarationSyntax, (FixedList<IClassMemberDeclarationSyntax>, TextSpan)> parseMembers)
         : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, moveModifier,
-            nameSpan, name, genericParameters, superTypes)
+            nameSpan, StandardTypeName.Create(name, genericParameters.Count), genericParameters, superTypes)
     {
         AbstractModifier = abstractModifier;
         IsAbstract = AbstractModifier is not null;

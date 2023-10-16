@@ -11,11 +11,11 @@ internal abstract class ParameterSyntax : Syntax, IParameterSyntax
 {
     [DebuggerHidden]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public Name? Name { get; }
+    public SimpleName? Name { get; }
     public abstract IPromise<DataType> DataType { get; }
     public bool Unused { get; }
 
-    protected ParameterSyntax(TextSpan span, Name? name)
+    protected ParameterSyntax(TextSpan span, SimpleName? name)
         : base(span)
     {
         Name = name;

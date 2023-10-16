@@ -1,7 +1,5 @@
-using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Moq;
 using Xunit;
 using DT = Azoth.Tools.Bootstrap.Compiler.Types.DataType;
 
@@ -22,8 +20,7 @@ public class SymbolTests : SymbolTestFixture
     public void Symbol_in_namespace_is_not_global()
     {
         var ns = Namespace();
-        var className = Name("My_Class");
-        var type = DeclaredObjectType.Create(ns.Package!.Name, ns.Name, className, false);
+        var type = DeclaredObjectType.Create(ns.Package!.Name, ns.Name, "My_Class", false);
         var symbol = new ObjectTypeSymbol(ns, type);
 
         Assert.False(symbol.IsGlobal);

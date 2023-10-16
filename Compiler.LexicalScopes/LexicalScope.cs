@@ -12,10 +12,10 @@ public abstract class LexicalScope
 {
     internal abstract PackagesScope ContainingPackagesScope { get; }
 
-    public virtual PackageSymbol? LookupPackage(Name name)
+    public virtual PackageSymbol? LookupPackage(SimpleName name)
         => ContainingPackagesScope.LookupPackage(name);
 
-    public abstract IEnumerable<IPromise<Symbol>> LookupInGlobalScope(TypeName name);
+    public abstract IEnumerable<IPromise<Symbol>> LookupInGlobalScope(Name name);
 
-    public abstract IEnumerable<IPromise<Symbol>> Lookup(TypeName name, bool includeNested = true);
+    public abstract IEnumerable<IPromise<Symbol>> Lookup(Name name, bool includeNested = true);
 }

@@ -15,11 +15,11 @@ public abstract class DeclaredReferenceType : IEquatable<DeclaredReferenceType>
 {
     public static readonly DeclaredAnyType Any = DeclaredAnyType.Instance;
 
-    public abstract Name? ContainingPackage { get; }
+    public abstract SimpleName? ContainingPackage { get; }
 
     public abstract NamespaceName ContainingNamespace { get; }
 
-    public abstract TypeName Name { get; }
+    public abstract Name Name { get; }
 
     public abstract ReferenceType With(ReferenceCapability capability, FixedList<DataType> typeArguments);
 

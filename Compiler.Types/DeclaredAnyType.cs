@@ -13,9 +13,9 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
     private DeclaredAnyType() { }
     #endregion
 
-    public override Name? ContainingPackage => null;
+    public override SimpleName? ContainingPackage => null;
     public override NamespaceName ContainingNamespace => NamespaceName.Global;
-    public override TypeName Name => SpecialTypeName.Any;
+    public override Name Name => SpecialTypeName.Any;
 
     public override AnyType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
     {

@@ -11,11 +11,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// </summary>
 public sealed class FunctionSymbol : FunctionOrMethodSymbol
 {
-    public override Name Name { get; }
+    public override SimpleName Name { get; }
 
     public FunctionSymbol(
         Symbol containingSymbol,
-        Name name,
+        SimpleName name,
         FixedList<ParameterType> parameterDataTypes,
         ReturnType returnType)
         : base(containingSymbol, name, parameterDataTypes, returnType)
@@ -25,7 +25,7 @@ public sealed class FunctionSymbol : FunctionOrMethodSymbol
 
     public FunctionSymbol(
         Symbol containingSymbol,
-        Name name,
+        SimpleName name,
         FixedList<ParameterType> parameterDataTypes)
         : this(containingSymbol, name, parameterDataTypes, ReturnType.Void)
     {

@@ -20,12 +20,12 @@ internal class TraitDeclarationSyntax : TypeDeclarationSyntax<ITraitMemberDeclar
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
         TextSpan nameSpan,
-        Name name,
+        string name,
         FixedList<IGenericParameterSyntax> genericParameters,
         FixedList<ITypeNameSyntax> superTypes,
         Func<ITraitDeclarationSyntax, (FixedList<ITraitMemberDeclarationSyntax>, TextSpan)> parseMembers)
         : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, moveModifier,
-            nameSpan, name, genericParameters, superTypes)
+            nameSpan, StandardTypeName.Create(name, genericParameters.Count), genericParameters, superTypes)
     {
         var (members, bodySpan) = parseMembers(this);
         Members = members;
@@ -42,6 +42,4 @@ internal class TraitDeclarationSyntax : TypeDeclarationSyntax<ITraitMemberDeclar
         var generics = GenericParameters.Any() ? $"[{string.Join(", ", GenericParameters)}]" : "";
         return $"{modifiers}trait {Name}{generics} {{ … }}";
     }
-
-
 }

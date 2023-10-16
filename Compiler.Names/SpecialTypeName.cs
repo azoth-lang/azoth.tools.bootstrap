@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 /// They are distinguished because for example `bool` is a special name, but
 /// `\"bool"` is a regular name with the same text.
 /// </summary>
-public sealed class SpecialTypeName : TypeName
+public sealed class SpecialTypeName : Name
 {
     #region Empty and Simple Types
     public static readonly SpecialTypeName Void = new("void");
@@ -35,9 +35,10 @@ public sealed class SpecialTypeName : TypeName
     #endregion
 
     private SpecialTypeName(string text)
-        : base(text) { }
+        : base(text, 0) { }
 
-    public override bool Equals(TypeName? other)
+    #region Equality
+    public override bool Equals(Name? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -45,6 +46,7 @@ public sealed class SpecialTypeName : TypeName
     }
 
     public override int GetHashCode() => HashCode.Combine(typeof(SpecialTypeName), Text);
+    #endregion
 
     public override string ToString() => Text;
 }

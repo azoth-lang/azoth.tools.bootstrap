@@ -135,7 +135,7 @@ public static class TypeError
             3018, $"Cannot use `{capability.ToSourceString()}` on constant type `{type}`");
     }
 
-    public static Diagnostic BaseTypeMustBeClass(CodeFile file, Name className, ITypeNameSyntax typeName)
+    public static Diagnostic BaseTypeMustBeClass(CodeFile file, StandardTypeName className, ITypeNameSyntax typeName)
     {
         return new(file, typeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3019, $"Class `{className}` cannot have base class `{typeName}` because it is not a class");
@@ -154,7 +154,7 @@ public static class TypeError
             3021, "Cannot have `lent` `id`");
     }
 
-    public static Diagnostic SuperTypeMustBeClassOrTrait(CodeFile file, Name typeName, ITypeNameSyntax superTypeName)
+    public static Diagnostic SuperTypeMustBeClassOrTrait(CodeFile file, SimpleName typeName, ITypeNameSyntax superTypeName)
     {
         return new(file, superTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3022, $"Type `{typeName}` cannot have super type `{superTypeName}` because it is not a trait or class");

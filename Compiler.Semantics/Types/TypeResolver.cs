@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -19,11 +20,19 @@ public class TypeResolver
 {
     private readonly CodeFile file;
     private readonly Diagnostics diagnostics;
+    private readonly ITypeSymbolBuilder? typeSymbolBuilder;
 
     public TypeResolver(CodeFile file, Diagnostics diagnostics)
     {
         this.file = file;
         this.diagnostics = diagnostics;
+    }
+
+    public TypeResolver(CodeFile file, Diagnostics diagnostics, ITypeSymbolBuilder typeSymbolBuilder)
+    {
+        this.file = file;
+        this.diagnostics = diagnostics;
+        this.typeSymbolBuilder = typeSymbolBuilder;
     }
 
     [return: NotNullIfNotNull(nameof(typeSyntax))]
@@ -138,7 +147,7 @@ public class TypeResolver
         FixedList<DataType> typeArguments,
         Func<TypeSymbol, FixedList<DataType>, DataType> createType)
     {
-        var symbols = typeName.LookupInContainingScope().ToFixedList();
+        var symbols = typeName.LookupInContainingScope().Select(EnsureBuilt).ToFixedList();
         switch (symbols.Count)
         {
             case 0:
@@ -154,6 +163,14 @@ public class TypeResolver
                 typeName.ReferencedSymbol.Fulfill(null);
                 return typeName.NamedType = DataType.Unknown;
         }
+    }
+
+    private TypeSymbol EnsureBuilt(IPromise<TypeSymbol> promise)
+    {
+        if (promise.IsFulfilled) return promise.Result;
+        if (typeSymbolBuilder is null)
+            throw new InvalidOperationException("All type symbols should already be built");
+        return typeSymbolBuilder.Build(promise);
     }
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]

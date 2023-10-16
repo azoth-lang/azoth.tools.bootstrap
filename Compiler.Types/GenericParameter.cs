@@ -1,5 +1,6 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -10,12 +11,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// That is why this class exists to ease refactoring later.</remarks>
 public sealed class GenericParameter : IEquatable<GenericParameter>
 {
-    public GenericParameter(Name name)
+    public GenericParameter(StandardTypeName name)
     {
+        Requires.That(nameof(name), name.GenericParameterCount == 0, "Cannot have generic parameters");
         Name = name;
     }
 
-    public Name Name { get; }
+    public StandardTypeName Name { get; }
 
     // TODO When parameters can be values not just types, add: public DataType DataType { get; }
 

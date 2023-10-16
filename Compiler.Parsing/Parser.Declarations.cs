@@ -109,7 +109,7 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var fn = Tokens.Expect<IFunctionKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
-        Name name = identifier.Value;
+        SimpleName name = identifier.Value;
         var bodyParser = BodyParser();
         var parameters = bodyParser.ParseParameters(bodyParser.ParseFunctionParameter);
         var @return = ParseReturn();
@@ -162,7 +162,7 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var classKeywordSpan = Tokens.Expect<IClassKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
-        Name name = identifier.Value;
+        var name = identifier.Value;
         var generic = AcceptGenericParameters();
         var genericParameters = generic?.Parameters ?? FixedList<IGenericParameterSyntax>.Empty;
         ITypeNameSyntax? baseType = null;
@@ -234,7 +234,7 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var traitKeywordSpan = Tokens.Expect<ITraitKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
-        Name name = identifier.Value;
+        var name = identifier.Value;
         var generic = AcceptGenericParameters();
         var genericParameters = generic?.Parameters ?? FixedList<IGenericParameterSyntax>.Empty;
         var superTypes = ParseSuperTypes();
@@ -280,7 +280,7 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var fn = Tokens.Expect<IFunctionKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
-        Name name = identifier.Value;
+        SimpleName name = identifier.Value;
         var bodyParser = BodyParser();
         var parameters = bodyParser.ParseParameters(bodyParser.ParseMethodParameter);
         var @return = ParseReturn();
@@ -345,7 +345,7 @@ public partial class Parser
         // We should only be called when there is a binding keyword
         var binding = Tokens.Required<IBindingToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
-        Name name = identifier.Value;
+        SimpleName name = identifier.Value;
         Tokens.Expect<IColonToken>();
         var type = ParseType();
         IExpressionSyntax? initializer = null;
@@ -367,7 +367,7 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var fn = Tokens.Expect<IFunctionKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
-        Name name = identifier.Value;
+        SimpleName name = identifier.Value;
         var bodyParser = BodyParser();
         var parameters = bodyParser.ParseParameters(bodyParser.ParseMethodParameter);
         var @return = ParseReturn();
@@ -434,7 +434,7 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var newKeywordSpan = Tokens.Expect<INewKeywordToken>();
         var identifier = Tokens.AcceptToken<IIdentifierToken>();
-        var name = identifier is null ? null : (Name)identifier.Value;
+        var name = identifier is null ? null : (SimpleName)identifier.Value;
         var bodyParser = BodyParser();
         // Self parameter is expected to be after the current token which is expected to be `(`
         var expectedSelfParameterLocation = Tokens.Current.Span.AtEnd();

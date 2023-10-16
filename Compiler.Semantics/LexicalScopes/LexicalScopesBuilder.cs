@@ -96,7 +96,7 @@ public class LexicalScopesBuilder
         return allPackagesGlobalScope;
     }
 
-    private static FixedDictionary<TypeName, FixedSet<IPromise<Symbol>>> ToDictionary(
+    private static FixedDictionary<Name, FixedSet<IPromise<Symbol>>> ToDictionary(
         IEnumerable<NonMemberSymbol> symbols)
     {
         return symbols.GroupBy(s => s.Name, s => s.Symbol)

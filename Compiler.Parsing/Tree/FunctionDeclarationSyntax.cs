@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
@@ -10,23 +9,10 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class FunctionDeclarationSyntax : InvocableDeclarationSyntax, IFunctionDeclarationSyntax
+internal sealed class FunctionDeclarationSyntax : InvocableNonMemberEntityDeclarationSyntax, IFunctionDeclarationSyntax
 {
-    public NamespaceName ContainingNamespaceName { get; }
-
-    private NamespaceOrPackageSymbol? containingNamespaceSymbol;
-    public NamespaceOrPackageSymbol ContainingNamespaceSymbol
-    {
-        get => containingNamespaceSymbol
-               ?? throw new InvalidOperationException($"{ContainingNamespaceSymbol} not yet assigned");
-        set
-        {
-            if (containingNamespaceSymbol is not null)
-                throw new InvalidOperationException($"Can't set {nameof(ContainingNamespaceSymbol)} repeatedly");
-            containingNamespaceSymbol = value;
-        }
-    }
-    public new Name Name { get; }
+    public new SimpleName Name { get; }
+    Name INonMemberEntityDeclarationSyntax.Name => Name;
     public new FixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public IBodySyntax Body { [DebuggerStepThrough] get; }
@@ -38,13 +24,12 @@ internal class FunctionDeclarationSyntax : InvocableDeclarationSyntax, IFunction
         CodeFile file,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
-        Name name,
+        SimpleName name,
         FixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
         IBodySyntax body)
-        : base(span, file, accessModifier, nameSpan, name, parameters, new AcyclicPromise<FunctionSymbol>())
+        : base(containingNamespaceName, span, file, accessModifier, nameSpan, name, parameters, new AcyclicPromise<FunctionSymbol>())
     {
-        ContainingNamespaceName = containingNamespaceName;
         Name = name;
         Parameters = parameters;
         Body = body;

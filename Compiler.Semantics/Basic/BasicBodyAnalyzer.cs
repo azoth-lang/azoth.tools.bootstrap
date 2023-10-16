@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -530,6 +531,8 @@ public class BasicBodyAnalyzer
                 exp.DataType = new IntegerConstantType(exp.Value);
                 return new ExpressionResult(exp);
             case IStringLiteralExpressionSyntax exp:
+                if (stringSymbol is null)
+                    diagnostics.Add(TypeError.NotImplemented(file, exp.Span, "Could not find string type for string literal."));
                 exp.DataType = stringSymbol?.DeclaresType.With(ReferenceCapability.Constant, FixedList<DataType>.Empty)
                                ?? (DataType)DataType.Unknown;
                 return new ExpressionResult(exp);
@@ -980,7 +983,7 @@ public class BasicBodyAnalyzer
 
                 // Check for assigning into fields (self is handled by binding mutability analysis)
                 if (exp.Context is not ISelfExpressionSyntax
-                    && member.ReferencedSymbol.Result is BindingSymbol { IsMutableBinding: false, Name: Name name })
+                    && member.ReferencedSymbol.Result is BindingSymbol { IsMutableBinding: false, Name: SimpleName name })
                     diagnostics.Add(SemanticError.CannotAssignImmutableField(file, exp.Span, name));
 
                 type = type.AccessedVia(contextResult.Type);
@@ -1042,7 +1045,7 @@ public class BasicBodyAnalyzer
             case ISimpleNameExpressionSyntax exp:
                 results = InferArgumentTypes(invocation.Arguments, flow);
                 functionSymbols = exp.LookupInContainingScope()
-                                    .Select(p => p.As<FunctionSymbol>())
+                                    .Select(p => p.Downcast().As<FunctionSymbol>())
                                     .WhereNotNull()
                                     .Select(p => p.Result).ToFixedSet();
                 break;
@@ -1055,7 +1058,7 @@ public class BasicBodyAnalyzer
 
     private ExpressionResult InferMethodInvocationType(
         IInvocationExpressionSyntax invocation,
-        Name methodName,
+        SimpleName methodName,
         ArgumentResults arguments,
         FlowState flow)
     {
@@ -1306,7 +1309,7 @@ public class BasicBodyAnalyzer
 
         // First look for local variables
         var variableSymbols = nameExpression.LookupInContainingScope()
-                                    .Select(p => p.As<VariableSymbol>())
+                                    .Select(p => p.Downcast().As<VariableSymbol>())
                                     .WhereNotNull()
                                     .ToFixedList();
         var symbolCount = variableSymbols.Count;

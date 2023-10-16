@@ -18,7 +18,7 @@ internal class ConcreteMethodDeclarationSyntax : MethodDeclarationSyntax, IConcr
         CodeFile file,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
-        Name name,
+        SimpleName name,
         ISelfParameterSyntax selfParameter,
         FixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,

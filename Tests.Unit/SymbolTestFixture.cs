@@ -17,10 +17,10 @@ public abstract class SymbolTestFixture
     protected PackageSymbol Package(string? name = null)
         => new(Name(name) ?? DefaultName("package"));
 
-    protected Name DefaultName(string prefix) => new($"⧫{prefix}_{++unique}");
+    protected SimpleName DefaultName(string prefix) => new($"⧫{prefix}_{++unique}");
 
     [return: NotNullIfNotNull(nameof(name))]
-    protected static Name? Name(string? name = null) => name is null ? null : new Name(name);
+    protected static SimpleName? Name(string? name = null) => name is null ? null : new SimpleName(name);
 
     protected FixedList<ParameterType> Params(int? count = null)
         => Enumerable.Range(1, count ?? ++unique).Select(_ => ParameterType.Int).ToFixedList();
@@ -91,7 +91,7 @@ public abstract class SymbolTestFixture
 
     protected ObjectType DataType(
         string? name = null,
-        Name? containingPackage = null,
+        SimpleName? containingPackage = null,
         NamespaceName? containingNamespace = null,
         bool? isConst = null,
         ReferenceCapability? referenceCapability = null)
@@ -107,7 +107,7 @@ public abstract class SymbolTestFixture
 
     protected ReturnType ReturnType(
         string? name = null,
-        Name? containingPackage = null,
+        SimpleName? containingPackage = null,
         NamespaceName? containingNamespace = null,
         bool? isConst = null,
         ReferenceCapability? referenceCapability = null)

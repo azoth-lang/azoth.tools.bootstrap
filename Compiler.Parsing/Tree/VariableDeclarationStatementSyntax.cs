@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class VariableDeclarationStatementSyntax : StatementSyntax, IVariableDeclarationStatementSyntax
 {
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
-    public Name Name { [DebuggerStepThrough] get; }
+    public SimpleName Name { [DebuggerStepThrough] get; }
     public Promise<int?> DeclarationNumber { [DebuggerStepThrough] get; } = new Promise<int?>();
     public Promise<VariableSymbol> Symbol { [DebuggerStepThrough] get; } = new Promise<VariableSymbol>();
     IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
@@ -23,7 +23,7 @@ internal class VariableDeclarationStatementSyntax : StatementSyntax, IVariableDe
     public VariableDeclarationStatementSyntax(
         TextSpan span,
         bool isMutableBinding,
-        Name name,
+        SimpleName name,
         TextSpan nameSpan,
         ITypeSyntax? typeSyntax,
         IReferenceCapabilitySyntax? capability,

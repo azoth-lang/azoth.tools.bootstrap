@@ -8,10 +8,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class GenericParameterSyntax : Syntax, IGenericParameterSyntax
 {
-    public Name Name { get; }
+    public SimpleName Name { get; }
     public Promise<GenericParameterTypeSymbol> Symbol { get; } = new();
 
-    public GenericParameterSyntax(TextSpan span, Name name)
+    public GenericParameterSyntax(TextSpan span, SimpleName name)
         : base(span)
     {
         Name = name;

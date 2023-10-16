@@ -8,14 +8,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 
 internal class MethodSignature : IEquatable<MethodSignature>
 {
-    public Name Name { get; }
+    public SimpleName Name { get; }
     public ParameterType SelfType { get; }
     public FixedList<ParameterType> ParameterTypes { get; }
     public ReturnType ReturnType { get; }
     private readonly int hashCode;
 
     public MethodSignature(
-        Name name,
+        SimpleName name,
         ParameterType selfType,
         FixedList<ParameterType> parameterTypes,
         ReturnType returnType)

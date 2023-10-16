@@ -1,4 +1,3 @@
-using System;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -8,24 +7,8 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class NamespaceDeclarationSyntax : DeclarationSyntax, INamespaceDeclarationSyntax
+internal class NamespaceDeclarationSyntax : NonMemberDeclarationSyntax, INamespaceDeclarationSyntax
 {
-    public NamespaceName ContainingNamespaceName { get; }
-
-    private NamespaceOrPackageSymbol? containingNamespaceSymbol;
-    public NamespaceOrPackageSymbol ContainingNamespaceSymbol
-    {
-        get =>
-            containingNamespaceSymbol
-            ?? throw new InvalidOperationException($"{ContainingNamespaceSymbol} not yet assigned");
-        set
-        {
-            if (containingNamespaceSymbol is not null)
-                throw new InvalidOperationException($"Can't set {nameof(ContainingNamespaceSymbol)} repeatedly");
-            containingNamespaceSymbol = value;
-        }
-    }
-
     /// <summary>
     /// Whether this namespace declaration is in the global namespace, the
     /// implicit file namespace is in the global namespace. As are namespaces
@@ -33,7 +16,7 @@ internal class NamespaceDeclarationSyntax : DeclarationSyntax, INamespaceDeclara
     /// </summary>
     public bool IsGlobalQualified { get; }
     public NamespaceName DeclaredNames { get; }
-    public new Name Name { get; }
+    public new SimpleName Name { get; }
     public NamespaceName FullName { get; }
     public new Promise<NamespaceOrPackageSymbol> Symbol { get; }
     public FixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
@@ -48,9 +31,8 @@ internal class NamespaceDeclarationSyntax : DeclarationSyntax, INamespaceDeclara
         TextSpan nameSpan,
         FixedList<IUsingDirectiveSyntax> usingDirectives,
         FixedList<INonMemberDeclarationSyntax> declarations)
-        : base(span, file, declaredNames.Segments[^1], nameSpan, new Promise<NamespaceOrPackageSymbol>())
+        : base(containingNamespaceName, span, file, declaredNames.Segments[^1], nameSpan, new Promise<NamespaceOrPackageSymbol>())
     {
-        ContainingNamespaceName = containingNamespaceName;
         DeclaredNames = declaredNames;
         FullName = containingNamespaceName.Qualify(declaredNames);
         Name = declaredNames.Segments[^1];
@@ -60,8 +42,5 @@ internal class NamespaceDeclarationSyntax : DeclarationSyntax, INamespaceDeclara
         Symbol = (Promise<NamespaceOrPackageSymbol>)base.Symbol;
     }
 
-    public override string ToString()
-    {
-        return $"namespace ::{FullName} {{ … }}";
-    }
+    public override string ToString() => $"namespace ::{FullName} {{ … }}";
 }

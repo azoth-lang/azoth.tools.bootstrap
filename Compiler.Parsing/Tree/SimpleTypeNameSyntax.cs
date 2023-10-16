@@ -31,19 +31,25 @@ internal class SimpleTypeNameSyntax : TypeSyntax, ISimpleTypeNameSyntax
             containingLexicalScope = value;
         }
     }
-    public TypeName Name { get; }
+    public Name Name { get; }
     public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
 
-    public SimpleTypeNameSyntax(TextSpan span, TypeName name)
+    public SimpleTypeNameSyntax(TextSpan span, string name)
         : base(span)
     {
         Name = name;
     }
 
-    public IEnumerable<TypeSymbol> LookupInContainingScope()
+    public SimpleTypeNameSyntax(TextSpan span, SpecialTypeName name)
+        : base(span)
+    {
+        Name = name;
+    }
+
+    public IEnumerable<IPromise<TypeSymbol>> LookupInContainingScope()
     {
         if (containingLexicalScope is not null)
-            return containingLexicalScope.Lookup(Name).Select(p => p.As<TypeSymbol>()).WhereNotNull().Select(p => p.Result);
+            return containingLexicalScope.Lookup(Name).Select(p => p.Downcast().As<TypeSymbol>()).WhereNotNull();
 
         throw new InvalidOperationException($"Can't lookup type name without {nameof(ContainingLexicalScope)}");
     }

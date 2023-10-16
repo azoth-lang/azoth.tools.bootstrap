@@ -12,14 +12,14 @@ public sealed class VariableSymbol : NamedBindingSymbol
     public static VariableSymbol CreateLocal(
         InvocableSymbol containingSymbol,
         bool isMutableBinding,
-        Name name,
+        SimpleName name,
         int? declarationNumber,
         DataType dataType)
         => new(containingSymbol, isMutableBinding, false, name, declarationNumber, dataType, false);
 
     public static VariableSymbol CreateParameter(
         InvocableSymbol containingSymbol,
-        Name name,
+        SimpleName name,
         int? declarationNumber,
         bool isMutableBinding,
         bool isLentBinding,
@@ -35,7 +35,7 @@ public sealed class VariableSymbol : NamedBindingSymbol
         InvocableSymbol containingSymbol,
         bool isMutableBinding,
         bool isLentBinding,
-        Name name,
+        SimpleName name,
         int? declarationNumber,
         DataType dataType,
         bool isParameter)

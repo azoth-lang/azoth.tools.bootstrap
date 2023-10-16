@@ -12,7 +12,7 @@ internal class FieldDeclarationSyntax : MemberDeclarationSyntax, IFieldDeclarati
 {
     public new IClassDeclarationSyntax DeclaringType { get; }
     public bool IsMutableBinding { get; }
-    public new Name Name { get; }
+    public new SimpleName Name { get; }
     public new AcyclicPromise<FieldSymbol> Symbol { [DebuggerStepThrough] get; }
     IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
     public ITypeSyntax Type { get; }
@@ -25,7 +25,7 @@ internal class FieldDeclarationSyntax : MemberDeclarationSyntax, IFieldDeclarati
         IAccessModifierToken? accessModifier,
         bool mutableBinding,
         TextSpan nameSpan,
-        Name name,
+        SimpleName name,
         ITypeSyntax type,
         IExpressionSyntax? initializer)
         : base(declaringClass, span, file, accessModifier, nameSpan, name, new AcyclicPromise<FieldSymbol>())

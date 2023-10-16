@@ -30,23 +30,21 @@ internal class ParameterizedTypeSyntax : TypeSyntax, IParameterizedTypeSyntax
         }
     }
     public Name Name { get; }
-    TypeName ITypeNameSyntax.Name => Name;
     public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
     public FixedList<ITypeSyntax> TypeArguments { get; }
 
-    public ParameterizedTypeSyntax(TextSpan span, Name name, FixedList<ITypeSyntax> typeArguments)
+    public ParameterizedTypeSyntax(TextSpan span, string name, FixedList<ITypeSyntax> typeArguments)
         : base(span)
     {
         TypeArguments = typeArguments;
-        Name = name;
+        Name = StandardTypeName.Create(name, typeArguments.Count);
     }
 
-    public IEnumerable<TypeSymbol> LookupInContainingScope()
+    public IEnumerable<IPromise<TypeSymbol>> LookupInContainingScope()
     {
         if (containingLexicalScope is not null)
-            return containingLexicalScope.Lookup(Name).Select(p => p.As<ObjectTypeSymbol>())
-                .WhereNotNull().Select(p => p.Result)
-                .Where(s => s.DeclaresType.GenericParameters.Count == TypeArguments.Count);
+            return containingLexicalScope.Lookup(Name).Select(p => p.Downcast().As<ObjectTypeSymbol>())
+                .WhereNotNull();
 
         throw new InvalidOperationException($"Can't lookup type name without {nameof(ContainingLexicalScope)}");
     }

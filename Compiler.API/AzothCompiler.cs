@@ -29,15 +29,15 @@ public class AzothCompiler
     public bool SaveReachabilityGraphs { get; set; }
 
     public Task<Package> CompilePackageAsync(
-        Name name,
+        SimpleName name,
         IEnumerable<ICodeFileSource> files,
-        FixedDictionary<Name, Task<Package>> referenceTasks)
+        FixedDictionary<SimpleName, Task<Package>> referenceTasks)
         => CompilePackageAsync(name, files, referenceTasks, TaskScheduler.Default);
 
     public async Task<Package> CompilePackageAsync(
-        Name name,
+        SimpleName name,
         IEnumerable<ICodeFileSource> fileSources,
-        FixedDictionary<Name, Task<Package>> referenceTasks,
+        FixedDictionary<SimpleName, Task<Package>> referenceTasks,
         TaskScheduler taskScheduler)
     {
         var lexer = new Lexer();
@@ -86,13 +86,13 @@ public class AzothCompiler
     public Package CompilePackage(
         string name,
         IEnumerable<ICodeFileSource> fileSources,
-        FixedDictionary<Name, Package> references)
+        FixedDictionary<SimpleName, Package> references)
         => CompilePackage(name, fileSources.Select(s => s.Load()), references);
 
     public Package CompilePackage(
         string name,
         IEnumerable<CodeFile> files,
-        FixedDictionary<Name, Package> references)
+        FixedDictionary<SimpleName, Package> references)
     {
         var lexer = new Lexer();
         var parser = new CompilationUnitParser();

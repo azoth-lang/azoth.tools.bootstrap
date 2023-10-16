@@ -17,7 +17,7 @@ public static class BorrowError
     public static Diagnostic SharedValueDoesNotLiveLongEnough(
         CodeFile file,
         TextSpan span,
-        Name? variable)
+        SimpleName? variable)
     {
         var msg = variable is null ? "Shared value does not live long enough"
             : $"Value shared by `{variable}` does not live long enough";

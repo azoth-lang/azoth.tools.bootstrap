@@ -9,12 +9,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class MethodSymbol : FunctionOrMethodSymbol
 {
     public override TypeSymbol ContainingSymbol { get; }
-    public override Name Name { get; }
+    public override SimpleName Name { get; }
     public ParameterType SelfParameterType { get; }
 
     public MethodSymbol(
         TypeSymbol containingSymbol,
-        Name name,
+        SimpleName name,
         ParameterType selfParameterType,
         FixedList<ParameterType> parameterTypes,
         ReturnType returnType)

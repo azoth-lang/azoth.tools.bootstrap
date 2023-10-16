@@ -117,7 +117,7 @@ internal static class ParseError
             2015, "An abstract method must be declared `abstract`");
     }
 
-    public static Diagnostic AssociatedFunctionMissingBody(CodeFile file, TextSpan span, Name name)
+    public static Diagnostic AssociatedFunctionMissingBody(CodeFile file, TextSpan span, SimpleName name)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2016, $"Associated function `{name}` is missing a method body");

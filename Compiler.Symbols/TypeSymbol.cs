@@ -9,9 +9,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
     typeof(GenericParameterTypeSymbol))]
 public abstract class TypeSymbol : Symbol
 {
-    public override TypeName Name { get; }
+    public override Name Name { get; }
 
-    protected TypeSymbol(Symbol? containingSymbol, TypeName name)
+    protected TypeSymbol(Symbol? containingSymbol, Name name)
         : base(containingSymbol, name)
     {
         Name = name;

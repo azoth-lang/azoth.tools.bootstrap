@@ -11,26 +11,20 @@ public class PackagesScope : LexicalScope
 {
     internal override PackagesScope ContainingPackagesScope => this;
     public PackageSymbol CurrentPackage { get; }
-    private readonly FixedDictionary<Name, PackageSymbol> packageAliases;
+    private readonly FixedDictionary<SimpleName, PackageSymbol> packageAliases;
 
-    public PackagesScope(PackageSymbol currentPackage, FixedDictionary<Name, PackageSymbol> packageAliases)
+    public PackagesScope(PackageSymbol currentPackage, FixedDictionary<SimpleName, PackageSymbol> packageAliases)
     {
         CurrentPackage = currentPackage;
         this.packageAliases = packageAliases;
     }
 
-    public override PackageSymbol? LookupPackage(Name name)
-    {
-        return packageAliases.TryGetValue(name, out var package) ? package : null;
-    }
+    public override PackageSymbol? LookupPackage(SimpleName name)
+        => packageAliases.TryGetValue(name, out var package) ? package : null;
 
-    public override IEnumerable<IPromise<Symbol>> LookupInGlobalScope(TypeName name)
-    {
-        return Enumerable.Empty<IPromise<Symbol>>();
-    }
+    public override IEnumerable<IPromise<Symbol>> LookupInGlobalScope(Name name)
+        => Enumerable.Empty<IPromise<Symbol>>();
 
-    public override IEnumerable<IPromise<Symbol>> Lookup(TypeName name, bool includeNested = true)
-    {
-        return Enumerable.Empty<IPromise<Symbol>>();
-    }
+    public override IEnumerable<IPromise<Symbol>> Lookup(Name name, bool includeNested = true)
+        => Enumerable.Empty<IPromise<Symbol>>();
 }

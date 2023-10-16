@@ -10,11 +10,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
     typeof(MethodSymbol))]
 public abstract class FunctionOrMethodSymbol : InvocableSymbol
 {
-    public override Name Name { get; }
+    public override SimpleName Name { get; }
 
     protected FunctionOrMethodSymbol(
         Symbol containingSymbol,
-        Name name,
+        SimpleName name,
         FixedList<ParameterType> parameterTypes,
         ReturnType returnType)
         : base(containingSymbol, name, parameterTypes, returnType)

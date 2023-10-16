@@ -25,7 +25,7 @@ internal class NonMemberSymbol
     /// The namespace this symbol is declared in.
     /// </summary>
     public NamespaceName ContainingNamespace { get; }
-    public TypeName Name { get; }
+    public Name Name { get; }
     /// <summary>
     /// The namespace that must exist for this symbol.
     /// </summary>
