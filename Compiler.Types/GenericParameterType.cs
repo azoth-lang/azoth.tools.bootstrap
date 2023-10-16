@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -10,15 +10,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class GenericParameterType : NonEmptyType
 {
-    public GenericParameterType(DeclaredObjectType declaringType, GenericParameter parameter)
-    {
-        if (!declaringType.GenericParameters.Contains(parameter))
-            throw new ArgumentException("Must be declared with the type", nameof(parameter));
-        DeclaringType = declaringType;
-        Parameter = parameter;
-    }
-
-    public DeclaredObjectType DeclaringType { get; }
+    public Promise<DeclaredObjectType> DeclaringTypePromise { get; }
+    public DeclaredObjectType DeclaringType => DeclaringTypePromise.Result;
 
     public GenericParameter Parameter { get; }
 
@@ -28,6 +21,12 @@ public sealed class GenericParameterType : NonEmptyType
 
     // TODO the type semantics isn't actually known because it is generic
     public override TypeSemantics Semantics => TypeSemantics.CopyValue;
+
+    public GenericParameterType(Promise<DeclaredObjectType> declaringTypePromise, GenericParameter parameter)
+    {
+        DeclaringTypePromise = declaringTypePromise;
+        Parameter = parameter;
+    }
 
     #region Equals
     public override bool Equals(DataType? other)
@@ -42,7 +41,7 @@ public sealed class GenericParameterType : NonEmptyType
     public override int GetHashCode() => HashCode.Combine(DeclaringType, Parameter);
     #endregion
 
-    public override string ToSourceCodeString() => $"{DeclaringType}.{Parameter}";
+    public override string ToSourceCodeString() => $"{DeclaringTypePromise}.{Parameter}";
 
-    public override string ToILString() => $"{DeclaringType}.{Parameter}";
+    public override string ToILString() => $"{DeclaringTypePromise}.{Parameter}";
 }

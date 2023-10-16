@@ -1,6 +1,5 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
-using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -10,16 +9,15 @@ public sealed class GenericParameterTypeSymbol : TypeSymbol
     private readonly IPromise<ObjectTypeSymbol> containingSymbol;
     public override PackageSymbol Package => ContainingSymbol.Package ?? throw new ArgumentNullException();
     public override ObjectTypeSymbol ContainingSymbol => containingSymbol.Result;
-
-    public Promise<GenericParameterType> DeclaresTypePromise { get; } = new Promise<GenericParameterType>();
-    public GenericParameterType DeclaresType => DeclaresTypePromise.Result;
+    public GenericParameterType DeclaresType { get; }
 
     public GenericParameterTypeSymbol(
         IPromise<ObjectTypeSymbol> containingSymbol,
-        SimpleName name)
-        : base(name)
+        GenericParameterType declaresType)
+        : base(declaresType.Name)
     {
         this.containingSymbol = containingSymbol;
+        DeclaresType = declaresType;
     }
 
     #region Equals

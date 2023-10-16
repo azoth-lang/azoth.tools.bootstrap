@@ -4,4 +4,5 @@ public interface IPromise<out T>
 {
     bool IsFulfilled { get; }
     T Result { get; }
+    string ToString();
 }

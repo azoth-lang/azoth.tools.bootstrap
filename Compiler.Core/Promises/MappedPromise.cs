@@ -19,4 +19,6 @@ internal class MappedPromise<T, S> : IPromise<S>
     public bool IsFulfilled => promise.IsFulfilled;
 
     public S Result => selector(promise.Result);
+
+    public override string ToString() => IsFulfilled ? Result?.ToString() ?? "⧼null⧽" : "⧼pending⧽";
 }

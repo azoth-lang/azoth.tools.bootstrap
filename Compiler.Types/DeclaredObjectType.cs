@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -14,27 +15,27 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         NamespaceName containingNamespace,
         string name,
         bool isConst)
-        => new(containingPackage, containingNamespace, name, isConst, FixedList<GenericParameter>.Empty, FixedSet<DeclaredObjectType>.Empty);
+        => new(containingPackage, containingNamespace, name, isConst, FixedList<GenericParameterType>.Empty, FixedSet<DeclaredObjectType>.Empty);
 
     public static DeclaredObjectType Create(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         string name,
         bool isConst,
-        FixedList<GenericParameter> genericParameters,
+        FixedList<GenericParameterType> genericParameterTypes,
         FixedSet<DeclaredObjectType> superTypes)
-        => new(containingPackage, containingNamespace, StandardTypeName.Create(name, genericParameters.Count), isConst, genericParameters, superTypes);
+        => new(containingPackage, containingNamespace, StandardTypeName.Create(name, genericParameterTypes.Count), isConst, genericParameterTypes, superTypes);
 
     public static DeclaredObjectType Create(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         StandardTypeName name,
         bool isConst,
-        FixedList<GenericParameter> genericParameters,
+        FixedList<GenericParameterType> genericParametersTypes,
         FixedSet<DeclaredObjectType> superTypes)
     {
-        Requires.That(nameof(genericParameters), name.GenericParameterCount == genericParameters.Count, "Count must match name count");
-        return new(containingPackage, containingNamespace, name, isConst, genericParameters, superTypes);
+        Requires.That(nameof(genericParametersTypes), name.GenericParameterCount == genericParametersTypes.Count, "Count must match name count");
+        return new(containingPackage, containingNamespace, name, isConst, genericParametersTypes, superTypes);
     }
 
 
@@ -44,24 +45,34 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         string name,
         bool isConst,
         params GenericParameter[] genericParameters)
-        => new(containingPackage, containingNamespace, StandardTypeName.Create(name, genericParameters.Length), isConst, FixedList.Create(genericParameters), FixedSet<DeclaredObjectType>.Empty);
+    {
+        var declaringTypePromise = new Promise<DeclaredObjectType>();
+        var genericParametersTypes = genericParameters.Select(p => new GenericParameterType(declaringTypePromise, p)).ToFixedList();
+        return new(containingPackage, containingNamespace, StandardTypeName.Create(name, genericParameters.Length),
+            isConst, genericParametersTypes, FixedSet<DeclaredObjectType>.Empty);
+    }
 
     private DeclaredObjectType(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         StandardTypeName name,
         bool isConst,
-        FixedList<GenericParameter> genericParameters,
+        FixedList<GenericParameterType> genericParametersTypes,
         FixedSet<DeclaredObjectType> superTypes)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
         Name = name;
         IsConst = isConst;
-        GenericParameters = genericParameters;
-        GenericParameterTypes = GenericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList();
+        GenericParameters = genericParametersTypes.Select(t => t.Parameter).ToFixedList();
+        GenericParameterTypes = genericParametersTypes;
         GenericParameterDataTypes = GenericParameterTypes.ToFixedList<DataType>();
         SuperTypes = superTypes;
+
+        // Fulfill the declaring type promise so the parameters are associated to this type
+        var declaringTypePromise = genericParametersTypes.Select(t => t.DeclaringTypePromise)
+                                                         .Distinct().SingleOrDefault();
+        declaringTypePromise?.Fulfill(this);
     }
 
     public override SimpleName ContainingPackage { get; }

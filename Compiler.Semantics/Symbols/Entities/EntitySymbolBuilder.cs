@@ -172,13 +172,12 @@ public class EntitySymbolBuilder
         if (!@class.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
         var packageName = @class.ContainingNamespaceSymbol.Package!.Name;
-        var typeParameters = @class.GenericParameters.Select(p => new GenericParameter(p.Name)).ToFixedList();
-        var genericParameterSymbols = BuildGenericParameterSymbols(@class).ToFixedList();
+        var typeParameters = BuildGenericParameterTypes(@class);
+        var genericParameterSymbols = BuildGenericParameterSymbols(@class, typeParameters).ToFixedList();
 
         var superTypes = EvaluateSupertypes(@class, typeDeclarations).ToFixedSet();
         var classType = DeclaredObjectType.Create(packageName, @class.ContainingNamespaceName,
             @class.Name, @class.IsConst, typeParameters, superTypes);
-        FulfillTypePromises(genericParameterSymbols, classType);
 
         var classSymbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(classSymbol);
@@ -199,13 +198,12 @@ public class EntitySymbolBuilder
         if (!trait.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
         var packageName = trait.ContainingNamespaceSymbol.Package!.Name;
-        var typeParameters = trait.GenericParameters.Select(p => new GenericParameter(p.Name)).ToFixedList();
-        var genericParameterSymbols = BuildGenericParameterSymbols(trait).ToFixedList();
+        var typeParameters = BuildGenericParameterTypes(trait);
+        var genericParameterSymbols = BuildGenericParameterSymbols(trait, typeParameters).ToFixedList();
 
         var superTypes = EvaluateSupertypes(trait, typeDeclarations).ToFixedSet();
-        var traitType = DeclaredObjectType.Create(packageName, trait.ContainingNamespaceName, trait.Name,
-            trait.IsConst, typeParameters, superTypes);
-        FulfillTypePromises(genericParameterSymbols, traitType);
+        var traitType = DeclaredObjectType.Create(packageName, trait.ContainingNamespaceName,
+            trait.Name, trait.IsConst, typeParameters, superTypes);
 
         var traitSymbol = new ObjectTypeSymbol(trait.ContainingNamespaceSymbol, traitType);
         trait.Symbol.Fulfill(traitSymbol);
@@ -217,6 +215,26 @@ public class EntitySymbolBuilder
         void AddCircularDefinitionError()
         {
             diagnostics.Add(TypeError.CircularDefinition(trait.File, trait.NameSpan, trait));
+        }
+    }
+
+    private static FixedList<GenericParameterType> BuildGenericParameterTypes(ITypeDeclarationSyntax type)
+    {
+        var declaredType = new Promise<DeclaredObjectType>();
+        return type.GenericParameters.Select(p => new GenericParameterType(declaredType, new GenericParameter(p.Name)))
+                   .ToFixedList();
+    }
+
+    private static IEnumerable<GenericParameterTypeSymbol> BuildGenericParameterSymbols(
+        ITypeDeclarationSyntax typeSyntax,
+        FixedList<GenericParameterType> genericParameterTypes)
+    {
+        var typeSymbol = typeSyntax.Symbol;
+        foreach (var (syn, genericParameter) in typeSyntax.GenericParameters.Zip(genericParameterTypes))
+        {
+            var genericParameterSymbol = new GenericParameterTypeSymbol(typeSymbol, genericParameter);
+            syn.Symbol.Fulfill(genericParameterSymbol);
+            yield return genericParameterSymbol;
         }
     }
 
@@ -245,25 +263,6 @@ public class EntitySymbolBuilder
             else
                 diagnostics.Add(TypeError.BaseTypeMustBeClass(syn.File, syn.Name, superTypeSyntax));
         }
-    }
-
-    private static IEnumerable<GenericParameterTypeSymbol> BuildGenericParameterSymbols(ITypeDeclarationSyntax syn)
-    {
-        var typeSymbolPromise = syn.Symbol;
-        foreach (var genericParameter in syn.GenericParameters)
-        {
-            var genericParameterSymbol = new GenericParameterTypeSymbol(typeSymbolPromise, genericParameter.Name);
-            genericParameter.Symbol.Fulfill(genericParameterSymbol);
-            yield return genericParameterSymbol;
-        }
-    }
-
-    private static void FulfillTypePromises(
-        IEnumerable<GenericParameterTypeSymbol> symbols,
-        DeclaredObjectType declaredObjectType)
-    {
-        foreach (var (symbol, type) in symbols.Zip(declaredObjectType.GenericParameterTypes))
-            symbol.DeclaresTypePromise.Fulfill(type);
     }
 
     private static FixedList<ParameterType> ResolveParameterTypes(
