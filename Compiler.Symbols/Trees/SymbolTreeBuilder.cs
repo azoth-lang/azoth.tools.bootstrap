@@ -41,6 +41,12 @@ public class SymbolTreeBuilder : ISymbolTree
         GetOrAdd(symbol);
     }
 
+    public void Add(IEnumerable<Symbol> symbols)
+    {
+        foreach (var symbol in symbols)
+            Add(symbol);
+    }
+
     public void AddInherited(TypeSymbol symbol, Symbol inheritedSymbol)
     {
         RequireForPackage(symbol);

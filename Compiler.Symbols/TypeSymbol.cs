@@ -11,8 +11,8 @@ public abstract class TypeSymbol : Symbol
 {
     public override Name Name { get; }
 
-    protected TypeSymbol(Symbol? containingSymbol, Name name)
-        : base(containingSymbol, name)
+    protected TypeSymbol(Name name)
+        : base(name)
     {
         Name = name;
     }

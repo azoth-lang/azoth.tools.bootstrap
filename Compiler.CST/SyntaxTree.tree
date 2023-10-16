@@ -42,7 +42,7 @@ NamespaceDeclaration: NonMemberDeclaration = IsGlobalQualified:'bool' DeclaredNa
 // ---------- Non-Member Entity Declarations
 NonMemberEntityDeclaration: EntityDeclaration, NonMemberDeclaration = Name:'Name';
 TypeDeclaration: NonMemberEntityDeclaration = ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'StandardTypeName' GenericParameters:GenericParameter* Symbol:'AcyclicPromise<ObjectTypeSymbol>' SupertypeNames:TypeName* Members:MemberDeclaration*;
-ClassDeclaration: TypeDeclaration = AbstractModifier:'IAbstractKeywordToken'? IsAbstract:'bool' GenericParameters:GenericParameter* BaseTypeName:TypeName? Members:ClassMemberDeclaration* SupertypeNames:TypeName* DefaultConstructorSymbol:'ConstructorSymbol'?;
+ClassDeclaration: TypeDeclaration = AbstractModifier:'IAbstractKeywordToken'? IsAbstract:'bool' GenericParameters:GenericParameter* BaseTypeName:TypeName? SupertypeNames:TypeName* DefaultConstructorSymbol:'ConstructorSymbol'? Members:ClassMemberDeclaration*;
 TraitDeclaration: TypeDeclaration = GenericParameters:GenericParameter* SupertypeNames:TypeName* Members:TraitMemberDeclaration*;
 FunctionDeclaration: NonMemberEntityDeclaration, ConcreteInvocableDeclaration = Name:'SimpleName' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 

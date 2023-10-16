@@ -49,8 +49,17 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
                 containingScope = BuildUsingDirectivesScope(syn.UsingDirectives, containingScope);
                 break;
             case ITypeDeclarationSyntax syn:
-                containingScope = BuildTypeScope(syn, containingScope);
-                break;
+                foreach (var genericParameter in syn.GenericParameters)
+                    Walk(genericParameter, containingScope);
+                containingScope = BuildTypeParameterScope(syn, containingScope);
+                if (syn is IClassDeclarationSyntax classSyntax)
+                    Walk(classSyntax.BaseTypeName, containingScope);
+                foreach (var supertypeName in syn.SupertypeNames)
+                    Walk(supertypeName, containingScope);
+                containingScope = BuildTypeBodyScope(syn, containingScope);
+                foreach (var member in syn.Members)
+                    Walk(member, containingScope);
+                return;
             case IFunctionDeclarationSyntax function:
                 foreach (var parameter in function.Parameters)
                     Walk(parameter, containingScope);
@@ -151,17 +160,22 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         return NestedScope.Create(containingScope, symbolsInScope);
     }
 
-    private static LexicalScope BuildTypeScope(
+    private static LexicalScope BuildTypeParameterScope(
         ITypeDeclarationSyntax typeSyntax,
         LexicalScope containingScope)
     {
+        var symbols = typeSyntax.GenericParameters.ToFixedDictionary(p => (Name)p.Name,
+                p => FixedSet.Create<IPromise<Symbol>>(p.Symbol));
+
+        return NestedScope.Create(containingScope, symbols);
+    }
+
+    private static LexicalScope BuildTypeBodyScope(ITypeDeclarationSyntax typeSyntax, LexicalScope containingScope)
+    {
         // Only "static" names are in scope. Other names must use `self.`
         var symbols = typeSyntax.Members.OfType<IAssociatedFunctionDeclarationSyntax>()
-                            .GroupBy(m => m.Name, m => m.Symbol)
-                            .ToDictionary(e => (Name)e.Key, e => e.ToFixedSet<IPromise<Symbol>>());
-
-        foreach (var genericParameter in typeSyntax.GenericParameters)
-            symbols.Add(genericParameter.Name, FixedSet.Create<IPromise<Symbol>>(genericParameter.Symbol));
+                                .GroupBy(m => m.Name, m => m.Symbol).ToDictionary(e => (Name)e.Key,
+                                    e => e.ToFixedSet<IPromise<Symbol>>());
 
         return NestedScope.Create(containingScope, symbols.ToFixedDictionary());
     }

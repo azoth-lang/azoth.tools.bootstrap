@@ -34,9 +34,9 @@ public static class ISyntaxExtensions
                     yield return child;
                 if (n.BaseTypeName is not null)
                     yield return n.BaseTypeName;
-                foreach (var child in n.Members)
-                    yield return child;
                 foreach (var child in n.SupertypeNames)
+                    yield return child;
+                foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case ITraitDeclarationSyntax n:

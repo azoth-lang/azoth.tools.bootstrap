@@ -171,19 +171,20 @@ public class EntitySymbolBuilder
     {
         if (!@class.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
-        var typeParameters = @class.GenericParameters.Select(p => new GenericParameter(p.Name)).ToFixedList();
         var packageName = @class.ContainingNamespaceSymbol.Package!.Name;
+        var typeParameters = @class.GenericParameters.Select(p => new GenericParameter(p.Name)).ToFixedList();
+        var genericParameterSymbols = BuildGenericParameterSymbols(@class).ToFixedList();
 
         var superTypes = EvaluateSupertypes(@class, typeDeclarations).ToFixedSet();
         var classType = DeclaredObjectType.Create(packageName, @class.ContainingNamespaceName,
             @class.Name, @class.IsConst, typeParameters, superTypes);
+        FulfillTypePromises(genericParameterSymbols, classType);
 
         var classSymbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(classSymbol);
         symbolTree.Add(classSymbol);
 
-        // TODO the generic parameter symbols are needed while evaluating base types
-        BuildGenericParameterSymbols(@class, classSymbol);
+        symbolTree.Add(genericParameterSymbols);
         @class.CreateDefaultConstructor(symbolTree);
         return;
 
@@ -197,19 +198,20 @@ public class EntitySymbolBuilder
     {
         if (!trait.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
-        var typeParameters = trait.GenericParameters.Select(p => new GenericParameter(p.Name)).ToFixedList();
         var packageName = trait.ContainingNamespaceSymbol.Package!.Name;
+        var typeParameters = trait.GenericParameters.Select(p => new GenericParameter(p.Name)).ToFixedList();
+        var genericParameterSymbols = BuildGenericParameterSymbols(trait).ToFixedList();
 
         var superTypes = EvaluateSupertypes(trait, typeDeclarations).ToFixedSet();
         var traitType = DeclaredObjectType.Create(packageName, trait.ContainingNamespaceName, trait.Name,
             trait.IsConst, typeParameters, superTypes);
+        FulfillTypePromises(genericParameterSymbols, traitType);
 
         var traitSymbol = new ObjectTypeSymbol(trait.ContainingNamespaceSymbol, traitType);
         trait.Symbol.Fulfill(traitSymbol);
         symbolTree.Add(traitSymbol);
 
-        // TODO the generic parameter symbols are needed while evaluating base types
-        BuildGenericParameterSymbols(trait, traitSymbol);
+        symbolTree.Add(genericParameterSymbols);
         return;
 
         void AddCircularDefinitionError()
@@ -245,15 +247,23 @@ public class EntitySymbolBuilder
         }
     }
 
-    private void BuildGenericParameterSymbols(ITypeDeclarationSyntax syn, ObjectTypeSymbol typeSymbol)
+    private static IEnumerable<GenericParameterTypeSymbol> BuildGenericParameterSymbols(ITypeDeclarationSyntax syn)
     {
-        var declaresType = typeSymbol.DeclaresType;
-        foreach (var (genericParameter, type) in syn.GenericParameters.Zip(declaresType.GenericParameterTypes))
+        var typeSymbolPromise = syn.Symbol;
+        foreach (var genericParameter in syn.GenericParameters)
         {
-            var genericParameterSymbol = new GenericParameterTypeSymbol(typeSymbol, type);
+            var genericParameterSymbol = new GenericParameterTypeSymbol(typeSymbolPromise, genericParameter.Name);
             genericParameter.Symbol.Fulfill(genericParameterSymbol);
-            symbolTree.Add(genericParameterSymbol);
+            yield return genericParameterSymbol;
         }
+    }
+
+    private static void FulfillTypePromises(
+        IEnumerable<GenericParameterTypeSymbol> symbols,
+        DeclaredObjectType declaredObjectType)
+    {
+        foreach (var (symbol, type) in symbols.Zip(declaredObjectType.GenericParameterTypes))
+            symbol.DeclaresTypePromise.Fulfill(type);
     }
 
     private static FixedList<ParameterType> ResolveParameterTypes(

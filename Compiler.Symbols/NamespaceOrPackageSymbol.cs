@@ -8,12 +8,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
     typeof(PackageSymbol))]
 public abstract class NamespaceOrPackageSymbol : Symbol
 {
+    public override PackageSymbol Package { get; }
     public NamespaceName NamespaceName { get; }
     public override SimpleName Name { get; }
 
-    protected NamespaceOrPackageSymbol(NamespaceOrPackageSymbol? containingSymbol, SimpleName name)
-        : base(containingSymbol, name)
+    protected NamespaceOrPackageSymbol(PackageSymbol package, NamespaceOrPackageSymbol? containingSymbol, SimpleName name)
+        : base(name)
     {
+        Package = package;
         NamespaceName = containingSymbol is null
             ? NamespaceName.Global
             : containingSymbol.NamespaceName.Qualify(name);

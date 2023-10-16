@@ -12,9 +12,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public class PackageSymbol : NamespaceOrPackageSymbol
 {
     public override PackageSymbol Package => this;
+    public override Symbol? ContainingSymbol => null;
 
     public PackageSymbol(SimpleName name)
-        : base(null, name) { }
+        : base(null!, null, name) { }
 
     public override bool Equals(Symbol? other)
     {

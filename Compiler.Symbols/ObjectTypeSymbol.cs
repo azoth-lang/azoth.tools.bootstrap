@@ -8,14 +8,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// </summary>
 public sealed class ObjectTypeSymbol : TypeSymbol
 {
-    public override PackageSymbol? Package { get; }
+    public override PackageSymbol Package { get; }
     public override NamespaceOrPackageSymbol ContainingSymbol { get; }
     public DeclaredObjectType DeclaresType { get; }
 
     public ObjectTypeSymbol(
         NamespaceOrPackageSymbol containingSymbol,
         DeclaredObjectType declaresType)
-        : base(containingSymbol, declaresType.Name)
+        : base(declaresType.Name)
     {
         // TODO check the declared type is in the containing namespace and package
         Package = containingSymbol.Package;

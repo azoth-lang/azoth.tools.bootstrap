@@ -10,6 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
     typeof(ConstructorSymbol))]
 public abstract class InvocableSymbol : Symbol
 {
+    public override PackageSymbol? Package { get; }
     public override Symbol ContainingSymbol { get; }
     public override SimpleName? Name { get; }
     public FixedList<ParameterType> ParameterTypes { get; }
@@ -21,8 +22,9 @@ public abstract class InvocableSymbol : Symbol
         SimpleName? name,
         FixedList<ParameterType> parameterTypes,
         ReturnType returnType)
-        : base(containingSymbol, name)
+        : base(name)
     {
+        Package = containingSymbol.Package;
         ContainingSymbol = containingSymbol;
         Name = name;
         ParameterTypes = parameterTypes;

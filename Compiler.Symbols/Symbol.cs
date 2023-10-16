@@ -13,15 +13,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class Symbol : IEquatable<Symbol>
 {
-    public virtual PackageSymbol? Package { get; }
-    public virtual Symbol? ContainingSymbol { get; }
+    /// <summary>
+    /// The package that declares this symbol or <see langword="null"/> for primitives.
+    /// </summary>
+    public abstract PackageSymbol? Package { get; }
+    /// <summary>
+    /// The symbol that contains this symbol or <see langword="null"/> for primitives and
+    /// <see cref="PackageSymbol"/>.
+    /// </summary>
+    public abstract Symbol? ContainingSymbol { get; }
     public virtual Name? Name { get; }
     public bool IsGlobal => ContainingSymbol == Package;
 
-    private protected Symbol(Symbol? containingSymbol, Name? name)
+    private protected Symbol(Name? name)
     {
-        Package = containingSymbol?.Package;
-        ContainingSymbol = containingSymbol;
         Name = name;
     }
 
@@ -41,7 +46,7 @@ public abstract class Symbol : IEquatable<Symbol>
         => Equals(symbol1, symbol2);
 
     public static bool operator !=(Symbol? symbol1, Symbol? symbol2)
-        => !(symbol1 == symbol2);
+        => !Equals(symbol1, symbol2);
     #endregion
 
     [Obsolete("Use ToILString() instead", error: true)]

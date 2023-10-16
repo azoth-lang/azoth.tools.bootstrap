@@ -172,8 +172,8 @@ public partial interface IClassDeclarationSyntax : ITypeDeclarationSyntax
     IAbstractKeywordToken? AbstractModifier { get; }
     bool IsAbstract { get; }
     ITypeNameSyntax? BaseTypeName { get; }
-    new FixedList<IClassMemberDeclarationSyntax> Members { get; }
     ConstructorSymbol? DefaultConstructorSymbol { get; }
+    new FixedList<IClassMemberDeclarationSyntax> Members { get; }
 }
 
 public partial interface ITraitDeclarationSyntax : ITypeDeclarationSyntax

@@ -6,19 +6,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public class PrimitiveTypeSymbol : TypeSymbol
 {
+    public override PackageSymbol? Package => null;
+    public override Symbol? ContainingSymbol => null;
     public override SpecialTypeName Name { get; }
 
     public DataType DeclaresType { get; }
 
     public PrimitiveTypeSymbol(SimpleType declaresType)
-        : base(null, declaresType.Name)
+        : base(declaresType.Name)
     {
         Name = declaresType.Name;
         DeclaresType = declaresType;
     }
 
     public PrimitiveTypeSymbol(EmptyType declaresType)
-        : base(null, declaresType.Name)
+        : base(declaresType.Name)
     {
         Name = declaresType.Name;
         DeclaresType = declaresType;
@@ -27,7 +29,7 @@ public class PrimitiveTypeSymbol : TypeSymbol
     /// <remarks>This is a little odd that it "declares" a specific reference type while the
     /// <see cref="ObjectTypeSymbol"/> declares a <see cref="DeclaredObjectType"/>.</remarks>
     public PrimitiveTypeSymbol(AnyType declaresType)
-        : base(null, declaresType.Name)
+        : base(declaresType.Name)
     {
         Name = declaresType.Name;
         DeclaresType = declaresType;

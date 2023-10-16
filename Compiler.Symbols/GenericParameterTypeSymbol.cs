@@ -1,20 +1,25 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class GenericParameterTypeSymbol : TypeSymbol
 {
-    public override ObjectTypeSymbol ContainingSymbol { get; }
-    public GenericParameterType DeclaresType { get; }
+    private readonly IPromise<ObjectTypeSymbol> containingSymbol;
+    public override PackageSymbol Package => ContainingSymbol.Package ?? throw new ArgumentNullException();
+    public override ObjectTypeSymbol ContainingSymbol => containingSymbol.Result;
+
+    public Promise<GenericParameterType> DeclaresTypePromise { get; } = new Promise<GenericParameterType>();
+    public GenericParameterType DeclaresType => DeclaresTypePromise.Result;
 
     public GenericParameterTypeSymbol(
-        ObjectTypeSymbol containingSymbol,
-        GenericParameterType declaresType)
-        : base(containingSymbol, declaresType.Name)
+        IPromise<ObjectTypeSymbol> containingSymbol,
+        SimpleName name)
+        : base(name)
     {
-        ContainingSymbol = containingSymbol;
-        DeclaresType = declaresType;
+        this.containingSymbol = containingSymbol;
     }
 
     #region Equals
@@ -30,5 +35,9 @@ public sealed class GenericParameterTypeSymbol : TypeSymbol
     public override int GetHashCode() => HashCode.Combine(ContainingSymbol, Name);
     #endregion
 
-    public override string ToILString() => $"{ContainingSymbol.ToILString()}.{Name}";
+    public override string ToILString()
+    {
+        var containSymbolString = containingSymbol.IsFulfilled ? ContainingSymbol.ToILString() : containingSymbol.ToString();
+        return $"{containSymbolString}.{Name}";
+    }
 }
