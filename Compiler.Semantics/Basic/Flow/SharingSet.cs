@@ -16,10 +16,16 @@ public class SharingSet : IReadOnlySharingSet
     public bool IsIsolated => variables.Count == 1;
     public bool IsAlive => variables.Any(v => v.KeepsSetAlive);
 
-    public SharingSet(bool isLent, FixedSet<ISharingVariable> variables)
+    public SharingSet(bool isLent, IReadOnlySet<ISharingVariable> variables)
     {
         IsLent = isLent;
         this.variables = variables.ToHashSet();
+    }
+
+    public SharingSet(IReadOnlySharingSet set)
+    {
+        IsLent = set.IsLent;
+        variables = set.ToHashSet();
     }
 
     public SharingSet(ISharingVariable variable, bool isLent)

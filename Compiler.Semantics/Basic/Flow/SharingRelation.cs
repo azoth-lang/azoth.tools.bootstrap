@@ -40,7 +40,7 @@ public sealed class SharingRelation
 
     private SharingRelation(IEnumerable<SharingSet> sets)
     {
-        this.sets = new(sets);
+        this.sets = new(sets.Select(s => new SharingSet(s)));
         subsetFor = new();
         foreach (var set in this.sets)
             foreach (var variable in set)
@@ -203,4 +203,35 @@ public sealed class SharingRelation
 
     public override string ToString()
         => string.Join(", ", sets.Select(s => $"{{{string.Join(", ", s.Distinct())}}}"));
+
+    public void Merge(SharingRelation other)
+    {
+        foreach (var set in other.SharingSets)
+        {
+            var representative = set.FirstOrDefault(subsetFor.ContainsKey);
+            if (representative is null)
+            {
+                // Whole set is missing, copy and add it
+                var newSet = new SharingSet(set);
+                sets.Add(newSet);
+                foreach (var variable in newSet)
+                    subsetFor.Add(variable, newSet);
+                continue;
+            }
+
+            // At least one item of the set is present. Use that part as a core to union everything
+            // in the set together. This is necessary because there could be multiple sets that need
+            // unioned.
+            var targetSet = SharingSet(representative);
+            foreach (var variable in set)
+            {
+                // If a variable is completely missing, just declare it. This ensures existing logic
+                // can apply to the union.
+                if (!subsetFor.ContainsKey(variable))
+                    Declare(variable, set.IsLent);
+
+                Union(representative, variable);
+            }
+        }
+    }
 }

@@ -155,4 +155,6 @@ public sealed class FlowState
         foreach (var variable in sharingSet.OfType<BindingVariable>())
             capabilities.RemoveWriteRestriction(variable.Symbol);
     }
+
+    public void Merge(FlowState other) => sharing.Merge(other.sharing);
 }

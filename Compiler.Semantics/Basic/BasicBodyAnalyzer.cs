@@ -805,8 +805,8 @@ public class BasicBodyAnalyzer
             {
                 CheckIndependentExpressionType(exp.Condition, DataType.Bool, flow);
                 var elseClause = exp.ElseClause;
-                FlowState? elseFlow = null;
-                if (elseClause is not null) elseFlow = flow.Fork();
+                // Even if there is no else clause, the if could be skipped. Still need to join
+                FlowState elseFlow = flow.Fork();
                 var thenResult = InferBlockType(exp.ThenBlock, flow);
                 ExpressionResult? elseResult = null;
                 switch (elseClause)
@@ -833,7 +833,7 @@ public class BasicBodyAnalyzer
                 // TODO correct reference semantics?
                 exp.Semantics = expType.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 exp.DataType = expType;
-                // TODO need to merge the two flow states!
+                flow.Merge(elseFlow);
                 var resultVariable = flow.Combine(thenResult.Variable, elseResult?.Variable);
                 return new ExpressionResult(exp, resultVariable);
             }
