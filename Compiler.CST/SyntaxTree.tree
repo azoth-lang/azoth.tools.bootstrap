@@ -54,7 +54,7 @@ TraitMemberDeclaration: MemberDeclaration;
 MethodDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration = Name:'SimpleName' SelfParameter Parameters:NamedParameter* Return? Symbol:'AcyclicPromise<MethodSymbol>';
 AbstractMethodDeclaration: MethodDeclaration = SelfParameter Parameters:NamedParameter* Return?;
 ConcreteMethodDeclaration: MethodDeclaration, ConcreteInvocableDeclaration = SelfParameter Parameters:NamedParameter* Return? Body;
-ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclarationSyntax' Name:'SimpleName'? SelfParameter Parameters:ConstructorParameter* Body Symbol:'AcyclicPromise<ConstructorSymbol>';
+ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclarationSyntax' Name:'SimpleName'? SelfParameter Parameters:ConstructorParameter* Body:BlockBody Symbol:'AcyclicPromise<ConstructorSymbol>';
 FieldDeclaration: ClassMemberDeclaration, Binding = DeclaringType:'IClassDeclarationSyntax' Name:'SimpleName' Type Symbol:'AcyclicPromise<FieldSymbol>' Initializer:Expression?;
 AssociatedFunctionDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, ConcreteInvocableDeclaration = Name:'SimpleName' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
@@ -71,7 +71,9 @@ FieldParameter: Parameter, ConstructorParameter = Name:'SimpleName' ReferencedSy
 Return = IsLent:'bool' Type;
 
 // ---------- Function Parts
-Body: BodyOrBlock = Statements:BodyStatement*;
+Body: BodyOrBlock;
+BlockBody: Body = Statements:BodyStatement*;
+ExpressionBody: Body = ResultStatement Statements:Statement*;
 
 // ---------- Types
 Type;

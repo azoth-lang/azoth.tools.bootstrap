@@ -104,7 +104,12 @@ public static class ISyntaxExtensions
             case IReturnSyntax n:
                 yield return n.Type;
                 yield break;
-            case IBodySyntax n:
+            case IBlockBodySyntax n:
+                foreach (var child in n.Statements)
+                    yield return child;
+                yield break;
+            case IExpressionBodySyntax n:
+                yield return n.ResultStatement;
                 foreach (var child in n.Statements)
                     yield return child;
                 yield break;

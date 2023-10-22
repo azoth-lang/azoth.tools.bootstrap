@@ -113,7 +113,7 @@ public partial class Parser
         var bodyParser = BodyParser();
         var parameters = bodyParser.ParseParameters(bodyParser.ParseFunctionParameter);
         var @return = ParseReturn();
-        var body = bodyParser.ParseFunctionBody();
+        var body = bodyParser.ParseBody();
         var span = TextSpan.Covering(fn, body.Span);
         return new FunctionDeclarationSyntax(ContainingNamespace, span, File, accessModifer, identifier.Span,
             name, parameters, @return, body);
@@ -128,7 +128,16 @@ public partial class Parser
         return parameters.ToFixedList();
     }
 
-    private IBodySyntax ParseFunctionBody()
+    private IBodySyntax ParseBody()
+        => Tokens.Current is IRightDoubleArrowToken ? ParseExpressionBody() : ParseBlockBody();
+
+    private IExpressionBodySyntax ParseExpressionBody()
+    {
+        var resultStatement = ParseResultStatement();
+        return new ExpressionBodySyntax(resultStatement.Span, resultStatement);
+    }
+
+    private IBlockBodySyntax ParseBlockBody()
     {
         var openBrace = Tokens.Expect<IOpenBraceToken>();
         var statements = ParseMany<IStatementSyntax, ICloseBraceToken>(ParseStatement);
@@ -136,7 +145,7 @@ public partial class Parser
             Add(ParseError.ResultStatementInBody(File, resultStatement.Span));
         var closeBrace = Tokens.Expect<ICloseBraceToken>();
         var span = TextSpan.Covering(openBrace, closeBrace);
-        return new BodySyntax(span, statements.OfType<IBodyStatementSyntax>().ToFixedList());
+        return new BlockBodySyntax(span, statements.OfType<IBodyStatementSyntax>().ToFixedList());
     }
 
     private IReturnSyntax? ParseReturn()
@@ -294,14 +303,14 @@ public partial class Parser
         {
             IBodySyntax body;
             TextSpan span;
-            if (Tokens.Current is IOpenBraceToken)
+            if (Tokens.Current is IOpenBraceToken or IRightDoubleArrowToken)
             {
-                body = bodyParser.ParseFunctionBody();
+                body = bodyParser.ParseBody();
                 span = TextSpan.Covering(fn, body.Span);
             }
             else
             {
-                body = new BodySyntax(Tokens.Current.Span.AtStart(), FixedList<IBodyStatementSyntax>.Empty);
+                body = new BlockBodySyntax(Tokens.Current.Span.AtStart(), FixedList<IBodyStatementSyntax>.Empty);
                 var semicolon = bodyParser.Tokens.Expect<ISemicolonToken>();
                 span = TextSpan.Covering(fn, semicolon);
                 Add(ParseError.AssociatedFunctionMissingBody(File, span, name));
@@ -317,9 +326,9 @@ public partial class Parser
             Add(ParseError.ExtraSelfParameter(File, extraSelfParameter.Span));
 
         // It is a method that may or may not have a body
-        if (Tokens.Current is IOpenBraceToken)
+        if (Tokens.Current is IOpenBraceToken or IRightDoubleArrowToken)
         {
-            var body = bodyParser.ParseFunctionBody();
+            var body = bodyParser.ParseBody();
             var span = TextSpan.Covering(fn, body.Span);
             return new ConcreteMethodDeclarationSyntax(declaringType, span, File, accessModifer,
                 identifier.Span, name, selfParameter, namedParameters, @return, body);
@@ -383,14 +392,14 @@ public partial class Parser
                 Add(ParseError.AbstractAssociatedFunction(File, abstractModifier.Span));
             IBodySyntax body;
             TextSpan span;
-            if (Tokens.Current is IOpenBraceToken)
+            if (Tokens.Current is IOpenBraceToken or IRightDoubleArrowToken)
             {
-                body = bodyParser.ParseFunctionBody();
+                body = bodyParser.ParseBody();
                 span = TextSpan.Covering(fn, body.Span);
             }
             else
             {
-                body = new BodySyntax(Tokens.Current.Span.AtStart(), FixedList<IBodyStatementSyntax>.Empty);
+                body = new BlockBodySyntax(Tokens.Current.Span.AtStart(), FixedList<IBodyStatementSyntax>.Empty);
                 var semicolon = bodyParser.Tokens.Expect<ISemicolonToken>();
                 span = TextSpan.Covering(fn, semicolon);
                 Add(ParseError.AssociatedFunctionMissingBody(File, span, name));
@@ -406,11 +415,11 @@ public partial class Parser
             Add(ParseError.ExtraSelfParameter(File, extraSelfParameter.Span));
 
         // It is a method that may or may not have a body
-        if (Tokens.Current is IOpenBraceToken)
+        if (Tokens.Current is IOpenBraceToken or IRightDoubleArrowToken)
         {
             if (abstractModifier is not null)
                 Add(ParseError.ConcreteMethodDeclaredAbstract(File, abstractModifier.Span));
-            var body = bodyParser.ParseFunctionBody();
+            var body = bodyParser.ParseBody();
             var span = TextSpan.Covering(fn, body.Span);
             return new ConcreteMethodDeclarationSyntax(declaringType, span, File, accessModifer,
                 identifier.Span, name, selfParameter, namedParameters, @return, body);
@@ -458,7 +467,7 @@ public partial class Parser
         foreach (var extraSelfParameter in parameters.OfType<ISelfParameterSyntax>().Skip(1))
             Add(ParseError.ExtraSelfParameter(File, extraSelfParameter.Span));
 
-        var body = bodyParser.ParseFunctionBody();
+        var body = bodyParser.ParseBlockBody();
         // For now, just say constructors have no annotations
         var span = TextSpan.Covering(newKeywordSpan, body.Span);
         return new ConstructorDeclarationSyntax(declaringType, span, File, accessModifer,

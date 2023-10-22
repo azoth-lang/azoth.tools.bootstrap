@@ -35,6 +35,6 @@ internal class ConstructorDeclaration : InvocableDeclaration, IConstructorDeclar
     {
         var name = Symbol.Name is null ? $" {Symbol.Name}" : "";
         var parameters = string.Join(", ", Parameters.Prepend<IParameter>(SelfParameter));
-        return $"{Symbol.ContainingSymbol}::new{name}({parameters})";
+        return $"{Symbol.ContainingSymbol}::new{name}({parameters}) {Body}";
     }
 }

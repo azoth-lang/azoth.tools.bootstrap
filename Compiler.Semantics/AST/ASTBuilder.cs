@@ -148,7 +148,7 @@ internal class ASTBuilder
         var nameSpan = syn.NameSpan;
         var selfParameter = BuildParameter(syn.SelfParameter);
         var parameters = syn.Parameters.Select(BuildParameter).ToFixedList();
-        var body = BuildBody(syn.Body);
+        var body = BuildBlockBody(syn.Body);
         return new ConstructorDeclaration(syn.File, syn.Span, declaringClass, symbol, nameSpan, selfParameter, parameters, body);
     }
 
@@ -203,8 +203,26 @@ internal class ASTBuilder
 
     private static IBody BuildBody(IBodySyntax syn)
     {
+        return syn switch
+        {
+            IBlockBodySyntax body => BuildBlockBody(body),
+            IExpressionBodySyntax body => BuildExpressionBody(body),
+            _ => throw ExhaustiveMatch.Failed(syn),
+        };
+    }
+
+    private static IBody BuildBlockBody(IBlockBodySyntax syn)
+    {
         var statements = syn.Statements.Select(BuildBodyStatement).ToFixedList();
         return new Body(syn.Span, statements);
+    }
+
+    private static IBody BuildExpressionBody(IExpressionBodySyntax syn)
+    {
+        var exp = BuildExpression(syn.ResultStatement.Expression);
+        var returnExp = new ReturnExpression(syn.ResultStatement.Span, exp.DataType, exp.Semantics, exp);
+        var returnStmt = new ExpressionStatement(syn.ResultStatement.Span, returnExp);
+        return new Body(syn.Span, returnStmt.Yield().ToFixedList<IBodyStatement>());
     }
 
     private static IStatement BuildStatement(IStatementSyntax stmt)

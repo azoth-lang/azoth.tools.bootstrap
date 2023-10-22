@@ -16,7 +16,8 @@ internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConst
     ITypeDeclarationSyntax IMemberDeclarationSyntax.DeclaringType => DeclaringType;
     public ISelfParameterSyntax SelfParameter { get; }
     public new FixedList<IConstructorParameterSyntax> Parameters { get; }
-    public virtual IBodySyntax Body { get; }
+    public virtual IBlockBodySyntax Body { get; }
+    IBodySyntax IConcreteInvocableDeclarationSyntax.Body => Body;
     public new AcyclicPromise<ConstructorSymbol> Symbol { get; }
 
     public ConstructorDeclarationSyntax(
@@ -28,7 +29,7 @@ internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConst
         SimpleName? name,
         ISelfParameterSyntax selfParameter,
         FixedList<IConstructorParameterSyntax> parameters,
-        IBodySyntax body)
+        IBlockBodySyntax body)
         : base(span, file, accessModifier, nameSpan, name, parameters,
             new AcyclicPromise<ConstructorSymbol>())
     {

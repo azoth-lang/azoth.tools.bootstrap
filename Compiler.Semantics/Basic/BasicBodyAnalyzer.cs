@@ -51,7 +51,6 @@ public class BasicBodyAnalyzer
         : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
             symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
     { }
-
     public BasicBodyAnalyzer(
         IAssociatedFunctionDeclarationSyntax containingDeclaration,
         SymbolTreeBuilder symbolTreeBuilder,
@@ -147,8 +146,35 @@ public class BasicBodyAnalyzer
     public void ResolveTypes(IBodySyntax body)
     {
         var flow = new FlowState(parameterCapabilities, parameterSharing);
+        switch (body)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(body);
+            case IBlockBodySyntax syn:
+                ResolveTypes(syn, flow);
+                break;
+            case IExpressionBodySyntax syn:
+                ResolveTypes(syn, flow);
+                break;
+        }
+    }
+
+    private void ResolveTypes(IBlockBodySyntax body, FlowState flow)
+    {
         foreach (var statement in body.Statements)
             ResolveTypes(statement, StatementContext.BodyLevel, flow);
+    }
+
+    private void ResolveTypes(IExpressionBodySyntax body, FlowState flow)
+    {
+        if (returnType is not { } expectedReturnType)
+            throw new NotImplementedException("Expression body in field initializer.");
+        var expectedType = expectedReturnType.Type;
+        var result = ResolveTypes(body.ResultStatement, StatementContext.BeforeResult, flow)!;
+        // local variables are no longer in scope and isolated parameters have no external references
+        flow.DropBindingsForReturn();
+        result = AddImplicitConversionIfNeeded(result, expectedType, flow);
+        CheckTypeCompatibility(expectedType, result.Syntax);
     }
 
     /// <summary>

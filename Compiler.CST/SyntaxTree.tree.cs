@@ -239,6 +239,7 @@ public partial interface IConstructorDeclarationSyntax : IClassMemberDeclaration
     new IClassDeclarationSyntax DeclaringType { get; }
     new SimpleName? Name { get; }
     ISelfParameterSyntax SelfParameter { get; }
+    new IBlockBodySyntax Body { get; }
     new AcyclicPromise<ConstructorSymbol> Symbol { get; }
 }
 
@@ -314,9 +315,21 @@ public partial interface IReturnSyntax : ISyntax
     ITypeSyntax Type { get; }
 }
 
+[Closed(
+    typeof(IBlockBodySyntax),
+    typeof(IExpressionBodySyntax))]
 public partial interface IBodySyntax : IBodyOrBlockSyntax
 {
+}
+
+public partial interface IBlockBodySyntax : IBodySyntax
+{
     new FixedList<IBodyStatementSyntax> Statements { get; }
+}
+
+public partial interface IExpressionBodySyntax : IBodySyntax
+{
+    IResultStatementSyntax ResultStatement { get; }
 }
 
 [Closed(
