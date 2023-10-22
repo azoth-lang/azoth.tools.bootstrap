@@ -60,7 +60,7 @@ public partial class Parser
                         if (expression is IAssignableExpressionSyntax assignableExpression)
                             expression = new AssignmentExpressionSyntax(assignableExpression, assignmentOperator, rightOperand);
                         else
-                            // Don't assign expression, so it is just the right hand side of the assignment
+                            // Can't assign expression, so it is just the right hand side of the assignment
                             Add(ParseError.CantAssignIntoExpression(File, expression.Span));
                         continue;
                     }

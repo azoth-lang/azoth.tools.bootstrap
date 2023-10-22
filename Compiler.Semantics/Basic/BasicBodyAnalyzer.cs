@@ -915,9 +915,18 @@ public class BasicBodyAnalyzer
                 if (!left.Type.IsAssignableFrom(right.Type))
                     diagnostics.Add(TypeError.CannotImplicitlyConvert(file,
                         exp.RightOperand, right.Type, left.Type));
-                exp.Semantics = ExpressionSemantics.Void;
-                exp.DataType = DataType.Void;
                 var variableResult = flow.Combine(left.Variable, right.Variable);
+                if (left.Type.Semantics == TypeSemantics.MoveValue)
+                {
+                    exp.Semantics = ExpressionSemantics.Void;
+                    exp.DataType = DataType.Void;
+                    flow.Drop(variableResult);
+                }
+                else
+                {
+                    exp.Semantics = left.Type.Semantics.ToExpressionSemantics(ExpressionSemantics.MutableReference);
+                    exp.DataType = left.Type;
+                }
                 return new ExpressionResult(exp, variableResult);
             }
             case ISelfExpressionSyntax exp:
