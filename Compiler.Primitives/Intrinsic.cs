@@ -15,29 +15,29 @@ public static class Intrinsic
 
     public static readonly FunctionSymbol AbortRawUtf8Bytes = Find<FunctionSymbol>("ABORT_RAW_UTF8_BYTES");
 
-    public static readonly ObjectTypeSymbol RawBoundedList
-        = Find<ObjectTypeSymbol>("Raw_Bounded_List");
+    public static readonly ObjectTypeSymbol RawHybridBoundedList
+        = Find<ObjectTypeSymbol>("Raw_Hybrid_Bounded_List");
 
     public static readonly ConstructorSymbol NewRawBoundedList
-        = Find<ConstructorSymbol>(RawBoundedList, null);
+        = Find<ConstructorSymbol>(RawHybridBoundedList, null);
 
     public static readonly MethodSymbol GetRawBoundedListCapacity
-        = Find<MethodSymbol>(RawBoundedList, "get_capacity");
+        = Find<MethodSymbol>(RawHybridBoundedList, "get_capacity");
 
     public static readonly MethodSymbol GetRawBoundedListCount
-        = Find<MethodSymbol>(RawBoundedList, "get_count");
+        = Find<MethodSymbol>(RawHybridBoundedList, "get_count");
 
     public static readonly MethodSymbol RawBoundedListAdd
-        = Find<MethodSymbol>(RawBoundedList, "add");
+        = Find<MethodSymbol>(RawHybridBoundedList, "add");
 
     public static readonly MethodSymbol RawBoundedListAt
-        = Find<MethodSymbol>(RawBoundedList, "at");
+        = Find<MethodSymbol>(RawHybridBoundedList, "at");
 
     public static readonly MethodSymbol RawBoundedListSetAt
-        = Find<MethodSymbol>(RawBoundedList, "set_at");
+        = Find<MethodSymbol>(RawHybridBoundedList, "set_at");
 
     public static readonly MethodSymbol RawBoundedListShrink
-        = Find<MethodSymbol>(RawBoundedList, "shrink");
+        = Find<MethodSymbol>(RawHybridBoundedList, "shrink");
 
     private static IEnumerable<T> Find<T>()
         => SymbolTree.Symbols.OfType<T>();
@@ -58,7 +58,7 @@ public static class Intrinsic
         var intrinsicsNamespace = new NamespaceSymbol(intrinsicsPackage, "intrinsics");
 
         var rawBoundedListType = BuildSpecializedCollectionSymbols(intrinsicsPackage, tree);
-        var readBytesType = rawBoundedListType.WithRead(DataType.Byte.Yield().ToFixedList<DataType>());
+        var readBytesType = rawBoundedListType.WithRead(FixedList.Create<DataType>(DataType.Void, DataType.Byte));
 
         // fn print_raw_utf8_bytes(bytes: Raw_Bounded_List[byte], start: size, byte_count: size)
         var print = new FunctionSymbol(intrinsicsNamespace, "print_raw_utf8_bytes",
@@ -89,23 +89,32 @@ public static class Intrinsic
         tree.Add(collectionsNamespace);
         tree.Add(specializedNamespace);
 
-        return BuildRawBoundedListSymbol(tree, specializedNamespace);
+        return BuildRawHybridBoundedListSymbol(tree, specializedNamespace);
     }
 
-    private static DeclaredObjectType BuildRawBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
+    private static DeclaredObjectType BuildRawHybridBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
     {
         var classType = DeclaredObjectType.Create(@namespace.Package!.Name, @namespace.NamespaceName,
-            isAbstract: false, isConst: false, isClass: true, "Raw_Bounded_List", "T");
+            isAbstract: false, isConst: false, isClass: true, "Raw_Hybrid_Bounded_List", "F", "T");
+        var fixedType = classType.GenericParameterTypes[0];
         var readClassParamType = new ParameterType(false, classType.WithRead(classType.GenericParameterDataTypes));
         var mutClassType = classType.WithMutate(classType.GenericParameterDataTypes);
         var mutClassParamType = new ParameterType(false, mutClassType);
-        var itemType = classType.GenericParameterTypes[0];
+        var itemType = classType.GenericParameterTypes[1];
         var classSymbol = new ObjectTypeSymbol(@namespace, classType);
         tree.Add(classSymbol);
 
-        // published new(.capacity) {...}
-        var constructor = new ConstructorSymbol(classSymbol, null, mutClassType, Params(DataType.Size));
+        // published new(.fixed, .capacity) {...}
+        var constructor = new ConstructorSymbol(classSymbol, null, mutClassType, Params(fixedType, DataType.Size));
         tree.Add(constructor);
+
+        // published fn get_fixed() -> F;
+        var getFixed = new MethodSymbol(classSymbol, "get_fixed", mutClassParamType, Params(), new ReturnType(false, fixedType));
+        tree.Add(getFixed);
+
+        // published fn set_fixed(fixed: F);
+        var setFixed = new MethodSymbol(classSymbol, "set_fixed", mutClassParamType, Params(), ReturnType.Void);
+        tree.Add(setFixed);
 
         // published fn get_capacity() -> size;
         var capacity = new MethodSymbol(classSymbol, "get_capacity", readClassParamType, Params(), ReturnType.Size);

@@ -6,18 +6,18 @@ published class String
     /// The number of bytes in the string when encoded in UTF8.
     published let byte_count: size;
     // TODO use iref var?
-    var bytes: mut Raw_Bounded_List[byte];
+    var bytes: mut Raw_Hybrid_Bounded_List[void, byte];
 
     // Constructor is private because this is a temporary way of constructing strings for constants
     // TODO parameter type doesn't make sense for string literals
-    /* unsafe */ new(self, bytes: Raw_Bounded_List[byte], start: size, byte_count: size)
+    /* unsafe */ new(self, bytes: Raw_Hybrid_Bounded_List[void, byte], start: size, byte_count: size)
     {
         .bytes = bytes;
         .start = start;
         .byte_count = byte_count;
     }
 
-    public fn raw_bytes(self) -> Raw_Bounded_List[byte]
+    public fn raw_bytes(self) -> Raw_Hybrid_Bounded_List[void, byte]
     {
         return .bytes;
     }

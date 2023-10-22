@@ -578,6 +578,7 @@ public class BasicBodyAnalyzer
                 // Note that the operator could be overloaded
                 if (!leftResult.Type.IsFullyKnown || !rightResult.Type.IsFullyKnown)
                 {
+                    exp.Semantics = ExpressionSemantics.Never;
                     exp.DataType = DataType.Unknown;
                     return new ExpressionResult(exp, resultVariable);
                 }
@@ -752,9 +753,10 @@ public class BasicBodyAnalyzer
 
                 var typeSymbol = exp.Type.ReferencedSymbol.Result ?? throw new NotImplementedException();
                 DataType constructedType;
+                var contextType = (NonEmptyType)constructingType;
                 var constructorSymbols = symbolTrees.Children(typeSymbol).OfType<ConstructorSymbol>().ToFixedSet();
-                constructorSymbols = SelectOverload(constructorSymbols, arguments);
-                switch (constructorSymbols.Count)
+                var validOverloads = SelectOverload(contextType, constructorSymbols, arguments);
+                switch (validOverloads.Count)
                 {
                     case 0:
                         diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
@@ -762,14 +764,11 @@ public class BasicBodyAnalyzer
                         constructedType = DataType.Unknown;
                         break;
                     case 1:
-                        var constructorSymbol = constructorSymbols.Single();
-                        exp.ReferencedSymbol.Fulfill(constructorSymbol);
-                        var contextType = (NonEmptyType)constructingType;
-                        var expectedArgumentTypes =
-                            constructorSymbol.ParameterTypes.Select(contextType.ReplaceTypeParametersIn);
-                        CheckTypes(arguments, expectedArgumentTypes, flow);
+                        var constructor = validOverloads.Single();
+                        exp.ReferencedSymbol.Fulfill(constructor.Symbol);
+                        CheckTypes(arguments, constructor.ParameterTypes, flow);
                         resultVariable = CombineResults(arguments, flow);
-                        constructedType = contextType.ReplaceTypeParametersIn(constructorSymbol.ReturnType);
+                        constructedType = constructor.ReturnType.Type;
                         break;
                     default:
                         diagnostics.Add(NameBindingError.AmbiguousConstructorCall(file, exp.Span));
@@ -1097,6 +1096,10 @@ public class BasicBodyAnalyzer
         ArgumentResults arguments,
         FlowState flow)
     {
+        // There are no types for functions
+        invocation.Expression.DataType = DataType.Void;
+        invocation.Expression.Semantics = ExpressionSemantics.Void;
+
         var selfResult = arguments.Self!;
         var selfArgumentType = selfResult.Type;
         // If it is unknown, we already reported an error
@@ -1149,10 +1152,6 @@ public class BasicBodyAnalyzer
             flow.Drop(resultVariable);
             resultVariable = null;
         }
-
-        // There are no types for functions
-        invocation.Expression.DataType = DataType.Void;
-        invocation.Expression.Semantics = ExpressionSemantics.Void;
 
         // Apply the referenced symbol to the underlying name
         if (invocation.Expression is IQualifiedNameExpressionSyntax nameExpression)
@@ -1218,8 +1217,8 @@ public class BasicBodyAnalyzer
         ArgumentResults arguments,
         FlowState flow)
     {
-        functionSymbols = SelectOverload(functionSymbols, arguments);
-        switch (functionSymbols.Count)
+        var validOverloads = SelectOverload(null, functionSymbols, arguments);
+        switch (validOverloads.Count)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindFunction(file, invocation.Span));
@@ -1228,10 +1227,10 @@ public class BasicBodyAnalyzer
                 invocation.Semantics = ExpressionSemantics.Never;
                 break;
             case 1:
-                var functionSymbol = functionSymbols.Single();
-                invocation.ReferencedSymbol.Fulfill(functionSymbol);
-                CheckTypes(arguments, functionSymbol.ParameterTypes, flow);
-                var returnType = functionSymbol.ReturnType.Type;
+                var function = validOverloads.Single();
+                invocation.ReferencedSymbol.Fulfill(function.Symbol);
+                CheckTypes(arguments, function.ParameterTypes, flow);
+                var returnType = function.ReturnType.Type;
                 invocation.DataType = returnType;
                 AssignInvocationSemantics(invocation, returnType);
                 break;
@@ -1586,20 +1585,38 @@ public class BasicBodyAnalyzer
         };
     }
 
-    private static FixedSet<TSymbol> SelectOverload<TSymbol>(
+    private static FixedSet<Contextualized<TSymbol>> SelectOverload<TSymbol>(
+        NonEmptyType? contextType,
         FixedSet<TSymbol> symbols,
         ArgumentResults argumentTypes)
         where TSymbol : InvocableSymbol
     {
+        var contextualizedSymbols = Contextualize(contextType, symbols);
         // Filter down to symbols that could possible match
-        symbols = symbols.Where(s =>
+        contextualizedSymbols = contextualizedSymbols.Where(s =>
         {
             if (s.Arity != argumentTypes.Arguments.Count) return false;
             // TODO check compatibility over argument types
             return true;
         }).ToFixedSet();
         // TODO Select most specific match
-        return symbols;
+        return contextualizedSymbols;
+    }
+
+    private static FixedSet<Contextualized<TSymbol>> Contextualize<TSymbol>(
+        NonEmptyType? contextType,
+        FixedSet<TSymbol> symbols)
+        where TSymbol : InvocableSymbol
+    {
+        return symbols.Select(s =>
+        {
+            var effectiveParameterTypes = contextType is null
+                ? s.ParameterTypes
+                : s.ParameterTypes.Select(contextType.ReplaceTypeParametersIn).Where(p => p.Type is NonEmptyType)
+                   .ToFixedList();
+            var effectiveReturnType = contextType?.ReplaceTypeParametersIn(s.ReturnType) ?? s.ReturnType;
+            return new Contextualized<TSymbol>(s, effectiveParameterTypes, effectiveReturnType);
+        }).ToFixedSet();
     }
 
     private FixedList<MethodSymbol> SelectMethodOverload(

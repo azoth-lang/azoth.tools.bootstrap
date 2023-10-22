@@ -1,16 +1,16 @@
 published class List[T]
 {
-    var items: mut Raw_Bounded_List[T];
+    var items: mut Raw_Hybrid_Bounded_List[void, T];
 
     published new(mut self)
     {
-        .items = new Raw_Bounded_List[T](2);
+        .items = new Raw_Hybrid_Bounded_List[void, T](2);
     }
 
     published new(mut self, var capacity: size)
     {
         if capacity < 2 => capacity = 2;
-        .items = new Raw_Bounded_List[T](capacity);
+        .items = new Raw_Hybrid_Bounded_List[void, T](capacity);
     }
 
     published fn get_capacity(self) -> size
@@ -51,7 +51,7 @@ published class List[T]
         if new_count <= capacity => return;
         while capacity < new_count { capacity *= 2; }
         let count = .items.get_count();
-        let new_items: mut = new Raw_Bounded_List[T](capacity);
+        let new_items: mut = new Raw_Hybrid_Bounded_List[void, T](capacity);
         foreach i in 0..<count { new_items.add(.items.at(i)); }
         .items = new_items;
     }
