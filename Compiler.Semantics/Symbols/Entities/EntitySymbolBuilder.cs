@@ -254,6 +254,8 @@ public class EntitySymbolBuilder
                     diagnostics.Add(TypeError.BaseTypeMustBeClass(syn.File, syn.Name, baseTypeName));
 
                 yield return declaredType;
+                foreach (var inheritedType in declaredType.SuperTypes)
+                    yield return inheritedType;
             }
             else
                 diagnostics.Add(TypeError.BaseTypeMustBeClass(syn.File, syn.Name, baseTypeName));
@@ -263,7 +265,11 @@ public class EntitySymbolBuilder
         {
             var superType = resolver.EvaluateBareType(superTypeSyntax);
             if (superType is ObjectType { DeclaredType: var declaredType })
+            {
                 yield return declaredType;
+                foreach (var inheritedType in declaredType.SuperTypes)
+                    yield return inheritedType;
+            }
             else
                 diagnostics.Add(TypeError.SuperTypeMustBeClassOrTrait(syn.File, syn.Name, superTypeSyntax));
         }
