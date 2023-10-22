@@ -24,6 +24,7 @@ public static class BinaryOperatorExtensions
             BinaryOperator.LessThanDotDot => "<..",
             BinaryOperator.DotDotLessThan => "..<",
             BinaryOperator.LessThanDotDotLessThan => "<..<",
+            BinaryOperator.QuestionQuestion => "??",
             _ => throw ExhaustiveMatch.Failed(@operator)
         };
 
@@ -50,6 +51,8 @@ public static class BinaryOperatorExtensions
             BinaryOperator.LessThanOrEqual => OperatorPrecedence.Relational,
             BinaryOperator.GreaterThan => OperatorPrecedence.Relational,
             BinaryOperator.GreaterThanOrEqual => OperatorPrecedence.Relational,
+
+            BinaryOperator.QuestionQuestion => OperatorPrecedence.Coalesce,
 
             _ => throw ExhaustiveMatch.Failed(@operator),
         };

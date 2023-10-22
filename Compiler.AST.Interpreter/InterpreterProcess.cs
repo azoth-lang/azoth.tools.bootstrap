@@ -430,7 +430,8 @@ public class InterpreterProcess
                     case BinaryOperator.LessThanDotDot:
                     case BinaryOperator.DotDotLessThan:
                     case BinaryOperator.LessThanDotDotLessThan:
-                        throw new NotImplementedException($"Operator {exp.Operator}");
+                    case BinaryOperator.QuestionQuestion:
+                        throw new NotImplementedException($"Operator `{exp.Operator}`");
                 }
             case IUnaryOperatorExpression exp:
                 return exp.Operator switch

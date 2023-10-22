@@ -1584,7 +1584,10 @@ public class BasicBodyAnalyzer
         if (selfType is not NonEmptyType nonEmptySelfType)
             return FixedList<MethodSymbol>.Empty;
 
-        var contextSymbol = LookupSymbolForType(selfType);
+        if (nonEmptySelfType is OptionalType)
+            return FixedList<MethodSymbol>.Empty;
+
+        var contextSymbol = LookupSymbolForType(nonEmptySelfType);
         var symbols = symbolTrees.Children(contextSymbol!)
                                  .OfType<MethodSymbol>().Where(s => s.Name == methodName);
 
@@ -1611,6 +1614,7 @@ public class BasicBodyAnalyzer
                                                   .GlobalSymbols
                                                   .OfType<PrimitiveTypeSymbol>()
                                                   .Single(s => s.DeclaresType == integerType),
+            OptionalType _ => null,
             _ => throw new NotImplementedException(
                 $"{nameof(LookupSymbolForType)} not implemented for {dataType.GetType().Name}")
         };

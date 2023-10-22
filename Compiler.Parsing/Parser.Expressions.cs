@@ -250,7 +250,7 @@ public partial class Parser
             ILessThanDotDotToken _ => BinaryOperator.LessThanDotDot,
             IDotDotLessThanToken _ => BinaryOperator.DotDotLessThan,
             ILessThanDotDotLessThanToken _ => BinaryOperator.LessThanDotDotLessThan,
-            IQuestionQuestionToken _ => throw new NotImplementedException(),
+            IQuestionQuestionToken _ => BinaryOperator.QuestionQuestion,
             _ => throw ExhaustiveMatch.Failed(operatorToken)
         };
         return new BinaryOperatorExpressionSyntax(left, binaryOperator, right);
