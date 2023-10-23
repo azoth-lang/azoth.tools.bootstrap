@@ -413,18 +413,10 @@ public partial interface IExpressionStatementSyntax : IBodyStatementSyntax
 }
 
 [Closed(
-    typeof(IBindingPatternSyntax),
     typeof(IBindingContextPatternSyntax),
-    typeof(IOptionalPatternSyntax))]
+    typeof(IOptionalOrBindingPatternSyntax))]
 public partial interface IPatternSyntax : ISyntax
 {
-}
-
-public partial interface IBindingPatternSyntax : IPatternSyntax, ILocalBindingSyntax
-{
-    SimpleName Name { get; }
-    Promise<int?> DeclarationNumber { get; }
-    new Promise<VariableSymbol> Symbol { get; }
 }
 
 public partial interface IBindingContextPatternSyntax : IPatternSyntax
@@ -434,9 +426,23 @@ public partial interface IBindingContextPatternSyntax : IPatternSyntax
     ITypeSyntax? Type { get; }
 }
 
-public partial interface IOptionalPatternSyntax : IPatternSyntax
+[Closed(
+    typeof(IBindingPatternSyntax),
+    typeof(IOptionalPatternSyntax))]
+public partial interface IOptionalOrBindingPatternSyntax : IPatternSyntax
 {
-    IPatternSyntax Pattern { get; }
+}
+
+public partial interface IBindingPatternSyntax : IOptionalOrBindingPatternSyntax, ILocalBindingSyntax
+{
+    SimpleName Name { get; }
+    Promise<int?> DeclarationNumber { get; }
+    new Promise<VariableSymbol> Symbol { get; }
+}
+
+public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSyntax
+{
+    IOptionalOrBindingPatternSyntax Pattern { get; }
 }
 
 [Closed(

@@ -7,18 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
 public partial class Parser
 {
-    private IPatternSyntax ParsePattern(bool? mutableBinding = null, bool refutable = true)
-    {
-        var pattern = ParseNonOptionalPattern(mutableBinding, refutable);
-        while (Tokens.AcceptToken<IQuestionToken>() is IQuestionToken question)
-        {
-            var span = TextSpan.Covering(pattern.Span, question.Span);
-            pattern = new OptionalPatternSyntax(span, pattern);
-        }
-        return pattern;
-    }
-
-    private IPatternSyntax ParseNonOptionalPattern(bool? isMutableBinding, bool refutable)
+    private IPatternSyntax ParsePattern(bool? isMutableBinding = null, bool refutable = true)
     {
         switch (Tokens.Current)
         {
@@ -50,10 +39,16 @@ public partial class Parser
         return new BindingContextPatternSyntax(span, isMutableBinding, pattern, type);
     }
 
-    private IBindingPatternSyntax ParseBindingPattern(bool isMutableBinding)
+    private IOptionalOrBindingPatternSyntax ParseBindingPattern(bool isMutableBinding)
     {
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
-        return new BindingPatternSyntax(identifier.Span, isMutableBinding, name);
+        IOptionalOrBindingPatternSyntax pattern = new BindingPatternSyntax(identifier.Span, isMutableBinding, name);
+        while (Tokens.AcceptToken<IQuestionToken>() is IQuestionToken question)
+        {
+            var span = TextSpan.Covering(pattern.Span, question.Span);
+            pattern = new OptionalPatternSyntax(span, pattern);
+        }
+        return pattern;
     }
 }

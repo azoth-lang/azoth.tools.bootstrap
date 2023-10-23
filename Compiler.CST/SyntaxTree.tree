@@ -94,9 +94,10 @@ ExpressionStatement: BodyStatement = Expression;
 
 // ---------- Patterns
 Pattern;
-BindingPattern: Pattern, LocalBinding = Name:'SimpleName' DeclarationNumber:'Promise<int?>' Symbol:'Promise<VariableSymbol>';
 BindingContextPattern: Pattern = IsMutableBinding:'bool' Pattern Type?;
-OptionalPattern: Pattern = Pattern;
+OptionalOrBindingPattern: Pattern;
+BindingPattern: OptionalOrBindingPattern, LocalBinding = Name:'SimpleName' DeclarationNumber:'Promise<int?>' Symbol:'Promise<VariableSymbol>';
+OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
 Expression = ImplicitConversion:'Conversion' ConvertedDataType:'DataType'? ConvertedSemantics:'ExpressionSemantics'?;

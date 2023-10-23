@@ -5,13 +5,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class OptionalPatternSyntax : Syntax, IOptionalPatternSyntax
 {
-    public IPatternSyntax Pattern { get; }
+    public IOptionalOrBindingPatternSyntax Pattern { get; }
 
-    public OptionalPatternSyntax(TextSpan span, IPatternSyntax pattern)
+    public OptionalPatternSyntax(TextSpan span, IOptionalOrBindingPatternSyntax pattern)
         : base(span)
     {
         Pattern = pattern;
     }
 
-    public override string ToString() => $"({Pattern})?";
+    public override string ToString() => $"{Pattern}?";
 }
