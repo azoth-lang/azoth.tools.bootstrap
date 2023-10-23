@@ -142,6 +142,16 @@ public static class ISyntaxExtensions
             case IExpressionStatementSyntax n:
                 yield return n.Expression;
                 yield break;
+            case IBindingPatternSyntax n:
+                yield break;
+            case IBindingContextPatternSyntax n:
+                yield return n.Pattern;
+                if (n.Type is not null)
+                    yield return n.Type;
+                yield break;
+            case IOptionalPatternSyntax n:
+                yield return n.Pattern;
+                yield break;
             case IBlockExpressionSyntax n:
                 foreach (var child in n.Statements)
                     yield return child;
@@ -179,6 +189,10 @@ public static class ISyntaxExtensions
             case IConversionExpressionSyntax n:
                 yield return n.Referent;
                 yield return n.ConvertToType;
+                yield break;
+            case IPatternMatchExpressionSyntax n:
+                yield return n.Referent;
+                yield return n.Pattern;
                 yield break;
             case IIfExpressionSyntax n:
                 yield return n.Condition;

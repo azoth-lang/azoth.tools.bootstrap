@@ -11,11 +11,10 @@ internal class ImplicitNumericConversionExpression : ImplicitConversionExpressio
 
     public ImplicitNumericConversionExpression(
         TextSpan span,
-        DataType dataType,
         ExpressionSemantics semantics,
         IExpression expression,
         NumericType convertToType)
-        : base(span, dataType, semantics, expression)
+        : base(span, convertToType, semantics, expression)
     {
         ConvertToType = convertToType;
     }

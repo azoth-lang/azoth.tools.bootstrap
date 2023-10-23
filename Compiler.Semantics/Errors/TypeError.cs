@@ -165,4 +165,10 @@ public static class TypeError
         return new(file, typeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3023, $"Type `{typeName}` cannot be constructed because it is abstract");
     }
+
+    public static Diagnostic OptionalPatternOnNonOptionalType(CodeFile file, IOptionalPatternSyntax pattern, DataType type)
+    {
+        return new(file, pattern.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+            3024, $"Optional pattern `{pattern}` cannot be applied to value of non-optional type {type}");
+    }
 }

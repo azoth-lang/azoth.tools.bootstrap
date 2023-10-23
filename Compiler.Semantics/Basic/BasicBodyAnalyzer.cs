@@ -630,6 +630,8 @@ public class BasicBodyAnalyzer
                         or (_, BinaryOperator.LessThanDotDotLessThan, _)
                         => throw new NotImplementedException("Type analysis of range operators"),
                     _ => DataType.Unknown
+
+                    // TODO optional types
                 };
 
                 if (type == DataType.Unknown)
@@ -915,19 +917,19 @@ public class BasicBodyAnalyzer
                 if (!left.Type.IsAssignableFrom(right.Type))
                     diagnostics.Add(TypeError.CannotImplicitlyConvert(file,
                         exp.RightOperand, right.Type, left.Type));
-                var variableResult = flow.Combine(left.Variable, right.Variable);
+                var resultVariable = flow.Combine(left.Variable, right.Variable);
                 if (left.Type.Semantics == TypeSemantics.MoveValue)
                 {
                     exp.Semantics = ExpressionSemantics.Void;
                     exp.DataType = DataType.Void;
-                    flow.Drop(variableResult);
+                    flow.Drop(resultVariable);
                 }
                 else
                 {
                     exp.Semantics = left.Type.Semantics.ToExpressionSemantics(ExpressionSemantics.MutableReference);
                     exp.DataType = left.Type;
                 }
-                return new ExpressionResult(exp, variableResult);
+                return new ExpressionResult(exp, resultVariable);
             }
             case ISelfExpressionSyntax exp:
             {
@@ -957,6 +959,56 @@ public class BasicBodyAnalyzer
                 exp.Semantics = exp.Referent.ConvertedSemantics!;
                 exp.DataType = convertToType;
                 return new ExpressionResult(exp, result.Variable);
+            }
+            case IPatternMatchExpressionSyntax exp:
+            {
+                var referent = InferType(exp.Referent, flow);
+                ResolveTypes(exp.Pattern, referent.Type, referent.Variable, flow);
+                flow.Drop(referent.Variable);
+                exp.Semantics = ExpressionSemantics.CopyValue;
+                exp.DataType = DataType.Bool;
+                return new ExpressionResult(exp);
+            }
+        }
+    }
+
+    private void ResolveTypes(
+        IPatternSyntax pattern,
+        DataType valueType,
+        ResultVariable? resultVariable,
+        FlowState flow,
+        bool? isMutableBinding = false)
+    {
+        switch (pattern)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(pattern);
+            case IBindingContextPatternSyntax pat:
+            {
+                valueType = typeResolver.Evaluate(pat.Type) ?? valueType;
+                ResolveTypes(pat.Pattern, valueType, resultVariable, flow, pat.IsMutableBinding);
+                break;
+            }
+            case IBindingPatternSyntax pat:
+            {
+                if (isMutableBinding is null) throw new UnreachableCodeException("Binding pattern outside of binding context");
+                var symbol = VariableSymbol.CreateLocal(containingSymbol, isMutableBinding.Value, pat.Name,
+                    pat.DeclarationNumber.Result, valueType);
+                pat.Symbol.Fulfill(symbol);
+                symbolTreeBuilder.Add(symbol);
+                // Declare the symbol
+                flow.Declare(symbol, resultVariable);
+                break;
+            }
+            case IOptionalPatternSyntax pat:
+            {
+                if (valueType is OptionalType optionalType)
+                    valueType = optionalType.Referent;
+                else
+                    diagnostics.Add(TypeError.OptionalPatternOnNonOptionalType(file, pat, valueType));
+
+                ResolveTypes(pat.Pattern, valueType, resultVariable, flow, isMutableBinding);
+                break;
             }
         }
     }

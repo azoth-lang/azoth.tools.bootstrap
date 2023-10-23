@@ -55,7 +55,7 @@ public partial class Parser
     // Requires the binding has already been consumed
     private IStatementSyntax ParseRestOfVariableDeclaration(
         TextSpan binding,
-        bool mutableBinding)
+        bool isMutableBinding)
     {
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
@@ -71,7 +71,7 @@ public partial class Parser
         var semicolon = Tokens.Expect<ISemicolonToken>();
         var span = TextSpan.Covering(binding, semicolon);
         return new VariableDeclarationStatementSyntax(span,
-            mutableBinding, name, identifier.Span, type, capability, initializer);
+            isMutableBinding, name, identifier.Span, type, capability, initializer);
     }
 
     // TODO return is really an either type

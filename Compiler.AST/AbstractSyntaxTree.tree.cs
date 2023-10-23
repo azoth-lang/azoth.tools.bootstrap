@@ -16,6 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST;
     typeof(IDeclaration),
     typeof(IParameter),
     typeof(IStatement),
+    typeof(IPattern),
     typeof(IExpression))]
 public partial interface IAbstractSyntax
 {
@@ -56,6 +57,7 @@ public partial interface IBinding : IAbstractSyntax
 [Closed(
     typeof(INamedParameter),
     typeof(IVariableDeclarationStatement),
+    typeof(IBindingPattern),
     typeof(IForeachExpression))]
 public partial interface ILocalBinding : IBinding
 {
@@ -283,6 +285,31 @@ public partial interface IExpressionStatement : IBodyStatement
 }
 
 [Closed(
+    typeof(IBindingPattern),
+    typeof(IBindingContextPattern),
+    typeof(IOptionalPattern))]
+public partial interface IPattern : IAbstractSyntax
+{
+}
+
+public partial interface IBindingPattern : IPattern, ILocalBinding
+{
+    new VariableSymbol Symbol { get; }
+    Promise<bool> VariableIsLiveAfter { get; }
+}
+
+public partial interface IBindingContextPattern : IPattern
+{
+    IPattern Pattern { get; }
+    DataType Type { get; }
+}
+
+public partial interface IOptionalPattern : IPattern
+{
+    IPattern Pattern { get; }
+}
+
+[Closed(
     typeof(IAssignableExpression),
     typeof(IBlockExpression),
     typeof(INewObjectExpression),
@@ -291,6 +318,7 @@ public partial interface IExpressionStatement : IBodyStatement
     typeof(IAssignmentExpression),
     typeof(IBinaryOperatorExpression),
     typeof(IUnaryOperatorExpression),
+    typeof(IPatternMatchExpression),
     typeof(IIfExpression),
     typeof(ILoopExpression),
     typeof(IWhileExpression),
@@ -382,6 +410,12 @@ public partial interface IUnaryOperatorExpression : IExpression
     UnaryOperatorFixity Fixity { get; }
     UnaryOperator Operator { get; }
     IExpression Operand { get; }
+}
+
+public partial interface IPatternMatchExpression : IExpression
+{
+    IExpression Referent { get; }
+    IPattern Pattern { get; }
 }
 
 public partial interface IIfExpression : IExpression, IElseClause

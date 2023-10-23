@@ -55,6 +55,9 @@ internal class BackwardDataFlowAnalyzer<TState> : AbstractSyntaxWalker<bool>
                 currentState = checker!.VariableDeclaration(exp, currentState!);
                 WalkNonNull(exp.InExpression, isLValue);
                 return;
+            case IBindingPattern pat:
+                currentState = checker!.VariableDeclaration(pat, currentState!);
+                return;
             case IFieldAccessExpression exp:
                 WalkNonNull(exp.Context, isLValue);
                 // Don't walk the field name, it shouldn't be treated as a variable

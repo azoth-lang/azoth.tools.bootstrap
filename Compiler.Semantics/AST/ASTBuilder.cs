@@ -306,6 +306,7 @@ internal class ASTBuilder
             IIdExpressionSyntax syn => BuildIdExpression(syn),
             IFreezeExpressionSyntax syn => BuildFreezeExpression(syn),
             IConversionExpressionSyntax syn => BuildConversionExpression(syn),
+            IPatternMatchExpressionSyntax syn => BuildPatternMatchExpression(syn),
             _ => throw ExhaustiveMatch.Failed(expressionSyntax),
         };
         return BuildImplicitConversion(expression, expressionSyntax);
@@ -313,18 +314,27 @@ internal class ASTBuilder
 
     private static IExpression BuildImplicitConversion(IExpression expression, IExpressionSyntax expressionSyntax)
     {
-        return expressionSyntax.ImplicitConversion switch
+        if (expressionSyntax.ImplicitConversion is Conversion conversion)
+            return BuildImplicitConversion(expression, conversion);
+
+        return expression;
+    }
+
+    private static IExpression BuildImplicitConversion(IExpression expression, Conversion conversion)
+    {
+        if (conversion is ChainedConversion chainedConversion)
+            expression = BuildImplicitConversion(expression, chainedConversion.PriorConversion);
+        return conversion switch
         {
-            null => expression,
-            LiftedConversion _ => BuildImplicitLiftedConversionExpression(expression, expressionSyntax),
-            NumericConversion _ => BuildImplicitNumericConversionExpression(expression, expressionSyntax),
-            OptionalConversion _ => BuildImplicitOptionalConversionExpression(expression, expressionSyntax),
-            RecoverIsolation _ => BuildRecoverIsolationExpression(expression, expressionSyntax),
-            RecoverConst _ => BuildRecoverConstExpression(expression, expressionSyntax),
-            ImplicitMove _ => BuildImplicitMoveExpression(expression, expressionSyntax),
-            ImplicitFreeze _ => BuildImplicitFreezeExpression(expression, expressionSyntax),
+            LiftedConversion _ => BuildImplicitLiftedConversionExpression(expression, conversion),
+            NumericConversion _ => BuildImplicitNumericConversionExpression(expression, conversion),
+            OptionalConversion _ => BuildImplicitOptionalConversionExpression(expression, conversion),
+            RecoverIsolation _ => BuildRecoverIsolationExpression(expression, conversion),
+            RecoverConst _ => BuildRecoverConstExpression(expression, conversion),
+            ImplicitMove _ => BuildImplicitMoveExpression(expression, conversion),
+            ImplicitFreeze _ => BuildImplicitFreezeExpression(expression, conversion),
             IdentityConversion _ => expression,
-            _ => throw ExhaustiveMatch.Failed(expressionSyntax.ImplicitConversion)
+            _ => throw ExhaustiveMatch.Failed(conversion)
         };
     }
 
@@ -453,47 +463,42 @@ internal class ASTBuilder
 
     private static IImplicitLiftedConversionExpression BuildImplicitLiftedConversionExpression(
         IExpression expression,
-        IExpressionSyntax expressionSyntax)
+        Conversion conversion)
     {
-        var semantics = expressionSyntax.ConvertedSemantics!.Value;
-        var convertToType = (OptionalType)expressionSyntax.ConvertedDataType!;
-        return new ImplicitLiftedConversion(expression.Span, convertToType, semantics, expression, convertToType);
+        var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
+        return new ImplicitLiftedConversion(expression.Span, convertToType, semantics, expression, (OptionalType)convertToType);
     }
 
     private static IImplicitNumericConversionExpression BuildImplicitNumericConversionExpression(
         IExpression expression,
-        IExpressionSyntax expressionSyntax)
+        Conversion conversion)
     {
-        var semantics = expressionSyntax.ConvertedSemantics!.Value;
-        var convertToType = (NumericType)expressionSyntax.ConvertedDataType!;
-        return new ImplicitNumericConversionExpression(expression.Span, convertToType, semantics, expression, convertToType);
+        var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
+        return new ImplicitNumericConversionExpression(expression.Span, semantics, expression, (NumericType)convertToType);
     }
 
     private static IImplicitOptionalConversionExpression BuildImplicitOptionalConversionExpression(
         IExpression expression,
-        IExpressionSyntax expressionSyntax)
+        Conversion conversion)
     {
-        var semantics = expressionSyntax.ConvertedSemantics!.Value;
-        var convertToType = (OptionalType)expressionSyntax.ConvertedDataType!;
-        return new ImplicitOptionalConversionExpression(expression.Span, convertToType, semantics, expression, convertToType);
+        var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
+        return new ImplicitOptionalConversionExpression(expression.Span, convertToType, semantics, expression, (OptionalType)convertToType);
     }
 
     private static IRecoverIsolationExpression BuildRecoverIsolationExpression(
         IExpression expression,
-        IExpressionSyntax expressionSyntax)
+        Conversion conversion)
     {
-        var semantics = expressionSyntax.ConvertedSemantics!.Value;
-        var convertToType = (ReferenceType)expressionSyntax.ConvertedDataType!;
-        return new RecoverIsolationExpression(expression.Span, convertToType, semantics, expression);
+        var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
+        return new RecoverIsolationExpression(expression.Span, (ReferenceType)convertToType, semantics, expression);
     }
 
     private static IRecoverConstExpression BuildRecoverConstExpression(
         IExpression expression,
-        IExpressionSyntax expressionSyntax)
+        Conversion conversion)
     {
-        var semantics = expressionSyntax.ConvertedSemantics!.Value;
-        var convertToType = (ReferenceType)expressionSyntax.ConvertedDataType!;
-        return new RecoverConstExpression(expression.Span, convertToType, semantics, expression);
+        var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
+        return new RecoverConstExpression(expression.Span, (ReferenceType)convertToType, semantics, expression);
     }
 
     private static IIntegerLiteralExpression BuildIntegerLiteralExpression(IIntegerLiteralExpressionSyntax syn)
@@ -538,12 +543,11 @@ internal class ASTBuilder
 
     private static IMoveExpression BuildImplicitMoveExpression(
         IExpression expression,
-        IExpressionSyntax expressionSyntax)
+        Conversion conversion)
     {
-        var semantics = expressionSyntax.ConvertedSemantics!.Value;
-        var convertToType = (ReferenceType)expressionSyntax.ConvertedDataType!;
+        var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
         var referencedSymbol = ((INameExpression)expression).ReferencedSymbol;
-        return new MoveExpression(expression.Span, convertToType, semantics, referencedSymbol, expression);
+        return new MoveExpression(expression.Span, (ReferenceType)convertToType, semantics, referencedSymbol, expression);
     }
 
     private static INameExpression BuildNameExpression(ISimpleNameExpressionSyntax syn)
@@ -633,12 +637,11 @@ internal class ASTBuilder
 
     private static IFreezeExpression BuildImplicitFreezeExpression(
         IExpression expression,
-        IExpressionSyntax expressionSyntax)
+        Conversion conversion)
     {
-        var semantics = expressionSyntax.ConvertedSemantics!.Value;
-        var convertToType = (ReferenceType)expressionSyntax.ConvertedDataType!;
+        var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
         var referencedSymbol = ((INameExpression)expression).ReferencedSymbol;
-        return new FreezeExpression(expressionSyntax.Span, convertToType, semantics, referencedSymbol, expression);
+        return new FreezeExpression(expression.Span, (ReferenceType)convertToType, semantics, referencedSymbol, expression);
     }
 
     private static IExpression BuildConversionExpression(IConversionExpressionSyntax syn)
@@ -649,9 +652,55 @@ internal class ASTBuilder
 
         // TODO support non-numeric conversions
         var semantics = syn.ConvertedSemantics!.Value;
-        var expressionType = syn.DataType!;
+        var expressionType = syn.DataType.Assigned();
         var isOptional = syn.Operator == ConversionOperator.Optional;
-        var convertToType = (NumericType)syn.ConvertToType.NamedType!;
+        var convertToType = (NumericType)syn.ConvertToType.NamedType.Assigned();
         return new ExplicitNumericConversion(syn.Span, expressionType, semantics, referent, isOptional, convertToType);
+    }
+
+    private static IExpression BuildImplicitNumericConversionExpression(
+        IExpression expression, IConversionExpressionSyntax conversion)
+    {
+        var convertToType = (NumericType)conversion.ConvertToType.NamedType.Assigned();
+        var semantics = conversion.ConvertedSemantics.Assigned();
+        return new ImplicitNumericConversionExpression(expression.Span, semantics, expression, convertToType);
+    }
+
+    private static IExpression BuildPatternMatchExpression(IPatternMatchExpressionSyntax syn)
+    {
+        var referent = BuildExpression(syn.Referent);
+        var pattern = BuildPattern(syn.Pattern);
+        return new PatternMatchExpression(referent, pattern);
+    }
+
+    private static IPattern BuildPattern(IPatternSyntax patternSyntax)
+    {
+        return patternSyntax switch
+        {
+            IBindingContextPatternSyntax syn => BuildBindingContextPattern(syn),
+            IBindingPatternSyntax syn => BuildBindingPattern(syn),
+            IOptionalPatternSyntax syn => BuildOptionalPattern(syn),
+            _ => throw ExhaustiveMatch.Failed(patternSyntax),
+        };
+    }
+
+    private static IPattern BuildBindingContextPattern(IBindingContextPatternSyntax syn)
+    {
+        var pattern = BuildPattern(syn.Pattern);
+        if (syn.Type is null) return pattern;
+        var type = syn.Type.NamedType.Assigned();
+        return new BindingContextPattern(syn.Span, pattern, type);
+    }
+
+    private static IBindingPattern BuildBindingPattern(IBindingPatternSyntax syn)
+    {
+        var symbol = syn.Symbol.Result;
+        return new BindingPattern(syn.Span, symbol);
+    }
+
+    private static IOptionalPattern BuildOptionalPattern(IOptionalPatternSyntax syn)
+    {
+        var pattern = BuildPattern(syn.Pattern);
+        return new OptionalPattern(syn.Span, pattern);
     }
 }

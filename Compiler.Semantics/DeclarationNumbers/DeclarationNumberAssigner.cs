@@ -38,6 +38,12 @@ public class DeclarationNumberAssigner : SyntaxWalker
             case IForeachExpressionSyntax syn:
                 ProcessDeclaration(syn.VariableName, syn.DeclarationNumber);
                 break;
+            case IBindingPatternSyntax syn:
+                ProcessDeclaration(syn.Name, syn.DeclarationNumber);
+                break;
+            case ITypeSyntax _:
+                // can't contain declarations
+                return;
         }
         WalkChildren(syntax);
     }

@@ -549,6 +549,32 @@ public class InterpreterProcess
                 // TODO handle other lifted conversions
                 return value.Convert(exp.Expression.DataType, (NumericType)exp.ConvertToType.Referent, false);
             }
+            case IPatternMatchExpression exp:
+            {
+                var value = await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
+                return await ExecuteMatchAsync(value, exp.Pattern, variables);
+            }
+        }
+    }
+
+    private async ValueTask<AzothValue> ExecuteMatchAsync(
+        AzothValue value,
+        IPattern pattern,
+        LocalVariableScope variables)
+    {
+        switch (pattern)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(pattern);
+            case IBindingContextPattern pat:
+                throw new NotImplementedException();
+            case IBindingPattern pat:
+                variables.Add(pat.Symbol, value);
+                return AzothValue.Bool(true);
+            case IOptionalPattern pat:
+                if (value.IsNone)
+                    return AzothValue.Bool(false);
+                return await ExecuteMatchAsync(value, pat.Pattern, variables);
         }
     }
 

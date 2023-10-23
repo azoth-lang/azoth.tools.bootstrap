@@ -9,4 +9,5 @@ public interface IForwardDataFlowAnalysis<TState>
     TState IdentifierName(INameExpression nameExpression, TState state);
     TState VariableDeclaration(IVariableDeclarationStatement variableDeclaration, TState state);
     TState VariableDeclaration(IForeachExpression foreachExpression, TState state);
+    TState VariableDeclaration(IBindingPattern bindingPattern, TState state);
 }

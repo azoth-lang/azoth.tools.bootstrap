@@ -93,6 +93,7 @@
         //"Underscore",
         //"External",
         //"Sealed",
+        "Is",
     }.AsReadOnly();
 #>
 using System;

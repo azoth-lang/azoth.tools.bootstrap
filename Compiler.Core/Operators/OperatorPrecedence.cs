@@ -4,13 +4,13 @@ public enum OperatorPrecedence
 {
     Min = Assignment, // The minimum precedence
     AboveAssignment = Coalesce,
-    Assignment = 1, // `=` `+=` `-=`
+    Assignment = 1, // `=` `+=` `-=` `*=` `/=`
     Coalesce, // `??`
     LogicalOr, // `or`
     LogicalAnd, // `and`
     Equality, // `==` `≠`
-    Relational, // `<` `<=` `>` `>=` `<:`
-    Range, // `..` `..<`
+    Relational, // `<` `<=` `>` `>=` `<:` `is`
+    Range, // `..` `..<` `<..` `<..<`
     Conversion, // `as` `as!` `as?`
     Additive, // `+` `-`
     Multiplicative, // `*` `/`

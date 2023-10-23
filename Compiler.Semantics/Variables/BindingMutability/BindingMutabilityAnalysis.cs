@@ -107,4 +107,9 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<BindingFlags>
         IForeachExpression foreachExpression,
         BindingFlags definitelyUnassigned)
         => definitelyUnassigned.Set(foreachExpression.Symbol, false);
+
+    public BindingFlags VariableDeclaration(
+        IBindingPattern bindingPattern,
+        BindingFlags definitelyUnassigned)
+        => definitelyUnassigned.Set(bindingPattern.Symbol, false);
 }

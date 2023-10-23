@@ -92,6 +92,12 @@ BodyStatement: Statement;
 VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Name:'SimpleName' DeclarationNumber:'Promise<int?>' Capability:ReferenceCapability? Type? Symbol:'Promise<VariableSymbol>' Initializer:Expression?;
 ExpressionStatement: BodyStatement = Expression;
 
+// ---------- Patterns
+Pattern;
+BindingPattern: Pattern, LocalBinding = Name:'SimpleName' DeclarationNumber:'Promise<int?>' Symbol:'Promise<VariableSymbol>';
+BindingContextPattern: Pattern = IsMutableBinding:'bool' Pattern Type?;
+OptionalPattern: Pattern = Pattern;
+
 // ---------- Expressions
 Expression = ImplicitConversion:'Conversion' ConvertedDataType:'DataType'? ConvertedSemantics:'ExpressionSemantics'?;
 AssignableExpression: Expression;
@@ -112,6 +118,7 @@ BinaryOperatorExpression: Expression = LeftOperand:Expression Operator:'BinaryOp
 UnaryOperatorExpression: Expression = Fixity:'UnaryOperatorFixity' Operator:'UnaryOperator' Operand:Expression;
 IdExpression: Expression = Referent:Expression;
 ConversionExpression: Expression = Referent:Expression Operator:'ConversionOperator' ConvertToType:Type;
+PatternMatchExpression: Expression = Referent:Expression Pattern;
 
 // ---------- Control Flow Expressions
 IfExpression: Expression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;

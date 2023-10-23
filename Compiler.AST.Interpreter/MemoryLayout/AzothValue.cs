@@ -6,6 +6,15 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 
+/// <summary>
+/// A compact structure for representing Azoth values.
+/// </summary>
+/// <remarks><para>This struct is laid out in memory so that the first part is a reference and the second
+/// is primitive value. This corresponds with the internal layout of <see cref="BigInteger"/> which
+/// stores the bit array in the first part and the <see cref="Int32"/> value second.</para>
+///
+/// <para>Since small value <see cref="BigInteger"/>s have a null reference, a special flag reference
+/// must be used to indicate `none`.</para></remarks>
 [StructLayout(LayoutKind.Explicit)]
 internal readonly struct AzothValue
 {
@@ -14,7 +23,7 @@ internal readonly struct AzothValue
     [FieldOffset(0)] public readonly IRawBoundedList RawBoundedListValue;
     [FieldOffset(0)] private readonly ValueType value;
 
-    public bool IsNone => value.Struct is null;
+    public bool IsNone => ReferenceEquals(value.Reference, NoneFlag);
     public bool BoolValue => value.Simple.BoolValue;
     public sbyte I8Value => value.Simple.I8Value;
     public byte ByteValue => value.Simple.ByteValue;
@@ -28,7 +37,7 @@ internal readonly struct AzothValue
     public nuint SizeValue => value.Simple.SizeValue;
 
     #region Static Factory Methods/Properties
-    public static readonly AzothValue None = default;
+    public static readonly AzothValue None = new();
 
     public static AzothValue Object(AzothObject value) => new(value);
     public static AzothValue Int(BigInteger value) => new(value);
@@ -48,6 +57,10 @@ internal readonly struct AzothValue
 
     #region Private Constructors
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public AzothValue()
+    {
+        value.Reference = NoneFlag;
+    }
     private AzothValue(AzothObject value)
     {
         ObjectValue = value;
@@ -62,59 +75,47 @@ internal readonly struct AzothValue
     }
     private AzothValue(bool value)
     {
-        this.value.Struct = NotStruct;
         this.value.Simple.BoolValue = value;
     }
-
     private AzothValue(sbyte value)
     {
-        this.value.Struct = NotStruct;
         this.value.Simple.I8Value = value;
     }
     private AzothValue(byte value)
     {
-        this.value.Struct = NotStruct;
         this.value.Simple.ByteValue = value;
     }
     private AzothValue(short value)
     {
-        this.value.Struct = NotStruct;
         this.value.Simple.I16Value = value;
     }
     private AzothValue(ushort value)
     {
-        this.value.Struct = NotStruct;
         this.value.Simple.U16Value = value;
     }
     private AzothValue(int value)
     {
-        this.value.Struct = NotStruct;
         this.value.Simple.I32Value = value;
     }
     private AzothValue(uint value)
     {
-        this.value.Struct = NotStruct;
         this.value.Simple.U32Value = value;
     }
     private AzothValue(long value)
     {
-        this.value.Struct = NotStruct;
         this.value.Simple.I64Value = value;
     }
     private AzothValue(ulong value)
     {
-        this.value.Struct = NotStruct;
         this.value.Simple.U64Value = value;
     }
 
     private AzothValue(nint value)
     {
-        this.value.Struct = NotStruct;
         this.value.Simple.OffsetValue = value;
     }
     private AzothValue(nuint value) : this()
     {
-        this.value.Struct = NotStruct;
         this.value.Simple.SizeValue = value;
     }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -191,9 +192,9 @@ internal readonly struct AzothValue
 
     private struct ValueType
     {
-        public object? Struct;
+        public object? Reference;
         public SimpleValue Simple;
     }
 
-    private static readonly object NotStruct = new();
+    private static readonly object NoneFlag = new();
 }

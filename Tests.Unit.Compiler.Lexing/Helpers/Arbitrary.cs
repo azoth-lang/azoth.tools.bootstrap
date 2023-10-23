@@ -325,6 +325,7 @@ public static class Arbitrary
         //{ "_", typeof(IUnderscoreKeywordToken) },
         //{ "external", typeof(IExternalKeywordToken) },
         { "freeze", typeof(IFreezeKeywordToken) },
+        { "is", typeof(IIsKeywordToken) },
     }.ToFixedDictionary();
 
     private readonly record struct AppendedToken(IEnumerable<PsuedoToken> Items, PsuedoToken? LastToken)

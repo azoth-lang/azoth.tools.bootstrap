@@ -69,6 +69,12 @@ BodyStatement: Statement;
 VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Symbol:'VariableSymbol' Initializer:Expression? VariableIsLiveAfter:'Promise<bool>';
 ExpressionStatement: BodyStatement = Expression;
 
+// ---------- Patterns
+Pattern;
+BindingPattern: Pattern, LocalBinding = Symbol:'VariableSymbol' VariableIsLiveAfter:'Promise<bool>';
+BindingContextPattern: Pattern = Pattern Type:'DataType';
+OptionalPattern: Pattern = Pattern;
+
 // ---------- Expressions
 Expression = DataType:'DataType' Semantics:'ExpressionSemantics';
 AssignableExpression: Expression;
@@ -87,6 +93,7 @@ StringLiteralExpression: LiteralExpression = Value:'string';
 AssignmentExpression: Expression = LeftOperand:AssignableExpression Operator:'AssignmentOperator' RightOperand:Expression;
 BinaryOperatorExpression: Expression = LeftOperand:Expression Operator:'BinaryOperator' RightOperand:Expression;
 UnaryOperatorExpression: Expression = Fixity:'UnaryOperatorFixity' Operator:'UnaryOperator' Operand:Expression;
+PatternMatchExpression: Expression = Referent:Expression Pattern;
 
 // ---------- Control Flow Expressions
 IfExpression: Expression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;

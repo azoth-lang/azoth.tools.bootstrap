@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
 using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
@@ -28,6 +31,13 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
 
     protected override void WalkNonNull(ISyntax syntax, LexicalScope containingScope)
     {
+        // Forward calls for expressions before setting ContainingLexicalScope
+        if (syntax is IExpressionSyntax exp)
+        {
+            _ = Walk(exp, containingScope);
+            return;
+        }
+
         if (syntax is IHasContainingLexicalScope hasContainingLexicalScope)
             hasContainingLexicalScope.ContainingLexicalScope = containingScope;
 
@@ -90,24 +100,153 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
                 Walk(constructor.Body, containingScope);
                 return;
             case IBodyOrBlockSyntax bodyOrBlock:
-                foreach (var statement in bodyOrBlock.Statements)
-                {
-                    Walk(statement, containingScope);
-                    // Each variable declaration effectively starts a new scope after it, this
-                    // ensures a lookup returns the last declaration
-                    if (statement is IVariableDeclarationStatementSyntax variableDeclaration)
-                        containingScope = BuildVariableScope(containingScope, variableDeclaration.Name, variableDeclaration.Symbol);
-                }
+                Walk(bodyOrBlock, containingScope);
                 return;
-            case IForeachExpressionSyntax foreachExpression:
-                Walk(foreachExpression.Type, containingScope);
-                Walk(foreachExpression.InExpression, containingScope);
-                containingScope = BuildVariableScope(containingScope, foreachExpression.VariableName, foreachExpression.Symbol);
-                Walk(foreachExpression.Block, containingScope);
-                return;
+            case IExpressionSyntax _:
+                throw new UnreachableCodeException($"{nameof(IExpressionSyntax)} should be unreachable `{syntax}`");
         }
 
         WalkChildren(syntax, containingScope);
+    }
+
+    private void Walk(IBodyOrBlockSyntax bodyOrBlock, LexicalScope containingScope)
+    {
+        foreach (var statement in bodyOrBlock.Statements)
+        {
+            Walk(statement, containingScope);
+            // Each variable declaration effectively starts a new scope after it, this
+            // ensures a lookup returns the last declaration
+            if (statement is IVariableDeclarationStatementSyntax variableDeclaration)
+                containingScope = BuildVariableScope(containingScope, variableDeclaration.Name, variableDeclaration.Symbol);
+        }
+    }
+
+    private ConditionalLexicalScopes Walk(IExpressionSyntax? syntax, LexicalScope containingScope)
+    {
+        if (syntax is IHasContainingLexicalScope hasContainingLexicalScope)
+            hasContainingLexicalScope.ContainingLexicalScope = containingScope;
+
+        switch (syntax)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(syntax);
+            case IQualifiedNameExpressionSyntax exp:
+                return Walk(exp.Context, containingScope);
+            case IAssignmentExpressionSyntax exp:
+                _ = Walk(exp.LeftOperand, containingScope);
+                return Walk(exp.RightOperand, containingScope);
+            case IBinaryOperatorExpressionSyntax exp:
+                switch (exp.Operator)
+                {
+                    case BinaryOperator.Or:
+                        var flowScope = Walk(exp.LeftOperand, containingScope).False;
+                        _ = Walk(exp.RightOperand, flowScope);
+                        break;
+                    case BinaryOperator.And:
+                    default:
+                        containingScope = Walk(exp.LeftOperand, containingScope).True;
+                        return Walk(exp.RightOperand, containingScope);
+                }
+                break;
+            case IBlockExpressionSyntax block:
+                Walk((IBodyOrBlockSyntax)block, containingScope);
+                break;
+            case IBreakExpressionSyntax exp:
+                _ = Walk(exp.Value, containingScope);
+                break;
+            case IConversionExpressionSyntax exp:
+            {
+                var scopes = Walk(exp.Referent, containingScope);
+                Walk(exp.ConvertToType, containingScope);
+                return scopes;
+            }
+            case IForeachExpressionSyntax exp:
+            {
+                Walk(exp.Type, containingScope);
+                var bodyScope = Walk(exp.InExpression, containingScope).True;
+                bodyScope = BuildVariableScope(bodyScope, exp.VariableName, exp.Symbol);
+                Walk((IBodyOrBlockSyntax)exp.Block, bodyScope);
+                break;
+            }
+            case IFreezeExpressionSyntax exp:
+                return Walk(exp.Referent, containingScope);
+            case IIdExpressionSyntax exp:
+                return Walk(exp.Referent, containingScope);
+            case IInvocationExpressionSyntax exp:
+                containingScope = Walk(exp.Expression, containingScope).True;
+                foreach (var argument in exp.Arguments)
+                    containingScope = Walk(argument, containingScope).True;
+                break;
+            case ILoopExpressionSyntax exp:
+                Walk((IBodyOrBlockSyntax)exp.Block, containingScope);
+                break;
+            case IMoveExpressionSyntax exp:
+                return Walk(exp.Referent, containingScope);
+            case INewObjectExpressionSyntax exp:
+                Walk(exp.Type, containingScope);
+                foreach (var argument in exp.Arguments)
+                    containingScope = Walk(argument, containingScope).True;
+                break;
+            case IPatternMatchExpressionSyntax exp:
+                containingScope = Walk(exp.Referent, containingScope).True;
+                return WalkNonNull(exp.Pattern, containingScope);
+            case IReturnExpressionSyntax exp:
+                _ = Walk(exp.Value, containingScope);
+                break;
+            case IUnaryOperatorExpressionSyntax exp:
+            {
+                var scopes = Walk(exp.Operand, containingScope);
+                if (exp.Operator == UnaryOperator.Not) scopes = scopes.Swapped();
+                return scopes;
+            }
+            case IUnsafeExpressionSyntax exp:
+                return Walk(exp.Expression, containingScope);
+            case IWhileExpressionSyntax exp:
+            {
+                var bodyScope = Walk(exp.Condition, containingScope).True;
+                Walk((IBodyOrBlockSyntax)exp.Block, bodyScope);
+                break;
+            }
+            case IIfExpressionSyntax exp:
+            {
+                var conditionScopes = Walk(exp.Condition, containingScope);
+                Walk(exp.ThenBlock, conditionScopes.True);
+                if (exp.ElseClause is null && exp.ThenBlock.DataType == DataType.Never)
+                    return ConditionalLexicalScopes.Unconditional(conditionScopes.False);
+
+                Walk(exp.ElseClause, conditionScopes.False);
+                break;
+            }
+            case ILiteralExpressionSyntax _:
+            case ISelfExpressionSyntax _:
+            case ISimpleNameExpressionSyntax _:
+            case INextExpressionSyntax _:
+            case null:
+                // Nothing special to do
+                break;
+        }
+
+        return ConditionalLexicalScopes.Unconditional(containingScope);
+    }
+
+    private ConditionalLexicalScopes WalkNonNull(IPatternSyntax syntax, LexicalScope containingScope)
+    {
+        switch (syntax)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(syntax);
+            case IBindingContextPatternSyntax pat:
+            {
+                var scopes = WalkNonNull(pat.Pattern, containingScope);
+                Walk(pat.Type, containingScope);
+                return scopes;
+            }
+            case IBindingPatternSyntax pat:
+                var trueScope = BuildVariableScope(containingScope, pat.Name, pat.Symbol);
+                return new ConditionalLexicalScopes(trueScope, containingScope);
+            case IOptionalPatternSyntax pat:
+                return WalkNonNull(pat.Pattern, containingScope);
+        }
     }
 
     private LexicalScope BuildNamespaceScopes(

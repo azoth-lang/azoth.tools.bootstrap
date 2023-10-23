@@ -146,4 +146,11 @@ internal static class ParseError
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2020, "Field parameter cannot be `lent`");
     }
+
+    public static Diagnostic UnexpectedEndOfPattern(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2021, "Unexpected end of pattern");
+    }
+
 }

@@ -126,6 +126,15 @@ public partial class Parser
                         continue;
                     }
                     break;
+                case IIsKeywordToken _:
+                    if (minPrecedence <= OperatorPrecedence.Relational)
+                    {
+                        _ = Tokens.Required<IIsKeywordToken>();
+                        var patternSyntax = ParsePattern();
+                        expression = new PatternMatchExpressionSyntax(expression, patternSyntax);
+                        continue;
+                    }
+                    break;
                 case IPlusToken _:
                 case IMinusToken _:
                     if (minPrecedence <= OperatorPrecedence.Additive)

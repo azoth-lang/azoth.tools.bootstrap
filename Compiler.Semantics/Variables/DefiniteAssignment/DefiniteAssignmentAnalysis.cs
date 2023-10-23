@@ -77,4 +77,9 @@ internal class DefiniteAssignmentAnalysis : IForwardDataFlowAnalysis<BindingFlag
         IForeachExpression foreachExpression,
         BindingFlags definitelyAssigned)
         => definitelyAssigned.Set(foreachExpression.Symbol, true);
+
+    public BindingFlags VariableDeclaration(
+        IBindingPattern bindingPattern,
+        BindingFlags definitelyAssigned)
+        => definitelyAssigned.Set(bindingPattern.Symbol, true);
 }

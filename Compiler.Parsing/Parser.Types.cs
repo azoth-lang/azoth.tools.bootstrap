@@ -16,7 +16,6 @@ public partial class Parser
         return Tokens.Current switch
         {
             ICapabilityToken or IIdentifierToken or IPrimitiveTypeToken => ParseType(),
-
             _ => null
         };
     }

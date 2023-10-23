@@ -50,6 +50,9 @@ public class SymbolValidator : SyntaxWalker
             case IVariableDeclarationStatementSyntax syn:
                 CheckSymbol(syn, syn.Symbol);
                 break;
+            case IBindingPatternSyntax syn:
+                CheckSymbol(syn, syn.Symbol);
+                break;
             case IDeclarationSyntax syn:
                 CheckSymbol(syn, syn.Symbol);
                 break;

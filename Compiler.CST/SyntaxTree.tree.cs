@@ -25,6 +25,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(ITypeSyntax),
     typeof(IReferenceCapabilitySyntax),
     typeof(IStatementSyntax),
+    typeof(IPatternSyntax),
     typeof(IExpressionSyntax))]
 public partial interface ISyntax
 {
@@ -79,6 +80,7 @@ public partial interface IBindingSyntax : ISyntax
 [Closed(
     typeof(INamedParameterSyntax),
     typeof(IVariableDeclarationStatementSyntax),
+    typeof(IBindingPatternSyntax),
     typeof(IForeachExpressionSyntax))]
 public partial interface ILocalBindingSyntax : IBindingSyntax
 {
@@ -411,6 +413,33 @@ public partial interface IExpressionStatementSyntax : IBodyStatementSyntax
 }
 
 [Closed(
+    typeof(IBindingPatternSyntax),
+    typeof(IBindingContextPatternSyntax),
+    typeof(IOptionalPatternSyntax))]
+public partial interface IPatternSyntax : ISyntax
+{
+}
+
+public partial interface IBindingPatternSyntax : IPatternSyntax, ILocalBindingSyntax
+{
+    SimpleName Name { get; }
+    Promise<int?> DeclarationNumber { get; }
+    new Promise<VariableSymbol> Symbol { get; }
+}
+
+public partial interface IBindingContextPatternSyntax : IPatternSyntax
+{
+    bool IsMutableBinding { get; }
+    IPatternSyntax Pattern { get; }
+    ITypeSyntax? Type { get; }
+}
+
+public partial interface IOptionalPatternSyntax : IPatternSyntax
+{
+    IPatternSyntax Pattern { get; }
+}
+
+[Closed(
     typeof(IAssignableExpressionSyntax),
     typeof(IBlockExpressionSyntax),
     typeof(INewObjectExpressionSyntax),
@@ -421,6 +450,7 @@ public partial interface IExpressionStatementSyntax : IBodyStatementSyntax
     typeof(IUnaryOperatorExpressionSyntax),
     typeof(IIdExpressionSyntax),
     typeof(IConversionExpressionSyntax),
+    typeof(IPatternMatchExpressionSyntax),
     typeof(IIfExpressionSyntax),
     typeof(ILoopExpressionSyntax),
     typeof(IWhileExpressionSyntax),
@@ -522,6 +552,12 @@ public partial interface IConversionExpressionSyntax : IExpressionSyntax
     IExpressionSyntax Referent { get; }
     ConversionOperator Operator { get; }
     ITypeSyntax ConvertToType { get; }
+}
+
+public partial interface IPatternMatchExpressionSyntax : IExpressionSyntax
+{
+    IExpressionSyntax Referent { get; }
+    IPatternSyntax Pattern { get; }
 }
 
 public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyntax

@@ -82,6 +82,14 @@ public static class IAbstractSyntaxExtensions
             case IExpressionStatement n:
                 yield return n.Expression;
                 yield break;
+            case IBindingPattern n:
+                yield break;
+            case IBindingContextPattern n:
+                yield return n.Pattern;
+                yield break;
+            case IOptionalPattern n:
+                yield return n.Pattern;
+                yield break;
             case IBlockExpression n:
                 foreach (var child in n.Statements)
                     yield return child;
@@ -111,6 +119,10 @@ public static class IAbstractSyntaxExtensions
                 yield break;
             case IUnaryOperatorExpression n:
                 yield return n.Operand;
+                yield break;
+            case IPatternMatchExpression n:
+                yield return n.Referent;
+                yield return n.Pattern;
                 yield break;
             case IIfExpression n:
                 yield return n.Condition;

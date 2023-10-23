@@ -102,4 +102,10 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags>
         BindingFlags possiblyMoved)
         // No affect on state since it should already be false
         => possiblyMoved;
+
+    public BindingFlags VariableDeclaration(
+        IBindingPattern bindingPattern,
+        BindingFlags possiblyMoved)
+        // No affect on state since it should already be false
+        => possiblyMoved;
 }

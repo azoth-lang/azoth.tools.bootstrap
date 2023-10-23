@@ -63,6 +63,12 @@ public class LivenessAnalysis : IBackwardDataFlowAnalysis<BindingFlags>
         return liveVariables.Set(foreachExpression.Symbol, false);
     }
 
+    public BindingFlags VariableDeclaration(IBindingPattern bindingPattern, BindingFlags liveVariables)
+    {
+        SetLiveness(bindingPattern.Symbol, bindingPattern.VariableIsLiveAfter, liveVariables);
+        return liveVariables.Set(bindingPattern.Symbol, false);
+    }
+
     private static void SetLiveness(
         NamedBindingSymbol symbol,
         Promise<bool> promise,
