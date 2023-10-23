@@ -13,7 +13,5 @@ internal class BareIdentifierToken : IdentifierToken, IBareIdentifierToken
 public static partial class TokenFactory
 {
     public static IIdentifierToken BareIdentifier(TextSpan span, string value)
-    {
-        return new BareIdentifierToken(span, value);
-    }
+        => new BareIdentifierToken(span, value);
 }

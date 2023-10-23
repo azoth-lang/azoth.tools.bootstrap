@@ -169,6 +169,6 @@ public static class TypeError
     public static Diagnostic OptionalPatternOnNonOptionalType(CodeFile file, IOptionalPatternSyntax pattern, DataType type)
     {
         return new(file, pattern.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3024, $"Optional pattern `{pattern}` cannot be applied to value of non-optional type {type}");
+            3024, $"Optional pattern `{pattern}` cannot be applied to value of non-optional type {type.ToSourceCodeString()}");
     }
 }

@@ -12,9 +12,6 @@ internal class EscapedIdentifierToken : IdentifierToken, IEscapedIdentifierToken
 
 public static partial class TokenFactory
 {
-
     public static IEscapedIdentifierToken EscapedIdentifier(TextSpan span, string value)
-    {
-        return new EscapedIdentifierToken(span, value);
-    }
+        => new EscapedIdentifierToken(span, value);
 }

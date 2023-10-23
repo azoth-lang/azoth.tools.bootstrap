@@ -65,13 +65,37 @@ public partial class Parser
             type = new CapabilityTypeSyntax(capability, type, span);
         }
 
-        while (Tokens.AcceptToken<IQuestionToken>() is IQuestionToken question)
+        while (TryParseOptionalType(ref type))
         {
-            var span = TextSpan.Covering(type.Span, question.Span);
-            type = new OptionalTypeSyntax(span, type);
+            // Work is done by TryParseOptionalType
         }
 
         return type;
+    }
+
+    public bool TryParseOptionalType(ref ITypeSyntax type)
+    {
+        switch (Tokens.Current)
+        {
+            case IQuestionToken:
+            {
+                var question = Tokens.Required<IQuestionToken>();
+                var span = TextSpan.Covering(type.Span, question);
+                type = new OptionalTypeSyntax(span, type);
+                return true;
+            }
+            case IQuestionQuestionToken:
+            {
+                var questionQuestion = Tokens.RequiredToken<IQuestionQuestionToken>();
+                var span = TextSpan.Covering(type.Span, questionQuestion.FirstQuestionSpan);
+                type = new OptionalTypeSyntax(span, type);
+                span = TextSpan.Covering(type.Span, questionQuestion.SecondQuestionSpan);
+                type = new OptionalTypeSyntax(span, type);
+                return true;
+            }
+            default:
+                return false;
+        }
     }
 
     /// <summary>

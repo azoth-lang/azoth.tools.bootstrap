@@ -44,11 +44,35 @@ public partial class Parser
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
         IOptionalOrBindingPatternSyntax pattern = new BindingPatternSyntax(identifier.Span, isMutableBinding, name);
-        while (Tokens.AcceptToken<IQuestionToken>() is IQuestionToken question)
+        while (TryParseOptionalPattern(ref pattern))
         {
-            var span = TextSpan.Covering(pattern.Span, question.Span);
-            pattern = new OptionalPatternSyntax(span, pattern);
+            // Work is done by TryParseOptionalPattern
         }
         return pattern;
+    }
+
+    private bool TryParseOptionalPattern(ref IOptionalOrBindingPatternSyntax pattern)
+    {
+        switch (Tokens.Current)
+        {
+            case IQuestionToken:
+            {
+                var question = Tokens.Required<IQuestionToken>();
+                var span = TextSpan.Covering(pattern.Span, question);
+                pattern = new OptionalPatternSyntax(span, pattern);
+                return true;
+            }
+            case IQuestionQuestionToken:
+            {
+                var questionQuestion = Tokens.RequiredToken<IQuestionQuestionToken>();
+                var span = TextSpan.Covering(pattern.Span, questionQuestion.FirstQuestionSpan);
+                pattern = new OptionalPatternSyntax(span, pattern);
+                span = TextSpan.Covering(pattern.Span, questionQuestion.SecondQuestionSpan);
+                pattern = new OptionalPatternSyntax(span, pattern);
+                return true;
+            }
+            default:
+                return false;
+        }
     }
 }

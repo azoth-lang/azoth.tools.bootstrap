@@ -14,17 +14,11 @@ internal class StringLiteralToken : Token, IStringLiteralToken
     }
 
     // Helpful for debugging
-    public override string ToString()
-    {
-        return '"' + Value.Escape() + '"';
-    }
+    public override string ToString() => '"' + Value.Escape() + '"';
 }
 
 public static partial class TokenFactory
 {
-
     public static IStringLiteralToken StringLiteral(TextSpan span, string value)
-    {
-        return new StringLiteralToken(span, value);
-    }
+        => new StringLiteralToken(span, value);
 }
