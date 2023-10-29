@@ -45,14 +45,14 @@ public class TypeResolver
             case null:
                 return null;
             case ISimpleTypeNameSyntax syn:
-                return ResolveType(syn, FixedList<DataType>.Empty, CreateType);
+                return ResolveType(syn, isAttribute: false, FixedList<DataType>.Empty, CreateType);
             case IParameterizedTypeSyntax syn:
                 var typeArguments = Evaluate(syn.TypeArguments);
-                return ResolveType(syn, typeArguments, CreateType);
+                return ResolveType(syn, isAttribute: false, typeArguments, CreateType);
             case ICapabilityTypeSyntax referenceCapability:
             {
                 var capability = referenceCapability.Capability.Declared.ToReferenceCapability();
-                var type = Evaluate(referenceCapability.ReferentType, capability);
+                var type = Evaluate(referenceCapability.ReferentType, isAttribute: false, capability);
                 if (capability.AllowsWrite && type is ObjectType { IsConst: true } objectType)
                     diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(file, referenceCapability, capability,
                         objectType.DeclaredType));
@@ -78,17 +78,17 @@ public class TypeResolver
         }
     }
 
-    private DataType Evaluate(ITypeSyntax typeSyntax, ReferenceCapability capability)
+    private DataType Evaluate(ITypeSyntax typeSyntax, bool isAttribute, ReferenceCapability capability)
     {
         switch (typeSyntax)
         {
             default:
                 throw ExhaustiveMatch.Failed(typeSyntax);
             case ISimpleTypeNameSyntax syn:
-                _ = EvaluateBareType(syn, capability);
+                _ = EvaluateBareType(syn, isAttribute, capability);
                 return syn.NamedType!;
             case IParameterizedTypeSyntax syn:
-                _ = EvaluateBareType(syn, capability);
+                _ = EvaluateBareType(syn, isAttribute, capability);
                 return syn.NamedType!;
             case ICapabilityTypeSyntax _:
             case IOptionalTypeSyntax _:
@@ -101,17 +101,22 @@ public class TypeResolver
     /// </summary>
     /// <remarks>This is used for new expressions and base types. It assigns an `id` reference
     /// capability to the type.</remarks>
-    public DataType EvaluateBareType(ITypeNameSyntax typeSyntax) => EvaluateBareType(typeSyntax, null);
+    public DataType EvaluateBareType(ITypeNameSyntax typeSyntax)
+        => EvaluateBareType(typeSyntax, isAttribute: false, capability: null);
+
+    public DataType EvaluateAttribute(ITypeNameSyntax typeSyntax)
+        => EvaluateBareType(typeSyntax, isAttribute: true, capability: null);
 
     private DataType EvaluateBareType(
         ITypeNameSyntax typeSyntax,
+        bool isAttribute,
         ReferenceCapability? capability)
     {
         return typeSyntax switch
         {
-            ISimpleTypeNameSyntax syn => ResolveType(syn, FixedList<DataType>.Empty, CreateType),
+            ISimpleTypeNameSyntax syn => ResolveType(syn, isAttribute, FixedList<DataType>.Empty, CreateType),
             IParameterizedTypeSyntax syn
-                => ResolveType(syn, Evaluate(syn.TypeArguments), CreateType),
+                => ResolveType(syn, isAttribute, Evaluate(syn.TypeArguments), CreateType),
             _ => throw ExhaustiveMatch.Failed(typeSyntax)
         };
 
@@ -144,10 +149,13 @@ public class TypeResolver
 
     private DataType ResolveType(
         ITypeNameSyntax typeName,
+        bool isAttribute,
         FixedList<DataType> typeArguments,
         Func<TypeSymbol, FixedList<DataType>, DataType> createType)
     {
-        var symbols = typeName.LookupInContainingScope().Select(EnsureBuilt).ToFixedList();
+        var symbols = typeName.LookupInContainingScope(withAttributeSuffix: false).Select(EnsureBuilt).ToFixedList();
+        if (isAttribute && !symbols.Any())
+            symbols = typeName.LookupInContainingScope(withAttributeSuffix: true).Select(EnsureBuilt).ToFixedList();
         switch (symbols.Count)
         {
             case 0:

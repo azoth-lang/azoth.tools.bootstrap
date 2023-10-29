@@ -16,6 +16,8 @@ public abstract class StandardTypeName : Name
     protected StandardTypeName(string text, int genericParameterCount)
         : base(text, genericParameterCount) { }
 
+    public abstract override StandardTypeName WithAttributeSuffix();
+
     public override string ToBareString() => QuotedText;
 
     public static implicit operator StandardTypeName(string text) => new SimpleName(text);

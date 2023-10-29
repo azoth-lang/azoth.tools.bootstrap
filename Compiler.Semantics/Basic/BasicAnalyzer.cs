@@ -1,7 +1,9 @@
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -76,6 +78,9 @@ public class BasicAnalyzer
             case IConstructorDeclarationSyntax syn:
                 Resolve(syn);
                 break;
+            case IFunctionDeclarationSyntax syn:
+                Resolve(syn);
+                break;
             case IInvocableDeclarationSyntax syn:
                 ResolveBody(syn);
                 break;
@@ -91,6 +96,26 @@ public class BasicAnalyzer
         foreach (var supertype in type.SupertypeNames)
             if (supertype.ReferencedSymbol.Result is not ObjectTypeSymbol)
                 diagnostics.Add(OtherSemanticError.SupertypeMustBeClassOrTrait(type.File, type.Name, supertype));
+    }
+
+    private void ResolveAttributes(IFunctionDeclarationSyntax func)
+    {
+        if (!func.Attributes.Any())
+            return;
+
+        var typeResolver = new TypeResolver(func.File, diagnostics);
+        foreach (var attribute in func.Attributes)
+        {
+            _ = typeResolver.EvaluateAttribute(attribute.TypeName);
+            var referencedTypeSymbol = attribute.TypeName.ReferencedSymbol.Result;
+            if (referencedTypeSymbol is null)
+                continue;
+
+            var noArgConstructor = symbolTrees.Children(referencedTypeSymbol)
+                                    .OfType<ConstructorSymbol>().SingleOrDefault(c => c.Arity == 0);
+            if (noArgConstructor is null)
+                diagnostics.Add(NameBindingError.CouldNotBindName(func.File, attribute.TypeName.Span));
+        }
     }
 
     private void Resolve(IClassDeclarationSyntax @class)
@@ -126,6 +151,12 @@ public class BasicAnalyzer
             diagnostics.Add(OtherSemanticError.LentConstructorSelf(constructor.File, constructor.SelfParameter));
 
         ResolveBody(constructor);
+    }
+
+    private void Resolve(IFunctionDeclarationSyntax func)
+    {
+        ResolveAttributes(func);
+        ResolveBody(func);
     }
 
     private void ResolveBody(IInvocableDeclarationSyntax declaration)

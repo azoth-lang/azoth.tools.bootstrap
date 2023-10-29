@@ -24,5 +24,8 @@ public sealed class GenericTypeName : StandardTypeName
     public override int GetHashCode() => HashCode.Combine(Text, GenericParameterCount);
     #endregion
 
+    public override StandardTypeName WithAttributeSuffix()
+        => new GenericTypeName(Text + SpecialNames.AttributeSuffix, GenericParameterCount);
+
     public override string ToString() => $"{QuotedText}[{new string(',', GenericParameterCount - 1)}]";
 }

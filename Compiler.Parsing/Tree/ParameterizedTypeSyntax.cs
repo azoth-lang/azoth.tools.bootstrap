@@ -40,13 +40,16 @@ internal class ParameterizedTypeSyntax : TypeSyntax, IParameterizedTypeSyntax
         Name = StandardTypeName.Create(name, typeArguments.Count);
     }
 
-    public IEnumerable<IPromise<TypeSymbol>> LookupInContainingScope()
+    public IEnumerable<IPromise<TypeSymbol>> LookupInContainingScope(bool withAttributeSuffix)
     {
-        if (containingLexicalScope is not null)
-            return containingLexicalScope.Lookup(Name).Select(p => p.Downcast().As<ObjectTypeSymbol>())
-                .WhereNotNull();
+        if (containingLexicalScope is null)
+            throw new InvalidOperationException($"Can't lookup type name without {nameof(ContainingLexicalScope)}");
 
-        throw new InvalidOperationException($"Can't lookup type name without {nameof(ContainingLexicalScope)}");
+        var name = withAttributeSuffix ? Name.WithAttributeSuffix() : Name;
+        if (name is null) return Enumerable.Empty<IPromise<TypeSymbol>>();
+
+        return containingLexicalScope.Lookup(name).Select(p => p.Downcast().As<ObjectTypeSymbol>())
+                                     .WhereNotNull();
     }
 
     public override string ToString() => $"{Name.ToBareString()}[{string.Join(", ", TypeArguments)}]";

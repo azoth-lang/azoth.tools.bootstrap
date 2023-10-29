@@ -23,6 +23,8 @@ public sealed class SimpleName : StandardTypeName
         => HashCode.Combine(typeof(SimpleName), Text);
     #endregion
 
+    public override StandardTypeName WithAttributeSuffix() => Text + SpecialNames.AttributeSuffix;
+
     public override string ToString() => QuotedText;
 
     public static implicit operator SimpleName(string text)

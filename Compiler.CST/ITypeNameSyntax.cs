@@ -6,5 +6,5 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
 public partial interface ITypeNameSyntax
 {
-    IEnumerable<IPromise<TypeSymbol>> LookupInContainingScope();
+    IEnumerable<IPromise<TypeSymbol>> LookupInContainingScope(bool withAttributeSuffix);
 }

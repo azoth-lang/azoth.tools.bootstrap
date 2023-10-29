@@ -51,6 +51,7 @@ public abstract partial class Name : IEquatable<Name>
     public static bool operator !=(Name? left, Name? right) => !Equals(left, right);
     #endregion
 
+    public abstract StandardTypeName? WithAttributeSuffix();
 
     public abstract string ToBareString();
 

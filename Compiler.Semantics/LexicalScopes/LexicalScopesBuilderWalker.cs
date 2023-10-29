@@ -71,6 +71,8 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
                     Walk(member, containingScope);
                 return;
             case IFunctionDeclarationSyntax function:
+                foreach (var attribute in function.Attributes)
+                    Walk(attribute, containingScope);
                 foreach (var parameter in function.Parameters)
                     Walk(parameter, containingScope);
                 Walk(function.Return, containingScope);
