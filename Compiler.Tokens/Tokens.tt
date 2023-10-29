@@ -19,7 +19,7 @@
         //"Pipe", // `|` U+007C
         "Colon", // `:` U+003A
         "RightArrow", // `→` U+2192, `->` U+002D, U+003E
-        //"Hash", // `#` U+0023
+        "Hash", // `#` U+0023
         //"HashHash", // `##` U+0023, U+0023
         "Dot", // `.` U+002E
         "ColonColonDot", // `::.` U+003A, U+003A, U+002E

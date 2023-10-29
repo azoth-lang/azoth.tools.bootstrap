@@ -78,7 +78,7 @@ public static class Arbitrary
             case "<..":
                 return t2.Text is "<" or "<=" or "<:" or "<.." or "<..<";
             case "#":
-                return t2.Text is "#" or "##";
+                return t2.Text is "#" or "##" or "(" or "[" or "{";
             case ":":
                 // TODO actually ':',':' is fine. It is really the three token sequence ':',':','.' that is the problem
                 return t2.Text == ":";
@@ -215,6 +215,8 @@ public static class Arbitrary
         //{ "|", typeof(IPipeToken) },
         { "→", typeof(IRightArrowToken) },
         { "->", typeof(IRightArrowToken) },
+        { "#", typeof(IHashToken) },
+        //{ "##", typeof(IHashHashToken) },
         //{ "@", typeof(IAtSignToken) },
         //{ "^", typeof(ICaretToken) },
         //{ "^.", typeof(ICaretDotToken) },
@@ -238,8 +240,6 @@ public static class Arbitrary
         { "/=", typeof(ISlashEqualsToken) },
         { "⇒", typeof(IRightDoubleArrowToken) },
         { "=>", typeof(IRightDoubleArrowToken) },
-        //{ "#", typeof(IHashToken) },
-        //{ "##", typeof(IHashHashToken) },
         { "published", typeof(IPublishedKeywordToken) },
         { "public", typeof(IPublicKeywordToken) },
         //{ "protected", typeof(IProtectedKeywordToken) },

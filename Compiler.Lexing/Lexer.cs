@@ -71,7 +71,7 @@ public class Lexer
                         // it is `#{`
                         '{' => NewReservedOperator(2),
                         // it is `#`
-                        _ => NewReservedOperator()
+                        _ => TokenFactory.Hash(SymbolSpan()),
                     };
                     break;
                 case '.':

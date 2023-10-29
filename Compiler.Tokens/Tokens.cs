@@ -38,6 +38,9 @@ public static partial class TokenFactory
     public static IRightArrowToken RightArrow(TextSpan span)
         => new RightArrowToken(span);
 
+    public static IHashToken Hash(TextSpan span)
+        => new HashToken(span);
+
     public static IDotToken Dot(TextSpan span)
         => new DotToken(span);
 
@@ -130,6 +133,7 @@ public static partial class TokenFactory
     typeof(ICommaToken),
     typeof(IColonToken),
     typeof(IRightArrowToken),
+    typeof(IHashToken),
     typeof(IDotToken),
     typeof(IColonColonDotToken),
     typeof(IDotDotToken),
@@ -253,6 +257,15 @@ public partial interface IRightArrowToken : IEssentialToken { }
 internal partial class RightArrowToken : Token, IRightArrowToken
 {
     public RightArrowToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IHashToken : IEssentialToken { }
+internal partial class HashToken : Token, IHashToken
+{
+    public HashToken(TextSpan span)
         : base(span)
     {
     }

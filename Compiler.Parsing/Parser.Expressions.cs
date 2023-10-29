@@ -408,6 +408,7 @@ public partial class Parser
             case IEndOfFileToken _:
             case IOpenBracketToken _:
             case ICloseBracketToken _:
+            case IHashToken _:
                 Add(ParseError.UnexpectedEndOfExpression(File, Tokens.Current.Span.AtStart()));
                 throw new ParseFailedException("Unexpected end of expression");
             case IRightDoubleArrowToken _:
