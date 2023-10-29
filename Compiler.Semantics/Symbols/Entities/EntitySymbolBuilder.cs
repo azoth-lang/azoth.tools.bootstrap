@@ -93,11 +93,6 @@ public class EntitySymbolBuilder
         symbolTree.Add(symbol);
         BuildSelfParameterSymbol(symbol, file, method.SelfParameter, selfParameterType.Type);
         BuildParameterSymbols(symbol, file, method.Parameters, parameterTypes);
-
-        var inConstClass = declaringTypeSymbol.DeclaresType.IsConst;
-        var selfCapability = ((ReferenceType)selfParameterType.Type).Capability;
-        if (inConstClass && !(selfCapability.IsConstant || selfCapability == ReferenceCapability.Identity))
-            diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(file, method.SelfParameter));
     }
 
     private void BuildConstructorSymbol(IConstructorDeclarationSyntax constructor)

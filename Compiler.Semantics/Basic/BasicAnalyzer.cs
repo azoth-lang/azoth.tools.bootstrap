@@ -106,6 +106,12 @@ public class BasicAnalyzer
         if (concreteClass && method is IAbstractMethodDeclarationSyntax)
             diagnostics.Add(OtherSemanticError.AbstractMethodNotInAbstractClass(method.File, method.Span, method.Name));
 
+        var inConstClass = method.DeclaringType.Symbol.Result.DeclaresType.IsConst;
+        var selfParameterType = method.SelfParameter.DataType.Result.Assigned();
+        var selfCapability = ((ReferenceType)selfParameterType).Capability;
+        if (inConstClass && !(selfCapability.IsConstant || selfCapability == ReferenceCapability.Identity))
+            diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(method.File, method.SelfParameter));
+
         ResolveBody(method);
     }
 
