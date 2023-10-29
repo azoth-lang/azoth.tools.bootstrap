@@ -34,6 +34,7 @@ public partial class Parser
 
     public INonMemberDeclarationSyntax ParseNonMemberDeclaration()
     {
+        var attributes = ParseAttributes();
         var modifiers = ParseModifiers();
 
         switch (Tokens.Current)
@@ -45,7 +46,7 @@ public partial class Parser
             case ITraitKeywordToken _:
                 return ParseTrait(modifiers);
             case IFunctionKeywordToken _:
-                return ParseFunction(modifiers);
+                return ParseFunction(attributes, modifiers);
             default:
                 Tokens.UnexpectedToken();
                 throw new ParseFailedException();
@@ -103,7 +104,9 @@ public partial class Parser
     #endregion
 
     #region Parse Functions
-    internal IFunctionDeclarationSyntax ParseFunction(ModifierParser modifiers)
+    internal IFunctionDeclarationSyntax ParseFunction(
+        FixedList<IAttributeSyntax> attributes,
+        ModifierParser modifiers)
     {
         var accessModifer = modifiers.ParseAccessModifier();
         modifiers.ParseEndOfModifiers();
@@ -114,9 +117,9 @@ public partial class Parser
         var parameters = bodyParser.ParseParameters(bodyParser.ParseFunctionParameter);
         var @return = ParseReturn();
         var body = bodyParser.ParseBody();
-        var span = TextSpan.Covering(fn, body.Span);
-        return new FunctionDeclarationSyntax(ContainingNamespace, span, File, accessModifer, identifier.Span,
-            name, parameters, @return, body);
+        var span = TextSpan.Covering(accessModifer?.Span, fn, body.Span);
+        return new FunctionDeclarationSyntax(ContainingNamespace, span, File, attributes,
+            accessModifer, identifier.Span, name, parameters, @return, body);
     }
 
     private FixedList<TParameter> ParseParameters<TParameter>(Func<TParameter> parseParameter)

@@ -19,6 +19,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(IElseClauseSyntax),
     typeof(IBindingSyntax),
     typeof(IDeclarationSyntax),
+    typeof(IAttributeSyntax),
     typeof(IGenericParameterSyntax),
     typeof(IParameterSyntax),
     typeof(IReturnSyntax),
@@ -185,6 +186,7 @@ public partial interface ITraitDeclarationSyntax : ITypeDeclarationSyntax
 
 public partial interface IFunctionDeclarationSyntax : INonMemberEntityDeclarationSyntax, IConcreteInvocableDeclarationSyntax
 {
+    FixedList<IAttributeSyntax> Attributes { get; }
     new SimpleName Name { get; }
     new FixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
@@ -260,6 +262,11 @@ public partial interface IAssociatedFunctionDeclarationSyntax : IClassMemberDecl
     new FixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
     new AcyclicPromise<FunctionSymbol> Symbol { get; }
+}
+
+public partial interface IAttributeSyntax : ISyntax
+{
+    ITypeNameSyntax TypeName { get; }
 }
 
 public partial interface IGenericParameterSyntax : ISyntax

@@ -11,6 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal sealed class FunctionDeclarationSyntax : InvocableNonMemberEntityDeclarationSyntax, IFunctionDeclarationSyntax
 {
+    public FixedList<IAttributeSyntax> Attributes { get; }
     public new SimpleName Name { get; }
     Name INonMemberEntityDeclarationSyntax.Name => Name;
     public new FixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
@@ -22,6 +23,7 @@ internal sealed class FunctionDeclarationSyntax : InvocableNonMemberEntityDeclar
         NamespaceName containingNamespaceName,
         TextSpan span,
         CodeFile file,
+        FixedList<IAttributeSyntax> attributes,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
         SimpleName name,
@@ -33,6 +35,7 @@ internal sealed class FunctionDeclarationSyntax : InvocableNonMemberEntityDeclar
         Name = name;
         Parameters = parameters;
         Body = body;
+        Attributes = attributes;
         Return = @return;
         Symbol = (AcyclicPromise<FunctionSymbol>)base.Symbol;
     }

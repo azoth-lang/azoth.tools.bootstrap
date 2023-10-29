@@ -44,7 +44,7 @@ NonMemberEntityDeclaration: EntityDeclaration, NonMemberDeclaration = Name:'Name
 TypeDeclaration: NonMemberEntityDeclaration = ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'StandardTypeName' GenericParameters:GenericParameter* Symbol:'AcyclicPromise<ObjectTypeSymbol>' SupertypeNames:TypeName* Members:MemberDeclaration*;
 ClassDeclaration: TypeDeclaration = AbstractModifier:'IAbstractKeywordToken'? IsAbstract:'bool' GenericParameters:GenericParameter* BaseTypeName:TypeName? SupertypeNames:TypeName* DefaultConstructorSymbol:'ConstructorSymbol'? Members:ClassMemberDeclaration*;
 TraitDeclaration: TypeDeclaration = GenericParameters:GenericParameter* SupertypeNames:TypeName* Members:TraitMemberDeclaration*;
-FunctionDeclaration: NonMemberEntityDeclaration, ConcreteInvocableDeclaration = Name:'SimpleName' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
+FunctionDeclaration: NonMemberEntityDeclaration, ConcreteInvocableDeclaration = Attributes:Attribute* Name:'SimpleName' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
 // ---------- Member Declarations
 // Note: by declaring the DeclaringType property type with quotes, it avoids the system assuming it must represent a child syntax node
@@ -57,6 +57,9 @@ ConcreteMethodDeclaration: MethodDeclaration, ConcreteInvocableDeclaration = Sel
 ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclarationSyntax' Name:'SimpleName'? SelfParameter Parameters:ConstructorParameter* Body:BlockBody Symbol:'AcyclicPromise<ConstructorSymbol>';
 FieldDeclaration: ClassMemberDeclaration, Binding = DeclaringType:'IClassDeclarationSyntax' Name:'SimpleName' Type Symbol:'AcyclicPromise<FieldSymbol>' Initializer:Expression?;
 AssociatedFunctionDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, ConcreteInvocableDeclaration = Name:'SimpleName' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
+
+// ---------- Attributes
+Attribute = TypeName;
 
 // ---------- Type Parameters --------------
 GenericParameter = Name:'SimpleName' Symbol:'Promise<GenericParameterTypeSymbol>';

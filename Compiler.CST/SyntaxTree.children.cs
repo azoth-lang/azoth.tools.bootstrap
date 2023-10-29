@@ -48,6 +48,8 @@ public static class ISyntaxExtensions
                     yield return child;
                 yield break;
             case IFunctionDeclarationSyntax n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 foreach (var child in n.Parameters)
                     yield return child;
                 if (n.Return is not null)
@@ -86,6 +88,9 @@ public static class ISyntaxExtensions
                 if (n.Return is not null)
                     yield return n.Return;
                 yield return n.Body;
+                yield break;
+            case IAttributeSyntax n:
+                yield return n.TypeName;
                 yield break;
             case IGenericParameterSyntax n:
                 yield break;
