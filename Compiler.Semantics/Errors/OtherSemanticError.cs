@@ -74,9 +74,9 @@ public static class OtherSemanticError
             6012, $"Field `{name}` declared with `let` cannot be assigned");
     }
 
-    public static Diagnostic LentConstructorSelf(CodeFile file, TextSpan span)
+    public static Diagnostic LentConstructorSelf(CodeFile file, ISelfParameterSyntax self)
     {
-        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+        return new(file, self.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             6013, "Constructor `self` parameter cannot be `lent`");
     }
 

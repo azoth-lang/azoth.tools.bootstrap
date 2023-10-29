@@ -91,7 +91,7 @@ public class EntitySymbolBuilder
         var symbol = new MethodSymbol(declaringTypeSymbol, method.Name, selfParameterType, parameterTypes, returnType);
         method.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);
-        BuildSelfParameterSymbol(symbol, file, method.SelfParameter, selfParameterType.Type);
+        BuildSelfParameterSymbol(symbol, method.SelfParameter, selfParameterType.Type);
         BuildParameterSymbols(symbol, file, method.Parameters, parameterTypes);
     }
 
@@ -107,7 +107,7 @@ public class EntitySymbolBuilder
         var symbol = new ConstructorSymbol(declaringClassSymbol, constructor.Name, selfParameterType, parameterTypes);
         constructor.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);
-        BuildSelfParameterSymbol(symbol, file, constructor.SelfParameter, selfParameterType, isConstructor: true);
+        BuildSelfParameterSymbol(symbol, constructor.SelfParameter, selfParameterType, isConstructor: true);
         BuildParameterSymbols(symbol, file, constructor.Parameters, parameterTypes);
     }
 
@@ -252,8 +252,6 @@ public class EntitySymbolBuilder
                 foreach (var inheritedType in declaredType.SuperTypes)
                     yield return inheritedType;
             }
-            else
-                diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(syn.File, syn.Name, baseTypeName));
         }
 
         foreach (var supertype in syn.SupertypeNames)
@@ -384,13 +382,10 @@ public class EntitySymbolBuilder
 
     private void BuildSelfParameterSymbol(
         InvocableSymbol containingSymbol,
-        CodeFile file,
         ISelfParameterSyntax param,
         DataType type,
         bool isConstructor = false)
     {
-        if (isConstructor && param.IsLentBinding)
-            diagnostics.Add(OtherSemanticError.LentConstructorSelf(file, param.Span));
         var symbol = new SelfParameterSymbol(containingSymbol, param.IsLentBinding && !isConstructor, type);
         param.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);

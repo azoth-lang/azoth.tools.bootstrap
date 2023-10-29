@@ -73,6 +73,9 @@ public class BasicAnalyzer
             case IMethodDeclarationSyntax syn:
                 Resolve(syn);
                 break;
+            case IConstructorDeclarationSyntax syn:
+                Resolve(syn);
+                break;
             case IInvocableDeclarationSyntax syn:
                 ResolveBody(syn);
                 break;
@@ -106,13 +109,23 @@ public class BasicAnalyzer
         if (concreteClass && method is IAbstractMethodDeclarationSyntax)
             diagnostics.Add(OtherSemanticError.AbstractMethodNotInAbstractClass(method.File, method.Span, method.Name));
 
+        var symbol = method.Symbol.Result;
+
         var inConstClass = method.DeclaringType.Symbol.Result.DeclaresType.IsConst;
-        var selfParameterType = method.SelfParameter.DataType.Result.Assigned();
-        var selfCapability = ((ReferenceType)selfParameterType).Capability;
+        var selfParameterType = symbol.SelfParameterType;
+        var selfCapability = ((ReferenceType)selfParameterType.Type).Capability;
         if (inConstClass && !(selfCapability.IsConstant || selfCapability == ReferenceCapability.Identity))
             diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(method.File, method.SelfParameter));
 
         ResolveBody(method);
+    }
+
+    private void Resolve(IConstructorDeclarationSyntax constructor)
+    {
+        if (constructor.SelfParameter.IsLentBinding)
+            diagnostics.Add(OtherSemanticError.LentConstructorSelf(constructor.File, constructor.SelfParameter));
+
+        ResolveBody(constructor);
     }
 
     private void ResolveBody(IInvocableDeclarationSyntax declaration)
