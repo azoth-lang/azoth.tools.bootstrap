@@ -78,6 +78,20 @@ public static partial class StringExtensions
         return escaped.ToString();
     }
 
+    public static string Unescape(this string input)
+    {
+        var unescaped = new StringBuilder(input);
+        unescaped.Replace(@"\\", @"\b") // Swap out backslash escape to not mess up others
+                 .Replace(@"\r", "\r")
+                 .Replace(@"\n", "\n")
+                 .Replace(@"\0", "\0")
+                 .Replace(@"\t", "\t")
+                 .Replace(@"\'", "\'")
+                 .Replace(@"\""", "\"")
+                 .Replace(@"\b", "\\"); // Put in actual backslashes
+        return unescaped.ToString();
+    }
+
     public static FixedList<string> SplitOrEmpty(this string value, params char[] separators)
     {
         if (string.IsNullOrEmpty(value))

@@ -64,4 +64,10 @@ internal static class LexError
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Lexing,
             1010, "The word `uint8` is a reserved word. Use the `byte` keyword instead");
     }
+
+    public static Diagnostic UnclosedStringIdentifier(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Lexing,
+            1011, "End-of-file in string identifier");
+    }
 }

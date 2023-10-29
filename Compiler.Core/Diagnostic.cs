@@ -40,8 +40,5 @@ public class Diagnostic
 
     public bool IsFatal => Level == DiagnosticLevel.FatalCompilationError;
 
-    public override string ToString()
-    {
-        return $"{Level} {ErrorCode}: {Message} @{File.Reference}@{Span}";
-    }
+    public override string ToString() => $"{Level} {ErrorCode}: {Message} @{File.Reference}@{Span}";
 }

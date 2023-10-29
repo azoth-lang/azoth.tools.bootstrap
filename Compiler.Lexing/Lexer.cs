@@ -301,14 +301,19 @@ public class Lexer
                 }
                 case '\\':
                 {
-                    tokenEnd = tokenStart + 1;
-                    while (tokenEnd < text.Length && IsIdentifierCharacter(text[tokenEnd]))
-                        tokenEnd += 1;
-
-                    if (tokenEnd == tokenStart + 1)
-                        yield return NewUnexpectedCharacter();
+                    if (NextChar() is '"')
+                        yield return LexStringIdentifier();
                     else
-                        yield return NewEscapedIdentifier();
+                    {
+                        tokenEnd = tokenStart + 1;
+                        while (tokenEnd < text.Length && IsIdentifierCharacter(text[tokenEnd]))
+                            tokenEnd += 1;
+
+                        if (tokenEnd == tokenStart + 1)
+                            yield return NewUnexpectedCharacter();
+                        else
+                            yield return NewEscapedIdentifier();
+                    }
                     break;
                 }
                 default:
@@ -427,9 +432,29 @@ public class Lexer
             return index < text.Length ? text[index] : default;
         }
 
-        IToken LexString()
+        IStringLiteralToken LexString()
         {
-            tokenEnd = tokenStart + 1;
+            var content = LexStringLike(1, out var isUnclosed);
+            var span = TextSpan.FromStartEnd(tokenStart, tokenEnd);
+            if (isUnclosed)
+                diagnostics.Add(LexError.UnclosedStringLiteral(file, span));
+
+            return TokenFactory.StringLiteral(span, content);
+        }
+
+        IIdentifierStringToken LexStringIdentifier()
+        {
+            var content = LexStringLike(2, out var isUnclosed);
+            var span = TextSpan.FromStartEnd(tokenStart, tokenEnd);
+            if (isUnclosed)
+                diagnostics.Add(LexError.UnclosedStringIdentifier(file, span));
+
+            return TokenFactory.IdentifierString(span, content);
+        }
+
+        string LexStringLike(int startOffset, out bool isUnclosed)
+        {
+            tokenEnd = tokenStart + startOffset;
             var content = new StringBuilder();
             char currentChar;
             while (tokenEnd < text.Length && (currentChar = text[tokenEnd]) != '"')
@@ -489,16 +514,14 @@ public class Lexer
                         }
 
                         var codepoint = new StringBuilder(6);
-                        while (tokenEnd < text.Length &&
-                               IsHexDigit(currentChar = text[tokenEnd]))
+                        while (tokenEnd < text.Length && IsHexDigit(currentChar = text[tokenEnd]))
                         {
                             codepoint.Append(currentChar);
                             tokenEnd += 1;
                         }
 
                         int value;
-                        if (codepoint.Length is > 0 and <= 6
-                            && (value = Convert.ToInt32(codepoint.ToString(), 16)) <= 0x10FFFF)
+                        if (codepoint.Length is > 0 and <= 6 && (value = Convert.ToInt32(codepoint.ToString(), 16)) <= 0x10FFFF)
                         {
                             // TODO disallow surrogate pairs
                             content.Append(char.ConvertFromUtf32(value));
@@ -513,6 +536,7 @@ public class Lexer
                                 content.Append(')');
                                 tokenEnd += 1;
                             }
+
                             var errorSpan = TextSpan.FromStartEnd(escapeStart, tokenEnd);
                             diagnostics.Add(LexError.InvalidEscapeSequence(file, errorSpan));
                             break;
@@ -525,6 +549,7 @@ public class Lexer
                             var errorSpan = TextSpan.FromStartEnd(escapeStart, tokenEnd);
                             diagnostics.Add(LexError.InvalidEscapeSequence(file, errorSpan));
                         }
+
                         break;
                     }
                     default:
@@ -542,14 +567,13 @@ public class Lexer
             if (tokenEnd < text.Length)
             {
                 // To include the close quote
-                if (text[tokenEnd] == '"')
-                    tokenEnd += 1;
+                if (text[tokenEnd] == '"') tokenEnd += 1;
+                isUnclosed = false;
             }
             else
-                diagnostics.Add(LexError.UnclosedStringLiteral(file,
-                    TextSpan.FromStartEnd(tokenStart, tokenEnd)));
+                isUnclosed = true;
 
-            return TokenFactory.StringLiteral(TextSpan.FromStartEnd(tokenStart, tokenEnd), content.ToString());
+            return content.ToString();
         }
     }
 

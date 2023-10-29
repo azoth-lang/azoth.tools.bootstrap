@@ -13,8 +13,5 @@ internal abstract class IdentifierToken : Token
     }
 
     // Helpful for debugging
-    public override string ToString()
-    {
-        return Value;
-    }
+    public override string ToString() => Value;
 }

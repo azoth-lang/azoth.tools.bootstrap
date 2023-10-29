@@ -107,6 +107,7 @@ public static class Arbitrary
             GenComment().WithWeight(5),
             GenBareIdentifier().WithWeight(10),
             GenEscapedIdentifier().WithWeight(5),
+            GenIdentifierString().WithWeight(5),
             GenIntegerLiteral().WithWeight(5),
             GenStringLiteral().WithWeight(5));
     }
@@ -164,6 +165,15 @@ public static class Arbitrary
                .Select(s => new PsuedoToken(typeof(IEscapedIdentifierToken), s, s[1..]));
     }
 
+    private static Gen<PsuedoToken> GenIdentifierString()
+    {
+        return GenRegex(@"\\\""([^\\""]|\\(r|n|0|t|\'|\""))*\""").Select(s =>
+        {
+            var value = s[2..^1].Unescape();
+            return new PsuedoToken(typeof(IIdentifierStringToken), s, value);
+        });
+    }
+
     private static Gen<PsuedoToken> GenIntegerLiteral()
     {
         return Arb.Default.BigInt().Generator.Where(v => v > 0)
@@ -176,16 +186,7 @@ public static class Arbitrary
         return GenRegex(@"\""([^\\""]|\\(r|n|0|t|\'|\""))*\""")
             .Select(s =>
             {
-                var value = s[1..^1]
-                            .Replace(@"\\", @"\b", StringComparison.Ordinal) // Swap out backslash escape to not mess up others
-                            .Replace(@"\r", "\r", StringComparison.Ordinal)
-                            .Replace(@"\n", "\n", StringComparison.Ordinal)
-                            .Replace(@"\0", "\0", StringComparison.Ordinal)
-                            .Replace(@"\t", "\t", StringComparison.Ordinal)
-                            .Replace(@"\'", "\'", StringComparison.Ordinal)
-                            .Replace(@"\""", "\"", StringComparison.Ordinal)
-                            .Replace(@"\b", "\\", StringComparison.Ordinal);
-
+                var value = s[1..^1].Unescape();
                 return new PsuedoToken(typeof(IStringLiteralToken), s, value);
             });
     }

@@ -3,7 +3,6 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 [Closed(
-    typeof(IMemberNameToken),
     typeof(IBindingToken),
     typeof(IModifierToken),
     typeof(IAccessModifierToken),
