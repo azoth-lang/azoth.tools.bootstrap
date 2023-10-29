@@ -92,7 +92,7 @@ public static class OtherSemanticError
             6015, $"Class `{className}` cannot have base type `{baseTypeName}` because it is not a class");
     }
 
-    public static Diagnostic SuperTypeMustBeClassOrTrait(CodeFile file, StandardTypeName typeName, ITypeNameSyntax superTypeName)
+    public static Diagnostic SupertypeMustBeClassOrTrait(CodeFile file, StandardTypeName typeName, ITypeNameSyntax superTypeName)
     {
         return new(file, superTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6016, $"Type `{typeName}` cannot have super type `{superTypeName}` because it is not a trait or class");

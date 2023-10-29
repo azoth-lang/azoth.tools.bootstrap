@@ -247,17 +247,12 @@ public class EntitySymbolBuilder
         ITypeDeclarationSyntax syn,
         TypeSymbolBuilder typeDeclarations)
     {
-        // TODO error for duplicates
-
         var resolver = new TypeResolver(syn.File, diagnostics, typeDeclarations);
         if (syn is IClassDeclarationSyntax { BaseTypeName: not null and var baseTypeName })
         {
             var baseType = resolver.EvaluateBareType(baseTypeName);
             if (baseType is ObjectType { DeclaredType: var declaredType })
             {
-                if (!declaredType.IsClass)
-                    diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(syn.File, syn.Name, baseTypeName));
-
                 yield return declaredType;
                 foreach (var inheritedType in declaredType.SuperTypes)
                     yield return inheritedType;
@@ -266,17 +261,15 @@ public class EntitySymbolBuilder
                 diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(syn.File, syn.Name, baseTypeName));
         }
 
-        foreach (var superTypeSyntax in syn.SupertypeNames)
+        foreach (var supertype in syn.SupertypeNames)
         {
-            var superType = resolver.EvaluateBareType(superTypeSyntax);
+            var superType = resolver.EvaluateBareType(supertype);
             if (superType is ObjectType { DeclaredType: var declaredType })
             {
                 yield return declaredType;
                 foreach (var inheritedType in declaredType.SuperTypes)
                     yield return inheritedType;
             }
-            else
-                diagnostics.Add(OtherSemanticError.SuperTypeMustBeClassOrTrait(syn.File, syn.Name, superTypeSyntax));
         }
     }
 

@@ -7,6 +7,9 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 
+/// <summary>
+/// Inherit symbols (e.g. methods and fields) from parent types.
+/// </summary>
 internal class TypeSymbolInheritor
 {
     private readonly SymbolTreeBuilder symbolTree;
@@ -18,8 +21,8 @@ internal class TypeSymbolInheritor
         IEnumerable<ITypeDeclarationSyntax> typeDeclarations)
     {
         this.symbolTree = symbolTree;
-        processed = typeDeclarations.ToDictionary(t => t, t => false);
         this.typeDeclarations = typeDeclarations.ToFixedDictionary(t => (TypeSymbol)t.Symbol.Result);
+        processed = this.typeDeclarations.Values.ToDictionary(t => t, _ => false);
     }
 
     public void AddInheritedSymbols()

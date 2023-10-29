@@ -49,16 +49,67 @@ public class BasicAnalyzer
     public static void Check(PackageSyntax<Package> package, ObjectTypeSymbol? stringSymbol)
     {
         var analyzer = new BasicAnalyzer(package.SymbolTree, package.SymbolTrees, stringSymbol, package.Diagnostics);
-        analyzer.Check(package.AllEntityDeclarations);
+        analyzer.Resolve(package.AllEntityDeclarations);
     }
 
-    private void Check(FixedSet<IEntityDeclarationSyntax> entities)
+    private void Resolve(FixedSet<IEntityDeclarationSyntax> entities)
     {
         foreach (var entity in entities)
-            ResolveBodyTypes(entity);
+            Resolve(entity);
     }
 
-    private void ResolveBodyTypes(IEntityDeclarationSyntax declaration)
+    private void Resolve(IEntityDeclarationSyntax entity)
+    {
+        switch (entity)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(entity);
+            case ITraitDeclarationSyntax syn:
+                ResolveSupertypes(syn);
+                break;
+            case IClassDeclarationSyntax syn:
+                Resolve(syn);
+                break;
+            case IMethodDeclarationSyntax syn:
+                Resolve(syn);
+                break;
+            case IInvocableDeclarationSyntax syn:
+                ResolveBody(syn);
+                break;
+            case IFieldDeclarationSyntax syn:
+                ResolveInitializer(syn);
+                break;
+        }
+    }
+
+    private void ResolveSupertypes(ITypeDeclarationSyntax type)
+    {
+        // TODO error for duplicates
+        foreach (var supertype in type.SupertypeNames)
+            if (supertype.ReferencedSymbol.Result is not ObjectTypeSymbol)
+                diagnostics.Add(OtherSemanticError.SupertypeMustBeClassOrTrait(type.File, type.Name, supertype));
+    }
+
+    private void Resolve(IClassDeclarationSyntax @class)
+    {
+        if (@class.BaseTypeName is not null)
+            // TODO error for duplicates
+            if (@class.BaseTypeName.ReferencedSymbol.Result is not ObjectTypeSymbol { DeclaresType.IsClass: true })
+                diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(@class.File, @class.Name, @class.BaseTypeName));
+
+        ResolveSupertypes(@class);
+    }
+
+    private void Resolve(IMethodDeclarationSyntax method)
+    {
+        var concreteClass = method.DeclaringType is IClassDeclarationSyntax { IsAbstract: false };
+        if (concreteClass && method is IAbstractMethodDeclarationSyntax)
+            diagnostics.Add(OtherSemanticError.AbstractMethodNotInAbstractClass(method.File, method.Span, method.Name));
+
+        ResolveBody(method);
+    }
+
+    private void ResolveBody(IInvocableDeclarationSyntax declaration)
     {
         switch (declaration)
         {
@@ -86,17 +137,8 @@ public class BasicAnalyzer
                 resolver.ResolveTypes(method.Body);
                 break;
             }
-            case IAbstractMethodDeclarationSyntax method:
+            case IAbstractMethodDeclarationSyntax _:
                 // has no body, so nothing to resolve
-                if (method.DeclaringType is IClassDeclarationSyntax { IsAbstract: false })
-                    diagnostics.Add(OtherSemanticError.AbstractMethodNotInAbstractClass(method.File, method.Span, method.Name));
-                break;
-            case IFieldDeclarationSyntax field:
-                if (field.Initializer is not null)
-                {
-                    var resolver = new BasicBodyAnalyzer(field, symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics);
-                    resolver.CheckFieldInitializerType(field.Initializer, field.Symbol.Result.DataType);
-                }
                 break;
             case IConstructorDeclarationSyntax constructor:
             {
@@ -105,9 +147,15 @@ public class BasicAnalyzer
                 resolver.ResolveTypes(constructor.Body);
                 break;
             }
-            case ITypeDeclarationSyntax _:
-                // body of type is processed as separate items
-                break;
+        }
+    }
+
+    private void ResolveInitializer(IFieldDeclarationSyntax field)
+    {
+        if (field.Initializer is not null)
+        {
+            var resolver = new BasicBodyAnalyzer(field, symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics);
+            resolver.CheckFieldInitializerType(field.Initializer, field.Symbol.Result.DataType);
         }
     }
 }
