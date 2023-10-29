@@ -171,4 +171,10 @@ public static class TypeError
         return new(file, pattern.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3024, $"Optional pattern `{pattern}` cannot be applied to value of non-optional type {type.ToSourceCodeString()}");
     }
+
+    public static Diagnostic ConstClassSelfParameterCannotHaveCapability(CodeFile file, ISelfParameterSyntax self)
+    {
+        return new(file, self.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3025, $"Self parameter `{self}` must be `const` or `id` because it is in a `const` class.");
+    }
 }
