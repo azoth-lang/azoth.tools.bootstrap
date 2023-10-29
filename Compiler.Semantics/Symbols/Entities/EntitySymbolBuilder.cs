@@ -85,9 +85,9 @@ public class EntitySymbolBuilder
         var declaringTypeSymbol = method.DeclaringType.Symbol.Result;
         var file = method.File;
         var resolver = new TypeResolver(file, diagnostics);
-        var selfParameterType = ResolveMethodSelfParameterType(resolver, method.SelfParameter, method.DeclaringType);
+        var selfParameterType = ResolveMethodSelfParameterType(resolver, file, method.SelfParameter, method.DeclaringType);
         var parameterTypes = ResolveParameterTypes(resolver, method.Parameters, method.DeclaringType);
-        var returnType = ResolveReturnType(file, method.Return, resolver);
+        var returnType = ResolveReturnType(resolver, file, method.Return);
         var symbol = new MethodSymbol(declaringTypeSymbol, method.Name, selfParameterType, parameterTypes, returnType);
         method.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);
@@ -117,7 +117,7 @@ public class EntitySymbolBuilder
         var file = associatedFunction.File;
         var resolver = new TypeResolver(file, diagnostics);
         var parameterTypes = ResolveParameterTypes(resolver, associatedFunction.Parameters);
-        var returnType = ResolveReturnType(file, associatedFunction.Return, resolver);
+        var returnType = ResolveReturnType(resolver, file, associatedFunction.Return);
         var declaringTypeSymbol = associatedFunction.DeclaringType.Symbol.Result;
         var symbol = new FunctionSymbol(declaringTypeSymbol, associatedFunction.Name, parameterTypes, returnType);
         associatedFunction.Symbol.Fulfill(symbol);
@@ -145,7 +145,7 @@ public class EntitySymbolBuilder
         var file = function.File;
         var resolver = new TypeResolver(file, diagnostics);
         var parameterTypes = ResolveParameterTypes(resolver, function.Parameters);
-        var returnType = ResolveReturnType(file, function.Return, resolver);
+        var returnType = ResolveReturnType(resolver, file, function.Return);
         var symbol = new FunctionSymbol(function.ContainingNamespaceSymbol, function.Name, parameterTypes, returnType);
         function.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);
@@ -370,14 +370,21 @@ public class EntitySymbolBuilder
         return resolver.EvaluateConstructorSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterDataTypes);
     }
 
-    private static ParameterType ResolveMethodSelfParameterType(
+    private ParameterType ResolveMethodSelfParameterType(
         TypeResolver resolver,
+        CodeFile file,
         ISelfParameterSyntax selfParameter,
         ITypeDeclarationSyntax declaringType)
     {
         var declaredType = declaringType.Symbol.Result.DeclaresType;
         var selfType = resolver.EvaluateMethodSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterDataTypes);
-        return new ParameterType(selfParameter.IsLentBinding, selfType);
+        bool isLent = selfParameter.IsLentBinding;
+        if (isLent && selfType is ReferenceType { IsIdentityReference: true })
+        {
+            diagnostics.Add(TypeError.LentIdentity(file, selfParameter.Span));
+            isLent = false;
+        }
+        return new ParameterType(isLent, selfType);
     }
 
     private void BuildSelfParameterSymbol(
@@ -392,9 +399,9 @@ public class EntitySymbolBuilder
     }
 
     private ReturnType ResolveReturnType(
+        TypeResolver resolver,
         CodeFile file,
-        IReturnSyntax? returnSyntax,
-        TypeResolver resolver)
+        IReturnSyntax? returnSyntax)
     {
         if (returnSyntax is null)
             return ReturnType.Void;
