@@ -71,7 +71,7 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<BindingFlags>
             {
                 var symbol = identifier.ReferencedSymbol;
                 if (!symbol.IsMutableBinding && definitelyUnassigned[symbol] == false)
-                    diagnostics.Add(SemanticError.MayAlreadyBeAssigned(file, identifier.Span,
+                    diagnostics.Add(OtherSemanticError.MayAlreadyBeAssigned(file, identifier.Span,
                         symbol.Name));
                 return definitelyUnassigned.Set(symbol, false);
             }
@@ -80,7 +80,7 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<BindingFlags>
                 {
                     var symbol = fieldAccess.ReferencedSymbol;
                     if (!symbol.IsMutableBinding && definitelyUnassigned[symbol] == false)
-                        diagnostics.Add(SemanticError.MayAlreadyBeAssigned(file, fieldAccess.Span, symbol.Name));
+                        diagnostics.Add(OtherSemanticError.MayAlreadyBeAssigned(file, fieldAccess.Span, symbol.Name));
                     definitelyUnassigned = definitelyUnassigned.Set(symbol, false);
                 }
                 return definitelyUnassigned;

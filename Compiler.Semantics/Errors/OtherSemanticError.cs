@@ -4,16 +4,8 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 
-/// <summary>
-/// Error Code Ranges:
-/// 1001-1999: Lexical Errors
-/// 2001-2999: Parsing Errors
-/// 3001-3999: Type Errors
-/// 4001-4999: Borrow Checking Errors
-/// 5001-5999: Name Binding Errors
-/// 6001-6999: Other Semantic Errors
-/// </summary>
-public static class SemanticError
+/// <remarks><see cref="ErrorCodeRange"/> for the ranges of various kinds of error codes.</remarks>
+public static class OtherSemanticError
 {
     public static Diagnostic CantRebindMutableBinding(CodeFile file, TextSpan span)
     {
@@ -46,12 +38,6 @@ public static class SemanticError
             6005, $"Variable `{name}` may not have been assigned before use");
     }
 
-    public static Diagnostic UseOfPossiblyMovedValue(CodeFile file, TextSpan span)
-    {
-        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            6006, "Use of possibly moved value.");
-    }
-
     public static Diagnostic ImplicitSelfOutsideMethod(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
@@ -64,45 +50,57 @@ public static class SemanticError
             6008, "Can't use `self` outside of a method or constructor");
     }
 
-    public static Diagnostic NoStringTypeDefined(CodeFile file)
-    {
-        return new(file, new TextSpan(0, 0), DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            6009, "Could not find a `String` type. A `String` type must be defined in the global namespace");
-    }
-
     public static Diagnostic ResultStatementInBody(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            6010, "Result statement (i.e. `=> ...;`) cannot be used in the body of a function, or method, etc.");
+            6009, "Result statement (i.e. `=> ...;`) cannot be used in the body of a function, or method, etc.");
     }
 
     public static Diagnostic StatementAfterResult(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            6011, "Statement after result statement is unreachable");
+            6010, "Statement after result statement is unreachable");
     }
 
     public static Diagnostic AbstractMethodNotInAbstractClass(CodeFile file, TextSpan span, SimpleName name)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            6012, $"Abstract method `{name}` declared in a concrete class");
+            6011, $"Abstract method `{name}` declared in a concrete class");
     }
 
     public static Diagnostic CannotAssignImmutableField(CodeFile file, TextSpan span, SimpleName name)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            6013, $"Field `{name}` declared with `let` cannot be assigned");
+            6012, $"Field `{name}` declared with `let` cannot be assigned");
     }
 
     public static Diagnostic LentConstructorSelf(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            6014, "Constructor `self` parameter cannot be `lent`");
+            6013, "Constructor `self` parameter cannot be `lent`");
     }
 
     public static Diagnostic CircularDefinition(CodeFile file, TextSpan span, ITypeDeclarationSyntax type)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            6015, $"Declaration of type `{type.ContainingNamespaceName}.{type.Name}` is part of a circular definition");
+            6014, $"Declaration of type `{type.ContainingNamespaceName}.{type.Name}` is part of a circular definition");
+    }
+
+    public static Diagnostic BaseTypeMustBeClass(CodeFile file, StandardTypeName className, ITypeNameSyntax baseTypeName)
+    {
+        return new(file, baseTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            6015, $"Class `{className}` cannot have base type `{baseTypeName}` because it is not a class");
+    }
+
+    public static Diagnostic SuperTypeMustBeClassOrTrait(CodeFile file, StandardTypeName typeName, ITypeNameSyntax superTypeName)
+    {
+        return new(file, superTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            6016, $"Type `{typeName}` cannot have super type `{superTypeName}` because it is not a trait or class");
+    }
+
+    public static Diagnostic CannotConstructAbstractType(CodeFile file, ITypeNameSyntax typeName)
+    {
+        return new(file, typeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            6017, $"Type `{typeName}` cannot be constructed because it is abstract");
     }
 }

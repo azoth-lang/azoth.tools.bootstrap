@@ -62,7 +62,7 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags>
     {
         var symbol = nameExpression.ReferencedSymbol;
         if (possiblyMoved[symbol] == true)
-            diagnostics.Add(SemanticError.UseOfPossiblyMovedValue(file, nameExpression.Span));
+            diagnostics.Add(FlowTypingError.UseOfPossiblyMovedValue(file, nameExpression.Span));
 
         if (symbol.DataType is not ValueType)
             return possiblyMoved;

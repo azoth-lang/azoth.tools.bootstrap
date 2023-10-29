@@ -53,9 +53,9 @@ internal class ShadowChecker : AbstractSyntaxWalker<BindingScope>
                 WalkChildren(syn, bindingScope);
                 if (!bindingScope.Lookup(syn.Symbol.Name, out var binding)) return;
                 if (binding.MutableBinding)
-                    diagnostics.Add(SemanticError.CantRebindMutableBinding(file, syn.NameSpan));
+                    diagnostics.Add(OtherSemanticError.CantRebindMutableBinding(file, syn.NameSpan));
                 else if (syn.Symbol.IsMutableBinding)
-                    diagnostics.Add(SemanticError.CantRebindAsMutableBinding(file, syn.NameSpan));
+                    diagnostics.Add(OtherSemanticError.CantRebindAsMutableBinding(file, syn.NameSpan));
                 return;
             }
             case INameExpression syn:
@@ -63,7 +63,7 @@ internal class ShadowChecker : AbstractSyntaxWalker<BindingScope>
                 // This checks for cases where a variable was shadowed, but then used later
                 if (!bindingScope.Lookup(syn.ReferencedSymbol.Name, out var binding)) return;
                 if (binding.WasShadowedBy.Any())
-                    diagnostics.Add(SemanticError.CantShadow(file, binding.WasShadowedBy[^1].NameSpan, syn.Span));
+                    diagnostics.Add(OtherSemanticError.CantShadow(file, binding.WasShadowedBy[^1].NameSpan, syn.Span));
                 return;
             }
             case IDeclaration _:

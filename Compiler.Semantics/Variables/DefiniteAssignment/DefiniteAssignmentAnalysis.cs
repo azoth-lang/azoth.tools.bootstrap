@@ -58,7 +58,7 @@ internal class DefiniteAssignmentAnalysis : IForwardDataFlowAnalysis<BindingFlag
         BindingFlags definitelyAssigned)
     {
         if (definitelyAssigned[nameExpression.ReferencedSymbol] == false)
-            diagnostics.Add(SemanticError.VariableMayNotHaveBeenAssigned(file,
+            diagnostics.Add(OtherSemanticError.VariableMayNotHaveBeenAssigned(file,
                 nameExpression.Span, nameExpression.ReferencedSymbol.Name));
 
         return definitelyAssigned;

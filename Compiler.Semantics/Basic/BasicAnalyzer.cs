@@ -89,7 +89,7 @@ public class BasicAnalyzer
             case IAbstractMethodDeclarationSyntax method:
                 // has no body, so nothing to resolve
                 if (method.DeclaringType is IClassDeclarationSyntax { IsAbstract: false })
-                    diagnostics.Add(SemanticError.AbstractMethodNotInAbstractClass(method.File, method.Span, method.Name));
+                    diagnostics.Add(OtherSemanticError.AbstractMethodNotInAbstractClass(method.File, method.Span, method.Name));
                 break;
             case IFieldDeclarationSyntax field:
                 if (field.Initializer is not null)

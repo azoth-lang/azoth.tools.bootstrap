@@ -194,7 +194,7 @@ public class EntitySymbolBuilder
 
         void AddCircularDefinitionError()
         {
-            diagnostics.Add(SemanticError.CircularDefinition(@class.File, @class.NameSpan, @class));
+            diagnostics.Add(OtherSemanticError.CircularDefinition(@class.File, @class.NameSpan, @class));
         }
     }
 
@@ -219,7 +219,7 @@ public class EntitySymbolBuilder
 
         void AddCircularDefinitionError()
         {
-            diagnostics.Add(SemanticError.CircularDefinition(trait.File, trait.NameSpan, trait));
+            diagnostics.Add(OtherSemanticError.CircularDefinition(trait.File, trait.NameSpan, trait));
         }
     }
 
@@ -256,14 +256,14 @@ public class EntitySymbolBuilder
             if (baseType is ObjectType { DeclaredType: var declaredType })
             {
                 if (!declaredType.IsClass)
-                    diagnostics.Add(TypeError.BaseTypeMustBeClass(syn.File, syn.Name, baseTypeName));
+                    diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(syn.File, syn.Name, baseTypeName));
 
                 yield return declaredType;
                 foreach (var inheritedType in declaredType.SuperTypes)
                     yield return inheritedType;
             }
             else
-                diagnostics.Add(TypeError.BaseTypeMustBeClass(syn.File, syn.Name, baseTypeName));
+                diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(syn.File, syn.Name, baseTypeName));
         }
 
         foreach (var superTypeSyntax in syn.SupertypeNames)
@@ -276,7 +276,7 @@ public class EntitySymbolBuilder
                     yield return inheritedType;
             }
             else
-                diagnostics.Add(TypeError.SuperTypeMustBeClassOrTrait(syn.File, syn.Name, superTypeSyntax));
+                diagnostics.Add(OtherSemanticError.SuperTypeMustBeClassOrTrait(syn.File, syn.Name, superTypeSyntax));
         }
     }
 
@@ -402,7 +402,7 @@ public class EntitySymbolBuilder
         bool isConstructor = false)
     {
         if (isConstructor && param.IsLentBinding)
-            diagnostics.Add(SemanticError.LentConstructorSelf(file, param.Span));
+            diagnostics.Add(OtherSemanticError.LentConstructorSelf(file, param.Span));
         var symbol = new SelfParameterSymbol(containingSymbol, param.IsLentBinding && !isConstructor, type);
         param.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);

@@ -187,7 +187,7 @@ public class BasicBodyAnalyzer
         FlowState flow)
     {
         if (context == StatementContext.AfterResult)
-            diagnostics.Add(SemanticError.StatementAfterResult(file, statement.Span));
+            diagnostics.Add(OtherSemanticError.StatementAfterResult(file, statement.Span));
         switch (statement)
         {
             default:
@@ -206,7 +206,7 @@ public class BasicBodyAnalyzer
             {
                 var result = InferType(resultStatement.Expression, flow);
                 if (context == StatementContext.BodyLevel)
-                    diagnostics.Add(SemanticError.ResultStatementInBody(file, resultStatement.Span));
+                    diagnostics.Add(OtherSemanticError.ResultStatementInBody(file, resultStatement.Span));
 
                 // Return type for use in determining block type. Keep result shared for use in
                 // parent expression.
@@ -459,7 +459,7 @@ public class BasicBodyAnalyzer
                                     diagnostics.Add(TypeError.NotImplemented(file, exp.Span,
                                         "Reference capability does not allow moving"));
                                 if (!flow.IsIsolated(bindingSymbol))
-                                    diagnostics.Add(TypeError.CannotMoveValue(file, exp));
+                                    diagnostics.Add(FlowTypingError.CannotMoveValue(file, exp));
 
                                 type = referenceType.With(ReferenceCapability.Isolated);
                                 flow.Move(bindingSymbol);
@@ -548,7 +548,7 @@ public class BasicBodyAnalyzer
                 else if (expectedType == DataType.Never)
                     diagnostics.Add(TypeError.CannotReturnFromNeverFunction(file, exp.Span));
                 else if (expectedType != DataType.Void)
-                    diagnostics.Add(TypeError.MutReturnCorrectType(file, exp.Span, expectedType));
+                    diagnostics.Add(TypeError.MustReturnCorrectType(file, exp.Span, expectedType));
 
                 // Return expressions always have the type Never
                 return new ExpressionResult(exp);
@@ -746,7 +746,7 @@ public class BasicBodyAnalyzer
 
                 if (constructingType is ObjectType { DeclaredType.IsAbstract: true })
                 {
-                    diagnostics.Add(TypeError.CannotConstructAbstractType(file, exp.Type));
+                    diagnostics.Add(OtherSemanticError.CannotConstructAbstractType(file, exp.Type));
                     exp.ReferencedSymbol.Fulfill(null);
                     exp.DataType = DataType.Unknown;
                     resultVariable = CombineResults(arguments, flow);
@@ -1079,7 +1079,7 @@ public class BasicBodyAnalyzer
                 // Check for assigning into fields (self is handled by binding mutability analysis)
                 if (exp.Context is not ISelfExpressionSyntax
                     && member.ReferencedSymbol.Result is BindingSymbol { IsMutableBinding: false, Name: SimpleName name })
-                    diagnostics.Add(SemanticError.CannotAssignImmutableField(file, exp.Span, name));
+                    diagnostics.Add(OtherSemanticError.CannotAssignImmutableField(file, exp.Span, name));
 
                 type = type.AccessedVia(contextResult.Type);
                 member.DataType = type;
@@ -1459,8 +1459,8 @@ public class BasicBodyAnalyzer
                 }
             case FunctionSymbol _:
                 diagnostics.Add(selfExpression.IsImplicit
-                    ? SemanticError.ImplicitSelfOutsideMethod(file, selfExpression.Span)
-                    : SemanticError.SelfOutsideMethod(file, selfExpression.Span));
+                    ? OtherSemanticError.ImplicitSelfOutsideMethod(file, selfExpression.Span)
+                    : OtherSemanticError.SelfOutsideMethod(file, selfExpression.Span));
                 selfExpression.ReferencedSymbol.Fulfill(null);
                 return null;
         }

@@ -6,15 +6,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
-/// <summary>
-/// Error Code Ranges:
-/// 1001-1999: Lexical Errors
-/// 2001-2999: Parsing Errors
-/// 3001-3999: Type Errors
-/// 4001-4999: Borrow Checking Errors
-/// 5001-5999: Name Binding Errors
-/// 6001-6999: Other Semantic Errors
-/// </summary>
+/// <remarks><see cref="ErrorCodeRange"/> for the ranges of various kinds of error codes.</remarks>
 internal static class ParseError
 {
     /// <summary>
@@ -129,28 +121,22 @@ internal static class ParseError
             2017, "Constructor is missing a self parameter");
     }
 
-    public static Diagnostic LentId(CodeFile file, TextSpan span)
-    {
-        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2018, "Cannot declare `lent id` capability, use `id` instead");
-    }
-
     public static Diagnostic LentVarNotAllowed(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2019, "Parameter binding cannot be both `lent` and `var`");
+            2018, "Parameter binding cannot be both `lent` and `var`");
     }
 
     public static Diagnostic LentFieldParameter(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2020, "Field parameter cannot be `lent`");
+            2019, "Field parameter cannot be `lent`");
     }
 
     public static Diagnostic UnexpectedEndOfPattern(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2021, "Unexpected end of pattern");
+            2020, "Unexpected end of pattern");
     }
 
 }

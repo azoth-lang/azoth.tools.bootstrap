@@ -1,21 +1,12 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using UnaryOperator = Azoth.Tools.Bootstrap.Compiler.Core.Operators.UnaryOperator;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 
-/// <summary>
-/// Error Code Ranges:
-/// 1001-1999: Lexical Errors
-/// 2001-2999: Parsing Errors
-/// 3001-3999: Type Errors
-/// 4001-4999: Borrow Checking Errors
-/// 5001-5999: Name Binding Errors
-/// 6001-6999: Other Semantic Errors
-/// </summary>
+/// <remarks><see cref="ErrorCodeRange"/> for the ranges of various kinds of error codes.</remarks>
 public static class TypeError
 {
     public static Diagnostic NotImplemented(CodeFile file, TextSpan span, string message)
@@ -66,103 +57,73 @@ public static class TypeError
     public static Diagnostic CannotImplicitlyConvert(CodeFile file, ISyntax expression, DataType ofType, DataType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3007, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstantType().ToSourceCodeString()}` to type `{toType.ToNonConstantType().ToSourceCodeString()}`");
+            3006, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstantType().ToSourceCodeString()}` to type `{toType.ToNonConstantType().ToSourceCodeString()}`");
     }
 
     public static Diagnostic MustBeInvocable(CodeFile file, IExpressionSyntax expression)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3008, $"Expression must be of callable type to be invoked `{file.Code[expression.Span]}`");
+            3007, $"Expression must be of callable type to be invoked `{file.Code[expression.Span]}`");
     }
 
-    public static Diagnostic CannotMoveValue(CodeFile file, IMoveExpressionSyntax expression)
-    {
-        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3009, $"Cannot move value `{file.Code[expression.Referent.Span]}`");
-    }
-
-    public static Diagnostic TypeDeclaredImmutable(CodeFile file, IExpressionSyntax expression)
-    {
-        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3010, $"Type can't be made mutable because it was declared immutable `{file.Code[expression.Span]}`");
-    }
-
-    public static Diagnostic MutReturnCorrectType(CodeFile file, in TextSpan span, DataType returnType)
+    public static Diagnostic MustReturnCorrectType(CodeFile file, in TextSpan span, DataType returnType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3012, $"The return expression must return a value of type `{returnType}`");
+            3008, $"The return expression must return a value of type `{returnType}`");
     }
 
     public static Diagnostic CannotReturnFromNeverFunction(CodeFile file, in TextSpan span)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3013, "Functions that never return can't contain return statements");
+            3009, "Functions that never return can't contain return statements");
     }
 
     public static Diagnostic CannotAssignFieldOfReadOnly(CodeFile file, in TextSpan span, ReferenceType referenceType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3014, $"Cannot assign into a field through a read only reference of type `{referenceType.ToSourceCodeString()}`");
+            3010, $"Cannot assign into a field through a read only reference of type `{referenceType.ToSourceCodeString()}`");
     }
 
     public static Diagnostic CannotIdNonReferenceType(CodeFile file, in TextSpan span, DataType type)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3015, $"Taking the `id` of the type `{type.ToSourceCodeString()}` is not supported, because it is not a reference type");
+            3011, $"Taking the `id` of the type `{type.ToSourceCodeString()}` is not supported, because it is not a reference type");
     }
 
     public static Diagnostic CannotExplicitlyConvert(CodeFile file, ISyntax expression, DataType ofType, DataType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3017, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstantType().ToSourceCodeString()}` to type `{toType.ToNonConstantType().ToSourceCodeString()}`");
+            3012, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstantType().ToSourceCodeString()}` to type `{toType.ToNonConstantType().ToSourceCodeString()}`");
     }
 
     public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, ISyntax expression, ReferenceCapability capability, DeclaredObjectType type)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3018, $"Cannot use `{capability.ToSourceString()}` on constant type `{type}`");
-    }
-
-    public static Diagnostic BaseTypeMustBeClass(CodeFile file, StandardTypeName className, ITypeNameSyntax baseTypeName)
-    {
-        return new(file, baseTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3019, $"Class `{className}` cannot have base type `{baseTypeName}` because it is not a class");
+            3013, $"Cannot use `{capability.ToSourceString()}` on constant type `{type}`");
     }
 
     public static Diagnostic InvalidConstructorSelfParameterCapability(CodeFile file, IReferenceCapabilitySyntax syn)
     {
         var capability = syn.Declared.ToReferenceCapability();
         return new(file, syn.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3020, $"Constructor self parameter cannot have reference capability `{capability.ToSourceString()}`. Only `mut` and read-only are allowed");
+            3014, $"Constructor self parameter cannot have reference capability `{capability.ToSourceString()}`. Only `mut` and read-only are allowed");
     }
 
     public static Diagnostic LentIdentity(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3021, "Cannot have `lent` `id`");
-    }
-
-    public static Diagnostic SuperTypeMustBeClassOrTrait(CodeFile file, StandardTypeName typeName, ITypeNameSyntax superTypeName)
-    {
-        return new(file, superTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3022, $"Type `{typeName}` cannot have super type `{superTypeName}` because it is not a trait or class");
-    }
-
-    public static Diagnostic CannotConstructAbstractType(CodeFile file, ITypeNameSyntax typeName)
-    {
-        return new(file, typeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3023, $"Type `{typeName}` cannot be constructed because it is abstract");
+            3015, "Cannot have `lent` `id`");
     }
 
     public static Diagnostic OptionalPatternOnNonOptionalType(CodeFile file, IOptionalPatternSyntax pattern, DataType type)
     {
         return new(file, pattern.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3024, $"Optional pattern `{pattern}` cannot be applied to value of non-optional type {type.ToSourceCodeString()}");
+            3016, $"Optional pattern `{pattern}` cannot be applied to value of non-optional type {type.ToSourceCodeString()}");
     }
 
     public static Diagnostic ConstClassSelfParameterCannotHaveCapability(CodeFile file, ISelfParameterSyntax self)
     {
         return new(file, self.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3025, $"Self parameter `{self}` must be `const` or `id` because it is in a `const` class.");
+            3017, $"Self parameter `{self}` must be `const` or `id` because it is in a `const` class.");
     }
 }
