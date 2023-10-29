@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
@@ -8,11 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 /// 1001-1999: Lexical Errors
 /// 2001-2999: Parsing Errors
 /// 3001-3999: Type Errors
-/// 4001-4999: Borrow Checking Errors
+/// 4001-4999: Flow Typing Errors
 /// 5001-5999: Name Binding Errors
 /// 6001-6999: Other Semantic Errors
 /// </summary>
-public static class BorrowError
+public static class FlowTypingError
 {
     public static Diagnostic SharedValueDoesNotLiveLongEnough(
         CodeFile file,
@@ -58,5 +59,11 @@ public static class BorrowError
     {
         return new Diagnostic(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 4007,
             $"Value does not live long enough.");
+    }
+
+    public static Diagnostic CannotFreezeValue(CodeFile file, IFreezeExpressionSyntax expression)
+    {
+        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3016, $"Cannot freeze the value `{file.Code[expression.Referent.Span]}`");
     }
 }

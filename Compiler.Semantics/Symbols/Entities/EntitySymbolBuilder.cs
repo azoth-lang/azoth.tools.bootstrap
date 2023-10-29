@@ -194,7 +194,7 @@ public class EntitySymbolBuilder
 
         void AddCircularDefinitionError()
         {
-            diagnostics.Add(TypeError.CircularDefinition(@class.File, @class.NameSpan, @class));
+            diagnostics.Add(SemanticError.CircularDefinition(@class.File, @class.NameSpan, @class));
         }
     }
 
@@ -219,7 +219,7 @@ public class EntitySymbolBuilder
 
         void AddCircularDefinitionError()
         {
-            diagnostics.Add(TypeError.CircularDefinition(trait.File, trait.NameSpan, trait));
+            diagnostics.Add(SemanticError.CircularDefinition(trait.File, trait.NameSpan, trait));
         }
     }
 

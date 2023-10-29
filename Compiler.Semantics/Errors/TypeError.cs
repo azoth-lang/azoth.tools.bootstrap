@@ -63,12 +63,6 @@ public static class TypeError
             3005, "Expression must be of type `bool`");
     }
 
-    public static Diagnostic CircularDefinition(CodeFile file, TextSpan span, ITypeDeclarationSyntax type)
-    {
-        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3006, $"Declaration of type `{type.ContainingNamespaceName}.{type.Name}` is part of a circular definition");
-    }
-
     public static Diagnostic CannotImplicitlyConvert(CodeFile file, ISyntax expression, DataType ofType, DataType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
@@ -93,7 +87,7 @@ public static class TypeError
             3010, $"Type can't be made mutable because it was declared immutable `{file.Code[expression.Span]}`");
     }
 
-    public static Diagnostic ReturnExpressionMustHaveValue(CodeFile file, in TextSpan span, DataType returnType)
+    public static Diagnostic MutReturnCorrectType(CodeFile file, in TextSpan span, DataType returnType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3012, $"The return expression must return a value of type `{returnType}`");
@@ -115,12 +109,6 @@ public static class TypeError
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3015, $"Taking the `id` of the type `{type.ToSourceCodeString()}` is not supported, because it is not a reference type");
-    }
-
-    public static Diagnostic CannotFreezeValue(CodeFile file, IFreezeExpressionSyntax expression)
-    {
-        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3016, $"Cannot freeze the value `{file.Code[expression.Referent.Span]}`");
     }
 
     public static Diagnostic CannotExplicitlyConvert(CodeFile file, ISyntax expression, DataType ofType, DataType toType)

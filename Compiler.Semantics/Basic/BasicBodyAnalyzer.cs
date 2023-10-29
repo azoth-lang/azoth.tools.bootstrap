@@ -504,7 +504,7 @@ public class BasicBodyAnalyzer
                                     diagnostics.Add(TypeError.NotImplemented(file, exp.Span,
                                         "Reference capability does not allow freezing"));
                                 if (!flow.IsIsolated(bindingSymbol))
-                                    diagnostics.Add(TypeError.CannotFreezeValue(file, exp));
+                                    diagnostics.Add(FlowTypingError.CannotFreezeValue(file, exp));
 
                                 type = referenceType.With(ReferenceCapability.Constant);
                                 flow.Freeze(bindingSymbol);
@@ -548,7 +548,7 @@ public class BasicBodyAnalyzer
                 else if (expectedType == DataType.Never)
                     diagnostics.Add(TypeError.CannotReturnFromNeverFunction(file, exp.Span));
                 else if (expectedType != DataType.Void)
-                    diagnostics.Add(TypeError.ReturnExpressionMustHaveValue(file, exp.Span, expectedType));
+                    diagnostics.Add(TypeError.MutReturnCorrectType(file, exp.Span, expectedType));
 
                 // Return expressions always have the type Never
                 return new ExpressionResult(exp);
