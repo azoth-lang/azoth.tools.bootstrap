@@ -53,7 +53,7 @@ public static class Program
         app.Command("interpret", cmd =>
         {
             cmd.Description = "Interpret a package and all of its dependencies";
-            var packageOption = cmd.Option("-p|--package <Package-Path>", "Package to build",
+            var packageOption = cmd.Option("-p|--package <Package-Path>", "Package to interpret",
                 CommandOptionType.SingleValue);
             var verboseOption = cmd.Option("-v|--verbose", "Use verbose output", CommandOptionType.NoValue);
             cmd.OnExecuteAsync(async (ct) =>
@@ -64,6 +64,23 @@ public static class Program
                 var packagePath = packageOption.Value() ?? ".";
 
                 await InterpretAsync(packagePath, verbose, allowParallel, maxConcurrency).ConfigureAwait(false);
+            });
+        });
+
+        app.Command("test", cmd =>
+        {
+            cmd.Description = "Run tests in a package";
+            var packageOption = cmd.Option("-p|--package <Package-Path>", "Package to test",
+                CommandOptionType.SingleValue);
+            var verboseOption = cmd.Option("-v|--verbose", "Use verbose output", CommandOptionType.NoValue);
+            cmd.OnExecuteAsync(async (ct) =>
+            {
+                var allowParallel = allowParallelOption.OptionalValue() ?? DefaultAllowParallel;
+                var maxConcurrency = maxConcurrencyOption.OptionalValue();
+                var verbose = verboseOption.HasValue();
+                var packagePath = packageOption.Value() ?? ".";
+
+                await TestAsync(packagePath, verbose, allowParallel, maxConcurrency).ConfigureAwait(false);
             });
         });
 
@@ -104,6 +121,20 @@ public static class Program
         projectSet.AddAll(configs);
         var taskScheduler = NewTaskScheduler(allowParallel, maxConcurrency);
         return projectSet.InterpretAsync(taskScheduler, verbose, projectConfig);
+    }
+
+    private static Task TestAsync(
+        string packagePath,
+        bool verbose,
+        bool allowParallel,
+        int? maxConcurrency)
+    {
+        var configs = new ProjectConfigSet();
+        var projectConfig = configs.Load(packagePath);
+        var projectSet = new ProjectSet();
+        projectSet.AddAll(configs);
+        var taskScheduler = NewTaskScheduler(allowParallel, maxConcurrency);
+        return projectSet.TestAsync(taskScheduler, verbose, projectConfig);
     }
 
     private static TaskScheduler NewTaskScheduler(bool allowParallel, int? maxConcurrency)
