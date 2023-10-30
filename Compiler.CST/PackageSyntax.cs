@@ -25,10 +25,13 @@ public class PackageSyntax<TReference>
 {
     public PackageSymbol Symbol { get; }
     public SymbolTreeBuilder SymbolTree { get; }
+    public ISymbolTreeBuilder TestSymbolTree { get; }
     public SymbolForest SymbolTrees { get; }
+    public SymbolForest TestSymbolTrees { get; }
 
     [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
     public FixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
+    public FixedSet<ICompilationUnitSyntax> TestCompilationUnits { get; }
     public FixedSet<IEntityDeclarationSyntax> AllEntityDeclarations { get; }
     public FixedDictionary<SimpleName, TReference> References { get; }
     public IEnumerable<TReference> ReferencedPackages => References.Values;
@@ -37,14 +40,19 @@ public class PackageSyntax<TReference>
     public PackageSyntax(
         SimpleName name,
         FixedSet<ICompilationUnitSyntax> compilationUnits,
+        FixedSet<ICompilationUnitSyntax> testCompilationUnits,
         FixedDictionary<SimpleName, TReference> references)
     {
         Symbol = new PackageSymbol(name);
         SymbolTree = new SymbolTreeBuilder(Symbol);
+        TestSymbolTree = new TestingSymbolTreeBuilder(SymbolTree);
         CompilationUnits = compilationUnits;
+        TestCompilationUnits = testCompilationUnits;
         AllEntityDeclarations = GetEntityDeclarations(CompilationUnits).ToFixedSet();
         References = references;
         SymbolTrees = BuiltIn.CreateSymbolForest(SymbolTree, ReferencedPackages.Select(p => p.SymbolTree));
+        // TODO use referenced test symbol trees
+        TestSymbolTrees = BuiltIn.CreateSymbolForest(TestSymbolTree, ReferencedPackages.Select(p => p.SymbolTree));
         Diagnostics = new Diagnostics(CompilationUnits.SelectMany(cu => cu.Diagnostics));
     }
 

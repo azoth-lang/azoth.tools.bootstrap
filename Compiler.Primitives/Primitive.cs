@@ -13,7 +13,7 @@ public static class Primitive
 
     private static PrimitiveSymbolTree DefinePrimitiveSymbols()
     {
-        var tree = new SymbolTreeBuilder();
+        var tree = SymbolTreeBuilder.CreateForPrimitives();
 
         var stringType = ObjectType.Create(ReferenceCapability.Constant, "", NamespaceName.Global, false, false, true, "String");
 

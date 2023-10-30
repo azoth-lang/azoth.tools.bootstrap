@@ -31,40 +31,21 @@ public class AzothCompiler
     public Task<Package> CompilePackageAsync(
         SimpleName name,
         IEnumerable<ICodeFileSource> files,
+        IEnumerable<ICodeFileSource> testFileSources,
         FixedDictionary<SimpleName, Task<Package>> referenceTasks)
-        => CompilePackageAsync(name, files, referenceTasks, TaskScheduler.Default);
+        => CompilePackageAsync(name, files, testFileSources, referenceTasks, TaskScheduler.Default);
 
     public async Task<Package> CompilePackageAsync(
         SimpleName name,
         IEnumerable<ICodeFileSource> fileSources,
+        IEnumerable<ICodeFileSource> testFileSources,
         FixedDictionary<SimpleName, Task<Package>> referenceTasks,
         TaskScheduler taskScheduler)
     {
         var lexer = new Lexer();
         var parser = new CompilationUnitParser();
-        var parseBlock = new TransformBlock<ICodeFileSource, ICompilationUnitSyntax>(
-            async (fileSource) =>
-            {
-                var file = await fileSource.LoadAsync().ConfigureAwait(false);
-                var context = new ParseContext(file, new Diagnostics());
-                var tokens = lexer.Lex(context).WhereNotTrivia();
-                return parser.Parse(tokens);
-            }, new ExecutionDataflowBlockOptions()
-            {
-                TaskScheduler = taskScheduler,
-                EnsureOrdered = false,
-            });
-
-        foreach (var fileSource in fileSources)
-            parseBlock.Post(fileSource);
-
-        parseBlock.Complete();
-
-        await parseBlock.Completion.ConfigureAwait(false);
-
-        if (!parseBlock.TryReceiveAll(out var compilationUnits))
-            throw new Exception("Not all compilation units are ready");
-
+        var compilationUnits = await ParseFilesAsync(fileSources);
+        var testCompilationUnits = await ParseFilesAsync(testFileSources);
         var referencePairs = await Task
                                    .WhenAll(referenceTasks.Select(async kv =>
                                        (alias: kv.Key, package: await kv.Value.ConfigureAwait(false))))
@@ -72,7 +53,7 @@ public class AzothCompiler
         var references = referencePairs.ToFixedDictionary(r => r.alias, r => r.package);
 
         // TODO add the references to the package syntax
-        var packageSyntax = new PackageSyntax<Package>(name, compilationUnits.ToFixedSet(), references);
+        var packageSyntax = new PackageSyntax<Package>(name, compilationUnits, testCompilationUnits, references);
 
         var analyzer = new SemanticAnalyzer()
         {
@@ -81,30 +62,48 @@ public class AzothCompiler
         };
 
         return analyzer.Check(packageSyntax);
+
+        async Task<FixedSet<ICompilationUnitSyntax>> ParseFilesAsync(IEnumerable<ICodeFileSource> codeFileSources)
+        {
+            var parseBlock = new TransformBlock<ICodeFileSource, ICompilationUnitSyntax>(async fileSource =>
+            {
+                var file = await fileSource.LoadAsync().ConfigureAwait(false);
+                var context = new ParseContext(file, new Diagnostics());
+                var tokens = lexer.Lex(context).WhereNotTrivia();
+                return parser.Parse(tokens);
+            }, new ExecutionDataflowBlockOptions() { TaskScheduler = taskScheduler, EnsureOrdered = false, });
+
+            foreach (var fileSource in codeFileSources) parseBlock.Post(fileSource);
+
+            parseBlock.Complete();
+
+            await parseBlock.Completion.ConfigureAwait(false);
+
+            if (!parseBlock.TryReceiveAll(out var compilationUnits))
+                throw new Exception("Not all compilation units are ready");
+
+            return compilationUnits.ToFixedSet();
+        }
     }
 
     public Package CompilePackage(
         string name,
         IEnumerable<ICodeFileSource> fileSources,
+        IEnumerable<ICodeFileSource> testFileSources,
         FixedDictionary<SimpleName, Package> references)
-        => CompilePackage(name, fileSources.Select(s => s.Load()), references);
+        => CompilePackage(name, fileSources.Select(s => s.Load()), testFileSources.Select(s => s.Load()), references);
 
     public Package CompilePackage(
         string name,
         IEnumerable<CodeFile> files,
+        IEnumerable<CodeFile> testFiles,
         FixedDictionary<SimpleName, Package> references)
     {
         var lexer = new Lexer();
         var parser = new CompilationUnitParser();
-        var compilationUnits = files
-                               .Select(file =>
-                               {
-                                   var context = new ParseContext(file, new Diagnostics());
-                                   var tokens = lexer.Lex(context).WhereNotTrivia();
-                                   return parser.Parse(tokens);
-                               })
-                               .ToFixedSet();
-        var packageSyntax = new PackageSyntax<Package>(name, compilationUnits, references);
+        var compilationUnits = ParseFiles(files);
+        var testCompilationUnits = ParseFiles(testFiles);
+        var packageSyntax = new PackageSyntax<Package>(name, compilationUnits, testCompilationUnits, references);
 
         var analyzer = new SemanticAnalyzer()
         {
@@ -113,5 +112,17 @@ public class AzothCompiler
         };
 
         return analyzer.Check(packageSyntax);
+
+        FixedSet<ICompilationUnitSyntax> ParseFiles(IEnumerable<CodeFile> codeFiles)
+        {
+            return codeFiles
+                   .Select(file =>
+                   {
+                       var context = new ParseContext(file, new Diagnostics());
+                       var tokens = lexer.Lex(context).WhereNotTrivia();
+                       return parser.Parse(tokens);
+                   })
+                   .ToFixedSet();
+        }
     }
 }

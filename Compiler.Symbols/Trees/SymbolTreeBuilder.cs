@@ -8,13 +8,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 /// <summary>
 /// Builder for a <see cref="ISymbolTree"/>
 /// </summary>
-public class SymbolTreeBuilder : ISymbolTree
+public class SymbolTreeBuilder : ISymbolTreeBuilder
 {
+    public static SymbolTreeBuilder CreateForPrimitives() => new();
+
     public PackageSymbol? Package { get; }
     private readonly IDictionary<Symbol, ISet<Symbol>> symbolChildren = new Dictionary<Symbol, ISet<Symbol>>();
     public IEnumerable<Symbol> Symbols => symbolChildren.Keys;
 
-    public SymbolTreeBuilder()
+    private SymbolTreeBuilder()
     {
         Package = null;
     }
@@ -85,6 +87,4 @@ public class SymbolTreeBuilder : ISymbolTree
             throw new InvalidOperationException($"Can't build {nameof(PrimitiveSymbolTree)} WITH a package");
         return new(symbolChildren.ToFixedDictionary(e => e.Key, e => e.Value.ToFixedSet()));
     }
-
-
 }

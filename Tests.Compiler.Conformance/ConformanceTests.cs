@@ -50,7 +50,7 @@ public partial class ConformanceTests
     public async Task Test_cases(TestCase testCase)
     {
         // Setup
-        var codeFile = CodeFile.Load(testCase.FullCodePath);
+        var codeFile = CodeFile.Load(testCase.FullCodePath, isTest: false);
         var code = codeFile.Code.Text;
         var compiler = new AzothCompiler()
         {
@@ -67,7 +67,7 @@ public partial class ConformanceTests
         {
             // Analyze
             var package = compiler.CompilePackage("testPackage", codeFile.Yield(),
-                references.ToFixedDictionary());
+                Enumerable.Empty<CodeFile>(), references.ToFixedDictionary());
 
             // Check for compiler errors
             Assert.NotNull(package.Diagnostics);
@@ -117,7 +117,7 @@ public partial class ConformanceTests
             var rootNamespace = FixedList<string>.Empty;
             var codeFiles = sourcePaths.Select(p => LoadCode(p, sourceDir, rootNamespace)).ToList();
             var package = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles,
-                FixedDictionary<SimpleName, Package>.Empty);
+                Enumerable.Empty<CodeFile>(), FixedDictionary<SimpleName, Package>.Empty);
             if (package.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
                 ReportSupportCompilationErrors(package.Diagnostics);
             return package;
@@ -149,7 +149,7 @@ public partial class ConformanceTests
     {
         var relativeDirectory = Path.GetDirectoryName(Path.GetRelativePath(sourceDir, path)) ?? throw new InvalidOperationException();
         var ns = rootNamespace.Concat(relativeDirectory.SplitOrEmpty(Path.DirectorySeparatorChar)).ToFixedList();
-        return CodeFile.Load(path, ns);
+        return CodeFile.Load(path, ns, isTest: false);
     }
 
     private List<Diagnostic> CheckErrorsExpected(

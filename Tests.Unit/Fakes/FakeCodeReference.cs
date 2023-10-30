@@ -7,16 +7,13 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Fakes;
 internal class FakeCodeReference : CodeReference
 {
     #region Singleton
-
-    public static readonly FakeCodeReference Instance = new FakeCodeReference();
+    public static readonly FakeCodeReference Instance = new();
 
     private FakeCodeReference()
-        : base(FixedList<string>.Empty)
+        : base(FixedList<string>.Empty, isTest: false)
     { }
     #endregion
 
     public override string ToString()
-    {
-        throw new InvalidOperationException("Fake doesn't support ToString()");
-    }
+        => throw new InvalidOperationException("Fake doesn't support ToString()");
 }

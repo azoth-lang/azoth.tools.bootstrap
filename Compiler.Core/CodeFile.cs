@@ -16,20 +16,20 @@ public class CodeFile
 
     public CodeText Code { get; }
 
+    public bool IsTest => Reference.IsTest;
+
     public CodeFile(CodeReference reference, CodeText text)
     {
         Code = text;
         Reference = reference;
     }
 
-    public static CodeFile Load(string path)
-    {
-        return Load(path, FixedList<string>.Empty);
-    }
+    public static CodeFile Load(string path, bool isTest)
+        => Load(path, FixedList<string>.Empty, isTest);
 
-    public static CodeFile Load(string path, FixedList<string> @namespace)
+    public static CodeFile Load(string path, FixedList<string> @namespace, bool isTest)
     {
         var fullPath = Path.GetFullPath(path);
-        return new CodeFile(new CodePath(fullPath, @namespace), new CodeText(File.ReadAllText(fullPath, Encoding)));
+        return new CodeFile(new CodePath(fullPath, @namespace, isTest), new CodeText(File.ReadAllText(fullPath, Encoding)));
     }
 }

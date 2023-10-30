@@ -8,6 +8,6 @@ public static class BuiltIn
     public static SymbolForest CreateSymbolForest(IEnumerable<FixedSymbolTree> packageTrees)
         => new(Primitive.SymbolTree, Intrinsic.SymbolTree, packageTrees);
 
-    public static SymbolForest CreateSymbolForest(SymbolTreeBuilder symbolTree, IEnumerable<FixedSymbolTree> packageTrees)
+    public static SymbolForest CreateSymbolForest(ISymbolTreeBuilder symbolTree, IEnumerable<FixedSymbolTree> packageTrees)
         => new(Primitive.SymbolTree, Intrinsic.SymbolTree, symbolTree, packageTrees);
 }

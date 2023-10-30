@@ -5,15 +5,16 @@ using Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 
 public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
 {
-    private readonly SymbolTreeBuilder treeBuilder;
+    private readonly ISymbolTreeBuilder treeBuilder;
     private readonly PackageSymbol packageSymbol;
 
-    private NamespaceSymbolBuilder(SymbolTreeBuilder treeBuilder, PackageSymbol packageSymbol)
+    private NamespaceSymbolBuilder(ISymbolTreeBuilder treeBuilder, PackageSymbol packageSymbol)
     {
         this.treeBuilder = treeBuilder;
         this.packageSymbol = packageSymbol;
@@ -21,8 +22,17 @@ public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
 
     public static void BuildNamespaceSymbols(PackageSyntax<Package> package)
     {
-        var builder = new NamespaceSymbolBuilder(package.SymbolTree, package.Symbol);
-        foreach (var compilationUnit in package.CompilationUnits)
+        BuildNamespaceSymbols(package, package.SymbolTree, package.CompilationUnits);
+        BuildNamespaceSymbols(package, package.TestSymbolTree, package.TestCompilationUnits);
+    }
+
+    private static void BuildNamespaceSymbols(
+        PackageSyntax<Package> package,
+        ISymbolTreeBuilder treeBuilder,
+        FixedSet<ICompilationUnitSyntax> compilationUnits)
+    {
+        var builder = new NamespaceSymbolBuilder(treeBuilder, package.Symbol);
+        foreach (var compilationUnit in compilationUnits)
             builder.Walk(compilationUnit, package.Symbol);
     }
 

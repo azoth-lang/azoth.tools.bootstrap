@@ -63,17 +63,19 @@ internal class ProjectSet : IEnumerable<Project>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public async Task BuildAsync(TaskScheduler taskScheduler, bool verbose)
-        => await ProcessProjects(taskScheduler, verbose, BuildAsync, null);
+        => await ProcessProjects(taskScheduler, verbose, outputTests: false, BuildAsync, null);
 
     private delegate Task<Package?> ProcessAsync(
         AzothCompiler compiler,
         Project project,
+        bool outputTests,
         Task<FixedDictionary<Project, Task<Package?>>> projectBuildsTask,
         object consoleLock);
 
     private async Task<Package?> ProcessProjects(
         TaskScheduler taskScheduler,
         bool verbose,
+        bool outputTests,
         ProcessAsync processAsync,
         ProjectConfig? entryProjectConfig)
     {
@@ -90,7 +92,7 @@ internal class ProjectSet : IEnumerable<Project>
         var consoleLock = new object();
         foreach (var project in sortedProjects)
         {
-            var buildTask = taskFactory.StartNew(() => processAsync(compiler, project, projectBuildsTask, consoleLock))
+            var buildTask = taskFactory.StartNew(() => processAsync(compiler, project, outputTests, projectBuildsTask, consoleLock))
                                        .Unwrap(); // Needed because StartNew doesn't work intuitively with Async methods
             if (!projectBuilds.TryAdd(project, buildTask))
                 throw new Exception("Project added to build set twice");
@@ -109,7 +111,7 @@ internal class ProjectSet : IEnumerable<Project>
 
     public async Task InterpretAsync(TaskScheduler taskScheduler, bool verbose, ProjectConfig entryProjectConfig)
     {
-        var entryPackage = await ProcessProjects(taskScheduler, verbose, CompileAsync, entryProjectConfig);
+        var entryPackage = await ProcessProjects(taskScheduler, verbose, outputTests: false, CompileAsync, entryProjectConfig);
 
         if (entryPackage is null)
             // Fatal Compile Errors
@@ -126,7 +128,7 @@ internal class ProjectSet : IEnumerable<Project>
 
     public async Task TestAsync(TaskScheduler taskScheduler, bool verbose, ProjectConfig testProjectConfig)
     {
-        var testPackage = await ProcessProjects(taskScheduler, verbose, CompileAsync, testProjectConfig);
+        var testPackage = await ProcessProjects(taskScheduler, verbose, outputTests: true, CompileAsync, testProjectConfig);
 
         if (testPackage is null)
             // Fatal Compile Errors
@@ -144,14 +146,15 @@ internal class ProjectSet : IEnumerable<Project>
     private static async Task<Package?> BuildAsync(
         AzothCompiler compiler,
         Project project,
+        bool outputTests,
         Task<FixedDictionary<Project, Task<Package?>>> projectBuildsTask,
         object consoleLock)
     {
-        var package = await CompileAsync(compiler, project, projectBuildsTask, consoleLock);
+        var package = await CompileAsync(compiler, project, outputTests, projectBuildsTask, consoleLock);
         if (package is null) return package;
 
         var cacheDir = PrepareCacheDir(project);
-        var codePath = EmitIL(project, package, cacheDir);
+        var codePath = EmitIL(project, package, outputTests, cacheDir);
 
         lock (consoleLock)
         {
@@ -164,12 +167,17 @@ internal class ProjectSet : IEnumerable<Project>
     private static async Task<Package?> CompileAsync(
         AzothCompiler compiler,
         Project project,
+        bool outputTests,
         Task<FixedDictionary<Project, Task<Package?>>> projectBuildsTask,
         object consoleLock)
     {
+        // Doesn't affect compilation, only IL emitting
+        _ = outputTests;
+
         var projectBuilds = await projectBuildsTask.ConfigureAwait(false);
         var sourceDir = Path.Combine(project.Path, "src");
         var sourcePaths = Directory.EnumerateFiles(sourceDir, "*.az", SearchOption.AllDirectories);
+        var testSourcePaths = Directory.EnumerateFiles(sourceDir, "*.azt", SearchOption.AllDirectories);
         // Wait for the references, unfortunately, this requires an ugly loop.
         var referenceTasks = project.References.ToDictionary(r => r.Name, r => projectBuilds[r.Project]);
         var references = new Dictionary<SimpleName, Package>();
@@ -184,10 +192,11 @@ internal class ProjectSet : IEnumerable<Project>
         {
             Console.WriteLine($"Compiling {project.Name} ({project.Path})...");
         }
-        var codeFiles = sourcePaths.Select(p => LoadCode(p, sourceDir, project.RootNamespace)).ToList();
+        var codeFiles = LoadCode(sourcePaths, isTest: false);
+        var testCodeFiles = LoadCode(testSourcePaths, isTest: true);
         try
         {
-            var package = compiler.CompilePackage(project.Name, codeFiles, references.ToFixedDictionary());
+            var package = compiler.CompilePackage(project.Name, codeFiles, testCodeFiles, references.ToFixedDictionary());
             // TODO switch to the async version of the compiler
             //var codeFiles = sourcePaths.Select(p => new CodePath(p)).ToList();
             //var references = project.References.ToDictionary(r => r.Name, r => projectBuilds[r.Project]);
@@ -208,16 +217,20 @@ internal class ProjectSet : IEnumerable<Project>
             OutputDiagnostics(project, ex.Diagnostics, consoleLock);
             return null;
         }
+
+        IEnumerable<CodeFile> LoadCode(IEnumerable<string> paths, bool isTest)
+            => paths.Select(p => ProjectSet.LoadCode(p, sourceDir, project.RootNamespace, isTest));
     }
 
     private static CodeFile LoadCode(
         string path,
         string sourceDir,
-        FixedList<string> rootNamespace)
+        FixedList<string> rootNamespace,
+        bool isTest)
     {
         var relativeDirectory = Path.GetDirectoryName(Path.GetRelativePath(sourceDir, path)) ?? throw new InvalidOperationException("Null directory name");
         var ns = rootNamespace.Concat(relativeDirectory.SplitOrEmpty(Path.DirectorySeparatorChar)).ToFixedList();
-        return CodeFile.Load(path, ns);
+        return CodeFile.Load(path, ns, isTest);
     }
 
     private static string PrepareCacheDir(Project project)
@@ -266,7 +279,7 @@ internal class ProjectSet : IEnumerable<Project>
         return true;
     }
 
-    private static string EmitIL(Project project, Package package, string cacheDir)
+    private static string EmitIL(Project project, Package package, bool outputTests, string cacheDir)
     {
 #pragma warning disable IDE0022
         throw new NotImplementedException();

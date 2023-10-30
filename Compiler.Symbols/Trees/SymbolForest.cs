@@ -15,7 +15,8 @@ public class SymbolForest
                                                                    .Concat(Packages.SelectMany(Children));
     public IEnumerable<Symbol> Symbols => packageTrees.Values.SelectMany(t => t.Symbols);
 
-    public SymbolForest(PrimitiveSymbolTree primitiveSymbolTree, FixedSymbolTree intrinsicSymbolTree, SymbolTreeBuilder symbolTreeBuilder, IEnumerable<FixedSymbolTree> packageTrees)
+    public SymbolForest(PrimitiveSymbolTree primitiveSymbolTree, FixedSymbolTree intrinsicSymbolTree,
+        ISymbolTreeBuilder symbolTreeBuilder, IEnumerable<FixedSymbolTree> packageTrees)
     {
         if (symbolTreeBuilder.Package is null)
             throw new ArgumentException("Can't be builder for primitive symbols", nameof(symbolTreeBuilder));
