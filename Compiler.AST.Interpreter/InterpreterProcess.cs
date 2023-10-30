@@ -46,8 +46,7 @@ public class InterpreterProcess
     private InterpreterProcess(Package package, bool runTests)
     {
         this.package = package;
-        var allDeclarations = package.Declarations.Concat(package.References.SelectMany(r => r.Declarations))
-                                     .ToList();
+        var allDeclarations = GetAllDeclarations(package, runTests ? r => r.Declarations.Concat(r.TestingDeclarations) : r => r.Declarations);
         functions = allDeclarations
                     .OfType<IConcreteFunctionInvocableDeclaration>()
                     .ToFixedDictionary(f => f.Symbol);
@@ -73,6 +72,9 @@ public class InterpreterProcess
 
         executionTask = runTests ? Task.Run(RunTestsAsync) : Task.Run(CallEntryPointAsync);
     }
+
+    private static List<IDeclaration> GetAllDeclarations(Package package, Func<Package, IEnumerable<IDeclaration>> getDeclarations)
+        => getDeclarations(package).Concat(package.References.SelectMany(getDeclarations)).ToList();
 
     private async Task CallEntryPointAsync()
     {
@@ -101,36 +103,52 @@ public class InterpreterProcess
         }
     }
 
-    private Task RunTestsAsync()
+    private async Task RunTestsAsync()
     {
-        _ = 42;
-        throw new NotImplementedException();
-        //try
-        //{
-        //    package.TestingDeclarations.OfType<IFunctionDeclaration>().Where()
+        try
+        {
+            var testFunctions = package.TestingDeclarations.OfType<IFunctionDeclaration>()
+                                       .Where(f => f.Attributes.Any(IsTestAttribute)).ToFixedSet();
 
-        //    var entryPoint = package.EntryPoint!;
-        //    var arguments = new List<AzothValue>();
-        //    foreach (var parameterType in entryPoint.Symbol.ParameterTypes)
-        //        arguments.Add(await ConstructMainParameterAsync(parameterType.Type));
+            await standardOutputWriter.WriteLineAsync($"Testing {package.Symbol.Name} package...");
+            await standardOutputWriter.WriteLineAsync($"  Found {testFunctions.Count} tests");
+            await standardOutputWriter.WriteLineAsync();
 
-        //    var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
-        //    // Flush any buffered output
-        //    await standardOutputWriter.FlushAsync().ConfigureAwait(false);
-        //    var returnType = entryPoint.Symbol.ReturnType;
-        //    if (returnType == ReturnType.Void)
-        //        exitCode = 0;
-        //    else if (returnType.Type == DataType.Byte)
-        //        exitCode = returnValue.ByteValue;
-        //    else
-        //        throw new InvalidOperationException($"Main function cannot have return type {returnType.ToILString()}");
-        //}
-        //finally
-        //{
-        //    await standardOutputWriter.DisposeAsync().ConfigureAwait(false);
-        //    standardOutput.Position = 0;
-        //}
+            int failed = 0;
+
+            foreach (var function in testFunctions)
+            {
+                // TODO check that return type is void
+                var symbol = function.Symbol;
+                await standardOutputWriter.WriteLineAsync($"{symbol.ContainingSymbol.ToILString()}.{symbol.Name} ...");
+                try
+                {
+                    await CallFunctionAsync(function, Enumerable.Empty<AzothValue>()).ConfigureAwait(false);
+                    await standardOutputWriter.WriteLineAsync("  passed");
+                }
+                catch (Abort)
+                {
+                    await standardOutputWriter.WriteLineAsync("  FAILED");
+                    failed += 1;
+                }
+            }
+
+            await standardOutputWriter.WriteLineAsync();
+            await standardOutputWriter.WriteLineAsync($"Tested {package.Symbol.Name} package");
+            await standardOutputWriter.WriteLineAsync($"{failed} failed tests out of {testFunctions.Count} total");
+
+            // Flush any buffered output
+            await standardOutputWriter.FlushAsync().ConfigureAwait(false);
+        }
+        finally
+        {
+            await standardOutputWriter.DisposeAsync().ConfigureAwait(false);
+            standardOutput.Position = 0;
+        }
     }
+
+    private static bool IsTestAttribute(IAttribute attribute1)
+        => attribute1.ReferencedSymbol.Name.Text == "Test_Attribute";
 
     private async Task<AzothValue> ConstructMainParameterAsync(DataType parameterType)
     {

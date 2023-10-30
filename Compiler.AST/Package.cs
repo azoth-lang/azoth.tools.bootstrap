@@ -29,7 +29,7 @@ public class Package : IHasSymbolTree
         IFunctionDeclaration? entryPoint)
     {
         Declarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();
-        TestingDeclarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();
+        TestingDeclarations = GetAllDeclarations(testingNonMemberDeclarations).ToFixedSet();
         NonMemberDeclarations = nonMemberDeclarations;
         TestingNonMemberDeclarations = testingNonMemberDeclarations;
         Symbol = symbolTree.Package;
