@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -11,10 +9,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST;
 
 internal class PackageBuilder
 {
-    public FixedSet<IDeclaration> AllDeclarations { get; }
+    public FixedSet<IDeclaration> Declarations { get; }
+    public FixedSet<IDeclaration> TestingDeclarations { get; }
     public FixedSet<INonMemberDeclaration> NonMemberDeclarations { get; }
+    public FixedSet<INonMemberDeclaration> NonMemberTestingDeclarations { get; }
     public FixedSymbolTree SymbolTree { get; }
-    public SymbolForest SymbolTrees { get; }
+    public FixedSymbolTree TestingSymbolTree { get; }
     public Diagnostics Diagnostics { get; }
     public FixedDictionary<SimpleName, Package> References { get; }
     public IEnumerable<Package> ReferencedPackages => References.Values;
@@ -22,34 +22,37 @@ internal class PackageBuilder
 
     public PackageBuilder(
         FixedSet<INonMemberDeclaration> nonMemberDeclarations,
+        FixedSet<INonMemberDeclaration> nonMemberTestingDeclarations,
         FixedSymbolTree symbolTree,
+        FixedSymbolTree testingSymbolTree,
         Diagnostics diagnostics,
         FixedDictionary<SimpleName, Package> references)
     {
-        AllDeclarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();
+        Declarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();
+        TestingDeclarations = GetAllDeclarations(nonMemberTestingDeclarations).ToFixedSet();
         NonMemberDeclarations = nonMemberDeclarations;
+        NonMemberTestingDeclarations = nonMemberTestingDeclarations;
         SymbolTree = symbolTree;
         Diagnostics = diagnostics;
         References = references;
-        SymbolTrees = BuiltIn.CreateSymbolForest(
-            ReferencedPackages.Select(p => p.SymbolTree).Append(SymbolTree));
+        TestingSymbolTree = testingSymbolTree;
     }
 
     private static IEnumerable<IDeclaration> GetAllDeclarations(
         IEnumerable<INonMemberDeclaration> nonMemberDeclarations)
     {
-        var declarations = new Queue<IDeclaration>();
-        declarations.EnqueueRange(nonMemberDeclarations);
+        var declarations = new Queue<IDeclaration>(nonMemberDeclarations);
         while (declarations.TryDequeue(out var declaration))
         {
             yield return declaration;
-            if (declaration is IClassDeclaration syn) declarations.EnqueueRange(syn.Members);
+            if (declaration is IClassDeclaration syn)
+                declarations.EnqueueRange(syn.Members);
         }
     }
 
     public Package Build()
     {
-        return new Package(NonMemberDeclarations, SymbolTree,
+        return new Package(NonMemberDeclarations, SymbolTree, TestingSymbolTree,
             Diagnostics.ToFixedList(), References.Values.ToFixedSet(),
             EntryPoint);
     }

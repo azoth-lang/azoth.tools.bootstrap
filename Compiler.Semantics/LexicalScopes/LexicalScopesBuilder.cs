@@ -29,7 +29,7 @@ public class LexicalScopesBuilder
 
         var testingDeclarationSymbols = GetAllNonMemberDeclarationSymbols(primitiveEntitySymbols,
             package.TestingSymbolTree, package.AllEntityDeclarations,
-            package.ReferencedPackages.Select(p => p.SymbolTree));
+            package.ReferencedPackages.Select(p => p.TestingSymbolTree));
         BuildFor(package.TestingCompilationUnits, packagesScope, testingDeclarationSymbols);
     }
 

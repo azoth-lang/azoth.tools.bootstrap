@@ -92,7 +92,7 @@ public class SemanticAnalyzer
         var packageBuilder = new ASTBuilder().BuildPackage(packageSyntax);
 
         // From this point forward, analysis focuses on executable declarations (i.e. invocables and field initializers)
-        var executableDeclarations = packageBuilder.AllDeclarations.OfType<IExecutableDeclaration>().ToFixedSet();
+        var executableDeclarations = packageBuilder.Declarations.OfType<IExecutableDeclaration>().ToFixedSet();
 
         ShadowChecker.Check(executableDeclarations, packageBuilder.Diagnostics);
 

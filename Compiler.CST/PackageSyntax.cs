@@ -59,8 +59,7 @@ public class PackageSyntax<TReference>
         AllEntityDeclarations = EntityDeclarations.Concat(TestingEntityDeclarations).ToFixedSet();
         References = references;
         SymbolTrees = BuiltIn.CreateSymbolForest(SymbolTree, ReferencedPackages.Select(p => p.SymbolTree));
-        // TODO use referenced test symbol trees
-        TestingSymbolTrees = BuiltIn.CreateSymbolForest(TestingSymbolTree, ReferencedPackages.Select(p => p.SymbolTree));
+        TestingSymbolTrees = BuiltIn.CreateSymbolForest(TestingSymbolTree, ReferencedPackages.Select(p => p.TestingSymbolTree));
         Diagnostics = new Diagnostics(CompilationUnits.SelectMany(cu => cu.Diagnostics));
     }
 

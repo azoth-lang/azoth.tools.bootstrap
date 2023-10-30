@@ -8,10 +8,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST;
 
 public class Package : IHasSymbolTree
 {
-    public FixedSet<IDeclaration> AllDeclarations { get; }
+    public FixedSet<IDeclaration> Declarations { get; }
     public FixedSet<INonMemberDeclaration> NonMemberDeclarations { get; }
     public PackageSymbol Symbol { get; }
     public FixedSymbolTree SymbolTree { get; }
+    public FixedSymbolTree TestingSymbolTree { get; }
     public FixedList<Diagnostic> Diagnostics { get; }
     public FixedSet<Package> References { get; }
     public IFunctionDeclaration? EntryPoint { get; }
@@ -19,17 +20,19 @@ public class Package : IHasSymbolTree
     public Package(
         FixedSet<INonMemberDeclaration> nonMemberDeclarations,
         FixedSymbolTree symbolTree,
+        FixedSymbolTree testingSymbolTree,
         FixedList<Diagnostic> diagnostics,
         FixedSet<Package> references,
         IFunctionDeclaration? entryPoint)
     {
-        AllDeclarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();
+        Declarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();
         NonMemberDeclarations = nonMemberDeclarations;
         Symbol = symbolTree.Package;
         SymbolTree = symbolTree;
         Diagnostics = diagnostics;
         References = references;
         EntryPoint = entryPoint;
+        TestingSymbolTree = testingSymbolTree;
     }
 
     private static IEnumerable<IDeclaration> GetAllDeclarations(

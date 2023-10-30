@@ -23,17 +23,28 @@ internal class ASTBuilder
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
     public PackageBuilder BuildPackage(PackageSyntax<Package> packageSyntax)
     {
-        var declarationDictionary = new Dictionary<Symbol, Lazy<INonMemberDeclaration>>();
-        foreach (var declaration in packageSyntax.EntityDeclarations.OfType<INonMemberEntityDeclarationSyntax>())
+        var declarations = BuildNonMemberDeclarations(packageSyntax.EntityDeclarations, Enumerable.Empty<INonMemberDeclaration>());
+        var testingDeclarations = BuildNonMemberDeclarations(packageSyntax.TestingEntityDeclarations, declarations);
+
+        var symbolTree = packageSyntax.SymbolTree.Build();
+        var testingSymbolTree = packageSyntax.TestingSymbolTree.Build();
+        return new PackageBuilder(declarations, testingDeclarations, symbolTree, testingSymbolTree,
+            packageSyntax.Diagnostics, packageSyntax.References);
+    }
+
+    private static FixedSet<INonMemberDeclaration> BuildNonMemberDeclarations(
+        FixedSet<IEntityDeclarationSyntax> entityDeclarations,
+        IEnumerable<INonMemberDeclaration> existingDeclarations)
+    {
+        var declarationDictionary = existingDeclarations.ToDictionary(d => d.Symbol, d => new Lazy<INonMemberDeclaration>(d));
+        foreach (var declaration in entityDeclarations.OfType<INonMemberEntityDeclarationSyntax>())
         {
             declarationDictionary.Add(declaration.Symbol.Result,
                 new(() => BuildNonMemberDeclaration(declaration, declarationDictionary)));
         }
 
         var declarations = declarationDictionary.Values.Select(l => l.Value).ToFixedSet();
-
-        var symbolTree = packageSyntax.SymbolTree.Build();
-        return new PackageBuilder(declarations, symbolTree, packageSyntax.Diagnostics, packageSyntax.References);
+        return declarations;
     }
 
     private static INonMemberDeclaration BuildNonMemberDeclaration(

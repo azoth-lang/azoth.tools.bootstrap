@@ -36,7 +36,7 @@ public class InterpreterProcess
     {
         if (package.EntryPoint is null) throw new ArgumentException("Package must have an entry point");
         this.package = package;
-        var allDeclarations = package.AllDeclarations.Concat(package.References.SelectMany(r => r.AllDeclarations))
+        var allDeclarations = package.Declarations.Concat(package.References.SelectMany(r => r.Declarations))
                                      .ToList();
         functions = allDeclarations
                     .OfType<IConcreteFunctionInvocableDeclaration>()
