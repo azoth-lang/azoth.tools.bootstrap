@@ -43,7 +43,7 @@ internal class ClassDeclarationSyntax : TypeDeclarationSyntax<IClassMemberDeclar
         Span = TextSpan.Covering(headerSpan, bodySpan);
     }
 
-    public void CreateDefaultConstructor(SymbolTreeBuilder symbolTree)
+    public void CreateDefaultConstructor(ISymbolTreeBuilder symbolTree)
     {
         if (Members.Any(m => m is IConstructorDeclarationSyntax))
             return;

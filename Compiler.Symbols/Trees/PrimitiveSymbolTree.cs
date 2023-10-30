@@ -24,7 +24,7 @@ public sealed class PrimitiveSymbolTree : ISymbolTree
 
     public bool Contains(Symbol symbol) => symbolChildren.ContainsKey(symbol);
 
-    public IEnumerable<Symbol> Children(Symbol symbol)
+    public IEnumerable<Symbol> GetChildrenOf(Symbol symbol)
     {
         if (symbol.Package is not null)
             throw new ArgumentException("Symbol must be primitive", nameof(symbol));

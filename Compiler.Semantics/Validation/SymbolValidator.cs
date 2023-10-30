@@ -17,6 +17,9 @@ public class SymbolValidator : SyntaxWalker
         this.symbolTree = symbolTree;
     }
 
+    /// <summary>
+    /// Validate that the entities have symbols and those symbols are in the symbol tree.
+    /// </summary>
     public void Validate(IEnumerable<IEntityDeclarationSyntax> entityDeclaration)
     {
         foreach (var declaration in entityDeclaration)

@@ -30,7 +30,7 @@ public class SymbolTreeBuilder : ISymbolTreeBuilder
     public bool Contains(Symbol symbol)
         => symbolChildren.ContainsKey(symbol);
 
-    public IEnumerable<Symbol> Children(Symbol symbol)
+    public IEnumerable<Symbol> GetChildrenOf(Symbol symbol)
     {
         RequireForPackage(symbol);
         return symbolChildren.TryGetValue(symbol, out var children)
@@ -41,12 +41,6 @@ public class SymbolTreeBuilder : ISymbolTreeBuilder
     {
         RequireForPackage(symbol);
         GetOrAdd(symbol);
-    }
-
-    public void Add(IEnumerable<Symbol> symbols)
-    {
-        foreach (var symbol in symbols)
-            Add(symbol);
     }
 
     public void AddInherited(TypeSymbol symbol, Symbol inheritedSymbol)

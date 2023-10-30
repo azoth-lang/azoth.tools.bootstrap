@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -18,45 +19,63 @@ public class LexicalScopesBuilder
         Justification = "OO")]
     public void BuildFor(PackageSyntax<Package> package)
     {
-        var declarationSymbols = GetAllNonMemberDeclarationSymbols(package);
-        var namespaces = BuildNamespaces(declarationSymbols);
         var packagesScope = BuildPackagesScope(package);
-        var globalScope = BuildGlobalScope(packagesScope, namespaces[NamespaceName.Global]);
 
-        foreach (var compilationUnit in package.CompilationUnits)
-        {
-            var builder = new LexicalScopesBuilderWalker(globalScope, namespaces);
-            builder.BuildFor(compilationUnit, globalScope);
-        }
+        var primitiveEntitySymbols = GetPrimitiveEntitySymbols().ToFixedList();
+        var declarationSymbols = GetAllNonMemberDeclarationSymbols(primitiveEntitySymbols,
+            package.SymbolTree, package.EntityDeclarations,
+            package.ReferencedPackages.Select(p => p.SymbolTree));
+        BuildFor(package.CompilationUnits, packagesScope, declarationSymbols);
+
+        var testingDeclarationSymbols = GetAllNonMemberDeclarationSymbols(primitiveEntitySymbols,
+            package.TestingSymbolTree, package.AllEntityDeclarations,
+            package.ReferencedPackages.Select(p => p.SymbolTree));
+        BuildFor(package.TestingCompilationUnits, packagesScope, testingDeclarationSymbols);
     }
 
-    private static FixedList<NonMemberSymbol> GetAllNonMemberDeclarationSymbols(PackageSyntax<Package> package)
+    private static void BuildFor(
+        FixedSet<ICompilationUnitSyntax> compilationUnits,
+        PackagesScope packagesScope,
+        FixedList<NonMemberSymbol> declarationSymbols)
     {
-        var primitiveSymbols = Primitive.SymbolTree.Symbols
-                                        .Where(s => s.ContainingSymbol is null)
-                                        .Select(NonMemberSymbol.ForExternalSymbol);
+        var namespaces = BuildNamespaces(declarationSymbols);
+        var globalScope = BuildGlobalScope(packagesScope, namespaces[NamespaceName.Global]);
 
+        var builder = new LexicalScopesBuilderWalker(globalScope, namespaces);
+        foreach (var compilationUnit in compilationUnits)
+            builder.BuildFor(compilationUnit, globalScope);
+    }
+
+    private static FixedList<NonMemberSymbol> GetAllNonMemberDeclarationSymbols(
+        IEnumerable<NonMemberSymbol> primitiveEntitySymbols,
+        ISymbolTree packageSymbolTree,
+        IEnumerable<IEntityDeclarationSyntax> packageEntityDeclarations,
+        IEnumerable<FixedSymbolTree> referencedSymbolTrees)
+    {
         // Namespaces in the package need to be created even if they are empty
-        var packageNamespaces = package.SymbolTree.Symbols
-                                       .OfType<NamespaceSymbol>()
-                                       .Select(NonMemberSymbol.ForPackageNamespace);
+        var packageNamespaces = packageSymbolTree.Symbols
+                                                 .OfType<NamespaceSymbol>()
+                                                 .Select(NonMemberSymbol.ForPackageNamespace);
 
-        var packageSymbols = package.EntityDeclarations
+        var packageSymbols = packageEntityDeclarations
                                     .OfType<INonMemberEntityDeclarationSyntax>()
                                     .Select(NonMemberSymbol.For);
 
         // TODO it might be better to go to the declarations and get their symbols (once that is implemented)
-        var referencedSymbols = package.ReferencedPackages
-                                       .SelectMany(p => p.SymbolTree.Symbols)
+        var referencedSymbols = referencedSymbolTrees
+                                       .SelectMany(t => t.Symbols)
                                        .Concat(Intrinsic.SymbolTree.Symbols)
                                        .Where(s => s.ContainingSymbol is NamespaceOrPackageSymbol)
                                        .Select(NonMemberSymbol.ForExternalSymbol);
-        return primitiveSymbols
+        return primitiveEntitySymbols
                .Concat(packageNamespaces)
                .Concat(packageSymbols)
                .Concat(referencedSymbols)
                .ToFixedList();
     }
+
+    private static IEnumerable<NonMemberSymbol> GetPrimitiveEntitySymbols()
+        => Primitive.SymbolTree.Symbols.Where(s => s.ContainingSymbol is null).Select(NonMemberSymbol.ForExternalSymbol);
 
     private static FixedDictionary<NamespaceName, Namespace> BuildNamespaces(
         FixedList<NonMemberSymbol> declarationSymbols)

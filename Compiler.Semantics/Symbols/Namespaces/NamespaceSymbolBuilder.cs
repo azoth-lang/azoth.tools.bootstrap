@@ -70,7 +70,7 @@ public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
     {
         foreach (var nsName in namespaces.Segments)
         {
-            var nsSymbol = treeBuilder.Children(containingSymbol)
+            var nsSymbol = treeBuilder.GetChildrenOf(containingSymbol)
                                       .OfType<NamespaceSymbol>()
                                       .SingleOrDefault(c => c.Name == nsName);
             if (nsSymbol is null)

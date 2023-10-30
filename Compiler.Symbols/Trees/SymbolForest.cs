@@ -33,11 +33,11 @@ public class SymbolForest
     public IEnumerable<Symbol> Children(Symbol symbol)
     {
         if (symbol.Package is null)
-            return PrimitiveSymbolTree.Children(symbol);
+            return PrimitiveSymbolTree.GetChildrenOf(symbol);
 
         if (!packageTrees.TryGetValue(symbol.Package, out var tree))
             throw new ArgumentException("Symbol must be for one of the packages in this tree", nameof(symbol));
 
-        return tree.Children(symbol);
+        return tree.GetChildrenOf(symbol);
     }
 }

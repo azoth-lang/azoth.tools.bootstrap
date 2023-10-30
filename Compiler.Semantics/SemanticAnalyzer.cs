@@ -62,7 +62,7 @@ public class SemanticAnalyzer
 
     private static PackageBuilder CheckSemantics(PackageSyntax<Package> packageSyntax)
     {
-        DeclarationNumberAssigner.AssignIn(packageSyntax.EntityDeclarations);
+        DeclarationNumberAssigner.AssignIn(packageSyntax.AllEntityDeclarations);
 
         // Resolve symbols for the entities
         EntitySymbolBuilder.BuildFor(packageSyntax);
@@ -83,9 +83,10 @@ public class SemanticAnalyzer
         // Validate various properties of the package before continuing. Helps find bugs in the
         // analysis up to this point and avoids confusing error messages from later stages.
         new SymbolValidator(packageSyntax.SymbolTree).Validate(packageSyntax.EntityDeclarations);
-        new TypeFulfillmentValidator().Validate(packageSyntax.EntityDeclarations);
-        new TypeKnownValidator().Validate(packageSyntax.EntityDeclarations);
-        new ExpressionSemanticsValidator().Validate(packageSyntax.EntityDeclarations);
+        new SymbolValidator(packageSyntax.TestingSymbolTree).Validate(packageSyntax.TestingEntityDeclarations);
+        new TypeFulfillmentValidator().Validate(packageSyntax.AllEntityDeclarations);
+        new TypeKnownValidator().Validate(packageSyntax.AllEntityDeclarations);
+        new ExpressionSemanticsValidator().Validate(packageSyntax.AllEntityDeclarations);
 #endif
 
         var packageBuilder = new ASTBuilder().BuildPackage(packageSyntax);

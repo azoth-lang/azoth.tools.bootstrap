@@ -31,13 +31,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 /// </summary>
 public class BasicAnalyzer
 {
-    private readonly SymbolTreeBuilder symbolTreeBuilder;
+    private readonly ISymbolTreeBuilder symbolTreeBuilder;
     private readonly SymbolForest symbolTrees;
     private readonly ObjectTypeSymbol? stringSymbol;
     private readonly Diagnostics diagnostics;
 
     private BasicAnalyzer(
-        SymbolTreeBuilder symbolTreeBuilder,
+        ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
         Diagnostics diagnostics)
@@ -52,6 +52,9 @@ public class BasicAnalyzer
     {
         var analyzer = new BasicAnalyzer(package.SymbolTree, package.SymbolTrees, stringSymbol, package.Diagnostics);
         analyzer.Resolve(package.EntityDeclarations);
+
+        analyzer = new BasicAnalyzer(package.TestingSymbolTree, package.TestingSymbolTrees, stringSymbol, package.Diagnostics);
+        analyzer.Resolve(package.TestingEntityDeclarations);
     }
 
     private void Resolve(FixedSet<IEntityDeclarationSyntax> entities)

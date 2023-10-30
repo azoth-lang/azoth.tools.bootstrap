@@ -24,7 +24,7 @@ public class FixedSymbolTree : ISymbolTree
 
     public bool Contains(Symbol symbol) => symbolChildren.ContainsKey(symbol);
 
-    public IEnumerable<Symbol> Children(Symbol symbol)
+    public IEnumerable<Symbol> GetChildrenOf(Symbol symbol)
     {
         if (symbol.Package != Package)
             throw new ArgumentException("Symbol must be for the package of this tree", nameof(symbol));

@@ -19,7 +19,7 @@ public class BindingFlags
         bool defaultValue)
     {
         var executableSymbol = declaration.Symbol;
-        var symbolMap = symbolTree.Children(executableSymbol).Cast<BindingSymbol>().Enumerate().ToFixedDictionary();
+        var symbolMap = symbolTree.GetChildrenOf(executableSymbol).Cast<BindingSymbol>().Enumerate().ToFixedDictionary();
         var flags = new BitArray(symbolMap.Count, defaultValue);
         return new(symbolMap, flags);
     }
@@ -30,9 +30,9 @@ public class BindingFlags
         bool defaultValue)
     {
         var executableSymbol = declaration.Symbol;
-        var variables = symbolTree.Children(executableSymbol).Cast<BindingSymbol>();
+        var variables = symbolTree.GetChildrenOf(executableSymbol).Cast<BindingSymbol>();
         var fields = executableSymbol.ContainingSymbol is ObjectTypeSymbol containingObjectTypeSymbol
-            ? symbolTree.Children(containingObjectTypeSymbol).OfType<FieldSymbol>()
+            ? symbolTree.GetChildrenOf(containingObjectTypeSymbol).OfType<FieldSymbol>()
             : Enumerable.Empty<FieldSymbol>();
         var symbolMap = variables.Concat(fields).Enumerate().ToFixedDictionary();
         var flags = new BitArray(symbolMap.Count, defaultValue);

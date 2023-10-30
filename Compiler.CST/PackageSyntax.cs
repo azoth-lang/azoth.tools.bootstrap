@@ -24,7 +24,7 @@ public class PackageSyntax<TReference>
     where TReference : IHasSymbolTree
 {
     public PackageSymbol Symbol { get; }
-    public SymbolTreeBuilder SymbolTree { get; }
+    public ISymbolTreeBuilder SymbolTree { get; }
     public ISymbolTreeBuilder TestingSymbolTree { get; }
     public SymbolForest SymbolTrees { get; }
     public SymbolForest TestingSymbolTrees { get; }
@@ -34,6 +34,10 @@ public class PackageSyntax<TReference>
     public FixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
     public FixedSet<IEntityDeclarationSyntax> EntityDeclarations { get; }
     public FixedSet<IEntityDeclarationSyntax> TestingEntityDeclarations { get; }
+    /// <summary>
+    /// All the entity declarations including both regular code and testing code.
+    /// </summary>
+    public FixedSet<IEntityDeclarationSyntax> AllEntityDeclarations { get; }
     public FixedDictionary<SimpleName, TReference> References { get; }
     public IEnumerable<TReference> ReferencedPackages => References.Values;
     public Diagnostics Diagnostics { get; }
@@ -45,12 +49,14 @@ public class PackageSyntax<TReference>
         FixedDictionary<SimpleName, TReference> references)
     {
         Symbol = new PackageSymbol(name);
-        SymbolTree = new SymbolTreeBuilder(Symbol);
-        TestingSymbolTree = new TestingSymbolTreeBuilder(SymbolTree);
+        var symbolTree = new SymbolTreeBuilder(Symbol);
+        SymbolTree = symbolTree;
+        TestingSymbolTree = new TestingSymbolTreeBuilder(symbolTree);
         CompilationUnits = compilationUnits;
         TestingCompilationUnits = testingCompilationUnits;
         EntityDeclarations = GetEntityDeclarations(CompilationUnits).ToFixedSet();
         TestingEntityDeclarations = GetEntityDeclarations(TestingCompilationUnits).ToFixedSet();
+        AllEntityDeclarations = EntityDeclarations.Concat(TestingEntityDeclarations).ToFixedSet();
         References = references;
         SymbolTrees = BuiltIn.CreateSymbolForest(SymbolTree, ReferencedPackages.Select(p => p.SymbolTree));
         // TODO use referenced test symbol trees

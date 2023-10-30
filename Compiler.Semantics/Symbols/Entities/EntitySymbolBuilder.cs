@@ -19,9 +19,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 public class EntitySymbolBuilder
 {
     private readonly Diagnostics diagnostics;
-    private readonly SymbolTreeBuilder symbolTree;
+    private readonly ISymbolTreeBuilder symbolTree;
 
-    private EntitySymbolBuilder(Diagnostics diagnostics, SymbolTreeBuilder symbolTree)
+    private EntitySymbolBuilder(Diagnostics diagnostics, ISymbolTreeBuilder symbolTree)
     {
         this.diagnostics = diagnostics;
         this.symbolTree = symbolTree;
@@ -31,6 +31,9 @@ public class EntitySymbolBuilder
     {
         var builder = new EntitySymbolBuilder(package.Diagnostics, package.SymbolTree);
         builder.Build(package.EntityDeclarations);
+
+        builder = new EntitySymbolBuilder(package.Diagnostics, package.TestingSymbolTree);
+        builder.Build(package.TestingEntityDeclarations);
     }
 
     private void Build(FixedSet<IEntityDeclarationSyntax> entities)

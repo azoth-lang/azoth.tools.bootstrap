@@ -32,7 +32,7 @@ public class BasicBodyAnalyzer
 {
     private readonly CodeFile file;
     private readonly InvocableSymbol containingSymbol;
-    private readonly SymbolTreeBuilder symbolTreeBuilder;
+    private readonly ISymbolTreeBuilder symbolTreeBuilder;
     private readonly SymbolForest symbolTrees;
     private readonly ObjectTypeSymbol? stringSymbol;
     private readonly Diagnostics diagnostics;
@@ -43,7 +43,7 @@ public class BasicBodyAnalyzer
 
     public BasicBodyAnalyzer(
         IFunctionDeclarationSyntax containingDeclaration,
-        SymbolTreeBuilder symbolTreeBuilder,
+        ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
         Diagnostics diagnostics,
@@ -53,7 +53,7 @@ public class BasicBodyAnalyzer
     { }
     public BasicBodyAnalyzer(
         IAssociatedFunctionDeclarationSyntax containingDeclaration,
-        SymbolTreeBuilder symbolTreeBuilder,
+        ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
         Diagnostics diagnostics,
@@ -64,7 +64,7 @@ public class BasicBodyAnalyzer
 
     public BasicBodyAnalyzer(
         IConstructorDeclarationSyntax containingDeclaration,
-        SymbolTreeBuilder symbolTreeBuilder,
+        ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
         Diagnostics diagnostics,
@@ -78,7 +78,7 @@ public class BasicBodyAnalyzer
 
     public BasicBodyAnalyzer(
         IConcreteMethodDeclarationSyntax containingDeclaration,
-        SymbolTreeBuilder symbolTreeBuilder,
+        ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
         Diagnostics diagnostics,
@@ -89,7 +89,7 @@ public class BasicBodyAnalyzer
 
     public BasicBodyAnalyzer(
         IFieldDeclarationSyntax containingDeclaration,
-        SymbolTreeBuilder symbolTreeBuilder,
+        ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
         Diagnostics diagnostics)
@@ -100,7 +100,7 @@ public class BasicBodyAnalyzer
     private BasicBodyAnalyzer(
         IEntityDeclarationSyntax containingDeclaration,
         IEnumerable<BindingSymbol> parameterSymbols,
-        SymbolTreeBuilder symbolTreeBuilder,
+        ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
         Diagnostics diagnostics,
@@ -1441,7 +1441,7 @@ public class BasicBodyAnalyzer
                 throw ExhaustiveMatch.Failed(containingSymbol);
             case MethodSymbol _:
             case ConstructorSymbol _:
-                var symbols = symbolTreeBuilder.Children(containingSymbol).OfType<SelfParameterSymbol>().ToList();
+                var symbols = symbolTreeBuilder.GetChildrenOf(containingSymbol).OfType<SelfParameterSymbol>().ToList();
                 switch (symbols.Count)
                 {
                     case 0:

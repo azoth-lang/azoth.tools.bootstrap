@@ -11,5 +11,5 @@ public interface ISymbolTree
     PackageSymbol? Package { get; }
     IEnumerable<Symbol> Symbols { get; }
     bool Contains(Symbol symbol);
-    IEnumerable<Symbol> Children(Symbol symbol);
+    IEnumerable<Symbol> GetChildrenOf(Symbol symbol);
 }

@@ -12,17 +12,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 /// </summary>
 internal class TypeSymbolInheritor
 {
-    private readonly SymbolTreeBuilder symbolTree;
+    private readonly ISymbolTreeBuilder symbolTree;
     private readonly IDictionary<ITypeDeclarationSyntax, bool> processed;
-    private readonly FixedDictionary<TypeSymbol, ITypeDeclarationSyntax> typeDeclarations;
+    private readonly FixedDictionary<TypeSymbol, ITypeDeclarationSyntax> typeDeclarationsInPackage;
 
     public TypeSymbolInheritor(
-        SymbolTreeBuilder symbolTree,
+        ISymbolTreeBuilder symbolTree,
         IEnumerable<ITypeDeclarationSyntax> typeDeclarations)
     {
         this.symbolTree = symbolTree;
-        this.typeDeclarations = typeDeclarations.ToFixedDictionary(t => (TypeSymbol)t.Symbol.Result);
-        processed = this.typeDeclarations.Values.ToDictionary(t => t, _ => false);
+        typeDeclarationsInPackage = typeDeclarations.ToFixedDictionary(t => (TypeSymbol)t.Symbol.Result);
+        processed = typeDeclarationsInPackage.Values.ToDictionary(t => t, _ => false);
     }
 
     public void AddInheritedSymbols()
@@ -49,17 +49,19 @@ internal class TypeSymbolInheritor
     private void AddInheritedSymbols(ObjectTypeSymbol typeSymbol, ITypeNameSyntax supertypeName)
     {
         var supertypeSymbol = supertypeName.ReferencedSymbol.Result;
-        if (supertypeSymbol is not null && typeDeclarations.TryGetValue(supertypeSymbol, out var supertypeDeclaration))
-        {
+        if (supertypeSymbol is null)
+            return;
+        // Make sure super types in the same package have already had their symbols inherited
+        if (typeDeclarationsInPackage.TryGetValue(supertypeSymbol, out var supertypeDeclaration))
             AddInheritedSymbols(supertypeDeclaration);
-            AddInheritedSymbols(typeSymbol, supertypeSymbol);
-        }
+
+        AddInheritedSymbols(typeSymbol, supertypeSymbol);
     }
 
     private void AddInheritedSymbols(ObjectTypeSymbol typeSymbol, TypeSymbol baseSymbol)
     {
-        var existingMembers = symbolTree.Children(typeSymbol).ToFixedSet();
-        foreach (var symbol in symbolTree.Children(baseSymbol))
+        var existingMembers = symbolTree.GetChildrenOf(typeSymbol).ToFixedSet();
+        foreach (var symbol in symbolTree.GetChildrenOf(baseSymbol))
         {
             if (symbol is ConstructorSymbol)
                 continue;
