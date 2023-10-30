@@ -17,7 +17,6 @@ internal class PackageBuilder
     public FixedSymbolTree TestingSymbolTree { get; }
     public Diagnostics Diagnostics { get; }
     public FixedDictionary<SimpleName, Package> References { get; }
-    public IEnumerable<Package> ReferencedPackages => References.Values;
     public IFunctionDeclaration? EntryPoint { get; set; }
 
     public PackageBuilder(
@@ -45,14 +44,14 @@ internal class PackageBuilder
         while (declarations.TryDequeue(out var declaration))
         {
             yield return declaration;
-            if (declaration is IClassDeclaration syn)
+            if (declaration is ITypeDeclaration syn)
                 declarations.EnqueueRange(syn.Members);
         }
     }
 
     public Package Build()
     {
-        return new Package(NonMemberDeclarations, SymbolTree, TestingSymbolTree,
+        return new Package(NonMemberDeclarations, NonMemberTestingDeclarations, SymbolTree, TestingSymbolTree,
             Diagnostics.ToFixedList(), References.Values.ToFixedSet(),
             EntryPoint);
     }

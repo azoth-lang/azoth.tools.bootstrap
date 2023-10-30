@@ -9,7 +9,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST;
 public class Package : IHasSymbolTree
 {
     public FixedSet<IDeclaration> Declarations { get; }
+    public FixedSet<IDeclaration> TestingDeclarations { get; }
     public FixedSet<INonMemberDeclaration> NonMemberDeclarations { get; }
+    public FixedSet<INonMemberDeclaration> TestingNonMemberDeclarations { get; }
     public PackageSymbol Symbol { get; }
     public FixedSymbolTree SymbolTree { get; }
     public FixedSymbolTree TestingSymbolTree { get; }
@@ -19,6 +21,7 @@ public class Package : IHasSymbolTree
 
     public Package(
         FixedSet<INonMemberDeclaration> nonMemberDeclarations,
+        FixedSet<INonMemberDeclaration> testingNonMemberDeclarations,
         FixedSymbolTree symbolTree,
         FixedSymbolTree testingSymbolTree,
         FixedList<Diagnostic> diagnostics,
@@ -26,13 +29,15 @@ public class Package : IHasSymbolTree
         IFunctionDeclaration? entryPoint)
     {
         Declarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();
+        TestingDeclarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();
         NonMemberDeclarations = nonMemberDeclarations;
+        TestingNonMemberDeclarations = testingNonMemberDeclarations;
         Symbol = symbolTree.Package;
         SymbolTree = symbolTree;
+        TestingSymbolTree = testingSymbolTree;
         Diagnostics = diagnostics;
         References = references;
         EntryPoint = entryPoint;
-        TestingSymbolTree = testingSymbolTree;
     }
 
     private static IEnumerable<IDeclaration> GetAllDeclarations(
@@ -43,7 +48,7 @@ public class Package : IHasSymbolTree
         while (declarations.TryDequeue(out var declaration))
         {
             yield return declaration;
-            if (declaration is IClassDeclaration syn)
+            if (declaration is ITypeDeclaration syn)
                 declarations.EnqueueRange(syn.Members);
         }
     }

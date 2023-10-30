@@ -14,6 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST;
     typeof(IElseClause),
     typeof(IBinding),
     typeof(IDeclaration),
+    typeof(IAttribute),
     typeof(IParameter),
     typeof(IStatement),
     typeof(IPattern),
@@ -140,6 +141,7 @@ public partial interface ITraitDeclaration : ITypeDeclaration
 
 public partial interface IFunctionDeclaration : INonMemberDeclaration, IConcreteFunctionInvocableDeclaration
 {
+    FixedList<IAttribute> Attributes { get; }
     new FunctionSymbol Symbol { get; }
 }
 
@@ -203,6 +205,11 @@ public partial interface IFieldDeclaration : IClassMemberDeclaration, IExecutabl
 public partial interface IAssociatedFunctionDeclaration : IClassMemberDeclaration, ITraitMemberDeclaration, IConcreteFunctionInvocableDeclaration
 {
     new FunctionSymbol Symbol { get; }
+}
+
+public partial interface IAttribute : IAbstractSyntax
+{
+    TypeSymbol ReferencedSymbol { get; }
 }
 
 [Closed(

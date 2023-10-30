@@ -11,6 +11,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using Attribute = Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree.Attribute;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST;
 
@@ -23,7 +24,7 @@ internal class ASTBuilder
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
     public PackageBuilder BuildPackage(PackageSyntax<Package> packageSyntax)
     {
-        var declarations = BuildNonMemberDeclarations(packageSyntax.EntityDeclarations, Enumerable.Empty<INonMemberDeclaration>());
+        var declarations = BuildNonMemberDeclarations(packageSyntax.EntityDeclarations, FixedSet<INonMemberDeclaration>.Empty);
         var testingDeclarations = BuildNonMemberDeclarations(packageSyntax.TestingEntityDeclarations, declarations);
 
         var symbolTree = packageSyntax.SymbolTree.Build();
@@ -34,7 +35,7 @@ internal class ASTBuilder
 
     private static FixedSet<INonMemberDeclaration> BuildNonMemberDeclarations(
         FixedSet<IEntityDeclarationSyntax> entityDeclarations,
-        IEnumerable<INonMemberDeclaration> existingDeclarations)
+        FixedSet<INonMemberDeclaration> existingDeclarations)
     {
         var declarationDictionary = existingDeclarations.ToDictionary(d => d.Symbol, d => new Lazy<INonMemberDeclaration>(d));
         foreach (var declaration in entityDeclarations.OfType<INonMemberEntityDeclarationSyntax>())
@@ -43,7 +44,7 @@ internal class ASTBuilder
                 new(() => BuildNonMemberDeclaration(declaration, declarationDictionary)));
         }
 
-        var declarations = declarationDictionary.Values.Select(l => l.Value).ToFixedSet();
+        var declarations = declarationDictionary.Values.Select(l => l.Value).Except(existingDeclarations).ToFixedSet();
         return declarations;
     }
 
@@ -174,11 +175,21 @@ internal class ASTBuilder
 
     private static IFunctionDeclaration BuildFunction(IFunctionDeclarationSyntax syn)
     {
+        var attributes = BuildAttributes(syn.Attributes);
         var symbol = syn.Symbol.Result;
         var nameSpan = syn.NameSpan;
         var parameters = syn.Parameters.Select(BuildParameter).ToFixedList();
         var body = BuildBody(syn.Body);
-        return new FunctionDeclaration(syn.File, syn.Span, symbol, nameSpan, parameters, body);
+        return new FunctionDeclaration(syn.File, syn.Span, attributes, symbol, nameSpan, parameters, body);
+    }
+
+    private static FixedList<IAttribute> BuildAttributes(IEnumerable<IAttributeSyntax> syn)
+        => syn.Select(BuildAttribute).ToFixedList();
+
+    private static IAttribute BuildAttribute(IAttributeSyntax syn)
+    {
+        var referencedSymbol = syn.TypeName.ReferencedSymbol.Result.Assigned();
+        return new Attribute(syn.Span, referencedSymbol);
     }
 
     private static IConstructorParameter BuildParameter(IConstructorParameterSyntax parameter)
@@ -207,7 +218,7 @@ internal class ASTBuilder
 
     private static IFieldParameter BuildParameter(IFieldParameterSyntax syn)
     {
-        var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
+        var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
         var defaultValue = BuildExpression(syn.DefaultValue);
         return new FieldParameter(syn.Span, referencedSymbol, defaultValue);
     }
@@ -356,7 +367,7 @@ internal class ASTBuilder
 
     private static IAssignmentExpression BuildAssignmentExpression(IAssignmentExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var leftOperand = BuildAssignableExpression(syn.LeftOperand);
         var @operator = syn.Operator;
@@ -376,7 +387,7 @@ internal class ASTBuilder
 
     private static IBinaryOperatorExpression BuildBinaryOperatorExpression(IBinaryOperatorExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var leftOperand = BuildExpression(syn.LeftOperand);
         var @operator = syn.Operator;
@@ -386,7 +397,7 @@ internal class ASTBuilder
 
     private static IBlockExpression BuildBlockExpression(IBlockExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var statements = syn.Statements.Select(BuildStatement).ToFixedList();
         return new BlockExpression(syn.Span, type, semantics, statements);
@@ -394,7 +405,7 @@ internal class ASTBuilder
 
     private static IBoolLiteralExpression BuildBoolLiteralExpression(IBoolLiteralExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var value = syn.Value;
         return new BoolLiteralExpression(syn.Span, type, semantics, value);
@@ -402,7 +413,7 @@ internal class ASTBuilder
 
     private static IBreakExpression BuildBreakExpression(IBreakExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var value = BuildExpression(syn.Value);
         return new BreakExpression(syn.Span, type, semantics, value);
@@ -410,17 +421,17 @@ internal class ASTBuilder
 
     private static IFieldAccessExpression BuildFieldAccessExpression(IQualifiedNameExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var context = BuildExpression(syn.Context);
         var accessOperator = syn.AccessOperator;
-        var referencedSymbol = (FieldSymbol?)syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
+        var referencedSymbol = (FieldSymbol)syn.ReferencedSymbol.Result.Assigned();
         return new FieldAccessExpression(syn.Span, type, semantics, context, accessOperator, referencedSymbol);
     }
 
     private static IForeachExpression BuildForeachExpression(IForeachExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var symbol = syn.Symbol.Result;
         var inExpression = BuildExpression(syn.InExpression);
@@ -431,9 +442,9 @@ internal class ASTBuilder
     private static IInvocationExpression BuildInvocationExpression(
         IInvocationExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
-        var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
+        var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
         var arguments = BuildExpressions(syn.Arguments);
         switch (referencedSymbol)
         {
@@ -452,7 +463,7 @@ internal class ASTBuilder
 
     private static IIfExpression BuildIfExpression(IIfExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var condition = BuildExpression(syn.Condition);
         var thenBlock = BuildBlockOrResult(syn.ThenBlock);
@@ -514,7 +525,7 @@ internal class ASTBuilder
 
     private static IIntegerLiteralExpression BuildIntegerLiteralExpression(IIntegerLiteralExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var value = syn.Value;
         return new IntegerLiteralExpression(syn.Span, type, semantics, value);
@@ -522,14 +533,14 @@ internal class ASTBuilder
 
     private static INoneLiteralExpression BuildNoneLiteralExpression(INoneLiteralExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         return new NoneLiteralExpression(syn.Span, type, semantics);
     }
 
     private static IStringLiteralExpression BuildStringLiteralExpression(IStringLiteralExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var value = syn.Value;
         return new StringLiteralExpression(syn.Span, type, semantics, value);
@@ -537,7 +548,7 @@ internal class ASTBuilder
 
     private static ILoopExpression BuildLoopExpression(ILoopExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var block = BuildBlockExpression(syn.Block);
         return new LoopExpression(syn.Span, type, semantics, block);
@@ -545,9 +556,9 @@ internal class ASTBuilder
 
     private static IMoveExpression BuildMoveExpression(IMoveExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
-        var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
+        var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
         var referent = BuildExpression(syn.Referent);
         return new MoveExpression(syn.Span, type, semantics, referencedSymbol, referent);
     }
@@ -563,31 +574,31 @@ internal class ASTBuilder
 
     private static INameExpression BuildNameExpression(ISimpleNameExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
-        var referencedSymbol = (NamedBindingSymbol?)syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
+        var referencedSymbol = (NamedBindingSymbol)syn.ReferencedSymbol.Result.Assigned();
         return new NameExpression(syn.Span, type, semantics, referencedSymbol);
     }
 
     private static INewObjectExpression BuildNewObjectExpression(INewObjectExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
-        var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
+        var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
         var arguments = BuildExpressions(syn.Arguments);
         return new NewObjectExpression(syn.Span, type, semantics, referencedSymbol, arguments);
     }
 
     private static INextExpression BuildNextExpression(INextExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         return new NextExpression(syn.Span, type, semantics);
     }
 
     private static IReturnExpression BuildReturnExpression(IReturnExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var value = BuildExpression(syn.Value);
         return new ReturnExpression(syn.Span, type, semantics, value);
@@ -595,16 +606,16 @@ internal class ASTBuilder
 
     private static ISelfExpression BuildSelfExpression(ISelfExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
-        var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
+        var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
         var isImplicit = syn.IsImplicit;
         return new SelfExpression(syn.Span, type, semantics, referencedSymbol, isImplicit);
     }
 
     private static IUnaryOperatorExpression BuildUnaryOperatorExpression(IUnaryOperatorExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var fixity = syn.Fixity;
         var @operator = syn.Operator;
@@ -614,7 +625,7 @@ internal class ASTBuilder
 
     private static IUnsafeExpression BuildUnsafeExpression(IUnsafeExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var expression = BuildExpression(syn.Expression);
         return new UnsafeExpression(syn.Span, type, semantics, expression);
@@ -622,7 +633,7 @@ internal class ASTBuilder
 
     private static IWhileExpression BuildWhileExpression(IWhileExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var condition = BuildExpression(syn.Condition);
         var block = BuildBlockExpression(syn.Block);
@@ -631,7 +642,7 @@ internal class ASTBuilder
 
     private static IExpression BuildIdExpression(IIdExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var referent = BuildExpression(syn.Referent);
         return new IdExpression(syn.Span, type, semantics, referent);
@@ -639,9 +650,9 @@ internal class ASTBuilder
 
     private static IFreezeExpression BuildFreezeExpression(IFreezeExpressionSyntax syn)
     {
-        var type = syn.DataType ?? throw new InvalidOperationException();
+        var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
-        var referencedSymbol = syn.ReferencedSymbol.Result ?? throw new InvalidOperationException();
+        var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
         var referent = BuildExpression(syn.Referent);
         return new FreezeExpression(syn.Span, type, semantics, referencedSymbol, referent);
     }

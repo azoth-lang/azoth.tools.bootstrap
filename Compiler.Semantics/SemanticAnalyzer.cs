@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.AST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
@@ -17,6 +18,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.DefiniteAssignment;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Moves;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Shadowing;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
@@ -91,24 +93,34 @@ public class SemanticAnalyzer
 
         var packageBuilder = new ASTBuilder().BuildPackage(packageSyntax);
 
+        CheckDataFlow(packageBuilder.Declarations, packageBuilder.SymbolTree, packageBuilder.Diagnostics);
+        CheckDataFlow(packageBuilder.TestingDeclarations, packageBuilder.TestingSymbolTree, packageBuilder.Diagnostics);
+
+        return packageBuilder;
+    }
+
+    private static void CheckDataFlow(FixedSet<IDeclaration> declarations, FixedSymbolTree symbolTree, Diagnostics diagnostics)
+    {
         // From this point forward, analysis focuses on executable declarations (i.e. invocables and field initializers)
-        var executableDeclarations = packageBuilder.Declarations.OfType<IExecutableDeclaration>().ToFixedSet();
+        var executableDeclarations = declarations.OfType<IExecutableDeclaration>().ToFixedSet();
 
-        ShadowChecker.Check(executableDeclarations, packageBuilder.Diagnostics);
+        ShadowChecker.Check(executableDeclarations, diagnostics);
 
-        DataFlowAnalysis.Check(DefiniteAssignmentAnalyzer.Instance, executableDeclarations, packageBuilder.SymbolTree, packageBuilder.Diagnostics);
+        DataFlowAnalysis.Check(DefiniteAssignmentAnalyzer.Instance, executableDeclarations, symbolTree,
+            diagnostics);
 
-        DataFlowAnalysis.Check(BindingMutabilityAnalyzer.Instance, executableDeclarations, packageBuilder.SymbolTree, packageBuilder.Diagnostics);
+        DataFlowAnalysis.Check(BindingMutabilityAnalyzer.Instance, executableDeclarations, symbolTree,
+            diagnostics);
 
-        DataFlowAnalysis.Check(UseOfMovedValueAnalyzer.Instance, executableDeclarations, packageBuilder.SymbolTree, packageBuilder.Diagnostics);
+        DataFlowAnalysis.Check(UseOfMovedValueAnalyzer.Instance, executableDeclarations, symbolTree,
+            diagnostics);
 
         // TODO use DataFlowAnalysis to check for unused variables and report use of variables starting with `_`
 
         // Compute variable liveness needed by reachability analyzer
-        DataFlowAnalysis.Check(LivenessAnalyzer.Instance, executableDeclarations, packageBuilder.SymbolTree, packageBuilder.Diagnostics);
+        DataFlowAnalysis.Check(LivenessAnalyzer.Instance, executableDeclarations, symbolTree,
+            diagnostics);
 
         // TODO remove live variables if SaveLivenessAnalysis is false
-
-        return packageBuilder;
     }
 }

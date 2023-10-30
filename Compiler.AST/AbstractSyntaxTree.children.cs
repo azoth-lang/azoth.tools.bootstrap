@@ -30,6 +30,8 @@ public static class IAbstractSyntaxExtensions
                     yield return child;
                 yield break;
             case IFunctionDeclaration n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 foreach (var child in n.Parameters)
                     yield return child;
                 yield return n.Body;
@@ -57,6 +59,8 @@ public static class IAbstractSyntaxExtensions
                 foreach (var child in n.Parameters)
                     yield return child;
                 yield return n.Body;
+                yield break;
+            case IAttribute n:
                 yield break;
             case INamedParameter n:
                 if (n.DefaultValue is not null)

@@ -8,6 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal class FunctionDeclaration : InvocableDeclaration, IFunctionDeclaration
 {
+    public FixedList<IAttribute> Attributes { get; }
     public new FunctionSymbol Symbol { get; }
     public new FixedList<INamedParameter> Parameters { get; }
     public IBody Body { get; }
@@ -15,6 +16,7 @@ internal class FunctionDeclaration : InvocableDeclaration, IFunctionDeclaration
     public FunctionDeclaration(
         CodeFile file,
         TextSpan span,
+        FixedList<IAttribute> attributes,
         FunctionSymbol symbol,
         TextSpan nameSpan,
         FixedList<INamedParameter> parameters,
@@ -24,6 +26,7 @@ internal class FunctionDeclaration : InvocableDeclaration, IFunctionDeclaration
         Symbol = symbol;
         Parameters = parameters;
         Body = body;
+        Attributes = attributes;
     }
 
     public override string ToString()

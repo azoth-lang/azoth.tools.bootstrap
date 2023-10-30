@@ -35,7 +35,7 @@ NonMemberDeclaration: Declaration;
 TypeDeclaration: NonMemberDeclaration = Symbol:'ObjectTypeSymbol' Supertypes:TypeDeclaration* Members:MemberDeclaration*;
 ClassDeclaration: TypeDeclaration = BaseClass:ClassDeclaration? Supertypes:TypeDeclaration* Members:ClassMemberDeclaration* DefaultConstructorSymbol:'ConstructorSymbol'?;
 TraitDeclaration: TypeDeclaration = Supertypes:TypeDeclaration* Members:TraitMemberDeclaration*;
-FunctionDeclaration: NonMemberDeclaration, ConcreteFunctionInvocableDeclaration = Symbol:'FunctionSymbol' Parameters:NamedParameter* Body;
+FunctionDeclaration: NonMemberDeclaration, ConcreteFunctionInvocableDeclaration = Attributes:Attribute* Symbol:'FunctionSymbol' Parameters:NamedParameter* Body;
 
 // ---------- Member Declarations
 // Note: by declaring the DeclaringType property type with quotes, it avoids the system assuming it must represent a child node
@@ -48,6 +48,9 @@ ConcreteMethodDeclaration: MethodDeclaration, ConcreteInvocableDeclaration = Sym
 ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclaration' Symbol:'ConstructorSymbol' SelfParameter Parameters:ConstructorParameter* Body;
 FieldDeclaration: ClassMemberDeclaration, ExecutableDeclaration, Binding = DeclaringType:'IClassDeclaration' Symbol:'FieldSymbol';
 AssociatedFunctionDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, ConcreteFunctionInvocableDeclaration = Symbol:'FunctionSymbol' Parameters:NamedParameter* Body;
+
+// ---------- Attributes
+Attribute = ReferencedSymbol:'TypeSymbol';
 
 // ---------- Parameters --------------
 Parameter = Unused:'bool';

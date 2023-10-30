@@ -118,7 +118,7 @@ internal class ProjectSet : IEnumerable<Project>
             return;
 
         var interpreter = new AzothTreeInterpreter();
-        var process = interpreter.Execute(entryPackage!);
+        var process = interpreter.Execute(entryPackage);
         await process.WaitForExitAsync();
         var stdout = await process.StandardOutput.ReadToEndAsync();
         Console.WriteLine(stdout);
@@ -135,7 +135,7 @@ internal class ProjectSet : IEnumerable<Project>
             return;
 
         var interpreter = new AzothTreeInterpreter();
-        var process = interpreter.Execute(testPackage!);
+        var process = interpreter.ExecuteTests(testPackage);
         await process.WaitForExitAsync();
         var stdout = await process.StandardOutput.ReadToEndAsync();
         Console.WriteLine(stdout);

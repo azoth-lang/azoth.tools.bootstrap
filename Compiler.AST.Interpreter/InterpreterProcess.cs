@@ -19,6 +19,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 
 public class InterpreterProcess
 {
+    public static InterpreterProcess StartEntryPoint(Package package)
+    {
+        if (package.EntryPoint is null)
+            throw new ArgumentException("Cannot execute package without an entry point");
+
+        return new InterpreterProcess(package, runTests: false);
+    }
+
+    public static InterpreterProcess StartTests(Package package)
+        => new(package, runTests: true);
+
     private readonly Package package;
     private readonly Task executionTask;
     private readonly FixedDictionary<FunctionSymbol, IConcreteFunctionInvocableDeclaration> functions;
@@ -27,14 +38,13 @@ public class InterpreterProcess
     private readonly IClassDeclaration stringClass;
     private readonly IConstructorDeclaration stringConstructor;
     private byte? exitCode;
-    private readonly MemoryStream standardOutput;
+    private readonly MemoryStream standardOutput = new();
     private readonly TextWriter standardOutputWriter;
     private readonly MethodSignatureCache methodSignatures = new();
     private readonly ConcurrentDictionary<IClassDeclaration, VTable> vTables = new();
 
-    public InterpreterProcess(Package package)
+    private InterpreterProcess(Package package, bool runTests)
     {
-        if (package.EntryPoint is null) throw new ArgumentException("Package must have an entry point");
         this.package = package;
         var allDeclarations = package.Declarations.Concat(package.References.SelectMany(r => r.Declarations))
                                      .ToList();
@@ -55,11 +65,13 @@ public class InterpreterProcess
                                .OfType<IConstructorDeclaration>()
                                .Select(c => (c.Symbol, (IConstructorDeclaration?)c)))
                        .ToFixedDictionary();
-        executionTask = Task.Run(CallEntryPointAsync);
 
-        standardOutput = new MemoryStream();
+        // TODO pointing both of these to a memory stream is probably wrong. Need something that acts like a pipe.
         standardOutputWriter = new StreamWriter(standardOutput, Encoding.UTF8, leaveOpen: true);
         StandardOutput = new StreamReader(standardOutput, Encoding.UTF8);
+
+
+        executionTask = runTests ? Task.Run(RunTestsAsync) : Task.Run(CallEntryPointAsync);
     }
 
     private async Task CallEntryPointAsync()
@@ -87,6 +99,37 @@ public class InterpreterProcess
             await standardOutputWriter.DisposeAsync().ConfigureAwait(false);
             standardOutput.Position = 0;
         }
+    }
+
+    private Task RunTestsAsync()
+    {
+        _ = 42;
+        throw new NotImplementedException();
+        //try
+        //{
+        //    package.TestingDeclarations.OfType<IFunctionDeclaration>().Where()
+
+        //    var entryPoint = package.EntryPoint!;
+        //    var arguments = new List<AzothValue>();
+        //    foreach (var parameterType in entryPoint.Symbol.ParameterTypes)
+        //        arguments.Add(await ConstructMainParameterAsync(parameterType.Type));
+
+        //    var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
+        //    // Flush any buffered output
+        //    await standardOutputWriter.FlushAsync().ConfigureAwait(false);
+        //    var returnType = entryPoint.Symbol.ReturnType;
+        //    if (returnType == ReturnType.Void)
+        //        exitCode = 0;
+        //    else if (returnType.Type == DataType.Byte)
+        //        exitCode = returnValue.ByteValue;
+        //    else
+        //        throw new InvalidOperationException($"Main function cannot have return type {returnType.ToILString()}");
+        //}
+        //finally
+        //{
+        //    await standardOutputWriter.DisposeAsync().ConfigureAwait(false);
+        //    standardOutput.Position = 0;
+        //}
     }
 
     private async Task<AzothValue> ConstructMainParameterAsync(DataType parameterType)
