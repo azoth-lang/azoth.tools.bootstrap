@@ -23,7 +23,7 @@ public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
     public static void BuildNamespaceSymbols(PackageSyntax<Package> package)
     {
         BuildNamespaceSymbols(package, package.SymbolTree, package.CompilationUnits);
-        BuildNamespaceSymbols(package, package.TestSymbolTree, package.TestCompilationUnits);
+        BuildNamespaceSymbols(package, package.TestingSymbolTree, package.TestingCompilationUnits);
     }
 
     private static void BuildNamespaceSymbols(

@@ -31,21 +31,21 @@ public class AzothCompiler
     public Task<Package> CompilePackageAsync(
         SimpleName name,
         IEnumerable<ICodeFileSource> files,
-        IEnumerable<ICodeFileSource> testFileSources,
+        IEnumerable<ICodeFileSource> testingFileSources,
         FixedDictionary<SimpleName, Task<Package>> referenceTasks)
-        => CompilePackageAsync(name, files, testFileSources, referenceTasks, TaskScheduler.Default);
+        => CompilePackageAsync(name, files, testingFileSources, referenceTasks, TaskScheduler.Default);
 
     public async Task<Package> CompilePackageAsync(
         SimpleName name,
         IEnumerable<ICodeFileSource> fileSources,
-        IEnumerable<ICodeFileSource> testFileSources,
+        IEnumerable<ICodeFileSource> testingFileSources,
         FixedDictionary<SimpleName, Task<Package>> referenceTasks,
         TaskScheduler taskScheduler)
     {
         var lexer = new Lexer();
         var parser = new CompilationUnitParser();
         var compilationUnits = await ParseFilesAsync(fileSources);
-        var testCompilationUnits = await ParseFilesAsync(testFileSources);
+        var testingCompilationUnits = await ParseFilesAsync(testingFileSources);
         var referencePairs = await Task
                                    .WhenAll(referenceTasks.Select(async kv =>
                                        (alias: kv.Key, package: await kv.Value.ConfigureAwait(false))))
@@ -53,7 +53,7 @@ public class AzothCompiler
         var references = referencePairs.ToFixedDictionary(r => r.alias, r => r.package);
 
         // TODO add the references to the package syntax
-        var packageSyntax = new PackageSyntax<Package>(name, compilationUnits, testCompilationUnits, references);
+        var packageSyntax = new PackageSyntax<Package>(name, compilationUnits, testingCompilationUnits, references);
 
         var analyzer = new SemanticAnalyzer()
         {
@@ -89,21 +89,21 @@ public class AzothCompiler
     public Package CompilePackage(
         string name,
         IEnumerable<ICodeFileSource> fileSources,
-        IEnumerable<ICodeFileSource> testFileSources,
+        IEnumerable<ICodeFileSource> testingFileSources,
         FixedDictionary<SimpleName, Package> references)
-        => CompilePackage(name, fileSources.Select(s => s.Load()), testFileSources.Select(s => s.Load()), references);
+        => CompilePackage(name, fileSources.Select(s => s.Load()), testingFileSources.Select(s => s.Load()), references);
 
     public Package CompilePackage(
         string name,
         IEnumerable<CodeFile> files,
-        IEnumerable<CodeFile> testFiles,
+        IEnumerable<CodeFile> testingFiles,
         FixedDictionary<SimpleName, Package> references)
     {
         var lexer = new Lexer();
         var parser = new CompilationUnitParser();
         var compilationUnits = ParseFiles(files);
-        var testCompilationUnits = ParseFiles(testFiles);
-        var packageSyntax = new PackageSyntax<Package>(name, compilationUnits, testCompilationUnits, references);
+        var testingCompilationUnits = ParseFiles(testingFiles);
+        var packageSyntax = new PackageSyntax<Package>(name, compilationUnits, testingCompilationUnits, references);
 
         var analyzer = new SemanticAnalyzer()
         {

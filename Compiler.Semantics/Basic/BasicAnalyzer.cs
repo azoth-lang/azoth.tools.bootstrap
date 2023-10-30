@@ -51,7 +51,7 @@ public class BasicAnalyzer
     public static void Check(PackageSyntax<Package> package, ObjectTypeSymbol? stringSymbol)
     {
         var analyzer = new BasicAnalyzer(package.SymbolTree, package.SymbolTrees, stringSymbol, package.Diagnostics);
-        analyzer.Resolve(package.AllEntityDeclarations);
+        analyzer.Resolve(package.EntityDeclarations);
     }
 
     private void Resolve(FixedSet<IEntityDeclarationSyntax> entities)

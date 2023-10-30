@@ -14,8 +14,8 @@ public sealed class CodePath : CodeReference, ICodeFileSource
     {
     }
 
-    public CodePath(string path, FixedList<string> @namespace, bool isTest)
-        : base(@namespace, isTest)
+    public CodePath(string path, FixedList<string> @namespace, bool isTesting)
+        : base(@namespace, isTesting)
     {
         Requires.That(nameof(path), System.IO.Path.IsPathFullyQualified(path), "must be fully qualified");
         Path = path;

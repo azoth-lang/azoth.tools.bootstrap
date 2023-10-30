@@ -30,7 +30,7 @@ public class EntitySymbolBuilder
     public static void BuildFor(PackageSyntax<Package> package)
     {
         var builder = new EntitySymbolBuilder(package.Diagnostics, package.SymbolTree);
-        builder.Build(package.AllEntityDeclarations);
+        builder.Build(package.EntityDeclarations);
     }
 
     private void Build(FixedSet<IEntityDeclarationSyntax> entities)

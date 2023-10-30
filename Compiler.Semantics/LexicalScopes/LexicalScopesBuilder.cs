@@ -41,7 +41,7 @@ public class LexicalScopesBuilder
                                        .OfType<NamespaceSymbol>()
                                        .Select(NonMemberSymbol.ForPackageNamespace);
 
-        var packageSymbols = package.AllEntityDeclarations
+        var packageSymbols = package.EntityDeclarations
                                     .OfType<INonMemberEntityDeclarationSyntax>()
                                     .Select(NonMemberSymbol.For);
 

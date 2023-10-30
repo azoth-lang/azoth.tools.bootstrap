@@ -9,12 +9,12 @@ public abstract class CodeReference
 {
     public FixedList<string> Namespace { get; }
 
-    public bool IsTest { get; }
+    public bool IsTesting { get; }
 
-    protected CodeReference(FixedList<string> @namespace, bool isTest)
+    protected CodeReference(FixedList<string> @namespace, bool isTesting)
     {
         Namespace = @namespace;
-        IsTest = isTest;
+        IsTesting = isTesting;
     }
 
     public abstract override string ToString();

@@ -16,7 +16,7 @@ public class CodeFile
 
     public CodeText Code { get; }
 
-    public bool IsTest => Reference.IsTest;
+    public bool IsTesting => Reference.IsTesting;
 
     public CodeFile(CodeReference reference, CodeText text)
     {

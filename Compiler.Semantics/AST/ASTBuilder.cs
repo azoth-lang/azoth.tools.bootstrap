@@ -24,7 +24,7 @@ internal class ASTBuilder
     public PackageBuilder BuildPackage(PackageSyntax<Package> packageSyntax)
     {
         var declarationDictionary = new Dictionary<Symbol, Lazy<INonMemberDeclaration>>();
-        foreach (var declaration in packageSyntax.AllEntityDeclarations.OfType<INonMemberEntityDeclarationSyntax>())
+        foreach (var declaration in packageSyntax.EntityDeclarations.OfType<INonMemberEntityDeclarationSyntax>())
         {
             declarationDictionary.Add(declaration.Symbol.Result,
                 new(() => BuildNonMemberDeclaration(declaration, declarationDictionary)));
