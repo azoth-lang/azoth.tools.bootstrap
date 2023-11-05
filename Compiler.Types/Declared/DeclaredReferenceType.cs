@@ -1,12 +1,14 @@
 using System;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 /// <summary>
-/// A reference type without any capability attached
+/// A reference type as it is declared without any capability or type arguments
 /// </summary>
 [Closed(
     typeof(DeclaredObjectType),
@@ -19,18 +21,40 @@ public abstract class DeclaredReferenceType : IEquatable<DeclaredReferenceType>
 
     public abstract NamespaceName ContainingNamespace { get; }
 
+    /// <summary>
+    /// Whether this type was declared `const` meaning that most references should be treated as
+    /// const.
+    /// </summary>
+    public bool IsConstType { get; }
+
     public bool IsAbstract { get; }
 
     public abstract Name Name { get; }
 
-    protected DeclaredReferenceType(bool isAbstract)
+    public FixedList<GenericParameter> GenericParameters { get; }
+
+    public FixedList<GenericParameterType> GenericParameterTypes { get; }
+
+    // TODO this is really awkward. There should be a subtype relationship
+    public FixedList<DataType> GenericParameterDataTypes { get; }
+
+    public FixedSet<BareReferenceType> Supertypes { get; }
+
+    protected DeclaredReferenceType(
+        bool isConstType,
+        bool isAbstract,
+        FixedList<GenericParameterType> genericParametersTypes,
+        FixedSet<BareReferenceType> supertypes)
     {
+        IsConstType = isConstType;
         IsAbstract = isAbstract;
+        GenericParameters = genericParametersTypes.Select(t => t.Parameter).ToFixedList();
+        GenericParameterTypes = genericParametersTypes;
+        GenericParameterDataTypes = GenericParameterTypes.ToFixedList<DataType>();
+        Supertypes = supertypes;
     }
 
     public abstract ReferenceType With(ReferenceCapability capability, FixedList<DataType> typeArguments);
-
-    public abstract bool IsAssignableFrom(DeclaredReferenceType source);
 
     #region MyRegion
     public abstract bool Equals(DeclaredReferenceType? other);

@@ -1,5 +1,7 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -10,11 +12,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public sealed class AnyType : ReferenceType
 {
     public AnyType(ReferenceCapability capability)
-        : base(capability, DeclaredAnyType.Instance)
+        : base(capability, BareAnyType.Instance)
     {
     }
 
     public override SpecialTypeName Name => SpecialTypeName.Any;
+
+    public override BareAnyType BareType => BareAnyType.Instance;
 
     public override DeclaredAnyType DeclaredType => DeclaredAnyType.Instance;
 
@@ -29,15 +33,9 @@ public sealed class AnyType : ReferenceType
                && Capability == otherType.Capability;
     }
 
-    public override int GetHashCode() => HashCode.Combine(SpecialTypeName.Any, Capability);
+    public override int GetHashCode() => HashCode.Combine(Capability, SpecialTypeName.Any);
     #endregion
 
     public override AnyType With(ReferenceCapability referenceCapability)
         => new(referenceCapability);
-
-    public override string ToILString() => $"{Capability.ToILString()} Any";
-
-    public override string ToSourceCodeString()
-        => Capability != ReferenceCapability.ReadOnly
-            ? $"{Capability.ToSourceString()} Any" : "Any";
 }

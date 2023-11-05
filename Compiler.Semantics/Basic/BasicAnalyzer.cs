@@ -139,7 +139,7 @@ public class BasicAnalyzer
 
         var symbol = method.Symbol.Result;
 
-        var inConstClass = method.DeclaringType.Symbol.Result.DeclaresType.IsConst;
+        var inConstClass = method.DeclaringType.Symbol.Result.DeclaresType.IsConstType;
         var selfParameterType = symbol.SelfParameterType;
         var selfCapability = ((ReferenceType)selfParameterType.Type).Capability;
         if (inConstClass && !(selfCapability.IsConstant || selfCapability == ReferenceCapability.Identity))

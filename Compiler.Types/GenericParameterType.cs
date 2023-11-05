@@ -1,6 +1,7 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -34,11 +35,17 @@ public sealed class GenericParameterType : NonEmptyType
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is GenericParameterType otherType
-            && DeclaringType == otherType.DeclaringType
+            && (ReferenceEquals(DeclaringTypePromise, otherType.DeclaringTypePromise)
+                 || DeclaringType == otherType.DeclaringType)
             && Parameter == otherType.Parameter;
     }
 
-    public override int GetHashCode() => HashCode.Combine(DeclaringType, Parameter);
+    public override int GetHashCode()
+    {
+        if (!DeclaringTypePromise.IsFulfilled)
+            return HashCode.Combine(DeclaringTypePromise, Parameter);
+        return HashCode.Combine(DeclaringType, Parameter);
+    }
     #endregion
 
     public override string ToSourceCodeString() => $"{DeclaringTypePromise}.{Parameter}";

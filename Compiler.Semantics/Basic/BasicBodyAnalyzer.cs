@@ -389,7 +389,7 @@ public class BasicBodyAnalyzer
                 return !requireSigned || to.IsSigned ? new NumericConversion(to, priorConversion) : null;
             }
             case (ObjectType { IsConstReference: true } to, ObjectType { AllowsFreeze: true } from)
-                when to.DeclaredType.IsAssignableFrom(from.DeclaredType):
+                when to.BareType.IsAssignableFrom(from.BareType):
             {
                 // Try to recover const
                 if (flow.IsIsolated(fromResult))
@@ -406,7 +406,7 @@ public class BasicBodyAnalyzer
             case (ObjectType { IsIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from):
             {
                 // Try to recover isolation
-                if (to.DeclaredType.IsAssignableFrom(from.DeclaredType) && flow.IsIsolated(fromResult))
+                if (to.BareType.IsAssignableFrom(from.BareType) && flow.IsIsolated(fromResult))
                     return new RecoverIsolation(priorConversion);
 
                 return null;
@@ -1257,7 +1257,7 @@ public class BasicBodyAnalyzer
             || context.Type is not ReferenceType { AllowsRecoverIsolation: true } fromType)
             return;
 
-        if (!toType.DeclaredType.IsAssignableFrom(fromType.DeclaredType))
+        if (!toType.BareType.IsAssignableFrom(fromType.BareType))
             return;
 
         if (context.Syntax is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
@@ -1281,7 +1281,7 @@ public class BasicBodyAnalyzer
             || context.Syntax.ConvertedDataType is not ReferenceType { AllowsFreeze: true } fromType)
             return;
 
-        if (!toType.DeclaredType.IsAssignableFrom(fromType.DeclaredType)) return;
+        if (!toType.BareType.IsAssignableFrom(fromType.BareType)) return;
 
         if (context.Syntax is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
             || !flow.IsIsolatedExceptFor(symbol, context.Variable))
@@ -1678,10 +1678,7 @@ public class BasicBodyAnalyzer
         {
             if (s.Arity != arguments.Arguments.Count) return false;
 
-            var parameterTypes = s.ParameterTypes.AsEnumerable();
-            if (contextType is not null)
-                parameterTypes = parameterTypes.Select(contextType.ReplaceTypeParametersIn);
-            return TypesAreCompatible(arguments, parameterTypes, flow);
+            return TypesAreCompatible(arguments, s.ParameterTypes, flow);
         }).ToFixedSet();
         // TODO Select most specific match
         return contextualizedSymbols;

@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -21,18 +19,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </remarks>
 public sealed class ObjectType : ReferenceType
 {
-    public new DeclaredObjectType DeclaredType => (DeclaredObjectType)base.DeclaredType;
-
-    public FixedList<DataType> TypeArguments { get; }
-    public override bool IsFullyKnown { [DebuggerStepThrough] get; }
-
-    /// <summary>
-    /// Whether this type was declared `const` meaning that most references should be treated as
-    /// const.
-    /// </summary>
-    public bool IsConst => DeclaredType.IsConst;
-
-    private readonly FixedDictionary<DataType, DataType> typeReplacements;
+    public override BareObjectType BareType { get; }
+    public override DeclaredObjectType DeclaredType => BareType.DeclaredType;
 
     /// <summary>
     /// Create a object type for a given class or trait.
@@ -45,7 +33,7 @@ public sealed class ObjectType : ReferenceType
         bool isConst,
         bool isClass,
         string name)
-        => new(capability, DeclaredObjectType.Create(containingPackage, containingNamespace,
+        => Create(capability, DeclaredObjectType.Create(containingPackage, containingNamespace,
             isAbstract, isConst, isClass, name), FixedList<DataType>.Empty);
 
     /// <summary>
@@ -55,64 +43,33 @@ public sealed class ObjectType : ReferenceType
         ReferenceCapability capability,
         DeclaredObjectType declaredType,
         FixedList<DataType> typeArguments)
-        => new(capability, declaredType, typeArguments);
+        => Create(capability, BareObjectType.Create(declaredType, typeArguments));
+
+    /// <summary>
+    /// Create a object type for a given bare type.
+    /// </summary>
+    public static ObjectType Create(
+        ReferenceCapability capability,
+        BareObjectType bareType) =>
+        new(capability, bareType);
 
     private ObjectType(
         ReferenceCapability capability,
-        DeclaredObjectType declaredType,
-        FixedList<DataType> typeArguments)
-        : base(capability, declaredType)
+        BareObjectType bareType)
+        : base(capability, bareType)
     {
-        if (declaredType.GenericParameters.Count != typeArguments.Count)
-            throw new ArgumentException($"Number of type arguments must match. Given `[{typeArguments.ToILString()}]` for `{declaredType}`.", nameof(typeArguments));
-        TypeArguments = typeArguments;
-        IsFullyKnown = typeArguments.All(a => a.IsFullyKnown);
-        typeReplacements = declaredType.GenericParameterDataTypes.Zip(typeArguments).ToFixedDictionary();
+        BareType = bareType;
     }
 
     public override ObjectType With(ReferenceCapability referenceCapability)
-        => new(referenceCapability, DeclaredType, TypeArguments);
+        => new(referenceCapability, BareType);
 
     /// <remarks>For constant types, there can still be read only references. For example, inside
     /// the constructor.</remarks>
     public override ObjectType WithoutWrite() => (ObjectType)base.WithoutWrite();
 
     public override DataType ReplaceTypeParametersIn(DataType type)
-    {
-        if (typeReplacements.TryGetValue(type, out var replacementType))
-            return replacementType;
-        switch (type)
-        {
-            case ObjectType objectType:
-            {
-                var replacementTypes = ReplaceTypeParametersIn(objectType.TypeArguments);
-                if (!ReferenceEquals(objectType.TypeArguments, replacementTypes))
-                    return new ObjectType(objectType.Capability, objectType.DeclaredType, replacementTypes);
-                break;
-            }
-            case OptionalType optionalType:
-            {
-                replacementType = ReplaceTypeParametersIn(optionalType.Referent);
-                if (!ReferenceEquals(optionalType.Referent, replacementType))
-                    return new OptionalType(replacementType);
-                break;
-            }
-        }
-        return type;
-    }
-
-    private FixedList<DataType> ReplaceTypeParametersIn(FixedList<DataType> types)
-    {
-        var replacementTypes = new List<DataType>();
-        var typesReplaced = false;
-        foreach (var type in types)
-        {
-            var replacementType = ReplaceTypeParametersIn(type);
-            typesReplaced |= !ReferenceEquals(type, replacementType);
-            replacementTypes.Add(replacementType);
-        }
-        return typesReplaced ? replacementTypes.ToFixedList() : types;
-    }
+        => BareType.ReplaceTypeParametersIn(type);
 
     #region Equality
     public override bool Equals(DataType? other)
@@ -121,42 +78,9 @@ public sealed class ObjectType : ReferenceType
         if (ReferenceEquals(this, other)) return true;
         return other is ObjectType otherType
                && Capability == otherType.Capability
-               && DeclaredType == otherType.DeclaredType
-               && TypeArguments.Equals(otherType.TypeArguments);
+               && BareType == otherType.BareType;
     }
 
-    public override int GetHashCode() => HashCode.Combine(DeclaredType, Capability, TypeArguments);
+    public override int GetHashCode() => HashCode.Combine(Capability, BareType);
     #endregion
-
-    public override string ToSourceCodeString()
-    {
-        var builder = new StringBuilder();
-        if (Capability != ReferenceCapability.ReadOnly)
-        {
-            builder.Append(Capability.ToSourceString());
-            builder.Append(' ');
-        }
-        AppendName(builder, t => t.ToSourceCodeString());
-        return builder.ToString();
-    }
-
-    public override string ToILString()
-    {
-        var builder = new StringBuilder();
-        builder.Append(Capability.ToILString());
-        builder.Append(' ');
-        AppendName(builder, t => t.ToILString());
-        return builder.ToString();
-    }
-
-    private void AppendName(StringBuilder builder, Func<DataType, string> toString)
-    {
-        builder.Append(ContainingNamespace);
-        if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
-        builder.Append(Name.ToBareString());
-        if (!TypeArguments.Any()) return;
-        builder.Append('[');
-        builder.AppendJoin(", ", TypeArguments.Select(toString));
-        builder.Append(']');
-    }
 }

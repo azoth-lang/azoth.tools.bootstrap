@@ -63,7 +63,7 @@ public partial class Parser
         return new ModifierParser(modifierTokens);
     }
 
-    private FixedList<ITypeNameSyntax> ParseSuperTypes()
+    private FixedList<ITypeNameSyntax> ParseSupertypes()
         => Tokens.Accept<ILessThanColonToken>() ? ParseTypeNames() : FixedList<ITypeNameSyntax>.Empty;
 
     #region Parse Namespaces
@@ -179,7 +179,7 @@ public partial class Parser
         var genericParameters = generic?.Parameters ?? FixedList<IGenericParameterSyntax>.Empty;
         ITypeNameSyntax? baseClass = null;
         if (Tokens.Accept<IColonToken>()) baseClass = ParseTypeName();
-        var superTypes = ParseSuperTypes();
+        var superTypes = ParseSupertypes();
         var headerSpan = TextSpan.Covering(classKeywordSpan, identifier.Span, generic?.Span, baseClass?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)));
         var bodyParser = BodyParser();
@@ -249,7 +249,7 @@ public partial class Parser
         var name = identifier.Value;
         var generic = AcceptGenericParameters();
         var genericParameters = generic?.Parameters ?? FixedList<IGenericParameterSyntax>.Empty;
-        var superTypes = ParseSuperTypes();
+        var superTypes = ParseSupertypes();
         var headerSpan = TextSpan.Covering(traitKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)));
         var bodyParser = BodyParser();

@@ -1,4 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -34,7 +37,21 @@ public abstract class ReferenceType : NonEmptyType
     /// </summary>
     public bool AllowsFreeze => Capability.AllowsFreeze;
 
-    public virtual DeclaredReferenceType DeclaredType { get; }
+    public virtual BareReferenceType BareType { get; }
+
+    public virtual DeclaredReferenceType DeclaredType => BareType.DeclaredType;
+
+    public FixedList<DataType> TypeArguments => BareType.TypeArguments;
+
+    public FixedSet<BareReferenceType> Supertypes => BareType.Supertypes;
+
+    public override bool IsFullyKnown => BareType.IsFullyKnown;
+
+    /// <summary>
+    /// Whether this type was declared `const` meaning that most references should be treated as
+    /// const.
+    /// </summary>
+    public bool IsConstType => DeclaredType.IsConstType;
 
     public SimpleName? ContainingPackage => DeclaredType.ContainingPackage;
     public NamespaceName ContainingNamespace => DeclaredType.ContainingNamespace;
@@ -43,10 +60,10 @@ public abstract class ReferenceType : NonEmptyType
 
     public override TypeSemantics Semantics => TypeSemantics.Reference;
 
-    private protected ReferenceType(ReferenceCapability capability, DeclaredReferenceType declaredType)
+    private protected ReferenceType(ReferenceCapability capability, BareReferenceType bareType)
     {
         Capability = capability;
-        DeclaredType = declaredType;
+        BareType = bareType;
     }
 
     public override ReferenceType WithoutWrite() => With(Capability.WithoutWrite());
@@ -55,4 +72,14 @@ public abstract class ReferenceType : NonEmptyType
     /// Return the same type except with the given reference capability
     /// </summary>
     public abstract ReferenceType With(ReferenceCapability referenceCapability);
+
+    public sealed override string ToSourceCodeString()
+    {
+        if (Capability != ReferenceCapability.ReadOnly)
+            return $"{Capability.ToSourceString()} {BareType.ToSourceCodeString()}";
+
+        return BareType.ToSourceCodeString();
+    }
+
+    public sealed override string ToILString() => $"{Capability.ToILString()} {BareType.ToILString()}";
 }

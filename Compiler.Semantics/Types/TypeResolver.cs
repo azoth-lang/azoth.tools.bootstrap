@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -53,7 +54,7 @@ public class TypeResolver
             {
                 var capability = referenceCapability.Capability.Declared.ToReferenceCapability();
                 var type = Evaluate(referenceCapability.ReferentType, isAttribute: false, capability);
-                if (capability.AllowsWrite && type is ObjectType { IsConst: true } objectType)
+                if (capability.AllowsWrite && type is ObjectType { IsConstType: true } objectType)
                     diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(file, referenceCapability, capability,
                         objectType.DeclaredType));
                 return referenceCapability.NamedType = type;
@@ -101,9 +102,11 @@ public class TypeResolver
     /// </summary>
     /// <remarks>This is used for new expressions and base types. It assigns an `id` reference
     /// capability to the type.</remarks>
+    // TODO should this return `BareType`?
     public DataType EvaluateBareType(ITypeNameSyntax typeSyntax)
         => EvaluateBareType(typeSyntax, isAttribute: false, capability: null);
 
+    // TODO should this return `BareType`?
     public DataType EvaluateAttribute(ITypeNameSyntax typeSyntax)
         => EvaluateBareType(typeSyntax, isAttribute: true, capability: null);
 

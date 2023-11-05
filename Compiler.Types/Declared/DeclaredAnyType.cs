@@ -1,21 +1,24 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 public sealed class DeclaredAnyType : DeclaredReferenceType
 {
     #region Singleton
     internal static readonly DeclaredAnyType Instance = new();
 
-    private DeclaredAnyType() : base(true) { }
+    private DeclaredAnyType()
+        : base(isConstType: false, isAbstract: true, FixedList<GenericParameterType>.Empty, FixedSet<BareReferenceType>.Empty)
+    { }
     #endregion
 
     public override SimpleName? ContainingPackage => null;
     public override NamespaceName ContainingNamespace => NamespaceName.Global;
-    public override Name Name => SpecialTypeName.Any;
+    public override SpecialTypeName Name => SpecialTypeName.Any;
 
     public override AnyType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
     {
@@ -27,8 +30,6 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
     [SuppressMessage("Performance", "CA1822:Mark members as static",
         Justification = "OO")]
     public AnyType With(ReferenceCapability capability) => new(capability);
-
-    public override bool IsAssignableFrom(DeclaredReferenceType source) => true;
 
     #region Equals
     public override bool Equals(DeclaredReferenceType? other) => ReferenceEquals(this, other);

@@ -11,6 +11,8 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -241,18 +243,21 @@ public class EntitySymbolBuilder
         }
     }
 
-    private IEnumerable<DeclaredObjectType> EvaluateSupertypes(
+    private IEnumerable<BareReferenceType> EvaluateSupertypes(
         ITypeDeclarationSyntax syn,
         TypeSymbolBuilder typeDeclarations)
     {
+        // Everything has `Any` as a supertype
+        yield return BareReferenceType.Any;
+
         var resolver = new TypeResolver(syn.File, diagnostics, typeDeclarations);
         if (syn is IClassDeclarationSyntax { BaseTypeName: not null and var baseTypeName })
         {
             var baseType = resolver.EvaluateBareType(baseTypeName);
-            if (baseType is ObjectType { DeclaredType: var declaredType })
+            if (baseType is ObjectType { BareType: var bareType })
             {
-                yield return declaredType;
-                foreach (var inheritedType in declaredType.SuperTypes)
+                yield return bareType;
+                foreach (var inheritedType in bareType.Supertypes)
                     yield return inheritedType;
             }
         }
@@ -260,10 +265,10 @@ public class EntitySymbolBuilder
         foreach (var supertype in syn.SupertypeNames)
         {
             var superType = resolver.EvaluateBareType(supertype);
-            if (superType is ObjectType { DeclaredType: var declaredType })
+            if (superType is ObjectType { BareType: var bareType })
             {
-                yield return declaredType;
-                foreach (var inheritedType in declaredType.SuperTypes)
+                yield return bareType;
+                foreach (var inheritedType in bareType.Supertypes)
                     yield return inheritedType;
             }
         }

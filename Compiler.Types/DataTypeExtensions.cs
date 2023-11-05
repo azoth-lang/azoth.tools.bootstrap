@@ -4,7 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -28,17 +30,40 @@ public static class DataTypeExtensions
                 or (BigIntegerType, IntegerType { IsSigned: false })
                 => true,
             (ReferenceType targetReference, ReferenceType sourceReference)
-                => targetReference.Capability.IsAssignableFrom(sourceReference.Capability)
-                   && (targetReference.DeclaredType.IsAssignableFrom(sourceReference.DeclaredType)
-                       // TODO remove hack to allow string to exist in both primitives and stdlib
-                       || (targetReference.Name == "String" && sourceReference.Name == "String"
-                           && targetReference.ContainingNamespace == NamespaceName.Global
-                           && sourceReference.ContainingNamespace == NamespaceName.Global)),
+                => IsAssignableFrom(targetReference, sourceReference),
             (OptionalType targetOptional, OptionalType sourceOptional)
                 => IsAssignableFrom(targetOptional.Referent, sourceOptional.Referent),
+            (OptionalType targetOptional, _)
+                => IsAssignableFrom(targetOptional.Referent, source),
             _ => false
         };
     }
+
+    public static bool IsAssignableFrom(this ReferenceType target, ReferenceType source)
+    {
+        if (!target.Capability.IsAssignableFrom(source.Capability)) return false;
+
+        switch (target)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(target);
+            case AnyType _:
+                return true;
+            case ObjectType targetObjectType:
+                if (source is not ObjectType sourceObjectType) return false;
+
+                if (IsAssignableFrom(targetObjectType.BareType, sourceObjectType.BareType))
+                    return true;
+
+                // TODO remove hack to allow string to exist in both primitives and stdlib
+                return target.Name == "String" && source.Name == "String"
+                    && target.ContainingNamespace == NamespaceName.Global
+                    && source.ContainingNamespace == NamespaceName.Global;
+        }
+    }
+
+    public static bool IsAssignableFrom(this BareReferenceType target, BareReferenceType source)
+        => source.Equals(target) || source.Supertypes.Contains(target);
 
     /// <summary>
     /// Validates that a type as been assigned.

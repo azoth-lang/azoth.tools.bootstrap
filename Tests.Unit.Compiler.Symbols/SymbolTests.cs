@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Xunit;
 using DT = Azoth.Tools.Bootstrap.Compiler.Types.DataType;
 
