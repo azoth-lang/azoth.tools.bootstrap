@@ -1195,7 +1195,7 @@ public class BasicBodyAnalyzer
         switch (methodSymbols.Count)
         {
             case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindMethod(file, invocation.Span));
+                diagnostics.Add(NameBindingError.CouldNotBindMethod(file, invocation.Span, methodName));
                 invocation.ReferencedSymbol.Fulfill(null);
                 invocation.DataType = DataType.Unknown;
                 break;
@@ -1301,7 +1301,7 @@ public class BasicBodyAnalyzer
         switch (validOverloads.Count)
         {
             case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindFunction(file, invocation.Span));
+                diagnostics.Add(NameBindingError.CouldNotBindFunction(file, invocation));
                 invocation.ReferencedSymbol.Fulfill(null);
                 invocation.DataType = DataType.Unknown;
                 invocation.Semantics = ExpressionSemantics.Never;

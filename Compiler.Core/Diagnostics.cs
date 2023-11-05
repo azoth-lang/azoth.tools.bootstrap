@@ -23,15 +23,9 @@ public class Diagnostics : IEnumerable<Diagnostic>
 
     public int Count => items.Count;
 
-    public void Add(Diagnostic diagnostic)
-    {
-        items.Add(diagnostic);
-    }
+    public void Add(Diagnostic diagnostic) => items.Add(diagnostic);
 
-    public void Add(IEnumerable<Diagnostic> diagnostics)
-    {
-        items.AddRange(diagnostics);
-    }
+    public void Add(IEnumerable<Diagnostic> diagnostics) => items.AddRange(diagnostics);
 
     public FixedList<Diagnostic> Build()
     {
@@ -45,13 +39,7 @@ public class Diagnostics : IEnumerable<Diagnostic>
             throw new FatalCompilationErrorException(items.ToFixedList());
     }
 
-    public IEnumerator<Diagnostic> GetEnumerator()
-    {
-        return items.GetEnumerator();
-    }
+    public IEnumerator<Diagnostic> GetEnumerator() => items.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return ((IEnumerable)items).GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)items).GetEnumerator();
 }

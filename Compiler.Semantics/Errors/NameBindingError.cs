@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
@@ -36,10 +37,10 @@ public static class NameBindingError
             5005, "Constructor call is ambiguous.");
     }
 
-    public static Diagnostic CouldNotBindFunction(CodeFile file, TextSpan span)
+    public static Diagnostic CouldNotBindFunction(CodeFile file, IInvocationExpressionSyntax invocation)
     {
-        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            5006, "Could not find function with this name and number of arguments.");
+        return new(file, invocation.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            5006, $"Could not find function with the name {invocation.Expression} and compatible arguments.");
     }
 
     public static Diagnostic AmbiguousFunctionCall(CodeFile file, TextSpan span)
@@ -48,10 +49,10 @@ public static class NameBindingError
             5007, "Function call is ambiguous.");
     }
 
-    public static Diagnostic CouldNotBindMethod(CodeFile file, TextSpan span)
+    public static Diagnostic CouldNotBindMethod(CodeFile file, TextSpan span, SimpleName methodName)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            5008, "Could not find method with this name and compatible arguments.");
+            5008, $"Could not find method with the name {methodName} and compatible arguments.");
     }
 
     public static Diagnostic AmbiguousMethodCall(CodeFile file, TextSpan span)
