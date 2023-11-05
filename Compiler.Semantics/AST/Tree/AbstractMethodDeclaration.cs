@@ -32,7 +32,7 @@ internal class AbstractMethodDeclaration : InvocableDeclaration, IAbstractMethod
 
     public override string ToString()
     {
-        var returnType = Symbol.ReturnType != ReturnType.Void ? " -> " + Symbol.ReturnType : "";
+        var returnType = Symbol.ReturnType != ReturnType.Void ? " -> " + Symbol.ReturnType.ToILString() : "";
         return $"fn {Symbol.Name}({string.Join(", ", Parameters.Prepend<IParameter>(SelfParameter))}){returnType};";
     }
 }

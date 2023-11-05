@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -31,8 +30,7 @@ public abstract class BareReferenceType : IEquatable<BareReferenceType>
     /// </summary>
     public bool IsConstType => DeclaredType.IsConstType;
 
-
-    private readonly FixedDictionary<DataType, DataType> typeReplacements;
+    private readonly TypeReplacements typeReplacements;
 
     protected BareReferenceType(DeclaredReferenceType declaredType, FixedList<DataType> typeArguments)
     {
@@ -42,67 +40,12 @@ public abstract class BareReferenceType : IEquatable<BareReferenceType>
                 nameof(typeArguments));
         TypeArguments = typeArguments;
         IsFullyKnown = typeArguments.All(a => a.IsFullyKnown);
-        typeReplacements = declaredType.GenericParameterDataTypes.Zip(typeArguments).ToFixedDictionary();
-        Supertypes = declaredType.Supertypes.Select(ReplaceTypeParametersIn).ToFixedSet();
+        typeReplacements = new TypeReplacements(declaredType, typeArguments);
+        Supertypes = declaredType.Supertypes.Select(typeReplacements.ReplaceTypeParametersIn).ToFixedSet();
     }
 
     public DataType ReplaceTypeParametersIn(DataType type)
-    {
-        if (typeReplacements.TryGetValue(type, out var replacementType)) return replacementType;
-        switch (type)
-        {
-            case ObjectType objectType:
-                return ReplaceTypeParametersIn(objectType);
-            case OptionalType optionalType:
-            {
-                replacementType = ReplaceTypeParametersIn(optionalType.Referent);
-                if (!ReferenceEquals(optionalType.Referent, replacementType)) return new OptionalType(replacementType);
-                break;
-            }
-        }
-
-        return type;
-    }
-
-    public BareReferenceType ReplaceTypeParametersIn(BareReferenceType type)
-    {
-        return type switch
-        {
-            BareObjectType objectType => ReplaceTypeParametersIn(objectType),
-            BareAnyType _ => type,
-            _ => throw ExhaustiveMatch.Failed(type)
-        };
-    }
-
-    public ObjectType ReplaceTypeParametersIn(ObjectType type)
-    {
-        var replacementType = ReplaceTypeParametersIn(type.BareType);
-        if (!ReferenceEquals(type.BareType, replacementType))
-            return ObjectType.Create(type.Capability, replacementType);
-        return type;
-    }
-
-    public BareObjectType ReplaceTypeParametersIn(BareObjectType type)
-    {
-        var replacementTypes = ReplaceTypeParametersIn(type.TypeArguments);
-        if (!ReferenceEquals(type.TypeArguments, replacementTypes))
-            return BareObjectType.Create(type.DeclaredType, replacementTypes);
-        return type;
-    }
-
-    private FixedList<DataType> ReplaceTypeParametersIn(FixedList<DataType> types)
-    {
-        var replacementTypes = new List<DataType>();
-        var typesReplaced = false;
-        foreach (var type in types)
-        {
-            var replacementType = ReplaceTypeParametersIn(type);
-            typesReplaced |= !ReferenceEquals(type, replacementType);
-            replacementTypes.Add(replacementType);
-        }
-
-        return typesReplaced ? replacementTypes.ToFixedList() : types;
-    }
+        => typeReplacements.ReplaceTypeParametersIn(type);
 
     #region Equality
     public abstract bool Equals(BareReferenceType? other);

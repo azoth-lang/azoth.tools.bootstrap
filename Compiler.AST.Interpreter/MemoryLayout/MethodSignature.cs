@@ -30,11 +30,22 @@ internal class MethodSignature : IEquatable<MethodSignature>
     public bool EqualsOrOverrides(MethodSignature other)
     {
         if (ReferenceEquals(this, other)) return true;
+        var selfType = (NonEmptyType)SelfType.Type;
         return Name.Equals(other.Name)
-                // TODO what about lent binding?
-                && other.SelfType.Type.IsAssignableFrom(SelfType.Type)
-                && ParameterTypes.Equals(other.ParameterTypes)
-                && ReturnType.Equals(other.ReturnType);
+               // TODO what about lent binding?
+               && SelfType.CanOverrideSelf(selfType.ReplaceTypeParametersIn(other.SelfType))
+               && ParametersCompatible(selfType, other)
+               && ReturnType.CanOverride(selfType.ReplaceTypeParametersIn(other.ReturnType));
+    }
+
+    private bool ParametersCompatible(NonEmptyType selfType, MethodSignature other)
+    {
+        if (ParameterTypes.Count != other.ParameterTypes.Count) return false;
+        foreach (var (paramType, baseParamType) in ParameterTypes.Zip(other.ParameterTypes.Select(selfType.ReplaceTypeParametersIn)))
+            if (!paramType.CanOverride(baseParamType))
+                return false;
+
+        return true;
     }
 
     #region Equality
