@@ -90,6 +90,13 @@ public sealed class ObjectType : ReferenceType
                     return new ObjectType(objectType.Capability, objectType.DeclaredType, replacementTypes);
                 break;
             }
+            case OptionalType optionalType:
+            {
+                replacementType = ReplaceTypeParametersIn(optionalType.Referent);
+                if (!ReferenceEquals(optionalType.Referent, replacementType))
+                    return new OptionalType(replacementType);
+                break;
+            }
         }
         return type;
     }
