@@ -51,7 +51,7 @@ public static class NameBindingError
     public static Diagnostic CouldNotBindMethod(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            5008, "Could not find method with this name and number of arguments.");
+            5008, "Could not find method with this name and compatible arguments.");
     }
 
     public static Diagnostic AmbiguousMethodCall(CodeFile file, TextSpan span)

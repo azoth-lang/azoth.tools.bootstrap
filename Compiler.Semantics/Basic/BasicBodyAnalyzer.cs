@@ -343,7 +343,8 @@ public class BasicBodyAnalyzer
         ResultVariable? fromResult,
         Conversion priorConversion,
         FlowState flow,
-        out ResultVariable? newResult)
+        out ResultVariable? newResult,
+        bool enact = true)
     {
         newResult = fromResult;
         switch (toType, fromType)
@@ -395,7 +396,8 @@ public class BasicBodyAnalyzer
                     return new RecoverConst(priorConversion);
                 if (toLentBinding)
                 {
-                    newResult = flow.LendConst(fromResult!);
+                    if (enact)
+                        newResult = flow.LendConst(fromResult!);
                     return new RecoverConst(priorConversion);
                 }
 
@@ -757,7 +759,7 @@ public class BasicBodyAnalyzer
                 DataType constructedType;
                 var contextType = (NonEmptyType)constructingType;
                 var constructorSymbols = symbolTrees.Children(typeSymbol).OfType<ConstructorSymbol>().ToFixedSet();
-                var validOverloads = SelectOverload(contextType, constructorSymbols, arguments);
+                var validOverloads = SelectOverload(contextType, constructorSymbols, arguments, flow);
                 switch (validOverloads.Count)
                 {
                     case 0:
@@ -1034,12 +1036,29 @@ public class BasicBodyAnalyzer
 
     private void CheckTypes(ArgumentResults arguments, IEnumerable<ParameterType> expectedTypes, FlowState flow)
     {
-        foreach (var (arg, parameterDataType) in arguments.Arguments.Zip(expectedTypes))
+        foreach (var (arg, parameter) in arguments.Arguments.Zip(expectedTypes))
         {
-            AddImplicitConversionIfNeeded(arg, parameterDataType, flow);
-            CheckTypeCompatibility(parameterDataType.Type, arg.Syntax);
+            AddImplicitConversionIfNeeded(arg, parameter, flow);
+            CheckTypeCompatibility(parameter.Type, arg.Syntax);
             // TODO update the expression result
         }
+    }
+
+    private static bool TypesAreCompatible(ArgumentResults arguments, IEnumerable<ParameterType> expectedTypes, FlowState flow)
+    {
+        foreach (var (arg, parameter) in arguments.Arguments.Zip(expectedTypes))
+        {
+            var argType = arg.Type;
+            var conversion = CreateImplicitConversion(parameter.Type, parameter.IsLentBinding,
+                arg.Type, arg.Variable, arg.Syntax.ImplicitConversion, flow,
+                out _, enact: false);
+            if (conversion is not null)
+                (argType, _) = conversion.Apply(argType, arg.Syntax.Semantics.Assigned());
+            if (!parameter.Type.IsAssignableFrom(argType))
+                return false;
+        }
+
+        return true;
     }
 
     private static ResultVariable? CombineResults(ArgumentResults results, FlowState flow)
@@ -1171,7 +1190,7 @@ public class BasicBodyAnalyzer
             return new(invocation, CombineResults(arguments, flow));
         }
 
-        var methodSymbols = SelectMethodOverload(methodName, selfArgumentType, arguments);
+        var methodSymbols = SelectMethodOverload(methodName, selfArgumentType, arguments, flow);
 
         switch (methodSymbols.Count)
         {
@@ -1278,7 +1297,7 @@ public class BasicBodyAnalyzer
         ArgumentResults arguments,
         FlowState flow)
     {
-        var validOverloads = SelectOverload(null, functionSymbols, arguments);
+        var validOverloads = SelectOverload(null, functionSymbols, arguments, flow);
         switch (validOverloads.Count)
         {
             case 0:
@@ -1649,16 +1668,20 @@ public class BasicBodyAnalyzer
     private static FixedSet<Contextualized<TSymbol>> SelectOverload<TSymbol>(
         NonEmptyType? contextType,
         FixedSet<TSymbol> symbols,
-        ArgumentResults argumentTypes)
+        ArgumentResults arguments,
+        FlowState flow)
         where TSymbol : InvocableSymbol
     {
         var contextualizedSymbols = Contextualize(contextType, symbols);
         // Filter down to symbols that could possible match
         contextualizedSymbols = contextualizedSymbols.Where(s =>
         {
-            if (s.Arity != argumentTypes.Arguments.Count) return false;
-            // TODO check compatibility over argument types
-            return true;
+            if (s.Arity != arguments.Arguments.Count) return false;
+
+            var parameterTypes = s.ParameterTypes.AsEnumerable();
+            if (contextType is not null)
+                parameterTypes = parameterTypes.Select(contextType.ReplaceTypeParametersIn);
+            return TypesAreCompatible(arguments, parameterTypes, flow);
         }).ToFixedSet();
         // TODO Select most specific match
         return contextualizedSymbols;
@@ -1683,7 +1706,8 @@ public class BasicBodyAnalyzer
     private FixedList<MethodSymbol> SelectMethodOverload(
         SimpleName methodName,
         DataType selfType,
-        ArgumentResults arguments)
+        ArgumentResults arguments,
+        FlowState flow)
     {
         if (selfType is not NonEmptyType nonEmptySelfType)
             return FixedList<MethodSymbol>.Empty;
@@ -1700,8 +1724,8 @@ public class BasicBodyAnalyzer
         {
             if (s.Arity != arguments.Arguments.Count) return false;
             // TODO check compatibility of self type
-            // TODO check compatibility over argument types
-            return true;
+            var parameterTypes = s.ParameterTypes.Select(nonEmptySelfType.ReplaceTypeParametersIn);
+            return TypesAreCompatible(arguments, parameterTypes, flow);
         });
 
         // TODO Select most specific match
