@@ -841,6 +841,12 @@ public class InterpreterProcess
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
         var type = leftExp.DataType;
+        if (type == DataType.Int.ToOptional())
+        {
+            if (left.IsNone && right.IsNone) return 0;
+            if (left.IsNone || right.IsNone) throw new NotImplementedException("No comparison order");
+            return left.IntValue.CompareTo(right.IntValue);
+        }
         if (type == DataType.Int) return left.IntValue.CompareTo(right.IntValue);
         if (type == DataType.UInt) return left.IntValue.CompareTo(right.IntValue);
         if (type == DataType.Int8) return left.I8Value.CompareTo(right.I8Value);

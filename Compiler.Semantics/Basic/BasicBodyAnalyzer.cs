@@ -610,6 +610,7 @@ public class BasicBodyAnalyzer
                         => InferNumericOperatorType(leftResult, rightResult, flow),
                     (NumericType, BinaryOperator.EqualsEquals, NumericType)
                         or (NumericType, BinaryOperator.NotEqual, NumericType)
+                        or (OptionalType { Referent: NumericType }, BinaryOperator.NotEqual, OptionalType { Referent: NumericType })
                         or (NumericType, BinaryOperator.LessThan, NumericType)
                         or (NumericType, BinaryOperator.LessThanOrEqual, NumericType)
                         or (NumericType, BinaryOperator.GreaterThan, NumericType)
