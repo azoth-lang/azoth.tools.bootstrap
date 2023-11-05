@@ -136,7 +136,7 @@ public class BasicBodyAnalyzer
                     sharing.DeclareNonLentParametersReference();
                     nonLentParametersReferenceDeclared = true;
                 }
-                sharing.Union(ExternalReference.NonParameters, parameterSymbol);
+                sharing.Union(ExternalReference.NonLentParameters, parameterSymbol);
             }
         }
         parameterCapabilities = capabilities.Snapshot();

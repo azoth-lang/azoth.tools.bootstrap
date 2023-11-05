@@ -16,7 +16,7 @@ public sealed class ExternalReference : ISharingVariable
     private static ExternalReference Factory(uint number) => new(number);
     #endregion
 
-    public static readonly ExternalReference NonParameters = new(0);
+    public static readonly ExternalReference NonLentParameters = new(0);
 
     public static ExternalReference CreateLentParameter(uint number)
     {
@@ -25,7 +25,7 @@ public sealed class ExternalReference : ISharingVariable
         return Create(number);
     }
 
-    private readonly ulong number;
+    private readonly uint number;
 
     public bool IsVariableOrParameter => false;
     public bool RestrictsWrite => false;

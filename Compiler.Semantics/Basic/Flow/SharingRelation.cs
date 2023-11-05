@@ -109,10 +109,10 @@ public sealed class SharingRelation
 
     public void DeclareNonLentParametersReference()
     {
-        if (subsetFor.TryGetValue(ExternalReference.NonParameters, out _))
+        if (subsetFor.TryGetValue(ExternalReference.NonLentParameters, out _))
             throw new InvalidOperationException("Non-lent parameters reference already declared.");
 
-        Declare(ExternalReference.NonParameters, false);
+        Declare(ExternalReference.NonLentParameters, false);
     }
 
     private void Declare(ISharingVariable variable, bool isLent)
