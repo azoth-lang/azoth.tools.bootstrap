@@ -13,8 +13,8 @@ public static partial class TokenTypes
     // Must be before KeywordFactories because it is used in the construction of it
     private static readonly int KeywordTokenLength = "KeywordToken".Length;
 
-    public static readonly FixedDictionary<string, Func<TextSpan, IKeywordToken>> KeywordFactories =
-        BuildKeywordFactories();
+    public static readonly FixedDictionary<string, Func<TextSpan, IKeywordToken>> KeywordFactories
+        = BuildKeywordFactories();
 
     public static readonly IReadOnlyCollection<string> Keywords = KeywordFactories.Keys.ToHashSet();
 
@@ -32,6 +32,7 @@ public static partial class TokenTypes
                 //nameof(SelfTypeKeywordToken) => "Self",
                 nameof(IsolatedKeywordToken) => "iso",
                 nameof(MutableKeywordToken) => "mut",
+                nameof(ExclusivelyMutableKeywordToken) => "xmut",
                 nameof(AnyKeywordToken) => "Any",
                 //nameof(TypeKeywordToken) => "Type",
                 nameof(AsExclamationKeywordToken) => "as!",
