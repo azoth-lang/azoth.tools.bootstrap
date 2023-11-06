@@ -131,6 +131,7 @@ public class BasicBodyAnalyzer
                 || capability == ReferenceCapability.Identity)
                 continue;
 
+            // Create external references so that they can't be frozen or moved
             if (parameterSymbol.IsLentBinding)
                 sharing.DeclareLentParameterReference(parameterSymbol, ++lentParameterNumber);
             else
@@ -982,7 +983,8 @@ public class BasicBodyAnalyzer
                 if (!referenceType.AllowsFreeze)
                     diagnostics.Add(TypeError.NotImplemented(file, exp.Span,
                         "Reference capability does not allow freezing"));
-                if (!flow.IsIsolated(symbol)) diagnostics.Add(FlowTypingError.CannotFreezeValue(file, exp));
+                if (!flow.IsIsolated(symbol))
+                    diagnostics.Add(FlowTypingError.CannotFreezeValue(file, exp));
 
                 type = referenceType.With(ReferenceCapability.Constant);
                 flow.Freeze(symbol);
