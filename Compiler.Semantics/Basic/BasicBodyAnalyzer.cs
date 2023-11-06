@@ -396,7 +396,7 @@ public class BasicBodyAnalyzer
             case (ObjectType { IsConstReference: true } to, ObjectType { AllowsFreeze: true } from)
                 when to.BareType.IsAssignableFrom(from.BareType):
             {
-                // Try to recover const
+                // Try to recover const. Note a variable name is never isolated because the result is an alias.
                 if (flow.IsIsolated(fromResult))
                     return new RecoverConst(priorConversion);
                 if (toLentBinding)
@@ -411,7 +411,7 @@ public class BasicBodyAnalyzer
             case (ObjectType { IsIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from)
                 when to.BareType.IsAssignableFrom(from.BareType):
             {
-                // Try to recover isolation
+                // Try to recover isolation. Note a variable name is never isolated because the result is an alias.
                 if (flow.IsIsolated(fromResult))
                     return new RecoverIsolation(priorConversion);
                 if (toLentBinding)
@@ -1308,7 +1308,7 @@ public class BasicBodyAnalyzer
         bool enact,
         Conversion priorConversion)
     {
-        // Implicit freezes never happen if the parameter is lent. `lent` is an explicit request not
+        // Implicit moves never happen if the parameter is lent. `lent` is an explicit request not
         // to force the caller to have `iso`.
         if (selfParamType.IsLentBinding) return null;
 

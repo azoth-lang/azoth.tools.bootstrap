@@ -202,6 +202,9 @@ public class TypeResolver
             case DeclaredReferenceCapability.ReadOnly:
                 referenceCapability = ReferenceCapability.InitReadOnly;
                 break;
+            case DeclaredReferenceCapability.ExclusivelyMutable:
+                referenceCapability = ReferenceCapability.ExclusivelyMutable;
+                break;
             case DeclaredReferenceCapability.Mutable:
                 referenceCapability = ReferenceCapability.InitMutable;
                 break;

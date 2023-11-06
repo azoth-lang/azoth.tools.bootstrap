@@ -38,7 +38,7 @@ public partial class Parser
             case IExclusivelyMutableKeywordToken _:
             {
                 var exclusivelyMutableKeyword = Tokens.RequiredToken<IExclusivelyMutableKeywordToken>();
-                return new ReferenceCapabilitySyntax(exclusivelyMutableKeyword.Span, exclusivelyMutableKeyword.Yield(), Mutable);
+                return new ReferenceCapabilitySyntax(exclusivelyMutableKeyword.Span, exclusivelyMutableKeyword.Yield(), ExclusivelyMutable);
             }
             case IMutableKeywordToken _:
             {
