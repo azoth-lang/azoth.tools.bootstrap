@@ -1084,18 +1084,42 @@ public class BasicBodyAnalyzer
     private static bool TypesAreCompatible(ArgumentResults arguments, IEnumerable<ParameterType> expectedTypes, FlowState flow)
     {
         foreach (var (arg, parameter) in arguments.Arguments.Zip(expectedTypes))
-        {
-            var argType = arg.Type;
-            var conversion = CreateImplicitConversion(parameter.Type, parameter.IsLentBinding,
-                arg.Type, arg.Variable, arg.Syntax.ImplicitConversion, flow,
-                out _, enact: false);
-            if (conversion is not null)
-                (argType, _) = conversion.Apply(argType, arg.Syntax.Semantics.Assigned());
-            if (!parameter.Type.IsAssignableFrom(argType))
+            if (!TypesAreCompatible(arg, parameter, flow))
                 return false;
-        }
 
         return true;
+    }
+
+    private static bool TypesAreCompatible(ExpressionResult arg, ParameterType parameter, FlowState flow, bool isSelf = false)
+    {
+        var argType = arg.Type;
+        var priorConversion = arg.Syntax.ImplicitConversion;
+        var conversion = CreateImplicitConversion(parameter.Type, parameter.IsLentBinding, arg.Type, arg.Variable,
+            priorConversion, flow, out _, enact: false);
+        if (conversion is not null)
+        {
+            (argType, _) = conversion.Apply(argType, arg.Syntax.Semantics.Assigned());
+            priorConversion = conversion;
+        }
+
+        if (isSelf)
+        {
+            conversion = CreateImplicitMoveConversion(argType, arg.Syntax, arg.Variable, parameter,
+                flow, enact: false, priorConversion);
+
+            if (conversion is not null)
+            {
+                (argType, _) = conversion.Apply(argType, arg.Syntax.Semantics.Assigned());
+                priorConversion = conversion;
+            }
+
+            conversion = CreateImplicitFreezeConversion(argType, arg.Syntax, arg.Variable, parameter,
+                flow, enact: false, priorConversion);
+
+            if (conversion is not null)
+                (argType, _) = conversion.Apply(argType, arg.Syntax.Semantics.Assigned());
+        }
+        return parameter.Type.IsAssignableFrom(argType);
     }
 
     private static ResultVariable? CombineResults(ArgumentResults results, FlowState flow)
@@ -1282,50 +1306,83 @@ public class BasicBodyAnalyzer
     }
 
     private static void AddImplicitMoveIfNeeded(
-        ExpressionResult context,
+        ExpressionResult selfArg,
         ParameterType selfParamType,
         FlowState flow)
+    {
+        var conversion = CreateImplicitMoveConversion(selfArg.Type, selfArg.Syntax, selfArg.Variable,
+            selfParamType, flow, enact: true, selfArg.Syntax.ImplicitConversion);
+        if (conversion is not null)
+            selfArg.Syntax.AddConversion(conversion);
+    }
+
+    private static ImplicitMove? CreateImplicitMoveConversion(
+        DataType selfArgType,
+        IExpressionSyntax selfArgSyntax,
+        ResultVariable? selfArgVariable,
+        ParameterType selfParamType,
+        FlowState flow,
+        bool enact,
+        Conversion priorConversion)
     {
         // Implicit freezes never happen if the parameter is lent. `lent` is an explicit request not
         // to force the caller to have `iso`.
-        if (selfParamType.IsLentBinding) return;
+        if (selfParamType.IsLentBinding) return null;
 
         if (selfParamType.Type is not ReferenceType { IsIsolatedReference: true } toType
-            || context.Type is not ReferenceType { AllowsRecoverIsolation: true } fromType)
-            return;
+            || selfArgType is not ReferenceType { AllowsRecoverIsolation: true } fromType)
+            return null;
 
-        if (!toType.BareType.IsAssignableFrom(fromType.BareType))
-            return;
+        if (!toType.BareType.IsAssignableFrom(fromType.BareType)) return null;
 
-        if (context.Syntax is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
-            || !flow.IsIsolatedExceptFor(symbol, context.Variable))
-            return;
+        if (selfArgSyntax is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
+            || !flow.IsIsolatedExceptFor(symbol, selfArgVariable))
+            return null;
 
-        context.Syntax.AddConversion(new ImplicitMove(context.Syntax.ImplicitConversion));
-        flow.Move(symbol);
+        if (enact)
+            flow.Move(symbol);
+
+        return new ImplicitMove(priorConversion);
     }
 
     private static void AddImplicitFreezeIfNeeded(
-        ExpressionResult context,
+        ExpressionResult selfArg,
         ParameterType selfParamType,
         FlowState flow)
     {
+        var conversion = CreateImplicitFreezeConversion(selfArg.Type, selfArg.Syntax, selfArg.Variable,
+            selfParamType, flow, enact: true, selfArg.Syntax.ImplicitConversion);
+        if (conversion is not null)
+            selfArg.Syntax.AddConversion(conversion);
+    }
+
+    private static ImplicitFreeze? CreateImplicitFreezeConversion(
+        DataType selfArgType,
+        IExpressionSyntax selfArgSyntax,
+        ResultVariable? selfArgVariable,
+        ParameterType selfParamType,
+        FlowState flow,
+        bool enact,
+        Conversion priorConversion)
+    {
         // Implicit freezes never happen if the parameter is lent. `lent` is an explicit request not
         // to force the caller to have `const`
-        if (selfParamType.IsLentBinding) return;
+        if (selfParamType.IsLentBinding) return null;
 
         if (selfParamType.Type is not ReferenceType { IsConstReference: true } toType
-            || context.Syntax.ConvertedDataType is not ReferenceType { AllowsFreeze: true } fromType)
-            return;
+            || selfArgType is not ReferenceType { AllowsFreeze: true } fromType)
+            return null;
 
-        if (!toType.BareType.IsAssignableFrom(fromType.BareType)) return;
+        if (!toType.BareType.IsAssignableFrom(fromType.BareType)) return null;
 
-        if (context.Syntax is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
-            || !flow.IsIsolatedExceptFor(symbol, context.Variable))
-            return;
+        if (selfArgSyntax is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
+            || !flow.IsIsolatedExceptFor(symbol, selfArgVariable))
+            return null;
 
-        context.Syntax.AddConversion(new ImplicitFreeze(context.Syntax.ImplicitConversion));
-        flow.Freeze(symbol);
+        if (enact)
+            flow.Freeze(symbol);
+
+        return new ImplicitFreeze(priorConversion);
     }
 
     private ExpressionResult InferFunctionInvocationType(
@@ -1757,7 +1814,10 @@ public class BasicBodyAnalyzer
         symbols = symbols.Where(s =>
         {
             if (s.Arity != arguments.Arguments.Count) return false;
-            // TODO check compatibility of self type
+            // Is self arg compatible?
+            if (!TypesAreCompatible(arguments.Self!, nonEmptySelfType.ReplaceTypeParametersIn(s.SelfParameterType), flow, isSelf: true))
+                return false;
+            // Are arguments compatible?
             var parameterTypes = s.ParameterTypes.Select(nonEmptySelfType.ReplaceTypeParametersIn);
             return TypesAreCompatible(arguments, parameterTypes, flow);
         });
