@@ -1251,9 +1251,9 @@ public class BasicBodyAnalyzer
             return new(invocation, CombineResults(arguments, flow));
         }
 
-        var methodSymbols = SelectMethodOverload(methodName, selfArgumentType, arguments, flow);
+        var validOverloads = SelectMethodOverload(methodName, selfArgumentType, arguments, flow);
 
-        switch (methodSymbols.Count)
+        switch (validOverloads.Count)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindMethod(file, invocation.Span, methodName));
@@ -1261,22 +1261,17 @@ public class BasicBodyAnalyzer
                 invocation.DataType = DataType.Unknown;
                 break;
             case 1:
-                var methodSymbol = methodSymbols.Single();
-                invocation.ReferencedSymbol.Fulfill(methodSymbol);
+                var overload = validOverloads.Single();
+                invocation.ReferencedSymbol.Fulfill(overload.Symbol);
 
-                // Since a method has been resolved, this must not be an empty type
-                var nonEmptySelfArgumentType = (NonEmptyType)selfArgumentType;
-
-                var selfParamType = nonEmptySelfArgumentType.ReplaceTypeParametersIn(methodSymbol.SelfParameterType);
+                var selfParamType = overload.SelfParameterType!.Value;
                 selfResult = AddImplicitConversionIfNeeded(selfResult, selfParamType, flow);
                 AddImplicitMoveIfNeeded(selfResult, selfParamType, flow);
                 AddImplicitFreezeIfNeeded(selfResult, selfParamType, flow);
                 CheckTypeCompatibility(selfParamType.Type, selfResult.Syntax);
-                var expectedArgumentTypes = methodSymbol.ParameterTypes.Select(nonEmptySelfArgumentType.ReplaceTypeParametersIn);
-                CheckTypes(arguments, expectedArgumentTypes, flow);
+                CheckTypes(arguments, overload.ParameterTypes, flow);
                 arguments = arguments with { Self = selfResult };
-                var returnType = methodSymbol.ReturnType;
-                invocation.DataType = nonEmptySelfArgumentType.ReplaceTypeParametersIn(returnType.Type);
+                invocation.DataType = overload.ReturnType.Type;
                 AssignInvocationSemantics(invocation, invocation.DataType);
                 break;
             default:
@@ -1770,8 +1765,8 @@ public class BasicBodyAnalyzer
         // Filter down to symbols that could possible match
         contextualizedSymbols = contextualizedSymbols.Where(s =>
         {
-            if (s.Arity != arguments.Arguments.Count) return false;
-
+            // Arity depends on the contextualized symbols because parameters can drop out with `void`
+            if (s.Arity != arguments.Arity) return false;
             return TypesAreCompatible(arguments, s.ParameterTypes, flow);
         }).ToFixedSet();
         // TODO Select most specific match
@@ -1780,50 +1775,64 @@ public class BasicBodyAnalyzer
 
     private static FixedSet<Contextualized<TSymbol>> Contextualize<TSymbol>(
         NonEmptyType? contextType,
-        FixedSet<TSymbol> symbols)
+        IEnumerable<TSymbol> symbols)
         where TSymbol : InvocableSymbol
     {
+        if (contextType is null)
+            return symbols.Select(s => new Contextualized<TSymbol>(s, SelfParameterTypeOrNull(s), s.ParameterTypes, s.ReturnType)).ToFixedSet();
+
         return symbols.Select(s =>
         {
-            var effectiveParameterTypes = contextType is null
-                ? s.ParameterTypes
-                : s.ParameterTypes.Select(contextType.ReplaceTypeParametersIn).Where(p => p.Type is NonEmptyType)
-                   .ToFixedList();
-            var effectiveReturnType = contextType?.ReplaceTypeParametersIn(s.ReturnType) ?? s.ReturnType;
-            return new Contextualized<TSymbol>(s, effectiveParameterTypes, effectiveReturnType);
+            var effectiveSelfType = contextType.ReplaceTypeParametersIn(SelfParameterTypeOrNull(s));
+            var effectiveParameterTypes = s.ParameterTypes.Select(contextType.ReplaceTypeParametersIn)
+                                           .Where(p => p.Type is NonEmptyType).ToFixedList();
+            var effectiveReturnType = contextType.ReplaceTypeParametersIn(s.ReturnType);
+            return new Contextualized<TSymbol>(s, effectiveSelfType, effectiveParameterTypes, effectiveReturnType);
         }).ToFixedSet();
     }
 
-    private FixedList<MethodSymbol> SelectMethodOverload(
+    private static ParameterType? SelfParameterTypeOrNull(InvocableSymbol symbol)
+    {
+        if (symbol is MethodSymbol { SelfParameterType: var selfType })
+            return selfType;
+        return null;
+    }
+
+    private FixedSet<Contextualized<MethodSymbol>> SelectMethodOverload(
         SimpleName methodName,
         DataType selfType,
         ArgumentResults arguments,
         FlowState flow)
     {
         if (selfType is not NonEmptyType nonEmptySelfType)
-            return FixedList<MethodSymbol>.Empty;
+            return FixedSet<Contextualized<MethodSymbol>>.Empty;
 
         if (nonEmptySelfType is OptionalType)
-            return FixedList<MethodSymbol>.Empty;
+            return FixedSet<Contextualized<MethodSymbol>>.Empty;
 
         var contextSymbol = LookupSymbolForType(nonEmptySelfType);
         var symbols = symbolTrees.Children(contextSymbol!)
-                                 .OfType<MethodSymbol>().Where(s => s.Name == methodName);
+                                 .OfType<MethodSymbol>()
+                                 .Where(s => s.Name == methodName);
+
+        var contextualizedSymbols = Contextualize(nonEmptySelfType, symbols);
 
         // Filter down to symbols that could possible match
-        symbols = symbols.Where(s =>
+        contextualizedSymbols = contextualizedSymbols.Where(s =>
         {
-            if (s.Arity != arguments.Arguments.Count) return false;
+            // Arity depends on the contextualized symbols because parameters can drop out with `void`
+            if (s.Arity != arguments.Arity) return false;
             // Is self arg compatible?
-            if (!TypesAreCompatible(arguments.Self!, nonEmptySelfType.ReplaceTypeParametersIn(s.SelfParameterType), flow, isSelf: true))
+            if (!TypesAreCompatible(arguments.Self!, nonEmptySelfType.ReplaceTypeParametersIn(s.SelfParameterType!.Value), flow, isSelf: true))
                 return false;
             // Are arguments compatible?
             var parameterTypes = s.ParameterTypes.Select(nonEmptySelfType.ReplaceTypeParametersIn);
             return TypesAreCompatible(arguments, parameterTypes, flow);
-        });
+        }).ToFixedSet();
 
         // TODO Select most specific match
-        return symbols.ToFixedList();
+
+        return contextualizedSymbols;
     }
 
     private TypeSymbol? LookupSymbolForType(DataType dataType)

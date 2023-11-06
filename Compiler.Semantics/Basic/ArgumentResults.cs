@@ -9,6 +9,8 @@ public readonly record struct ArgumentResults(ExpressionResult? Self, FixedList<
 {
     public IEnumerable<ExpressionResult> All => Self.YieldValue().Concat(Arguments);
 
+    public int Arity => Arguments.Count;
+
     public ArgumentResults(ExpressionResult? self, IEnumerable<ExpressionResult> arguments)
         : this(self, arguments.ToFixedList())
     {

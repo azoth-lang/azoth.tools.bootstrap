@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -27,6 +28,19 @@ public abstract class NonEmptyType : DataType
     /// <remarks>Has no effect if this is not a generic type.</remarks>
     public ParameterType ReplaceTypeParametersIn(ParameterType type)
         => type with { Type = ReplaceTypeParametersIn(type.Type) };
+
+    /// <summary>
+    /// Replace any <see cref="GenericParameterType"/> from this type that appear in the given type
+    /// with the type arguments from this type (assuming it has them).
+    /// </summary>
+    /// <remarks>Has no effect if this is not a generic type.</remarks>
+    [return: NotNullIfNotNull(nameof(type))]
+    public ParameterType? ReplaceTypeParametersIn(ParameterType? type)
+    {
+        if (type is ParameterType parameterType)
+            return ReplaceTypeParametersIn(parameterType);
+        return null;
+    }
 
     /// <summary>
     /// Replace any <see cref="GenericParameterType"/> from this type that appear in the given type
