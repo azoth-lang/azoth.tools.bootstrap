@@ -84,7 +84,7 @@ public sealed class FlowState
     }
 
     public void Freeze(BindingSymbol symbol)
-        // Because the symbol could reference `lent` `const` data, it still needs to be tracked
+        // Because the symbol could reference `lent const` data, it still needs to be tracked
         // and can't be dropped.
         => capabilities.Freeze(symbol);
 
@@ -101,6 +101,12 @@ public sealed class FlowState
     /// </summary>
     /// <remarks>This is named for it to be used as <c>flow.Type(symbol)</c></remarks>
     public DataType Type(BindingSymbol? symbol) => capabilities.CurrentType(symbol);
+
+    /// <summary>
+    /// Gives the type of an alias to the symbol
+    /// </summary>
+    /// <remarks>This is named for it to be used as <c>flow.AliasType(symbol)</c></remarks>
+    public DataType AliasType(BindingSymbol? symbol) => capabilities.AliasType(symbol);
 
     /// <summary>
     /// Combine two <see cref="ResultVariable"/>s into a single sharing set and return a result

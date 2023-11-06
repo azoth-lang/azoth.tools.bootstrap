@@ -163,7 +163,18 @@ public sealed class ReferenceCapability
     /// <summary>
     /// The reference capability after a possibly temporary alias has been made to it.
     /// </summary>
-    public ReferenceCapability Alias() => this == Isolated ? Mutable : this;
+    public ReferenceCapability WhenAliased() => this == Isolated ? Mutable : this;
+
+
+    /// <summary>
+    /// The reference capability of an alias to this type
+    /// </summary>
+    public ReferenceCapability OfAlias()
+    {
+        if (this == Isolated) return Mutable;
+        if (this == ExclusivelyMutable) return ReadOnly;
+        return this;
+    }
 
     /// <summary>
     /// The reference capability if the referenced object were frozen.

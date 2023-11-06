@@ -619,7 +619,7 @@ public class BasicBodyAnalyzer
                 if (symbol is VariableSymbol variableSymbol)
                 {
                     resultVariable = flow.Alias(variableSymbol);
-                    type = flow.Type(variableSymbol);
+                    type = flow.AliasType(variableSymbol);
                     // TODO is this right?
                     referenceSemantics = ExpressionSemantics.MutableReference;
                 }
@@ -897,7 +897,7 @@ public class BasicBodyAnalyzer
                 // InferSelfSymbol reports diagnostics and returns null if there is a problem
                 var selfSymbol = InferSelfSymbol(exp);
                 var variableResult = selfSymbol is not null ? flow.Alias(selfSymbol) : null;
-                var type = flow.Type(selfSymbol);
+                var type = flow.AliasType(selfSymbol);
                 // TODO is this correct?
                 var referenceSemantics = ExpressionSemantics.MutableReference;
                 exp.Semantics = type.Semantics.ToExpressionSemantics(referenceSemantics);

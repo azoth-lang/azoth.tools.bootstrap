@@ -34,7 +34,6 @@ public sealed class ReferenceCapabilities
         // Other types don't have capabilities and don't need to be tracked
     }
 
-
     public ReferenceCapability? For(BindingSymbol? symbol)
     {
         if (symbol?.SharingIsTracked() ?? false)
@@ -49,8 +48,16 @@ public sealed class ReferenceCapabilities
         var current = For(symbol);
         if (current is not null)
             return ((ReferenceType)symbol!.DataType).With(current);
-        //if (symbol?.DataType is ReferenceType referenceType)
-        //    return referenceType.With(currentCapabilities[symbol].Current);
+
+        // Other types don't have capabilities and don't need to be tracked
+        return symbol?.DataType ?? DataType.Unknown;
+    }
+
+    public DataType AliasType(BindingSymbol? symbol)
+    {
+        var current = For(symbol);
+        if (current is not null)
+            return ((ReferenceType)symbol!.DataType).With(current.OfAlias());
 
         // Other types don't have capabilities and don't need to be tracked
         return symbol?.DataType ?? DataType.Unknown;

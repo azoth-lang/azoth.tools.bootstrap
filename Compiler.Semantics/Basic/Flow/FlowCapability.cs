@@ -24,7 +24,7 @@ public readonly record struct FlowCapability(ReferenceCapability Original, Capab
     public static implicit operator FlowCapability(ReferenceCapability capability)
         => new(capability, CapabilityRestrictions.None);
 
-    public FlowCapability Alias() => this with { Modified = Modified.Alias() };
+    public FlowCapability Alias() => this with { Modified = Modified.WhenAliased() };
 
     public FlowCapability Freeze() => this with { Modified = Modified.Freeze() };
 
