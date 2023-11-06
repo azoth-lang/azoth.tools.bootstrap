@@ -55,10 +55,10 @@ public static class NameBindingError
             5008, $"Could not find method with the name `{methodName}` and compatible arguments.");
     }
 
-    public static Diagnostic AmbiguousMethodCall(CodeFile file, TextSpan span)
+    public static Diagnostic AmbiguousMethodCall(CodeFile file, TextSpan span, SimpleName methodName)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            5009, "Method call is ambiguous.");
+            5009, $"Method call to `{methodName}` is ambiguous.");
     }
 
     // TODO add check for this back

@@ -853,12 +853,6 @@ public class BasicBodyAnalyzer
                     // resolve generic type fields
                     type = nonEmptyContext.ReplaceTypeParametersIn(type);
                 var resultVariable = contextResult.Variable;
-                // If there could be no write aliases, then the result does not share with anything
-                if (!type.AllowsWriteAliases)
-                {
-                    flow.Drop(contextResult.Variable);
-                    resultVariable = null;
-                }
                 var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 member.Semantics = semantics;
                 member.DataType = type;
@@ -1241,7 +1235,7 @@ public class BasicBodyAnalyzer
         invocation.Expression.DataType = DataType.Void;
         invocation.Expression.Semantics = ExpressionSemantics.Void;
 
-        var selfResult = arguments.Self!;
+        var selfResult = arguments.Self.Assigned();
         var selfArgumentType = selfResult.Type;
         // If it is unknown, we already reported an error
         if (!selfArgumentType.IsFullyKnown)
@@ -1275,19 +1269,13 @@ public class BasicBodyAnalyzer
                 AssignInvocationSemantics(invocation, invocation.DataType);
                 break;
             default:
-                diagnostics.Add(NameBindingError.AmbiguousMethodCall(file, invocation.Span));
+                diagnostics.Add(NameBindingError.AmbiguousMethodCall(file, invocation.Span, methodName));
                 invocation.ReferencedSymbol.Fulfill(null);
                 invocation.DataType = DataType.Unknown;
                 break;
         }
 
         var resultVariable = CombineResults(arguments, flow);
-        // If there could be no write aliases, then the current result does not share with anything
-        if (!invocation.DataType.AllowsWriteAliases)
-        {
-            flow.Drop(resultVariable);
-            resultVariable = null;
-        }
 
         // Apply the referenced symbol to the underlying name
         if (invocation.Expression is IQualifiedNameExpressionSyntax nameExpression)
@@ -1412,12 +1400,6 @@ public class BasicBodyAnalyzer
         }
 
         var resultVariable = CombineResults(arguments, flow);
-        // If there could be no write aliases, then the current result does not share with anything
-        if (!invocation.DataType.AllowsWriteAliases)
-        {
-            flow.Drop(resultVariable);
-            resultVariable = null;
-        }
 
         // There are no types for functions
         invocation.Expression.DataType = DataType.Void;
@@ -1761,6 +1743,18 @@ public class BasicBodyAnalyzer
         FlowState flow)
         where TSymbol : InvocableSymbol
     {
+        var contextualizedSymbols = CompatibleOverloads(contextType, symbols, arguments, flow).ToFixedSet();
+        // TODO Select most specific match
+        return contextualizedSymbols;
+    }
+
+    private static IEnumerable<Contextualized<TSymbol>> CompatibleOverloads<TSymbol>(
+        NonEmptyType? contextType,
+        FixedSet<TSymbol> symbols,
+        ArgumentResults arguments,
+        FlowState flow)
+        where TSymbol : InvocableSymbol
+    {
         var contextualizedSymbols = Contextualize(contextType, symbols);
         // Filter down to symbols that could possible match
         contextualizedSymbols = contextualizedSymbols.Where(s =>
@@ -1769,17 +1763,16 @@ public class BasicBodyAnalyzer
             if (s.Arity != arguments.Arity) return false;
             return TypesAreCompatible(arguments, s.ParameterTypes, flow);
         }).ToFixedSet();
-        // TODO Select most specific match
         return contextualizedSymbols;
     }
 
-    private static FixedSet<Contextualized<TSymbol>> Contextualize<TSymbol>(
+    private static IEnumerable<Contextualized<TSymbol>> Contextualize<TSymbol>(
         NonEmptyType? contextType,
         IEnumerable<TSymbol> symbols)
         where TSymbol : InvocableSymbol
     {
         if (contextType is null)
-            return symbols.Select(s => new Contextualized<TSymbol>(s, SelfParameterTypeOrNull(s), s.ParameterTypes, s.ReturnType)).ToFixedSet();
+            return symbols.Select(s => new Contextualized<TSymbol>(s, SelfParameterTypeOrNull(s), s.ParameterTypes, s.ReturnType));
 
         return symbols.Select(s =>
         {
@@ -1788,7 +1781,7 @@ public class BasicBodyAnalyzer
                                            .Where(p => p.Type is NonEmptyType).ToFixedList();
             var effectiveReturnType = contextType.ReplaceTypeParametersIn(s.ReturnType);
             return new Contextualized<TSymbol>(s, effectiveSelfType, effectiveParameterTypes, effectiveReturnType);
-        }).ToFixedSet();
+        });
     }
 
     private static ParameterType? SelfParameterTypeOrNull(InvocableSymbol symbol)
@@ -1799,6 +1792,17 @@ public class BasicBodyAnalyzer
     }
 
     private FixedSet<Contextualized<MethodSymbol>> SelectMethodOverload(
+        SimpleName methodName,
+        DataType selfType,
+        ArgumentResults arguments,
+        FlowState flow)
+    {
+        var contextualizedSymbols = CompatibleMethodOverloads(methodName, selfType, arguments, flow).ToFixedSet();
+        // TODO Select most specific match
+        return contextualizedSymbols;
+    }
+
+    private IEnumerable<Contextualized<MethodSymbol>> CompatibleMethodOverloads(
         SimpleName methodName,
         DataType selfType,
         ArgumentResults arguments,
@@ -1823,15 +1827,13 @@ public class BasicBodyAnalyzer
             // Arity depends on the contextualized symbols because parameters can drop out with `void`
             if (s.Arity != arguments.Arity) return false;
             // Is self arg compatible?
-            if (!TypesAreCompatible(arguments.Self!, nonEmptySelfType.ReplaceTypeParametersIn(s.SelfParameterType!.Value), flow, isSelf: true))
+            if (!TypesAreCompatible(arguments.Self!, nonEmptySelfType.ReplaceTypeParametersIn(s.SelfParameterType!.Value),
+                    flow, isSelf: true))
                 return false;
             // Are arguments compatible?
             var parameterTypes = s.ParameterTypes.Select(nonEmptySelfType.ReplaceTypeParametersIn);
             return TypesAreCompatible(arguments, parameterTypes, flow);
         }).ToFixedSet();
-
-        // TODO Select most specific match
-
         return contextualizedSymbols;
     }
 
