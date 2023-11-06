@@ -138,10 +138,11 @@ InvocationExpression: Expression, 'IHasContainingLexicalScope' = Expression Argu
 
 // ---------- Variable Expressions
 NameExpression: AssignableExpression = ReferencedSymbol:'Promise<Symbol?>';
-SimpleNameExpression: NameExpression, 'IHasContainingLexicalScope' = Name:'SimpleName'?;
-SelfExpression: Expression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfParameterSymbol?>';
+VariableNameExpression: Expression = ReferencedSymbol:'IPromise<Symbol?>';
+SimpleNameExpression: NameExpression, VariableNameExpression, 'IHasContainingLexicalScope' = Name:'SimpleName'? ReferencedSymbol:'Promise<Symbol?>';
+SelfExpression: VariableNameExpression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfParameterSymbol?>';
 QualifiedNameExpression: NameExpression = Context:Expression AccessOperator:'AccessOperator' Member:SimpleNameExpression;
 
 // ---------- Capability Expressions
-MoveExpression: Expression = Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
-FreezeExpression: Expression = Referent:Expression ReferencedSymbol:'Promise<BindingSymbol?>';
+MoveExpression: Expression = Referent:VariableNameExpression ReferencedSymbol:'Promise<BindingSymbol?>';
+FreezeExpression: Expression = Referent:VariableNameExpression ReferencedSymbol:'Promise<BindingSymbol?>';

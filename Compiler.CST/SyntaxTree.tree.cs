@@ -472,7 +472,7 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
     typeof(INextExpressionSyntax),
     typeof(IReturnExpressionSyntax),
     typeof(IInvocationExpressionSyntax),
-    typeof(ISelfExpressionSyntax),
+    typeof(IVariableNameExpressionSyntax),
     typeof(IMoveExpressionSyntax),
     typeof(IFreezeExpressionSyntax))]
 public partial interface IExpressionSyntax : ISyntax
@@ -630,15 +630,24 @@ public partial interface INameExpressionSyntax : IAssignableExpressionSyntax
     Promise<Symbol?> ReferencedSymbol { get; }
 }
 
-public partial interface ISimpleNameExpressionSyntax : INameExpressionSyntax, IHasContainingLexicalScope
+[Closed(
+    typeof(ISimpleNameExpressionSyntax),
+    typeof(ISelfExpressionSyntax))]
+public partial interface IVariableNameExpressionSyntax : IExpressionSyntax
 {
-    SimpleName? Name { get; }
+    IPromise<Symbol?> ReferencedSymbol { get; }
 }
 
-public partial interface ISelfExpressionSyntax : IExpressionSyntax
+public partial interface ISimpleNameExpressionSyntax : INameExpressionSyntax, IVariableNameExpressionSyntax, IHasContainingLexicalScope
+{
+    SimpleName? Name { get; }
+    new Promise<Symbol?> ReferencedSymbol { get; }
+}
+
+public partial interface ISelfExpressionSyntax : IVariableNameExpressionSyntax
 {
     bool IsImplicit { get; }
-    Promise<SelfParameterSymbol?> ReferencedSymbol { get; }
+    new Promise<SelfParameterSymbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IQualifiedNameExpressionSyntax : INameExpressionSyntax
@@ -650,13 +659,13 @@ public partial interface IQualifiedNameExpressionSyntax : INameExpressionSyntax
 
 public partial interface IMoveExpressionSyntax : IExpressionSyntax
 {
-    IExpressionSyntax Referent { get; }
+    IVariableNameExpressionSyntax Referent { get; }
     Promise<BindingSymbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IFreezeExpressionSyntax : IExpressionSyntax
 {
-    IExpressionSyntax Referent { get; }
+    IVariableNameExpressionSyntax Referent { get; }
     Promise<BindingSymbol?> ReferencedSymbol { get; }
 }
 

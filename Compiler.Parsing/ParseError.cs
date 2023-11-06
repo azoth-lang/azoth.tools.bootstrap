@@ -88,7 +88,7 @@ internal static class ParseError
     public static Diagnostic CantFreezeExpression(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2012, "Can't freeze expression. Can only freeze a variable");
+            2012, "Can't freeze expression. Can only freeze a variable or self");
     }
 
     public static Diagnostic AbstractAssociatedFunction(CodeFile file, TextSpan span)

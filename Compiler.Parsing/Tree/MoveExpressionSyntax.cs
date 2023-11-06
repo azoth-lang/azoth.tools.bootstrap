@@ -11,18 +11,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 [SuppressMessage("Performance", "CA1812:Class Never Instantiated")]
 internal class MoveExpressionSyntax : ExpressionSyntax, IMoveExpressionSyntax
 {
-    public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
+    public IVariableNameExpressionSyntax Referent { [DebuggerStepThrough] get; }
 
     public Promise<BindingSymbol?> ReferencedSymbol { [DebuggerStepThrough] get; }
         = new Promise<BindingSymbol?>();
 
-    public MoveExpressionSyntax(TextSpan span, ISimpleNameExpressionSyntax referent)
-        : base(span)
-    {
-        Referent = referent;
-    }
-
-    public MoveExpressionSyntax(TextSpan span, ISelfExpressionSyntax referent)
+    public MoveExpressionSyntax(TextSpan span, IVariableNameExpressionSyntax referent)
         : base(span)
     {
         Referent = referent;

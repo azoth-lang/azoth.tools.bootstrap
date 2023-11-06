@@ -459,67 +459,42 @@ public class BasicBodyAnalyzer
             case IMoveExpressionSyntax exp:
                 switch (exp.Referent)
                 {
+                    default:
+                        throw ExhaustiveMatch.Failed(exp.Referent);
                     case ISimpleNameExpressionSyntax nameExpression:
                     {
                         var symbol = InferNameSymbol(nameExpression);
                         if (symbol is not BindingSymbol bindingSymbol)
                             throw new NotImplementedException("Raise error about `move` from non-variable");
 
-                        return InterMoveExpressionType(exp, bindingSymbol, flow);
+                        return InferMoveExpressionType(exp, bindingSymbol, flow);
                     }
                     case ISelfExpressionSyntax selfExpression:
                     {
                         var symbol = InferSelfSymbol(selfExpression);
-                        if (symbol is null)
-                            throw new NotImplementedException("Raise error about `move` from self");
-                        return InterMoveExpressionType(exp, symbol, flow);
+                        if (symbol is null) throw new NotImplementedException("Raise error about `move` from self");
+                        return InferMoveExpressionType(exp, symbol, flow);
                     }
-                    case IMoveExpressionSyntax:
-                        throw new NotImplementedException("Raise error about `move move` expression");
-                    default:
-                        throw new NotImplementedException("Tried to move out of expression type that isn't implemented");
                 }
             case IFreezeExpressionSyntax exp:
                 switch (exp.Referent)
                 {
+                    default:
+                        throw ExhaustiveMatch.Failed(exp.Referent);
                     case ISimpleNameExpressionSyntax nameExpression:
+                    {
                         var symbol = InferNameSymbol(nameExpression);
                         if (symbol is not BindingSymbol bindingSymbol)
                             throw new NotImplementedException("Raise error about `freeze` of non-variable");
 
-                        var type = flow.Type(bindingSymbol);
-                        switch (type)
-                        {
-                            case ReferenceType referenceType:
-                                if (!referenceType.AllowsRecoverIsolation)
-                                    diagnostics.Add(TypeError.NotImplemented(file, exp.Span,
-                                        "Reference capability does not allow freezing"));
-                                if (!flow.IsIsolated(bindingSymbol))
-                                    diagnostics.Add(FlowTypingError.CannotFreezeValue(file, exp));
-
-                                type = referenceType.With(ReferenceCapability.Constant);
-                                flow.Freeze(bindingSymbol);
-                                break;
-                            case UnknownType:
-                                type = DataType.Unknown;
-                                break;
-                            default:
-                                throw new NotImplementedException("Non-freezable type can't be frozen.");
-                        }
-                        // Alias not needed because it is already `const`
-
-                        exp.ReferencedSymbol.Fulfill(bindingSymbol);
-
-                        const ExpressionSemantics semantics = ExpressionSemantics.ConstReference;
-                        nameExpression.Semantics = semantics;
-                        nameExpression.DataType = type;
-                        exp.Semantics = semantics;
-                        exp.DataType = type;
-                        return new ExpressionResult(exp);
-                    case IMoveExpressionSyntax:
-                        throw new NotImplementedException("Raise error about `freeze move` expression.");
-                    default:
-                        throw new NotImplementedException("Tried to freeze expression type that isn't implemented.");
+                        return InferFreezeExpressionType(exp, bindingSymbol, flow);
+                    }
+                    case ISelfExpressionSyntax selfExpression:
+                    {
+                        var symbol = InferSelfSymbol(selfExpression);
+                        if (symbol is null) throw new NotImplementedException("Raise error about `freeze` from self");
+                        return InferFreezeExpressionType(exp, symbol, flow);
+                    }
                 }
             case IReturnExpressionSyntax exp:
             {
@@ -964,7 +939,7 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private ExpressionResult InterMoveExpressionType(
+    private ExpressionResult InferMoveExpressionType(
         IMoveExpressionSyntax exp,
         BindingSymbol symbol,
         FlowState flow)
@@ -994,6 +969,41 @@ public class BasicBodyAnalyzer
         exp.ReferencedSymbol.Fulfill(symbol);
 
         const ExpressionSemantics semantics = ExpressionSemantics.IsolatedReference;
+        exp.Referent.Semantics = semantics;
+        exp.Referent.DataType = type;
+        exp.Semantics = semantics;
+        exp.DataType = type;
+        return new ExpressionResult(exp);
+    }
+
+    private ExpressionResult InferFreezeExpressionType(
+        IFreezeExpressionSyntax exp,
+        BindingSymbol symbol,
+        FlowState flow)
+    {
+        var type = flow.Type(symbol);
+        switch (type)
+        {
+            case ReferenceType referenceType:
+                if (!referenceType.AllowsFreeze)
+                    diagnostics.Add(TypeError.NotImplemented(file, exp.Span,
+                        "Reference capability does not allow freezing"));
+                if (!flow.IsIsolated(symbol)) diagnostics.Add(FlowTypingError.CannotFreezeValue(file, exp));
+
+                type = referenceType.With(ReferenceCapability.Constant);
+                flow.Freeze(symbol);
+                break;
+            case UnknownType:
+                type = DataType.Unknown;
+                break;
+            default:
+                throw new NotImplementedException("Non-freezable type can't be frozen.");
+        }
+        // Alias not needed because it is already `const`
+
+        exp.ReferencedSymbol.Fulfill(symbol);
+
+        const ExpressionSemantics semantics = ExpressionSemantics.ConstReference;
         exp.Referent.Semantics = semantics;
         exp.Referent.DataType = type;
         exp.Semantics = semantics;
