@@ -9,10 +9,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
 public class SharingSet : IReadOnlySharingSet
 {
+    /// <summary>
+    /// Whether this sharing set contains lent references that must not be mixed with other sharing
+    /// sets.
+    /// </summary>
     public bool IsLent { get; }
     private readonly HashSet<ISharingVariable> variables;
     public int Count => variables.Count;
-    public bool IsWriteRestricted => variables.Any(v => v.RestrictsWrite);
+    public CapabilityRestrictions Restrictions
+        => variables.Select(v => v.RestrictionsImposed).Append(CapabilityRestrictions.None).Max();
     public bool IsIsolated => variables.Count == 1;
     public bool IsAlive => variables.Any(v => v.KeepsSetAlive);
 
@@ -82,7 +87,9 @@ public class SharingSet : IReadOnlySharingSet
     {
         var result = $"Count {variables.Count}";
         if (IsLent) result += ", lent";
-        if (IsWriteRestricted) result += ", restrict write";
+        var restrictions = Restrictions;
+        if (restrictions == CapabilityRestrictions.ReadWrite) result += ", restrict read/write";
+        else if (restrictions == CapabilityRestrictions.Write) result += ", restrict write";
         return result;
     }
 }

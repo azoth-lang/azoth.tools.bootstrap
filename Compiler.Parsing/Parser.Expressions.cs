@@ -374,6 +374,8 @@ public partial class Parser
                 var span = TextSpan.Covering(move, expression.Span);
                 if (expression is ISimpleNameExpressionSyntax name)
                     return new MoveExpressionSyntax(span, name);
+                if(expression is ISelfExpressionSyntax self)
+                    return new MoveExpressionSyntax(span, self);
                 Add(ParseError.CantMoveOutOfExpression(File, span));
                 return expression;
             }

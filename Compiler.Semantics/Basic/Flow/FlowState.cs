@@ -56,12 +56,12 @@ public sealed class FlowState
         Drop(variable);
     }
 
-    public void Drop(BindingSymbol symbol) => RemoveRestrictions(sharing.Drop(symbol));
+    public void Drop(BindingSymbol symbol) => LiftRemovedRestrictions(sharing.Drop(symbol));
 
     public void Drop(ResultVariable? variable)
     {
         if (variable is not null)
-            RemoveRestrictions(sharing.Drop(variable));
+            LiftRemovedRestrictions(sharing.Drop(variable));
     }
 
     /// <summary>
@@ -73,8 +73,7 @@ public sealed class FlowState
     {
         sharing.DropAllLocalVariablesAndParameters();
         // So many sets can be modified, just go through all of them and remove restrictions
-        foreach (var set in sharing.SharingSets)
-            RemoveRestrictions(set);
+        LiftRemovedRestrictions(sharing.SharingSets);
     }
 
     public void Move(BindingSymbol symbol)
@@ -134,26 +133,44 @@ public sealed class FlowState
     public ResultVariable LendConst(ResultVariable result)
     {
         var newResult = sharing.LendConst(result, resultVariableFactory, implicitLendFactory);
-        foreach (var variable in sharing.ReadSharingSet(result).OfType<BindingVariable>())
-            capabilities.RestrictWrite(variable.Symbol);
+        // Don't apply read/write restriction because if that is the level, it is already set
+        SetRestrictions(sharing.ReadSharingSet(result), applyReadWrite: false);
         return newResult;
     }
 
     /// <summary>
-    /// Remove restrictions on symbols in the set if allowed.
+    /// Mark the result as being lent iso.
     /// </summary>
-    private void RemoveRestrictions(IEnumerable<IReadOnlySharingSet> affectedSets)
+    /// <remarks>Because the current result must be at least temporarily iso, all references in
+    /// the sharing set must now not allow mutation or read.</remarks>
+    public ResultVariable LendIso(ResultVariable result)
     {
-        foreach (var set in affectedSets)
-            RemoveRestrictions(set);
+        var newResult = sharing.LendIso(result, resultVariableFactory, implicitLendFactory);
+        // Apply read/write restrictions because the level may have increased to that
+        SetRestrictions(sharing.ReadSharingSet(result), applyReadWrite: true);
+        return newResult;
     }
 
-    private void RemoveRestrictions(IReadOnlySharingSet sharingSet)
+    /// <summary>
+    /// Lift restrictions on symbols in the set if allowed.
+    /// </summary>
+    private void LiftRemovedRestrictions(IEnumerable<IReadOnlySharingSet> affectedSets)
     {
-        if (sharingSet.IsWriteRestricted) return;
+        foreach (var set in affectedSets)
+            LiftRemovedRestrictions(set);
+    }
 
+    private void LiftRemovedRestrictions(IReadOnlySharingSet sharingSet)
+        // Don't apply read/write restrictions since they have already been applied
+        => SetRestrictions(sharingSet, applyReadWrite: false);
+
+    private void SetRestrictions(IReadOnlySharingSet sharingSet, bool applyReadWrite)
+    {
+        var restrictions = sharingSet.Restrictions;
+        if (!applyReadWrite && restrictions == CapabilityRestrictions.ReadWrite)
+            return;
         foreach (var variable in sharingSet.OfType<BindingVariable>())
-            capabilities.RemoveWriteRestriction(variable.Symbol);
+            capabilities.SetRestrictions(variable.Symbol, restrictions);
     }
 
     public void Merge(FlowState other) => sharing.Merge(other.sharing);

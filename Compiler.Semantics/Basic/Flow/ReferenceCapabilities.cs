@@ -87,18 +87,10 @@ public sealed class ReferenceCapabilities
         // Other types don't have capabilities and don't need to be tracked
     }
 
-    public void RestrictWrite(BindingSymbol symbol)
+    public void SetRestrictions(BindingSymbol symbol, CapabilityRestrictions restrictions)
     {
         if (symbol.SharingIsTracked())
-            currentCapabilities[symbol] = currentCapabilities[symbol].RestrictWrite();
-
-        // Other types don't have capabilities and don't need to be tracked
-    }
-
-    public void RemoveWriteRestriction(BindingSymbol symbol)
-    {
-        if (symbol.SharingIsTracked())
-            currentCapabilities[symbol] = currentCapabilities[symbol].RemoveWriteRestriction();
+            currentCapabilities[symbol] = currentCapabilities[symbol].WithRestrictions(restrictions);
 
         // Other types don't have capabilities and don't need to be tracked
     }

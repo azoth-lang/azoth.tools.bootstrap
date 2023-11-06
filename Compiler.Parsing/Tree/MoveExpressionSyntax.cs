@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
@@ -18,7 +17,13 @@ internal class MoveExpressionSyntax : ExpressionSyntax, IMoveExpressionSyntax
         = new Promise<BindingSymbol?>();
 
     public MoveExpressionSyntax(TextSpan span, ISimpleNameExpressionSyntax referent)
-        : base(span) // TODO this could be a move or acquire?
+        : base(span)
+    {
+        Referent = referent;
+    }
+
+    public MoveExpressionSyntax(TextSpan span, ISelfExpressionSyntax referent)
+        : base(span)
     {
         Referent = referent;
     }

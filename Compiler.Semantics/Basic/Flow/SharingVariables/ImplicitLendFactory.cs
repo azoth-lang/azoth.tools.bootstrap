@@ -4,6 +4,9 @@ public class ImplicitLendFactory
 {
     private ImplicitLend? currentLend;
 
-    public ImplicitLend Create(bool restrictWrite)
-        => currentLend = new ImplicitLend(currentLend, restrictWrite);
+    public ImplicitLend CreateConstLend()
+        => currentLend = new ImplicitLend(currentLend, CapabilityRestrictions.Write);
+
+    public ImplicitLend CreateIsoLend()
+        => currentLend = new ImplicitLend(currentLend, CapabilityRestrictions.ReadWrite);
 }

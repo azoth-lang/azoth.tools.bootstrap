@@ -8,7 +8,7 @@ public sealed class BindingVariable : ISharingVariable
 {
     public BindingSymbol Symbol { get; }
     public bool IsVariableOrParameter { get; }
-    public bool RestrictsWrite => false;
+    public CapabilityRestrictions RestrictionsImposed => CapabilityRestrictions.None;
     public DataType DataType => Symbol.DataType;
     public bool IsLent => Symbol.IsLentBinding;
     public bool SharingIsTracked { get; }

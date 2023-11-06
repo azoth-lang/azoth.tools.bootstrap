@@ -66,8 +66,23 @@ public sealed class SharingRelation
         ImplicitLendFactory implicitLendFactory)
     {
         _ = SharingSet(result);
-        var borrowingResult = NewResult(resultVariableFactory, lent: true);
-        var lend = implicitLendFactory.Create(restrictWrite: true);
+        var borrowingResult = NewResult(resultVariableFactory, isLent: true);
+        var lend = implicitLendFactory.CreateConstLend();
+        Declare(lend.From, false);
+        Union(result, lend.From);
+        Declare(lend.To, true);
+        Union(borrowingResult, lend.To);
+        return borrowingResult;
+    }
+
+    public ResultVariable LendIso(
+        ResultVariable result,
+        ResultVariableFactory resultVariableFactory,
+        ImplicitLendFactory implicitLendFactory)
+    {
+        _ = SharingSet(result);
+        var borrowingResult = NewResult(resultVariableFactory, isLent: true);
+        var lend = implicitLendFactory.CreateIsoLend();
         Declare(lend.From, false);
         Union(result, lend.From);
         Declare(lend.To, true);
@@ -123,10 +138,10 @@ public sealed class SharingRelation
     }
 
     // TODO remove
-    private ResultVariable NewResult(ResultVariableFactory resultVariableFactory, bool lent = false)
+    private ResultVariable NewResult(ResultVariableFactory resultVariableFactory, bool isLent = false)
     {
         var result = resultVariableFactory.Create();
-        Declare(result, lent);
+        Declare(result, isLent);
         return result;
     }
 

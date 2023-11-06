@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
@@ -7,37 +8,35 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// Tracks the original and modified capability for a reference.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public readonly record struct FlowCapability(ReferenceCapability Original, bool IsWriteRestricted)
+public readonly record struct FlowCapability(ReferenceCapability Original, CapabilityRestrictions Restrictions)
 {
     public ReferenceCapability Modified { get; init; } = Original;
 
     public ReferenceCapability Current
-    {
-        get
+        => Restrictions switch
         {
-            if (IsWriteRestricted) return Modified.WithoutWrite();
-            return Modified;
-        }
-    }
+            CapabilityRestrictions.ReadWrite => ReferenceCapability.Identity,
+            CapabilityRestrictions.Write => Modified.WithoutWrite(),
+            CapabilityRestrictions.None => Modified,
+            _ => throw ExhaustiveMatch.Failed(Restrictions)
+        };
 
     public static implicit operator FlowCapability(ReferenceCapability capability)
-        => new(capability, false);
+        => new(capability, CapabilityRestrictions.None);
 
     public FlowCapability Alias() => this with { Modified = Modified.Alias() };
 
     public FlowCapability Freeze() => this with { Modified = Modified.Freeze() };
 
-    public FlowCapability RestrictWrite() => this with { IsWriteRestricted = true };
-
-    public FlowCapability RemoveWriteRestriction() => this with { IsWriteRestricted = false };
+    public FlowCapability WithRestrictions(CapabilityRestrictions restrictions)
+        => this with { Restrictions = restrictions };
 
     public override string ToString()
     {
-        var currentCapability = Current;
-        if (Original == currentCapability)
+        if (Original == Current)
             return Original.ToILString();
 
-        var writeRestrict = IsWriteRestricted ? "-/" : "";
-        return $"{Original.ToILString()} {writeRestrict}-> {Current.ToILString()}";
+        var restricted = Restrictions == CapabilityRestrictions.None ? "" : "-/";
+        return $"{Original.ToILString()} {restricted}-> {Current.ToILString()}";
     }
 }

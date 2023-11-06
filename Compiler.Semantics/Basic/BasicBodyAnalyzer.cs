@@ -125,17 +125,22 @@ public class BasicBodyAnalyzer
             if (parameterSymbol.DataType is not ReferenceType { Capability: var capability })
                 continue;
 
+            // These capabilities don't have to worry about external references
+            if (capability == ReferenceCapability.Isolated
+                || capability == ReferenceCapability.Constant
+                || capability == ReferenceCapability.Identity)
+                continue;
+
             if (parameterSymbol.IsLentBinding)
                 sharing.DeclareLentParameterReference(parameterSymbol, ++lentParameterNumber);
-            else if (capability != ReferenceCapability.Isolated
-                     && capability != ReferenceCapability.Constant
-                     && capability != ReferenceCapability.Identity)
+            else
             {
                 if (!nonLentParametersReferenceDeclared)
                 {
                     sharing.DeclareNonLentParametersReference();
                     nonLentParametersReferenceDeclared = true;
                 }
+
                 sharing.Union(ExternalReference.NonLentParameters, parameterSymbol);
             }
         }
@@ -403,12 +408,18 @@ public class BasicBodyAnalyzer
 
                 return null;
             }
-            case (ObjectType { IsIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from):
+            case (ObjectType { IsIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from)
+                when to.BareType.IsAssignableFrom(from.BareType):
             {
                 // Try to recover isolation
-                if (to.BareType.IsAssignableFrom(from.BareType) && flow.IsIsolated(fromResult))
+                if (flow.IsIsolated(fromResult))
                     return new RecoverIsolation(priorConversion);
-
+                if (toLentBinding)
+                {
+                    if (enact)
+                        newResult = flow.LendIso(fromResult!);
+                    return new RecoverIsolation(priorConversion);
+                }
                 return null;
             }
             default:
@@ -449,42 +460,20 @@ public class BasicBodyAnalyzer
                 switch (exp.Referent)
                 {
                     case ISimpleNameExpressionSyntax nameExpression:
+                    {
                         var symbol = InferNameSymbol(nameExpression);
                         if (symbol is not BindingSymbol bindingSymbol)
                             throw new NotImplementedException("Raise error about `move` from non-variable");
 
-                        var type = flow.Type(bindingSymbol);
-                        switch (type)
-                        {
-                            case ReferenceType referenceType:
-                                if (!referenceType.AllowsMove)
-                                    diagnostics.Add(TypeError.NotImplemented(file, exp.Span,
-                                        "Reference capability does not allow moving"));
-                                if (!flow.IsIsolated(bindingSymbol))
-                                    diagnostics.Add(FlowTypingError.CannotMoveValue(file, exp));
-
-                                type = referenceType.With(ReferenceCapability.Isolated);
-                                flow.Move(bindingSymbol);
-                                break;
-                            case ValueType { Semantics: TypeSemantics.MoveValue } valueType:
-                                type = valueType;
-                                break;
-                            case UnknownType:
-                                type = DataType.Unknown;
-                                break;
-                            default:
-                                throw new NotImplementedException("Non-moveable type can't be moved");
-                        }
-                        // Don't need to alias the symbol or union with result in flow because it will be moved
-
-                        exp.ReferencedSymbol.Fulfill(bindingSymbol);
-
-                        const ExpressionSemantics semantics = ExpressionSemantics.IsolatedReference;
-                        nameExpression.Semantics = semantics;
-                        nameExpression.DataType = type;
-                        exp.Semantics = semantics;
-                        exp.DataType = type;
-                        return new ExpressionResult(exp);
+                        return InterMoveExpressionType(exp, bindingSymbol, flow);
+                    }
+                    case ISelfExpressionSyntax selfExpression:
+                    {
+                        var symbol = InferSelfSymbol(selfExpression);
+                        if (symbol is null)
+                            throw new NotImplementedException("Raise error about `move` from self");
+                        return InterMoveExpressionType(exp, symbol, flow);
+                    }
                     case IMoveExpressionSyntax:
                         throw new NotImplementedException("Raise error about `move move` expression");
                     default:
@@ -973,6 +962,43 @@ public class BasicBodyAnalyzer
                 return new ExpressionResult(exp);
             }
         }
+    }
+
+    private ExpressionResult InterMoveExpressionType(
+        IMoveExpressionSyntax exp,
+        BindingSymbol symbol,
+        FlowState flow)
+    {
+        var type = flow.Type(symbol);
+        switch (type)
+        {
+            case ReferenceType referenceType:
+                if (!referenceType.AllowsMove)
+                    diagnostics.Add(TypeError.NotImplemented(file, exp.Span, "Reference capability does not allow moving"));
+                if (!flow.IsIsolated(symbol))
+                    diagnostics.Add(FlowTypingError.CannotMoveValue(file, exp));
+                type = referenceType.With(ReferenceCapability.Isolated);
+                flow.Move(symbol);
+                break;
+            case ValueType { Semantics: TypeSemantics.MoveValue } valueType:
+                type = valueType;
+                break;
+            case UnknownType:
+                type = DataType.Unknown;
+                break;
+            default:
+                throw new NotImplementedException("Non-moveable type can't be moved");
+        }
+        // Don't need to alias the symbol or union with result in flow because it will be moved
+
+        exp.ReferencedSymbol.Fulfill(symbol);
+
+        const ExpressionSemantics semantics = ExpressionSemantics.IsolatedReference;
+        exp.Referent.Semantics = semantics;
+        exp.Referent.DataType = type;
+        exp.Semantics = semantics;
+        exp.DataType = type;
+        return new ExpressionResult(exp);
     }
 
     private void ResolveTypes(

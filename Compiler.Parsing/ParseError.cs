@@ -52,7 +52,7 @@ internal static class ParseError
     public static Diagnostic CantMoveOutOfExpression(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2006, "Can't move out of expression. Can only move out of variable");
+            2006, "Can't move out of expression. Can only move out of variable or self");
     }
 
     public static Diagnostic ResultStatementInBody(CodeFile file, TextSpan span)

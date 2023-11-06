@@ -10,7 +10,7 @@ public class ImplicitLendFrom : ISharingVariable
     public ImplicitLend ImplicitLend { get; }
     public bool IsVariableOrParameter => false;
     /// <remarks>The from side is affected by any restrictions.</remarks>
-    public bool RestrictsWrite => ImplicitLend.RestrictWrite;
+    public CapabilityRestrictions RestrictionsImposed => ImplicitLend.RestrictionsImposed;
     public bool SharingIsTracked => true;
     public bool KeepsSetAlive => true;
     public ImplicitLendTo To => ImplicitLend.To;

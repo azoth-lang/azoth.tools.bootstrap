@@ -28,7 +28,7 @@ public sealed class ExternalReference : ISharingVariable
     private readonly uint number;
 
     public bool IsVariableOrParameter => false;
-    public bool RestrictsWrite => false;
+    public CapabilityRestrictions RestrictionsImposed => CapabilityRestrictions.None;
     public bool SharingIsTracked => true;
     public bool KeepsSetAlive => false;
 
