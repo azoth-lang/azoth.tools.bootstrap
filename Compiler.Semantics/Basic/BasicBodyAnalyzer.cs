@@ -945,7 +945,7 @@ public class BasicBodyAnalyzer
             case ReferenceType referenceType:
                 if (!referenceType.AllowsMove)
                     diagnostics.Add(TypeError.NotImplemented(file, exp.Span, "Reference capability does not allow moving"));
-                if (!flow.IsIsolated(symbol))
+                else if (!flow.IsIsolated(symbol))
                     diagnostics.Add(FlowTypingError.CannotMoveValue(file, exp));
                 type = referenceType.With(ReferenceCapability.Isolated);
                 flow.Move(symbol);
