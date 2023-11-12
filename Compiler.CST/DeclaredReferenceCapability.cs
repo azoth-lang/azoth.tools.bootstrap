@@ -11,7 +11,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 public enum DeclaredReferenceCapability
 {
     Isolated = 1,
-    ExclusivelyMutable,
     Mutable,
     ReadOnly, // read-only from this reference, possibly writable from others
     Constant,
@@ -24,7 +23,6 @@ public static class DeclaredReferenceCapabilityExtensions
         => capability switch
         {
             DeclaredReferenceCapability.Isolated => ReferenceCapability.Isolated,
-            DeclaredReferenceCapability.ExclusivelyMutable => ReferenceCapability.ExclusivelyMutable,
             DeclaredReferenceCapability.Mutable => ReferenceCapability.Mutable,
             DeclaredReferenceCapability.ReadOnly => ReferenceCapability.ReadOnly,
             DeclaredReferenceCapability.Constant => ReferenceCapability.Constant,

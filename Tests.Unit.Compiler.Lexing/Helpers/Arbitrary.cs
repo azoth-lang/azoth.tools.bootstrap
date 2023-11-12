@@ -288,7 +288,6 @@ public static class Arbitrary
         { "true", typeof(ITrueKeywordToken) },
         { "false", typeof(IFalseKeywordToken) },
         { "mut", typeof(IMutableKeywordToken) },
-        { "xmut", typeof(IExclusivelyMutableKeywordToken) },
         //{ "params", typeof(IParamsKeywordToken) },
         //{ "may", typeof(IMayKeywordToken) },
         //{ "no", typeof(INoKeywordToken) },

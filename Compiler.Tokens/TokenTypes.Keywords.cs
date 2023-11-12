@@ -32,7 +32,6 @@ public static partial class TokenTypes
                 //nameof(SelfTypeKeywordToken) => "Self",
                 nameof(IsolatedKeywordToken) => "iso",
                 nameof(MutableKeywordToken) => "mut",
-                nameof(ExclusivelyMutableKeywordToken) => "xmut",
                 nameof(AnyKeywordToken) => "Any",
                 //nameof(TypeKeywordToken) => "Type",
                 nameof(AsExclamationKeywordToken) => "as!",

@@ -31,12 +31,6 @@ public sealed class ReferenceCapability
         = new("mut", allowsWrite: true, allowsWriteAliases: true, allowsReadAliases: true);
 
     /// <summary>
-    /// A reference that has exclusive write access and can be stored into fields etc.
-    /// </summary>
-    public static readonly ReferenceCapability ExclusivelyMutable
-        = new("xmut", allowsWrite: true, allowsReadAliases: true);
-
-    /// <summary>
     /// A reference that has read-only access and can be stored into fields etc.
     /// </summary>
     public static readonly ReferenceCapability ReadOnly
@@ -99,18 +93,18 @@ public sealed class ReferenceCapability
     /// Does this capability allow a reference with it to be recovered to isolated if reference
     /// sharing permits.
     /// </summary>
-    public bool AllowsRecoverIsolation => this == Mutable || this == ExclusivelyMutable || this == ReadOnly;
+    public bool AllowsRecoverIsolation => this == Mutable || this == ReadOnly;
 
     /// <summary>
     /// Does this capability allow a reference with it to be moved if reference sharing permits.
     /// </summary>
-    public bool AllowsMove => this == Mutable || this == ExclusivelyMutable || this == ReadOnly || this == Isolated;
+    public bool AllowsMove => this == Mutable || this == ReadOnly || this == Isolated;
 
     /// <summary>
     /// Does this capability allow a reference with it to be frozen to const if reference
     /// sharing permits.
     /// </summary>
-    public bool AllowsFreeze => this == Mutable || this == ExclusivelyMutable || this == ReadOnly || this == Isolated;
+    public bool AllowsFreeze => this == Mutable || this == ReadOnly || this == Isolated;
 
     private ReferenceCapability(
         string name,
@@ -156,23 +150,27 @@ public sealed class ReferenceCapability
         if (!AllowsWrite) return this;
         // If it is init, there is only one non-writable init capability.
         if (IsInit) return InitReadOnly;
-        // It is either `iso`, `xmut`, or `mut`. Regardless, convert to `readonly`
+        // It is either `iso`, or `mut`. Regardless, convert to `readonly`
         return ReadOnly;
     }
 
     /// <summary>
     /// The reference capability after a possibly temporary alias has been made to it.
     /// </summary>
+    /// <remarks>Even though the behavior is the same as <see cref="OfAlias"/> the operation is
+    /// logically distinct.</remarks>
     public ReferenceCapability WhenAliased()
-        => this == Isolated || this == ExclusivelyMutable ? Mutable : this;
+        => this == Isolated ? Mutable : this;
 
 
     /// <summary>
     /// The reference capability of an alias to this type.
     /// </summary>
+    /// <remarks>Even though the behavior is the same as <see cref="WhenAliased"/> the operation is
+    /// logically distinct.</remarks>
     public ReferenceCapability OfAlias()
     {
-        if (this == Isolated || this == ExclusivelyMutable) return Mutable;
+        if (this == Isolated) return Mutable;
         return this;
     }
 
