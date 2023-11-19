@@ -222,10 +222,21 @@ public sealed class FlowState
         if (!subsetFor.TryGetValue(variable, out var set)) return false;
         if (set.IsIsolated) return true;
 
-        return set.Except(variable).Except(resultVariable)
-                  .OfType<BindingVariable>()
-                  .Select(v => v.Symbol)
-                  .All(symbol => Type(symbol) is not ReferenceType { AllowsWrite: true });
+        foreach (var sharingVariable in set.Except(variable).Except(resultVariable))
+        {
+            switch (sharingVariable)
+            {
+                case BindingVariable { Symbol: var symbol }:
+                    if (Type(symbol) is ReferenceType { AllowsWrite: true })
+                        return false;
+                    break;
+                // TODO support read only temp aliases
+                default:
+                    // All other reference types prevent freezing
+                    return false;
+            }
+        }
+        return true;
     }
 
     /// <summary>
