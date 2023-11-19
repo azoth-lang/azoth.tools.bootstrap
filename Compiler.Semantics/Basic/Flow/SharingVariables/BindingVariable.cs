@@ -23,6 +23,7 @@ public sealed class BindingVariable : ISharingVariable
 
     #region  Equality
     public bool Equals(ISharingVariable? other)
+        // All other properties are derived from the symbol
         => other is BindingVariable bindingVariable && Symbol.Equals(bindingVariable.Symbol);
 
     public override bool Equals(object? obj)

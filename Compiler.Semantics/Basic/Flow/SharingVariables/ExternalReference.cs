@@ -38,8 +38,8 @@ public sealed class ExternalReference : ISharingVariable
     }
 
     #region Equality
-    public bool Equals(ISharingVariable? other) =>
-        other is ExternalReference externalReference && number == externalReference.number;
+    public bool Equals(ISharingVariable? other)
+        => other is ExternalReference externalReference && number == externalReference.number;
 
     public override bool Equals(object? obj) => obj is ExternalReference other && Equals(other);
 

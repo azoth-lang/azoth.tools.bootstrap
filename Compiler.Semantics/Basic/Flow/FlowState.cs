@@ -145,7 +145,7 @@ public sealed class FlowState
         => variable is null || sharing.IsIsolated(variable);
 
     public bool IsIsolatedExceptFor(BindingVariable variable, ResultVariable? resultVariable)
-        => resultVariable is null ? IsIsolated(variable)
+        => resultVariable is null ? sharing.IsIsolated(variable)
             : sharing.IsIsolatedExceptFor(variable, resultVariable);
 
     /// <summary>
