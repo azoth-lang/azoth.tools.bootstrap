@@ -15,4 +15,11 @@ public class SharingSetSnapshot
     }
 
     public SharingSet MutableCopy() => new(IsLent, Variables);
+
+    public override string ToString()
+    {
+        var result = $"Count {Variables.Count}";
+        if (IsLent) result += ", lent";
+        return result;
+    }
 }

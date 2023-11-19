@@ -21,6 +21,9 @@ public sealed class ParameterSharingRelation
         SharingSets = BuildSharingSets(Symbols);
     }
 
+    public override string ToString()
+        => string.Join(", ", SharingSets.Select(s => $"{{{string.Join(", ", s)}}}"));
+
     #region Static Sharing Sets Builder Methods
     private static FixedSet<SharingSetSnapshot> BuildSharingSets(FixedList<BindingSymbol> parameterSymbols)
     {
