@@ -205,12 +205,27 @@ public sealed class FlowState
     public bool IsIsolated(BindingVariable variable) => IsIsolated((ISharingVariable)variable);
     public bool IsIsolated(ISharingVariable? variable)
         => variable is null || subsetFor.TryGetValue(variable, out var set) && set.IsIsolated;
-
     public bool IsIsolatedExceptFor(BindingVariable variable, ResultVariable? resultVariable)
     {
         return resultVariable is null
             ? IsIsolated((ISharingVariable)variable)
             : subsetFor.TryGetValue(variable, out var set) && set.IsIsolatedExceptFor(resultVariable);
+    }
+
+    public bool CanFreeze(BindingVariable variable) => CanFreeze((ISharingVariable)variable);
+    public bool CanFreeze(ISharingVariable? variable) => CanFreezeExceptFor(variable, null);
+    public bool CanFreezeExceptFor(BindingVariable variable, ResultVariable? resultVariable)
+        => CanFreezeExceptFor((ISharingVariable)variable, resultVariable);
+    public bool CanFreezeExceptFor(ISharingVariable? variable, ResultVariable? resultVariable)
+    {
+        if (variable is null) return true;
+        if (!subsetFor.TryGetValue(variable, out var set)) return false;
+        if (set.IsIsolated) return true;
+
+        return set.Except(variable).Except(resultVariable)
+                  .OfType<BindingVariable>()
+                  .Select(v => v.Symbol)
+                  .All(symbol => Type(symbol) is not ReferenceType { AllowsWrite: true });
     }
 
     /// <summary>

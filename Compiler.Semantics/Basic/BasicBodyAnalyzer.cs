@@ -364,8 +364,8 @@ public class BasicBodyAnalyzer
             case (ObjectType { IsConstReference: true } to, ObjectType { AllowsFreeze: true } from)
                 when to.BareType.IsAssignableFrom(from.BareType):
             {
-                // Try to recover const. Note a variable name is never isolated because the result is an alias.
-                if (flow.IsIsolated(fromResult))
+                // Try to recover const. Note a variable name can never be frozen because the result is an alias.
+                if (flow.CanFreeze(fromResult))
                     return new RecoverConst(priorConversion);
                 if (toLentBinding)
                 {
@@ -953,7 +953,7 @@ public class BasicBodyAnalyzer
                 if (!referenceType.AllowsFreeze)
                     diagnostics.Add(TypeError.NotImplemented(file, exp.Span,
                         "Reference capability does not allow freezing"));
-                if (!flow.IsIsolated(symbol))
+                if (!flow.CanFreeze(symbol))
                     diagnostics.Add(FlowTypingError.CannotFreezeValue(file, exp));
 
                 type = referenceType.With(ReferenceCapability.Constant);
@@ -1334,7 +1334,7 @@ public class BasicBodyAnalyzer
         if (!toType.BareType.IsAssignableFrom(fromType.BareType)) return null;
 
         if (selfArgSyntax is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
-            || !flow.IsIsolatedExceptFor(symbol, selfArgVariable))
+            || !flow.CanFreezeExceptFor(symbol, selfArgVariable))
             return null;
 
         if (enact)
