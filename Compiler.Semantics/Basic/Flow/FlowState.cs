@@ -140,7 +140,7 @@ public sealed class FlowState
     {
         var newResult = sharing.LendConst(result, resultVariableFactory, implicitLendFactory);
         // Don't apply read/write restriction because if that is the level, it is already set
-        SetRestrictions(sharing.ReadSharingSet(result), applyReadWrite: false);
+        SetRestrictions(sharing.ReadSharingSet(result), applyReadWriteRestriction: false);
         return newResult;
     }
 
@@ -153,7 +153,7 @@ public sealed class FlowState
     {
         var newResult = sharing.LendIso(result, resultVariableFactory, implicitLendFactory);
         // Apply read/write restrictions because the level may have increased to that
-        SetRestrictions(sharing.ReadSharingSet(result), applyReadWrite: true);
+        SetRestrictions(sharing.ReadSharingSet(result), applyReadWriteRestriction: true);
         return newResult;
     }
 
@@ -168,12 +168,12 @@ public sealed class FlowState
 
     private void LiftRemovedRestrictions(IReadOnlySharingSet sharingSet)
         // Don't apply read/write restrictions since they have already been applied
-        => SetRestrictions(sharingSet, applyReadWrite: false);
+        => SetRestrictions(sharingSet, applyReadWriteRestriction: false);
 
-    private void SetRestrictions(IReadOnlySharingSet sharingSet, bool applyReadWrite)
+    private void SetRestrictions(IReadOnlySharingSet sharingSet, bool applyReadWriteRestriction)
     {
         var restrictions = sharingSet.Restrictions;
-        if (!applyReadWrite && restrictions == CapabilityRestrictions.ReadWrite)
+        if (!applyReadWriteRestriction && restrictions == CapabilityRestrictions.ReadWrite)
             return;
         foreach (var variable in sharingSet.OfType<BindingVariable>())
             capabilities.SetRestrictions(variable.Symbol, restrictions);

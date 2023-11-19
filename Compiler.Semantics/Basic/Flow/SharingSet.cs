@@ -13,7 +13,7 @@ public class SharingSet : IReadOnlySharingSet
     /// Whether this sharing set contains lent references that must not be mixed with other sharing
     /// sets.
     /// </summary>
-    public bool IsLent { get; }
+    public bool IsLent { get; private set; }
     private readonly HashSet<ISharingVariable> variables;
     public int Count => variables.Count;
     public CapabilityRestrictions Restrictions
@@ -66,6 +66,8 @@ public class SharingSet : IReadOnlySharingSet
             || (smallerSet.IsLent && !IsIsolated))
             throw new InvalidOperationException("Cannot union two sharing sets if either is lent unless they are isolated sets.");
         variables.UnionWith(smallerSet.variables);
+        // In an error situation, a lent set can be unioned with a non-lent one and the result should be lent.
+        IsLent &= smallerSet.IsLent;
     }
 
     public void Clear() => variables.Clear();
