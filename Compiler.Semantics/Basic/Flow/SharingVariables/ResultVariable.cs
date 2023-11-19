@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 /// <summary>
 /// A "variable" representing a temporary result in an expression.
 /// </summary>
-public sealed class ResultVariable : ISharingVariable
+public sealed class ResultVariable : ICapabilitySharingVariable
 {
     #region Cache
     private static readonly ConcurrentDictionary<ulong, ResultVariable> Cache = new();

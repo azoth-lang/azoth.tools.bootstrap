@@ -26,8 +26,9 @@ public readonly record struct FlowCapability(ReferenceCapability Original, Capab
 
     public FlowCapability WhenAliased() => this with { Modified = Modified.WhenAliased() };
 
-    public FlowCapability Freeze() => this with { Modified = Modified.Freeze() };
+    public FlowCapability AfterFreeze() => this with { Modified = Modified.Freeze() };
 
+    public FlowCapability With(ReferenceCapability capability) => this with { Modified = capability };
     public FlowCapability WithRestrictions(CapabilityRestrictions restrictions)
         => this with { Restrictions = restrictions };
 

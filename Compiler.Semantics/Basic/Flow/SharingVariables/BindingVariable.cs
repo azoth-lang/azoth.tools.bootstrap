@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 
-public sealed class BindingVariable : ISharingVariable
+public sealed class BindingVariable : ICapabilitySharingVariable
 {
     public BindingSymbol Symbol { get; }
     public bool IsVariableOrParameter { get; }

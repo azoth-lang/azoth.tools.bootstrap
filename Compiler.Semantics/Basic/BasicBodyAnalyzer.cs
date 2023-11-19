@@ -717,6 +717,7 @@ public class BasicBodyAnalyzer
                         break;
                 }
                 exp.DataType = constructedType;
+                flow.Restrict(resultVariable, constructedType);
                 return new ExpressionResult(exp, resultVariable);
             }
             case IForeachExpressionSyntax exp:
@@ -890,6 +891,7 @@ public class BasicBodyAnalyzer
                     convertToType = convertToType.ToOptional();
                 exp.Semantics = exp.Referent.ConvertedSemantics!;
                 exp.DataType = convertToType;
+                flow.Restrict(result.Variable, convertToType);
                 return new ExpressionResult(exp, result.Variable);
             }
             case IPatternMatchExpressionSyntax exp:
@@ -1092,7 +1094,8 @@ public class BasicBodyAnalyzer
         ArgumentResults results,
         FlowState flow,
         IExpressionSyntax exp)
-        => results.All.Select(r => r.Variable).Aggregate(default(ResultVariable?), (v1, v2) => flow.Combine(v1, v2, exp));
+        => results.All.Select(r => r.Variable)
+                  .Aggregate(default(ResultVariable?), (v1, v2) => flow.Combine(v1, v2, exp));
 
     private ExpressionResult InferAssignmentTargetType(
         IAssignableExpressionSyntax expression,
@@ -1251,6 +1254,7 @@ public class BasicBodyAnalyzer
         }
 
         var resultVariable = CombineResults(arguments, flow, invocation);
+        flow.Restrict(resultVariable, invocation.DataType.Assigned());
 
         // Apply the referenced symbol to the underlying name
         if (invocation.Expression is IQualifiedNameExpressionSyntax nameExpression)
@@ -1375,6 +1379,7 @@ public class BasicBodyAnalyzer
         }
 
         var resultVariable = CombineResults(arguments, flow, invocation);
+        flow.Restrict(resultVariable, invocation.DataType.Assigned());
 
         // There are no types for functions
         invocation.Expression.DataType = DataType.Void;
@@ -1695,7 +1700,7 @@ public class BasicBodyAnalyzer
 
     private static bool ExplicitConversionTypesAreCompatible(IExpressionSyntax expression, bool safeOnly, DataType convertToType)
     {
-        return (expression.ConvertedDataType, convertToType) switch
+        return (expression.ConvertedDataType.Assigned(), convertToType) switch
         {
             // Safe conversions
             (BoolType, IntegerType) => true,
@@ -1707,7 +1712,7 @@ public class BasicBodyAnalyzer
             // TODO conversions for constants
             // Unsafe conversions
             (IntegerType, IntegerType) => !safeOnly,
-            _ => false
+            _ => convertToType.IsAssignableFrom(expression.ConvertedDataType),
         };
     }
 

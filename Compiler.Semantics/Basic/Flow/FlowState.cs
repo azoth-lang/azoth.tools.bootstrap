@@ -25,7 +25,7 @@ public sealed class FlowState
     private readonly ResultVariableFactory resultVariableFactory;
     private readonly ImplicitLendFactory implicitLendFactory;
 
-    private readonly Dictionary<BindingSymbol, FlowCapability> capabilities;
+    private readonly Dictionary<ICapabilitySharingVariable, FlowCapability> capabilities;
 
     /// <summary>
     /// All the distinct subsets of variables
@@ -55,7 +55,7 @@ public sealed class FlowState
     private FlowState(
         Diagnostics diagnostics,
         CodeFile file,
-        Dictionary<BindingSymbol, FlowCapability> capabilities,
+        Dictionary<ICapabilitySharingVariable, FlowCapability> capabilities,
         IEnumerable<SharingSet> sharing,
         ResultVariableFactory resultVariableFactory,
         ImplicitLendFactory implicitLendFactory)
@@ -120,7 +120,7 @@ public sealed class FlowState
     public void Move(BindingSymbol symbol)
     {
         if (symbol.SharingIsTracked())
-            capabilities[symbol] = ReferenceCapability.Identity;
+            capabilities[(BindingVariable)symbol] = ReferenceCapability.Identity;
 
         // Other types don't have capabilities and don't need to be tracked
         // Identity aren't tracked, this symbol is `id` now
@@ -132,9 +132,22 @@ public sealed class FlowState
         // Because the symbol could reference `lent const` data, it still needs to be tracked
         // and can't be dropped.
         if (symbol.SharingIsTracked())
-            capabilities[symbol] = capabilities[symbol].Freeze();
+        {
+            BindingVariable variable = symbol;
+            capabilities[variable] = capabilities[variable].AfterFreeze();
+        }
 
         // Other types don't have capabilities and don't need to be tracked
+    }
+
+    public void Restrict(ResultVariable? variable, DataType type)
+    {
+        if (variable is null
+            || !capabilities.TryGetValue(variable, out var flowCapability)
+            || type is not ReferenceType { Capability: var capability })
+            return;
+
+        capabilities[variable] = flowCapability.With(capability);
     }
 
     public ResultVariable? Alias(BindingSymbol symbol)
@@ -142,17 +155,18 @@ public sealed class FlowState
         if (!symbol.SharingIsTracked())
             return null;
 
-        var capability = (capabilities[symbol] = capabilities[symbol].WhenAliased()).Current;
+        BindingVariable variable = symbol;
+        var capability = (capabilities[variable] = capabilities[variable].WhenAliased()).Current;
 
         // Other types don't have capabilities and don't need to be tracked
         if (symbol.SharingIsTracked(capability))
         {
-            if (!symbol.SharingIsTracked()) return null;
             var set = SharingSet(symbol);
 
             var result = resultVariableFactory.Create();
             set.Declare(result);
             subsetFor.Add(result, set);
+            TrackCapability(result, capability.OfAlias());
             return result;
         }
 
@@ -180,7 +194,7 @@ public sealed class FlowState
             // Other types don't have capabilities and don't need to be tracked
             return symbol.DataType;
 
-        var current = capabilities[symbol].Current;
+        var current = capabilities[(BindingVariable)symbol].Current;
         return ((ReferenceType)symbol.DataType).With(transform(current));
     }
 
@@ -224,17 +238,16 @@ public sealed class FlowState
 
         foreach (var sharingVariable in set.Except(variable).Except(resultVariable))
         {
-            switch (sharingVariable)
+            if (sharingVariable is ICapabilitySharingVariable capabilityVariable)
             {
-                case BindingVariable { Symbol: var symbol }:
-                    if (Type(symbol) is ReferenceType { AllowsWrite: true })
-                        return false;
-                    break;
-                // TODO support read only temp aliases
-                default:
-                    // All other reference types prevent freezing
+                // The modified capability is what matters because lending can go out of scope later
+                var capability = capabilities[capabilityVariable].Modified;
+                if (capability.AllowsWrite)
                     return false;
             }
+            else
+                // All other sharing variable types prevent freezing
+                return false;
         }
         return true;
     }
@@ -259,6 +272,7 @@ public sealed class FlowState
     {
         _ = SharingSet(result);
         var borrowingResult = resultVariableFactory.Create();
+        TrackCapability(borrowingResult, lend.LendAs);
         SharingDeclare(borrowingResult, true);
         SharingDeclare(lend.From, false);
         SharingUnion(result, lend.From, null);
@@ -290,7 +304,7 @@ public sealed class FlowState
         foreach (var variable in sharingSet.OfType<BindingVariable>())
         {
             if (variable.Symbol.SharingIsTracked())
-                capabilities[variable.Symbol] = capabilities[variable.Symbol].WithRestrictions(restrictions);
+                capabilities[variable] = capabilities[variable].WithRestrictions(restrictions);
 
             // Other types don't have capabilities and don't need to be tracked
         }
@@ -331,10 +345,13 @@ public sealed class FlowState
     private void TrackCapability(BindingSymbol symbol)
     {
         if (symbol.SharingIsTracked())
-            capabilities.Add(symbol, ((ReferenceType)symbol.DataType).Capability);
+            capabilities.Add((BindingVariable)symbol, ((ReferenceType)symbol.DataType).Capability);
 
         // Other types don't have capabilities and don't need to be tracked
     }
+
+    private void TrackCapability(ResultVariable result, ReferenceCapability capability)
+        => capabilities.Add(result, capability);
 
     #region Sharing Management
     private SharingSet SharingSet(BindingVariable variable) => SharingSet((ISharingVariable)variable);
