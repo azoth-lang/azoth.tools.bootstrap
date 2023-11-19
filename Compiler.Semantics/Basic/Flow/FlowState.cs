@@ -137,7 +137,7 @@ public sealed class FlowState
 
         // Other types don't have capabilities and don't need to be tracked
         if (symbol.SharingIsTracked(capability))
-            return SharingNewResult(symbol, resultVariableFactory);
+            return SharingNewResult(symbol);
         return null;
     }
 
@@ -203,7 +203,7 @@ public sealed class FlowState
     public ResultVariable LendConst(ResultVariable result)
     {
         _ = SharingSet(result);
-        var borrowingResult = SharingNewResult(resultVariableFactory, isLent: true);
+        var borrowingResult = SharingNewResult(isLent: true);
         var lend = implicitLendFactory.CreateConstLend();
         SharingDeclare(lend.From, false);
         SharingUnion(result, lend.From, null);
@@ -223,7 +223,7 @@ public sealed class FlowState
     public ResultVariable LendIso(ResultVariable result)
     {
         _ = SharingSet(result);
-        var borrowingResult = SharingNewResult(resultVariableFactory, isLent: true);
+        var borrowingResult = SharingNewResult(isLent: true);
         var lend = implicitLendFactory.CreateIsoLend();
         SharingDeclare(lend.From, false);
         SharingUnion(result, lend.From, null);
@@ -349,7 +349,7 @@ public sealed class FlowState
         subsetFor.Add(variable, set);
     }
 
-    private ResultVariable SharingNewResult(ResultVariableFactory resultVariableFactory, bool isLent = false)
+    private ResultVariable SharingNewResult(bool isLent = false)
     {
         var result = resultVariableFactory.Create();
         SharingDeclare(result, isLent);
@@ -359,7 +359,7 @@ public sealed class FlowState
     /// <summary>
     /// Create a new result inside the set with the given symbol.
     /// </summary>
-    public ResultVariable? SharingNewResult(BindingSymbol symbol, ResultVariableFactory resultVariableFactory)
+    public ResultVariable? SharingNewResult(BindingSymbol symbol)
     {
         if (!symbol.SharingIsTracked()) return null;
         var set = SharingSet(symbol);
