@@ -8,4 +8,5 @@ public interface IReadOnlySharingSet : IEnumerable<ISharingVariable>, IEquatable
 {
     bool IsLent { get; }
     CapabilityRestrictions Restrictions { get; }
+    SharingSetSnapshot Snapshot();
 }

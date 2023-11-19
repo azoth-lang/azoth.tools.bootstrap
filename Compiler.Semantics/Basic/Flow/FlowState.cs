@@ -27,10 +27,11 @@ public sealed class FlowState
     public FlowState(
         Diagnostics diagnostics,
         CodeFile file,
-        ReferenceCapabilitiesSnapshot capabilities,
-        SharingRelationSnapshot sharing)
-        : this(diagnostics, file, capabilities.MutableCopy(), sharing.MutableCopy(), new(), new())
+        ParameterSharingRelation parameterSharing)
+        : this(diagnostics, file, new ReferenceCapabilities(), new SharingRelation(parameterSharing.SharingSets), new(), new())
     {
+        foreach (var symbol in parameterSharing.Symbols)
+            capabilities.Declare(symbol);
     }
 
     public FlowState(Diagnostics diagnostics, CodeFile file)

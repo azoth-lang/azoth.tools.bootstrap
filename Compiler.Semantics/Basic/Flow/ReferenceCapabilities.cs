@@ -101,6 +101,4 @@ public sealed class ReferenceCapabilities
 
         // Other types don't have capabilities and don't need to be tracked
     }
-
-    public ReferenceCapabilitiesSnapshot Snapshot() => new(currentCapabilities);
 }

@@ -38,8 +38,7 @@ public class BasicBodyAnalyzer
     private readonly Diagnostics diagnostics;
     private readonly ReturnType? returnType;
     private readonly TypeResolver typeResolver;
-    private readonly ReferenceCapabilitiesSnapshot parameterCapabilities;
-    private readonly SharingRelationSnapshot parameterSharing;
+    private readonly ParameterSharingRelation parameterSharing;
 
     public BasicBodyAnalyzer(
         IFunctionDeclarationSyntax containingDeclaration,
@@ -114,44 +113,12 @@ public class BasicBodyAnalyzer
         this.symbolTrees = symbolTrees;
         this.returnType = returnType;
         typeResolver = new TypeResolver(file, diagnostics);
-        var capabilities = new ReferenceCapabilities();
-        var sharing = new SharingRelation();
-        bool nonLentParametersReferenceDeclared = false;
-        uint lentParameterNumber = 0;
-        foreach (var parameterSymbol in parameterSymbols)
-        {
-            capabilities.Declare(parameterSymbol);
-            sharing.Declare(parameterSymbol);
-            if (parameterSymbol.DataType is not ReferenceType { Capability: var capability })
-                continue;
-
-            // These capabilities don't have to worry about external references
-            if (capability == ReferenceCapability.Isolated
-                || capability == ReferenceCapability.Constant
-                || capability == ReferenceCapability.Identity)
-                continue;
-
-            // Create external references so that they can't be frozen or moved
-            if (parameterSymbol.IsLentBinding)
-                sharing.DeclareLentParameterReference(parameterSymbol, ++lentParameterNumber);
-            else
-            {
-                if (!nonLentParametersReferenceDeclared)
-                {
-                    sharing.DeclareNonLentParametersReference();
-                    nonLentParametersReferenceDeclared = true;
-                }
-
-                sharing.Union(ExternalReference.NonLentParameters, parameterSymbol, null);
-            }
-        }
-        parameterCapabilities = capabilities.Snapshot();
-        parameterSharing = sharing.Snapshot();
+        parameterSharing = new ParameterSharingRelation(parameterSymbols);
     }
 
     public void ResolveTypes(IBodySyntax body)
     {
-        var flow = new FlowState(diagnostics, file, parameterCapabilities, parameterSharing);
+        var flow = new FlowState(diagnostics, file, parameterSharing);
         switch (body)
         {
             default:

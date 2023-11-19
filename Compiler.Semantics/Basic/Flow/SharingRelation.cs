@@ -221,8 +221,6 @@ public sealed class SharingRelation
     public bool IsIsolatedExceptFor(ISharingVariable variable, ResultVariable result)
         => subsetFor.TryGetValue(variable, out var set) && set.IsIsolatedExceptFor(result);
 
-    public SharingRelationSnapshot Snapshot() => new(sets);
-
     public override string ToString()
         => string.Join(", ", sets.Select(s => $"{{{string.Join(", ", s.Distinct())}}}"));
 
