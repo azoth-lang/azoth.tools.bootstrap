@@ -510,6 +510,9 @@ public class BasicBodyAnalyzer
                     flow.DropBindingsForReturn();
                     result = AddImplicitConversionIfNeeded(result, expectedType, flow);
                     CheckTypeCompatibility(expectedType, exp.Value);
+                    // TODO use proper check instead of `is not ValueType`
+                    if (!expectedReturnType.IsLent && flow.IsLent(result.Variable) && expectedReturnType.Type is not ValueType)
+                        diagnostics.Add(FlowTypingError.CannotReturnLent(file, exp));
                     flow.Drop(result.Variable);
                 }
                 else if (expectedType == DataType.Never)

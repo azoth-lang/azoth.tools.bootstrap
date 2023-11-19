@@ -197,4 +197,6 @@ public sealed class FlowState
     }
 
     public void Merge(FlowState other) => sharing.Merge(other.sharing);
+
+    public bool IsLent(ResultVariable? variable) => variable is not null && sharing.IsLent(variable);
 }

@@ -113,7 +113,7 @@ public static class TypeError
     public static Diagnostic LentIdentity(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3015, "Cannot have `lent` `id`");
+            3015, "Cannot have `lent id`");
     }
 
     public static Diagnostic OptionalPatternOnNonOptionalType(CodeFile file, IOptionalPatternSyntax pattern, DataType type)

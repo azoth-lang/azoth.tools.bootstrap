@@ -244,7 +244,6 @@ public sealed class SharingRelation
             // At least one item of the set is present. Use that part as a core to union everything
             // in the set together. This is necessary because there could be multiple sets that need
             // unioned.
-            var targetSet = SharingSet(representative);
             foreach (var variable in set)
             {
                 // If a variable is completely missing, just declare it. This ensures existing logic
@@ -256,4 +255,6 @@ public sealed class SharingRelation
             }
         }
     }
+
+    public bool IsLent(ResultVariable variable) => SharingSet(variable).IsLent;
 }

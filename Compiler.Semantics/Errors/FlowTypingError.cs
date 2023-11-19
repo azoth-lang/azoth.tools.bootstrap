@@ -29,4 +29,10 @@ public static class FlowTypingError
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             4004, "Cannot combine lent values");
     }
+
+    public static Diagnostic CannotReturnLent(CodeFile file, IReturnExpressionSyntax expression)
+    {
+        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            4005, "Cannot return lent value from function with return type not declared `lent`");
+    }
 }
