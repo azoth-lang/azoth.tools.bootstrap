@@ -69,9 +69,9 @@ public sealed class SharingRelation
         var borrowingResult = NewResult(resultVariableFactory, isLent: true);
         var lend = implicitLendFactory.CreateConstLend();
         Declare(lend.From, false);
-        Union(result, lend.From);
+        Union(result, lend.From, null);
         Declare(lend.To, true);
-        Union(borrowingResult, lend.To);
+        Union(borrowingResult, lend.To, null);
         return borrowingResult;
     }
 
@@ -84,9 +84,9 @@ public sealed class SharingRelation
         var borrowingResult = NewResult(resultVariableFactory, isLent: true);
         var lend = implicitLendFactory.CreateIsoLend();
         Declare(lend.From, false);
-        Union(result, lend.From);
+        Union(result, lend.From, null);
         Declare(lend.To, true);
-        Union(borrowingResult, lend.To);
+        Union(borrowingResult, lend.To, null);
         return borrowingResult;
     }
 
@@ -187,10 +187,10 @@ public sealed class SharingRelation
     private IEnumerable<IReadOnlySharingSet> DropAll(IEnumerable<ISharingVariable> sharingVariables)
         => sharingVariables.ToArray().SelectMany(Drop).Distinct();
 
-    public void Union(ISharingVariable var1, BindingVariable var2)
-        => Union(var1, (ISharingVariable)var2);
+    public void Union(ISharingVariable var1, BindingVariable var2, Action? addCannotUnionError)
+        => Union(var1, (ISharingVariable)var2, addCannotUnionError);
 
-    public void Union(ISharingVariable var1, ISharingVariable var2)
+    public void Union(ISharingVariable var1, ISharingVariable var2, Action? addCannotUnionError)
     {
         if (!var1.SharingIsTracked || !var2.SharingIsTracked) return;
         var set1 = SharingSet(var1);
@@ -199,7 +199,14 @@ public sealed class SharingRelation
             return;
 
         var (smallerSet, largerSet) = set1.Count <= set2.Count ? (set1, set2) : (set2, set1);
-        largerSet.UnionWith(smallerSet);
+        if (!largerSet.UnionWith(smallerSet))
+        {
+            if (addCannotUnionError is null)
+                throw new InvalidOperationException(
+                    "Cannot union two sharing sets if either is lent unless they are isolated sets.");
+            addCannotUnionError();
+            return;
+        }
         sets.Remove(smallerSet);
         foreach (var symbol in smallerSet)
             subsetFor[symbol] = largerSet;
@@ -245,7 +252,7 @@ public sealed class SharingRelation
                 if (!subsetFor.ContainsKey(variable))
                     Declare(variable, set.IsLent);
 
-                Union(representative, variable);
+                Union(representative, variable, null);
             }
         }
     }

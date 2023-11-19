@@ -60,14 +60,20 @@ public class SharingSet : IReadOnlySharingSet
 
     public void Remove(ISharingVariable variable) => variables.Remove(variable);
 
-    public void UnionWith(SharingSet smallerSet)
+    /// <summary>
+    /// Union this set with the other, hopefully smaller, set.
+    /// </summary>
+    /// <returns>Whether the union was allowed. If these sets are not allowed to be unioned,
+    /// <see langword="false"/> will be returned.</returns>
+    public bool UnionWith(SharingSet smallerSet)
     {
         if ((IsLent && !smallerSet.IsIsolated)
             || (smallerSet.IsLent && !IsIsolated))
-            throw new InvalidOperationException("Cannot union two sharing sets if either is lent unless they are isolated sets.");
+            return false;
         variables.UnionWith(smallerSet.variables);
         // In an error situation, a lent set can be unioned with a non-lent one and the result should be lent.
         IsLent &= smallerSet.IsLent;
+        return true;
     }
 
     public void Clear() => variables.Clear();

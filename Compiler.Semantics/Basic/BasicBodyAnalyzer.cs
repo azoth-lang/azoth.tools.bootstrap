@@ -142,7 +142,7 @@ public class BasicBodyAnalyzer
                     nonLentParametersReferenceDeclared = true;
                 }
 
-                sharing.Union(ExternalReference.NonLentParameters, parameterSymbol);
+                sharing.Union(ExternalReference.NonLentParameters, parameterSymbol, null);
             }
         }
         parameterCapabilities = capabilities.Snapshot();
@@ -151,7 +151,7 @@ public class BasicBodyAnalyzer
 
     public void ResolveTypes(IBodySyntax body)
     {
-        var flow = new FlowState(parameterCapabilities, parameterSharing);
+        var flow = new FlowState(diagnostics, file, parameterCapabilities, parameterSharing);
         switch (body)
         {
             default:
@@ -292,7 +292,7 @@ public class BasicBodyAnalyzer
 
     public void CheckFieldInitializerType(IExpressionSyntax expression, DataType expectedType)
     {
-        var flow = new FlowState();
+        var flow = new FlowState(diagnostics, file);
         CheckIndependentExpressionType(expression, expectedType, flow);
     }
 
@@ -539,7 +539,7 @@ public class BasicBodyAnalyzer
                 var @operator = exp.Operator;
                 var rightOperand = exp.RightOperand;
                 var rightResult = InferType(rightOperand, flow);
-                var resultVariable = flow.Combine(leftResult.Variable, rightResult.Variable);
+                var resultVariable = flow.Combine(leftResult.Variable, rightResult.Variable, exp);
 
                 // If either is unknown, then we can't know whether there is a a problem.
                 // Note that the operator could be overloaded
@@ -708,7 +708,7 @@ public class BasicBodyAnalyzer
                     diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
                     exp.ReferencedSymbol.Fulfill(null);
                     exp.DataType = DataType.Unknown;
-                    resultVariable = CombineResults(arguments, flow);
+                    resultVariable = CombineResults(arguments, flow, exp);
                     return new ExpressionResult(exp, resultVariable);
                 }
 
@@ -717,7 +717,7 @@ public class BasicBodyAnalyzer
                     diagnostics.Add(OtherSemanticError.CannotConstructAbstractType(file, exp.Type));
                     exp.ReferencedSymbol.Fulfill(null);
                     exp.DataType = DataType.Unknown;
-                    resultVariable = CombineResults(arguments, flow);
+                    resultVariable = CombineResults(arguments, flow, exp);
                     return new ExpressionResult(exp, resultVariable);
                 }
 
@@ -737,7 +737,7 @@ public class BasicBodyAnalyzer
                         var constructor = validOverloads.Single();
                         exp.ReferencedSymbol.Fulfill(constructor.Symbol);
                         CheckTypes(arguments, constructor.ParameterTypes, flow);
-                        resultVariable = CombineResults(arguments, flow);
+                        resultVariable = CombineResults(arguments, flow, exp);
                         constructedType = constructor.ReturnType.Type;
                         break;
                     default:
@@ -829,7 +829,7 @@ public class BasicBodyAnalyzer
                 exp.Semantics = expType.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 exp.DataType = expType;
                 flow.Merge(elseFlow);
-                var resultVariable = flow.Combine(thenResult.Variable, elseResult?.Variable);
+                var resultVariable = flow.Combine(thenResult.Variable, elseResult?.Variable, exp);
                 return new ExpressionResult(exp, resultVariable);
             }
             case IQualifiedNameExpressionSyntax exp:
@@ -879,7 +879,7 @@ public class BasicBodyAnalyzer
                 if (!left.Type.IsAssignableFrom(right.Type))
                     diagnostics.Add(TypeError.CannotImplicitlyConvert(file,
                         exp.RightOperand, right.Type, left.Type));
-                var resultVariable = flow.Combine(left.Variable, right.Variable);
+                var resultVariable = flow.Combine(left.Variable, right.Variable, exp);
                 if (left.Type.Semantics == TypeSemantics.MoveValue)
                 {
                     exp.Semantics = ExpressionSemantics.Void;
@@ -1118,8 +1118,11 @@ public class BasicBodyAnalyzer
         return parameter.Type.IsAssignableFrom(argType);
     }
 
-    private static ResultVariable? CombineResults(ArgumentResults results, FlowState flow)
-        => results.All.Select(r => r.Variable).Aggregate(default(ResultVariable?), flow.Combine);
+    private static ResultVariable? CombineResults(
+        ArgumentResults results,
+        FlowState flow,
+        IExpressionSyntax exp)
+        => results.All.Select(r => r.Variable).Aggregate(default(ResultVariable?), (v1, v2) => flow.Combine(v1, v2, exp));
 
     private ExpressionResult InferAssignmentTargetType(
         IAssignableExpressionSyntax expression,
@@ -1244,7 +1247,7 @@ public class BasicBodyAnalyzer
         {
             invocation.Semantics = ExpressionSemantics.Never;
             invocation.DataType = DataType.Unknown;
-            return new(invocation, CombineResults(arguments, flow));
+            return new(invocation, CombineResults(arguments, flow, invocation));
         }
 
         var validOverloads = SelectMethodOverload(methodName, selfArgumentType, arguments, flow);
@@ -1277,7 +1280,7 @@ public class BasicBodyAnalyzer
                 break;
         }
 
-        var resultVariable = CombineResults(arguments, flow);
+        var resultVariable = CombineResults(arguments, flow, invocation);
 
         // Apply the referenced symbol to the underlying name
         if (invocation.Expression is IQualifiedNameExpressionSyntax nameExpression)
@@ -1401,7 +1404,7 @@ public class BasicBodyAnalyzer
                 break;
         }
 
-        var resultVariable = CombineResults(arguments, flow);
+        var resultVariable = CombineResults(arguments, flow, invocation);
 
         // There are no types for functions
         invocation.Expression.DataType = DataType.Void;
@@ -1583,7 +1586,7 @@ public class BasicBodyAnalyzer
                 var rightOperand = binaryExpression.RightOperand;
                 var rightResult = InferType(rightOperand, flow);
 
-                var resultVariable = flow.Combine(leftResult.Variable, rightResult.Variable);
+                var resultVariable = flow.Combine(leftResult.Variable, rightResult.Variable, binaryExpression);
                 if (!leftResult.Type.IsFullyKnown || !rightResult.Type.IsFullyKnown)
                 {
                     inExpression.DataType = DataType.Unknown;

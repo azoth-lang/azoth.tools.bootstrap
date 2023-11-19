@@ -15,12 +15,18 @@ public static class FlowTypingError
     public static Diagnostic CannotFreezeValue(CodeFile file, IFreezeExpressionSyntax expression)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            4001, $"Cannot freeze the value `{file.Code[expression.Referent.Span]}`");
+            4002, $"Cannot freeze the value `{file.Code[expression.Referent.Span]}`");
     }
 
     public static Diagnostic UseOfPossiblyMovedValue(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             4003, "Use of possibly moved value");
+    }
+
+    public static Diagnostic CannotUnion(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            4004, "Cannot combine lent values");
     }
 }

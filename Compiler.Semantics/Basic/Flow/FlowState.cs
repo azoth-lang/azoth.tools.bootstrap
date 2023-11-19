@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -14,34 +17,45 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// the type of <s>self</s> if it started out isolated.</remarks>
 public sealed class FlowState
 {
+    private readonly Diagnostics diagnostics;
+    private readonly CodeFile file;
     private readonly ReferenceCapabilities capabilities;
     private readonly SharingRelation sharing;
     private readonly ResultVariableFactory resultVariableFactory;
     private readonly ImplicitLendFactory implicitLendFactory;
 
-    public FlowState(ReferenceCapabilitiesSnapshot capabilities, SharingRelationSnapshot sharing)
-        : this(capabilities.MutableCopy(), sharing.MutableCopy(), new(), new())
+    public FlowState(
+        Diagnostics diagnostics,
+        CodeFile file,
+        ReferenceCapabilitiesSnapshot capabilities,
+        SharingRelationSnapshot sharing)
+        : this(diagnostics, file, capabilities.MutableCopy(), sharing.MutableCopy(), new(), new())
     {
     }
 
-    public FlowState()
-        : this(new ReferenceCapabilities(), new SharingRelation(), new(), new())
+    public FlowState(Diagnostics diagnostics, CodeFile file)
+        : this(diagnostics, file, new ReferenceCapabilities(), new SharingRelation(), new(), new())
     {
     }
 
     private FlowState(
+        Diagnostics diagnostics,
+        CodeFile file,
         ReferenceCapabilities capabilities,
         SharingRelation sharing,
         ResultVariableFactory resultVariableFactory,
         ImplicitLendFactory implicitLendFactory)
     {
+        this.diagnostics = diagnostics;
+        this.file = file;
         this.capabilities = capabilities;
         this.sharing = sharing;
         this.resultVariableFactory = resultVariableFactory;
         this.implicitLendFactory = implicitLendFactory;
     }
 
-    public FlowState Fork() => new(capabilities.Copy(), sharing.Copy(), resultVariableFactory, implicitLendFactory);
+    public FlowState Fork()
+        => new(diagnostics, file, capabilities.Copy(), sharing.Copy(), resultVariableFactory, implicitLendFactory);
 
     /// <summary>
     /// Declare the given symbol and combine it with the result variable.
@@ -52,7 +66,7 @@ public sealed class FlowState
         capabilities.Declare(symbol);
         var bindingVariable = sharing.Declare(symbol);
         if (bindingVariable is not null && variable is not null)
-            sharing.Union(bindingVariable, variable);
+            sharing.Union(bindingVariable, variable, null);
         Drop(variable);
     }
 
@@ -113,11 +127,14 @@ public sealed class FlowState
     /// variable representative of the new set.
     /// </summary>
     /// <remarks>If two <see cref="ResultVariable"/>s are passed in, one will be dropped.</remarks>
-    public ResultVariable? Combine(ResultVariable? leftVariable, ResultVariable? rightVariable)
+    public ResultVariable? Combine(
+        ResultVariable? leftVariable,
+        ResultVariable? rightVariable,
+        IExpressionSyntax expression)
     {
         if (leftVariable is null) return rightVariable;
         if (rightVariable is null) return leftVariable;
-        sharing.Union(leftVariable, rightVariable);
+        sharing.Union(leftVariable, rightVariable, () => diagnostics.Add(FlowTypingError.CannotUnion(file, expression.Span)));
         Drop(leftVariable);
         // TODO would it be better to create a new result variable to return instead of reusing this one?
         return rightVariable;
