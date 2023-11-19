@@ -19,7 +19,7 @@ public sealed class FlowState
 {
     private readonly Diagnostics diagnostics;
     private readonly CodeFile file;
-    private readonly ReferenceCapabilities capabilities;
+    private readonly Dictionary<BindingSymbol, FlowCapability> capabilities;
     private readonly SharingRelation sharing;
     private readonly ResultVariableFactory resultVariableFactory;
     private readonly ImplicitLendFactory implicitLendFactory;
@@ -28,35 +28,35 @@ public sealed class FlowState
         Diagnostics diagnostics,
         CodeFile file,
         ParameterSharingRelation parameterSharing)
-        : this(diagnostics, file, new ReferenceCapabilities(), new SharingRelation(parameterSharing.SharingSets), new(), new())
+        : this(diagnostics, file, new(), new SharingRelation(parameterSharing.SharingSets), new(), new())
     {
         foreach (var symbol in parameterSharing.Symbols)
-            capabilities.Declare(symbol);
+            CapabilityDeclare(symbol);
     }
 
     public FlowState(Diagnostics diagnostics, CodeFile file)
-        : this(diagnostics, file, new ReferenceCapabilities(), new SharingRelation(), new(), new())
+        : this(diagnostics, file, new(), new SharingRelation(), new(), new())
     {
     }
 
     private FlowState(
         Diagnostics diagnostics,
         CodeFile file,
-        ReferenceCapabilities capabilities,
+        Dictionary<BindingSymbol, FlowCapability> capabilities,
         SharingRelation sharing,
         ResultVariableFactory resultVariableFactory,
         ImplicitLendFactory implicitLendFactory)
     {
         this.diagnostics = diagnostics;
         this.file = file;
-        this.capabilities = capabilities;
+        this.capabilities = new(capabilities);
         this.sharing = sharing;
         this.resultVariableFactory = resultVariableFactory;
         this.implicitLendFactory = implicitLendFactory;
     }
 
     public FlowState Fork()
-        => new(diagnostics, file, capabilities.Copy(), sharing.Copy(), resultVariableFactory, implicitLendFactory);
+        => new(diagnostics, file, capabilities, sharing.Copy(), resultVariableFactory, implicitLendFactory);
 
     /// <summary>
     /// Declare the given symbol and combine it with the result variable.
@@ -64,7 +64,7 @@ public sealed class FlowState
     /// <remarks>The result variable is dropped as part of this.</remarks>
     public void Declare(BindingSymbol symbol, ResultVariable? variable)
     {
-        capabilities.Declare(symbol);
+        CapabilityDeclare(symbol);
         var bindingVariable = sharing.Declare(symbol);
         if (bindingVariable is not null && variable is not null)
             sharing.Union(bindingVariable, variable, null);
@@ -93,7 +93,7 @@ public sealed class FlowState
 
     public void Move(BindingSymbol symbol)
     {
-        capabilities.Move(symbol);
+        CapabilityMove(symbol);
         // Identity aren't tracked, this symbol is `id` now
         Drop(symbol);
     }
@@ -101,11 +101,11 @@ public sealed class FlowState
     public void Freeze(BindingSymbol symbol)
         // Because the symbol could reference `lent const` data, it still needs to be tracked
         // and can't be dropped.
-        => capabilities.Freeze(symbol);
+        => CapabilityFreeze(symbol);
 
     public ResultVariable? Alias(BindingSymbol symbol)
     {
-        var capability = capabilities.Alias(symbol);
+        var capability = CapabilityAlias(symbol);
         if (symbol.SharingIsTracked(capability))
             return sharing.NewResult(symbol, resultVariableFactory);
         return null;
@@ -115,13 +115,13 @@ public sealed class FlowState
     /// Gives the current flow type of the symbol.
     /// </summary>
     /// <remarks>This is named for it to be used as <c>flow.Type(symbol)</c></remarks>
-    public DataType Type(BindingSymbol? symbol) => capabilities.CurrentType(symbol);
+    public DataType Type(BindingSymbol? symbol) => CurrentType(symbol);
 
     /// <summary>
     /// Gives the type of an alias to the symbol
     /// </summary>
     /// <remarks>This is named for it to be used as <c>flow.AliasType(symbol)</c></remarks>
-    public DataType AliasType(BindingSymbol? symbol) => capabilities.AliasType(symbol);
+    public DataType AliasType(BindingSymbol? symbol) => CapabilityAliasType(symbol);
 
     /// <summary>
     /// Combine two <see cref="ResultVariable"/>s into a single sharing set and return a result
@@ -194,10 +194,88 @@ public sealed class FlowState
         if (!applyReadWriteRestriction && restrictions == CapabilityRestrictions.ReadWrite)
             return;
         foreach (var variable in sharingSet.OfType<BindingVariable>())
-            capabilities.SetRestrictions(variable.Symbol, restrictions);
+            CapabilitySetRestrictions(variable.Symbol, restrictions);
     }
 
     public void Merge(FlowState other) => sharing.Merge(other.sharing);
 
     public bool IsLent(ResultVariable? variable) => variable is not null && sharing.IsLent(variable);
+
+    #region Capability Management
+    private void CapabilityDeclare(BindingSymbol symbol)
+    {
+        if (symbol.SharingIsTracked())
+            capabilities.Add(symbol, ((ReferenceType)symbol.DataType).Capability);
+
+        // Other types don't have capabilities and don't need to be tracked
+    }
+
+    private ReferenceCapability? CapabilityFor(BindingSymbol? symbol)
+    {
+        if (symbol?.SharingIsTracked() ?? false)
+            return capabilities[symbol].Current;
+
+        // Other types don't have capabilities and don't need to be tracked
+        return null;
+    }
+
+    private DataType CurrentType(BindingSymbol? symbol)
+    {
+        var current = CapabilityFor(symbol);
+        if (current is not null)
+            return ((ReferenceType)symbol!.DataType).With(current);
+
+        // Other types don't have capabilities and don't need to be tracked
+        return symbol?.DataType ?? DataType.Unknown;
+    }
+
+    private DataType CapabilityAliasType(BindingSymbol? symbol)
+    {
+        var current = CapabilityFor(symbol);
+        if (current is not null)
+            return ((ReferenceType)symbol!.DataType).With(current.OfAlias());
+
+        // Other types don't have capabilities and don't need to be tracked
+        return symbol?.DataType ?? DataType.Unknown;
+    }
+
+    /// <summary>
+    /// Creates an alias of the symbol therefor restricting the capability to no longer be `iso`.
+    /// </summary>
+    private ReferenceCapability? CapabilityAlias(BindingSymbol symbol)
+    {
+        if (symbol.SharingIsTracked())
+            return (capabilities[symbol] = capabilities[symbol].Alias()).Current;
+
+        // Other types don't have capabilities and don't need to be tracked
+        return null;
+    }
+
+    /// <summary>
+    /// Marks that a reference has been moved therefor restricting the capability to `id`.
+    /// </summary>
+    private void CapabilityMove(BindingSymbol? symbol)
+    {
+        if (symbol?.SharingIsTracked() ?? false)
+            capabilities[symbol] = ReferenceCapability.Identity;
+
+        // Other types don't have capabilities and don't need to be tracked
+    }
+
+    private void CapabilityFreeze(BindingSymbol symbol)
+    {
+        if (symbol.SharingIsTracked())
+            capabilities[symbol] = capabilities[symbol].Freeze();
+
+        // Other types don't have capabilities and don't need to be tracked
+    }
+
+    private void CapabilitySetRestrictions(BindingSymbol symbol, CapabilityRestrictions restrictions)
+    {
+        if (symbol.SharingIsTracked())
+            capabilities[symbol] = capabilities[symbol].WithRestrictions(restrictions);
+
+        // Other types don't have capabilities and don't need to be tracked
+    }
+    #endregion
 }
