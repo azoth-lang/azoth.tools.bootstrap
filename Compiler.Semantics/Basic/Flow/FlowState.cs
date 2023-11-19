@@ -142,7 +142,7 @@ public sealed class FlowState
         if (!symbol.SharingIsTracked())
             return null;
 
-        var capability = (capabilities[symbol] = capabilities[symbol].Alias()).Current;
+        var capability = (capabilities[symbol] = capabilities[symbol].WhenAliased()).Current;
 
         // Other types don't have capabilities and don't need to be tracked
         if (symbol.SharingIsTracked(capability))
