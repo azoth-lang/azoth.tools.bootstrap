@@ -18,12 +18,19 @@ public sealed class ParameterSharingRelation
     public ParameterSharingRelation(IEnumerable<BindingSymbol> parameterSymbols)
     {
         Symbols = parameterSymbols.ToFixedList();
-        var sharing = new SharingRelation();
-        bool nonLentParametersReferenceDeclared = false;
+        SharingSets = BuildSharingSets(Symbols);
+    }
+
+    #region Static Sharing Sets Builder Methods
+    private static FixedSet<SharingSetSnapshot> BuildSharingSets(FixedList<BindingSymbol> parameterSymbols)
+    {
+        var sharingSets = new HashSet<SharingSet>();
         uint lentParameterNumber = 0;
-        foreach (var parameterSymbol in Symbols)
+        SharingSet? nonLentParametersSet = null;
+        foreach (var parameterSymbol in parameterSymbols)
         {
-            sharing.Declare(parameterSymbol);
+            var setForParameter = DeclareVariable(sharingSets, parameterSymbol);
+            if (setForParameter is null) continue;
             if (parameterSymbol.DataType is not ReferenceType { Capability: var capability }) continue;
 
             // These capabilities don't have to worry about external references
@@ -33,19 +40,38 @@ public sealed class ParameterSharingRelation
 
             // Create external references so that they can't be frozen or moved
             if (parameterSymbol.IsLentBinding)
-                sharing.DeclareLentParameterReference(parameterSymbol, ++lentParameterNumber);
+                DeclareLentParameterReference(setForParameter, ++lentParameterNumber);
             else
             {
-                if (!nonLentParametersReferenceDeclared)
-                {
-                    sharing.DeclareNonLentParametersReference();
-                    nonLentParametersReferenceDeclared = true;
-                }
+                nonLentParametersSet ??= DeclareVariable(sharingSets, ExternalReference.NonLentParameters, false);
 
-                sharing.Union(ExternalReference.NonLentParameters, parameterSymbol, null);
+                if (!nonLentParametersSet.UnionWith(setForParameter))
+                    throw new UnreachableCodeException("Union failed.");
+
+                sharingSets.Remove(setForParameter);
             }
         }
 
-        SharingSets = sharing.SharingSets.Select(s => s.Snapshot()).ToFixedSet();
+        return sharingSets.Select(s => s.Snapshot()).ToFixedSet();
     }
+
+    private static SharingSet? DeclareVariable(HashSet<SharingSet> sets, BindingSymbol symbol)
+    {
+        // Other types don't participate in sharing
+        if (!symbol.SharingIsTracked()) return null;
+
+        BindingVariable variable = symbol;
+        return DeclareVariable(sets, variable, variable.IsLent);
+    }
+
+    private static SharingSet DeclareVariable(HashSet<SharingSet> sets, ISharingVariable variable, bool isLent)
+    {
+        var set = new SharingSet(variable, isLent);
+        sets.Add(set);
+        return set;
+    }
+
+    public static void DeclareLentParameterReference(SharingSet set, uint lentParameterNumber)
+        => set.Declare(ExternalReference.CreateLentParameter(lentParameterNumber));
+    #endregion
 }

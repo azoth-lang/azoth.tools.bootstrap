@@ -109,27 +109,6 @@ public sealed class SharingRelation
         return variable;
     }
 
-    public void DeclareLentParameterReference(BindingVariable variable, uint lentParameterNumber)
-    {
-        if (!subsetFor.TryGetValue(variable, out var set))
-            throw new InvalidOperationException("Cannot declare lent parameter for symbol not in a sharing set.");
-
-        var lentParameter = ExternalReference.CreateLentParameter(lentParameterNumber);
-        if (subsetFor.TryGetValue(lentParameter, out _))
-            throw new InvalidOperationException($"Lent parameter {lentParameter} already declared");
-
-        set.Declare(lentParameter);
-        subsetFor.Add(lentParameter, set);
-    }
-
-    public void DeclareNonLentParametersReference()
-    {
-        if (subsetFor.TryGetValue(ExternalReference.NonLentParameters, out _))
-            throw new InvalidOperationException("Non-lent parameters reference already declared.");
-
-        Declare(ExternalReference.NonLentParameters, false);
-    }
-
     private void Declare(ISharingVariable variable, bool isLent)
     {
         var set = new SharingSet(variable, isLent);
@@ -186,9 +165,6 @@ public sealed class SharingRelation
 
     private IEnumerable<IReadOnlySharingSet> DropAll(IEnumerable<ISharingVariable> sharingVariables)
         => sharingVariables.ToArray().SelectMany(Drop).Distinct();
-
-    public void Union(ISharingVariable var1, BindingVariable var2, Action? addCannotUnionError)
-        => Union(var1, (ISharingVariable)var2, addCannotUnionError);
 
     public void Union(ISharingVariable var1, ISharingVariable var2, Action? addCannotUnionError)
     {
