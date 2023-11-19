@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
+using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
@@ -21,9 +22,10 @@ public sealed class FlowState
 {
     private readonly Diagnostics diagnostics;
     private readonly CodeFile file;
-    private readonly Dictionary<BindingSymbol, FlowCapability> capabilities;
     private readonly ResultVariableFactory resultVariableFactory;
     private readonly ImplicitLendFactory implicitLendFactory;
+
+    private readonly Dictionary<BindingSymbol, FlowCapability> capabilities;
 
     /// <summary>
     /// All the distinct subsets of variables
@@ -101,26 +103,39 @@ public sealed class FlowState
     /// <remarks>External references will ensure that parameters are incorrectly treated as isolated.</remarks>
     public void DropBindingsForReturn()
     {
-        SharingDropAllLocalVariablesAndParameters();
+        SharingDropAll(subsetFor.Keys.Where(v => v.IsVariableOrParameter)).Consume();
         // So many sets can be modified, just go through all of them and remove restrictions
         LiftRemovedRestrictions(sets);
     }
 
     public void Move(BindingSymbol symbol)
     {
-        CapabilityMove(symbol);
+        if (symbol.SharingIsTracked())
+            capabilities[symbol] = ReferenceCapability.Identity;
+
+        // Other types don't have capabilities and don't need to be tracked
         // Identity aren't tracked, this symbol is `id` now
         Drop(symbol);
     }
 
     public void Freeze(BindingSymbol symbol)
+    {
         // Because the symbol could reference `lent const` data, it still needs to be tracked
         // and can't be dropped.
-        => CapabilityFreeze(symbol);
+        if (symbol.SharingIsTracked())
+            capabilities[symbol] = capabilities[symbol].Freeze();
+
+        // Other types don't have capabilities and don't need to be tracked
+    }
 
     public ResultVariable? Alias(BindingSymbol symbol)
     {
-        var capability = CapabilityAlias(symbol);
+        if (!symbol.SharingIsTracked())
+            return null;
+
+        var capability = (capabilities[symbol] = capabilities[symbol].Alias()).Current;
+
+        // Other types don't have capabilities and don't need to be tracked
         if (symbol.SharingIsTracked(capability))
             return SharingNewResult(symbol, resultVariableFactory);
         return null;
@@ -130,13 +145,29 @@ public sealed class FlowState
     /// Gives the current flow type of the symbol.
     /// </summary>
     /// <remarks>This is named for it to be used as <c>flow.Type(symbol)</c></remarks>
-    public DataType Type(BindingSymbol? symbol) => CurrentType(symbol);
+    public DataType Type(BindingSymbol? symbol)
+    {
+        var current = CapabilityFor(symbol);
+        if (current is not null)
+            return ((ReferenceType)symbol!.DataType).With(current);
+
+        // Other types don't have capabilities and don't need to be tracked
+        return symbol?.DataType ?? DataType.Unknown;
+    }
 
     /// <summary>
     /// Gives the type of an alias to the symbol
     /// </summary>
     /// <remarks>This is named for it to be used as <c>flow.AliasType(symbol)</c></remarks>
-    public DataType AliasType(BindingSymbol? symbol) => CapabilityAliasType(symbol);
+    public DataType AliasType(BindingSymbol? symbol)
+    {
+        var current = CapabilityFor(symbol);
+        if (current is not null)
+            return ((ReferenceType)symbol!.DataType).With(current.OfAlias());
+
+        // Other types don't have capabilities and don't need to be tracked
+        return symbol?.DataType ?? DataType.Unknown;
+    }
 
     /// <summary>
     /// Combine two <see cref="ResultVariable"/>s into a single sharing set and return a result
@@ -171,7 +202,14 @@ public sealed class FlowState
     /// the sharing set must now not allow mutation.</remarks>
     public ResultVariable LendConst(ResultVariable result)
     {
-        var newResult = SharingLendConst(result, resultVariableFactory, implicitLendFactory);
+        _ = SharingSet(result);
+        var borrowingResult = SharingNewResult(resultVariableFactory, isLent: true);
+        var lend = implicitLendFactory.CreateConstLend();
+        SharingDeclare(lend.From, false);
+        SharingUnion(result, lend.From, null);
+        SharingDeclare(lend.To, true);
+        SharingUnion(borrowingResult, lend.To, null);
+        var newResult = borrowingResult;
         // Don't apply read/write restriction because if that is the level, it is already set
         SetRestrictions(ReadSharingSet(result), applyReadWriteRestriction: false);
         return newResult;
@@ -184,7 +222,14 @@ public sealed class FlowState
     /// the sharing set must now not allow mutation or read.</remarks>
     public ResultVariable LendIso(ResultVariable result)
     {
-        var newResult = SharingLendIso(result, resultVariableFactory, implicitLendFactory);
+        _ = SharingSet(result);
+        var borrowingResult = SharingNewResult(resultVariableFactory, isLent: true);
+        var lend = implicitLendFactory.CreateIsoLend();
+        SharingDeclare(lend.From, false);
+        SharingUnion(result, lend.From, null);
+        SharingDeclare(lend.To, true);
+        SharingUnion(borrowingResult, lend.To, null);
+        var newResult = borrowingResult;
         // Apply read/write restrictions because the level may have increased to that
         SetRestrictions(ReadSharingSet(result), applyReadWriteRestriction: true);
         return newResult;
@@ -209,12 +254,45 @@ public sealed class FlowState
         if (!applyReadWriteRestriction && restrictions == CapabilityRestrictions.ReadWrite)
             return;
         foreach (var variable in sharingSet.OfType<BindingVariable>())
-            CapabilitySetRestrictions(variable.Symbol, restrictions);
+        {
+            if (variable.Symbol.SharingIsTracked())
+                capabilities[variable.Symbol] = capabilities[variable.Symbol].WithRestrictions(restrictions);
+
+            // Other types don't have capabilities and don't need to be tracked
+        }
     }
 
-    public void Merge(FlowState other) => SharingMerge(this);
+    public void Merge(FlowState other)
+    {
+        foreach (var set in (IEnumerable<IReadOnlySharingSet>)other.sets)
+        {
+            var representative = set.FirstOrDefault(subsetFor.ContainsKey);
+            if (representative is null)
+            {
+                // Whole set is missing, copy and add it
+                var newSet = new SharingSet(set);
+                sets.Add(newSet);
+                foreach (var variable in newSet)
+                    subsetFor.Add(variable, newSet);
+                continue;
+            }
 
-    public bool IsLent(ResultVariable? variable) => variable is not null && SharingIsLent(variable);
+            // At least one item of the set is present. Use that part as a core to union everything
+            // in the set together. This is necessary because there could be multiple sets that need
+            // unioned.
+            foreach (var variable in set)
+            {
+                // If a variable is completely missing, just declare it. This ensures existing logic
+                // can apply to the union.
+                if (!subsetFor.ContainsKey(variable))
+                    SharingDeclare(variable, set.IsLent);
+
+                SharingUnion(representative, variable, null);
+            }
+        }
+    }
+
+    public bool IsLent(ResultVariable? variable) => variable is not null && SharingSet(variable).IsLent;
 
     #region Capability Management
     private void CapabilityDeclare(BindingSymbol symbol)
@@ -233,65 +311,6 @@ public sealed class FlowState
         // Other types don't have capabilities and don't need to be tracked
         return null;
     }
-
-    private DataType CurrentType(BindingSymbol? symbol)
-    {
-        var current = CapabilityFor(symbol);
-        if (current is not null)
-            return ((ReferenceType)symbol!.DataType).With(current);
-
-        // Other types don't have capabilities and don't need to be tracked
-        return symbol?.DataType ?? DataType.Unknown;
-    }
-
-    private DataType CapabilityAliasType(BindingSymbol? symbol)
-    {
-        var current = CapabilityFor(symbol);
-        if (current is not null)
-            return ((ReferenceType)symbol!.DataType).With(current.OfAlias());
-
-        // Other types don't have capabilities and don't need to be tracked
-        return symbol?.DataType ?? DataType.Unknown;
-    }
-
-    /// <summary>
-    /// Creates an alias of the symbol therefor restricting the capability to no longer be `iso`.
-    /// </summary>
-    private ReferenceCapability? CapabilityAlias(BindingSymbol symbol)
-    {
-        if (symbol.SharingIsTracked())
-            return (capabilities[symbol] = capabilities[symbol].Alias()).Current;
-
-        // Other types don't have capabilities and don't need to be tracked
-        return null;
-    }
-
-    /// <summary>
-    /// Marks that a reference has been moved therefor restricting the capability to `id`.
-    /// </summary>
-    private void CapabilityMove(BindingSymbol? symbol)
-    {
-        if (symbol?.SharingIsTracked() ?? false)
-            capabilities[symbol] = ReferenceCapability.Identity;
-
-        // Other types don't have capabilities and don't need to be tracked
-    }
-
-    private void CapabilityFreeze(BindingSymbol symbol)
-    {
-        if (symbol.SharingIsTracked())
-            capabilities[symbol] = capabilities[symbol].Freeze();
-
-        // Other types don't have capabilities and don't need to be tracked
-    }
-
-    private void CapabilitySetRestrictions(BindingSymbol symbol, CapabilityRestrictions restrictions)
-    {
-        if (symbol.SharingIsTracked())
-            capabilities[symbol] = capabilities[symbol].WithRestrictions(restrictions);
-
-        // Other types don't have capabilities and don't need to be tracked
-    }
     #endregion
 
     #region Sharing Management
@@ -304,36 +323,6 @@ public sealed class FlowState
             throw new InvalidOperationException($"Sharing variable {variable} no longer declared.");
 
         return set;
-    }
-
-    public ResultVariable SharingLendConst(
-        ResultVariable result,
-        ResultVariableFactory resultVariableFactory,
-        ImplicitLendFactory implicitLendFactory)
-    {
-        _ = SharingSet(result);
-        var borrowingResult = SharingNewResult(resultVariableFactory, isLent: true);
-        var lend = implicitLendFactory.CreateConstLend();
-        SharingDeclare(lend.From, false);
-        SharingUnion(result, lend.From, null);
-        SharingDeclare(lend.To, true);
-        SharingUnion(borrowingResult, lend.To, null);
-        return borrowingResult;
-    }
-
-    public ResultVariable SharingLendIso(
-        ResultVariable result,
-        ResultVariableFactory resultVariableFactory,
-        ImplicitLendFactory implicitLendFactory)
-    {
-        _ = SharingSet(result);
-        var borrowingResult = SharingNewResult(resultVariableFactory, isLent: true);
-        var lend = implicitLendFactory.CreateIsoLend();
-        SharingDeclare(lend.From, false);
-        SharingUnion(result, lend.From, null);
-        SharingDeclare(lend.To, true);
-        SharingUnion(borrowingResult, lend.To, null);
-        return borrowingResult;
     }
 
     /// <summary>
@@ -403,9 +392,6 @@ public sealed class FlowState
         return affectedSets;
     }
 
-    public FixedSet<IReadOnlySharingSet> SharingDropAllLocalVariablesAndParameters()
-        => SharingDropAll(subsetFor.Keys.Where(v => v.IsVariableOrParameter)).ToFixedSet();
-
     private IEnumerable<IReadOnlySharingSet> SharingDropAll(IEnumerable<ISharingVariable> sharingVariables)
         => sharingVariables.ToArray().SelectMany(SharingDrop).Distinct();
 
@@ -439,40 +425,6 @@ public sealed class FlowState
 
     public bool SharingIsIsolatedExceptFor(ISharingVariable variable, ResultVariable result)
         => subsetFor.TryGetValue(variable, out var set) && set.IsIsolatedExceptFor(result);
-
-
-
-    public void SharingMerge(FlowState other)
-    {
-        foreach (var set in (IEnumerable<IReadOnlySharingSet>)other.sets)
-        {
-            var representative = set.FirstOrDefault(subsetFor.ContainsKey);
-            if (representative is null)
-            {
-                // Whole set is missing, copy and add it
-                var newSet = new SharingSet(set);
-                sets.Add(newSet);
-                foreach (var variable in newSet)
-                    subsetFor.Add(variable, newSet);
-                continue;
-            }
-
-            // At least one item of the set is present. Use that part as a core to union everything
-            // in the set together. This is necessary because there could be multiple sets that need
-            // unioned.
-            foreach (var variable in set)
-            {
-                // If a variable is completely missing, just declare it. This ensures existing logic
-                // can apply to the union.
-                if (!subsetFor.ContainsKey(variable))
-                    SharingDeclare(variable, set.IsLent);
-
-                SharingUnion(representative, variable, null);
-            }
-        }
-    }
-
-    public bool SharingIsLent(ResultVariable variable) => SharingSet(variable).IsLent;
     #endregion
 
     public override string ToString() => string.Join(", ", sets.Select(s => $"{{{string.Join(", ", s.Distinct())}}}"));
