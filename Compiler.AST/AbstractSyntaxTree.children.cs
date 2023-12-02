@@ -201,6 +201,9 @@ public static class IAbstractSyntaxExtensions
             case IRecoverIsolationExpression n:
                 yield return n.Value;
                 yield break;
+            case IAsyncBlockExpression n:
+                yield return n.Block;
+                yield break;
         }
     }
 }

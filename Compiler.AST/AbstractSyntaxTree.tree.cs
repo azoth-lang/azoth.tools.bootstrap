@@ -341,7 +341,8 @@ public partial interface IOptionalPattern : IPattern
     typeof(IFreezeExpression),
     typeof(IShareExpression),
     typeof(IIdExpression),
-    typeof(IRecoverExpression))]
+    typeof(IRecoverExpression),
+    typeof(IAsyncBlockExpression))]
 public partial interface IExpression : IAbstractSyntax
 {
     DataType DataType { get; }
@@ -578,5 +579,10 @@ public partial interface IRecoverConstExpression : IRecoverExpression
 
 public partial interface IRecoverIsolationExpression : IRecoverExpression
 {
+}
+
+public partial interface IAsyncBlockExpression : IExpression
+{
+    IBlockExpression Block { get; }
 }
 

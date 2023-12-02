@@ -388,6 +388,8 @@ public partial class Parser
                 Add(ParseError.CantFreezeExpression(File, span));
                 return expression;
             }
+            case IAsyncKeywordToken _:
+                return ParseAsyncBlock();
             case IOpenBraceToken _:
                 return ParseBlock();
             case IBinaryOperatorToken _:
@@ -508,6 +510,14 @@ public partial class Parser
             && expression is IResultStatementSyntax)
             Tokens.Expect<ISemicolonToken>();
         return expression;
+    }
+
+    private IExpressionSyntax ParseAsyncBlock()
+    {
+        var async = Tokens.Expect<IAsyncKeywordToken>();
+        var block = ParseBlock();
+        var span = TextSpan.Covering(async, block.Span);
+        return new AsyncBlockExpressionSyntax(span, block);
     }
 
     /// <summary>

@@ -903,6 +903,13 @@ public class BasicBodyAnalyzer
                 exp.DataType = DataType.Bool;
                 return new ExpressionResult(exp);
             }
+            case IAsyncBlockExpressionSyntax exp:
+            {
+                var result = InferBlockType(exp.Block, flow);
+                exp.Semantics = exp.Block.Semantics.Assigned();
+                exp.DataType = result.Type;
+                return result;
+            }
         }
     }
 

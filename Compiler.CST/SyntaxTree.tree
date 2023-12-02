@@ -146,3 +146,6 @@ QualifiedNameExpression: NameExpression = Context:Expression AccessOperator:'Acc
 // ---------- Capability Expressions
 MoveExpression: Expression = Referent:VariableNameExpression ReferencedSymbol:'Promise<BindingSymbol?>';
 FreezeExpression: Expression = Referent:VariableNameExpression ReferencedSymbol:'Promise<BindingSymbol?>';
+
+// ---------- Async Expressions
+AsyncBlockExpression: Expression = Block:BlockExpression;

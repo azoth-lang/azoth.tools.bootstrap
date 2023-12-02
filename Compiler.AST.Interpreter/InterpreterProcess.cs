@@ -615,6 +615,11 @@ public class InterpreterProcess
                 var value = await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
                 return await ExecuteMatchAsync(value, exp.Pattern, variables);
             }
+            case IAsyncBlockExpression exp:
+            {
+                // TODO properly enforce structured concurrency
+                return await ExecuteAsync(exp.Block, variables);
+            }
         }
     }
 

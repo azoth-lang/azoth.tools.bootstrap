@@ -136,3 +136,6 @@ IdExpression: Expression = Referent:Expression;
 RecoverExpression: Expression = Value:Expression;
 RecoverConstExpression: RecoverExpression = Value:Expression;
 RecoverIsolationExpression: RecoverExpression = Value:Expression;
+
+// ---------- Async Expressions
+AsyncBlockExpression: Expression = Block:BlockExpression;

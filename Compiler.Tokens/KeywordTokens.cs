@@ -66,6 +66,7 @@ public static partial class TokenTypes
         typeof(NotKeywordToken),
         typeof(TraitKeywordToken),
         typeof(IsKeywordToken),
+        typeof(AsyncKeywordToken),
     }.AsReadOnly();
 }
 
@@ -242,6 +243,9 @@ public static partial class TokenFactory
     public static IIsKeywordToken IsKeyword(TextSpan span)
         => new IsKeywordToken(span);
 
+    public static IAsyncKeywordToken AsyncKeyword(TextSpan span)
+        => new AsyncKeywordToken(span);
+
 }
 
 [Closed(
@@ -301,7 +305,8 @@ public static partial class TokenFactory
     typeof(IOrKeywordToken),
     typeof(INotKeywordToken),
     typeof(ITraitKeywordToken),
-    typeof(IIsKeywordToken))]
+    typeof(IIsKeywordToken),
+    typeof(IAsyncKeywordToken))]
 public partial interface IKeywordToken : IToken { }
 
 
@@ -813,6 +818,15 @@ public partial interface IIsKeywordToken : IKeywordToken { }
 internal partial class IsKeywordToken : Token, IIsKeywordToken
 {
     public IsKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IAsyncKeywordToken : IKeywordToken { }
+internal partial class AsyncKeywordToken : Token, IAsyncKeywordToken
+{
+    public AsyncKeywordToken(TextSpan span)
         : base(span)
     {
     }

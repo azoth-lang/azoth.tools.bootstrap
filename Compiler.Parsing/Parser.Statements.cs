@@ -32,6 +32,9 @@ public partial class Parser
             case IIfKeywordToken _:
                 var @if = ParseIf(ParseAs.Statement);
                 return new ExpressionStatementSyntax(@if.Span, @if);
+            case IAsyncKeywordToken _:
+                var async = ParseAsyncBlock();
+                return new ExpressionStatementSyntax(async.Span, async);
             case IUnsafeKeywordToken _:
                 return ParseUnsafeStatement();
             case IRightDoubleArrowToken _:

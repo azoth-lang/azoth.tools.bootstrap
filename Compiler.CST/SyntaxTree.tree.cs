@@ -474,7 +474,8 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
     typeof(IInvocationExpressionSyntax),
     typeof(IVariableNameExpressionSyntax),
     typeof(IMoveExpressionSyntax),
-    typeof(IFreezeExpressionSyntax))]
+    typeof(IFreezeExpressionSyntax),
+    typeof(IAsyncBlockExpressionSyntax))]
 public partial interface IExpressionSyntax : ISyntax
 {
     Conversion ImplicitConversion { get; }
@@ -667,5 +668,10 @@ public partial interface IFreezeExpressionSyntax : IExpressionSyntax
 {
     IVariableNameExpressionSyntax Referent { get; }
     Promise<BindingSymbol?> ReferencedSymbol { get; }
+}
+
+public partial interface IAsyncBlockExpressionSyntax : IExpressionSyntax
+{
+    IBlockExpressionSyntax Block { get; }
 }
 

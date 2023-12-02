@@ -93,6 +93,7 @@
         //"External",
         //"Sealed",
         "Is",
+        "Async",
     }.AsReadOnly();
 #>
 using System;

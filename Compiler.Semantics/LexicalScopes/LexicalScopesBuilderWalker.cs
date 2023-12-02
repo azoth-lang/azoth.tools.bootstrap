@@ -219,6 +219,12 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
                 Walk(exp.ElseClause, conditionScopes.False);
                 break;
             }
+            case IAsyncBlockExpressionSyntax exp:
+            {
+                // TODO once `async let` is supported, create a lexical scope for the variable
+                Walk((IBodyOrBlockSyntax)exp.Block, containingScope);
+                break;
+            }
             case ILiteralExpressionSyntax _:
             case ISelfExpressionSyntax _:
             case ISimpleNameExpressionSyntax _:

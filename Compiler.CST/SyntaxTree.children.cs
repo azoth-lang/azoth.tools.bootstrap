@@ -247,6 +247,9 @@ public static class ISyntaxExtensions
             case IFreezeExpressionSyntax n:
                 yield return n.Referent;
                 yield break;
+            case IAsyncBlockExpressionSyntax n:
+                yield return n.Block;
+                yield break;
         }
     }
 }

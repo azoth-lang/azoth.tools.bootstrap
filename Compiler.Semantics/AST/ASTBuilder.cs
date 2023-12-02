@@ -329,6 +329,7 @@ internal class ASTBuilder
             IFreezeExpressionSyntax syn => BuildFreezeExpression(syn),
             IConversionExpressionSyntax syn => BuildConversionExpression(syn),
             IPatternMatchExpressionSyntax syn => BuildPatternMatchExpression(syn),
+            IAsyncBlockExpressionSyntax syn => BuildAsyncBlockExpression(syn),
             _ => throw ExhaustiveMatch.Failed(expressionSyntax),
         };
         return BuildImplicitConversion(expression, expressionSyntax);
@@ -724,5 +725,13 @@ internal class ASTBuilder
     {
         var pattern = BuildPattern(syn.Pattern);
         return new OptionalPattern(syn.Span, pattern);
+    }
+
+    private static IAsyncBlockExpression BuildAsyncBlockExpression(IAsyncBlockExpressionSyntax syn)
+    {
+        var type = syn.DataType.Assigned();
+        var semantics = syn.Semantics.Assigned();
+        var block = BuildBlockExpression(syn.Block);
+        return new AsyncBlockExpression(syn.Span, type, semantics, block);
     }
 }
