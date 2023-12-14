@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.Async;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
@@ -8,10 +9,14 @@ internal class LocalVariableScope
 {
     private readonly LocalVariableScope? enclosingScope;
     private readonly IDictionary<BindingSymbol, AzothValue> values = new Dictionary<BindingSymbol, AzothValue>();
+    private readonly AsyncScope? asyncScope;
 
-    public LocalVariableScope(LocalVariableScope? enclosingScope = null)
+    public AsyncScope? AsyncScope => asyncScope ?? enclosingScope?.AsyncScope;
+
+    public LocalVariableScope(LocalVariableScope? enclosingScope = null, AsyncScope? asyncScope = null)
     {
         this.enclosingScope = enclosingScope;
+        this.asyncScope = asyncScope;
     }
 
     public AzothValue this[BindingSymbol symbol]
@@ -36,8 +41,5 @@ internal class LocalVariableScope
         }
     }
 
-    public void Add(BindingSymbol symbol, AzothValue value)
-    {
-        values.Add(symbol, value);
-    }
+    public void Add(BindingSymbol symbol, AzothValue value) => values.Add(symbol, value);
 }

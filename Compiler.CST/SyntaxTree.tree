@@ -149,3 +149,4 @@ FreezeExpression: Expression = Referent:VariableNameExpression ReferencedSymbol:
 
 // ---------- Async Expressions
 AsyncBlockExpression: Expression = Block:BlockExpression;
+AsyncStartExpression: Expression = Scheduled:'bool' Expression;

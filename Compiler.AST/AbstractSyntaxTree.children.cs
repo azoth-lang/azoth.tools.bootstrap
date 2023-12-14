@@ -204,6 +204,9 @@ public static class IAbstractSyntaxExtensions
             case IAsyncBlockExpression n:
                 yield return n.Block;
                 yield break;
+            case IAsyncStartExpression n:
+                yield return n.Expression;
+                yield break;
         }
     }
 }

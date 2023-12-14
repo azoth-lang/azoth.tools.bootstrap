@@ -225,6 +225,9 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
                 Walk((IBodyOrBlockSyntax)exp.Block, containingScope);
                 break;
             }
+            case IAsyncStartExpressionSyntax exp:
+                Walk(exp.Expression, containingScope);
+                break;
             case ILiteralExpressionSyntax _:
             case ISelfExpressionSyntax _:
             case ISimpleNameExpressionSyntax _:

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.Async;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout.BoundedLists;
@@ -617,8 +618,30 @@ public class InterpreterProcess
             }
             case IAsyncBlockExpression exp:
             {
-                // TODO properly enforce structured concurrency
-                return await ExecuteAsync(exp.Block, variables);
+                var asyncScope = new AsyncScope();
+                var blockVariables = new LocalVariableScope(variables, asyncScope);
+                try
+                {
+                    return await ExecuteAsync(exp.Block, blockVariables);
+                }
+                finally
+                {
+                    await asyncScope.ExitAsync();
+                }
+            }
+            case IAsyncStartExpression exp:
+            {
+                if (variables.AsyncScope is not AsyncScope asyncScope)
+                    throw new InvalidOperationException("Cannot execute `go` or `do` expression outside of an async scope.");
+
+                var task = exp.Scheduled
+                    ? Task.Run(async () => await ExecuteAsync(exp.Expression, variables))
+                    : ExecuteAsync(exp.Expression, variables).AsTask();
+
+                asyncScope.Add(task);
+
+                // TODO return a promise
+                return AzothValue.None;
             }
         }
     }

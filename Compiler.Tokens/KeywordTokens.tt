@@ -94,6 +94,8 @@
         //"Sealed",
         "Is",
         "Async",
+        "Go",
+        "Do",
     }.AsReadOnly();
 #>
 using System;

@@ -139,3 +139,4 @@ RecoverIsolationExpression: RecoverExpression = Value:Expression;
 
 // ---------- Async Expressions
 AsyncBlockExpression: Expression = Block:BlockExpression;
+AsyncStartExpression: Expression = Scheduled:'bool' Expression;

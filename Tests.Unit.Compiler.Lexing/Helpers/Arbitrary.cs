@@ -327,6 +327,8 @@ public static class Arbitrary
         { "freeze", typeof(IFreezeKeywordToken) },
         { "is", typeof(IIsKeywordToken) },
         { "async", typeof(IAsyncKeywordToken) },
+        { "go", typeof(IGoKeywordToken) },
+        { "do", typeof(IDoKeywordToken)},
     }.ToFixedDictionary();
 
     private readonly record struct AppendedToken(IEnumerable<PsuedoToken> Items, PsuedoToken? LastToken)

@@ -910,6 +910,14 @@ public class BasicBodyAnalyzer
                 exp.DataType = result.Type;
                 return result;
             }
+            case IAsyncStartExpressionSyntax exp:
+            {
+                _ = InferType(exp.Expression, flow);
+                // TODO type should be a promise
+                exp.Semantics = ExpressionSemantics.CopyValue;
+                exp.DataType = DataType.None;
+                return new ExpressionResult(exp);
+            }
         }
     }
 

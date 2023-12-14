@@ -32,7 +32,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(IAndKeywordToken),
     typeof(IOrKeywordToken),
     typeof(INotKeywordToken),
-    typeof(IAssignmentToken))]
+    typeof(IAssignmentOperatorToken),
+    typeof(IAsyncOperatorToken))]
 public interface IOperatorToken : IEssentialToken { }
 
 public partial interface IDotToken : IOperatorToken { }

@@ -67,6 +67,8 @@ public static partial class TokenTypes
         typeof(TraitKeywordToken),
         typeof(IsKeywordToken),
         typeof(AsyncKeywordToken),
+        typeof(GoKeywordToken),
+        typeof(DoKeywordToken),
     }.AsReadOnly();
 }
 
@@ -246,6 +248,12 @@ public static partial class TokenFactory
     public static IAsyncKeywordToken AsyncKeyword(TextSpan span)
         => new AsyncKeywordToken(span);
 
+    public static IGoKeywordToken GoKeyword(TextSpan span)
+        => new GoKeywordToken(span);
+
+    public static IDoKeywordToken DoKeyword(TextSpan span)
+        => new DoKeywordToken(span);
+
 }
 
 [Closed(
@@ -306,7 +314,9 @@ public static partial class TokenFactory
     typeof(INotKeywordToken),
     typeof(ITraitKeywordToken),
     typeof(IIsKeywordToken),
-    typeof(IAsyncKeywordToken))]
+    typeof(IAsyncKeywordToken),
+    typeof(IGoKeywordToken),
+    typeof(IDoKeywordToken))]
 public partial interface IKeywordToken : IToken { }
 
 
@@ -827,6 +837,24 @@ public partial interface IAsyncKeywordToken : IKeywordToken { }
 internal partial class AsyncKeywordToken : Token, IAsyncKeywordToken
 {
     public AsyncKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IGoKeywordToken : IKeywordToken { }
+internal partial class GoKeywordToken : Token, IGoKeywordToken
+{
+    public GoKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IDoKeywordToken : IKeywordToken { }
+internal partial class DoKeywordToken : Token, IDoKeywordToken
+{
+    public DoKeywordToken(TextSpan span)
         : base(span)
     {
     }

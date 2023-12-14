@@ -55,7 +55,7 @@ public partial class Parser
                 case ISlashEqualsToken _:
                     if (minPrecedence <= OperatorPrecedence.Assignment)
                     {
-                        var assignmentOperator = BuildAssignmentOperator(Tokens.RequiredToken<IAssignmentToken>());
+                        var assignmentOperator = BuildAssignmentOperator(Tokens.RequiredToken<IAssignmentOperatorToken>());
                         var rightOperand = ParseExpression();
                         if (expression is IAssignableExpressionSyntax assignableExpression)
                             expression = new AssignmentExpressionSyntax(assignableExpression, assignmentOperator, rightOperand);
@@ -202,7 +202,7 @@ public partial class Parser
         }
     }
 
-    private static AssignmentOperator BuildAssignmentOperator(IAssignmentToken assignmentToken)
+    private static AssignmentOperator BuildAssignmentOperator(IAssignmentOperatorToken assignmentToken)
     {
         return assignmentToken switch
         {
@@ -390,10 +390,14 @@ public partial class Parser
             }
             case IAsyncKeywordToken _:
                 return ParseAsyncBlock();
+            case IDoKeywordToken _:
+                return ParseAsyncStartExpression(scheduled: false);
+            case IGoKeywordToken _:
+                return ParseAsyncStartExpression(scheduled: true);
             case IOpenBraceToken _:
                 return ParseBlock();
             case IBinaryOperatorToken _:
-            case IAssignmentToken _:
+            case IAssignmentOperatorToken _:
             case IQuestionDotToken _:
             case ISemicolonToken _:
             case ICloseParenToken _:
@@ -447,6 +451,14 @@ public partial class Parser
         var operand = ParseExpression(OperatorPrecedence.Unary);
         var span = TextSpan.Covering(operatorSpan, operand.Span);
         return new UnaryOperatorExpressionSyntax(span, UnaryOperatorFixity.Prefix, @operator, operand);
+    }
+
+    private IAsyncStartExpressionSyntax ParseAsyncStartExpression(bool scheduled)
+    {
+        var operatorSpan = Tokens.Required<IAsyncOperatorToken>();
+        var expression = ParseExpression(OperatorPrecedence.Min);
+        var span = TextSpan.Covering(operatorSpan, expression.Span);
+        return new AsyncStartExpressionSyntax(span, scheduled, expression);
     }
 
     private IForeachExpressionSyntax ParseForeach()
