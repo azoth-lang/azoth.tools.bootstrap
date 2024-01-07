@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
@@ -912,11 +913,11 @@ public class BasicBodyAnalyzer
             }
             case IAsyncStartExpressionSyntax exp:
             {
-                _ = InferType(exp.Expression, flow);
-                // TODO type should be a promise
+                // TODO these act like function calls holding results longer
+                var result = InferType(exp.Expression, flow);
                 exp.Semantics = ExpressionSemantics.CopyValue;
-                exp.DataType = DataType.None;
-                return new ExpressionResult(exp);
+                exp.DataType = Intrinsic.PromiseOf(result.Type);
+                return new ExpressionResult(exp, result.Variable);
             }
         }
     }

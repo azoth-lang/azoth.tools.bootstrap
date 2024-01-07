@@ -7,10 +7,4 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 public record class ExpressionResult(IExpressionSyntax Syntax, ResultVariable? Variable = null)
 {
     public DataType Type => Syntax.ConvertedDataType.Assigned();
-
-    public void Deconstruct(out DataType type, out ResultVariable? result)
-    {
-        type = Type;
-        result = Variable;
-    }
 }

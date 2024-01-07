@@ -12,9 +12,10 @@ public static class Intrinsic
 {
     public static readonly FixedSymbolTree SymbolTree = DefineIntrinsicSymbols();
 
-    public static readonly FunctionSymbol PrintRawUtf8Bytes = Find<FunctionSymbol>("print_raw_utf8_bytes");
+    public static readonly ObjectTypeSymbol Promise = Find<ObjectTypeSymbol>("Promise");
 
-    public static readonly FunctionSymbol AbortRawUtf8Bytes = Find<FunctionSymbol>("ABORT_RAW_UTF8_BYTES");
+    public static ObjectType PromiseOf(DataType type)
+        => Promise.DeclaresType.WithRead(FixedList.Create(type));
 
     public static readonly ObjectTypeSymbol RawHybridBoundedList
         = Find<ObjectTypeSymbol>("Raw_Hybrid_Bounded_List");
@@ -40,6 +41,10 @@ public static class Intrinsic
     public static readonly MethodSymbol RawBoundedListShrink
         = Find<MethodSymbol>(RawHybridBoundedList, "shrink");
 
+    public static readonly FunctionSymbol PrintRawUtf8Bytes = Find<FunctionSymbol>("print_raw_utf8_bytes");
+
+    public static readonly FunctionSymbol AbortRawUtf8Bytes = Find<FunctionSymbol>("ABORT_RAW_UTF8_BYTES");
+
     private static IEnumerable<T> Find<T>()
         => SymbolTree.Symbols.OfType<T>();
 
@@ -58,7 +63,11 @@ public static class Intrinsic
 
         var intrinsicsNamespace = new NamespaceSymbol(intrinsicsPackage, "intrinsics");
 
-        var rawBoundedListType = BuildSpecializedCollectionSymbols(intrinsicsPackage, tree);
+        var azothNamespace = BuildAzothNamespace(intrinsicsPackage, tree);
+
+        _ = BuildPromiseSymbol(azothNamespace, tree);
+
+        var rawBoundedListType = BuildSpecializedCollectionSymbols(azothNamespace, tree);
         var readBytesType = rawBoundedListType.WithRead(FixedList.Create<DataType>(DataType.Void, DataType.Byte));
 
         // fn print_raw_utf8_bytes(bytes: Raw_Bounded_List[byte], start: size, byte_count: size)
@@ -79,14 +88,30 @@ public static class Intrinsic
         return tree.Build();
     }
 
-    private static DeclaredObjectType BuildSpecializedCollectionSymbols(
-        PackageSymbol intrinsicsPackage,
-        SymbolTreeBuilder tree)
+    private static NamespaceSymbol BuildAzothNamespace(PackageSymbol intrinsicsPackage, SymbolTreeBuilder tree)
     {
         var azothNamespace = new NamespaceSymbol(intrinsicsPackage, "azoth");
-        var collectionsNamespace = new NamespaceSymbol(intrinsicsPackage, "collections");
-        var specializedNamespace = new NamespaceSymbol(intrinsicsPackage, "specialized");
         tree.Add(azothNamespace);
+        return azothNamespace;
+    }
+
+    private static DeclaredObjectType BuildPromiseSymbol(NamespaceSymbol azothNamespace, SymbolTreeBuilder tree)
+    {
+        var intrinsicsPackage = azothNamespace.Package;
+        var promiseType = DeclaredObjectType.Create(intrinsicsPackage.Name, azothNamespace.NamespaceName,
+                       isAbstract: false, isConst: false, isClass: true, "Promise", "T");
+        var classSymbol = new ObjectTypeSymbol(azothNamespace, promiseType);
+        tree.Add(classSymbol);
+
+        return promiseType;
+    }
+
+    private static DeclaredObjectType BuildSpecializedCollectionSymbols(
+        NamespaceSymbol azothNamespace,
+        SymbolTreeBuilder tree)
+    {
+        var collectionsNamespace = new NamespaceSymbol(azothNamespace, "collections");
+        var specializedNamespace = new NamespaceSymbol(collectionsNamespace, "specialized");
         tree.Add(collectionsNamespace);
         tree.Add(specializedNamespace);
 
@@ -95,7 +120,7 @@ public static class Intrinsic
 
     private static DeclaredObjectType BuildRawHybridBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
     {
-        var classType = DeclaredObjectType.Create(@namespace.Package!.Name, @namespace.NamespaceName,
+        var classType = DeclaredObjectType.Create(@namespace.Package.Name, @namespace.NamespaceName,
             isAbstract: false, isConst: false, isClass: true, "Raw_Hybrid_Bounded_List", "F", "T");
         var fixedType = classType.GenericParameterTypes[0];
         var readClassParamType = new ParameterType(false, classType.WithRead(classType.GenericParameterDataTypes));
