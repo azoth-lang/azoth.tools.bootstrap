@@ -328,7 +328,8 @@ public static class Arbitrary
         { "is", typeof(IIsKeywordToken) },
         { "async", typeof(IAsyncKeywordToken) },
         { "go", typeof(IGoKeywordToken) },
-        { "do", typeof(IDoKeywordToken)},
+        { "do", typeof(IDoKeywordToken) },
+        { "await", typeof(IAwaitKeywordToken) },
     }.ToFixedDictionary();
 
     private readonly record struct AppendedToken(IEnumerable<PsuedoToken> Items, PsuedoToken? LastToken)

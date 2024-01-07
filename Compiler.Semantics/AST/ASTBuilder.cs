@@ -331,6 +331,7 @@ internal class ASTBuilder
             IPatternMatchExpressionSyntax syn => BuildPatternMatchExpression(syn),
             IAsyncBlockExpressionSyntax syn => BuildAsyncBlockExpression(syn),
             IAsyncStartExpressionSyntax syn => BuildAsyncStartExpression(syn),
+            IAwaitExpressionSyntax syn => BuildAwaitExpression(syn),
             _ => throw ExhaustiveMatch.Failed(expressionSyntax),
         };
         return BuildImplicitConversion(expression, expressionSyntax);
@@ -742,5 +743,13 @@ internal class ASTBuilder
         var semantics = syn.Semantics.Assigned();
         var expression = BuildExpression(syn.Expression);
         return new AsyncStartExpression(syn.Span, type, semantics, syn.Scheduled, expression);
+    }
+
+    private static IAwaitExpression BuildAwaitExpression(IAwaitExpressionSyntax syn)
+    {
+        var type = syn.DataType.Assigned();
+        var semantics = syn.Semantics.Assigned();
+        var expression = BuildExpression(syn.Expression);
+        return new AwaitExpression(syn.Span, type, semantics, expression);
     }
 }

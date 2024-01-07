@@ -343,7 +343,8 @@ public partial interface IOptionalPattern : IPattern
     typeof(IIdExpression),
     typeof(IRecoverExpression),
     typeof(IAsyncBlockExpression),
-    typeof(IAsyncStartExpression))]
+    typeof(IAsyncStartExpression),
+    typeof(IAwaitExpression))]
 public partial interface IExpression : IAbstractSyntax
 {
     DataType DataType { get; }
@@ -590,6 +591,11 @@ public partial interface IAsyncBlockExpression : IExpression
 public partial interface IAsyncStartExpression : IExpression
 {
     bool Scheduled { get; }
+    IExpression Expression { get; }
+}
+
+public partial interface IAwaitExpression : IExpression
+{
     IExpression Expression { get; }
 }
 

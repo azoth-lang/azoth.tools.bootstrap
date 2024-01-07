@@ -96,6 +96,7 @@
         "Async",
         "Go",
         "Do",
+        "Await",
     }.AsReadOnly();
 #>
 using System;

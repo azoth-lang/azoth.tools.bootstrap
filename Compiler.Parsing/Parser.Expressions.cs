@@ -394,6 +394,8 @@ public partial class Parser
                 return ParseAsyncStartExpression(scheduled: false);
             case IGoKeywordToken _:
                 return ParseAsyncStartExpression(scheduled: true);
+            case IAwaitKeywordToken _:
+                return ParseAwaitExpression();
             case IOpenBraceToken _:
                 return ParseBlock();
             case IBinaryOperatorToken _:
@@ -459,6 +461,14 @@ public partial class Parser
         var expression = ParseExpression(OperatorPrecedence.Min);
         var span = TextSpan.Covering(operatorSpan, expression.Span);
         return new AsyncStartExpressionSyntax(span, scheduled, expression);
+    }
+
+    private IExpressionSyntax ParseAwaitExpression()
+    {
+        var awaitKeyword = Tokens.Expect<IAwaitKeywordToken>();
+        var expression = ParseExpression(OperatorPrecedence.Unary);
+        var span = TextSpan.Covering(awaitKeyword, expression.Span);
+        return new AwaitExpressionSyntax(span, expression);
     }
 
     private IForeachExpressionSyntax ParseForeach()

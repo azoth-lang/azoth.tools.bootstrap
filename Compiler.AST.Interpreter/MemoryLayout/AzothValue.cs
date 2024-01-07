@@ -1,6 +1,7 @@
 using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout.BoundedLists;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -21,6 +22,7 @@ internal readonly struct AzothValue
     [FieldOffset(0)] public readonly AzothObject ObjectValue;
     [FieldOffset(0)] public readonly BigInteger IntValue;
     [FieldOffset(0)] public readonly IRawBoundedList RawBoundedListValue;
+    [FieldOffset(0)] public readonly Task<AzothValue> PromiseValue;
     [FieldOffset(0)] private readonly ValueType value;
 
     public bool IsNone => ReferenceEquals(value.Reference, NoneFlag);
@@ -42,6 +44,7 @@ internal readonly struct AzothValue
     public static AzothValue Object(AzothObject value) => new(value);
     public static AzothValue Int(BigInteger value) => new(value);
     public static AzothValue RawBoundedList(IRawBoundedList value) => new(value);
+    public static AzothValue Promise(Task<AzothValue> value) => new(value);
     public static AzothValue Bool(bool value) => new(value);
     public static AzothValue I8(sbyte value) => new(value);
     public static AzothValue Byte(byte value) => new(value);
@@ -73,6 +76,12 @@ internal readonly struct AzothValue
     {
         RawBoundedListValue = value;
     }
+
+    private AzothValue(Task<AzothValue> value)
+    {
+        PromiseValue = value;
+    }
+
     private AzothValue(bool value)
     {
         this.value.Simple.BoolValue = value;

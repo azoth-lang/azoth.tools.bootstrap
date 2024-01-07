@@ -640,8 +640,13 @@ public class InterpreterProcess
 
                 asyncScope.Add(task);
 
-                // TODO return a promise
-                return AzothValue.None;
+                return AzothValue.Promise(task);
+            }
+            case IAwaitExpression exp:
+            {
+                var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
+
+                return await value.PromiseValue.ConfigureAwait(false);
             }
         }
     }

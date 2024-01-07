@@ -14,8 +14,10 @@ public static class Intrinsic
 
     public static readonly ObjectTypeSymbol Promise = Find<ObjectTypeSymbol>("Promise");
 
+    public static readonly DeclaredObjectType PromiseType = Promise.DeclaresType;
+
     public static ObjectType PromiseOf(DataType type)
-        => Promise.DeclaresType.WithRead(FixedList.Create(type));
+        => PromiseType.WithRead(FixedList.Create(type));
 
     public static readonly ObjectTypeSymbol RawHybridBoundedList
         = Find<ObjectTypeSymbol>("Raw_Hybrid_Bounded_List");

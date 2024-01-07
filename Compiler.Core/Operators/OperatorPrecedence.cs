@@ -14,6 +14,6 @@ public enum OperatorPrecedence
     Conversion, // `as` `as!` `as?`
     Additive, // `+` `-`
     Multiplicative, // `*` `/`
-    Unary, // `+` `-` `not` `?`
+    Unary, // `+` `-` `not` `await`
     Primary // `f()` `.` `[]`
 }

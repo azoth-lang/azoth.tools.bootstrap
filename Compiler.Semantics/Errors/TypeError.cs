@@ -127,4 +127,10 @@ public static class TypeError
         return new(file, self.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3017, $"Self parameter `{self}` must be `const` or `id` because it is in a `const` class.");
     }
+
+    public static Diagnostic CannotAwaitType(CodeFile file, TextSpan span, DataType type)
+    {
+        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3018, $"Cannot await non-awaitable type `{type.ToSourceCodeString()}`.");
+    }
 }

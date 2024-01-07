@@ -919,6 +919,24 @@ public class BasicBodyAnalyzer
                 exp.DataType = Intrinsic.PromiseOf(result.Type);
                 return new ExpressionResult(exp, result.Variable);
             }
+            case IAwaitExpressionSyntax exp:
+            {
+                var result = InferType(exp.Expression, flow);
+                if (result.Type is not ObjectType { DeclaredType: { } declaredType } promiseType
+                    || declaredType != Intrinsic.PromiseType)
+                {
+                    diagnostics.Add(TypeError.CannotAwaitType(file, exp.Span, result.Type));
+                    exp.Semantics = ExpressionSemantics.CopyValue;
+                    exp.DataType = DataType.Unknown;
+                    return new ExpressionResult(exp, result.Variable);
+                }
+
+                var resultType = promiseType.TypeArguments[0];
+                exp.Semantics = ExpressionSemantics.CopyValue;
+                exp.DataType = resultType;
+                // TODO what is the effect on the flow typing
+                return new ExpressionResult(exp, result.Variable);
+            }
         }
     }
 

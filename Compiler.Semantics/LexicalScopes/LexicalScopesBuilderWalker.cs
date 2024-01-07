@@ -228,6 +228,8 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
             case IAsyncStartExpressionSyntax exp:
                 Walk(exp.Expression, containingScope);
                 break;
+            case IAwaitExpressionSyntax exp:
+                return Walk(exp.Expression, containingScope);
             case ILiteralExpressionSyntax _:
             case ISelfExpressionSyntax _:
             case ISimpleNameExpressionSyntax _:

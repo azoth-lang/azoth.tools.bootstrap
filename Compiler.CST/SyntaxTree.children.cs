@@ -253,6 +253,9 @@ public static class ISyntaxExtensions
             case IAsyncStartExpressionSyntax n:
                 yield return n.Expression;
                 yield break;
+            case IAwaitExpressionSyntax n:
+                yield return n.Expression;
+                yield break;
         }
     }
 }

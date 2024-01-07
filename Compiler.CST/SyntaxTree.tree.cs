@@ -476,7 +476,8 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
     typeof(IMoveExpressionSyntax),
     typeof(IFreezeExpressionSyntax),
     typeof(IAsyncBlockExpressionSyntax),
-    typeof(IAsyncStartExpressionSyntax))]
+    typeof(IAsyncStartExpressionSyntax),
+    typeof(IAwaitExpressionSyntax))]
 public partial interface IExpressionSyntax : ISyntax
 {
     Conversion ImplicitConversion { get; }
@@ -679,6 +680,11 @@ public partial interface IAsyncBlockExpressionSyntax : IExpressionSyntax
 public partial interface IAsyncStartExpressionSyntax : IExpressionSyntax
 {
     bool Scheduled { get; }
+    IExpressionSyntax Expression { get; }
+}
+
+public partial interface IAwaitExpressionSyntax : IExpressionSyntax
+{
     IExpressionSyntax Expression { get; }
 }
 
