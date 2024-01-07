@@ -455,7 +455,7 @@ public partial class Parser
 
     private IAsyncStartExpressionSyntax ParseAsyncStartExpression(bool scheduled)
     {
-        var operatorSpan = Tokens.Required<IAsyncOperatorToken>();
+        var operatorSpan = Tokens.Required<IAsyncStartOperatorToken>();
         var expression = ParseExpression(OperatorPrecedence.Min);
         var span = TextSpan.Covering(operatorSpan, expression.Span);
         return new AsyncStartExpressionSyntax(span, scheduled, expression);
