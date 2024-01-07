@@ -123,7 +123,7 @@ internal readonly struct AzothValue
     {
         this.value.Simple.OffsetValue = value;
     }
-    private AzothValue(nuint value) : this()
+    private AzothValue(nuint value)
     {
         this.value.Simple.SizeValue = value;
     }

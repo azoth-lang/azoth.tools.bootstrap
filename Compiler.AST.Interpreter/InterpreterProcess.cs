@@ -459,11 +459,11 @@ public class InterpreterProcess
                         return await DivideAsync(exp.LeftOperand, exp.RightOperand, variables)
                             .ConfigureAwait(false);
                     case BinaryOperator.EqualsEquals:
-                        return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables)
-                            .ConfigureAwait(false) == 0);
+                        return AzothValue.Bool(await EqualsAsync(exp.LeftOperand, exp.RightOperand, variables)
+                            .ConfigureAwait(false));
                     case BinaryOperator.NotEqual:
-                        return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables)
-                            .ConfigureAwait(false) != 0);
+                        return AzothValue.Bool(!await EqualsAsync(exp.LeftOperand, exp.RightOperand, variables)
+                            .ConfigureAwait(false));
                     case BinaryOperator.LessThan:
                         return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables)
                             .ConfigureAwait(false) < 0);
@@ -866,20 +866,62 @@ public class InterpreterProcess
         throw new NotImplementedException($"Divide {type.ToILString()}");
     }
 
+    private async ValueTask<bool> EqualsAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+    {
+        if (leftExp.DataType != rightExp.DataType)
+            throw new InvalidOperationException(
+                $"Can't compare expressions of type {leftExp.DataType.ToILString()} and {rightExp.DataType.ToILString()} for equality.");
+        var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
+        var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
+        var type = leftExp.DataType;
+        if (type is OptionalType optionalType)
+        {
+            if (left.IsNone && right.IsNone) return true;
+            if (left.IsNone || right.IsNone) return false;
+            return EqualsAsync(optionalType.Referent, left, right);
+        }
+
+        return EqualsAsync(type, left, right);
+    }
+
+    private static bool EqualsAsync(DataType type, AzothValue left, AzothValue right)
+    {
+        if (type == DataType.Int) return left.IntValue.Equals(right.IntValue);
+        if (type == DataType.UInt) return left.IntValue.Equals(right.IntValue);
+        if (type == DataType.Int8) return left.I8Value.Equals(right.I8Value);
+        if (type == DataType.Byte) return left.ByteValue.Equals(right.ByteValue);
+        if (type == DataType.Int16) return left.I16Value.Equals(right.I16Value);
+        if (type == DataType.UInt16) return left.U16Value.Equals(right.U16Value);
+        if (type == DataType.Int32) return left.I32Value.Equals(right.I32Value);
+        if (type == DataType.UInt32) return left.U32Value.Equals(right.U32Value);
+        if (type == DataType.Int64) return left.I64Value.Equals(right.I64Value);
+        if (type == DataType.UInt64) return left.U64Value.Equals(right.U64Value);
+        if (type == DataType.Offset) return left.OffsetValue.Equals(right.OffsetValue);
+        if (type == DataType.Size) return left.SizeValue.Equals(right.SizeValue);
+        if (type is ReferenceType { IsIdentityReference: true })
+            return ReferenceEquals(left.ObjectValue, right.ObjectValue);
+        throw new NotImplementedException($"Compare equality of `{type.ToILString()}`.");
+    }
+
     private async ValueTask<int> CompareAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
     {
         if (leftExp.DataType != rightExp.DataType)
             throw new InvalidOperationException(
-                $"Can't compare expressions of type {leftExp.DataType.ToILString()} and {rightExp.DataType.ToILString()}");
+                $"Can't compare expressions of type {leftExp.DataType.ToILString()} and {rightExp.DataType.ToILString()}.");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
         var type = leftExp.DataType;
-        if (type == DataType.Int.ToOptional())
+        if (type is OptionalType optionalType)
         {
             if (left.IsNone && right.IsNone) return 0;
             if (left.IsNone || right.IsNone) throw new NotImplementedException("No comparison order");
-            return left.IntValue.CompareTo(right.IntValue);
+            return CompareAsync(optionalType.Referent, left, right);
         }
+        return CompareAsync(type, left, right);
+    }
+
+    private static int CompareAsync(DataType type, AzothValue left, AzothValue right)
+    {
         if (type == DataType.Int) return left.IntValue.CompareTo(right.IntValue);
         if (type == DataType.UInt) return left.IntValue.CompareTo(right.IntValue);
         if (type == DataType.Int8) return left.I8Value.CompareTo(right.I8Value);
@@ -892,9 +934,7 @@ public class InterpreterProcess
         if (type == DataType.UInt64) return left.U64Value.CompareTo(right.U64Value);
         if (type == DataType.Offset) return left.OffsetValue.CompareTo(right.OffsetValue);
         if (type == DataType.Size) return left.SizeValue.CompareTo(right.SizeValue);
-        if (type is ReferenceType { IsIdentityReference: true })
-            return ReferenceEquals(left.ObjectValue, right.ObjectValue) ? 0 : -1;
-        throw new NotImplementedException($"Compare {type.ToILString()}");
+        throw new NotImplementedException($"Compare `{type.ToILString()}`.");
     }
 
     private async ValueTask<AzothValue> NegateAsync(IExpression expression, LocalVariableScope variables)
