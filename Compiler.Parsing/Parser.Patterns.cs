@@ -12,10 +12,10 @@ public partial class Parser
         switch (Tokens.Current)
         {
             case ILetKeywordToken _ when isMutableBinding is null:
-                var let = Tokens.Expect<IBindingToken>();
+                var let = Tokens.Consume<IBindingToken>();
                 return ParseRestOfBindingContextPattern(let, false, refutable);
             case IVarKeywordToken _ when isMutableBinding is null:
-                var var = Tokens.Expect<IBindingToken>();
+                var var = Tokens.Consume<IBindingToken>();
                 return ParseRestOfBindingContextPattern(var, true, refutable);
             case IIdentifierToken _ when isMutableBinding is not null:
                 return ParseBindingPattern(isMutableBinding.Value);
@@ -32,7 +32,7 @@ public partial class Parser
         ITypeSyntax? type = null;
         if (refutable && Tokens.Current is IColonToken)
         {
-            _ = Tokens.Required<IColonToken>();
+            _ = Tokens.Consume<IColonToken>();
             type = ParseType();
         }
         var span = TextSpan.Covering(binding, pattern.Span, type?.Span);
@@ -57,14 +57,14 @@ public partial class Parser
         {
             case IQuestionToken:
             {
-                var question = Tokens.Required<IQuestionToken>();
+                var question = Tokens.Consume<IQuestionToken>();
                 var span = TextSpan.Covering(pattern.Span, question);
                 pattern = new OptionalPatternSyntax(span, pattern);
                 return true;
             }
             case IQuestionQuestionToken:
             {
-                var questionQuestion = Tokens.RequiredToken<IQuestionQuestionToken>();
+                var questionQuestion = Tokens.ConsumeToken<IQuestionQuestionToken>();
                 var span = TextSpan.Covering(pattern.Span, questionQuestion.FirstQuestionSpan);
                 pattern = new OptionalPatternSyntax(span, pattern);
                 span = TextSpan.Covering(pattern.Span, questionQuestion.SecondQuestionSpan);

@@ -55,7 +55,7 @@ public partial class Parser
                 if (lentBinding is not null)
                     Add(ParseError.LentFieldParameter(File, lentBinding.Span));
 
-                var dot = Tokens.Expect<IDotToken>();
+                var dot = Tokens.Consume<IDotToken>();
                 var identifier = Tokens.RequiredToken<IIdentifierToken>();
                 var equals = Tokens.AcceptToken<IEqualsToken>();
                 IExpressionSyntax? defaultValue = null;

@@ -15,10 +15,10 @@ public partial class Parser
                 var block = ParseBlock();
                 return new ExpressionStatementSyntax(block.Span, block);
             case ILetKeywordToken _:
-                var let = Tokens.Expect<IBindingToken>();
+                var let = Tokens.Consume<IBindingToken>();
                 return ParseRestOfVariableDeclaration(let, false);
             case IVarKeywordToken _:
-                var var = Tokens.Expect<IBindingToken>();
+                var var = Tokens.Consume<IBindingToken>();
                 return ParseRestOfVariableDeclaration(var, true);
             case IForeachKeywordToken _:
                 var @foreach = ParseForeach();
@@ -97,7 +97,7 @@ public partial class Parser
 
     private IExpressionStatementSyntax ParseUnsafeStatement()
     {
-        var unsafeKeyword = Tokens.Expect<IUnsafeKeywordToken>();
+        var unsafeKeyword = Tokens.Consume<IUnsafeKeywordToken>();
         var isBlock = Tokens.Current is IOpenBraceToken;
         var expression = isBlock ? ParseBlock() : ParseParenthesizedExpression();
         var span = TextSpan.Covering(unsafeKeyword, expression.Span);

@@ -70,7 +70,7 @@ public partial class Parser
     internal NamespaceDeclarationSyntax ParseNamespaceDeclaration(ModifierParser modifiers)
     {
         modifiers.ParseEndOfModifiers();
-        var ns = Tokens.Expect<INamespaceKeywordToken>();
+        var ns = Tokens.Consume<INamespaceKeywordToken>();
         var globalQualifier = Tokens.AcceptToken<IColonColonDotToken>();
         var (name, nameSpan) = ParseNamespaceName();
         nameSpan = TextSpan.Covering(nameSpan, globalQualifier?.Span);
@@ -110,7 +110,7 @@ public partial class Parser
     {
         var accessModifer = modifiers.ParseAccessModifier();
         modifiers.ParseEndOfModifiers();
-        var fn = Tokens.Expect<IFunctionKeywordToken>();
+        var fn = Tokens.Consume<IFunctionKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         SimpleName name = identifier.Value;
         var bodyParser = BodyParser();
@@ -172,7 +172,7 @@ public partial class Parser
         var constModifier = modifiers.ParseConstModifier();
         var moveModifier = modifiers.ParseMoveModifier();
         modifiers.ParseEndOfModifiers();
-        var classKeywordSpan = Tokens.Expect<IClassKeywordToken>();
+        var classKeywordSpan = Tokens.Consume<IClassKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
         var generic = AcceptGenericParameters();
@@ -244,7 +244,7 @@ public partial class Parser
         var constModifier = modifiers.ParseConstModifier();
         var moveModifier = modifiers.ParseMoveModifier();
         modifiers.ParseEndOfModifiers();
-        var traitKeywordSpan = Tokens.Expect<ITraitKeywordToken>();
+        var traitKeywordSpan = Tokens.Consume<ITraitKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
         var generic = AcceptGenericParameters();
@@ -290,7 +290,7 @@ public partial class Parser
     {
         var accessModifer = modifiers.ParseAccessModifier();
         modifiers.ParseEndOfModifiers();
-        var fn = Tokens.Expect<IFunctionKeywordToken>();
+        var fn = Tokens.Consume<IFunctionKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         SimpleName name = identifier.Value;
         var bodyParser = BodyParser();
@@ -355,7 +355,7 @@ public partial class Parser
         var accessModifer = modifiers.ParseAccessModifier();
         modifiers.ParseEndOfModifiers();
         // We should only be called when there is a binding keyword
-        var binding = Tokens.Required<IBindingToken>();
+        var binding = Tokens.Consume<IBindingToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         SimpleName name = identifier.Value;
         Tokens.Expect<IColonToken>();
@@ -377,7 +377,7 @@ public partial class Parser
         var accessModifer = modifiers.ParseAccessModifier();
         var abstractModifier = modifiers.ParseAbstractModifier();
         modifiers.ParseEndOfModifiers();
-        var fn = Tokens.Expect<IFunctionKeywordToken>();
+        var fn = Tokens.Consume<IFunctionKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         SimpleName name = identifier.Value;
         var bodyParser = BodyParser();
@@ -444,7 +444,7 @@ public partial class Parser
     {
         var accessModifer = modifiers.ParseAccessModifier();
         modifiers.ParseEndOfModifiers();
-        var newKeywordSpan = Tokens.Expect<INewKeywordToken>();
+        var newKeywordSpan = Tokens.Consume<INewKeywordToken>();
         var identifier = Tokens.AcceptToken<IIdentifierToken>();
         var name = identifier is null ? null : (SimpleName)identifier.Value;
         var bodyParser = BodyParser();

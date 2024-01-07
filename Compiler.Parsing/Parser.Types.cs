@@ -32,22 +32,22 @@ public partial class Parser
         {
             case IIsolatedKeywordToken _:
             {
-                var isolatedKeyword = Tokens.RequiredToken<IIsolatedKeywordToken>();
+                var isolatedKeyword = Tokens.ConsumeToken<IIsolatedKeywordToken>();
                 return new ReferenceCapabilitySyntax(isolatedKeyword.Span, isolatedKeyword.Yield(), Isolated);
             }
             case IMutableKeywordToken _:
             {
-                var mutableKeyword = Tokens.RequiredToken<IMutableKeywordToken>();
+                var mutableKeyword = Tokens.ConsumeToken<IMutableKeywordToken>();
                 return new ReferenceCapabilitySyntax(mutableKeyword.Span, mutableKeyword.Yield(), Mutable);
             }
             case IConstKeywordToken _:
             {
-                var constKeyword = Tokens.RequiredToken<IConstKeywordToken>();
+                var constKeyword = Tokens.ConsumeToken<IConstKeywordToken>();
                 return new ReferenceCapabilitySyntax(constKeyword.Span, constKeyword.Yield(), Constant);
             }
             case IIdKeywordToken _:
             {
-                var idKeyword = Tokens.RequiredToken<IIdKeywordToken>();
+                var idKeyword = Tokens.ConsumeToken<IIdKeywordToken>();
                 return new ReferenceCapabilitySyntax(idKeyword.Span, idKeyword.Yield(), Identity);
             }
             default:
@@ -79,14 +79,14 @@ public partial class Parser
         {
             case IQuestionToken:
             {
-                var question = Tokens.Required<IQuestionToken>();
+                var question = Tokens.Consume<IQuestionToken>();
                 var span = TextSpan.Covering(type.Span, question);
                 type = new OptionalTypeSyntax(span, type);
                 return true;
             }
             case IQuestionQuestionToken:
             {
-                var questionQuestion = Tokens.RequiredToken<IQuestionQuestionToken>();
+                var questionQuestion = Tokens.ConsumeToken<IQuestionQuestionToken>();
                 var span = TextSpan.Covering(type.Span, questionQuestion.FirstQuestionSpan);
                 type = new OptionalTypeSyntax(span, type);
                 span = TextSpan.Covering(type.Span, questionQuestion.SecondQuestionSpan);
@@ -137,7 +137,7 @@ public partial class Parser
 
     private ISimpleTypeNameSyntax ParsePrimitiveType()
     {
-        var keyword = Tokens.RequiredToken<IPrimitiveTypeToken>();
+        var keyword = Tokens.ConsumeToken<IPrimitiveTypeToken>();
         SpecialTypeName name = keyword switch
         {
             IVoidKeywordToken _ => SpecialTypeName.Void,
