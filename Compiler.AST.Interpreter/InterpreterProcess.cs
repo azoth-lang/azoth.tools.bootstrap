@@ -702,6 +702,11 @@ public class InterpreterProcess
             string message = RawUtf8BytesToString(arguments);
             throw new Abort(message);
         }
+        if (function == Intrinsic.IdentityHash)
+        {
+            var value = arguments[0].ObjectValue;
+            return AzothValue.U64((ulong)value.GetHashCode());
+        }
         throw new NotImplementedException($"Intrinsic {function}");
     }
 
