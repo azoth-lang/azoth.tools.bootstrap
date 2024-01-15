@@ -38,20 +38,18 @@ public abstract class DeclaredReferenceType : IEquatable<DeclaredReferenceType>
     // TODO this is really awkward. There should be a subtype relationship
     public FixedList<DataType> GenericParameterDataTypes { get; }
 
-    public FixedSet<BareReferenceType> Supertypes { get; }
+    public abstract FixedSet<BareReferenceType> Supertypes { get; }
 
     protected DeclaredReferenceType(
         bool isConstType,
         bool isAbstract,
-        FixedList<GenericParameterType> genericParametersTypes,
-        FixedSet<BareReferenceType> supertypes)
+        FixedList<GenericParameterType> genericParametersTypes)
     {
         IsConstType = isConstType;
         IsAbstract = isAbstract;
         GenericParameters = genericParametersTypes.Select(t => t.Parameter).ToFixedList();
         GenericParameterTypes = genericParametersTypes;
         GenericParameterDataTypes = GenericParameterTypes.ToFixedList<DataType>();
-        Supertypes = supertypes;
     }
 
     public abstract ReferenceType With(ReferenceCapability capability, FixedList<DataType> typeArguments);

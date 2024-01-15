@@ -12,13 +12,14 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
     internal static readonly DeclaredAnyType Instance = new();
 
     private DeclaredAnyType()
-        : base(isConstType: false, isAbstract: true, FixedList<GenericParameterType>.Empty, FixedSet<BareReferenceType>.Empty)
+        : base(isConstType: false, isAbstract: true, FixedList<GenericParameterType>.Empty)
     { }
     #endregion
 
     public override SimpleName? ContainingPackage => null;
     public override NamespaceName ContainingNamespace => NamespaceName.Global;
     public override SpecialTypeName Name => SpecialTypeName.Any;
+    public override FixedSet<BareReferenceType> Supertypes => FixedSet<BareReferenceType>.Empty;
 
     public override AnyType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
     {

@@ -180,12 +180,15 @@ public class EntitySymbolBuilder
         var typeParameters = BuildGenericParameterTypes(@class);
         var genericParameterSymbols = BuildGenericParameterSymbols(@class, typeParameters).ToFixedList();
 
-        var superTypes = EvaluateSupertypes(@class, typeDeclarations).ToFixedSet();
+        var superTypes = new AcyclicPromise<FixedSet<BareReferenceType>>();
         var classType = DeclaredObjectType.Create(packageName, @class.ContainingNamespaceName,
             @class.IsAbstract, @class.IsConst, isClass: true, @class.Name, typeParameters, superTypes);
 
         var classSymbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(classSymbol);
+
+        BuildSupertypes(@class, superTypes, typeDeclarations);
+
         symbolTree.Add(classSymbol);
 
         symbolTree.Add(genericParameterSymbols);
@@ -206,12 +209,15 @@ public class EntitySymbolBuilder
         var typeParameters = BuildGenericParameterTypes(trait);
         var genericParameterSymbols = BuildGenericParameterSymbols(trait, typeParameters).ToFixedList();
 
-        var superTypes = EvaluateSupertypes(trait, typeDeclarations).ToFixedSet();
+        var superTypes = new AcyclicPromise<FixedSet<BareReferenceType>>();
         var traitType = DeclaredObjectType.Create(packageName, trait.ContainingNamespaceName,
             isAbstract: true, trait.IsConst, isClass: false, trait.Name, typeParameters, superTypes);
 
         var traitSymbol = new ObjectTypeSymbol(trait.ContainingNamespaceSymbol, traitType);
         trait.Symbol.Fulfill(traitSymbol);
+
+        BuildSupertypes(trait, superTypes, typeDeclarations);
+
         symbolTree.Add(traitSymbol);
 
         symbolTree.Add(genericParameterSymbols);
@@ -240,6 +246,21 @@ public class EntitySymbolBuilder
             var genericParameterSymbol = new GenericParameterTypeSymbol(typeSymbol, genericParameter);
             syn.Symbol.Fulfill(genericParameterSymbol);
             yield return genericParameterSymbol;
+        }
+    }
+
+    private void BuildSupertypes(
+        ITypeDeclarationSyntax syn,
+        AcyclicPromise<FixedSet<BareReferenceType>> supertypes,
+        TypeSymbolBuilder typeDeclarations)
+    {
+        if (!supertypes.TryBeginFulfilling(AddCircularDefinitionError)) return;
+
+        supertypes.Fulfill(EvaluateSupertypes(syn, typeDeclarations).ToFixedSet());
+
+        void AddCircularDefinitionError()
+        {
+            diagnostics.Add(OtherSemanticError.CircularDefinition(syn.File, syn.NameSpan, syn));
         }
     }
 
@@ -442,8 +463,6 @@ public class EntitySymbolBuilder
             symbolBuilder.BuildTypeSymbol(typeDeclaration, this);
             return promise.Result;
         }
-
-        public ITypeDeclarationSyntax this[IPromise<TypeSymbol> symbol] => typeDeclarations[symbol];
 
         #region IEnumerable<ITypeDeclarationSyntax>
         public IEnumerator<ITypeDeclarationSyntax> GetEnumerator() => typeDeclarations.Values.GetEnumerator();

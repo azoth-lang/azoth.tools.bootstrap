@@ -31,7 +31,7 @@ internal sealed class TypeReplacements
                             replacements.Add(genericParameterType, replacement);
                         else
                             throw new InvalidOperationException(
-                                $"Could not find replacement for `{typeArg}` in type `{declaredType}` with arguments `{typeArguments}`");
+                                $"Could not find replacement for `{typeArg}` in type `{declaredType}` with arguments `{typeArguments}`.");
                     }
                     else
                         replacements.Add(genericParameterType, ReplaceTypeParametersIn(typeArg));

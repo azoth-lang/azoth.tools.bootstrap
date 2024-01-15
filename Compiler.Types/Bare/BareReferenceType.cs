@@ -20,7 +20,8 @@ public abstract class BareReferenceType : IEquatable<BareReferenceType>
 
     public FixedList<DataType> TypeArguments { get; }
 
-    public FixedSet<BareReferenceType> Supertypes { get; }
+    private readonly Lazy<FixedSet<BareReferenceType>> supertypes;
+    public FixedSet<BareReferenceType> Supertypes => supertypes.Value;
 
     public bool IsFullyKnown { [DebuggerStepThrough] get; }
 
@@ -30,7 +31,7 @@ public abstract class BareReferenceType : IEquatable<BareReferenceType>
     /// </summary>
     public bool IsConstType => DeclaredType.IsConstType;
 
-    private readonly TypeReplacements typeReplacements;
+    private readonly Lazy<TypeReplacements> typeReplacements;
 
     protected BareReferenceType(DeclaredReferenceType declaredType, FixedList<DataType> typeArguments)
     {
@@ -40,12 +41,17 @@ public abstract class BareReferenceType : IEquatable<BareReferenceType>
                 nameof(typeArguments));
         TypeArguments = typeArguments;
         IsFullyKnown = typeArguments.All(a => a.IsFullyKnown);
-        typeReplacements = new TypeReplacements(declaredType, typeArguments);
-        Supertypes = declaredType.Supertypes.Select(typeReplacements.ReplaceTypeParametersIn).ToFixedSet();
+        typeReplacements = new(GetTypeReplacements);
+        supertypes = new(GetSupertypes);
     }
 
+    private TypeReplacements GetTypeReplacements() => new(DeclaredType, TypeArguments);
+
+    private FixedSet<BareReferenceType> GetSupertypes()
+        => DeclaredType.Supertypes.Select(typeReplacements.Value.ReplaceTypeParametersIn).ToFixedSet();
+
     public DataType ReplaceTypeParametersIn(DataType type)
-        => typeReplacements.ReplaceTypeParametersIn(type);
+        => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
     #region Equality
     public abstract bool Equals(BareReferenceType? other);

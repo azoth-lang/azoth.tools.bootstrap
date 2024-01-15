@@ -34,6 +34,7 @@ public class AcyclicPromise<T> : IPromise<T>
         state = PromiseState.InProgress;
     }
 
+    /// <returns><see langword="true"/> if the caller can begin fulfilling the promise.</returns>
     [DebuggerHidden]
     public bool TryBeginFulfilling(Action? whenInProgress = null)
     {

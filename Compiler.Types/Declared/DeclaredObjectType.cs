@@ -13,6 +13,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
 {
     private static readonly FixedSet<BareReferenceType> AnyType
         = BareReferenceType.Any.Yield().ToFixedSet<BareReferenceType>();
+    private static readonly Promise<FixedSet<BareReferenceType>> AnyTypePromise = new(AnyType);
 
     public static DeclaredObjectType Create(
         SimpleName containingPackage,
@@ -22,7 +23,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         bool isClass,
         string name)
         => new(containingPackage, containingNamespace, isAbstract, isConst, isClass, name,
-            FixedList<GenericParameterType>.Empty, AnyType);
+            FixedList<GenericParameterType>.Empty, AnyTypePromise);
 
     public static DeclaredObjectType Create(
         SimpleName containingPackage,
@@ -32,7 +33,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         bool isClass,
         string name,
         FixedList<GenericParameterType> genericParameterTypes,
-        FixedSet<BareReferenceType> superTypes)
+        IPromise<FixedSet<BareReferenceType>> superTypes)
         => new(containingPackage, containingNamespace, isAbstract, isConst, isClass,
             StandardTypeName.Create(name, genericParameterTypes.Count), genericParameterTypes, superTypes);
 
@@ -44,7 +45,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         bool isClass,
         StandardTypeName name,
         FixedList<GenericParameterType> genericParametersTypes,
-        FixedSet<BareReferenceType> superTypes)
+        IPromise<FixedSet<BareReferenceType>> superTypes)
     {
         Requires.That(nameof(genericParametersTypes), name.GenericParameterCount == genericParametersTypes.Count, "Count must match name count");
         return new(containingPackage, containingNamespace, isAbstract, isConst, isClass, name,
@@ -63,7 +64,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         var declaringTypePromise = new Promise<DeclaredObjectType>();
         var genericParametersTypes = genericParameters.Select(p => new GenericParameterType(declaringTypePromise, p)).ToFixedList();
         return new(containingPackage, containingNamespace, isAbstract, isConst, isClass,
-            StandardTypeName.Create(name, genericParameters.Length), genericParametersTypes, AnyType);
+            StandardTypeName.Create(name, genericParameters.Length), genericParametersTypes, AnyTypePromise);
     }
 
     private DeclaredObjectType(
@@ -74,16 +75,16 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         bool isClass,
         StandardTypeName name,
         FixedList<GenericParameterType> genericParametersTypes,
-        FixedSet<BareReferenceType> supertypes)
-        : base(isConstType, isAbstract, genericParametersTypes, supertypes)
+        IPromise<FixedSet<BareReferenceType>> supertypes)
+        : base(isConstType, isAbstract, genericParametersTypes)
     {
-        if (!supertypes.Contains(BareReferenceType.Any))
-            throw new ArgumentException("All object types must be subtypes of `Any`", nameof(supertypes));
+        //if (!supertypes.Contains(BareReferenceType.Any))
+        //    throw new ArgumentException("All object types must be subtypes of `Any`", nameof(supertypes));
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
         IsClass = isClass;
         Name = name;
-
+        this.supertypes = supertypes;
         // Fulfill the declaring type promise so the parameters are associated to this type
         var declaringTypePromise = genericParametersTypes.Select(t => t.DeclaringTypePromise)
                                                          .Distinct().SingleOrDefault();
@@ -100,6 +101,9 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// Whether this type is a `class` (as opposed to a `trait`)
     /// </summary>
     public bool IsClass { get; }
+
+    private readonly IPromise<FixedSet<BareReferenceType>> supertypes;
+    public override FixedSet<BareReferenceType> Supertypes => supertypes.Result;
 
     /// <summary>
     /// Make a version of this type for use as the default constructor parameter.
