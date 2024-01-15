@@ -176,7 +176,7 @@ public class EntitySymbolBuilder
     {
         if (!@class.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
-        var packageName = @class.ContainingNamespaceSymbol.Package!.Name;
+        var packageName = @class.ContainingNamespaceSymbol.Package.Name;
         var typeParameters = BuildGenericParameterTypes(@class);
         var genericParameterSymbols = BuildGenericParameterSymbols(@class, typeParameters).ToFixedList();
 
@@ -205,7 +205,7 @@ public class EntitySymbolBuilder
     {
         if (!trait.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
-        var packageName = trait.ContainingNamespaceSymbol.Package!.Name;
+        var packageName = trait.ContainingNamespaceSymbol.Package.Name;
         var typeParameters = BuildGenericParameterTypes(trait);
         var genericParameterSymbols = BuildGenericParameterSymbols(trait, typeParameters).ToFixedList();
 

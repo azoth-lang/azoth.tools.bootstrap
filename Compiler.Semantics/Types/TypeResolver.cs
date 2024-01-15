@@ -70,7 +70,8 @@ public class TypeResolver
         {
             var type = symbol switch
             {
-                PrimitiveTypeSymbol sym => sym.DeclaresType,
+                // TODO WithoutWrite() is a hack for handling `Any`
+                PrimitiveTypeSymbol sym => sym.DeclaresType.WithoutWrite(),
                 ObjectTypeSymbol sym => sym.DeclaresType.WithRead(typeArguments),
                 GenericParameterTypeSymbol sym => sym.DeclaresType,
                 _ => throw ExhaustiveMatch.Failed(symbol)
@@ -132,7 +133,18 @@ public class TypeResolver
                 default:
                     throw ExhaustiveMatch.Failed(symbol);
                 case PrimitiveTypeSymbol sym:
-                    return sym.DeclaresType;
+                    var type = sym.DeclaresType;
+                    // TODO Hack to handle `Any`
+                    if (type is ReferenceType referenceType)
+                    {
+                        // If capability not provided, then this is for a constructor or something
+                        // and reading the value doesn't matter, it exists to name the type.
+                        capability ??= ReferenceCapability.Identity;
+                        // Compatibility of the capability with the type is not checked here. That
+                        // is done on the capability type syntax.
+                        type = referenceType.With(capability);
+                    }
+                    return type;
                 case ObjectTypeSymbol sym:
                     var declaredObjectType = sym.DeclaresType;
                     // If capability not provided, then this is for a constructor or something
