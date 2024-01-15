@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Lexing;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
@@ -199,9 +200,21 @@ public partial class Parser
 
     private IGenericParameterSyntax? AcceptGenericParameter()
     {
+        var (variance, varianceSpan) = ParseVariance();
         var identifier = Tokens.AcceptToken<IIdentifierToken>();
         if (identifier is null) return null;
-        return new GenericParameterSyntax(identifier.Span, identifier.Value);
+        var span = TextSpan.Covering(varianceSpan, identifier.Span);
+        return new GenericParameterSyntax(span, variance, identifier.Value);
+    }
+
+    private (Variance, TextSpan) ParseVariance()
+    {
+        return Tokens.Current switch
+        {
+            IInKeywordToken _ => (Variance.Contravariant, Tokens.Consume<IInKeywordToken>()),
+            IOutKeywordToken _ => (Variance.Covariant, Tokens.Consume<IOutKeywordToken>()),
+            _ => (Variance.Invariant, Tokens.Current.Span.AtStart())
+        };
     }
 
     private (FixedList<IClassMemberDeclarationSyntax> Members, TextSpan Span) ParseClassBody(IClassDeclarationSyntax declaringType)

@@ -28,7 +28,7 @@ public static class NameBindingError
     public static Diagnostic CouldNotBindConstructor(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            5004, "Type doesn't have a constructor with this name and number of arguments.");
+            5004, "Type doesn't have a constructor with this name and matching arguments.");
     }
 
     public static Diagnostic AmbiguousConstructorCall(CodeFile file, TextSpan span)

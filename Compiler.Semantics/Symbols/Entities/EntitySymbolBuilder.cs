@@ -232,7 +232,7 @@ public class EntitySymbolBuilder
     private static FixedList<GenericParameterType> BuildGenericParameterTypes(ITypeDeclarationSyntax type)
     {
         var declaredType = new Promise<DeclaredObjectType>();
-        return type.GenericParameters.Select(p => new GenericParameterType(declaredType, new GenericParameter(p.Name)))
+        return type.GenericParameters.Select(p => new GenericParameterType(declaredType, new GenericParameter(p.Variance, p.Name)))
                    .ToFixedList();
     }
 

@@ -62,7 +62,7 @@ AssociatedFunctionDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, C
 Attribute = TypeName;
 
 // ---------- Type Parameters --------------
-GenericParameter = Name:'SimpleName' Symbol:'Promise<GenericParameterTypeSymbol>';
+GenericParameter = Variance:'Variance' Name:'SimpleName' Symbol:'Promise<GenericParameterTypeSymbol>';
 
 // ---------- Parameters and Return--------------
 Parameter = Name:'SimpleName'? DataType:'IPromise<DataType>' Unused:'bool';

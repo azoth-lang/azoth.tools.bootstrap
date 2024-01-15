@@ -109,7 +109,7 @@ public static class Intrinsic
     {
         var intrinsicsPackage = azothNamespace.Package;
         var promiseType = DeclaredObjectType.Create(intrinsicsPackage.Name, azothNamespace.NamespaceName,
-                       isAbstract: false, isConst: false, isClass: true, "Promise", "T");
+                       isAbstract: false, isConst: false, isClass: true, "Promise", GenericParameter.Out("T"));
         var classSymbol = new ObjectTypeSymbol(azothNamespace, promiseType);
         tree.Add(classSymbol);
 
@@ -131,7 +131,8 @@ public static class Intrinsic
     private static DeclaredObjectType BuildRawHybridBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
     {
         var classType = DeclaredObjectType.Create(@namespace.Package.Name, @namespace.NamespaceName,
-            isAbstract: false, isConst: false, isClass: true, "Raw_Hybrid_Bounded_List", "F", "T");
+            isAbstract: false, isConst: false, isClass: true, "Raw_Hybrid_Bounded_List",
+            GenericParameter.Invariant("F"), GenericParameter.Invariant("T"));
         var fixedType = classType.GenericParameterTypes[0];
         var readClassParamType = new ParameterType(false, classType.WithRead(classType.GenericParameterDataTypes));
         var mutClassType = classType.WithMutate(classType.GenericParameterDataTypes);

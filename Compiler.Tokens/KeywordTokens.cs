@@ -70,6 +70,7 @@ public static partial class TokenTypes
         typeof(GoKeywordToken),
         typeof(DoKeywordToken),
         typeof(AwaitKeywordToken),
+        typeof(OutKeywordToken),
     }.AsReadOnly();
 }
 
@@ -258,6 +259,9 @@ public static partial class TokenFactory
     public static IAwaitKeywordToken AwaitKeyword(TextSpan span)
         => new AwaitKeywordToken(span);
 
+    public static IOutKeywordToken OutKeyword(TextSpan span)
+        => new OutKeywordToken(span);
+
 }
 
 [Closed(
@@ -321,7 +325,8 @@ public static partial class TokenFactory
     typeof(IAsyncKeywordToken),
     typeof(IGoKeywordToken),
     typeof(IDoKeywordToken),
-    typeof(IAwaitKeywordToken))]
+    typeof(IAwaitKeywordToken),
+    typeof(IOutKeywordToken))]
 public partial interface IKeywordToken : IToken { }
 
 
@@ -869,6 +874,15 @@ public partial interface IAwaitKeywordToken : IKeywordToken { }
 internal partial class AwaitKeywordToken : Token, IAwaitKeywordToken
 {
     public AwaitKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IOutKeywordToken : IKeywordToken { }
+internal partial class OutKeywordToken : Token, IOutKeywordToken
+{
+    public OutKeywordToken(TextSpan span)
         : base(span)
     {
     }
