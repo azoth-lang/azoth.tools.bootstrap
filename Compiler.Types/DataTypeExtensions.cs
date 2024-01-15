@@ -5,6 +5,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -63,7 +64,51 @@ public static class DataTypeExtensions
     }
 
     public static bool IsAssignableFrom(this BareReferenceType target, BareReferenceType source)
-        => source.Equals(target) || source.Supertypes.Contains(target);
+    {
+        if (source.Equals(target) || source.Supertypes.Contains(target))
+            return true;
+
+        if (target.AllowsVariance)
+        {
+            var declaredType = target.DeclaredType;
+            var matchingDeclaredType = source.Supertypes.Prepend(source).Where(t => t.DeclaredType == declaredType);
+            foreach (var sourceType in matchingDeclaredType)
+                if (IsAssignableFrom(declaredType, target.TypeArguments, sourceType.TypeArguments))
+                    return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsAssignableFrom(
+        DeclaredReferenceType declaredType,
+        FixedList<DataType> target,
+        FixedList<DataType> source)
+    {
+        for (int i = 0; i < declaredType.GenericParameters.Count; i++)
+        {
+            var from = source[i];
+            var to = target[i];
+            switch (declaredType.GenericParameters[i].Variance)
+            {
+                case Variance.Invariant:
+                    if (!from.Equals(to))
+                        return false;
+                    break;
+                case Variance.Covariant:
+                    if (!to.IsAssignableFrom(from))
+                        return false;
+                    break;
+                case Variance.Contravariant:
+                    if (!from.IsAssignableFrom(to))
+                        return false;
+                    break;
+                default:
+                    throw ExhaustiveMatch.Failed(declaredType.GenericParameters[i].Variance);
+            }
+        }
+        return true;
+    }
 
     /// <summary>
     /// Validates that a type as been assigned.

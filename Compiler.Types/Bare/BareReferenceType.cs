@@ -18,6 +18,8 @@ public abstract class BareReferenceType : IEquatable<BareReferenceType>
 
     public abstract DeclaredReferenceType DeclaredType { get; }
 
+    public bool AllowsVariance => DeclaredType.AllowsVariance;
+
     public FixedList<DataType> TypeArguments { get; }
 
     private readonly Lazy<FixedSet<BareReferenceType>> supertypes;
