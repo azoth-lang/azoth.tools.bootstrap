@@ -13,6 +13,6 @@ published /*sealed*/ const class /*struct*/ range
             { .end = .start; }
     }
 
-    published fn iterate(const self) -> mut range_iterator
-        => return new range_iterator(self);
+    published fn iterate(const self) -> mut Range_Iterator
+        => return new Range_Iterator(self);
 }
