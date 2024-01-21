@@ -297,7 +297,7 @@ public class BasicBodyAnalyzer
         FlowState flow)
     {
         var syntax = expression.Syntax;
-        var conversion = CreateImplicitConversion(expectedType.Type, expectedType.IsLentBinding,
+        var conversion = CreateImplicitConversion(expectedType.Type, expectedType.IsLent,
             expression.Type, expression.Variable, syntax.ImplicitConversion, flow,
             out var newResult);
         if (conversion is not null) syntax.AddConversion(conversion);
@@ -1104,7 +1104,7 @@ public class BasicBodyAnalyzer
     {
         var argType = arg.Type;
         var priorConversion = arg.Syntax.ImplicitConversion;
-        var conversion = CreateImplicitConversion(parameter.Type, parameter.IsLentBinding, arg.Type, arg.Variable,
+        var conversion = CreateImplicitConversion(parameter.Type, parameter.IsLent, arg.Type, arg.Variable,
             priorConversion, flow, out _, enact: false);
         if (conversion is not null)
         {
@@ -1331,7 +1331,7 @@ public class BasicBodyAnalyzer
     {
         // Implicit moves never happen if the parameter is lent. `lent` is an explicit request not
         // to force the caller to have `iso`.
-        if (selfParamType.IsLentBinding) return null;
+        if (selfParamType.IsLent) return null;
 
         if (selfParamType.Type is not ReferenceType { IsIsolatedReference: true } toType
             || selfArgType is not ReferenceType { AllowsRecoverIsolation: true } fromType)
@@ -1371,7 +1371,7 @@ public class BasicBodyAnalyzer
     {
         // Implicit freezes never happen if the parameter is lent. `lent` is an explicit request not
         // to force the caller to have `const`
-        if (selfParamType.IsLentBinding) return null;
+        if (selfParamType.IsLent) return null;
 
         if (selfParamType.Type is not ReferenceType { IsConstReference: true } toType
             || selfArgType is not ReferenceType { AllowsFreeze: true } fromType)

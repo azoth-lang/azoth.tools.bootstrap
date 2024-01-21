@@ -53,16 +53,22 @@ public class TypeResolver
             case ICapabilityTypeSyntax referenceCapability:
             {
                 var capability = referenceCapability.Capability.Declared.ToReferenceCapability();
-                var type = Evaluate(referenceCapability.ReferentType, isAttribute: false, capability);
+                var type = Evaluate(referenceCapability.Referent, isAttribute: false, capability);
                 if (capability.AllowsWrite && type is ObjectType { IsConstType: true } objectType)
                     diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(file, referenceCapability, capability,
                         objectType.DeclaredType));
                 return referenceCapability.NamedType = type;
             }
-            case IOptionalTypeSyntax optionalType:
+            case IOptionalTypeSyntax syn:
             {
-                var referent = Evaluate(optionalType.Referent);
-                return optionalType.NamedType = new OptionalType(referent);
+                var referent = Evaluate(syn.Referent);
+                return syn.NamedType = new OptionalType(referent);
+            }
+            case IFunctionTypeSyntax syn:
+            {
+                var parameterTypes = syn.Parameters.Select(Evaluate).ToFixedList();
+                var returnType = Evaluate(syn.Return);
+                return syn.NamedType = new FunctionType(parameterTypes, returnType);
             }
         }
 
@@ -94,8 +100,21 @@ public class TypeResolver
                 return syn.NamedType!;
             case ICapabilityTypeSyntax _:
             case IOptionalTypeSyntax _:
+            case IFunctionTypeSyntax _:
                 throw new NotImplementedException("Report error about incorrect type expression.");
         }
+    }
+
+    private ParameterType Evaluate(IParameterTypeSyntax syn)
+    {
+        var referent = Evaluate(syn.Referent);
+        return new ParameterType(syn.IsLent, referent);
+    }
+
+    private ReturnType Evaluate(IReturnTypeSyntax syn)
+    {
+        var referent = Evaluate(syn.Referent);
+        return new ReturnType(syn.IsLent, referent);
     }
 
     /// <summary>
@@ -111,6 +130,7 @@ public class TypeResolver
     public DataType EvaluateAttribute(ITypeNameSyntax typeSyntax)
         => EvaluateBareType(typeSyntax, isAttribute: true, capability: null);
 
+    // TODO should this return `BareType`?
     private DataType EvaluateBareType(
         ITypeNameSyntax typeSyntax,
         bool isAttribute,

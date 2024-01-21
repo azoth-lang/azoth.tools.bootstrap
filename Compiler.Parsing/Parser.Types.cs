@@ -15,7 +15,7 @@ public partial class Parser
     {
         return Tokens.Current switch
         {
-            ICapabilityToken or IIdentifierToken or IPrimitiveTypeToken => ParseType(),
+            ICapabilityToken or IIdentifierToken or IPrimitiveTypeToken or IOpenParenToken => ParseType(),
             _ => null
         };
     }
@@ -106,6 +106,7 @@ public partial class Parser
         return Tokens.Current switch
         {
             IPrimitiveTypeToken _ => ParsePrimitiveType(),
+            IOpenParenToken _ => ParseFunctionType(),
             // otherwise we want a type name
             _ => ParseTypeName()
         };
@@ -163,5 +164,34 @@ public partial class Parser
         };
 
         return new SimpleTypeNameSyntax(keyword.Span, name);
+    }
+
+    private IFunctionTypeSyntax ParseFunctionType()
+    {
+        var openParen = Tokens.ConsumeToken<IOpenParenToken>();
+        var parameterTypes = AcceptManySeparated<IParameterTypeSyntax, ICommaToken>(AcceptParameterType);
+        Tokens.Required<ICloseParenToken>();
+        Tokens.Required<IRightArrowToken>();
+        var returnType = ParseReturnType();
+        var span = TextSpan.Covering(openParen.Span, returnType.Span);
+        return new FunctionTypeSyntax(span, parameterTypes, returnType);
+    }
+
+    private IParameterTypeSyntax? AcceptParameterType()
+    {
+        var lent = Tokens.AcceptToken<ILentKeywordToken>();
+        var referent = lent is null ? AcceptType() : ParseType();
+        if (referent is null)
+            return null;
+        var span = TextSpan.Covering(lent?.Span, referent.Span);
+        return new ParameterTypeSyntax(span, lent is not null, referent);
+    }
+
+    private IReturnTypeSyntax ParseReturnType()
+    {
+        var lent = Tokens.AcceptToken<ILentKeywordToken>();
+        var referent = ParseType();
+        var span = TextSpan.Covering(lent?.Span, referent.Span);
+        return new ReturnTypeSyntax(span, lent is not null, referent);
     }
 }

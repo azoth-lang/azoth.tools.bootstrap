@@ -25,6 +25,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(IReturnSyntax),
     typeof(ITypeSyntax),
     typeof(IReferenceCapabilitySyntax),
+    typeof(IParameterTypeSyntax),
+    typeof(IReturnTypeSyntax),
     typeof(IStatementSyntax),
     typeof(IPatternSyntax),
     typeof(IExpressionSyntax))]
@@ -345,7 +347,8 @@ public partial interface IExpressionBodySyntax : IBodySyntax
 [Closed(
     typeof(ITypeNameSyntax),
     typeof(IOptionalTypeSyntax),
-    typeof(ICapabilityTypeSyntax))]
+    typeof(ICapabilityTypeSyntax),
+    typeof(IFunctionTypeSyntax))]
 public partial interface ITypeSyntax : ISyntax
 {
 }
@@ -376,13 +379,31 @@ public partial interface IOptionalTypeSyntax : ITypeSyntax
 public partial interface ICapabilityTypeSyntax : ITypeSyntax
 {
     IReferenceCapabilitySyntax Capability { get; }
-    ITypeSyntax ReferentType { get; }
+    ITypeSyntax Referent { get; }
 }
 
 public partial interface IReferenceCapabilitySyntax : ISyntax
 {
     FixedList<ICapabilityToken> Tokens { get; }
     DeclaredReferenceCapability Declared { get; }
+}
+
+public partial interface IFunctionTypeSyntax : ITypeSyntax
+{
+    FixedList<IParameterTypeSyntax> Parameters { get; }
+    IReturnTypeSyntax Return { get; }
+}
+
+public partial interface IParameterTypeSyntax : ISyntax
+{
+    bool IsLent { get; }
+    ITypeSyntax Referent { get; }
+}
+
+public partial interface IReturnTypeSyntax : ISyntax
+{
+    bool IsLent { get; }
+    ITypeSyntax Referent { get; }
 }
 
 [Closed(

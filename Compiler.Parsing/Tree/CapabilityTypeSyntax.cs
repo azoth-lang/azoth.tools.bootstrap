@@ -6,17 +6,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class CapabilityTypeSyntax : TypeSyntax, ICapabilityTypeSyntax
 {
     public IReferenceCapabilitySyntax Capability { get; }
-    public ITypeSyntax ReferentType { get; }
+    public ITypeSyntax Referent { get; }
 
     public CapabilityTypeSyntax(
         IReferenceCapabilitySyntax referenceCapability,
-        ITypeSyntax referentType,
+        ITypeSyntax referent,
         TextSpan span)
         : base(span)
     {
-        ReferentType = referentType;
+        Referent = referent;
         Capability = referenceCapability;
     }
 
-    public override string ToString() => $"{Capability} {ReferentType}";
+    public override string ToString() => $"{Capability} {Referent}";
 }

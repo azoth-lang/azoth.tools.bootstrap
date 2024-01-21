@@ -7,18 +7,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// was declared `lent`. This type packages those to values.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public readonly record struct ParameterType(bool IsLentBinding, DataType Type)
+public readonly record struct ParameterType(bool IsLent, DataType Type)
 {
     public static readonly ParameterType Int = new(false, DataType.Int);
 
+    public bool IsFullyKnown => Type.IsFullyKnown;
+
     public bool CanOverride(ParameterType baseParameterType)
-        => (!baseParameterType.IsLentBinding || IsLentBinding) && Type.IsAssignableFrom(baseParameterType.Type);
+        => (!baseParameterType.IsLent || IsLent) && Type.IsAssignableFrom(baseParameterType.Type);
 
     public bool CanOverrideSelf(ParameterType baseSelfParameterType)
-        => (!baseSelfParameterType.IsLentBinding || IsLentBinding) && baseSelfParameterType.Type.IsAssignableFrom(Type);
+        => (!baseSelfParameterType.IsLent || IsLent) && baseSelfParameterType.Type.IsAssignableFrom(Type);
 
-    public string ToILString() => IsLentBinding ? $"lent {Type.ToILString()}" : Type.ToILString();
+    public string ToILString() => IsLent ? $"lent {Type.ToILString()}" : Type.ToILString();
 
     public string ToSourceCodeString()
-        => IsLentBinding ? $"lent {Type.ToSourceCodeString()}" : Type.ToSourceCodeString();
+        => IsLent ? $"lent {Type.ToSourceCodeString()}" : Type.ToSourceCodeString();
 }

@@ -15,6 +15,8 @@ public readonly record struct ReturnType(bool IsLent, DataType Type)
     public static readonly ReturnType Int = new(false, DataType.Int);
     public static readonly ReturnType UInt64 = new(false, DataType.UInt64);
 
+    public bool IsFullyKnown => Type.IsFullyKnown;
+
     public bool CanOverride(ReturnType baseReturnType)
         => (!IsLent || baseReturnType.IsLent) && baseReturnType.Type.IsAssignableFrom(Type);
 

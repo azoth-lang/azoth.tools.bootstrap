@@ -55,7 +55,7 @@ public class SymbolValidator : SyntaxWalker
                 break;
             case IForeachExpressionSyntax syn:
                 CheckSymbol(syn, syn.Symbol);
-                CheckReferencedSymbol(syn, syn.IterateMethod);
+                CheckReferencedSymbol(syn, syn.IterateMethod, optional: true);
                 CheckReferencedSymbol(syn, syn.NextMethod);
                 break;
             case IBindingPatternSyntax syn:
@@ -99,12 +99,12 @@ public class SymbolValidator : SyntaxWalker
             throw new Exception($"Symbol isn't in the symbol tree '{promise.Result}'");
     }
 
-    private static void CheckReferencedSymbol(ISyntax syntax, IPromise<Symbol?> promise)
+    private static void CheckReferencedSymbol(ISyntax syntax, IPromise<Symbol?> promise, bool optional = false)
     {
         if (!promise.IsFulfilled)
             throw new Exception($"Syntax doesn't have a referenced symbol '{syntax}'");
 
-        if (promise.Result is null)
+        if (!optional && promise.Result is null)
             throw new Exception($"Syntax has unknown referenced symbol '{syntax}'");
     }
 }

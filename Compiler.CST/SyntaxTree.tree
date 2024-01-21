@@ -85,8 +85,11 @@ SimpleTypeName: TypeName = ReferencedSymbol:'Promise<TypeSymbol?>';
 ParameterizedType: TypeName = TypeArguments:Type* ReferencedSymbol:'Promise<TypeSymbol?>';
 // TODO QualifiedTypeName
 OptionalType: Type = Referent:Type;
-CapabilityType: Type = Capability:ReferenceCapability ReferentType:Type;
+CapabilityType: Type = Capability:ReferenceCapability Referent:Type;
 ReferenceCapability = Tokens:'ICapabilityToken'* Declared:'DeclaredReferenceCapability';
+FunctionType: Type = Parameters:ParameterType* Return:ReturnType;
+ParameterType = IsLent:'bool' Referent:Type;
+ReturnType = IsLent:'bool' Referent:Type;
 
 // ---------- Statements
 Statement;

@@ -129,9 +129,20 @@ public static class ISyntaxExtensions
                 yield break;
             case ICapabilityTypeSyntax n:
                 yield return n.Capability;
-                yield return n.ReferentType;
+                yield return n.Referent;
                 yield break;
             case IReferenceCapabilitySyntax n:
+                yield break;
+            case IFunctionTypeSyntax n:
+                foreach (var child in n.Parameters)
+                    yield return child;
+                yield return n.Return;
+                yield break;
+            case IParameterTypeSyntax n:
+                yield return n.Referent;
+                yield break;
+            case IReturnTypeSyntax n:
+                yield return n.Referent;
                 yield break;
             case IResultStatementSyntax n:
                 yield return n.Expression;

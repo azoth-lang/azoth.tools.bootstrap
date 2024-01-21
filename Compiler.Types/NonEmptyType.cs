@@ -9,7 +9,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 [Closed(
     typeof(ReferenceType),
     typeof(ValueType),
-    typeof(GenericParameterType))]
+    typeof(GenericParameterType),
+    typeof(FunctionType))]
 public abstract class NonEmptyType : DataType
 {
     private protected NonEmptyType() { }
