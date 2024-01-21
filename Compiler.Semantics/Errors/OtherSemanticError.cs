@@ -1,6 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 
@@ -102,5 +103,17 @@ public static class OtherSemanticError
     {
         return new(file, typeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6017, $"Type `{typeName}` cannot be constructed because it is abstract");
+    }
+
+    public static Diagnostic ForeachNoIterateOrNextMethod(CodeFile file, IExpressionSyntax inExpression, DataType type)
+    {
+        return new(file, inExpression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            6018, $"`foreach` cannot operate on value of type `{type.ToILString()}` because it does not have an `iterate()` nor `next()` method.");
+    }
+
+    public static Diagnostic ForeachNoNextMethod(CodeFile file, IExpressionSyntax inExpression, DataType type)
+    {
+        return new(file, inExpression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 6018,
+            $"`foreach` cannot operate on value of type `{type.ToILString()}` because its iterator does not have a `next()` method.");
     }
 }

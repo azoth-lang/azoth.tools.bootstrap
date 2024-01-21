@@ -38,6 +38,8 @@ public class InterpreterProcess
     private readonly FixedDictionary<ObjectTypeSymbol, IClassDeclaration> classes;
     private readonly IClassDeclaration stringClass;
     private readonly IConstructorDeclaration stringConstructor;
+    private readonly IClassDeclaration? rangeClass;
+    private readonly ConstructorSymbol? rangeConstructor;
     private byte? exitCode;
     private readonly MemoryStream standardOutput = new();
     private readonly TextWriter standardOutputWriter;
@@ -56,6 +58,8 @@ public class InterpreterProcess
                                  .ToFixedDictionary(c => c.Symbol);
         stringClass = classes.Values.Single(c => c.Symbol.Name == "String");
         stringConstructor = stringClass.Members.OfType<IConstructorDeclaration>().Single(c => c.Parameters.Count == 3);
+        rangeClass = classes.Values.SingleOrDefault(c => c.Symbol.Name == "range");
+        rangeConstructor = rangeClass?.Members.OfType<IConstructorDeclaration>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
         var defaultConstructorSymbols = allDeclarations
                                         .OfType<IClassDeclaration>()
                                         .Select(c => c.DefaultConstructorSymbol).WhereNotNull();
@@ -492,6 +496,13 @@ public class InterpreterProcess
                     case BinaryOperator.LessThanDotDot:
                     case BinaryOperator.DotDotLessThan:
                     case BinaryOperator.LessThanDotDotLessThan:
+                    {
+                        var left = await ExecuteAsync(exp.LeftOperand, variables).ConfigureAwait(false);
+                        if (!exp.Operator.RangeInclusiveOfStart()) left = left.Increment(DataType.Int);
+                        var right = await ExecuteAsync(exp.RightOperand, variables).ConfigureAwait(false);
+                        if (exp.Operator.RangeInclusiveOfEnd()) right = right.Increment(DataType.Int);
+                        return await ConstructClass(rangeClass!, rangeConstructor!, new[] { left, right });
+                    }
                     case BinaryOperator.QuestionQuestion:
                         throw new NotImplementedException($"Operator `{exp.Operator}`");
                 }
@@ -569,38 +580,47 @@ public class InterpreterProcess
             }
             case IForeachExpression exp:
             {
+                var iterable = await ExecuteAsync(exp.InExpression, variables).ConfigureAwait(false);
                 var loopVariable = exp.Symbol;
-                var symbolDataType = exp.Symbol.DataType;
-                if (exp.InExpression is IBinaryOperatorExpression { Operator: var @operator } binaryExp && @operator.IsRangeOperator()
-                    && symbolDataType is NumericType numberType)
+                // Call `iterable.iterate()` if it exists
+                AzothValue iterator;
+                if (exp.IterateMethod is not null)
                 {
-                    var startValue = await ExecuteAsync(binaryExp.LeftOperand, variables).ConfigureAwait(false);
-                    if (!@operator.RangeInclusiveOfStart()) startValue = startValue.Increment(numberType);
-                    var endValue = await ExecuteAsync(binaryExp.RightOperand, variables).ConfigureAwait(false);
-                    if (!@operator.RangeInclusiveOfEnd()) endValue = endValue.Decrement(numberType);
-                    try
-                    {
-                        for (var i = startValue; i.ToBigInteger(numberType) <= endValue.ToBigInteger(numberType); i = i.Increment(numberType))
-                        {
-                            try
-                            {
-                                var loopVariables = new LocalVariableScope(variables);
-                                loopVariables.Add(loopVariable, i);
-                                await ExecuteAsync(exp.Block, loopVariables).ConfigureAwait(false);
-                            }
-                            catch (Next)
-                            {
-                                // continue
-                            }
-                        }
-                        return AzothValue.None;
-                    }
-                    catch (Break @break)
-                    {
-                        return @break.Value;
-                    }
+                    var iterateMethodSignature = methodSignatures[exp.IterateMethod];
+                    var iterableVTable = iterable.ObjectValue.VTable;
+                    var iterateMethod = iterableVTable[iterateMethodSignature];
+                    iterator = await CallMethodAsync(iterateMethod, iterable, Enumerable.Empty<AzothValue>()).ConfigureAwait(false);
                 }
-                throw new NotImplementedException($"`foreach` over {exp.InExpression}");
+                else
+                    iterator = iterable;
+
+                var nextMethodSignature = methodSignatures[exp.NextMethod];
+                var iteratorVTable = iterator.ObjectValue.VTable;
+                var nextMethod = iteratorVTable[nextMethodSignature];
+
+                try
+                {
+                    while (true)
+                    {
+                        var value = await CallMethodAsync(nextMethod, iterator, Enumerable.Empty<AzothValue>()).ConfigureAwait(false);
+                        if (value.IsNone) break;
+                        try
+                        {
+                            var loopVariables = new LocalVariableScope(variables);
+                            loopVariables.Add(loopVariable, value);
+                            await ExecuteAsync(exp.Block, loopVariables).ConfigureAwait(false);
+                        }
+                        catch (Next)
+                        {
+                            // continue
+                        }
+                    }
+                    return AzothValue.None;
+                }
+                catch (Break @break)
+                {
+                    return @break.Value;
+                }
             }
             case IRecoverExpression exp:
                 return await ExecuteAsync(exp.Value, variables).ConfigureAwait(false);

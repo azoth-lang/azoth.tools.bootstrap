@@ -19,6 +19,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 [StructLayout(LayoutKind.Explicit)]
 internal readonly struct AzothValue
 {
+    private static readonly object NoneFlag = new();
+
     [FieldOffset(0)] public readonly AzothObject ObjectValue;
     [FieldOffset(0)] public readonly BigInteger IntValue;
     [FieldOffset(0)] public readonly IRawBoundedList RawBoundedListValue;
@@ -204,6 +206,4 @@ internal readonly struct AzothValue
         public object? Reference;
         public SimpleValue Simple;
     }
-
-    private static readonly object NoneFlag = new();
 }

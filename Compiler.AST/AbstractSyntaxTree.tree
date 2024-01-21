@@ -102,7 +102,7 @@ PatternMatchExpression: Expression = Referent:Expression Pattern;
 IfExpression: Expression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
 LoopExpression: Expression = Block:BlockExpression;
 WhileExpression: Expression = Condition:Expression Block:BlockExpression;
-ForeachExpression: Expression, LocalBinding = Symbol:'VariableSymbol' InExpression:Expression Block:BlockExpression VariableIsLiveAfterAssignment:'Promise<bool>';
+ForeachExpression: Expression, LocalBinding = Symbol:'VariableSymbol' InExpression:Expression IterateMethod:'MethodSymbol?' NextMethod:'MethodSymbol' Block:BlockExpression VariableIsLiveAfterAssignment:'Promise<bool>';
 BreakExpression: Expression = Value:Expression?;
 NextExpression: Expression;
 ReturnExpression: Expression = Value:Expression?;

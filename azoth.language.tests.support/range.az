@@ -1,0 +1,18 @@
+published /*sealed*/ const class /*struct*/ range
+    // where T <: Steppable
+{
+    /// The inclusive start of the range.
+    published let start: int;
+
+    /// The exclusive end of the range.
+    published let end: int;
+
+    published new(self, .start, .end)
+    {
+        if .end < .start
+            { .end = .start; }
+    }
+
+    published fn iterate(const self) -> mut range_iterator
+        => return new range_iterator(self);
+}

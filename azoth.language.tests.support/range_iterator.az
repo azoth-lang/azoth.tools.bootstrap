@@ -1,0 +1,24 @@
+published class range_iterator
+{
+    let range: range;
+    var index: uint;
+
+    published new(mut self, .range)
+    {
+        .index = 0;
+    }
+
+    published fn \next(mut self) -> int?
+    {
+        let value = .range.start + .index;
+        if value >= .range.end
+        {
+            return none;
+        }
+        else
+        {
+            .index += 1;
+            return value;
+        }
+    }
+}

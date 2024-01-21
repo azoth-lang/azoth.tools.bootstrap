@@ -438,8 +438,10 @@ internal class ASTBuilder
         var semantics = syn.Semantics.Assigned();
         var symbol = syn.Symbol.Result;
         var inExpression = BuildExpression(syn.InExpression);
+        var iterateMethod = syn.IterateMethod.Result;
+        var nextMethod = syn.NextMethod.Result;
         var block = BuildBlockExpression(syn.Block);
-        return new ForeachExpression(syn.Span, type, semantics, symbol, inExpression, block);
+        return new ForeachExpression(syn.Span, type, semantics, symbol, inExpression, iterateMethod, nextMethod, block);
     }
 
     private static IInvocationExpression BuildInvocationExpression(

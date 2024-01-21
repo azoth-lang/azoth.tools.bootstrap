@@ -52,7 +52,7 @@ published class List[T]
         while capacity < new_count { capacity *= 2; }
         let count = .items.get_count();
         let new_items: mut = new Raw_Hybrid_Bounded_List[void, T](capacity);
-        foreach i in 0..<count { new_items.add(.items.at(i)); }
+        foreach i in 0..<count { new_items.add(.items.at(i as! size)); }
         .items = new_items;
     }
 
@@ -60,4 +60,7 @@ published class List[T]
     {
         .items.shrink(0);
     }
+
+    published fn iterate(lent const self) -> lent mut List_Iterator[T]
+        => new List_Iterator[T](self);
 }

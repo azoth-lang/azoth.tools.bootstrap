@@ -162,7 +162,7 @@ public static class Intrinsic
         var count = new MethodSymbol(classSymbol, "get_count", readClassParamType, Params(), ReturnType.Size);
         tree.Add(count);
 
-        // published /* unsafe */ fn at(mut self, index: size) -> T
+        // published /* unsafe */ fn at(self, index: size) -> T
         var at = new MethodSymbol(classSymbol, "at", readClassParamType,
             Params(DataType.Size), Return(itemType));
         tree.Add(at);

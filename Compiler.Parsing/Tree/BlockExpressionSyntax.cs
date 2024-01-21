@@ -3,7 +3,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -25,8 +24,8 @@ internal class BlockExpressionSyntax : ExpressionSyntax, IBlockExpressionSyntax
     public override string ToString()
     {
         if (Statements.Any())
-            return $"{{ {Statements.Count} Statements }} : {DataType}";
+            return $"{{ {Statements.Count} Statements }} : {DataType?.ToSourceCodeString()}";
 
-        return $"{{ }} : {DataType}";
+        return $"{{ }} : {DataType?.ToSourceCodeString()}";
     }
 }

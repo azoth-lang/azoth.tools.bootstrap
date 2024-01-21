@@ -600,6 +600,8 @@ public partial interface IForeachExpressionSyntax : IExpressionSyntax, ILocalBin
     SimpleName VariableName { get; }
     Promise<int?> DeclarationNumber { get; }
     IExpressionSyntax InExpression { get; }
+    Promise<MethodSymbol?> IterateMethod { get; }
+    Promise<MethodSymbol> NextMethod { get; }
     ITypeSyntax? Type { get; }
     new Promise<VariableSymbol> Symbol { get; }
     IBlockExpressionSyntax Block { get; }

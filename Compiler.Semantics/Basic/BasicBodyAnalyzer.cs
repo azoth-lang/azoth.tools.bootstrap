@@ -36,6 +36,7 @@ public class BasicBodyAnalyzer
     private readonly ISymbolTreeBuilder symbolTreeBuilder;
     private readonly SymbolForest symbolTrees;
     private readonly ObjectTypeSymbol? stringSymbol;
+    private readonly ObjectTypeSymbol? rangeSymbol;
     private readonly Diagnostics diagnostics;
     private readonly ReturnType? returnType;
     private readonly TypeResolver typeResolver;
@@ -46,20 +47,22 @@ public class BasicBodyAnalyzer
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
+        ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         ReturnType returnType)
         : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
+            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, returnType)
     { }
     public BasicBodyAnalyzer(
         IAssociatedFunctionDeclarationSyntax containingDeclaration,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
+        ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         ReturnType returnType)
         : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
+            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, returnType)
     { }
 
     public BasicBodyAnalyzer(
@@ -67,13 +70,14 @@ public class BasicBodyAnalyzer
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
+        ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         ReturnType returnType)
         : this(containingDeclaration,
             containingDeclaration.Parameters.OfType<INamedParameterSyntax>()
                                  .Select(p => p.Symbol.Result)
                                  .Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
+            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, returnType)
     { }
 
     public BasicBodyAnalyzer(
@@ -81,10 +85,11 @@ public class BasicBodyAnalyzer
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
+        ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         ReturnType returnType)
         : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result).Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, returnType)
+            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, returnType)
     { }
 
     public BasicBodyAnalyzer(
@@ -92,9 +97,10 @@ public class BasicBodyAnalyzer
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
+        ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics)
         : this(containingDeclaration, Enumerable.Empty<BindingSymbol>(),
-            symbolTreeBuilder, symbolTrees, stringSymbol, diagnostics, null)
+            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, null)
     { }
 
     private BasicBodyAnalyzer(
@@ -103,6 +109,7 @@ public class BasicBodyAnalyzer
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
         ObjectTypeSymbol? stringSymbol,
+        ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         ReturnType? returnType)
     {
@@ -110,6 +117,7 @@ public class BasicBodyAnalyzer
         containingSymbol = (InvocableSymbol)containingDeclaration.Symbol.Result;
         this.symbolTreeBuilder = symbolTreeBuilder;
         this.stringSymbol = stringSymbol;
+        this.rangeSymbol = rangeSymbol;
         this.diagnostics = diagnostics;
         this.symbolTrees = symbolTrees;
         this.returnType = returnType;
@@ -567,7 +575,7 @@ public class BasicBodyAnalyzer
                         or (_, BinaryOperator.LessThanDotDot, _)
                         or (_, BinaryOperator.DotDotLessThan, _)
                         or (_, BinaryOperator.LessThanDotDotLessThan, _)
-                        => throw new NotImplementedException("Type analysis of range operators"),
+                        => InferRangeOperatorType(leftResult, rightResult, flow),
                     _ => DataType.Unknown
 
                     // TODO optional types
@@ -725,8 +733,7 @@ public class BasicBodyAnalyzer
             {
                 var declaredType = typeResolver.Evaluate(exp.Type);
                 // TODO deal with result variable here
-                var expressionResult = CheckForeachInType(declaredType, exp.InExpression, flow);
-                var variableType = declaredType ?? expressionResult.Type.ToNonConstantType();
+                var (expressionResult, variableType) = CheckForeachInType(declaredType, exp, flow);
                 var symbol = VariableSymbol.CreateLocal(containingSymbol, exp.IsMutableBinding, exp.VariableName, exp.DeclarationNumber.Result, variableType);
                 exp.Symbol.Fulfill(symbol);
                 symbolTreeBuilder.Add(symbol);
@@ -1576,63 +1583,66 @@ public class BasicBodyAnalyzer
     /// check handles range expressions in the specific case of `foreach` only. It marks them
     /// as having the same type as the range endpoints.
     /// </summary>
-    private ExpressionResult CheckForeachInType(
+    private (ExpressionResult, DataType) CheckForeachInType(
         DataType? declaredType,
-        IExpressionSyntax inExpression,
+        IForeachExpressionSyntax exp,
         FlowState flow)
     {
-        switch (inExpression)
+        var inExpression = exp.InExpression;
+        var result = InferType(inExpression, flow);
+
+        if (result.Type is UnknownType)
+            return (result, declaredType ?? DataType.Unknown);
+
+        if (result.Type is not NonEmptyType iterableType)
+            return ForeachNoIterateOrNextMethod();
+
+        var iterableSymbol = LookupSymbolForType(iterableType);
+        if (iterableSymbol is null) return ForeachNoIterateOrNextMethod();
+
+        var iterateMethod = symbolTrees.Children(iterableSymbol).OfType<MethodSymbol>()
+                                       .SingleOrDefault(s => s.Name == "iterate" && s.Arity == 0 && s.ReturnType.Type is NonEmptyType);
+
+        exp.IterateMethod.Fulfill(iterateMethod);
+
+        var iteratorType = iterateMethod is not null ? iterableType.ReplaceTypeParametersIn(iterateMethod.ReturnType.Type) : iterableType;
+        var iteratorSymbol = LookupSymbolForType(iteratorType);
+        if (iteratorSymbol is null) return ForeachNoIterateOrNextMethod();
+
+        var nextMethod = symbolTrees.Children(iteratorSymbol).OfType<MethodSymbol>()
+                                    .SingleOrDefault(s => s.Name == "next" && s.Arity == 0 && s.ReturnType.Type is OptionalType);
+
+        if (nextMethod is null)
         {
-            case IBinaryOperatorExpressionSyntax
-            {
-                Operator: BinaryOperator.DotDot
-                    or BinaryOperator.LessThanDotDot
-                    or BinaryOperator.DotDotLessThan
-                    or BinaryOperator.LessThanDotDotLessThan
-            } binaryExpression:
-                var leftOperand = binaryExpression.LeftOperand;
-                var leftResult = InferType(leftOperand, flow);
-                var rightOperand = binaryExpression.RightOperand;
-                var rightResult = InferType(rightOperand, flow);
+            if (iterateMethod is null) return ForeachNoIterateOrNextMethod();
+            diagnostics.Add(OtherSemanticError.ForeachNoNextMethod(file, inExpression, iterableType));
+            return (result, declaredType ?? DataType.Unknown);
+        }
 
-                var resultVariable = flow.Combine(leftResult.Variable, rightResult.Variable, binaryExpression);
-                if (!leftResult.Type.IsFullyKnown || !rightResult.Type.IsFullyKnown)
-                {
-                    inExpression.DataType = DataType.Unknown;
-                    return new(inExpression, resultVariable);
-                }
+        exp.NextMethod.Fulfill(nextMethod);
 
-                DataType expType;
-                if (leftResult.Type is IntegerConstantType left && rightResult.Type is IntegerConstantType right)
-                    if (declaredType is not null)
-                    {
-                        AddImplicitConversionIfNeeded(leftResult, declaredType, flow);
-                        CheckTypeCompatibility(declaredType, leftOperand);
-                        AddImplicitConversionIfNeeded(rightResult, declaredType, flow);
-                        CheckTypeCompatibility(declaredType, rightOperand);
-                        expType = declaredType;
-                    }
-                    else
-                        expType = left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt;
-                else
-                    expType = InferNumericOperatorType(leftResult, rightResult, flow);
+        // iteratorType is NonEmptyType because it has a `next()` method
+        DataType iteratedType = nextMethod.ReturnType.Type is OptionalType optionalType
+            ? ((NonEmptyType)iteratorType).ReplaceTypeParametersIn(optionalType.Referent)
+            : throw new UnreachableCodeException();
 
-                if (expType == DataType.Unknown)
-                    diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandsOfType(file,
-                        binaryExpression.Span, binaryExpression.Operator, leftResult.Type, rightResult.Type));
+        if (declaredType is not null)
+        {
+            var conversion = CreateImplicitConversion(declaredType, false, iteratedType, null, inExpression.ImplicitConversion, flow,
+                out _, enact: false);
+            iteratedType = conversion is null ? iteratedType : conversion.Apply(iteratedType, ExpressionSemantics.IdReference).Item1;
+            if (!declaredType.IsAssignableFrom(iteratedType))
+                // TODO this error needs to be specific to iterators (e.g. not "Cannot convert expression `0..<count` of type `int` to type `size`")
+                diagnostics.Add(TypeError.CannotImplicitlyConvert(file, inExpression, iteratedType, declaredType));
+        }
 
-                binaryExpression.Semantics = ExpressionSemantics.CopyValue; // Treat ranges as structs
-                binaryExpression.DataType = expType;
+        var variableType = declaredType ?? iteratedType.ToNonConstantType();
+        return (result, variableType);
 
-                var assumedType = declaredType ?? expType.ToNonConstantType();
-
-                var binaryResult = new ExpressionResult(binaryExpression, resultVariable);
-                binaryResult = AddImplicitConversionIfNeeded(binaryResult, assumedType, flow);
-                CheckTypeCompatibility(assumedType, binaryExpression);
-
-                return binaryResult;
-            default:
-                return InferType(inExpression, flow);
+        (ExpressionResult, DataType) ForeachNoIterateOrNextMethod()
+        {
+            diagnostics.Add(OtherSemanticError.ForeachNoIterateOrNextMethod(file, inExpression, result.Type));
+            return (result, declaredType ?? DataType.Unknown);
         }
     }
 
@@ -1730,6 +1740,17 @@ public class BasicBodyAnalyzer
            && (left.IsAssignableFrom(right) || right.IsAssignableFrom(left)))
             return DataType.Bool;
         return DataType.Unknown;
+    }
+
+    private DataType InferRangeOperatorType(
+        ExpressionResult leftOperand,
+        ExpressionResult rightOperand,
+        FlowState flow)
+    {
+        AddImplicitConversionIfNeeded(leftOperand, DataType.Int, flow);
+        AddImplicitConversionIfNeeded(rightOperand, DataType.Int, flow);
+        return rangeSymbol?.DeclaresType.With(ReferenceCapability.Constant, FixedList<DataType>.Empty)
+               ?? (DataType)DataType.Unknown;
     }
 
     private static bool ExplicitConversionTypesAreCompatible(IExpressionSyntax expression, bool safeOnly, DataType convertToType)
@@ -1855,13 +1876,12 @@ public class BasicBodyAnalyzer
     {
         return dataType switch
         {
-            UnknownType _ => null,
+            UnknownType or IntegerConstantType or OptionalType => null,
             ObjectType objectType => LookupSymbolForType(objectType),
             IntegerType integerType => symbolTrees.PrimitiveSymbolTree
                                                   .GlobalSymbols
                                                   .OfType<PrimitiveTypeSymbol>()
                                                   .Single(s => s.DeclaresType == integerType),
-            OptionalType _ => null,
             _ => throw new NotImplementedException(
                 $"{nameof(LookupSymbolForType)} not implemented for {dataType.GetType().Name}")
         };

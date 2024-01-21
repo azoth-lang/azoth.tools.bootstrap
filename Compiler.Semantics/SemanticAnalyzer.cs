@@ -69,14 +69,15 @@ public class SemanticAnalyzer
         // Resolve symbols for the entities
         EntitySymbolBuilder.BuildFor(packageSyntax);
 
-        // TODO handle string better
-        var stringSymbol = packageSyntax.SymbolTrees
-                                        .GlobalSymbols
-                                        .OfType<ObjectTypeSymbol>()
-                                        .SingleOrDefault(s => s.Name == "String");
+
+        var globalObjectTypeSymbols = packageSyntax.SymbolTrees.GlobalSymbols.OfType<ObjectTypeSymbol>().ToFixedList();
+        // TODO handle `String` better
+        var stringSymbol = globalObjectTypeSymbols.SingleOrDefault(s => s.Name == "String");
+        // TODO handle `range` better
+        var rangeSymbol = globalObjectTypeSymbols.SingleOrDefault(s => s.Name == "range");
 
         // Basic Analysis includes: Name Binding, Type Checking, Constant Folding
-        BasicAnalyzer.Check(packageSyntax, stringSymbol);
+        BasicAnalyzer.Check(packageSyntax, stringSymbol, rangeSymbol);
 
         // If there are errors from the basic analysis phase, don't continue on
         packageSyntax.Diagnostics.ThrowIfFatalErrors();

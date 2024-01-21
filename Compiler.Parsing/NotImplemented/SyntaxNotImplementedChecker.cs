@@ -45,17 +45,6 @@ internal class SyntaxNotImplementedChecker : SyntaxWalker
                 if (syn.Initializer is not null)
                     diagnostics.Add(ParseError.NotImplemented(file, syn.Initializer.Span, "Field initializers"));
                 break;
-            case IForeachExpressionSyntax syn:
-            {
-                var inExpression = syn.InExpression;
-                if (inExpression is not IBinaryOperatorExpressionSyntax exp
-                    || (exp.Operator != BinaryOperator.DotDot
-                        && exp.Operator != BinaryOperator.LessThanDotDot
-                        && exp.Operator != BinaryOperator.DotDotLessThan
-                        && exp.Operator != BinaryOperator.LessThanDotDotLessThan))
-                    diagnostics.Add(ParseError.NotImplemented(file, inExpression.Span, "Foreach in non range expressions"));
-            }
-            break;
         }
         WalkChildren(syntax);
     }

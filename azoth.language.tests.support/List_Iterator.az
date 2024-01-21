@@ -1,0 +1,19 @@
+published class List_Iterator[T]
+{
+    let list: const List[T];
+    var index: size;
+
+
+    public new(mut self, .list)
+    {
+        .index = 0;
+    }
+
+    public fn \next(mut self) -> T?
+    {
+        if .index >= .list.get_count() => return none;
+        let value = .list.at(.index);
+        .index += 1;
+        return value;
+    }
+}

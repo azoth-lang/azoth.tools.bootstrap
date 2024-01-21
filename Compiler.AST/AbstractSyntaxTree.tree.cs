@@ -450,6 +450,8 @@ public partial interface IForeachExpression : IExpression, ILocalBinding
 {
     new VariableSymbol Symbol { get; }
     IExpression InExpression { get; }
+    MethodSymbol? IterateMethod { get; }
+    MethodSymbol NextMethod { get; }
     IBlockExpression Block { get; }
     Promise<bool> VariableIsLiveAfterAssignment { get; }
 }

@@ -13,6 +13,8 @@ internal class ForeachExpression : Expression, IForeachExpression
     BindingSymbol IBinding.Symbol => Symbol;
     NamedBindingSymbol ILocalBinding.Symbol => Symbol;
     public IExpression InExpression { get; }
+    public MethodSymbol? IterateMethod { get; }
+    public MethodSymbol NextMethod { get; }
     public IBlockExpression Block { get; }
     public Promise<bool> VariableIsLiveAfterAssignment { get; } = new Promise<bool>();
 
@@ -22,12 +24,16 @@ internal class ForeachExpression : Expression, IForeachExpression
         ExpressionSemantics semantics,
         VariableSymbol symbol,
         IExpression inExpression,
+        MethodSymbol? iterateMethod,
+        MethodSymbol nextMethod,
         IBlockExpression block)
         : base(span, dataType, semantics)
     {
         Symbol = symbol;
         InExpression = inExpression;
         Block = block;
+        IterateMethod = iterateMethod;
+        NextMethod = nextMethod;
     }
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;

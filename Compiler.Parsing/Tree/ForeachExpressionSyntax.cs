@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
@@ -20,6 +19,8 @@ internal class ForeachExpressionSyntax : ExpressionSyntax, IForeachExpressionSyn
 
     public ITypeSyntax? Type { [DebuggerStepThrough] get; }
     public IExpressionSyntax InExpression { [DebuggerStepThrough] get; }
+    public Promise<MethodSymbol?> IterateMethod { get; } = new Promise<MethodSymbol?>();
+    public Promise<MethodSymbol> NextMethod { get; } = new Promise<MethodSymbol>();
 
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
 
@@ -44,6 +45,7 @@ internal class ForeachExpressionSyntax : ExpressionSyntax, IForeachExpressionSyn
     public override string ToString()
     {
         var binding = IsMutableBinding ? "var " : "";
-        return $"foreach {binding}{VariableName}: {Type} in {InExpression} {Block}";
+        var type = Type is not null ? $": {Type} " : "";
+        return $"foreach {binding}{VariableName}{type} in {InExpression} {Block}";
     }
 }
