@@ -16,6 +16,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
@@ -1877,26 +1878,37 @@ public class BasicBodyAnalyzer
         return dataType switch
         {
             UnknownType or IntegerConstantType or OptionalType => null,
-            ObjectType objectType => LookupSymbolForType(objectType),
-            IntegerType integerType => symbolTrees.PrimitiveSymbolTree
+            ObjectType t => LookupSymbolForType(t),
+            GenericParameterType t => LookupSymbolForType(t),
+            IntegerType t => symbolTrees.PrimitiveSymbolTree
                                                   .GlobalSymbols
                                                   .OfType<PrimitiveTypeSymbol>()
-                                                  .Single(s => s.DeclaresType == integerType),
+                                                  .Single(s => s.DeclaresType == t),
             _ => throw new NotImplementedException(
                 $"{nameof(LookupSymbolForType)} not implemented for {dataType.GetType().Name}")
         };
     }
 
-    private TypeSymbol LookupSymbolForType(ObjectType objectType)
+    private TypeSymbol LookupSymbolForType(ObjectType type)
+        => LookupSymbolForType(type.DeclaredType);
+
+    private TypeSymbol LookupSymbolForType(DeclaredObjectType type)
     {
         var contextSymbols = symbolTrees.Packages.SafeCast<Symbol>();
-        foreach (var name in objectType.ContainingNamespace.Segments)
+        foreach (var name in type.ContainingNamespace.Segments)
         {
             contextSymbols = contextSymbols.SelectMany(c => symbolTrees.Children(c))
                                            .Where(s => s.Name == name);
         }
 
         return contextSymbols.SelectMany(symbolTrees.Children).OfType<TypeSymbol>()
-                             .Single(s => s.Name == objectType.Name);
+                             .Single(s => s.Name == type.Name);
+    }
+
+    private TypeSymbol LookupSymbolForType(GenericParameterType genericParameterType)
+    {
+        var declaringTypeSymbol = LookupSymbolForType(genericParameterType.DeclaringType);
+        return symbolTrees.Children(declaringTypeSymbol).OfType<TypeSymbol>()
+                   .Single(s => s.Name == genericParameterType.Name);
     }
 }
