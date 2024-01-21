@@ -131,9 +131,9 @@ public class InterpreterProcess
                     await CallFunctionAsync(function, Enumerable.Empty<AzothValue>()).ConfigureAwait(false);
                     await standardOutputWriter.WriteLineAsync("  passed");
                 }
-                catch (Abort)
+                catch (Abort ex)
                 {
-                    await standardOutputWriter.WriteLineAsync("  FAILED");
+                    await standardOutputWriter.WriteLineAsync("  FAILED: " + ex.Message);
                     failed += 1;
                 }
             }
