@@ -177,6 +177,7 @@ public static class IAbstractSyntaxExtensions
                     yield return child;
                 yield break;
             case IFunctionReferenceInvocationExpression n:
+                yield return n.Referent;
                 foreach (var child in n.Arguments)
                     yield return child;
                 yield break;

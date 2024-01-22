@@ -120,10 +120,10 @@ ExplicitConversionExpression: Expression = Expression IsOptional:'bool' DataType
 ExplicitNumericConversionExpression: ExplicitConversionExpression = Expression ConvertToType:'NumericType';
 
 // ---------- Invocation Expressions
-InvocationExpression: Expression = ReferencedSymbol:'Symbol' Arguments:Expression*;
+InvocationExpression: Expression = Arguments:Expression*;
 FunctionInvocationExpression: InvocationExpression = ReferencedSymbol:'FunctionSymbol' Arguments:Expression*;
 MethodInvocationExpression: InvocationExpression = Context:Expression ReferencedSymbol:'MethodSymbol' Arguments:Expression*;
-FunctionReferenceInvocationExpression: InvocationExpression = ReferencedSymbol:'NamedBindingSymbol' Arguments:Expression*;
+FunctionReferenceInvocationExpression: InvocationExpression = Referent:Expression Arguments:Expression*;
 
 // ---------- Variable Expressions
 VariableNameExpression: AssignableExpression, NameExpression = ReferencedSymbol:'NamedBindingSymbol' VariableIsLiveAfter:'Promise<bool>';

@@ -11,7 +11,6 @@ internal class MethodInvocationExpression : Expression, IMethodInvocationExpress
 {
     public IExpression Context { get; }
     public MethodSymbol ReferencedSymbol { get; }
-    Symbol IInvocationExpression.ReferencedSymbol => ReferencedSymbol;
     public FixedList<IExpression> Arguments { get; }
 
     public MethodInvocationExpression(

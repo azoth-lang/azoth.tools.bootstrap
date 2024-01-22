@@ -43,22 +43,22 @@ public static class NameBindingError
             5006, $"Could not find function with the name `{invocation.Expression}` and compatible arguments.");
     }
 
-    public static Diagnostic AmbiguousFunctionCall(CodeFile file, TextSpan span)
+    public static Diagnostic AmbiguousFunctionCall(CodeFile file, IInvocationExpressionSyntax invocation)
     {
-        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            5007, "Function call is ambiguous.");
+        return new(file, invocation.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            5007, $"Function call `{invocation}` is ambiguous.");
     }
 
-    public static Diagnostic CouldNotBindMethod(CodeFile file, TextSpan span, SimpleName methodName)
+    public static Diagnostic CouldNotBindMethod(CodeFile file, IInvocationExpressionSyntax invocation)
     {
-        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            5008, $"Could not find method with the name `{methodName}` and compatible arguments.");
+        return new(file, invocation.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            5008, $"Could not find method with the name `{invocation.Expression}` and compatible arguments.");
     }
 
-    public static Diagnostic AmbiguousMethodCall(CodeFile file, TextSpan span, SimpleName methodName)
+    public static Diagnostic AmbiguousMethodCall(CodeFile file, IInvocationExpressionSyntax invocation)
     {
-        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            5009, $"Method call to `{methodName}` is ambiguous.");
+        return new(file, invocation.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            5009, $"Method call `{invocation}` is ambiguous.");
     }
 
     // TODO add check for this back

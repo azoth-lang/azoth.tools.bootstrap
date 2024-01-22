@@ -1205,6 +1205,7 @@ public class BasicBodyAnalyzer
         // * Associated function invocation
         // * Namespaced function invocation
         // * Method invocation
+        // * Function type invocation
 
         ArgumentResults args;
         FunctionType? functionType = null;
@@ -1215,8 +1216,30 @@ public class BasicBodyAnalyzer
                 var contextResult = InferType(exp.Context, flow);
                 // Make sure to infer argument type *after* the context type
                 args = InferArgumentTypes(contextResult, invocation.Arguments, flow);
-                var name = exp.Member.Name!;
-                if (contextResult.Type is not VoidType) return InferMethodInvocationType(invocation, name, args, flow);
+
+                if (contextResult.Type is not VoidType)
+                {
+                    var typeSymbol = LookupSymbolForType(args.Self.Assigned().Type);
+                    var fieldSymbols = LookupSymbols<FieldSymbol>(typeSymbol, exp.Member);
+                    if (fieldSymbols?.Any(s => s.DataType is FunctionType) ?? false)
+                    {
+                        var fieldSymbol = InferSymbol(exp.Member, fieldSymbols);
+                        invocation.ReferencedSymbol.Fulfill(fieldSymbol);
+                        if (fieldSymbol is not null)
+                            functionType = (FunctionType)fieldSymbol.DataType;
+
+                        // No type for function names
+                        exp.Member.DataType = DataType.Void;
+                        exp.Member.Semantics = ExpressionSemantics.Void;
+                        break;
+                    }
+                    var methodSymbols = LookupSymbols<MethodSymbol>(typeSymbol, exp.Member);
+
+                    var method = InferSymbol(invocation, methodSymbols, args, flow);
+
+                    return InferMethodInvocationType(invocation, method, args, flow);
+                }
+
                 if (exp.Context is INameExpressionSyntax { ReferencedSymbol.Result: Symbol contextSymbol })
                 {
                     var functionSymbols = LookupSymbols<FunctionSymbol>(contextSymbol, exp.Member);
@@ -1231,6 +1254,7 @@ public class BasicBodyAnalyzer
             case ISimpleNameExpressionSyntax exp:
             {
                 args = InferArgumentTypes(invocation.Arguments, flow);
+
                 var variableSymbols = LookupSymbols<VariableSymbol>(exp);
                 if (variableSymbols.Any(s => s.DataType is FunctionType))
                 {
@@ -1254,63 +1278,40 @@ public class BasicBodyAnalyzer
 
     private ExpressionResult InferMethodInvocationType(
         IInvocationExpressionSyntax invocation,
-        SimpleName methodName,
+        Contextualized<MethodSymbol>? method,
         ArgumentResults arguments,
         FlowState flow)
     {
-        // There are no types for functions
-        invocation.Expression.DataType = DataType.Void;
-        invocation.Expression.Semantics = ExpressionSemantics.Void;
-
-        var selfResult = arguments.Self.Assigned();
-        var selfArgumentType = selfResult.Type;
-        // If it is unknown, we already reported an error
-        if (!selfArgumentType.IsFullyKnown)
+        if (method is not null)
         {
-            invocation.Semantics = ExpressionSemantics.Never;
-            invocation.DataType = DataType.Unknown;
-            return new(invocation, CombineResults(arguments, flow, invocation));
+            var selfParamType = method.SelfParameterType!.Value;
+            var selfResult = arguments.Self.Assigned();
+            selfResult = AddImplicitConversionIfNeeded(selfResult, selfParamType, flow);
+            AddImplicitMoveIfNeeded(selfResult, selfParamType, flow);
+            AddImplicitFreezeIfNeeded(selfResult, selfParamType, flow);
+            CheckTypeCompatibility(selfParamType.Type, selfResult.Syntax);
+            CheckTypes(arguments, method.ParameterTypes, flow);
+            arguments = arguments with { Self = selfResult };
+            invocation.DataType = method.ReturnType.Type;
+            AssignInvocationSemantics(invocation, invocation.DataType);
         }
-
-        var validOverloads = SelectMethodOverload(methodName, selfArgumentType, arguments, flow);
-
-        switch (validOverloads.Count)
+        else
         {
-            case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindMethod(file, invocation.Span, methodName));
-                invocation.ReferencedSymbol.Fulfill(null);
-                invocation.DataType = DataType.Unknown;
-                break;
-            case 1:
-                var overload = validOverloads.Single();
-                invocation.ReferencedSymbol.Fulfill(overload.Symbol);
-
-                var selfParamType = overload.SelfParameterType!.Value;
-                selfResult = AddImplicitConversionIfNeeded(selfResult, selfParamType, flow);
-                AddImplicitMoveIfNeeded(selfResult, selfParamType, flow);
-                AddImplicitFreezeIfNeeded(selfResult, selfParamType, flow);
-                CheckTypeCompatibility(selfParamType.Type, selfResult.Syntax);
-                CheckTypes(arguments, overload.ParameterTypes, flow);
-                arguments = arguments with { Self = selfResult };
-                invocation.DataType = overload.ReturnType.Type;
-                AssignInvocationSemantics(invocation, invocation.DataType);
-                break;
-            default:
-                diagnostics.Add(NameBindingError.AmbiguousMethodCall(file, invocation.Span, methodName));
-                invocation.ReferencedSymbol.Fulfill(null);
-                invocation.DataType = DataType.Unknown;
-                break;
+            invocation.DataType = DataType.Unknown;
         }
 
         var resultVariable = CombineResults(arguments, flow, invocation);
         flow.Restrict(resultVariable, invocation.DataType.Assigned());
+
+        // There are no types for functions
+        invocation.Expression.DataType = DataType.Void;
+        invocation.Expression.Semantics = ExpressionSemantics.Void;
 
         // Apply the referenced symbol to the underlying name
         if (invocation.Expression is IQualifiedNameExpressionSyntax nameExpression)
         {
             nameExpression.Member.DataType = DataType.Void;
             nameExpression.Member.Semantics = ExpressionSemantics.Void;
-            nameExpression.Member.ReferencedSymbol.Fulfill(invocation.ReferencedSymbol.Result);
         }
 
         return new(invocation, resultVariable);
@@ -1582,7 +1583,7 @@ public class BasicBodyAnalyzer
                 functionType = new FunctionType(function.ParameterTypes, function.ReturnType);
                 break;
             default:
-                diagnostics.Add(NameBindingError.AmbiguousFunctionCall(file, invocation.Span));
+                diagnostics.Add(NameBindingError.AmbiguousFunctionCall(file, invocation));
                 invocation.ReferencedSymbol.Fulfill(null);
                 functionType = null;
                 break;
@@ -1593,6 +1594,45 @@ public class BasicBodyAnalyzer
             nameExpression.ReferencedSymbol.Fulfill(invocation.ReferencedSymbol.Result);
 
         return functionType;
+    }
+
+    private Contextualized<MethodSymbol>? InferSymbol(
+        IInvocationExpressionSyntax invocation,
+        FixedSet<MethodSymbol>? methodSymbols,
+        ArgumentResults arguments,
+        FlowState flow)
+    {
+        var selfResult = arguments.Self.Assigned();
+        var selfArgumentType = selfResult.Type;
+
+        Contextualized<MethodSymbol>? method = null;
+        if (methodSymbols is not null)
+        {
+            var validOverloads = SelectOverload(selfArgumentType, methodSymbols, arguments, flow);
+            switch (validOverloads.Count)
+            {
+                case 0:
+                    diagnostics.Add(NameBindingError.CouldNotBindMethod(file, invocation));
+                    invocation.ReferencedSymbol.Fulfill(null);
+                    break;
+                case 1:
+                    method = validOverloads.Single();
+                    invocation.ReferencedSymbol.Fulfill(method.Symbol);
+                    break;
+                default:
+                    diagnostics.Add(NameBindingError.AmbiguousMethodCall(file, invocation));
+                    invocation.ReferencedSymbol.Fulfill(null);
+                    break;
+            }
+        }
+        else
+            invocation.ReferencedSymbol.Fulfill(null);
+
+        // Apply the referenced symbol to the underlying name
+        if (invocation.Expression is INameExpressionSyntax nameExpression)
+            nameExpression.ReferencedSymbol.Fulfill(invocation.ReferencedSymbol.Result);
+
+        return method;
     }
 
     private TSymbol? InferSymbol<TNameSymbol, TSymbol>(
@@ -1628,9 +1668,13 @@ public class BasicBodyAnalyzer
                              .WhereNotNull().Select(p => p.Result).ToFixedSet();
     }
 
-    private FixedSet<TSymbol> LookupSymbols<TSymbol>(Symbol contextSymbol, ISimpleNameExpressionSyntax exp)
+    /// <returns>The symbols with the given name in the context, or <see langword="null"/> if the
+    /// context is unknown.</returns>
+    [return: NotNullIfNotNull(nameof(contextSymbol))]
+    private FixedSet<TSymbol>? LookupSymbols<TSymbol>(Symbol? contextSymbol, ISimpleNameExpressionSyntax exp)
         where TSymbol : Symbol
     {
+        if (contextSymbol is null) return null;
         var name = exp.Name;
         return symbolTrees.Children(contextSymbol).OfType<TSymbol>().Where(s => s.Name == name).ToFixedSet();
     }
@@ -1834,7 +1878,7 @@ public class BasicBodyAnalyzer
     }
 
     private static FixedSet<Contextualized<TSymbol>> SelectOverload<TSymbol>(
-        NonEmptyType? contextType,
+        DataType? contextType,
         FixedSet<TSymbol> symbols,
         ArgumentResults arguments,
         FlowState flow)
@@ -1846,77 +1890,13 @@ public class BasicBodyAnalyzer
     }
 
     private static IEnumerable<Contextualized<TSymbol>> CompatibleOverloads<TSymbol>(
-        NonEmptyType? contextType,
+        DataType? contextType,
         FixedSet<TSymbol> symbols,
         ArgumentResults arguments,
         FlowState flow)
         where TSymbol : InvocableSymbol
     {
         var contextualizedSymbols = Contextualize(contextType, symbols);
-        // Filter down to symbols that could possible match
-        contextualizedSymbols = contextualizedSymbols.Where(s =>
-        {
-            // Arity depends on the contextualized symbols because parameters can drop out with `void`
-            if (s.Arity != arguments.Arity) return false;
-            return TypesAreCompatible(arguments, s.ParameterTypes, flow);
-        }).ToFixedSet();
-        return contextualizedSymbols;
-    }
-
-    private static IEnumerable<Contextualized<TSymbol>> Contextualize<TSymbol>(
-        NonEmptyType? contextType,
-        IEnumerable<TSymbol> symbols)
-        where TSymbol : InvocableSymbol
-    {
-        if (contextType is null)
-            return symbols.Select(s => new Contextualized<TSymbol>(s, SelfParameterTypeOrNull(s), s.ParameterTypes, s.ReturnType));
-
-        return symbols.Select(s =>
-        {
-            var effectiveSelfType = contextType.ReplaceTypeParametersIn(SelfParameterTypeOrNull(s));
-            var effectiveParameterTypes = s.ParameterTypes.Select(contextType.ReplaceTypeParametersIn)
-                                           .Where(p => p.Type is NonEmptyType).ToFixedList();
-            var effectiveReturnType = contextType.ReplaceTypeParametersIn(s.ReturnType);
-            return new Contextualized<TSymbol>(s, effectiveSelfType, effectiveParameterTypes, effectiveReturnType);
-        });
-    }
-
-    private static ParameterType? SelfParameterTypeOrNull(InvocableSymbol symbol)
-    {
-        if (symbol is MethodSymbol { SelfParameterType: var selfType })
-            return selfType;
-        return null;
-    }
-
-    private FixedSet<Contextualized<MethodSymbol>> SelectMethodOverload(
-        SimpleName methodName,
-        DataType selfType,
-        ArgumentResults arguments,
-        FlowState flow)
-    {
-        var contextualizedSymbols = CompatibleMethodOverloads(methodName, selfType, arguments, flow).ToFixedSet();
-        // TODO Select most specific match
-        return contextualizedSymbols;
-    }
-
-    private IEnumerable<Contextualized<MethodSymbol>> CompatibleMethodOverloads(
-        SimpleName methodName,
-        DataType selfType,
-        ArgumentResults arguments,
-        FlowState flow)
-    {
-        if (selfType is not NonEmptyType nonEmptySelfType)
-            return FixedSet<Contextualized<MethodSymbol>>.Empty;
-
-        if (nonEmptySelfType is OptionalType)
-            return FixedSet<Contextualized<MethodSymbol>>.Empty;
-
-        var contextSymbol = LookupSymbolForType(nonEmptySelfType);
-        var symbols = symbolTrees.Children(contextSymbol!)
-                                 .OfType<MethodSymbol>()
-                                 .Where(s => s.Name == methodName);
-
-        var contextualizedSymbols = Contextualize(nonEmptySelfType, symbols);
 
         // Filter down to symbols that could possible match
         contextualizedSymbols = contextualizedSymbols.Where(s =>
@@ -1924,14 +1904,39 @@ public class BasicBodyAnalyzer
             // Arity depends on the contextualized symbols because parameters can drop out with `void`
             if (s.Arity != arguments.Arity) return false;
             // Is self arg compatible?
-            if (!TypesAreCompatible(arguments.Self!, nonEmptySelfType.ReplaceTypeParametersIn(s.SelfParameterType!.Value),
-                    flow, isSelf: true))
+            if (s.SelfParameterType is ParameterType selfParameterType
+                && (arguments.Self is null || !TypesAreCompatible(arguments.Self, selfParameterType, flow, isSelf: true)))
                 return false;
             // Are arguments compatible?
-            var parameterTypes = s.ParameterTypes.Select(nonEmptySelfType.ReplaceTypeParametersIn);
-            return TypesAreCompatible(arguments, parameterTypes, flow);
+            return TypesAreCompatible(arguments, s.ParameterTypes, flow);
         }).ToFixedSet();
+
         return contextualizedSymbols;
+    }
+
+    private static IEnumerable<Contextualized<TSymbol>> Contextualize<TSymbol>(
+        DataType? contextType,
+        IEnumerable<TSymbol> symbols)
+        where TSymbol : InvocableSymbol
+    {
+        if (contextType is NonEmptyType context)
+            return symbols.Select(s =>
+            {
+                var effectiveSelfType = context.ReplaceTypeParametersIn(SelfParameterTypeOrNull(s));
+                var effectiveParameterTypes = s.ParameterTypes.Select(context.ReplaceTypeParametersIn)
+                                               .Where(p => p.Type is NonEmptyType).ToFixedList();
+                var effectiveReturnType = context.ReplaceTypeParametersIn(s.ReturnType);
+                return new Contextualized<TSymbol>(s, effectiveSelfType, effectiveParameterTypes, effectiveReturnType);
+            });
+
+        return symbols.Select(s => new Contextualized<TSymbol>(s, SelfParameterTypeOrNull(s), s.ParameterTypes, s.ReturnType));
+    }
+
+    private static ParameterType? SelfParameterTypeOrNull(InvocableSymbol symbol)
+    {
+        if (symbol is MethodSymbol { SelfParameterType: var selfType })
+            return selfType;
+        return null;
     }
 
     private TypeSymbol? LookupSymbolForType(DataType dataType)

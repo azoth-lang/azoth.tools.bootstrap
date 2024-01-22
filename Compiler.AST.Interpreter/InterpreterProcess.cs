@@ -356,7 +356,7 @@ public class InterpreterProcess
             }
             case IFunctionReferenceInvocationExpression exp:
             {
-                var function = variables[exp.ReferencedSymbol];
+                var function = await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
                 return await function.FunctionReferenceValue.CallAsync(arguments).ConfigureAwait(false);
             }

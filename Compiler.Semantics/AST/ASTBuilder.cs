@@ -460,8 +460,10 @@ internal class ASTBuilder
                 var qualifiedName = (IQualifiedNameExpressionSyntax)syn.Expression;
                 var context = BuildExpression(qualifiedName.Context);
                 return new MethodInvocationExpression(syn.Span, type, semantics, context, method, arguments);
-            case NamedBindingSymbol namedBinding:
-                return new FunctionReferenceInvocationExpression(syn.Span, type, semantics, namedBinding, arguments);
+            case NamedBindingSymbol _:
+                // TODO really it could be any expression and hence have no symbol
+                var referent = BuildExpression(syn.Expression);
+                return new FunctionReferenceInvocationExpression(syn.Span, type, semantics, referent, arguments);
             case SelfParameterSymbol _:
                 throw new InvalidOperationException("Invocation expression cannot invoke a self parameter.");
             case TypeSymbol _:

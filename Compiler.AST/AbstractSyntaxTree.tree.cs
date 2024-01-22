@@ -521,24 +521,23 @@ public partial interface IExplicitNumericConversionExpression : IExplicitConvers
     typeof(IFunctionReferenceInvocationExpression))]
 public partial interface IInvocationExpression : IExpression
 {
-    Symbol ReferencedSymbol { get; }
     FixedList<IExpression> Arguments { get; }
 }
 
 public partial interface IFunctionInvocationExpression : IInvocationExpression
 {
-    new FunctionSymbol ReferencedSymbol { get; }
+    FunctionSymbol ReferencedSymbol { get; }
 }
 
 public partial interface IMethodInvocationExpression : IInvocationExpression
 {
     IExpression Context { get; }
-    new MethodSymbol ReferencedSymbol { get; }
+    MethodSymbol ReferencedSymbol { get; }
 }
 
 public partial interface IFunctionReferenceInvocationExpression : IInvocationExpression
 {
-    new NamedBindingSymbol ReferencedSymbol { get; }
+    IExpression Referent { get; }
 }
 
 public partial interface IVariableNameExpression : IAssignableExpression, INameExpression

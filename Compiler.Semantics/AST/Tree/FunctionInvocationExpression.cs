@@ -10,7 +10,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 internal class FunctionInvocationExpression : Expression, IFunctionInvocationExpression
 {
     public FunctionSymbol ReferencedSymbol { get; }
-    Symbol IInvocationExpression.ReferencedSymbol => ReferencedSymbol;
     public FixedList<IExpression> Arguments { get; }
 
     public FunctionInvocationExpression(
