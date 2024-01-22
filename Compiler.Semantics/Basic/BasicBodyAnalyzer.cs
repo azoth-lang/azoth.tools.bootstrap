@@ -1224,7 +1224,7 @@ public class BasicBodyAnalyzer
                     if (fieldSymbols?.Any(s => s.DataType is FunctionType) ?? false)
                     {
                         var fieldSymbol = InferSymbol(exp.Member, fieldSymbols);
-                        invocation.ReferencedSymbol.Fulfill(fieldSymbol);
+                        invocation.ReferencedSymbol.Fulfill(null);
                         if (fieldSymbol is not null)
                             functionType = (FunctionType)fieldSymbol.DataType;
 
@@ -1259,7 +1259,7 @@ public class BasicBodyAnalyzer
                 if (variableSymbols.Any(s => s.DataType is FunctionType))
                 {
                     var variableSymbol = InferSymbol(exp, variableSymbols);
-                    invocation.ReferencedSymbol.Fulfill(variableSymbol);
+                    invocation.ReferencedSymbol.Fulfill(null);
                     if (variableSymbol is not null)
                         functionType = (FunctionType)variableSymbol.DataType;
                     break;
@@ -1270,7 +1270,15 @@ public class BasicBodyAnalyzer
                 break;
             }
             default:
-                throw new NotImplementedException("Invocation of expression");
+            {
+                var contextResult = InferType(invocation.Expression, flow);
+                // Make sure to infer argument type *after* the context type
+                args = InferArgumentTypes(contextResult, invocation.Arguments, flow);
+
+                functionType = contextResult.Type as FunctionType;
+                invocation.ReferencedSymbol.Fulfill(null);
+                break;
+            }
         }
 
         return InferFunctionInvocationType(invocation, functionType, args, flow);
@@ -1420,8 +1428,11 @@ public class BasicBodyAnalyzer
         flow.Restrict(resultVariable, invocation.DataType.Assigned());
 
         // There are no types for functions
-        invocation.Expression.DataType = DataType.Void;
-        invocation.Expression.Semantics = ExpressionSemantics.Void;
+        if (invocation.Expression.DataType is null)
+        {
+            invocation.Expression.DataType = DataType.Void;
+            invocation.Expression.Semantics = ExpressionSemantics.Void;
+        }
 
         return new(invocation, resultVariable);
     }
@@ -1449,13 +1460,22 @@ public class BasicBodyAnalyzer
             case TypeSemantics.Reference:
                 while (returnType is OptionalType optionalType)
                     returnType = optionalType.Referent;
-                var referenceType = (ReferenceType)returnType;
-                if (referenceType.Capability == ReferenceCapability.Isolated)
-                    invocationExpression.Semantics = ExpressionSemantics.IsolatedReference;
-                else if (referenceType.AllowsWrite)
-                    invocationExpression.Semantics = ExpressionSemantics.MutableReference;
-                else
-                    invocationExpression.Semantics = ExpressionSemantics.ReadOnlyReference;
+                switch (returnType)
+                {
+                    case ReferenceType referenceType:
+                        if (referenceType.Capability == ReferenceCapability.Isolated)
+                            invocationExpression.Semantics = ExpressionSemantics.IsolatedReference;
+                        else if (referenceType.AllowsWrite)
+                            invocationExpression.Semantics = ExpressionSemantics.MutableReference;
+                        else
+                            invocationExpression.Semantics = ExpressionSemantics.ReadOnlyReference;
+                        break;
+                    case FunctionType _:
+                        invocationExpression.Semantics = ExpressionSemantics.ReadOnlyReference;
+                        break;
+                    default:
+                        throw new NotImplementedException("Unknown reference type");
+                }
                 break;
         }
     }

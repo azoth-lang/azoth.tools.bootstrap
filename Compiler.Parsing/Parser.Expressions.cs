@@ -160,14 +160,17 @@ public partial class Parser
                         var nameSyntax = ParseName();
                         var memberAccessSpan = TextSpan.Covering(expression.Span, nameSyntax.Span);
                         expression = new QualifiedNameExpressionSyntax(memberAccessSpan, expression, accessOperator, nameSyntax);
-                        if (Tokens.Current is IOpenParenToken)
-                        {
-                            Tokens.Consume<IOpenParenToken>();
-                            var arguments = ParseArguments();
-                            var closeParenSpan = Tokens.Expect<ICloseParenToken>();
-                            var invocationSpan = TextSpan.Covering(expression.Span, closeParenSpan);
-                            expression = new InvocationExpressionSyntax(invocationSpan, expression, arguments);
-                        }
+                        continue;
+                    }
+                    break;
+                case IOpenParenToken _:
+                    if (minPrecedence <= OperatorPrecedence.Primary)
+                    {
+                        Tokens.Consume<IOpenParenToken>();
+                        var arguments = ParseArguments();
+                        var closeParenSpan = Tokens.Expect<ICloseParenToken>();
+                        var invocationSpan = TextSpan.Covering(expression.Span, closeParenSpan);
+                        expression = new InvocationExpressionSyntax(invocationSpan, expression, arguments);
                         continue;
                     }
                     break;
@@ -320,16 +323,7 @@ public partial class Parser
                 return new NoneLiteralExpressionSyntax(literal);
             }
             case IIdentifierToken _:
-            {
-                var nameSyntax = ParseName();
-                if (Tokens.Current is not IOpenParenToken)
-                    return nameSyntax;
-                Tokens.Consume<IOpenParenToken>();
-                var arguments = ParseArguments();
-                var closeParenSpan = Tokens.Expect<ICloseParenToken>();
-                var span = TextSpan.Covering(nameSyntax.Span, closeParenSpan);
-                return new InvocationExpressionSyntax(span, nameSyntax, arguments);
-            }
+                return ParseName();
             case IForeachKeywordToken _:
                 return ParseForeach();
             case IWhileKeywordToken _:

@@ -448,24 +448,23 @@ internal class ASTBuilder
     {
         var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
-        var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
+        var referencedSymbol = syn.ReferencedSymbol.Result;
         var arguments = BuildExpressions(syn.Arguments);
         switch (referencedSymbol)
         {
             default:
                 throw ExhaustiveMatch.Failed(referencedSymbol);
+            case null:
+                var referent = BuildExpression(syn.Expression);
+                return new FunctionReferenceInvocationExpression(syn.Span, type, semantics, referent, arguments);
             case FunctionSymbol function:
                 return new FunctionInvocationExpression(syn.Span, type, semantics, function, arguments);
             case MethodSymbol method:
                 var qualifiedName = (IQualifiedNameExpressionSyntax)syn.Expression;
                 var context = BuildExpression(qualifiedName.Context);
                 return new MethodInvocationExpression(syn.Span, type, semantics, context, method, arguments);
-            case NamedBindingSymbol _:
-                // TODO really it could be any expression and hence have no symbol
-                var referent = BuildExpression(syn.Expression);
-                return new FunctionReferenceInvocationExpression(syn.Span, type, semantics, referent, arguments);
-            case SelfParameterSymbol _:
-                throw new InvalidOperationException("Invocation expression cannot invoke a self parameter.");
+            case BindingSymbol _:
+                throw new InvalidOperationException("Invocation expression cannot invoke a binding symbol.");
             case TypeSymbol _:
                 throw new InvalidOperationException("Invocation expression cannot invoke a type.");
             case ConstructorSymbol _:

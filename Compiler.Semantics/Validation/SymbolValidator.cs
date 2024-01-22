@@ -80,7 +80,7 @@ public class SymbolValidator : SyntaxWalker
                 CheckReferencedSymbol(syn, syn.ReferencedSymbol);
                 break;
             case IInvocationExpressionSyntax syn:
-                CheckReferencedSymbol(syn, syn.ReferencedSymbol);
+                CheckReferencedSymbol(syn, syn.ReferencedSymbol, optional: true);
                 break;
         }
 
