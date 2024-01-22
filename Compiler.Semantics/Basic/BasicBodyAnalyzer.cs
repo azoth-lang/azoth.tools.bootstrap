@@ -1306,6 +1306,7 @@ public class BasicBodyAnalyzer
         else
         {
             invocation.DataType = DataType.Unknown;
+            invocation.Semantics = ExpressionSemantics.Never;
         }
 
         var resultVariable = CombineResults(arguments, flow, invocation);
