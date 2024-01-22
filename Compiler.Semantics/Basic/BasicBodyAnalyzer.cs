@@ -1515,21 +1515,6 @@ public class BasicBodyAnalyzer
         }
     }
 
-    //private FixedList<TSymbol> InferNameSymbols<TSymbol>(ISimpleNameExpressionSyntax nameExpression, Predicate<DataType>? where = null)
-    //{
-    //    if (nameExpression.Name is null)
-    //        return FixedList<TSymbol>.Empty;
-
-    //    // First look for local variables
-    //    var variableSymbols = nameExpression.LookupInContainingScope()
-    //                                        .Select(p => p.Downcast().As<VariableSymbol>())
-    //                                        .WhereNotNull()
-    //                                        .ToFixedList();
-    //    if (where is not null && variableSymbols.Any(s => where(s.Result.DataType)))
-    //        return variableSymbols.Select(s => s.Result).ToFixedList();
-
-    //}
-
     private BindingSymbol? InferBindingSymbol(IVariableNameExpressionSyntax variableNameExpressionSyntax)
     {
         return variableNameExpressionSyntax switch

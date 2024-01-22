@@ -682,7 +682,7 @@ public class InterpreterProcess
         }
     }
 
-    private async ValueTask<AzothValue> ExecuteMatchAsync(
+    private static async ValueTask<AzothValue> ExecuteMatchAsync(
         AzothValue value,
         IPattern pattern,
         LocalVariableScope variables)
