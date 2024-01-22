@@ -411,12 +411,14 @@ public class InterpreterProcess
                 {
                     for (; ; )
                     {
-                        var condition = await ExecuteAsync(exp.Condition, variables).ConfigureAwait(false);
+                        // Create a variable scope in case a variable is declared by a pattern in the condition
+                        var loopVariables = new LocalVariableScope(variables);
+                        var condition = await ExecuteAsync(exp.Condition, loopVariables).ConfigureAwait(false);
                         if (!condition.BoolValue)
                             return AzothValue.None;
                         try
                         {
-                            await ExecuteAsync(exp.Block, variables).ConfigureAwait(false);
+                            await ExecuteAsync(exp.Block, loopVariables).ConfigureAwait(false);
                         }
                         catch (Next)
                         {
