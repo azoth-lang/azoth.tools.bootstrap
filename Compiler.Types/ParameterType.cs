@@ -19,6 +19,9 @@ public readonly record struct ParameterType(bool IsLent, DataType Type)
     public bool CanOverrideSelf(ParameterType baseSelfParameterType)
         => (!baseSelfParameterType.IsLent || IsLent) && baseSelfParameterType.Type.IsAssignableFrom(Type);
 
+    public bool ReferenceEquals(ParameterType other)
+        => IsLent == other.IsLent && ReferenceEquals(Type, other.Type);
+
     public string ToILString() => IsLent ? $"lent {Type.ToILString()}" : Type.ToILString();
 
     public string ToSourceCodeString()

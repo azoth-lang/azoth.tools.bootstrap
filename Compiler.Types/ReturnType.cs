@@ -20,6 +20,9 @@ public readonly record struct ReturnType(bool IsLent, DataType Type)
     public bool CanOverride(ReturnType baseReturnType)
         => (!IsLent || baseReturnType.IsLent) && baseReturnType.Type.IsAssignableFrom(Type);
 
+    public bool ReferenceEquals(ReturnType other)
+        => IsLent == other.IsLent && ReferenceEquals(Type, other.Type);
+
     public string ToILString() => IsLent ? $"lent {Type.ToILString()}" : Type.ToILString();
 
     public string ToSourceCodeString()

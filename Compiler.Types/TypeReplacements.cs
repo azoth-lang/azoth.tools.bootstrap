@@ -62,6 +62,22 @@ internal sealed class TypeReplacements
                     return replacementType;
                 break;
             }
+            case FunctionType functionType:
+            {
+                var replacementParameterTypes = ReplaceTypeParametersIn(functionType.ParameterTypes);
+                var replacementReturnType = ReplaceTypeParametersIn(functionType.ReturnType);
+                if (!ReferenceEquals(functionType.ParameterTypes, replacementParameterTypes)
+                    || !functionType.ReturnType.ReferenceEquals(replacementReturnType))
+                    return new FunctionType(replacementParameterTypes, replacementReturnType);
+                break;
+            }
+            case AnyType _:
+            case SimpleType _:
+            case EmptyType _:
+            case UnknownType _:
+                break;
+            default:
+                throw ExhaustiveMatch.Failed(type);
         }
 
         return type;
@@ -85,6 +101,12 @@ internal sealed class TypeReplacements
         return type;
     }
 
+    public ParameterType ReplaceTypeParametersIn(ParameterType type)
+        => type with { Type = ReplaceTypeParametersIn(type.Type) };
+
+    public ReturnType ReplaceTypeParametersIn(ReturnType returnType)
+        => returnType with { Type = ReplaceTypeParametersIn(returnType.Type) };
+
     private FixedList<DataType> ReplaceTypeParametersIn(FixedList<DataType> types)
     {
         var replacementTypes = new List<DataType>();
@@ -93,6 +115,20 @@ internal sealed class TypeReplacements
         {
             var replacementType = ReplaceTypeParametersIn(type);
             typesReplaced |= !ReferenceEquals(type, replacementType);
+            replacementTypes.Add(replacementType);
+        }
+
+        return typesReplaced ? replacementTypes.ToFixedList() : types;
+    }
+
+    private FixedList<ParameterType> ReplaceTypeParametersIn(FixedList<ParameterType> types)
+    {
+        var replacementTypes = new List<ParameterType>();
+        var typesReplaced = false;
+        foreach (var type in types)
+        {
+            var replacementType = ReplaceTypeParametersIn(type);
+            typesReplaced |= !type.ReferenceEquals(replacementType);
             replacementTypes.Add(replacementType);
         }
 
