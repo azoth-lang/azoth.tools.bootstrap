@@ -67,7 +67,7 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<BindingFlags>
     {
         switch (assignmentExpression.LeftOperand)
         {
-            case INameExpression identifier:
+            case IVariableNameExpression identifier:
             {
                 var symbol = identifier.ReferencedSymbol;
                 if (!symbol.IsMutableBinding && definitelyUnassigned[symbol] == false)
@@ -90,7 +90,7 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<BindingFlags>
     }
 
     public BindingFlags IdentifierName(
-        INameExpression nameExpression,
+        IVariableNameExpression nameExpression,
         BindingFlags definitelyUnassigned)
         => definitelyUnassigned;
 

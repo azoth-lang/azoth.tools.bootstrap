@@ -25,6 +25,7 @@ internal readonly struct AzothValue
     [FieldOffset(0)] public readonly BigInteger IntValue;
     [FieldOffset(0)] public readonly IRawBoundedList RawBoundedListValue;
     [FieldOffset(0)] public readonly Task<AzothValue> PromiseValue;
+    [FieldOffset(0)] public readonly FunctionReference FunctionReferenceValue;
     [FieldOffset(0)] private readonly ValueType value;
 
     public bool IsNone => ReferenceEquals(value.Reference, NoneFlag);
@@ -47,6 +48,7 @@ internal readonly struct AzothValue
     public static AzothValue Int(BigInteger value) => new(value);
     public static AzothValue RawBoundedList(IRawBoundedList value) => new(value);
     public static AzothValue Promise(Task<AzothValue> value) => new(value);
+    public static AzothValue FunctionReference(FunctionReference value) => new(value);
     public static AzothValue Bool(bool value) => new(value);
     public static AzothValue I8(sbyte value) => new(value);
     public static AzothValue Byte(byte value) => new(value);
@@ -78,12 +80,14 @@ internal readonly struct AzothValue
     {
         RawBoundedListValue = value;
     }
-
     private AzothValue(Task<AzothValue> value)
     {
         PromiseValue = value;
     }
-
+    private AzothValue(FunctionReference value)
+    {
+        FunctionReferenceValue = value;
+    }
     private AzothValue(bool value)
     {
         this.value.Simple.BoolValue = value;

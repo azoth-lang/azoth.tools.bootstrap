@@ -46,7 +46,7 @@ internal class DefiniteAssignmentAnalysis : IForwardDataFlowAnalysis<BindingFlag
     {
         return assignmentExpression.LeftOperand switch
         {
-            INameExpression identifier =>
+            IVariableNameExpression identifier =>
                 definitelyAssigned.Set(identifier.ReferencedSymbol, true),
             IFieldAccessExpression _ => definitelyAssigned,
             _ => throw new NotImplementedException("Complex assignments not yet implemented")
@@ -54,7 +54,7 @@ internal class DefiniteAssignmentAnalysis : IForwardDataFlowAnalysis<BindingFlag
     }
 
     public BindingFlags IdentifierName(
-        INameExpression nameExpression,
+        IVariableNameExpression nameExpression,
         BindingFlags definitelyAssigned)
     {
         if (definitelyAssigned[nameExpression.ReferencedSymbol] == false)

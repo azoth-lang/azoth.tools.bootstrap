@@ -45,7 +45,7 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags>
     {
         switch (assignmentExpression.LeftOperand)
         {
-            case INameExpression identifierName:
+            case IVariableNameExpression identifierName:
                 // We are assigning into this variable so it definitely has a value now
                 var symbol = identifierName.ReferencedSymbol;
                 return symbol.DataType is ValueType ? possiblyMoved.Set(symbol, false) : possiblyMoved;
@@ -57,7 +57,7 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags>
     }
 
     public BindingFlags IdentifierName(
-        INameExpression nameExpression,
+        IVariableNameExpression nameExpression,
         BindingFlags possiblyMoved)
     {
         var symbol = nameExpression.ReferencedSymbol;

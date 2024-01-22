@@ -137,7 +137,7 @@ NextExpression: Expression;
 ReturnExpression: Expression = Value:Expression?;
 
 // ---------- Invocation Expressions
-InvocationExpression: Expression, 'IHasContainingLexicalScope' = Expression Arguments:Expression* ReferencedSymbol:'Promise<InvocableSymbol?>';
+InvocationExpression: Expression, 'IHasContainingLexicalScope' = Expression Arguments:Expression* ReferencedSymbol:'Promise<Symbol?>';
 
 // ---------- Variable Expressions
 NameExpression: AssignableExpression = ReferencedSymbol:'Promise<Symbol?>';

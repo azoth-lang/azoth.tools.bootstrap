@@ -40,8 +40,7 @@ public abstract class SymbolTestFixture
         return new FunctionSymbol(
             ns ?? Namespace(),
             Name(name) ?? DefaultName("func"),
-            @params ?? Params(),
-            @return ?? ReturnType());
+            new FunctionType(@params ?? Params(), @return ?? ReturnType()));
     }
 
     protected static FunctionSymbol Func(
@@ -54,8 +53,7 @@ public abstract class SymbolTestFixture
         return new FunctionSymbol(
             ns ?? mother.ContainingSymbol,
             Name(name) ?? mother.Name,
-            @params ?? mother.ParameterTypes,
-            @return ?? mother.ReturnType);
+            new FunctionType(@params ?? mother.ParameterTypes, @return ?? mother.ReturnType));
     }
 
     protected MethodSymbol Method(

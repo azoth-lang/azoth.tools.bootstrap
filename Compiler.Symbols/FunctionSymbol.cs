@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -12,23 +11,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class FunctionSymbol : FunctionOrMethodSymbol
 {
     public override SimpleName Name { get; }
+    public FunctionType Type { get; }
 
     public FunctionSymbol(
         Symbol containingSymbol,
         SimpleName name,
-        FixedList<ParameterType> parameterDataTypes,
-        ReturnType returnType)
-        : base(containingSymbol, name, parameterDataTypes, returnType)
+        FunctionType type)
+        : base(containingSymbol, name, type.ParameterTypes, type.ReturnType)
     {
         Name = name;
-    }
-
-    public FunctionSymbol(
-        Symbol containingSymbol,
-        SimpleName name,
-        FixedList<ParameterType> parameterDataTypes)
-        : this(containingSymbol, name, parameterDataTypes, ReturnType.Void)
-    {
+        Type = type;
     }
 
     public override bool Equals(Symbol? other)

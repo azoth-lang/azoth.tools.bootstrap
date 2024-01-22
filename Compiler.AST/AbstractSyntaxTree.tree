@@ -80,6 +80,7 @@ OptionalPattern: Pattern = Pattern;
 
 // ---------- Expressions
 Expression = DataType:'DataType' Semantics:'ExpressionSemantics';
+NameExpression: Expression;
 AssignableExpression: Expression;
 BlockExpression: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
 NewObjectExpression: Expression =  ReferencedSymbol:'ConstructorSymbol' Arguments:Expression*;
@@ -119,12 +120,13 @@ ExplicitConversionExpression: Expression = Expression IsOptional:'bool' DataType
 ExplicitNumericConversionExpression: ExplicitConversionExpression = Expression ConvertToType:'NumericType';
 
 // ---------- Invocation Expressions
-InvocationExpression: Expression = ReferencedSymbol:'InvocableSymbol' Arguments:Expression*;
+InvocationExpression: Expression = ReferencedSymbol:'Symbol' Arguments:Expression*;
 FunctionInvocationExpression: InvocationExpression = ReferencedSymbol:'FunctionSymbol' Arguments:Expression*;
 MethodInvocationExpression: InvocationExpression = Context:Expression ReferencedSymbol:'MethodSymbol' Arguments:Expression*;
+FunctionReferenceInvocationExpression: InvocationExpression = ReferencedSymbol:'NamedBindingSymbol' Arguments:Expression*;
 
 // ---------- Variable Expressions
-NameExpression: AssignableExpression = ReferencedSymbol:'NamedBindingSymbol' VariableIsLiveAfter:'Promise<bool>';
+VariableNameExpression: AssignableExpression, NameExpression = ReferencedSymbol:'NamedBindingSymbol' VariableIsLiveAfter:'Promise<bool>';
 SelfExpression: Expression = ReferencedSymbol:'SelfParameterSymbol' IsImplicit:'bool';
 FieldAccessExpression: AssignableExpression = Context:Expression AccessOperator:'AccessOperator' ReferencedSymbol:'FieldSymbol';
 MoveExpression: Expression = ReferencedSymbol:'BindingSymbol' Referent:Expression;
@@ -141,3 +143,6 @@ RecoverIsolationExpression: RecoverExpression = Value:Expression;
 AsyncBlockExpression: Expression = Block:BlockExpression;
 AsyncStartExpression: Expression = Scheduled:'bool' Expression;
 AwaitExpression: Expression = Expression;
+
+// ---------- Name Expressions
+FunctionNameExpression: NameExpression = ReferencedSymbol:'FunctionSymbol';

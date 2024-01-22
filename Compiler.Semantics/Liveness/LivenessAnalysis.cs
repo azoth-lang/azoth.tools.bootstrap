@@ -26,7 +26,7 @@ public class LivenessAnalysis : IBackwardDataFlowAnalysis<BindingFlags>
     {
         switch (assignmentExpression.LeftOperand)
         {
-            case INameExpression identifier:
+            case IVariableNameExpression identifier:
                 var symbol = identifier.ReferencedSymbol;
                 var isLifeAfter = liveVariables[symbol]
                                   ?? throw new Exception($"No liveness data for variable {symbol}");
@@ -40,7 +40,7 @@ public class LivenessAnalysis : IBackwardDataFlowAnalysis<BindingFlags>
     }
 
     public BindingFlags IdentifierName(
-        INameExpression nameExpression,
+        IVariableNameExpression nameExpression,
         BindingFlags liveVariables)
     {
         SetLiveness(nameExpression.ReferencedSymbol, nameExpression.VariableIsLiveAfter, liveVariables);

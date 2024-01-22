@@ -7,23 +7,20 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
-internal class MethodInvocationExpression : Expression, IMethodInvocationExpression
+internal class FunctionReferenceInvocationExpression : Expression, IFunctionReferenceInvocationExpression
 {
-    public IExpression Context { get; }
-    public MethodSymbol ReferencedSymbol { get; }
+    public NamedBindingSymbol ReferencedSymbol { get; }
     Symbol IInvocationExpression.ReferencedSymbol => ReferencedSymbol;
     public FixedList<IExpression> Arguments { get; }
 
-    public MethodInvocationExpression(
+    public FunctionReferenceInvocationExpression(
         TextSpan span,
         DataType dataType,
         ExpressionSemantics semantics,
-        IExpression context,
-        MethodSymbol referencedSymbol,
+        NamedBindingSymbol referencedSymbol,
         FixedList<IExpression> arguments)
         : base(span, dataType, semantics)
     {
-        Context = context;
         ReferencedSymbol = referencedSymbol;
         Arguments = arguments;
     }
@@ -31,5 +28,5 @@ internal class MethodInvocationExpression : Expression, IMethodInvocationExpress
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
     public override string ToString()
-        => $"{Context.ToGroupedString(ExpressionPrecedence)}.{ReferencedSymbol.Name}({string.Join(", ", Arguments)})";
+        => $"{ReferencedSymbol.Name}({string.Join(", ", Arguments)})";
 }

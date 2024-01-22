@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
+using static Azoth.Tools.Bootstrap.Compiler.Primitives.SymbolBuilder;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
 
@@ -75,23 +76,23 @@ public static class Intrinsic
         var readBytesType = rawBoundedListType.WithRead(FixedList.Create<DataType>(DataType.Void, DataType.Byte));
 
         // fn print_raw_utf8_bytes(bytes: Raw_Bounded_List[byte], start: size, byte_count: size)
-        var print = new FunctionSymbol(intrinsicsNamespace, "print_raw_utf8_bytes",
+        var print = Function(intrinsicsNamespace, "print_raw_utf8_bytes",
             Params(readBytesType, DataType.Size, DataType.Size));
         tree.Add(print);
 
         // fn read_raw_utf8_bytes_line(bytes: mut Raw_Bounded_List[byte], start: size) -> size
-        var readLine = new FunctionSymbol(intrinsicsNamespace, "read_raw_utf8_bytes_line",
+        var readLine = Function(intrinsicsNamespace, "read_raw_utf8_bytes_line",
             Params(DataType.Size, DataType.Size), ReturnType.Size);
         tree.Add(readLine);
 
         // fn ABORT_RAW_UTF8_BYTES(bytes: Raw_Bounded_List[byte], start: size, byte_count: size) -> never
-        var abort = new FunctionSymbol(intrinsicsNamespace, "ABORT_RAW_UTF8_BYTES",
+        var abort = Function(intrinsicsNamespace, "ABORT_RAW_UTF8_BYTES",
             Params(readBytesType, DataType.Size, DataType.Size), ReturnType.Never);
         tree.Add(abort);
 
         var readAnyType = new AnyType(ReferenceCapability.ReadOnly);
         // fn identity_hash(value: Any) -> uint64 // TODO: should be nuint
-        var identityHash = new FunctionSymbol(intrinsicsNamespace, "identity_hash",
+        var identityHash = Function(intrinsicsNamespace, "identity_hash",
             Params(readAnyType), ReturnType.UInt64);
         tree.Add(identityHash);
 
@@ -185,9 +186,4 @@ public static class Intrinsic
 
         return classType;
     }
-
-    private static FixedList<ParameterType> Params(params DataType[] types)
-        => types.Select(t => new ParameterType(false, t)).ToFixedList();
-
-    private static ReturnType Return(DataType type) => new(false, type);
 }

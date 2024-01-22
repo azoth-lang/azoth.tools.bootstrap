@@ -58,7 +58,7 @@ internal class ShadowChecker : AbstractSyntaxWalker<BindingScope>
                     diagnostics.Add(OtherSemanticError.CantRebindAsMutableBinding(file, syn.NameSpan));
                 return;
             }
-            case INameExpression syn:
+            case IVariableNameExpression syn:
             {
                 // This checks for cases where a variable was shadowed, but then used later
                 if (!bindingScope.Lookup(syn.ReferencedSymbol.Name, out var binding)) return;

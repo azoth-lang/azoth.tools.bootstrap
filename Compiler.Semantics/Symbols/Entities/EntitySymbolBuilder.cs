@@ -123,8 +123,9 @@ public class EntitySymbolBuilder
         var resolver = new TypeResolver(file, diagnostics);
         var parameterTypes = ResolveParameterTypes(resolver, associatedFunction.Parameters);
         var returnType = ResolveReturnType(resolver, file, associatedFunction.Return);
+        var type = new FunctionType(parameterTypes, returnType);
         var declaringTypeSymbol = associatedFunction.DeclaringType.Symbol.Result;
-        var symbol = new FunctionSymbol(declaringTypeSymbol, associatedFunction.Name, parameterTypes, returnType);
+        var symbol = new FunctionSymbol(declaringTypeSymbol, associatedFunction.Name, type);
         associatedFunction.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);
         BuildParameterSymbols(symbol, file, associatedFunction.Parameters, parameterTypes);
@@ -151,7 +152,8 @@ public class EntitySymbolBuilder
         var resolver = new TypeResolver(file, diagnostics);
         var parameterTypes = ResolveParameterTypes(resolver, function.Parameters);
         var returnType = ResolveReturnType(resolver, file, function.Return);
-        var symbol = new FunctionSymbol(function.ContainingNamespaceSymbol, function.Name, parameterTypes, returnType);
+        var type = new FunctionType(parameterTypes, returnType);
+        var symbol = new FunctionSymbol(function.ContainingNamespaceSymbol, function.Name, type);
         function.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);
         BuildParameterSymbols(symbol, file, function.Parameters, parameterTypes);

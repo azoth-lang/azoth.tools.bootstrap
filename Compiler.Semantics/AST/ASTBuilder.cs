@@ -383,7 +383,7 @@ internal class ASTBuilder
         return expression switch
         {
             IQualifiedNameExpressionSyntax syn => BuildFieldAccessExpression(syn),
-            ISimpleNameExpressionSyntax syn => BuildNameExpression(syn),
+            ISimpleNameExpressionSyntax syn => BuildVariableNameExpression(syn),
             _ => throw ExhaustiveMatch.Failed(expression),
         };
     }
@@ -444,8 +444,7 @@ internal class ASTBuilder
         return new ForeachExpression(syn.Span, type, semantics, symbol, inExpression, iterateMethod, nextMethod, block);
     }
 
-    private static IInvocationExpression BuildInvocationExpression(
-        IInvocationExpressionSyntax syn)
+    private static IInvocationExpression BuildInvocationExpression(IInvocationExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
@@ -461,8 +460,16 @@ internal class ASTBuilder
                 var qualifiedName = (IQualifiedNameExpressionSyntax)syn.Expression;
                 var context = BuildExpression(qualifiedName.Context);
                 return new MethodInvocationExpression(syn.Span, type, semantics, context, method, arguments);
+            case NamedBindingSymbol namedBinding:
+                return new FunctionReferenceInvocationExpression(syn.Span, type, semantics, namedBinding, arguments);
+            case SelfParameterSymbol _:
+                throw new InvalidOperationException("Invocation expression cannot invoke a self parameter.");
+            case TypeSymbol _:
+                throw new InvalidOperationException("Invocation expression cannot invoke a type.");
             case ConstructorSymbol _:
-                throw new InvalidOperationException("Invocation expression cannot invoke a constructor");
+                throw new InvalidOperationException("Invocation expression cannot invoke a constructor.");
+            case NamespaceOrPackageSymbol _:
+                throw new InvalidOperationException("Invocation expression cannot invoke a namespace or package.");
         }
     }
 
@@ -573,16 +580,40 @@ internal class ASTBuilder
         Conversion conversion)
     {
         var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
-        var referencedSymbol = ((INameExpression)expression).ReferencedSymbol;
+        var referencedSymbol = ((IVariableNameExpression)expression).ReferencedSymbol;
         return new MoveExpression(expression.Span, (ReferenceType)convertToType, semantics, referencedSymbol, expression);
     }
 
     private static INameExpression BuildNameExpression(ISimpleNameExpressionSyntax syn)
     {
+        return syn.ReferencedSymbol.Result.Assigned() switch
+        {
+            NamedBindingSymbol symbol => BuildVariableNameExpression(syn, symbol),
+            FunctionSymbol symbol => BuildFunctionNameExpression(syn, symbol),
+            TypeSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a type."),
+            InvocableSymbol _ => throw new InvalidOperationException("Cannot build a name expression for an invocable."),
+            NamespaceOrPackageSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a namespace or package."),
+            SelfParameterSymbol _ => throw new UnreachableCodeException("Self parameter would be a different expression."),
+            _ => throw ExhaustiveMatch.Failed(syn),
+        };
+    }
+
+    private static IVariableNameExpression BuildVariableNameExpression(ISimpleNameExpressionSyntax syn)
+        => BuildVariableNameExpression(syn, (NamedBindingSymbol)syn.ReferencedSymbol.Result.Assigned());
+
+    private static IVariableNameExpression BuildVariableNameExpression(ISimpleNameExpressionSyntax syn, NamedBindingSymbol referencedSymbol)
+    {
         var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
-        var referencedSymbol = (NamedBindingSymbol)syn.ReferencedSymbol.Result.Assigned();
-        return new NameExpression(syn.Span, type, semantics, referencedSymbol);
+        return new VariableNameExpression(syn.Span, type, semantics, referencedSymbol);
+    }
+
+    private static IFunctionNameExpression BuildFunctionNameExpression(ISimpleNameExpressionSyntax syn, FunctionSymbol referenceSymbol)
+    {
+        var type = syn.DataType.Assigned();
+        var semantics = syn.Semantics.Assigned();
+        var referencedSymbol = (FunctionSymbol)syn.ReferencedSymbol.Result.Assigned();
+        return new FunctionNameExpression(syn.Span, type, semantics, referencedSymbol);
     }
 
     private static INewObjectExpression BuildNewObjectExpression(INewObjectExpressionSyntax syn)
@@ -667,7 +698,7 @@ internal class ASTBuilder
         Conversion conversion)
     {
         var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
-        var referencedSymbol = ((INameExpression)expression).ReferencedSymbol;
+        var referencedSymbol = ((IVariableNameExpression)expression).ReferencedSymbol;
         return new FreezeExpression(expression.Span, (ReferenceType)convertToType, semantics, referencedSymbol, expression);
     }
 

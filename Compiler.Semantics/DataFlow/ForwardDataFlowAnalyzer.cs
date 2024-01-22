@@ -46,7 +46,7 @@ internal class ForwardDataFlowAnalyzer<TState> : AbstractSyntaxWalker<bool>
                 WalkNonNull(exp.RightOperand, false);
                 currentState = checker!.Assignment(exp, currentState!);
                 return;
-            case INameExpression exp:
+            case IVariableNameExpression exp:
                 if (isLValue) return; // ignore
                 currentState = checker!.IdentifierName(exp, currentState!);
                 return;

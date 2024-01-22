@@ -1,22 +1,20 @@
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
-internal class NameExpression : Expression, INameExpression
+internal class FunctionNameExpression : Expression, IFunctionNameExpression
 {
-    public NamedBindingSymbol ReferencedSymbol { get; }
-    public Promise<bool> VariableIsLiveAfter { get; } = new Promise<bool>();
+    public FunctionSymbol ReferencedSymbol { get; }
 
-    public NameExpression(
+    public FunctionNameExpression(
         TextSpan span,
         DataType dataType,
         ExpressionSemantics semantics,
-        NamedBindingSymbol referencedSymbol)
+        FunctionSymbol referencedSymbol)
         : base(span, dataType, semantics)
     {
         ReferencedSymbol = referencedSymbol;

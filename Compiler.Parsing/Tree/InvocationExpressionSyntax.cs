@@ -6,7 +6,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -15,7 +14,7 @@ internal class InvocationExpressionSyntax : ExpressionSyntax, IInvocationExpress
 {
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
     public FixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
-    public Promise<InvocableSymbol?> ReferencedSymbol { get; } = new Promise<InvocableSymbol?>();
+    public Promise<Symbol?> ReferencedSymbol { get; } = new Promise<Symbol?>();
 
     private LexicalScope? containingLexicalScope;
     public LexicalScope ContainingLexicalScope

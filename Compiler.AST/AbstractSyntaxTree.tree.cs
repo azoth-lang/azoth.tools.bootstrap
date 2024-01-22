@@ -317,6 +317,7 @@ public partial interface IOptionalPattern : IPattern
 }
 
 [Closed(
+    typeof(INameExpression),
     typeof(IAssignableExpression),
     typeof(IBlockExpression),
     typeof(INewObjectExpression),
@@ -352,7 +353,14 @@ public partial interface IExpression : IAbstractSyntax
 }
 
 [Closed(
-    typeof(INameExpression),
+    typeof(IVariableNameExpression),
+    typeof(IFunctionNameExpression))]
+public partial interface INameExpression : IExpression
+{
+}
+
+[Closed(
+    typeof(IVariableNameExpression),
     typeof(IFieldAccessExpression))]
 public partial interface IAssignableExpression : IExpression
 {
@@ -509,10 +517,11 @@ public partial interface IExplicitNumericConversionExpression : IExplicitConvers
 
 [Closed(
     typeof(IFunctionInvocationExpression),
-    typeof(IMethodInvocationExpression))]
+    typeof(IMethodInvocationExpression),
+    typeof(IFunctionReferenceInvocationExpression))]
 public partial interface IInvocationExpression : IExpression
 {
-    InvocableSymbol ReferencedSymbol { get; }
+    Symbol ReferencedSymbol { get; }
     FixedList<IExpression> Arguments { get; }
 }
 
@@ -527,7 +536,12 @@ public partial interface IMethodInvocationExpression : IInvocationExpression
     new MethodSymbol ReferencedSymbol { get; }
 }
 
-public partial interface INameExpression : IAssignableExpression
+public partial interface IFunctionReferenceInvocationExpression : IInvocationExpression
+{
+    new NamedBindingSymbol ReferencedSymbol { get; }
+}
+
+public partial interface IVariableNameExpression : IAssignableExpression, INameExpression
 {
     NamedBindingSymbol ReferencedSymbol { get; }
     Promise<bool> VariableIsLiveAfter { get; }
@@ -599,5 +613,10 @@ public partial interface IAsyncStartExpression : IExpression
 public partial interface IAwaitExpression : IExpression
 {
     IExpression Expression { get; }
+}
+
+public partial interface IFunctionNameExpression : INameExpression
+{
+    FunctionSymbol ReferencedSymbol { get; }
 }
 

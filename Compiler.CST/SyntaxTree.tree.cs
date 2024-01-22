@@ -646,7 +646,7 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax, IHasCo
 {
     IExpressionSyntax Expression { get; }
     FixedList<IExpressionSyntax> Arguments { get; }
-    Promise<InvocableSymbol?> ReferencedSymbol { get; }
+    Promise<Symbol?> ReferencedSymbol { get; }
 }
 
 [Closed(

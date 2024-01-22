@@ -1,10 +1,9 @@
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
-using Azoth.Tools.Bootstrap.Framework;
+using static Azoth.Tools.Bootstrap.Compiler.Primitives.SymbolBuilder;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
 
@@ -77,9 +76,4 @@ public static class Primitive
         var symbol = new PrimitiveTypeSymbol(DeclaredReferenceType.Any.With(ReferenceCapability.Mutable));
         tree.Add(symbol);
     }
-
-    private static FixedList<ParameterType> Params(params DataType[] types)
-        => types.Select(t => new ParameterType(false, t)).ToFixedList();
-
-    private static ReturnType Return(DataType type) => new(false, type);
 }

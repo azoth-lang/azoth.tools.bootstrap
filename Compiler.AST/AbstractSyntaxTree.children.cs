@@ -176,7 +176,11 @@ public static class IAbstractSyntaxExtensions
                 foreach (var child in n.Arguments)
                     yield return child;
                 yield break;
-            case INameExpression n:
+            case IFunctionReferenceInvocationExpression n:
+                foreach (var child in n.Arguments)
+                    yield return child;
+                yield break;
+            case IVariableNameExpression n:
                 yield break;
             case ISelfExpression n:
                 yield break;
@@ -209,6 +213,8 @@ public static class IAbstractSyntaxExtensions
                 yield break;
             case IAwaitExpression n:
                 yield return n.Expression;
+                yield break;
+            case IFunctionNameExpression n:
                 yield break;
         }
     }

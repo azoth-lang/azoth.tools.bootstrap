@@ -170,7 +170,7 @@ public class InterpreterProcess
         return await ConstructClass(@class, constructorSymbol, Enumerable.Empty<AzothValue>());
     }
 
-    private async Task<AzothValue> CallFunctionAsync(IConcreteFunctionInvocableDeclaration function, IEnumerable<AzothValue> arguments)
+    internal async Task<AzothValue> CallFunctionAsync(IConcreteFunctionInvocableDeclaration function, IEnumerable<AzothValue> arguments)
     {
         try
         {
@@ -354,6 +354,12 @@ public class InterpreterProcess
                     return await CallIntrinsicAsync(functionSymbol, arguments).ConfigureAwait(false);
                 return await CallFunctionAsync(functions[functionSymbol], arguments).ConfigureAwait(false);
             }
+            case IFunctionReferenceInvocationExpression exp:
+            {
+                var function = variables[exp.ReferencedSymbol];
+                var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
+                return await function.FunctionReferenceValue.CallAsync(arguments).ConfigureAwait(false);
+            }
             case IBoolLiteralExpression exp:
                 return AzothValue.Bool(exp.Value);
             case IIfExpression exp:
@@ -365,8 +371,10 @@ public class InterpreterProcess
                     return await ExecuteElseAsync(exp.ElseClause, variables).ConfigureAwait(false);
                 return AzothValue.None;
             }
-            case INameExpression exp:
+            case IVariableNameExpression exp:
                 return variables[exp.ReferencedSymbol];
+            case IFunctionNameExpression exp:
+                return AzothValue.FunctionReference(new ConcreteFunctionReference(this, functions[exp.ReferencedSymbol]));
             case IBlockExpression block:
             {
                 var blockVariables = new LocalVariableScope(variables);
@@ -1045,7 +1053,7 @@ public class InterpreterProcess
         {
             default:
                 throw new NotImplementedException($"Can't interpret assignment into {expression.GetType().Name}");
-            case INameExpression exp:
+            case IVariableNameExpression exp:
                 variables[exp.ReferencedSymbol] = value;
                 break;
             case IFieldAccessExpression exp:
