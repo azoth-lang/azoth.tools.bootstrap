@@ -133,4 +133,10 @@ public static class TypeError
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3018, $"Cannot await non-awaitable type `{type.ToSourceCodeString()}`.");
     }
+
+    public static Diagnostic CapabilityAppliedToTypeParameter(CodeFile file, ITypeNameSyntax typeSyntax)
+    {
+        return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+            3019, $"Reference capabilities cannot be applied to type parameters `{typeSyntax.ToString()}`.");
+    }
 }

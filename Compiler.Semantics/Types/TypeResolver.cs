@@ -174,6 +174,8 @@ public class TypeResolver
                     // is done on the capability type syntax.
                     return declaredObjectType.With(capability, typeArguments);
                 case GenericParameterTypeSymbol sym:
+                    if (capability is not null)
+                        diagnostics.Add(TypeError.CapabilityAppliedToTypeParameter(file, typeSyntax));
                     return sym.DeclaresType;
             }
         }
