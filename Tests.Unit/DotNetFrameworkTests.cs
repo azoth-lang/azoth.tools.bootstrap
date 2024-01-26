@@ -98,6 +98,67 @@ public class DotNetFrameworkTests
         var z = x.HasValue();
         Assert.Equal("Hello!", z.Value);
     }
+
+    [Fact]
+    public void BoxedStructThisPassedByRef()
+    {
+        IIncrementable x = new MutableStruct();
+        x.Increment();
+        Assert.Equal(1, x.Value);
+    }
+
+    [Fact]
+    public void CanObserveBoxedStructStateChange()
+    {
+
+        IIncrementable x = new MutableStruct();
+        x.Observe((in MutableStruct y) =>
+        {
+            Assert.Equal(0, y.Value);
+            x.Increment();
+            Assert.Equal(1, x.Value);
+        });
+    }
+
+    private interface IIncrementable
+    {
+        public int Value { get; }
+        void Increment();
+        void Observe(ObserveDelegate observer);
+    }
+
+    private delegate void ObserveDelegate(in MutableStruct x);
+
+    private struct MutableStruct : IIncrementable
+    {
+        public MutableStruct()
+        {
+        }
+
+        public int Value { get; set; } = 0;
+
+        public void Increment()
+        {
+            Value++;
+        }
+
+        public readonly void Observe(ObserveDelegate observer)
+        {
+            observer(in this);
+        }
+
+        public void PassThis()
+        {
+            ref MutableStruct x = ref this;
+            IncrementByRef(ref this);
+        }
+    }
+
+    private static void IncrementByRef(ref MutableStruct x)
+    {
+        x.Increment();
+        ref MutableStruct y = ref x;
+    }
 }
 
 public class Ref<T>
