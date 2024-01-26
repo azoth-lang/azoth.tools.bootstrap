@@ -36,6 +36,8 @@ public static class DataTypeExtensions
                 => IsAssignableFrom(targetOptional.Referent, sourceOptional.Referent),
             (OptionalType targetOptional, _)
                 => IsAssignableFrom(targetOptional.Referent, source),
+            (FunctionType targetFunction, FunctionType sourceFunction)
+                => IsAssignableFrom(targetFunction, sourceFunction),
             _ => false
         };
     }
@@ -108,6 +110,36 @@ public static class DataTypeExtensions
             }
         }
         return true;
+    }
+
+    public static bool IsAssignableFrom(this FunctionType target, FunctionType source)
+    {
+        if (target.ParameterTypes.Count != source.ParameterTypes.Count)
+            return false;
+
+        foreach (var (targetParameter, sourceParameter) in target.ParameterTypes.Zip(source.ParameterTypes))
+            if (!targetParameter.IsAssignableFrom(sourceParameter))
+                return false;
+
+        return IsAssignableFrom(target.ReturnType, source.ReturnType);
+    }
+
+    public static bool IsAssignableFrom(this ParameterType target, ParameterType source)
+    {
+        // TODO add more flexibility in lent
+        if (target.IsLent != source.IsLent) return false;
+
+        // Parameter types need to be more specific in the target than the source.
+        return source.Type.IsAssignableFrom(target.Type);
+    }
+
+    public static bool IsAssignableFrom(ReturnType target, ReturnType source)
+    {
+        // TODO add more flexibility in lent
+        if (target.IsLent != source.IsLent) return false;
+
+        // Return types need to be more general in the target than the source.
+        return target.Type.IsAssignableFrom(source.Type);
     }
 
     /// <summary>
