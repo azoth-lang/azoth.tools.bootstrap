@@ -65,6 +65,6 @@ public sealed class VariableSymbol : NamedBindingSymbol
     {
         var mutable = IsMutableBinding ? "var" : "let";
         var declarationNumber = DeclarationNumber is null ? "" : "#" + DeclarationNumber;
-        return $"{ContainingSymbol.ToILString()} {{{mutable} {Name}{declarationNumber}: {DataType.ToILString()}}}";
+        return $"{mutable} {Name}{declarationNumber}: {DataType.ToILString()} in {ContainingSymbol.ToILString()}";
     }
 }
