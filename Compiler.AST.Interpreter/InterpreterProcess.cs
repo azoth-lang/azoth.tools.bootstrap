@@ -904,7 +904,7 @@ public class InterpreterProcess
 
     private async ValueTask<bool> EqualsAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
     {
-        if (leftExp.DataType != rightExp.DataType)
+        if (leftExp.DataType != rightExp.DataType && leftExp.DataType is not ReferenceType { IsIdentityReference: true })
             throw new InvalidOperationException(
                 $"Can't compare expressions of type {leftExp.DataType.ToILString()} and {rightExp.DataType.ToILString()} for equality.");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
