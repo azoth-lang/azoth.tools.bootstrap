@@ -344,8 +344,8 @@ public sealed class FlowState
 
     private void TrackCapability(BindingSymbol symbol)
     {
-        if (symbol.SharingIsTracked())
-            capabilities.Add((BindingVariable)symbol, ((ReferenceType)symbol.DataType).Capability);
+        if (symbol.SharingIsTracked() && symbol.DataType is ReferenceType type)
+            capabilities.Add((BindingVariable)symbol, type.Capability);
 
         // Other types don't have capabilities and don't need to be tracked
     }
