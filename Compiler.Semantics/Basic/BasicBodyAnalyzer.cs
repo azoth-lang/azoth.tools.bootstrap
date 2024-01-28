@@ -567,6 +567,10 @@ public class BasicBodyAnalyzer
                         or (_, BinaryOperator.DotDotLessThan, _)
                         or (_, BinaryOperator.LessThanDotDotLessThan, _)
                         => InferRangeOperatorType(leftResult, rightResult, flow),
+
+                    (OptionalType { Referent: var referentType }, BinaryOperator.QuestionQuestion, NeverType)
+                        => referentType,
+
                     _ => DataType.Unknown
 
                     // TODO optional types
