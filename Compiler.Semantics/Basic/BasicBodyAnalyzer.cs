@@ -687,7 +687,7 @@ public class BasicBodyAnalyzer
                     diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
                     exp.ReferencedSymbol.Fulfill(null);
                     exp.DataType = DataType.Unknown;
-                    resultVariable = CombineResults(arguments, flow, exp);
+                    resultVariable = CombineResults<ConstructorSymbol>(null, arguments, flow, exp);
                     return new ExpressionResult(exp, resultVariable);
                 }
 
@@ -696,7 +696,7 @@ public class BasicBodyAnalyzer
                     diagnostics.Add(OtherSemanticError.CannotConstructAbstractType(file, exp.Type));
                     exp.ReferencedSymbol.Fulfill(null);
                     exp.DataType = DataType.Unknown;
-                    resultVariable = CombineResults(arguments, flow, exp);
+                    resultVariable = CombineResults<ConstructorSymbol>(null, arguments, flow, exp);
                     return new ExpressionResult(exp, resultVariable);
                 }
 
@@ -716,7 +716,7 @@ public class BasicBodyAnalyzer
                         var constructor = validOverloads.Single();
                         exp.ReferencedSymbol.Fulfill(constructor.Symbol);
                         CheckTypes(arguments, constructor.ParameterTypes, flow);
-                        resultVariable = CombineResults(arguments, flow, exp);
+                        resultVariable = CombineResults(constructor, arguments, flow, exp);
                         constructedType = constructor.ReturnType.Type;
                         break;
                     default:
@@ -1131,12 +1131,49 @@ public class BasicBodyAnalyzer
         return parameter.Type.IsAssignableFrom(argType);
     }
 
-    private static ResultVariable? CombineResults(
+    private static ResultVariable? CombineResults<TSymbol>(
+        Contextualized<TSymbol>? invocable,
         ArgumentResults results,
         FlowState flow,
         IExpressionSyntax exp)
-        => results.All.Select(r => r.Variable)
-                  .Aggregate(default(ResultVariable?), (v1, v2) => flow.Combine(v1, v2, exp));
+        where TSymbol : InvocableSymbol
+        => CombineResults(invocable?.SelfParameterType, invocable?.ParameterTypes, invocable?.ReturnType, results, flow, exp);
+
+    private static ResultVariable? CombineResults(
+        FunctionType? function,
+        ArgumentResults results,
+        FlowState flow,
+        IExpressionSyntax exp)
+        => CombineResults(null, function?.ParameterTypes, function?.ReturnType, results, flow, exp);
+
+    private static ResultVariable? CombineResults(
+        ParameterType? selfType,
+        FixedList<ParameterType>? parameterTypes,
+        ReturnType? returnType,
+        ArgumentResults results,
+        FlowState flow,
+        IExpressionSyntax exp)
+    {
+        IEnumerable<ExpressionResult> arguments;
+        if (returnType?.IsLent == true)
+        {
+            // When return is lent, only lent arguments are combined.
+            arguments = parameterTypes?.Zip(results.Arguments).Where(t => t.First.IsLent).Select(t => t.Second)
+                        ?? results.Arguments;
+            if (results.Self is not null && selfType?.IsLent == true)
+                arguments = arguments.Prepend(results.Self);
+        }
+        else
+        {
+            // When return is not lent, lent arguments are not combined.
+            arguments = parameterTypes?.Zip(results.Arguments).Where(t => !t.First.IsLent).Select(t => t.Second)
+                        ?? results.Arguments;
+            if (results.Self is not null && !selfType?.IsLent == true)
+                arguments = arguments.Prepend(results.Self);
+        }
+
+        return arguments.Select(r => r.Variable).Aggregate(default(ResultVariable?), (v1, v2) => flow.Combine(v1, v2, exp));
+    }
 
     private ExpressionResult InferAssignmentTargetType(
         IAssignableExpressionSyntax expression,
@@ -1313,7 +1350,7 @@ public class BasicBodyAnalyzer
             invocation.Semantics = ExpressionSemantics.Never;
         }
 
-        var resultVariable = CombineResults(arguments, flow, invocation);
+        var resultVariable = CombineResults(method, arguments, flow, invocation);
         flow.Restrict(resultVariable, invocation.DataType.Assigned());
 
         // There are no types for functions
@@ -1429,7 +1466,7 @@ public class BasicBodyAnalyzer
             invocation.Semantics = ExpressionSemantics.Never;
         }
 
-        var resultVariable = CombineResults(arguments, flow, invocation);
+        var resultVariable = CombineResults(functionType, arguments, flow, invocation);
         flow.Restrict(resultVariable, invocation.DataType.Assigned());
 
         // There are no types for functions
