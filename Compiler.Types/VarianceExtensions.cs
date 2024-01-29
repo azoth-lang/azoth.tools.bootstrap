@@ -8,6 +8,7 @@ public static class VarianceExtensions
         {
             Variance.Contravariant => "in",
             Variance.Invariant => "",
+            Variance.Independent => "ind",
             Variance.Covariant => "out",
             _ => throw ExhaustiveMatch.Failed(variance),
         };

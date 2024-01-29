@@ -4,5 +4,6 @@ public enum Variance
 {
     Contravariant = -1,
     Invariant = 0,
-    Covariant = 1,
+    Independent = 1,
+    Covariant = 2,
 }

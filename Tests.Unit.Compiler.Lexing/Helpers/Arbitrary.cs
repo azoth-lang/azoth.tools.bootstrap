@@ -240,6 +240,8 @@ public static class Arbitrary
         { "/=", typeof(ISlashEqualsToken) },
         { "⇒", typeof(IRightDoubleArrowToken) },
         { "=>", typeof(IRightDoubleArrowToken) },
+        { "▷", typeof(IRightTriangleToken) },
+        { "|>", typeof(IRightTriangleToken) },
         { "published", typeof(IPublishedKeywordToken) },
         { "public", typeof(IPublicKeywordToken) },
         //{ "protected", typeof(IProtectedKeywordToken) },
@@ -331,6 +333,7 @@ public static class Arbitrary
         { "do", typeof(IDoKeywordToken) },
         { "await", typeof(IAwaitKeywordToken) },
         { "out", typeof(IOutKeywordToken) },
+        { "ind", typeof(IIndependentKeywordToken) },
     }.ToFixedDictionary();
 
     private readonly record struct AppendedToken(IEnumerable<PsuedoToken> Items, PsuedoToken? LastToken)

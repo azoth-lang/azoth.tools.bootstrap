@@ -212,6 +212,7 @@ public partial class Parser
         return Tokens.Current switch
         {
             IInKeywordToken _ => (Variance.Contravariant, Tokens.Consume<IInKeywordToken>()),
+            IIndependentKeywordToken _ => (Variance.Independent, Tokens.Consume<IIndependentKeywordToken>()),
             IOutKeywordToken _ => (Variance.Covariant, Tokens.Consume<IOutKeywordToken>()),
             _ => (Variance.Invariant, Tokens.Current.Span.AtStart())
         };

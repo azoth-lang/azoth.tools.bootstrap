@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -373,7 +372,7 @@ public class BasicBodyAnalyzer
                 return !requireSigned || to.IsSigned ? new NumericConversion(to, priorConversion) : null;
             }
             case (ObjectType { IsConstReference: true } to, ObjectType { AllowsFreeze: true } from)
-                when to.BareType.IsAssignableFrom(from.BareType):
+                when to.BareType.IsAssignableFrom(targetAllowsWrite: false, from.BareType):
             {
                 // Try to recover const. Note a variable name can never be frozen because the result is an alias.
                 if (flow.CanFreeze(fromResult))
@@ -388,7 +387,7 @@ public class BasicBodyAnalyzer
                 return null;
             }
             case (ObjectType { IsIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from)
-                when to.BareType.IsAssignableFrom(from.BareType):
+                when to.BareType.IsAssignableFrom(targetAllowsWrite: true, from.BareType):
             {
                 // Try to recover isolation. Note a variable name is never isolated because the result is an alias.
                 if (flow.IsIsolated(fromResult))
@@ -1398,7 +1397,7 @@ public class BasicBodyAnalyzer
             || selfArgType is not ReferenceType { AllowsRecoverIsolation: true } fromType)
             return null;
 
-        if (!toType.BareType.IsAssignableFrom(fromType.BareType)) return null;
+        if (!toType.BareType.IsAssignableFrom(toType.AllowsWrite, fromType.BareType)) return null;
 
         if (selfArgSyntax is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
             || !flow.IsIsolatedExceptFor(symbol, selfArgVariable))
@@ -1438,7 +1437,7 @@ public class BasicBodyAnalyzer
             || selfArgType is not ReferenceType { AllowsFreeze: true } fromType)
             return null;
 
-        if (!toType.BareType.IsAssignableFrom(fromType.BareType)) return null;
+        if (!toType.BareType.IsAssignableFrom(toType.AllowsWrite, fromType.BareType)) return null;
 
         if (selfArgSyntax is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
             || !flow.CanFreezeExceptFor(symbol, selfArgVariable))

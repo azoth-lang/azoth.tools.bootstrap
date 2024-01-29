@@ -170,6 +170,8 @@ public sealed class ReferenceCapability
         if (!capability.AllowsWrite)
             return WithoutWrite();
 
+        // TODO capability.IsIsolated is not correct. It should prevent breaking isolation
+
         return this;
     }
 

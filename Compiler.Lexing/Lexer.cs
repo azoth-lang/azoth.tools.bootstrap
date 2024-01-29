@@ -47,6 +47,13 @@ public class Lexer
                     yield return TokenFactory.CloseBracket(SymbolSpan());
                     break;
                 case '|':
+                    if (NextChar() is '>')
+                        // it is `|>`
+                        yield return TokenFactory.RightTriangle(SymbolSpan(2));
+                    else
+                        // it is `|`
+                        yield return NewReservedOperator();
+                    break;
                 case '&':
                 case '@':
                 case '`':
@@ -111,6 +118,9 @@ public class Lexer
                     break;
                 case '⇒':
                     yield return TokenFactory.RightDoubleArrow(SymbolSpan());
+                    break;
+                case '▷':
+                    yield return TokenFactory.RightTriangle(SymbolSpan());
                     break;
                 case '^':
                     if (NextChar() is '.')

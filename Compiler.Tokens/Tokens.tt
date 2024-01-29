@@ -50,6 +50,7 @@
         "QuestionDot", // `?.` U+003F, U+002E
         "LessThanColon" , // `<:` U+003C, U+003A
         "RightDoubleArrow", // `⇒` U+21D2, `=>` U+003D, U+003E
+        "RightTriangle", // `▷` U+25B7, `|>` U+007C, U+003E
     }.AsReadOnly();
 #>
 using Azoth.Tools.Bootstrap.Compiler.Core;

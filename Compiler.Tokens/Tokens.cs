@@ -119,6 +119,9 @@ public static partial class TokenFactory
     public static IRightDoubleArrowToken RightDoubleArrow(TextSpan span)
         => new RightDoubleArrowToken(span);
 
+    public static IRightTriangleToken RightTriangle(TextSpan span)
+        => new RightTriangleToken(span);
+
 }
 
 [Closed(
@@ -159,7 +162,8 @@ public static partial class TokenFactory
     typeof(IQuestionQuestionToken),
     typeof(IQuestionDotToken),
     typeof(ILessThanColonToken),
-    typeof(IRightDoubleArrowToken))]
+    typeof(IRightDoubleArrowToken),
+    typeof(IRightTriangleToken))]
 public partial interface IEssentialToken { }
 
 
@@ -500,6 +504,15 @@ public partial interface IRightDoubleArrowToken : IEssentialToken { }
 internal partial class RightDoubleArrowToken : Token, IRightDoubleArrowToken
 {
     public RightDoubleArrowToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IRightTriangleToken : IEssentialToken { }
+internal partial class RightTriangleToken : Token, IRightTriangleToken
+{
+    public RightTriangleToken(TextSpan span)
         : base(span)
     {
     }

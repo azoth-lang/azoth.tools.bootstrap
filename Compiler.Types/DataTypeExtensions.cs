@@ -55,7 +55,7 @@ public static class DataTypeExtensions
             case ObjectType targetObjectType:
                 if (source is not ObjectType sourceObjectType) return false;
 
-                if (IsAssignableFrom(targetObjectType.BareType, sourceObjectType.BareType))
+                if (IsAssignableFrom(targetObjectType.BareType, targetObjectType.AllowsWrite, sourceObjectType.BareType))
                     return true;
 
                 // TODO remove hack to allow string to exist in both primitives and stdlib
@@ -65,7 +65,10 @@ public static class DataTypeExtensions
         }
     }
 
-    public static bool IsAssignableFrom(this BareReferenceType target, BareReferenceType source)
+    public static bool IsAssignableFrom(
+        this BareReferenceType target,
+        bool targetAllowsWrite,
+        BareReferenceType source)
     {
         if (source.Equals(target) || source.Supertypes.Contains(target))
             return true;
@@ -75,7 +78,7 @@ public static class DataTypeExtensions
             var declaredType = target.DeclaredType;
             var matchingDeclaredType = source.Supertypes.Prepend(source).Where(t => t.DeclaredType == declaredType);
             foreach (var sourceType in matchingDeclaredType)
-                if (IsAssignableFrom(declaredType, target.TypeArguments, sourceType.TypeArguments))
+                if (IsAssignableFrom(declaredType, targetAllowsWrite, target.TypeArguments, sourceType.TypeArguments))
                     return true;
         }
 
@@ -84,6 +87,7 @@ public static class DataTypeExtensions
 
     private static bool IsAssignableFrom(
         DeclaredReferenceType declaredType,
+        bool targetAllowsWrite,
         FixedList<DataType> target,
         FixedList<DataType> source)
     {
@@ -94,8 +98,25 @@ public static class DataTypeExtensions
             switch (declaredType.GenericParameters[i].Variance)
             {
                 case Variance.Invariant:
-                    if (!from.Equals(to))
+                    if (from != to)
                         return false;
+                    break;
+                case Variance.Independent:
+                    if (from != to)
+                    {
+                        // When target allows write, acts invariant
+                        if (targetAllowsWrite)
+                            return false;
+
+                        if (from is not ReferenceType fromReference || to is not ReferenceType toReference)
+                            return false;
+
+                        if (fromReference.BareType != toReference.BareType
+                            // TODO does this handle `iso` and `id` correctly?
+                            || !toReference.Capability.IsAssignableFrom(fromReference.Capability))
+                            return false;
+                    }
+
                     break;
                 case Variance.Covariant:
                     if (!to.IsAssignableFrom(from))

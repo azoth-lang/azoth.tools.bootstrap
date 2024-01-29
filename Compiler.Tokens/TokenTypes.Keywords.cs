@@ -36,6 +36,7 @@ public static partial class TokenTypes
                 //nameof(TypeKeywordToken) => "Type",
                 nameof(AsExclamationKeywordToken) => "as!",
                 nameof(AsQuestionKeywordToken) => "as?",
+                nameof(IndependentKeywordToken) => "ind",
                 "UnderscoreKeywordToken" => "_",
                 _ => tokenTypeName[..^KeywordTokenLength]
                                   .ToLower(CultureInfo.InvariantCulture)
