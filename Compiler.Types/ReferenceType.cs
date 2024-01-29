@@ -68,6 +68,18 @@ public abstract class ReferenceType : NonEmptyType
 
     public override ReferenceType WithoutWrite() => With(Capability.WithoutWrite());
 
+    public override DataType AccessedVia(DataType contextType)
+    {
+        if (contextType is not ReferenceType contextReferenceType)
+            return this;
+
+        // Not field access from `id` hence error and unknown type
+        if (contextReferenceType.Capability == ReferenceCapability.Identity)
+            return DataType.Unknown;
+
+        return With(Capability.AccessedVia(contextReferenceType.Capability));
+    }
+
     /// <summary>
     /// Return the same type except with the given reference capability
     /// </summary>

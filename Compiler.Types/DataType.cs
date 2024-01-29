@@ -85,16 +85,15 @@ public abstract class DataType : IEquatable<DataType>
     public virtual DataType ToNonConstantType() => this;
 
     /// <summary>
-    /// Returns the same type except with any mutability removed.
+    /// The same type except with any mutability removed.
     /// </summary>
     public virtual DataType WithoutWrite() => this;
 
     /// <summary>
-    /// Return the type for when this a value of this type is accessed via a type of the given value.
+    /// Return the type for when a value of this type is accessed via a type of the given value.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
-    public DataType AccessedVia(DataType contextType)
-        => contextType.AllowsWrite ? this : WithoutWrite();
+    public virtual DataType AccessedVia(DataType contextType) => this;
 
     [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member

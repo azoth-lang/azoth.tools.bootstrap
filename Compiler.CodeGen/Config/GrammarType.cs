@@ -36,20 +36,11 @@ public sealed class GrammarType : IEquatable<GrammarType>
         return obj is GrammarType other && Equals(other);
     }
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Symbol, IsRef, IsOptional, IsList);
-    }
+    public override int GetHashCode() => HashCode.Combine(Symbol, IsRef, IsOptional, IsList);
 
-    public static bool operator ==(GrammarType? left, GrammarType? right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(GrammarType? left, GrammarType? right) => Equals(left, right);
 
-    public static bool operator !=(GrammarType? left, GrammarType? right)
-    {
-        return !Equals(left, right);
-    }
+    public static bool operator !=(GrammarType? left, GrammarType? right) => !Equals(left, right);
 
     public override string ToString()
     {

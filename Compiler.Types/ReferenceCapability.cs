@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
+[DebuggerDisplay("{ToILString()}")]
 public sealed class ReferenceCapability
 {
     /// <summary>
@@ -61,7 +63,7 @@ public sealed class ReferenceCapability
     /// <summary>
     /// Is this a `const` capability.
     /// </summary>
-    public bool IsConstant => !AllowsWrite && AllowsRead && !AllowsWriteAliases;
+    public bool IsConstant => !AllowsWrite && AllowsRead && !AllowsWriteAliases && !IsInit;
     /// <summary>
     /// Is this an `iso` capability.
     /// </summary>
@@ -152,6 +154,23 @@ public sealed class ReferenceCapability
         if (IsInit) return InitReadOnly;
         // It is either `iso`, or `mut`. Regardless, convert to `readonly`
         return ReadOnly;
+    }
+
+    public ReferenceCapability AccessedVia(ReferenceCapability capability)
+    {
+        if (IsInit)
+            throw new InvalidOperationException("Fields cannot have the init capability.");
+        if (capability == Identity)
+            throw new InvalidOperationException("Cannot access fields via `id`.");
+
+        if (capability.IsConstant)
+            // Constant is contagious
+            return Constant;
+
+        if (!capability.AllowsWrite)
+            return WithoutWrite();
+
+        return this;
     }
 
     /// <summary>

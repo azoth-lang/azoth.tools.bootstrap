@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -832,6 +833,8 @@ public class BasicBodyAnalyzer
                 if (contextResult.Type is NonEmptyType nonEmptyContext)
                     // resolve generic type fields
                     type = nonEmptyContext.ReplaceTypeParametersIn(type);
+
+                type = type.AccessedVia(contextResult.Type);
                 var resultVariable = contextResult.Variable;
                 var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 member.Semantics = semantics;
