@@ -18,13 +18,13 @@ public sealed class ReferenceCapability
     /// An init reference that has write access.
     /// </summary>
     public static readonly ReferenceCapability InitMutable
-        = new("init mut", init: true, allowsWrite: true);
+        = new("init mut", "⧼init⧽ mut", init: true, allowsWrite: true);
 
     /// <summary>
     /// An init reference that has read-only access.
     /// </summary>
     public static readonly ReferenceCapability InitReadOnly
-        = new("init readonly", init: true);
+        = new("init read", "⧼init⧽ ⧼read⧽", init: true);
 
     /// <summary>
     /// A reference that has write access and can be stored into fields etc.
@@ -36,7 +36,7 @@ public sealed class ReferenceCapability
     /// A reference that has read-only access and can be stored into fields etc.
     /// </summary>
     public static readonly ReferenceCapability ReadOnly
-        = new("readonly", allowsWriteAliases: true, allowsReadAliases: true);
+        = new("read", "⧼read⧽", allowsWriteAliases: true, allowsReadAliases: true);
 
     /// <summary>
     /// A reference has read-only access and there are no references that
@@ -52,26 +52,15 @@ public sealed class ReferenceCapability
     public static readonly ReferenceCapability Identity
         = new("id", allowsWriteAliases: true, allowsRead: false, allowsReadAliases: true);
 
-    private readonly string name;
+    private readonly string ilName;
+    private readonly string sourceCodeName;
 
     /// <summary>
     /// Whether this kind of reference is an init reference. Init references always allow assignment
     /// into fields (even `let` fields). They also do not allow aliases. Aliases have the `id`
     /// capability.
     /// </summary>
-    public bool IsInit { get; }
-    /// <summary>
-    /// Is this a `const` capability.
-    /// </summary>
-    public bool IsConstant => !AllowsWrite && AllowsRead && !AllowsWriteAliases && !IsInit;
-    /// <summary>
-    /// Is this an `iso` capability.
-    /// </summary>
-    public bool IsIsolated => AllowsWrite && AllowsRead && !AllowsWriteAliases && !AllowsReadAliases;
-    /// <summary>
-    /// Is this a read only capability.
-    /// </summary>
-    public bool IsReadOnly => !AllowsWrite && AllowsRead && AllowsWriteAliases && AllowsReadAliases;
+    public bool AllowsInit { get; }
     /// <summary>
     /// Whether this kind of reference allows mutating the referenced object through this reference
     /// </summary>
@@ -98,7 +87,8 @@ public sealed class ReferenceCapability
     public bool AllowsRecoverIsolation => this == Mutable || this == ReadOnly;
 
     /// <summary>
-    /// Does this capability allow a reference with it to be moved if reference sharing permits.
+    /// Does this capability allow a reference with it to be moved into isolated if reference
+    /// sharing permits.
     /// </summary>
     public bool AllowsMove => this == Mutable || this == ReadOnly || this == Isolated;
 
@@ -115,13 +105,26 @@ public sealed class ReferenceCapability
         bool allowsWriteAliases = false,
         bool allowsRead = true,
         bool allowsReadAliases = false)
+        : this(name, name, init, allowsWrite, allowsWriteAliases, allowsRead, allowsReadAliases)
     {
-        IsInit = init;
+    }
+
+    private ReferenceCapability(
+        string ilName,
+        string sourceCodeName,
+        bool init = false,
+        bool allowsWrite = false,
+        bool allowsWriteAliases = false,
+        bool allowsRead = true,
+        bool allowsReadAliases = false)
+    {
+        this.ilName = ilName;
+        this.sourceCodeName = sourceCodeName;
+        AllowsInit = init;
         AllowsWrite = allowsWrite;
         AllowsWriteAliases = allowsWriteAliases;
         AllowsRead = allowsRead;
         AllowsReadAliases = allowsReadAliases;
-        this.name = name;
     }
 
     /// <summary>
@@ -133,7 +136,7 @@ public sealed class ReferenceCapability
     public bool IsAssignableFrom(ReferenceCapability from)
     {
         // Can't change init
-        if (IsInit != from.IsInit) return false;
+        if (AllowsInit != from.AllowsInit) return false;
         // Can't gain permissions
         if (AllowsWrite && !from.AllowsWrite) return false;
         if (!AllowsWriteAliases && from.AllowsWriteAliases) return false;
@@ -151,19 +154,19 @@ public sealed class ReferenceCapability
         // Already not writable. Just return this. That will preserve the correct other attributes
         if (!AllowsWrite) return this;
         // If it is init, there is only one non-writable init capability.
-        if (IsInit) return InitReadOnly;
+        if (AllowsInit) return InitReadOnly;
         // It is either `iso`, or `mut`. Regardless, convert to `readonly`
         return ReadOnly;
     }
 
     public ReferenceCapability AccessedVia(ReferenceCapability capability)
     {
-        if (IsInit)
+        if (AllowsInit)
             throw new InvalidOperationException("Fields cannot have the init capability.");
         if (capability == Identity)
             throw new InvalidOperationException("Cannot access fields via `id`.");
 
-        if (capability.IsConstant)
+        if (capability == Constant)
             // Constant is contagious
             return Constant;
 
@@ -182,7 +185,6 @@ public sealed class ReferenceCapability
     /// logically distinct.</remarks>
     public ReferenceCapability WhenAliased()
         => this == Isolated ? Mutable : this;
-
 
     /// <summary>
     /// The reference capability of an alias to this type.
@@ -207,13 +209,7 @@ public sealed class ReferenceCapability
 #pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
         => throw new NotSupportedException();
 
-    public string ToILString() => name;
+    public string ToILString() => ilName;
 
-    public string ToSourceString()
-    {
-        if (this == ReadOnly) return "⧼read-only⧽";
-        if (this == InitMutable) return "⧼init⧽ mut";
-        if (this == InitReadOnly) return "⧼init⧽ ⧼read-only⧽";
-        return name;
-    }
+    public string ToSourceString() => sourceCodeName;
 }

@@ -1193,7 +1193,7 @@ public class BasicBodyAnalyzer
                 var member = exp.Member;
                 switch (contextResult.Type)
                 {
-                    case ReferenceType { AllowsWrite: false, IsInitReference: false } contextReferenceType:
+                    case ReferenceType { AllowsWrite: false, AllowsInit: false } contextReferenceType:
                         diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(file, expression.Span, contextReferenceType));
                         goto default;
                     case UnknownType:

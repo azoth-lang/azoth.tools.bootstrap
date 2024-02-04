@@ -150,7 +150,7 @@ public class BasicAnalyzer
         var inConstClass = method.DeclaringType.Symbol.Result.DeclaresType.IsConstType;
         var selfParameterType = symbol.SelfParameterType;
         var selfCapability = ((ReferenceType)selfParameterType.Type).Capability;
-        if (inConstClass && !(selfCapability.IsConstant || selfCapability == ReferenceCapability.Identity))
+        if (inConstClass && !(selfCapability == ReferenceCapability.Constant || selfCapability == ReferenceCapability.Identity))
             diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(method.File, method.SelfParameter));
 
         ResolveBody(method);
