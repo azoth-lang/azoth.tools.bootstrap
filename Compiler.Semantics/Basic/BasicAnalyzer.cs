@@ -114,7 +114,7 @@ public class BasicAnalyzer
         if (!func.Attributes.Any())
             return;
 
-        var typeResolver = new TypeResolver(func.File, diagnostics);
+        var typeResolver = new TypeResolver(func.File, diagnostics, selfType: null);
         foreach (var attribute in func.Attributes)
         {
             _ = typeResolver.EvaluateAttribute(attribute.TypeName);

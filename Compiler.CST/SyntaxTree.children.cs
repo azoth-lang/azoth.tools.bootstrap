@@ -144,6 +144,13 @@ public static class ISyntaxExtensions
             case IReturnTypeSyntax n:
                 yield return n.Referent;
                 yield break;
+            case ICapabilityViewpointTypeSyntax n:
+                yield return n.Capability;
+                yield return n.Referent;
+                yield break;
+            case ISelfViewpointTypeSyntax n:
+                yield return n.Referent;
+                yield break;
             case IResultStatementSyntax n:
                 yield return n.Expression;
                 yield break;

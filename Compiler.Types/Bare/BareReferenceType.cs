@@ -55,6 +55,10 @@ public abstract class BareReferenceType : IEquatable<BareReferenceType>
     public DataType ReplaceTypeParametersIn(DataType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
+    public abstract BareReferenceType AccessedVia(ReferenceCapability capability);
+
+    public abstract ReferenceType With(ReferenceCapability capability);
+
     #region Equality
     public abstract bool Equals(BareReferenceType? other);
 

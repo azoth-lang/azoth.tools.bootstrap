@@ -37,5 +37,8 @@ public sealed class AnyType : ReferenceType
     #endregion
 
     public override AnyType With(ReferenceCapability referenceCapability)
-        => new(referenceCapability);
+    {
+        if (referenceCapability == Capability) return this;
+        return new(referenceCapability);
+    }
 }

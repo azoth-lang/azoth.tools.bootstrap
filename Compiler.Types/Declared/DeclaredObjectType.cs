@@ -196,9 +196,8 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
 
     public void ToString(StringBuilder builder)
     {
-        builder.Append('<');
         builder.Append(ContainingPackage);
-        builder.Append(">::");
+        builder.Append("::.");
         builder.Append(ContainingNamespace);
         if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
         builder.Append(Name.ToBareString());

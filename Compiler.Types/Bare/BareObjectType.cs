@@ -25,6 +25,19 @@ public sealed class BareObjectType : BareReferenceType
         DeclaredType = declaredType;
     }
 
+    public override BareObjectType AccessedVia(ReferenceCapability capability)
+    {
+        if (DeclaredType.GenericParameters.All(p => p.Variance != Variance.Independent))
+            return this;
+        var newTypeArguments = DeclaredType.GenericParameters
+            .Zip(TypeArguments, (p, arg) => p.Variance == Variance.Independent ? arg.AccessedVia(capability) : arg)
+            .ToFixedList();
+        return Create(DeclaredType, newTypeArguments);
+    }
+
+    public override ObjectType With(ReferenceCapability capability)
+        => ObjectType.Create(capability, this);
+
     #region Equality
     public override bool Equals(BareReferenceType? other)
     {

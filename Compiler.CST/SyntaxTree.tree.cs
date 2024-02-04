@@ -348,7 +348,8 @@ public partial interface IExpressionBodySyntax : IBodySyntax
     typeof(ITypeNameSyntax),
     typeof(IOptionalTypeSyntax),
     typeof(ICapabilityTypeSyntax),
-    typeof(IFunctionTypeSyntax))]
+    typeof(IFunctionTypeSyntax),
+    typeof(IViewpointTypeSyntax))]
 public partial interface ITypeSyntax : ISyntax
 {
 }
@@ -404,6 +405,24 @@ public partial interface IReturnTypeSyntax : ISyntax
 {
     bool IsLent { get; }
     ITypeSyntax Referent { get; }
+}
+
+[Closed(
+    typeof(ICapabilityViewpointTypeSyntax),
+    typeof(ISelfViewpointTypeSyntax))]
+public partial interface IViewpointTypeSyntax : ITypeSyntax
+{
+    ITypeSyntax Referent { get; }
+}
+
+public partial interface ICapabilityViewpointTypeSyntax : IViewpointTypeSyntax
+{
+    IReferenceCapabilitySyntax Capability { get; }
+}
+
+public partial interface ISelfViewpointTypeSyntax : IViewpointTypeSyntax
+{
+    Promise<SelfParameterSymbol?> ReferencedSymbol { get; }
 }
 
 [Closed(

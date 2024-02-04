@@ -57,11 +57,7 @@ internal sealed class TypeReplacements
                 break;
             }
             case GenericParameterType genericParameterType:
-            {
-                if (replacements.TryGetValue(genericParameterType, out var replacementType))
-                    return replacementType;
-                break;
-            }
+                return ReplaceTypeParametersIn(genericParameterType);
             case FunctionType functionType:
             {
                 var replacementParameterTypes = ReplaceTypeParametersIn(functionType.ParameterTypes);
@@ -69,6 +65,17 @@ internal sealed class TypeReplacements
                 if (!ReferenceEquals(functionType.ParameterTypes, replacementParameterTypes)
                     || !functionType.ReturnType.ReferenceEquals(replacementReturnType))
                     return new FunctionType(replacementParameterTypes, replacementReturnType);
+                break;
+            }
+            case CapabilityViewpointType capabilityViewpointType:
+            {
+                var replacementType = ReplaceTypeParametersIn(capabilityViewpointType.Referent);
+                if (!ReferenceEquals(capabilityViewpointType.Referent, replacementType))
+                    if (replacementType is GenericParameterType genericParameterType)
+                        return new CapabilityViewpointType(capabilityViewpointType.Capability, genericParameterType);
+                    else
+                        return replacementType.AccessedVia(capabilityViewpointType.Capability);
+
                 break;
             }
             case AnyType _:
@@ -80,6 +87,13 @@ internal sealed class TypeReplacements
                 throw ExhaustiveMatch.Failed(type);
         }
 
+        return type;
+    }
+
+    public DataType ReplaceTypeParametersIn(GenericParameterType type)
+    {
+        if (replacements.TryGetValue(type, out var replacementType))
+            return replacementType;
         return type;
     }
 
@@ -96,9 +110,10 @@ internal sealed class TypeReplacements
     public BareObjectType ReplaceTypeParametersIn(BareObjectType type)
     {
         var replacementTypes = ReplaceTypeParametersIn(type.TypeArguments);
-        if (!ReferenceEquals(type.TypeArguments, replacementTypes))
-            return BareObjectType.Create(type.DeclaredType, replacementTypes);
-        return type;
+        if (ReferenceEquals(type.TypeArguments, replacementTypes))
+            return type;
+
+        return BareObjectType.Create(type.DeclaredType, replacementTypes);
     }
 
     public ParameterType ReplaceTypeParametersIn(ParameterType type)

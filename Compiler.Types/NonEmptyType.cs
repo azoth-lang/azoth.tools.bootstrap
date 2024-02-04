@@ -10,6 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(ReferenceType),
     typeof(ValueType),
     typeof(GenericParameterType),
+    typeof(ViewpointType),
     typeof(FunctionType))]
 public abstract class NonEmptyType : DataType
 {

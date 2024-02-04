@@ -18,6 +18,9 @@ public sealed class BareAnyType : BareReferenceType
 
     public override DeclaredAnyType DeclaredType => DeclaredReferenceType.Any;
 
+    public override BareReferenceType AccessedVia(ReferenceCapability capability) => this;
+    public override ReferenceType With(ReferenceCapability capability) => new AnyType(capability);
+
     #region Equals
     public override bool Equals(BareReferenceType? other) => ReferenceEquals(this, other);
 

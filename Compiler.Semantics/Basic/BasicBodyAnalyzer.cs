@@ -51,7 +51,7 @@ public class BasicBodyAnalyzer
         ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         ReturnType returnType)
-        : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
+        : this(containingDeclaration, null, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
             symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, returnType)
     { }
     public BasicBodyAnalyzer(
@@ -62,7 +62,7 @@ public class BasicBodyAnalyzer
         ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         ReturnType returnType)
-        : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
+        : this(containingDeclaration, null, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
             symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, returnType)
     { }
 
@@ -74,7 +74,7 @@ public class BasicBodyAnalyzer
         ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         ReturnType returnType)
-        : this(containingDeclaration,
+        : this(containingDeclaration, containingDeclaration.SelfParameter.DataType.Result,
             containingDeclaration.Parameters.OfType<INamedParameterSyntax>()
                                  .Select(p => p.Symbol.Result)
                                  .Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
@@ -89,7 +89,8 @@ public class BasicBodyAnalyzer
         ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         ReturnType returnType)
-        : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result).Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
+        : this(containingDeclaration, containingDeclaration.SelfParameter.DataType.Result,
+            containingDeclaration.Parameters.Select(p => p.Symbol.Result).Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
             symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, returnType)
     { }
 
@@ -100,12 +101,13 @@ public class BasicBodyAnalyzer
         ObjectTypeSymbol? stringSymbol,
         ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics)
-        : this(containingDeclaration, Enumerable.Empty<BindingSymbol>(),
+        : this(containingDeclaration, null, Enumerable.Empty<BindingSymbol>(),
             symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, null)
     { }
 
     private BasicBodyAnalyzer(
         IEntityDeclarationSyntax containingDeclaration,
+        DataType? selfType,
         IEnumerable<BindingSymbol> parameterSymbols,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
@@ -122,7 +124,7 @@ public class BasicBodyAnalyzer
         this.diagnostics = diagnostics;
         this.symbolTrees = symbolTrees;
         this.returnType = returnType;
-        typeResolver = new TypeResolver(file, diagnostics);
+        typeResolver = new TypeResolver(file, diagnostics, selfType);
         parameterSharing = new ParameterSharingRelation(parameterSymbols);
     }
 

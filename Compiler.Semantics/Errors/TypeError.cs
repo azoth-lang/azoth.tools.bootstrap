@@ -139,4 +139,22 @@ public static class TypeError
         return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3019, $"Reference capabilities cannot be applied to type parameters `{typeSyntax.ToString()}`.");
     }
+
+    public static Diagnostic CapabilityViewpointNotAppliedToTypeParameter(CodeFile file, ICapabilityViewpointTypeSyntax typeSyntax)
+    {
+        return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+            3020, $"Reference capabilities viewpoint must be applied to type parameter `{typeSyntax.ToString()}`.");
+    }
+
+    public static Diagnostic SelfViewpointNotAppliedToTypeParameter(CodeFile file, ISelfViewpointTypeSyntax typeSyntax)
+    {
+        return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+            3021, $"Self viewpoint must be applied to type parameter `{typeSyntax.ToString()}`.");
+    }
+
+    public static Diagnostic SelfViewpointNotAvailable(CodeFile file, ISelfViewpointTypeSyntax typeSyntax)
+    {
+        return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+            3022, $"Self viewpoint not available `{typeSyntax.ToString()}`.");
+    }
 }

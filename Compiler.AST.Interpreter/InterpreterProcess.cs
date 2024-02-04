@@ -543,6 +543,7 @@ public class InterpreterProcess
                     case OptionalType _:
                     case GenericParameterType _:
                     case FunctionType _:
+                    case ViewpointType _:
                         throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
                     case ReferenceType _:
                         var vtable = self.ObjectValue.VTable;

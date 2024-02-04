@@ -4,10 +4,10 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 /// <summary>
-/// A symbol a package
+/// A symbol for a package.
 /// </summary>
 /// <remarks>
-/// A package alias has no affect on the symbol. It is still the same package.
+/// A package alias has no effect on the symbol. It is still the same package.
 /// </remarks>
 public class PackageSymbol : NamespaceOrPackageSymbol
 {
@@ -27,5 +27,5 @@ public class PackageSymbol : NamespaceOrPackageSymbol
 
     public override int GetHashCode() => HashCode.Combine(Name);
 
-    public override string ToILString() => $"<{Name}>::";
+    public override string ToILString() => $"{Name}::.";
 }

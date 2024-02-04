@@ -93,7 +93,18 @@ public abstract class DataType : IEquatable<DataType>
     /// Return the type for when a value of this type is accessed via a type of the given value.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
-    public virtual DataType AccessedVia(DataType contextType) => this;
+    public DataType AccessedVia(DataType contextType)
+    {
+        if (contextType is ReferenceType contextReferenceType)
+            return AccessedVia(contextReferenceType.Capability);
+        return this;
+    }
+
+    /// <summary>
+    /// Return the type for when a value of this type is accessed via a reference with the given capability.
+    /// </summary>
+    /// <remarks>This can restrict the ability to write to the value.</remarks>
+    public virtual DataType AccessedVia(ReferenceCapability capability) => this;
 
     [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member

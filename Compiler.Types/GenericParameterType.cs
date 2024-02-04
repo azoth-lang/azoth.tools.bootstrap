@@ -29,6 +29,13 @@ public sealed class GenericParameterType : NonEmptyType
         Parameter = parameter;
     }
 
+    public override DataType AccessedVia(ReferenceCapability capability)
+    {
+        // Independent type parameters are not affected by the capability
+        if (Parameter.Variance == Variance.Independent) return this;
+        return new CapabilityViewpointType(capability, this);
+    }
+
     #region Equals
     public override bool Equals(DataType? other)
     {
@@ -48,7 +55,7 @@ public sealed class GenericParameterType : NonEmptyType
     }
     #endregion
 
-    public override string ToSourceCodeString() => $"{DeclaringTypePromise}.{Parameter}";
+    public override string ToSourceCodeString() => $"{DeclaringTypePromise}.{Parameter.Name}";
 
-    public override string ToILString() => $"{DeclaringTypePromise}.{Parameter}";
+    public override string ToILString() => $"{DeclaringTypePromise}.{Parameter.Name}";
 }

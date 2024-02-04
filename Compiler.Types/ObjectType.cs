@@ -62,7 +62,10 @@ public sealed class ObjectType : ReferenceType
     }
 
     public override ObjectType With(ReferenceCapability referenceCapability)
-        => new(referenceCapability, BareType);
+    {
+        if (referenceCapability == Capability) return this;
+        return new(referenceCapability, BareType);
+    }
 
     /// <remarks>For constant types, there can still be read only references. For example, inside
     /// the constructor.</remarks>

@@ -8,7 +8,6 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -21,18 +20,25 @@ public class TypeResolver
 {
     private readonly CodeFile file;
     private readonly Diagnostics diagnostics;
+    private readonly DataType? selfType;
     private readonly ITypeSymbolBuilder? typeSymbolBuilder;
 
-    public TypeResolver(CodeFile file, Diagnostics diagnostics)
+    public TypeResolver(CodeFile file, Diagnostics diagnostics, DataType? selfType)
     {
         this.file = file;
         this.diagnostics = diagnostics;
+        this.selfType = selfType;
     }
 
-    public TypeResolver(CodeFile file, Diagnostics diagnostics, ITypeSymbolBuilder typeSymbolBuilder)
+    public TypeResolver(
+        CodeFile file,
+        Diagnostics diagnostics,
+        DataType? selfType,
+        ITypeSymbolBuilder typeSymbolBuilder)
     {
         this.file = file;
         this.diagnostics = diagnostics;
+        this.selfType = selfType;
         this.typeSymbolBuilder = typeSymbolBuilder;
     }
 
@@ -70,6 +76,31 @@ public class TypeResolver
                 var returnType = Evaluate(syn.Return);
                 return syn.NamedType = new FunctionType(parameterTypes, returnType);
             }
+            case ICapabilityViewpointTypeSyntax syn:
+            {
+                var capability = syn.Capability.Declared.ToReferenceCapability();
+                var type = Evaluate(syn.Referent);
+                if (type is GenericParameterType genericParameterType)
+                    return syn.NamedType = new CapabilityViewpointType(capability, genericParameterType);
+
+                diagnostics.Add(TypeError.CapabilityViewpointNotAppliedToTypeParameter(file, syn));
+                return syn.NamedType = type;
+            }
+            case ISelfViewpointTypeSyntax syn:
+            {
+                var type = Evaluate(syn.Referent);
+                if (selfType is ReferenceType { Capability: var capability }
+                        && type is GenericParameterType genericParameterType)
+                    return syn.NamedType = new CapabilityViewpointType(capability, genericParameterType);
+
+                if (selfType is not ReferenceType)
+                    diagnostics.Add(TypeError.SelfViewpointNotAvailable(file, syn));
+
+                if (type is not GenericParameterType)
+                    diagnostics.Add(TypeError.SelfViewpointNotAppliedToTypeParameter(file, syn));
+
+                return syn.NamedType = type;
+            }
         }
 
         static DataType CreateType(TypeSymbol symbol, FixedList<DataType> typeArguments)
@@ -101,6 +132,7 @@ public class TypeResolver
             case ICapabilityTypeSyntax _:
             case IOptionalTypeSyntax _:
             case IFunctionTypeSyntax _:
+            case IViewpointTypeSyntax _:
                 throw new NotImplementedException("Report error about incorrect type expression.");
         }
     }
@@ -216,42 +248,5 @@ public class TypeResolver
         if (typeSymbolBuilder is null)
             throw new InvalidOperationException("All type symbols should already be built");
         return typeSymbolBuilder.Build(promise);
-    }
-
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-    public ObjectType EvaluateMethodSelfParameterType(
-        DeclaredObjectType objectType,
-        IReferenceCapabilitySyntax capability,
-        FixedList<DataType> typeArguments)
-        => objectType.With(capability.Declared.ToReferenceCapability(), typeArguments);
-
-    public ObjectType EvaluateConstructorSelfParameterType(
-        DeclaredObjectType objectType,
-        IReferenceCapabilitySyntax capability,
-        FixedList<DataType> typeArguments)
-    {
-        ReferenceCapability referenceCapability;
-        switch (capability.Declared)
-        {
-            case DeclaredReferenceCapability.ReadOnly:
-                referenceCapability = ReferenceCapability.InitReadOnly;
-                break;
-            case DeclaredReferenceCapability.Mutable:
-                referenceCapability = ReferenceCapability.InitMutable;
-                break;
-            case DeclaredReferenceCapability.Isolated:
-                diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, capability));
-                referenceCapability = ReferenceCapability.InitMutable;
-                break;
-            case DeclaredReferenceCapability.Constant:
-            case DeclaredReferenceCapability.Identity:
-                diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, capability));
-                referenceCapability = ReferenceCapability.InitReadOnly;
-                break;
-            default:
-                throw ExhaustiveMatch.Failed(capability.Declared);
-        }
-
-        return objectType.With(referenceCapability, typeArguments);
     }
 }

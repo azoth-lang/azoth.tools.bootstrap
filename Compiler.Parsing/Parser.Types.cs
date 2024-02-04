@@ -11,22 +11,38 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
 public partial class Parser
 {
-    public ITypeSyntax? AcceptType()
+    private ITypeSyntax? AcceptType()
     {
         return Tokens.Current switch
         {
-            ICapabilityToken or IIdentifierToken or IPrimitiveTypeToken or IOpenParenToken => ParseType(),
+            ICapabilityToken or IIdentifierToken or IPrimitiveTypeToken or IOpenParenToken
+                or ISelfKeywordToken => ParseType(),
             _ => null
         };
     }
 
-    public ITypeSyntax ParseType()
+    private ITypeSyntax ParseType()
     {
+        if (Tokens.Current is ISelfKeywordToken)
+            return ParseSelfViewpointType();
         var capability = ParseReferenceCapability();
+        if (capability is not null && Tokens.Current is IRightTriangleToken)
+            return ParseTypeWithCapabilityViewpoint(capability);
+
         return ParseTypeWithCapability(capability);
     }
 
-    public IReferenceCapabilitySyntax? ParseReferenceCapability()
+    private ITypeSyntax ParseSelfViewpointType()
+    {
+        var self = Tokens.Consume<ISelfKeywordToken>();
+        _ = Tokens.Required<IRightTriangleToken>();
+        var type = ParseBareType();
+        var span = TextSpan.Covering(self, type.Span);
+        type = new SelfViewpointTypeSyntax(span, type);
+        return ParseOptionalType(type);
+    }
+
+    private IReferenceCapabilitySyntax? ParseReferenceCapability()
     {
         switch (Tokens.Current)
         {
@@ -56,15 +72,26 @@ public partial class Parser
         }
     }
 
-    public ITypeSyntax ParseTypeWithCapability(IReferenceCapabilitySyntax? capability)
+    private ITypeSyntax ParseTypeWithCapability(IReferenceCapabilitySyntax? capability)
     {
         var type = ParseBareType();
         if (capability is not null)
-        {
-            var span = TextSpan.Covering(capability.Span, type.Span);
-            type = new CapabilityTypeSyntax(capability, type, span);
-        }
+            type = new CapabilityTypeSyntax(capability, type);
 
+        return ParseOptionalType(type);
+    }
+
+    private ITypeSyntax ParseTypeWithCapabilityViewpoint(IReferenceCapabilitySyntax capability)
+    {
+        _ = Tokens.Consume<IRightTriangleToken>();
+        var type = ParseBareType();
+        type = new CapabilityViewpointTypeSyntax(capability, type);
+
+        return ParseOptionalType(type);
+    }
+
+    private ITypeSyntax ParseOptionalType(ITypeSyntax type)
+    {
         while (TryParseOptionalType(ref type))
         {
             // Work is done by TryParseOptionalType
@@ -73,7 +100,7 @@ public partial class Parser
         return type;
     }
 
-    public bool TryParseOptionalType(ref ITypeSyntax type)
+    private bool TryParseOptionalType(ref ITypeSyntax type)
     {
         switch (Tokens.Current)
         {

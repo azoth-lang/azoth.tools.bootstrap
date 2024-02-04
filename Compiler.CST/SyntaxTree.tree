@@ -90,6 +90,9 @@ ReferenceCapability = Tokens:'ICapabilityToken'* Declared:'DeclaredReferenceCapa
 FunctionType: Type = Parameters:ParameterType* Return:ReturnType;
 ParameterType = IsLent:'bool' Referent:Type;
 ReturnType = IsLent:'bool' Referent:Type;
+ViewpointType: Type = Referent:Type;
+CapabilityViewpointType: ViewpointType = Capability:ReferenceCapability Referent:Type;
+SelfViewpointType: ViewpointType = ReferencedSymbol:'Promise<SelfParameterSymbol?>' Referent:Type;
 
 // ---------- Statements
 Statement;

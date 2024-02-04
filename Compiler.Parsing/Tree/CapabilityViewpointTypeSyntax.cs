@@ -3,19 +3,17 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class CapabilityTypeSyntax : TypeSyntax, ICapabilityTypeSyntax
+internal class CapabilityViewpointTypeSyntax : TypeSyntax, ICapabilityViewpointTypeSyntax
 {
     public IReferenceCapabilitySyntax Capability { get; }
     public ITypeSyntax Referent { get; }
 
-    public CapabilityTypeSyntax(
-        IReferenceCapabilitySyntax capability,
-        ITypeSyntax referent)
+    public CapabilityViewpointTypeSyntax(IReferenceCapabilitySyntax capability, ITypeSyntax referent)
         : base(TextSpan.Covering(capability.Span, referent.Span))
     {
         Capability = capability;
         Referent = referent;
     }
 
-    public override string ToString() => $"{Capability} {Referent}";
+    public override string ToString() => $"{Capability}|>{Referent}";
 }

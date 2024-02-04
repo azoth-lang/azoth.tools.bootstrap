@@ -89,8 +89,8 @@ public class EntitySymbolBuilder
         method.Symbol.BeginFulfilling();
         var declaringTypeSymbol = method.DeclaringType.Symbol.Result;
         var file = method.File;
-        var resolver = new TypeResolver(file, diagnostics);
-        var selfParameterType = ResolveMethodSelfParameterType(resolver, file, method.SelfParameter, method.DeclaringType);
+        var selfParameterType = ResolveMethodSelfParameterType(file, method.SelfParameter, method.DeclaringType);
+        var resolver = new TypeResolver(file, diagnostics, selfParameterType.Type);
         var parameterTypes = ResolveParameterTypes(resolver, method.Parameters, method.DeclaringType);
         var returnType = ResolveReturnType(resolver, file, method.Return);
         var symbol = new MethodSymbol(declaringTypeSymbol, method.Name, selfParameterType, parameterTypes, returnType);
@@ -104,8 +104,8 @@ public class EntitySymbolBuilder
     {
         constructor.Symbol.BeginFulfilling();
         var file = constructor.File;
-        var resolver = new TypeResolver(file, diagnostics);
-        var selfParameterType = ResolveConstructorSelfParameterType(resolver, constructor.SelfParameter, constructor.DeclaringType);
+        var selfParameterType = ResolveConstructorSelfParameterType(constructor.SelfParameter, constructor.DeclaringType);
+        var resolver = new TypeResolver(file, diagnostics, selfParameterType);
         var parameterTypes = ResolveParameterTypes(resolver, constructor.Parameters, constructor.DeclaringType);
 
         var declaringClassSymbol = constructor.DeclaringType.Symbol.Result;
@@ -120,7 +120,7 @@ public class EntitySymbolBuilder
     {
         associatedFunction.Symbol.BeginFulfilling();
         var file = associatedFunction.File;
-        var resolver = new TypeResolver(file, diagnostics);
+        var resolver = new TypeResolver(file, diagnostics, selfType: null);
         var parameterTypes = ResolveParameterTypes(resolver, associatedFunction.Parameters);
         var returnType = ResolveReturnType(resolver, file, associatedFunction.Return);
         var type = new FunctionType(parameterTypes, returnType);
@@ -137,7 +137,7 @@ public class EntitySymbolBuilder
             return field.Symbol.Result;
 
         field.Symbol.BeginFulfilling();
-        var resolver = new TypeResolver(field.File, diagnostics);
+        var resolver = new TypeResolver(field.File, diagnostics, selfType: null);
         var type = resolver.Evaluate(field.Type);
         var symbol = new FieldSymbol(field.DeclaringType.Symbol.Result, field.Name, field.IsMutableBinding, type);
         field.Symbol.Fulfill(symbol);
@@ -149,7 +149,7 @@ public class EntitySymbolBuilder
     {
         function.Symbol.BeginFulfilling();
         var file = function.File;
-        var resolver = new TypeResolver(file, diagnostics);
+        var resolver = new TypeResolver(file, diagnostics, selfType: null);
         var parameterTypes = ResolveParameterTypes(resolver, function.Parameters);
         var returnType = ResolveReturnType(resolver, file, function.Return);
         var type = new FunctionType(parameterTypes, returnType);
@@ -273,7 +273,7 @@ public class EntitySymbolBuilder
         // Everything has `Any` as a supertype
         yield return BareReferenceType.Any;
 
-        var resolver = new TypeResolver(syn.File, diagnostics, typeDeclarations);
+        var resolver = new TypeResolver(syn.File, diagnostics, selfType: null, typeDeclarations);
         if (syn is IClassDeclarationSyntax { BaseTypeName: not null and var baseTypeName })
         {
             var baseType = resolver.EvaluateBareType(baseTypeName);
@@ -392,22 +392,22 @@ public class EntitySymbolBuilder
         }
     }
 
-    private static ObjectType ResolveConstructorSelfParameterType(
-        TypeResolver resolver,
+    private ObjectType ResolveConstructorSelfParameterType(
         ISelfParameterSyntax selfParameter,
         IClassDeclarationSyntax declaringClass)
     {
         var declaredType = declaringClass.Symbol.Result.DeclaresType;
+        var resolver = new SelfTypeResolver(declaringClass.File, diagnostics);
         return resolver.EvaluateConstructorSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterDataTypes);
     }
 
     private ParameterType ResolveMethodSelfParameterType(
-        TypeResolver resolver,
         CodeFile file,
         ISelfParameterSyntax selfParameter,
         ITypeDeclarationSyntax declaringType)
     {
         var declaredType = declaringType.Symbol.Result.DeclaresType;
+        var resolver = new SelfTypeResolver(declaringType.File, diagnostics);
         var selfType = resolver.EvaluateMethodSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterDataTypes);
         bool isLent = selfParameter.IsLentBinding;
         if (isLent && selfType is ReferenceType { IsIdentityReference: true })
