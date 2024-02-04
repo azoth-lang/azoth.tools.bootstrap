@@ -528,10 +528,12 @@ internal class ASTBuilder
             case ConversionKind.Recover:
                 return new RecoverIsolationExpression(expression.Span, (ReferenceType)convertToType, semantics, expression);
             case ConversionKind.Implicit:
-                var referencedSymbol = ((IVariableNameExpression)expression).ReferencedSymbol;
-                return new MoveExpression(expression.Span, (ReferenceType)convertToType, semantics, referencedSymbol, expression);
+                var variableNameExpression = (IVariableNameExpression)expression;
+                var referencedSymbol = variableNameExpression.ReferencedSymbol;
+                return new MoveExpression(expression.Span, (ReferenceType)convertToType, semantics, referencedSymbol,
+                    variableNameExpression);
             case ConversionKind.Temporary:
-                throw new NotImplementedException();
+                return new TempMoveExpression(expression.Span, (ReferenceType)convertToType, semantics, expression);
             default:
                 throw ExhaustiveMatch.Failed(conversion.Kind);
         }
@@ -547,11 +549,12 @@ internal class ASTBuilder
             case ConversionKind.Recover:
                 return new RecoverConstExpression(expression.Span, (ReferenceType)convertToType, semantics, expression);
             case ConversionKind.Implicit:
+                var variableNameExpression = (IVariableNameExpression)expression;
                 var referencedSymbol = ((IVariableNameExpression)expression).ReferencedSymbol;
                 return new FreezeExpression(expression.Span, (ReferenceType)convertToType, semantics, referencedSymbol,
-                    expression);
+                    variableNameExpression);
             case ConversionKind.Temporary:
-                throw new NotImplementedException();
+                return new TempFreezeExpression(expression.Span, (ReferenceType)convertToType, semantics, expression);
             default:
                 throw ExhaustiveMatch.Failed(conversion.Kind);
         }

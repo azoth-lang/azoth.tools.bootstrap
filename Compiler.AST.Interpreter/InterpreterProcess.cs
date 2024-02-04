@@ -327,7 +327,11 @@ public class InterpreterProcess
                 return await ExecuteAsync(exp.Referent, variables);
             case IMoveExpression exp:
                 return await ExecuteAsync(exp.Referent, variables);
+            case ITempMoveExpression exp:
+                return await ExecuteAsync(exp.Referent, variables);
             case IFreezeExpression exp:
+                return await ExecuteAsync(exp.Referent, variables);
+            case ITempFreezeExpression exp:
                 return await ExecuteAsync(exp.Referent, variables);
             case INoneLiteralExpression _:
                 return AzothValue.None;
@@ -570,9 +574,6 @@ public class InterpreterProcess
                 var @class = classes[objectTypeSymbol];
                 return await ConstructClass(@class, constructorSymbol, arguments);
             }
-            case IShareExpression exp:
-                // TODO do share expressions make sense in Azoth?
-                return await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
             case ISelfExpression exp:
                 return variables[exp.ReferencedSymbol];
             case IImplicitOptionalConversionExpression exp:

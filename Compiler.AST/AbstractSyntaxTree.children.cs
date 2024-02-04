@@ -191,10 +191,13 @@ public static class IAbstractSyntaxExtensions
             case IMoveExpression n:
                 yield return n.Referent;
                 yield break;
+            case ITempMoveExpression n:
+                yield return n.Referent;
+                yield break;
             case IFreezeExpression n:
                 yield return n.Referent;
                 yield break;
-            case IShareExpression n:
+            case ITempFreezeExpression n:
                 yield return n.Referent;
                 yield break;
             case IIdExpression n:

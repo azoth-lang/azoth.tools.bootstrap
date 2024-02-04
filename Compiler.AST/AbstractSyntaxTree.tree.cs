@@ -339,8 +339,9 @@ public partial interface IOptionalPattern : IPattern
     typeof(IInvocationExpression),
     typeof(ISelfExpression),
     typeof(IMoveExpression),
+    typeof(ITempMoveExpression),
     typeof(IFreezeExpression),
-    typeof(IShareExpression),
+    typeof(ITempFreezeExpression),
     typeof(IIdExpression),
     typeof(IRecoverExpression),
     typeof(IAsyncBlockExpression),
@@ -565,15 +566,19 @@ public partial interface IMoveExpression : IExpression
     IExpression Referent { get; }
 }
 
+public partial interface ITempMoveExpression : IExpression
+{
+    IExpression Referent { get; }
+}
+
 public partial interface IFreezeExpression : IExpression
 {
     BindingSymbol ReferencedSymbol { get; }
     IExpression Referent { get; }
 }
 
-public partial interface IShareExpression : IExpression
+public partial interface ITempFreezeExpression : IExpression
 {
-    BindingSymbol ReferencedSymbol { get; }
     IExpression Referent { get; }
 }
 

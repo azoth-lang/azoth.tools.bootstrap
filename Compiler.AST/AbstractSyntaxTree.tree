@@ -129,9 +129,12 @@ FunctionReferenceInvocationExpression: InvocationExpression = Referent:Expressio
 VariableNameExpression: AssignableExpression, NameExpression = ReferencedSymbol:'NamedBindingSymbol' VariableIsLiveAfter:'Promise<bool>';
 SelfExpression: Expression = ReferencedSymbol:'SelfParameterSymbol' IsImplicit:'bool';
 FieldAccessExpression: AssignableExpression = Context:Expression AccessOperator:'AccessOperator' ReferencedSymbol:'FieldSymbol';
+
+// ---------- Capability Expressions
 MoveExpression: Expression = ReferencedSymbol:'BindingSymbol' Referent:Expression;
+TempMoveExpression: Expression = Referent:Expression;
 FreezeExpression: Expression = ReferencedSymbol:'BindingSymbol' Referent:Expression;
-ShareExpression: Expression = ReferencedSymbol:'BindingSymbol' Referent:Expression;
+TempFreezeExpression: Expression = Referent:Expression;
 IdExpression: Expression = Referent:Expression;
 
 // ---------- Recover Expressions
