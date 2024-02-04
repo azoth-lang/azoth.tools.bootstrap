@@ -37,8 +37,8 @@ public sealed class ParameterSharingRelation
             if (parameterSymbol.DataType is not ReferenceType { Capability: var capability }) continue;
 
             // These capabilities don't have to worry about external references
-            if (capability == ReferenceCapability.Isolated || capability == ReferenceCapability.Constant
-                                                           || capability == ReferenceCapability.Identity)
+            if (capability == ReferenceCapability.Isolated || capability == ReferenceCapability.TemporarilyIsolated
+                || capability == ReferenceCapability.Constant || capability == ReferenceCapability.Identity)
                 continue;
 
             // Create external references so that they can't be frozen or moved

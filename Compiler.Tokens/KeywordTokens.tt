@@ -99,6 +99,7 @@
         "Await",
         "Out",
         "Independent",
+        "Temp",
     }.AsReadOnly();
 #>
 using System;

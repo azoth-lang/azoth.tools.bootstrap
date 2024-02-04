@@ -5,16 +5,16 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 /// <summary>
-/// This is the type of integer constants, it isn't possible to declare a
+/// This is the type of integer value literals, it isn't possible to declare a
 /// variable to have this type.
 /// </summary>
-public sealed class IntegerConstantType : IntegerType
+public sealed class IntegerValueType : IntegerType
 {
-    public override bool IsTypeOfConstant => true;
+    public override bool IsTypeOfValue => true;
     public BigInteger Value { get; }
     public override bool IsFullyKnown => true;
 
-    public IntegerConstantType(BigInteger value)
+    public IntegerValueType(BigInteger value)
         : base(SpecialTypeName.ConstInt, value < BigInteger.Zero)
     {
         Value = value;
@@ -23,21 +23,21 @@ public sealed class IntegerConstantType : IntegerType
     public bool IsUInt16 => Value >= UInt16.MinValue && Value <= UInt16.MaxValue;
     public bool IsInt16 => Value >= Int16.MinValue && Value <= Int16.MaxValue;
 
-    public IntegerConstantType Add(IntegerConstantType right) => new(Value + right.Value);
-    public IntegerConstantType Subtract(IntegerConstantType right) => new(Value - right.Value);
-    public IntegerConstantType Multiply(IntegerConstantType right) => new(Value * right.Value);
-    public IntegerConstantType DivideBy(IntegerConstantType right) => new(Value / right.Value);
-    public IntegerConstantType Negate() => new(-Value);
-    public BoolConstantType Equals(IntegerConstantType right) => Value == right.Value;
-    public BoolConstantType NotEquals(IntegerConstantType right) => Value != right.Value;
-    public BoolConstantType LessThan(IntegerConstantType right) => Value < right.Value;
-    public BoolConstantType LessThanOrEqual(IntegerConstantType right) => Value <= right.Value;
-    public BoolConstantType GreaterThan(IntegerConstantType right) => Value > right.Value;
-    public BoolConstantType GreaterThanOrEqual(IntegerConstantType right) => Value >= right.Value;
+    public IntegerValueType Add(IntegerValueType right) => new(Value + right.Value);
+    public IntegerValueType Subtract(IntegerValueType right) => new(Value - right.Value);
+    public IntegerValueType Multiply(IntegerValueType right) => new(Value * right.Value);
+    public IntegerValueType DivideBy(IntegerValueType right) => new(Value / right.Value);
+    public IntegerValueType Negate() => new(-Value);
+    public BoolValueType Equals(IntegerValueType right) => Value == right.Value;
+    public BoolValueType NotEquals(IntegerValueType right) => Value != right.Value;
+    public BoolValueType LessThan(IntegerValueType right) => Value < right.Value;
+    public BoolValueType LessThanOrEqual(IntegerValueType right) => Value <= right.Value;
+    public BoolValueType GreaterThan(IntegerValueType right) => Value > right.Value;
+    public BoolValueType GreaterThanOrEqual(IntegerValueType right) => Value >= right.Value;
 
     /// <summary>
     /// The default non-constant type to places values of this type in. For
-    /// <see cref="IntegerConstantType"/>, that is <see cref="DataType.Int"/>.
+    /// <see cref="IntegerValueType"/>, that is <see cref="DataType.Int"/>.
     /// </summary>
     /// <remarks>It might be thought this should return the smallest integer type that contains
     /// the value. However, that would lead to unexpected behavior in some cases because small
@@ -61,7 +61,7 @@ public sealed class IntegerConstantType : IntegerType
     public IntegerType ToSmallestUnsignedIntegerType()
     {
         if (IsSigned)
-            throw new InvalidOperationException("Cannot convert signed constant to unsigned integer type.");
+            throw new InvalidOperationException("Cannot convert signed value type to unsigned type.");
         if (Value > Int64.MaxValue) return UInt;
         if (Value > Int32.MaxValue) return UInt64;
         if (Value > Int16.MaxValue) return UInt32;
@@ -74,7 +74,7 @@ public sealed class IntegerConstantType : IntegerType
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is IntegerConstantType otherType
+        return other is IntegerValueType otherType
                && Value == otherType.Value;
     }
 
@@ -82,7 +82,7 @@ public sealed class IntegerConstantType : IntegerType
     #endregion
 
     public override string ToSourceCodeString()
-        => throw new InvalidOperationException("Integer constant type has no source code representation");
+        => throw new InvalidOperationException("Integer value type has no source code representation");
 
-    public override string ToILString() => $"const[{Value}]";
+    public override string ToILString() => $"Value[{Value}]";
 }

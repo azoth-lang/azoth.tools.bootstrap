@@ -4,12 +4,12 @@ using Xunit;
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
 
 [Trait("Category", "Types")]
-public class IntegerConstantTypeTests
+public class IntegerValueTypeTests
 {
     [Fact]
     public void Is_integer_numeric_simple_value_type()
     {
-        var type = new IntegerConstantType(1);
+        var type = new IntegerValueType(1);
 
         Assert.OfType<IntegerType>(type);
         Assert.OfType<NumericType>(type);
@@ -20,15 +20,15 @@ public class IntegerConstantTypeTests
     [Fact]
     public void Is_constant()
     {
-        var type = new IntegerConstantType(1);
+        var type = new IntegerValueType(1);
 
-        Assert.True(type.IsTypeOfConstant);
+        Assert.True(type.IsTypeOfValue);
     }
 
     [Fact]
     public void Is_known_type()
     {
-        var type = new IntegerConstantType(1);
+        var type = new IntegerValueType(1);
 
         Assert.True(type.IsFullyKnown);
     }
@@ -36,7 +36,7 @@ public class IntegerConstantTypeTests
     [Fact]
     public void Is_not_empty_type()
     {
-        var type = new IntegerConstantType(1);
+        var type = new IntegerValueType(1);
 
         Assert.False(type.IsEmpty);
     }
@@ -44,7 +44,7 @@ public class IntegerConstantTypeTests
     [Fact]
     public void Has_copy_semantics()
     {
-        var type = new IntegerConstantType(1);
+        var type = new IntegerValueType(1);
 
         Assert.Equal(TypeSemantics.CopyValue, type.Semantics);
     }
@@ -58,7 +58,7 @@ public class IntegerConstantTypeTests
     [InlineData(234_324_234_325)]
     public void Has_integer_value(long value)
     {
-        var type = new IntegerConstantType(value);
+        var type = new IntegerValueType(value);
 
         Assert.Equal(value, type.Value);
     }
@@ -68,7 +68,7 @@ public class IntegerConstantTypeTests
     {
         // TODO larger values need to convert to larger integer types
 
-        var type = new IntegerConstantType(42);
+        var type = new IntegerValueType(42);
 
         var nonConstant = type.ToNonConstantType();
 
@@ -83,8 +83,8 @@ public class IntegerConstantTypeTests
     [InlineData(234234524)]
     public void Integer_constant_types_with_same_value_are_equal(int value)
     {
-        var type1 = new IntegerConstantType(value);
-        var type2 = new IntegerConstantType(value);
+        var type1 = new IntegerValueType(value);
+        var type2 = new IntegerValueType(value);
 
         Assert.Equal(type1, type2);
     }

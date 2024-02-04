@@ -1,3 +1,4 @@
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -65,6 +66,35 @@ public partial class Parser
             {
                 var idKeyword = Tokens.ConsumeToken<IIdKeywordToken>();
                 return new ReferenceCapabilitySyntax(idKeyword.Span, idKeyword.Yield(), Identity);
+            }
+            case ITempKeywordToken _:
+            {
+                var tempKeyword = Tokens.ConsumeToken<ITempKeywordToken>();
+                DeclaredReferenceCapability capability;
+                switch (Tokens.Current)
+                {
+                    case IIsolatedKeywordToken _:
+                        capability = TemporarilyIsolated;
+                        break;
+                    case IConstKeywordToken _:
+                        capability = TemporarilyConstant;
+                        break;
+                    case ICapabilityToken capabilityToken:
+                    {
+                        var errorSpan = TextSpan.Covering(tempKeyword.Span, capabilityToken.Span);
+                        Add(ParseError.InvalidTempCapability(File, errorSpan));
+                        return ParseReferenceCapability();
+                    }
+                    default:
+                        // Treat this as a read-only reference capability
+                        Add(ParseError.InvalidTempCapability(File, tempKeyword.Span));
+                        return new ReferenceCapabilitySyntax(tempKeyword.Span, Enumerable.Empty<ICapabilityToken>(), ReadOnly);
+                }
+
+                var capabilityKeyword = Tokens.ConsumeToken<ICapabilityToken>();
+                var span = TextSpan.Covering(tempKeyword.Span, capabilityKeyword.Span);
+                var tokens = tempKeyword.Yield<ICapabilityToken>().Append(capabilityKeyword);
+                return new ReferenceCapabilitySyntax(span, tokens, capability);
             }
             default:
                 // Could be a readable reference capability, or could be a value type

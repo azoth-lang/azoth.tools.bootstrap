@@ -9,7 +9,7 @@ internal static class Operations
 {
     public static AzothValue Convert(this AzothValue value, DataType from, NumericType to, bool isOptional)
     {
-        if (from is IntegerConstantType)
+        if (from is IntegerValueType)
         {
             if (to == DataType.Int) return AzothValue.Int(value.IntValue);
             if (to == DataType.UInt) return AzothValue.Int(value.IntValue);

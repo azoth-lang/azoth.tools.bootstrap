@@ -139,4 +139,9 @@ internal static class ParseError
             2020, "Unexpected end of pattern");
     }
 
+    public static Diagnostic InvalidTempCapability(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2021, "This reference capability does not support `temp`.");
+    }
 }

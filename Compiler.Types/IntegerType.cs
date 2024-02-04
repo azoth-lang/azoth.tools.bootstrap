@@ -4,7 +4,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 [Closed(
-    typeof(IntegerConstantType),
+    typeof(IntegerValueType),
     typeof(FixedSizeIntegerType),
     typeof(PointerSizedIntegerType),
     typeof(BigIntegerType))]

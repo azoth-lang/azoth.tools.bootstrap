@@ -136,10 +136,10 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
             switch (parameterType.Type)
             {
                 case ReferenceType when parameterType.IsLent:
-                case ReferenceType { IsConstReference: true }:
+                case ReferenceType { IsConstantReference: true }:
                 case ReferenceType { IsIsolatedReference: true }:
                 case OptionalType { Referent: ReferenceType } when parameterType.IsLent:
-                case OptionalType { Referent: ReferenceType { IsConstReference: true } }:
+                case OptionalType { Referent: ReferenceType { IsConstantReference: true } }:
                 case OptionalType { Referent: ReferenceType { IsIsolatedReference: true } }:
                 case SimpleType:
                 case EmptyType:

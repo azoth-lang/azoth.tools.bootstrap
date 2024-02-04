@@ -5,12 +5,12 @@ using Xunit;
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
 
 [Trait("Category", "Types")]
-public class BoolConstantTypeTests
+public class BoolValueTypeTests
 {
     [Fact]
     public void Is_a_boolean_type()
     {
-        var type = BoolConstantType.True;
+        var type = BoolValueType.True;
 
         Assert.OfType<BoolType>(type);
     }
@@ -18,15 +18,15 @@ public class BoolConstantTypeTests
     [Fact]
     public void Is_constant()
     {
-        var type = BoolConstantType.True;
+        var type = BoolValueType.True;
 
-        Assert.True(type.IsTypeOfConstant);
+        Assert.True(type.IsTypeOfValue);
     }
 
     [Fact]
     public void True_type_has_true_value()
     {
-        var type = BoolConstantType.True;
+        var type = BoolValueType.True;
 
         Assert.True(type.Value);
     }
@@ -34,7 +34,7 @@ public class BoolConstantTypeTests
     [Fact]
     public void False_type_has_false_value()
     {
-        var type = BoolConstantType.False;
+        var type = BoolValueType.False;
 
         Assert.False(type.Value);
     }
@@ -42,25 +42,25 @@ public class BoolConstantTypeTests
     [Fact]
     public void True_has_special_name_and_ToILString()
     {
-        var type = BoolConstantType.True;
+        var type = BoolValueType.True;
 
         Assert.Equal(SpecialTypeName.True, type.Name);
-        Assert.Equal("const[true]", type.ToILString());
+        Assert.Equal("Value[true]", type.ToILString());
     }
 
     [Fact]
     public void False_has_special_name_and_ToILString()
     {
-        var type = BoolConstantType.False;
+        var type = BoolValueType.False;
 
         Assert.Equal(SpecialTypeName.False, type.Name);
-        Assert.Equal("const[false]", type.ToILString());
+        Assert.Equal("Value[false]", type.ToILString());
     }
 
     [Fact]
     public void Converts_to_non_constant_bool_type()
     {
-        var type = BoolConstantType.False;
+        var type = BoolValueType.False;
 
         var nonConstant = type.ToNonConstantType();
 
@@ -70,13 +70,13 @@ public class BoolConstantTypeTests
     [Fact]
     public void Bool_constant_types_with_same_value_are_equal()
     {
-        Assert.Equal(BoolConstantType.True, BoolConstantType.True);
-        Assert.Equal(BoolConstantType.False, BoolConstantType.False);
+        Assert.Equal(BoolValueType.True, BoolValueType.True);
+        Assert.Equal(BoolValueType.False, BoolValueType.False);
     }
 
     [Fact]
     public void Any_types_with_different_reference_capabilities_are_not_equal()
     {
-        Assert.NotEqual(BoolConstantType.True, BoolConstantType.False);
+        Assert.NotEqual(BoolValueType.True, BoolValueType.False);
     }
 }

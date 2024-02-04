@@ -983,7 +983,7 @@ public class InterpreterProcess
         if (dataType == DataType.Int16) return AzothValue.I16((short)-value.I16Value);
         if (dataType == DataType.Int32) return AzothValue.I32(-value.I32Value);
         if (dataType == DataType.Int64) return AzothValue.I64(-value.I64Value);
-        if (dataType is IntegerConstantType) return AzothValue.Int(-value.IntValue);
+        if (dataType is IntegerValueType) return AzothValue.Int(-value.IntValue);
         throw new NotImplementedException($"Negate {dataType.ToILString()}");
     }
 
@@ -1010,7 +1010,7 @@ public class InterpreterProcess
     private async ValueTask<AzothValue> ToDisplayStringAsync(AzothValue value, NumericType type)
     {
         string displayString;
-        if (type is IntegerConstantType) displayString = value.IntValue.ToString();
+        if (type is IntegerValueType) displayString = value.IntValue.ToString();
         else if (type == DataType.Int) displayString = value.IntValue.ToString();
         else if (type == DataType.UInt) displayString = value.IntValue.ToString();
         else if (type == DataType.Byte) displayString = value.ByteValue.ToString();

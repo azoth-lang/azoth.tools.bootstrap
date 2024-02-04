@@ -334,6 +334,7 @@ public static class Arbitrary
         { "await", typeof(IAwaitKeywordToken) },
         { "out", typeof(IOutKeywordToken) },
         { "ind", typeof(IIndependentKeywordToken) },
+        { "temp", typeof(ITempKeywordToken) },
     }.ToFixedDictionary();
 
     private readonly record struct AppendedToken(IEnumerable<PsuedoToken> Items, PsuedoToken? LastToken)

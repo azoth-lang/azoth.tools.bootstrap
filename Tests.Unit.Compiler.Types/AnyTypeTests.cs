@@ -20,7 +20,7 @@ public class AnyTypeTests
     {
         var type = new AnyType(Isolated);
 
-        Assert.False(type.IsTypeOfConstant);
+        Assert.False(type.IsTypeOfValue);
     }
 
     [Fact]

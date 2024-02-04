@@ -25,7 +25,7 @@ public static class DataTypeExtensions
             (_, _) when target.Equals(source) => true,
             (UnknownType, _)
                 or (_, UnknownType)
-                or (BoolType, BoolConstantType)
+                or (BoolType, BoolValueType)
                 or (_, NeverType)
                 or (BigIntegerType { IsSigned: true }, IntegerType)
                 or (BigIntegerType, IntegerType { IsSigned: false })
@@ -257,15 +257,15 @@ public static class DataTypeExtensions
                 => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
             (PointerSizedIntegerType left, PointerSizedIntegerType right)
                 => left.IsSigned || right.IsSigned ? DataType.Offset : DataType.Size,
-            (PointerSizedIntegerType { IsSigned: true }, IntegerConstantType { IsInt16: true })
-                or (PointerSizedIntegerType { IsSigned: false }, IntegerConstantType { IsUInt16: true })
+            (PointerSizedIntegerType { IsSigned: true }, IntegerValueType { IsInt16: true })
+                or (PointerSizedIntegerType { IsSigned: false }, IntegerValueType { IsUInt16: true })
                 => leftType,
-            (PointerSizedIntegerType left, IntegerConstantType right)
+            (PointerSizedIntegerType left, IntegerValueType right)
                 => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
-            (IntegerConstantType { IsInt16: true }, PointerSizedIntegerType { IsSigned: true })
-                or (IntegerConstantType { IsUInt16: true }, PointerSizedIntegerType { IsSigned: false })
+            (IntegerValueType { IsInt16: true }, PointerSizedIntegerType { IsSigned: true })
+                or (IntegerValueType { IsUInt16: true }, PointerSizedIntegerType { IsSigned: false })
                 => rightType,
-            (IntegerConstantType left, PointerSizedIntegerType right)
+            (IntegerValueType left, PointerSizedIntegerType right)
                 => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
             (FixedSizeIntegerType left, FixedSizeIntegerType right)
                 when left.IsSigned == right.IsSigned
@@ -276,15 +276,15 @@ public static class DataTypeExtensions
             (FixedSizeIntegerType left, FixedSizeIntegerType { IsSigned: true } right)
                 when left.Bits < right.Bits
                 => right,
-            (FixedSizeIntegerType { IsSigned: true } left, IntegerConstantType right)
+            (FixedSizeIntegerType { IsSigned: true } left, IntegerValueType right)
                 when left.IsSigned || right.IsSigned
                 => left.NumericOperatorCommonType(right.ToSmallestSignedIntegerType()),
-            (FixedSizeIntegerType { IsSigned: false } left, IntegerConstantType { IsSigned: false } right)
+            (FixedSizeIntegerType { IsSigned: false } left, IntegerValueType { IsSigned: false } right)
                 => left.NumericOperatorCommonType(right.ToSmallestUnsignedIntegerType()),
-            (IntegerConstantType left, FixedSizeIntegerType right)
+            (IntegerValueType left, FixedSizeIntegerType right)
                 when left.IsSigned || right.IsSigned
                 => left.ToSmallestSignedIntegerType().NumericOperatorCommonType(right),
-            (IntegerConstantType { IsSigned: false } left, FixedSizeIntegerType { IsSigned: false } right)
+            (IntegerValueType { IsSigned: false } left, FixedSizeIntegerType { IsSigned: false } right)
                 => left.ToSmallestSignedIntegerType().NumericOperatorCommonType(right),
             _ => null
         };

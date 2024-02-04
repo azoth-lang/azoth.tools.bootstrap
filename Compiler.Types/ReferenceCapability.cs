@@ -7,24 +7,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public sealed class ReferenceCapability
 {
     /// <summary>
-    /// A reference that has write access and is externally unique. That is,
-    /// there are no other references into the object graph reachable from this
-    /// reference and no references out from those objects to non-constant
-    /// references.
+    /// A reference that has write access and is the sole reference into an isolated sub-graph. That
+    /// is, there are no other references into the object graph reachable from this reference and no
+    /// references out from those objects to non-constant objects.
     /// </summary>
     public static readonly ReferenceCapability Isolated = new("iso", allowsWrite: true);
 
     /// <summary>
-    /// An init reference that has write access.
+    /// A reference that has write access and is <i>temporarily</i> the sole reference into an
+    /// isolated sub-graph. That is, there are no other references into the object graph reachable
+    /// from this reference and no references out from those objects to non-constant objects. Except
+    /// that there can be sequestered aliases into the object graph.
     /// </summary>
-    public static readonly ReferenceCapability InitMutable
-        = new("init mut", "⧼init⧽ mut", init: true, allowsWrite: true);
-
-    /// <summary>
-    /// An init reference that has read-only access.
-    /// </summary>
-    public static readonly ReferenceCapability InitReadOnly
-        = new("init read", "⧼init⧽ ⧼read⧽", init: true);
+    public static readonly ReferenceCapability TemporarilyIsolated
+        = new("temp iso", allowsWrite: true, allowsSequesteredAliases: true);
 
     /// <summary>
     /// A reference that has write access and can be stored into fields etc.
@@ -33,17 +29,37 @@ public sealed class ReferenceCapability
         = new("mut", allowsWrite: true, allowsWriteAliases: true, allowsReadAliases: true);
 
     /// <summary>
+    /// An init reference that has write access.
+    /// </summary>
+    public static readonly ReferenceCapability InitMutable
+        = new("init mut", "⧼init⧽ mut", init: true, allowsWrite: true);
+
+
+    /// <summary>
     /// A reference that has read-only access and can be stored into fields etc.
     /// </summary>
     public static readonly ReferenceCapability ReadOnly
         = new("read", "⧼read⧽", allowsWriteAliases: true, allowsReadAliases: true);
 
     /// <summary>
-    /// A reference has read-only access and there are no references that
+    /// An init reference that has read-only access.
+    /// </summary>
+    public static readonly ReferenceCapability InitReadOnly
+        = new("init read", "⧼init⧽ ⧼read⧽", init: true);
+
+    /// <summary>
+    /// A reference that has read-only access and there are no references that
     /// can mutate this object.
     /// </summary>
     public static readonly ReferenceCapability Constant
         = new("const", allowsReadAliases: true);
+
+    /// <summary>
+    /// A reference that has read-only access and there are <i>temporarily</i> no references that
+    /// can mutate this object. There can be sequestered references that can mutate the object.
+    /// </summary>
+    public static readonly ReferenceCapability TemporarilyConstant
+        = new("temp const", allowsReadAliases: true, allowsSequesteredAliases: true);
 
     /// <summary>
     /// A reference that can be used to identify an object but not read or
@@ -56,21 +72,21 @@ public sealed class ReferenceCapability
     private readonly string sourceCodeName;
 
     /// <summary>
-    /// Whether this kind of reference is an init reference. Init references always allow assignment
-    /// into fields (even `let` fields). They also do not allow aliases. Aliases have the `id`
+    /// Whether this kind of reference is an init reference. Init references always permit assignment
+    /// into fields (even `let` fields). They also do not permit aliases. Aliases have the `id`
     /// capability.
     /// </summary>
     public bool AllowsInit { get; }
     /// <summary>
-    /// Whether this kind of reference allows mutating the referenced object through this reference
+    /// Whether this kind of reference permits mutating the referenced object through this reference.
     /// </summary>
     public bool AllowsWrite { get; }
     /// <summary>
-    /// Whether this kind of reference permits other writable aliases to the object to exist
+    /// Whether this kind of reference permits other writable aliases to the object to exist.
     /// </summary>
     public bool AllowsWriteAliases { get; }
     /// <summary>
-    /// Whether this kind of reference allows reading the value of an object through this reference
+    /// Whether this kind of reference permits reading the value of an object through this reference.
     /// </summary>
     public bool AllowsRead { get; }
     /// <summary>
@@ -79,6 +95,11 @@ public sealed class ReferenceCapability
     /// <remarks>Note that <see cref="Constant"/> does <see cref="AllowsReadAliases"/> but not
     /// <see cref="AllowsWriteAliases"/>.</remarks>
     public bool AllowsReadAliases { get; }
+    /// <summary>
+    /// Whether this kind of reference permits aliases that have been sequestered to temporarily
+    /// strengthen the capability of the reference. This is only relevant for `iso` and `const`.
+    /// </summary>
+    public bool AllowsSequesteredAliases { get; }
 
     /// <summary>
     /// Does this capability allow a reference with it to be recovered to isolated if reference
@@ -90,7 +111,7 @@ public sealed class ReferenceCapability
     /// Does this capability allow a reference with it to be moved into isolated if reference
     /// sharing permits.
     /// </summary>
-    public bool AllowsMove => this == Mutable || this == ReadOnly || this == Isolated;
+    public bool AllowsMove => this == Mutable || this == ReadOnly || this == Isolated || this == TemporarilyIsolated;
 
     /// <summary>
     /// Does this capability allow a reference with it to be frozen to const if reference
@@ -104,8 +125,10 @@ public sealed class ReferenceCapability
         bool allowsWrite = false,
         bool allowsWriteAliases = false,
         bool allowsRead = true,
-        bool allowsReadAliases = false)
-        : this(name, name, init, allowsWrite, allowsWriteAliases, allowsRead, allowsReadAliases)
+        bool allowsReadAliases = false,
+        bool allowsSequesteredAliases = false)
+        : this(name, name, init, allowsWrite, allowsWriteAliases, allowsRead, allowsReadAliases,
+            allowsSequesteredAliases)
     {
     }
 
@@ -116,7 +139,8 @@ public sealed class ReferenceCapability
         bool allowsWrite = false,
         bool allowsWriteAliases = false,
         bool allowsRead = true,
-        bool allowsReadAliases = false)
+        bool allowsReadAliases = false,
+        bool allowsSequesteredAliases = false)
     {
         this.ilName = ilName;
         this.sourceCodeName = sourceCodeName;
@@ -125,6 +149,7 @@ public sealed class ReferenceCapability
         AllowsWriteAliases = allowsWriteAliases;
         AllowsRead = allowsRead;
         AllowsReadAliases = allowsReadAliases;
+        AllowsSequesteredAliases = allowsSequesteredAliases;
     }
 
     /// <summary>
@@ -135,13 +160,16 @@ public sealed class ReferenceCapability
     /// is passed to something expecting a non-lent reference. The rules are context dependent.</remarks>
     public bool IsAssignableFrom(ReferenceCapability from)
     {
-        // Can't change init
+        // Can't change `init`
         if (AllowsInit != from.AllowsInit) return false;
         // Can't gain permissions
         if (AllowsWrite && !from.AllowsWrite) return false;
         if (!AllowsWriteAliases && from.AllowsWriteAliases) return false;
         if (AllowsRead && !from.AllowsRead) return false;
         if (!AllowsReadAliases && from.AllowsReadAliases) return false;
+        // Can't change `temp` to non-temp when target disallows aliases
+        if (!AllowsSequesteredAliases && from.AllowsSequesteredAliases
+            && (!AllowsWriteAliases || !AllowsReadAliases)) return false;
 
         return true;
     }

@@ -8,15 +8,15 @@ public class ReferenceCapabilityAssignmentTestCase
     public ReferenceCapability To { get; }
     public bool Assignable { get; }
 
-    public ReferenceCapabilityAssignmentTestCase(ReferenceCapability from, ReferenceCapability to, bool assignable)
+    public ReferenceCapabilityAssignmentTestCase(
+        ReferenceCapability from,
+        ReferenceCapability to,
+        bool assignable)
     {
         From = from;
         To = to;
         Assignable = assignable;
     }
 
-    public override string ToString()
-    {
-        return Assignable ? $"{From} <: {To}" : $"{From} ≮: {To}";
-    }
+    public override string ToString() => Assignable ? $"{From} <: {To}" : $"{From} ≮: {To}";
 }

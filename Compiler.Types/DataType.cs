@@ -20,8 +20,8 @@ public abstract class DataType : IEquatable<DataType>
     public static readonly VoidType Void = VoidType.Instance;
     public static readonly NeverType Never = NeverType.Instance;
     public static readonly BoolType Bool = BoolType.Instance;
-    public static readonly BoolConstantType True = BoolConstantType.True;
-    public static readonly BoolConstantType False = BoolConstantType.False;
+    public static readonly BoolValueType True = BoolValueType.True;
+    public static readonly BoolValueType False = BoolValueType.False;
     public static readonly BigIntegerType Int = BigIntegerType.Int;
     public static readonly BigIntegerType UInt = BigIntegerType.UInt;
     public static readonly FixedSizeIntegerType Int8 = FixedSizeIntegerType.Int8;
@@ -52,9 +52,9 @@ public abstract class DataType : IEquatable<DataType>
     public virtual bool IsEmpty => false;
 
     /// <summary>
-    /// Whether this is a type for constants like the integer constant type.
+    /// Whether this is a type for literal values like specific integer or boolean values.
     /// </summary>
-    public virtual bool IsTypeOfConstant => false;
+    public virtual bool IsTypeOfValue => false;
 
     /// <summary>
     /// A known type is one that has no unknown parts.

@@ -13,8 +13,10 @@ public abstract class ReferenceType : NonEmptyType
 {
     public ReferenceCapability Capability { get; }
     public bool IsReadOnlyReference => Capability == ReferenceCapability.ReadOnly;
-    public bool IsConstReference => Capability == ReferenceCapability.Constant;
+    public bool IsConstantReference => Capability == ReferenceCapability.Constant;
+    public bool IsTemporarilyConstantReference => Capability == ReferenceCapability.TemporarilyConstant;
     public bool IsIsolatedReference => Capability == ReferenceCapability.Isolated;
+    public bool IsTemporarilyIsolatedReference => Capability == ReferenceCapability.TemporarilyIsolated;
     public bool IsIdentityReference => Capability == ReferenceCapability.Identity;
     public bool AllowsInit => Capability.AllowsInit;
     public override bool AllowsWrite => Capability.AllowsWrite;
@@ -51,7 +53,7 @@ public abstract class ReferenceType : NonEmptyType
     /// Whether this type was declared `const` meaning that most references should be treated as
     /// const.
     /// </summary>
-    public bool IsConstType => DeclaredType.IsConstType;
+    public bool IsDeclaredConstant => DeclaredType.IsConstType;
 
     public SimpleName? ContainingPackage => DeclaredType.ContainingPackage;
     public NamespaceName ContainingNamespace => DeclaredType.ContainingNamespace;

@@ -354,10 +354,8 @@ internal class ASTBuilder
             LiftedConversion _ => BuildImplicitLiftedConversionExpression(expression, conversion),
             NumericConversion _ => BuildImplicitNumericConversionExpression(expression, conversion),
             OptionalConversion _ => BuildImplicitOptionalConversionExpression(expression, conversion),
-            RecoverIsolation _ => BuildRecoverIsolationExpression(expression, conversion),
-            RecoverConst _ => BuildRecoverConstExpression(expression, conversion),
-            ImplicitMove _ => BuildImplicitMoveExpression(expression, conversion),
-            ImplicitFreeze _ => BuildImplicitFreezeExpression(expression, conversion),
+            MoveConversion moveConversion => BuildMoveConversionExpression(expression, moveConversion),
+            FreezeConversion freezeConversion => BuildFreezeConversionExpression(expression, freezeConversion),
             IdentityConversion _ => expression,
             _ => throw ExhaustiveMatch.Failed(conversion)
         };
@@ -520,20 +518,43 @@ internal class ASTBuilder
         return new ImplicitOptionalConversionExpression(expression.Span, convertToType, semantics, expression, (OptionalType)convertToType);
     }
 
-    private static IRecoverIsolationExpression BuildRecoverIsolationExpression(
+    private static IExpression BuildMoveConversionExpression(
         IExpression expression,
-        Conversion conversion)
+        MoveConversion conversion)
     {
         var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
-        return new RecoverIsolationExpression(expression.Span, (ReferenceType)convertToType, semantics, expression);
+        switch (conversion.Kind)
+        {
+            case ConversionKind.Recover:
+                return new RecoverIsolationExpression(expression.Span, (ReferenceType)convertToType, semantics, expression);
+            case ConversionKind.Implicit:
+                var referencedSymbol = ((IVariableNameExpression)expression).ReferencedSymbol;
+                return new MoveExpression(expression.Span, (ReferenceType)convertToType, semantics, referencedSymbol, expression);
+            case ConversionKind.Temporary:
+                throw new NotImplementedException();
+            default:
+                throw ExhaustiveMatch.Failed(conversion.Kind);
+        }
     }
 
-    private static IRecoverConstExpression BuildRecoverConstExpression(
+    private static IExpression BuildFreezeConversionExpression(
         IExpression expression,
-        Conversion conversion)
+        FreezeConversion conversion)
     {
         var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
-        return new RecoverConstExpression(expression.Span, (ReferenceType)convertToType, semantics, expression);
+        switch (conversion.Kind)
+        {
+            case ConversionKind.Recover:
+                return new RecoverConstExpression(expression.Span, (ReferenceType)convertToType, semantics, expression);
+            case ConversionKind.Implicit:
+                var referencedSymbol = ((IVariableNameExpression)expression).ReferencedSymbol;
+                return new FreezeExpression(expression.Span, (ReferenceType)convertToType, semantics, referencedSymbol,
+                    expression);
+            case ConversionKind.Temporary:
+                throw new NotImplementedException();
+            default:
+                throw ExhaustiveMatch.Failed(conversion.Kind);
+        }
     }
 
     private static IIntegerLiteralExpression BuildIntegerLiteralExpression(IIntegerLiteralExpressionSyntax syn)
@@ -574,15 +595,6 @@ internal class ASTBuilder
         var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
         var referent = BuildExpression(syn.Referent);
         return new MoveExpression(syn.Span, type, semantics, referencedSymbol, referent);
-    }
-
-    private static IMoveExpression BuildImplicitMoveExpression(
-        IExpression expression,
-        Conversion conversion)
-    {
-        var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
-        var referencedSymbol = ((IVariableNameExpression)expression).ReferencedSymbol;
-        return new MoveExpression(expression.Span, (ReferenceType)convertToType, semantics, referencedSymbol, expression);
     }
 
     private static INameExpression BuildNameExpression(ISimpleNameExpressionSyntax syn)
@@ -692,15 +704,6 @@ internal class ASTBuilder
         var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
         var referent = BuildExpression(syn.Referent);
         return new FreezeExpression(syn.Span, type, semantics, referencedSymbol, referent);
-    }
-
-    private static IFreezeExpression BuildImplicitFreezeExpression(
-        IExpression expression,
-        Conversion conversion)
-    {
-        var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
-        var referencedSymbol = ((IVariableNameExpression)expression).ReferencedSymbol;
-        return new FreezeExpression(expression.Span, (ReferenceType)convertToType, semantics, referencedSymbol, expression);
     }
 
     private static IExpression BuildConversionExpression(IConversionExpressionSyntax syn)

@@ -30,7 +30,7 @@ public class DataTypeExtensionsTests
     [InlineData((long)int.MinValue - 1)]
     public void Integer_constant_types_not_assignable_to_int32(long value)
     {
-        var constType = new IntegerConstantType(value);
+        var constType = new IntegerValueType(value);
 
         var assignable = DataType.Int32.IsAssignableFrom(constType);
 

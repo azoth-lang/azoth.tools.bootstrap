@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -299,7 +300,7 @@ public class BasicBodyAnalyzer
         FlowState flow)
     {
         var syntax = expression.Syntax;
-        var conversion = CreateImplicitConversion(expectedType.Type, expectedType.IsLent,
+        var conversion = CreateImplicitConversion(expectedType.Type,
             expression.Type, expression.Variable, syntax.ImplicitConversion, flow,
             out var newResult);
         if (conversion is not null) syntax.AddConversion(conversion);
@@ -315,7 +316,7 @@ public class BasicBodyAnalyzer
         FlowState flow)
     {
         var syntax = expression.Syntax;
-        var conversion = CreateImplicitConversion(expectedType, false,
+        var conversion = CreateImplicitConversion(expectedType,
             expression.Type, expression.Variable, syntax.ImplicitConversion, flow, out var newResult);
         if (conversion is not null) syntax.AddConversion(conversion);
         return expression with { Variable = newResult };
@@ -323,7 +324,6 @@ public class BasicBodyAnalyzer
 
     private static ChainedConversion? CreateImplicitConversion(
         DataType toType,
-        bool toLentBinding,
         DataType fromType,
         ResultVariable? fromResult,
         Conversion priorConversion,
@@ -340,12 +340,12 @@ public class BasicBodyAnalyzer
                 // Direct subtype
                 if (to.IsAssignableFrom(from))
                     return null;
-                var liftedConversion = CreateImplicitConversion(to, toLentBinding, from, fromResult, IdentityConversion.Instance, flow, out newResult);
+                var liftedConversion = CreateImplicitConversion(to, from, fromResult, IdentityConversion.Instance, flow, out newResult);
                 return liftedConversion is null ? null : new LiftedConversion(liftedConversion, priorConversion);
             case (OptionalType { Referent: var to }, not OptionalType):
                 if (!to.IsAssignableFrom(fromType))
                 {
-                    var conversion = CreateImplicitConversion(to, toLentBinding, fromType, fromResult, priorConversion, flow, out newResult);
+                    var conversion = CreateImplicitConversion(to, fromType, fromResult, priorConversion, flow, out newResult);
                     if (conversion is null) return null; // Not able to convert to the referent type
                     priorConversion = conversion;
                 }
@@ -355,7 +355,7 @@ public class BasicBodyAnalyzer
                     return new NumericConversion(to, priorConversion);
 
                 return null;
-            case (FixedSizeIntegerType to, IntegerConstantType from):
+            case (FixedSizeIntegerType to, IntegerValueType from):
             {
                 var requireSigned = from.Value < 0;
                 var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
@@ -368,38 +368,37 @@ public class BasicBodyAnalyzer
                 return new NumericConversion(to, priorConversion);
             case (BigIntegerType to, IntegerType { IsSigned: false }):
                 return new NumericConversion(to, priorConversion);
-            case (PointerSizedIntegerType to, IntegerConstantType from):
+            case (PointerSizedIntegerType to, IntegerValueType from):
             {
                 var requireSigned = from.Value < 0;
                 return !requireSigned || to.IsSigned ? new NumericConversion(to, priorConversion) : null;
             }
-            case (ObjectType { IsConstReference: true } to, ObjectType { AllowsFreeze: true } from)
+            case (ObjectType { IsTemporarilyConstantReference: true } to, ObjectType { AllowsFreeze: true } from)
+                when to.BareType.IsAssignableFrom(targetAllowsWrite: false, from.BareType):
+            {
+                if (enact) newResult = flow.LendConst(fromResult!);
+                return new FreezeConversion(priorConversion, ConversionKind.Temporary);
+            }
+            case (ObjectType { IsConstantReference: true } to, ObjectType { AllowsFreeze: true } from)
                 when to.BareType.IsAssignableFrom(targetAllowsWrite: false, from.BareType):
             {
                 // Try to recover const. Note a variable name can never be frozen because the result is an alias.
                 if (flow.CanFreeze(fromResult))
-                    return new RecoverConst(priorConversion);
-                if (toLentBinding)
-                {
-                    if (enact)
-                        newResult = flow.LendConst(fromResult!);
-                    return new RecoverConst(priorConversion);
-                }
-
+                    return new FreezeConversion(priorConversion, ConversionKind.Recover);
                 return null;
+            }
+            case (ObjectType { IsTemporarilyIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from)
+                when to.BareType.IsAssignableFrom(targetAllowsWrite: true, from.BareType):
+            {
+                if (enact) newResult = flow.LendIso(fromResult!);
+                return new MoveConversion(priorConversion, ConversionKind.Temporary);
             }
             case (ObjectType { IsIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from)
                 when to.BareType.IsAssignableFrom(targetAllowsWrite: true, from.BareType):
             {
                 // Try to recover isolation. Note a variable name is never isolated because the result is an alias.
                 if (flow.IsIsolated(fromResult))
-                    return new RecoverIsolation(priorConversion);
-                if (toLentBinding)
-                {
-                    if (enact)
-                        newResult = flow.LendIso(fromResult!);
-                    return new RecoverIsolation(priorConversion);
-                }
+                    return new MoveConversion(priorConversion, ConversionKind.Recover);
                 return null;
             }
             default:
@@ -493,7 +492,7 @@ public class BasicBodyAnalyzer
                 return new ExpressionResult(exp);
             }
             case IIntegerLiteralExpressionSyntax exp:
-                exp.DataType = new IntegerConstantType(exp.Value);
+                exp.DataType = new IntegerValueType(exp.Value);
                 return new ExpressionResult(exp);
             case IStringLiteralExpressionSyntax exp:
                 if (stringSymbol is null)
@@ -524,21 +523,21 @@ public class BasicBodyAnalyzer
 
                 DataType type = (leftResult.Type, @operator, rightResult.Type) switch
                 {
-                    (IntegerConstantType left, BinaryOperator.Plus, IntegerConstantType right) => left.Add(right),
-                    (IntegerConstantType left, BinaryOperator.Minus, IntegerConstantType right) => left.Subtract(right),
-                    (IntegerConstantType left, BinaryOperator.Asterisk, IntegerConstantType right) => left.Multiply(right),
-                    (IntegerConstantType left, BinaryOperator.Slash, IntegerConstantType right) => left.DivideBy(right),
-                    (IntegerConstantType left, BinaryOperator.EqualsEquals, IntegerConstantType right) => left.Equals(right),
-                    (IntegerConstantType left, BinaryOperator.NotEqual, IntegerConstantType right) => left.NotEquals(right),
-                    (IntegerConstantType left, BinaryOperator.LessThan, IntegerConstantType right) => left.LessThan(right),
-                    (IntegerConstantType left, BinaryOperator.LessThanOrEqual, IntegerConstantType right) => left.LessThanOrEqual(right),
-                    (IntegerConstantType left, BinaryOperator.GreaterThan, IntegerConstantType right) => left.GreaterThan(right),
-                    (IntegerConstantType left, BinaryOperator.GreaterThanOrEqual, IntegerConstantType right) => left.GreaterThanOrEqual(right),
+                    (IntegerValueType left, BinaryOperator.Plus, IntegerValueType right) => left.Add(right),
+                    (IntegerValueType left, BinaryOperator.Minus, IntegerValueType right) => left.Subtract(right),
+                    (IntegerValueType left, BinaryOperator.Asterisk, IntegerValueType right) => left.Multiply(right),
+                    (IntegerValueType left, BinaryOperator.Slash, IntegerValueType right) => left.DivideBy(right),
+                    (IntegerValueType left, BinaryOperator.EqualsEquals, IntegerValueType right) => left.Equals(right),
+                    (IntegerValueType left, BinaryOperator.NotEqual, IntegerValueType right) => left.NotEquals(right),
+                    (IntegerValueType left, BinaryOperator.LessThan, IntegerValueType right) => left.LessThan(right),
+                    (IntegerValueType left, BinaryOperator.LessThanOrEqual, IntegerValueType right) => left.LessThanOrEqual(right),
+                    (IntegerValueType left, BinaryOperator.GreaterThan, IntegerValueType right) => left.GreaterThan(right),
+                    (IntegerValueType left, BinaryOperator.GreaterThanOrEqual, IntegerValueType right) => left.GreaterThanOrEqual(right),
 
-                    (BoolConstantType left, BinaryOperator.EqualsEquals, BoolConstantType right) => left.Equals(right),
-                    (BoolConstantType left, BinaryOperator.NotEqual, BoolConstantType right) => left.NotEquals(right),
-                    (BoolConstantType left, BinaryOperator.And, BoolConstantType right) => left.And(right),
-                    (BoolConstantType left, BinaryOperator.Or, BoolConstantType right) => left.Or(right),
+                    (BoolValueType left, BinaryOperator.EqualsEquals, BoolValueType right) => left.Equals(right),
+                    (BoolValueType left, BinaryOperator.NotEqual, BoolValueType right) => left.NotEquals(right),
+                    (BoolValueType left, BinaryOperator.And, BoolValueType right) => left.And(right),
+                    (BoolValueType left, BinaryOperator.Or, BoolValueType right) => left.Or(right),
 
                     (NumericType, BinaryOperator.Plus, NumericType)
                         or (NumericType, BinaryOperator.Minus, NumericType)
@@ -626,7 +625,7 @@ public class BasicBodyAnalyzer
                     default:
                         throw ExhaustiveMatch.Failed(@operator);
                     case UnaryOperator.Not:
-                        if (result.Type is BoolConstantType boolType)
+                        if (result.Type is BoolValueType boolType)
                             expType = boolType.Not();
                         else
                         {
@@ -640,7 +639,7 @@ public class BasicBodyAnalyzer
                     case UnaryOperator.Minus:
                         switch (result.Type)
                         {
-                            case IntegerConstantType integerType:
+                            case IntegerValueType integerType:
                                 expType = integerType.Negate();
                                 break;
                             case FixedSizeIntegerType sizedIntegerType:
@@ -964,7 +963,7 @@ public class BasicBodyAnalyzer
                     diagnostics.Add(TypeError.NotImplemented(file, exp.Span, "Reference capability does not allow moving"));
                 else if (!flow.IsIsolated(symbol))
                     diagnostics.Add(FlowTypingError.CannotMoveValue(file, exp));
-                type = referenceType.With(ReferenceCapability.Isolated);
+                type = referenceType.IsTemporarilyIsolatedReference ? type : referenceType.With(ReferenceCapability.Isolated);
                 flow.Move(symbol);
                 break;
             case ValueType { Semantics: TypeSemantics.MoveValue } valueType:
@@ -1107,7 +1106,7 @@ public class BasicBodyAnalyzer
     {
         var argType = arg.Type;
         var priorConversion = arg.Syntax.ImplicitConversion;
-        var conversion = CreateImplicitConversion(parameter.Type, parameter.IsLent, arg.Type, arg.Variable,
+        var conversion = CreateImplicitConversion(parameter.Type, arg.Type, arg.Variable,
             priorConversion, flow, out _, enact: false);
         if (conversion is not null)
         {
@@ -1280,6 +1279,7 @@ public class BasicBodyAnalyzer
                     }
                     var methodSymbols = LookupSymbols<MethodSymbol>(typeSymbol, exp.Member);
 
+                    if (exp.Member.Name == "edit") Debugger.Break();
                     var method = InferSymbol(invocation, methodSymbols, args, flow);
 
                     return InferMethodInvocationType(invocation, method, args, flow);
@@ -1382,7 +1382,7 @@ public class BasicBodyAnalyzer
             selfArg.Syntax.AddConversion(conversion);
     }
 
-    private static ImplicitMove? CreateImplicitMoveConversion(
+    private static MoveConversion? CreateImplicitMoveConversion(
         DataType selfArgType,
         IExpressionSyntax selfArgSyntax,
         ResultVariable? selfArgVariable,
@@ -1408,7 +1408,7 @@ public class BasicBodyAnalyzer
         if (enact)
             flow.Move(symbol);
 
-        return new ImplicitMove(priorConversion);
+        return new MoveConversion(priorConversion, ConversionKind.Implicit);
     }
 
     private static void AddImplicitFreezeIfNeeded(
@@ -1422,7 +1422,7 @@ public class BasicBodyAnalyzer
             selfArg.Syntax.AddConversion(conversion);
     }
 
-    private static ImplicitFreeze? CreateImplicitFreezeConversion(
+    private static FreezeConversion? CreateImplicitFreezeConversion(
         DataType selfArgType,
         IExpressionSyntax selfArgSyntax,
         ResultVariable? selfArgVariable,
@@ -1435,7 +1435,7 @@ public class BasicBodyAnalyzer
         // to force the caller to have `const`
         if (selfParamType.IsLent) return null;
 
-        if (selfParamType.Type is not ReferenceType { IsConstReference: true } toType
+        if (selfParamType.Type is not ReferenceType { IsConstantReference: true } toType
             || selfArgType is not ReferenceType { AllowsFreeze: true } fromType)
             return null;
 
@@ -1448,7 +1448,7 @@ public class BasicBodyAnalyzer
         if (enact)
             flow.Freeze(symbol);
 
-        return new ImplicitFreeze(priorConversion);
+        return new FreezeConversion(priorConversion, ConversionKind.Implicit);
     }
 
     private ExpressionResult InferFunctionInvocationType(
@@ -1785,7 +1785,7 @@ public class BasicBodyAnalyzer
 
         if (declaredType is not null)
         {
-            var conversion = CreateImplicitConversion(declaredType, false, iteratedType, null, inExpression.ImplicitConversion, flow,
+            var conversion = CreateImplicitConversion(declaredType, iteratedType, null, inExpression.ImplicitConversion, flow,
                 out _, enact: false);
             iteratedType = conversion is null ? iteratedType : conversion.Apply(iteratedType, ExpressionSemantics.IdReference).Item1;
             if (!declaredType.IsAssignableFrom(iteratedType))
@@ -1994,7 +1994,7 @@ public class BasicBodyAnalyzer
     {
         return dataType switch
         {
-            UnknownType or IntegerConstantType or OptionalType => null,
+            UnknownType or IntegerValueType or OptionalType => null,
             ObjectType t => LookupSymbolForType(t),
             GenericParameterType t => LookupSymbolForType(t),
             IntegerType t => symbolTrees.PrimitiveSymbolTree

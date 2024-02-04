@@ -41,10 +41,12 @@ public class SelfTypeResolver
                 referenceCapability = ReferenceCapability.InitMutable;
                 break;
             case DeclaredReferenceCapability.Isolated:
+            case DeclaredReferenceCapability.TemporarilyIsolated:
                 diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, capability));
                 referenceCapability = ReferenceCapability.InitMutable;
                 break;
             case DeclaredReferenceCapability.Constant:
+            case DeclaredReferenceCapability.TemporarilyConstant:
             case DeclaredReferenceCapability.Identity:
                 diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, capability));
                 referenceCapability = ReferenceCapability.InitReadOnly;
