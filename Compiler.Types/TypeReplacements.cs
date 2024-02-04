@@ -72,7 +72,7 @@ internal sealed class TypeReplacements
                 var replacementType = ReplaceTypeParametersIn(capabilityViewpointType.Referent);
                 if (!ReferenceEquals(capabilityViewpointType.Referent, replacementType))
                     if (replacementType is GenericParameterType genericParameterType)
-                        return new CapabilityViewpointType(capabilityViewpointType.Capability, genericParameterType);
+                        return CapabilityViewpointType.Create(capabilityViewpointType.Capability, genericParameterType);
                     else
                         return replacementType.AccessedVia(capabilityViewpointType.Capability);
 

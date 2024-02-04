@@ -81,7 +81,7 @@ public class TypeResolver
                 var capability = syn.Capability.Declared.ToReferenceCapability();
                 var type = Evaluate(syn.Referent);
                 if (type is GenericParameterType genericParameterType)
-                    return syn.NamedType = new CapabilityViewpointType(capability, genericParameterType);
+                    return syn.NamedType = CapabilityViewpointType.Create(capability, genericParameterType);
 
                 diagnostics.Add(TypeError.CapabilityViewpointNotAppliedToTypeParameter(file, syn));
                 return syn.NamedType = type;
@@ -91,7 +91,7 @@ public class TypeResolver
                 var type = Evaluate(syn.Referent);
                 if (selfType is ReferenceType { Capability: var capability }
                         && type is GenericParameterType genericParameterType)
-                    return syn.NamedType = new CapabilityViewpointType(capability, genericParameterType);
+                    return syn.NamedType = CapabilityViewpointType.Create(capability, genericParameterType);
 
                 if (selfType is not ReferenceType)
                     diagnostics.Add(TypeError.SelfViewpointNotAvailable(file, syn));

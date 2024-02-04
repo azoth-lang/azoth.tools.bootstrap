@@ -33,7 +33,7 @@ public sealed class GenericParameterType : NonEmptyType
     {
         // Independent type parameters are not affected by the capability
         if (Parameter.Variance == Variance.Independent) return this;
-        return new CapabilityViewpointType(capability, this);
+        return CapabilityViewpointType.Create(capability, this);
     }
 
     #region Equals

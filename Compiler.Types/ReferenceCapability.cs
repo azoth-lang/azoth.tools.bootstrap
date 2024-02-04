@@ -183,7 +183,7 @@ public sealed class ReferenceCapability
         if (!AllowsWrite) return this;
         // If it is init, there is only one non-writable init capability.
         if (AllowsInit) return InitReadOnly;
-        // It is either `iso`, or `mut`. Regardless, convert to `readonly`
+        // It is either `iso`, `temp iso`, or `mut`. Regardless, convert to `readonly`
         return ReadOnly;
     }
 
@@ -194,14 +194,15 @@ public sealed class ReferenceCapability
         if (capability == Identity)
             throw new InvalidOperationException("Cannot access fields via `id`.");
 
-        if (capability == Constant)
-            // Constant is contagious
-            return Constant;
+        // Constant is contagious
+        if (capability == Constant) return Constant;
+        if (capability == TemporarilyConstant) return TemporarilyConstant;
+
+        if (capability == Isolated || capability == TemporarilyIsolated)
+            throw new NotImplementedException("prevent breaking isolation");
 
         if (!capability.AllowsWrite)
             return WithoutWrite();
-
-        // TODO capability.IsIsolated is not correct. It should prevent breaking isolation
 
         return this;
     }
