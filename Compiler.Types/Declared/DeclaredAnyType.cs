@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -21,12 +22,15 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
     public override SpecialTypeName Name => SpecialTypeName.Any;
     public override FixedSet<BareReferenceType> Supertypes => FixedSet<BareReferenceType>.Empty;
 
-    public override AnyType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+    public override BareAnyType With(FixedList<DataType> typeArguments)
     {
         if (typeArguments.Count != 0)
             throw new ArgumentException($"`{SpecialTypeName.Any}` does not support type arguments.");
-        return new(capability);
+        return BareReferenceType.Any;
     }
+
+    public override AnyType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+        => With(typeArguments).With(capability);
 
     [SuppressMessage("Performance", "CA1822:Mark members as static",
         Justification = "OO")]

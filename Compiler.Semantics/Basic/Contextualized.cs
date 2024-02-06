@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
@@ -12,14 +13,14 @@ public class Contextualized<TSymbol>
     where TSymbol : InvocableSymbol
 {
     public TSymbol Symbol { get; }
-    public ParameterType? SelfParameterType { get; }
+    public SelfParameterType? SelfParameterType { get; }
     public FixedList<ParameterType> ParameterTypes { get; }
     public int Arity => ParameterTypes.Count;
     public ReturnType ReturnType { get; }
 
     public Contextualized(
         TSymbol symbol,
-        ParameterType? effectiveSelfType,
+        SelfParameterType? effectiveSelfType,
         FixedList<ParameterType> parameterTypes,
         ReturnType returnType)
     {

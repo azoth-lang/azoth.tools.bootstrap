@@ -27,6 +27,6 @@ internal class NamedParameter : Parameter, INamedParameter
         var mutable = Symbol.IsMutableBinding ? "var " : "";
         var defaultValue = DefaultValue is not null ? " = " + DefaultValue : "";
         var declarationNumber = Symbol.DeclarationNumber is null ? "" : "⟦#" + Symbol.DeclarationNumber + "⟧";
-        return $"{mutable}{Symbol.Name}{declarationNumber}: {Symbol.DataType.ToILString()}{defaultValue}";
+        return $"{mutable}{Symbol.Name}{declarationNumber}: {Symbol.Type.ToILString()}{defaultValue}";
     }
 }

@@ -13,6 +13,8 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Tokens;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 'ISyntax' = Span:'TextSpan';
@@ -51,10 +53,10 @@ FunctionDeclaration: NonMemberEntityDeclaration, ConcreteInvocableDeclaration = 
 MemberDeclaration: EntityDeclaration = DeclaringType:'ITypeDeclarationSyntax';
 ClassMemberDeclaration: MemberDeclaration;
 TraitMemberDeclaration: MemberDeclaration;
-MethodDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration = Name:'SimpleName' SelfParameter Parameters:NamedParameter* Return? Symbol:'AcyclicPromise<MethodSymbol>';
-AbstractMethodDeclaration: MethodDeclaration = SelfParameter Parameters:NamedParameter* Return?;
-ConcreteMethodDeclaration: MethodDeclaration, ConcreteInvocableDeclaration = SelfParameter Parameters:NamedParameter* Return? Body;
-ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclarationSyntax' Name:'SimpleName'? SelfParameter Parameters:ConstructorParameter* Body:BlockBody Symbol:'AcyclicPromise<ConstructorSymbol>';
+MethodDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration = Name:'SimpleName' SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Symbol:'AcyclicPromise<MethodSymbol>';
+AbstractMethodDeclaration: MethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return?;
+ConcreteMethodDeclaration: MethodDeclaration, ConcreteInvocableDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
+ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclarationSyntax' Name:'SimpleName'? SelfParameter:ConstructorSelfParameter Parameters:ConstructorParameter* Body:BlockBody Symbol:'AcyclicPromise<ConstructorSymbol>';
 FieldDeclaration: ClassMemberDeclaration, Binding = DeclaringType:'IClassDeclarationSyntax' Name:'SimpleName' Type Symbol:'AcyclicPromise<FieldSymbol>' Initializer:Expression?;
 AssociatedFunctionDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, ConcreteInvocableDeclaration = Name:'SimpleName' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
@@ -65,11 +67,15 @@ Attribute = TypeName;
 GenericParameter = Variance:'Variance' Name:'SimpleName' Symbol:'Promise<GenericParameterTypeSymbol>';
 
 // ---------- Parameters and Return--------------
-Parameter = Name:'SimpleName'? DataType:'IPromise<DataType>' Unused:'bool';
+Parameter = Name:'SimpleName'? DataType:'IPromise<Pseudotype>' Unused:'bool';
 /// A non-self parameter that can be declared in a constructor
 ConstructorParameter: Parameter;
-NamedParameter: Parameter, ConstructorParameter, LocalBinding = IsMutableBinding:'bool' IsLentBinding:'bool' Name:'SimpleName' DeclarationNumber:'Promise<int?>' Type Symbol:'Promise<VariableSymbol>' DefaultValue:Expression?;
-SelfParameter: Parameter = IsLentBinding:'bool' Capability:ReferenceCapability Symbol:'Promise<SelfParameterSymbol>';
+NamedParameter: Parameter, ConstructorParameter, LocalBinding = IsMutableBinding:'bool' IsLentBinding:'bool' Name:'SimpleName' DeclarationNumber:'Promise<int?>' Type DataType:'IPromise<DataType>' Symbol:'Promise<VariableSymbol>' DefaultValue:Expression?;
+SelfParameter: Parameter = IsLentBinding:'bool' Symbol:'Promise<SelfParameterSymbol>';
+ConstructorSelfParameter: SelfParameter = IsLentBinding:'bool' Capability:ReferenceCapability DataType:'IPromise<DataType>' Symbol:'Promise<SelfParameterSymbol>';
+MethodSelfParameter: SelfParameter = IsLentBinding:'bool' Capability:SelfReferenceCapability Symbol:'Promise<SelfParameterSymbol>';
+SelfReferenceCapability;
+ReferenceCapabilityConstraint: SelfReferenceCapability = Constraint:'ReferenceCapabilityConstraint';
 FieldParameter: Parameter, ConstructorParameter = Name:'SimpleName' ReferencedSymbol:'Promise<FieldSymbol?>' DefaultValue:Expression?;
 Return = IsLent:'bool' Type;
 
@@ -86,7 +92,7 @@ ParameterizedType: TypeName = TypeArguments:Type* ReferencedSymbol:'Promise<Type
 // TODO QualifiedTypeName
 OptionalType: Type = Referent:Type;
 CapabilityType: Type = Capability:ReferenceCapability Referent:Type;
-ReferenceCapability = Tokens:'ICapabilityToken'* Declared:'DeclaredReferenceCapability';
+ReferenceCapability: SelfReferenceCapability = Tokens:'ICapabilityToken'* Declared:'DeclaredReferenceCapability';
 FunctionType: Type = Parameters:ParameterType* Return:ReturnType;
 ParameterType = IsLent:'bool' Referent:Type;
 ReturnType = IsLent:'bool' Referent:Type;

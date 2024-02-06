@@ -3,7 +3,9 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 using static Azoth.Tools.Bootstrap.Compiler.Primitives.SymbolBuilder;
 
@@ -135,9 +137,9 @@ public static class Intrinsic
             isAbstract: false, isConst: false, isClass: true, "Raw_Hybrid_Bounded_List",
             GenericParameter.Invariant("F"), GenericParameter.Invariant("T"));
         var fixedType = classType.GenericParameterTypes[0];
-        var readClassParamType = new ParameterType(false, classType.WithRead(classType.GenericParameterDataTypes));
+        var readClassParamType = new SelfParameterType(false, classType.WithRead(classType.GenericParameterDataTypes));
         var mutClassType = classType.WithMutate(classType.GenericParameterDataTypes);
-        var mutClassParamType = new ParameterType(false, mutClassType);
+        var mutClassParamType = new SelfParameterType(false, mutClassType);
         var itemType = classType.GenericParameterTypes[1];
         var classSymbol = new ObjectTypeSymbol(@namespace, classType);
         tree.Add(classSymbol);

@@ -3,7 +3,10 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit;
@@ -28,6 +31,8 @@ public abstract class SymbolTestFixture
 
     protected static FixedList<ParameterType> Params(DataType param, params DataType[] @params)
         => @params.Prepend(param).Select(t => new ParameterType(false, t)).ToFixedList();
+
+    protected static SelfParameterType SelfParam(Pseudotype param) => new SelfParameterType(false, param);
 
     protected static ParameterType Param(DataType param) => new ParameterType(false, param);
 
@@ -59,7 +64,7 @@ public abstract class SymbolTestFixture
     protected MethodSymbol Method(
         string? name = null,
         ObjectTypeSymbol? containing = null,
-        ParameterType? self = null,
+        SelfParameterType? self = null,
         FixedList<ParameterType>? @params = null,
         ReturnType? @return = null)
     {
@@ -67,7 +72,7 @@ public abstract class SymbolTestFixture
         return new MethodSymbol(
             containing,
             Name(name) ?? DefaultName("method"),
-            self ?? new ParameterType(false, containing.DeclaresType.With(ReferenceCapability.ReadOnly, FixedList<DataType>.Empty)),
+            self ?? new SelfParameterType(false, containing.DeclaresType.With(ReferenceCapability.ReadOnly, FixedList<DataType>.Empty)),
             @params ?? Params(),
             @return ?? ReturnType());
     }
@@ -76,7 +81,7 @@ public abstract class SymbolTestFixture
         MethodSymbol mother,
         string? name = null,
         ObjectTypeSymbol? containing = null,
-        ParameterType? self = null,
+        SelfParameterType? self = null,
         FixedList<ParameterType>? @params = null,
         ReturnType? @return = null)
     {
@@ -171,7 +176,7 @@ public abstract class SymbolTestFixture
             mut ?? mother.IsMutableBinding,
             Name(name) ?? mother.Name,
             declaration ?? mother.DeclarationNumber,
-            type ?? mother.DataType);
+            type ?? mother.Type);
     }
 
     protected SelfParameterSymbol SelfParam(

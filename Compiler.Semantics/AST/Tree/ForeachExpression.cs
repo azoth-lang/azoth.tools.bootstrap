@@ -42,6 +42,6 @@ internal class ForeachExpression : Expression, IForeachExpression
     {
         var binding = Symbol.IsMutableBinding ? "var " : "";
         var declarationNumber = Symbol.DeclarationNumber is null ? "" : "⟦#" + Symbol.DeclarationNumber + "⟧";
-        return $"foreach {binding}{Symbol.Name}{declarationNumber}: {Symbol.DataType.ToILString()} in {InExpression} {Block}";
+        return $"foreach {binding}{Symbol.Name}{declarationNumber}: {Symbol.Type.ToILString()} in {InExpression} {Block}";
     }
 }

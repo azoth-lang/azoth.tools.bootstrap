@@ -1,4 +1,4 @@
-using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
 

@@ -48,7 +48,7 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags>
             case IVariableNameExpression identifierName:
                 // We are assigning into this variable so it definitely has a value now
                 var symbol = identifierName.ReferencedSymbol;
-                return symbol.DataType is ValueType ? possiblyMoved.Set(symbol, false) : possiblyMoved;
+                return symbol.Type is ValueType ? possiblyMoved.Set(symbol, false) : possiblyMoved;
             case IFieldAccessExpression _:
                 return possiblyMoved;
             default:
@@ -64,7 +64,7 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags>
         if (possiblyMoved[symbol] == true)
             diagnostics.Add(FlowTypingError.UseOfPossiblyMovedValue(file, nameExpression.Span));
 
-        if (symbol.DataType is not ValueType)
+        if (symbol.Type is not ValueType)
             return possiblyMoved;
 
         var valueSemantics = nameExpression.Semantics;

@@ -55,16 +55,16 @@ public sealed class VariableSymbol : NamedBindingSymbol
                && Name == otherVariable.Name
                && DeclarationNumber == otherVariable.DeclarationNumber
                && IsMutableBinding == otherVariable.IsMutableBinding
-               && DataType == otherVariable.DataType;
+               && Type == otherVariable.Type;
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(Name, DeclarationNumber, IsMutableBinding, DataType);
+        => HashCode.Combine(Name, DeclarationNumber, IsMutableBinding, Type);
 
     public override string ToILString()
     {
         var mutable = IsMutableBinding ? "var" : "let";
         var declarationNumber = DeclarationNumber is null ? "" : "#" + DeclarationNumber;
-        return $"{mutable} {Name}{declarationNumber}: {DataType.ToILString()} in {ContainingSymbol.ToILString()}";
+        return $"{mutable} {Name}{declarationNumber}: {Type.ToILString()} in {ContainingSymbol.ToILString()}";
     }
 }

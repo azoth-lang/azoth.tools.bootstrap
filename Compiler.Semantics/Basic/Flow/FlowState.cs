@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 using MoreLinq;
 
@@ -192,10 +193,10 @@ public sealed class FlowState
         if (symbol is null) return DataType.Unknown;
         if (!symbol.SharingIsTracked())
             // Other types don't have capabilities and don't need to be tracked
-            return symbol.DataType;
+            return symbol.Type.ToUpperBound();
 
         var current = capabilities[(BindingVariable)symbol].Current;
-        return ((ReferenceType)symbol.DataType).With(transform(current));
+        return ((ReferenceType)symbol.Type.ToUpperBound()).With(transform(current));
     }
 
     /// <summary>
@@ -344,7 +345,7 @@ public sealed class FlowState
 
     private void TrackCapability(BindingSymbol symbol)
     {
-        if (symbol.SharingIsTracked() && symbol.DataType is ReferenceType type)
+        if (symbol.SharingIsTracked() && symbol.Type.ToUpperBound() is ReferenceType type)
             capabilities.Add((BindingVariable)symbol, type.Capability);
 
         // Other types don't have capabilities and don't need to be tracked

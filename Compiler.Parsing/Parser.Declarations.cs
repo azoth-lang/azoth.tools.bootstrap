@@ -311,7 +311,7 @@ public partial class Parser
         var parameters = bodyParser.ParseParameters(bodyParser.ParseMethodParameter);
         var @return = ParseReturn();
 
-        var selfParameter = parameters.OfType<ISelfParameterSyntax>().FirstOrDefault();
+        var selfParameter = parameters.OfType<IMethodSelfParameterSyntax>().FirstOrDefault();
         var namedParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>())
                                         .Cast<INamedParameterSyntax>().ToFixedList();
 
@@ -398,7 +398,7 @@ public partial class Parser
         var parameters = bodyParser.ParseParameters(bodyParser.ParseMethodParameter);
         var @return = ParseReturn();
 
-        var selfParameter = parameters.OfType<ISelfParameterSyntax>().FirstOrDefault();
+        var selfParameter = parameters.OfType<IMethodSelfParameterSyntax>().FirstOrDefault();
         var namedParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>())
                                         .Cast<INamedParameterSyntax>().ToFixedList();
 
@@ -466,7 +466,7 @@ public partial class Parser
         var expectedSelfParameterLocation = Tokens.Current.Span.AtEnd();
         var parameters = bodyParser.ParseParameters(bodyParser.ParseConstructorParameter);
 
-        var selfParameter = parameters.OfType<ISelfParameterSyntax>().FirstOrDefault();
+        var selfParameter = parameters.OfType<IConstructorSelfParameterSyntax>().FirstOrDefault();
         var constructorParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>()).Cast<IConstructorParameterSyntax>()
                                         .ToFixedList();
 
@@ -476,7 +476,7 @@ public partial class Parser
             // For simplicity of downstream code, make up a fake self parameter
             var selfReferenceCapability = new ReferenceCapabilitySyntax(expectedSelfParameterLocation,
                 Enumerable.Empty<ICapabilityToken>(), DeclaredReferenceCapability.Mutable);
-            selfParameter = new SelfParameterSyntax(expectedSelfParameterLocation, false, selfReferenceCapability);
+            selfParameter = new ConstructorSelfParameterSyntax(expectedSelfParameterLocation, false, selfReferenceCapability);
         }
         else if (parameters[0] is not ISelfParameterSyntax)
             Add(ParseError.SelfParameterMustBeFirst(File, selfParameter.Span));

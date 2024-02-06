@@ -17,9 +17,9 @@ public class MethodSymbolTests : SymbolTestFixture
     [Fact]
     public void Methods_with_different_self_parameters_are_not_equal()
     {
-        var selfType1 = Param(DataType("T1"));
+        var selfType1 = SelfParam(DataType("T1"));
         var methodA1 = Method("A", self: selfType1);
-        var selfType2 = Param(DataType("T2"));
+        var selfType2 = SelfParam(DataType("T2"));
         var methodA2 = Method(methodA1, self: selfType2);
 
         Assert.NotEqual(methodA1, methodA2);
@@ -54,7 +54,7 @@ public class MethodSymbolTests : SymbolTestFixture
         var parameters = Params(DataType("T1"), DataType("T2"));
         var selfDataType = DataType("Class");
         var selfType = Type(ns, selfDataType.DeclaredType);
-        var method = Method("A", selfType, Param(selfDataType), parameters, ReturnType("T3"));
+        var method = Method("A", selfType, SelfParam(selfDataType), parameters, ReturnType("T3"));
         var func = Func("A", ns, parameters, ReturnType("T3"));
 
         // Note: assert false used to ensure which object Equals is called on

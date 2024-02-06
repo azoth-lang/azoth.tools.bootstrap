@@ -17,7 +17,7 @@ public class VariableSymbolTests : SymbolTestFixture
         Assert.Equal(42, symbol.DeclarationNumber);
         Assert.True(symbol.IsMutableBinding);
         Assert.True(symbol.IsLentBinding);
-        Assert.Equal(dataType, symbol.DataType);
+        Assert.Equal(dataType, symbol.Type);
         Assert.True(symbol.IsParameter);
     }
 

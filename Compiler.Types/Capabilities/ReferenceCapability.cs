@@ -1,10 +1,11 @@
 using System;
 using System.Diagnostics;
+using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 [DebuggerDisplay("{ToILString()}")]
-public sealed class ReferenceCapability
+public sealed class ReferenceCapability : IReferenceCapabilityConstraint
 {
     /// <summary>
     /// A reference that has write access and is the sole reference into an isolated sub-graph. That
@@ -174,6 +175,16 @@ public sealed class ReferenceCapability
         return true;
     }
 
+    public bool IsAssignableFrom(IReferenceCapabilityConstraint from)
+    {
+        return from switch
+        {
+            ReferenceCapability fromCapability => IsAssignableFrom(fromCapability),
+            ReferenceCapabilityConstraint _ => false,
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+    }
+
     /// <summary>
     /// This capability with any write ability removed.
     /// </summary>
@@ -237,6 +248,7 @@ public sealed class ReferenceCapability
     public override string ToString()
 #pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
         => throw new NotSupportedException();
+
 
     public string ToILString() => ilName;
 

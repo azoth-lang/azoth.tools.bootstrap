@@ -26,15 +26,15 @@ public sealed class FieldSymbol : NamedBindingSymbol
                && ContainingSymbol == otherField.ContainingSymbol
                && Name == otherField.Name
                && IsMutableBinding == otherField.IsMutableBinding
-               && DataType == otherField.DataType;
+               && Type == otherField.Type;
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingSymbol, Name, IsMutableBinding, DataType);
+        => HashCode.Combine(ContainingSymbol, Name, IsMutableBinding, Type);
 
     public override string ToILString()
     {
         var mutable = IsMutableBinding ? "var" : "let";
-        return $"{ContainingSymbol.ToILString()}::{mutable} {Name}: {DataType.ToILString()}";
+        return $"{ContainingSymbol.ToILString()}::{mutable} {Name}: {Type.ToILString()}";
     }
 }

@@ -12,7 +12,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
 {
     public ITypeDeclarationSyntax DeclaringType { get; }
     public new SimpleName Name { get; }
-    public ISelfParameterSyntax SelfParameter { get; }
+    public IMethodSelfParameterSyntax SelfParameter { get; }
     public new FixedList<INamedParameterSyntax> Parameters { get; }
     public IReturnSyntax? Return { get; }
     public new AcyclicPromise<MethodSymbol> Symbol { get; }
@@ -24,7 +24,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
         SimpleName name,
-        ISelfParameterSyntax selfParameter,
+        IMethodSelfParameterSyntax selfParameter,
         FixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return)
         : base(span, file, accessModifier, nameSpan, name,

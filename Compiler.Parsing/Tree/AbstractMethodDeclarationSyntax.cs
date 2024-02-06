@@ -16,7 +16,7 @@ internal class AbstractMethodDeclarationSyntax : MethodDeclarationSyntax, IAbstr
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
         SimpleName name,
-        ISelfParameterSyntax selfParameter,
+        IMethodSelfParameterSyntax selfParameter,
         FixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return)
         : base(declaringType, span, file, accessModifier, nameSpan, name,

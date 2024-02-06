@@ -11,14 +11,17 @@ public abstract class NamedBindingSymbol : BindingSymbol
 {
     public override SimpleName Name { get; }
 
+    public override DataType Type { get; }
+
     protected NamedBindingSymbol(
         Symbol containingSymbol,
         bool isMutableBinding,
         bool isLentBinding,
         SimpleName name,
         DataType dataType)
-        : base(containingSymbol, isMutableBinding, isLentBinding, name, dataType)
+        : base(containingSymbol, isMutableBinding, isLentBinding, name)
     {
         Name = name;
+        Type = dataType;
     }
 }

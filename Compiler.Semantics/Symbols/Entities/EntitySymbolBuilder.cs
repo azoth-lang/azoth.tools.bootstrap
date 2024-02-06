@@ -13,6 +13,8 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -342,7 +344,7 @@ public class EntitySymbolBuilder
                     {
                         var fieldSymbol = BuildFieldSymbol(field);
                         fieldParameter.ReferencedSymbol.Fulfill(fieldSymbol);
-                        types.Add(new ParameterType(false, fieldSymbol.DataType));
+                        types.Add(new ParameterType(false, fieldSymbol.Type));
                     }
                     break;
                 }
@@ -393,7 +395,7 @@ public class EntitySymbolBuilder
     }
 
     private ObjectType ResolveConstructorSelfParameterType(
-        ISelfParameterSyntax selfParameter,
+        IConstructorSelfParameterSyntax selfParameter,
         IClassDeclarationSyntax declaringClass)
     {
         var declaredType = declaringClass.Symbol.Result.DeclaresType;
@@ -401,9 +403,9 @@ public class EntitySymbolBuilder
         return resolver.EvaluateConstructorSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterDataTypes);
     }
 
-    private ParameterType ResolveMethodSelfParameterType(
+    private SelfParameterType ResolveMethodSelfParameterType(
         CodeFile file,
-        ISelfParameterSyntax selfParameter,
+        IMethodSelfParameterSyntax selfParameter,
         ITypeDeclarationSyntax declaringType)
     {
         var declaredType = declaringType.Symbol.Result.DeclaresType;
@@ -415,13 +417,13 @@ public class EntitySymbolBuilder
             diagnostics.Add(TypeError.LentIdentity(file, selfParameter.Span));
             isLent = false;
         }
-        return new ParameterType(isLent, selfType);
+        return new SelfParameterType(isLent, selfType);
     }
 
     private void BuildSelfParameterSymbol(
         InvocableSymbol containingSymbol,
         ISelfParameterSyntax param,
-        DataType type,
+        Pseudotype type,
         bool isConstructor = false)
     {
         var symbol = new SelfParameterSymbol(containingSymbol, param.IsLentBinding && !isConstructor, type);

@@ -1,5 +1,5 @@
 using Xunit;
-using static Azoth.Tools.Bootstrap.Compiler.Types.ReferenceCapability;
+using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.ReferenceCapability;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
 

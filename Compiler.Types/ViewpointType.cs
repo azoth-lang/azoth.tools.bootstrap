@@ -1,16 +1,14 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-[Closed(typeof(CapabilityViewpointType))]
+[Closed(typeof(CapabilityViewpointType), typeof(SelfViewpointType))]
 public abstract class ViewpointType : NonEmptyType
 {
-    protected ViewpointType(GenericParameterType referent)
-    {
-        Referent = referent;
-    }
+    public abstract IReferenceCapabilityConstraint Capability { get; }
 
-    public GenericParameterType Referent { get; }
+    public abstract DataType Referent { get; }
 
     public override bool IsFullyKnown => Referent.IsFullyKnown;
 

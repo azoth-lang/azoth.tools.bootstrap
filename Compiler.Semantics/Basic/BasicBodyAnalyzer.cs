@@ -17,7 +17,10 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
@@ -108,7 +111,7 @@ public class BasicBodyAnalyzer
 
     private BasicBodyAnalyzer(
         IEntityDeclarationSyntax containingDeclaration,
-        DataType? selfType,
+        Pseudotype? selfType,
         IEnumerable<BindingSymbol> parameterSymbols,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
@@ -1150,7 +1153,7 @@ public class BasicBodyAnalyzer
         => CombineResults(null, function?.ParameterTypes, function?.ReturnType, results, flow, exp);
 
     private static ResultVariable? CombineResults(
-        ParameterType? selfType,
+        SelfParameterType? selfType,
         FixedList<ParameterType>? parameterTypes,
         ReturnType? returnType,
         ArgumentResults results,
@@ -1265,12 +1268,12 @@ public class BasicBodyAnalyzer
                 {
                     var typeSymbol = LookupSymbolForType(args.Self.Assigned().Type);
                     var fieldSymbols = LookupSymbols<FieldSymbol>(typeSymbol, exp.Member);
-                    if (fieldSymbols?.Any(s => s.DataType is FunctionType) ?? false)
+                    if (fieldSymbols?.Any(s => s.Type is FunctionType) ?? false)
                     {
                         var fieldSymbol = InferSymbol(exp.Member, fieldSymbols);
                         invocation.ReferencedSymbol.Fulfill(null);
                         if (fieldSymbol is not null)
-                            functionType = (FunctionType)fieldSymbol.DataType;
+                            functionType = (FunctionType)fieldSymbol.Type;
 
                         // No type for function names
                         exp.Member.DataType = DataType.Void;
@@ -1301,12 +1304,12 @@ public class BasicBodyAnalyzer
                 args = InferArgumentTypes(invocation.Arguments, flow);
 
                 var variableSymbols = LookupSymbols<VariableSymbol>(exp);
-                if (variableSymbols.Any(s => s.DataType is FunctionType))
+                if (variableSymbols.Any(s => s.Type is FunctionType))
                 {
                     var variableSymbol = InferSymbol(exp, variableSymbols);
                     invocation.ReferencedSymbol.Fulfill(null);
                     if (variableSymbol is not null)
-                        functionType = (FunctionType)variableSymbol.DataType;
+                        functionType = (FunctionType)variableSymbol.Type;
                     break;
                 }
 
@@ -1338,11 +1341,12 @@ public class BasicBodyAnalyzer
         if (method is not null)
         {
             var selfParamType = method.SelfParameterType!.Value;
+            var selfParamUpperBound = selfParamType.ToUpperBound();
             var selfResult = arguments.Self.Assigned();
-            selfResult = AddImplicitConversionIfNeeded(selfResult, selfParamType, flow);
+            selfResult = AddImplicitConversionIfNeeded(selfResult, selfParamUpperBound, flow);
             AddImplicitMoveIfNeeded(selfResult, selfParamType, flow);
             AddImplicitFreezeIfNeeded(selfResult, selfParamType, flow);
-            CheckTypeCompatibility(selfParamType.Type, selfResult.Syntax);
+            CheckTypeCompatibility(selfParamUpperBound.Type, selfResult.Syntax);
             CheckTypes(arguments, method.ParameterTypes, flow);
             arguments = arguments with { Self = selfResult };
             invocation.DataType = method.ReturnType.Type;
@@ -1373,11 +1377,11 @@ public class BasicBodyAnalyzer
 
     private static void AddImplicitMoveIfNeeded(
         ExpressionResult selfArg,
-        ParameterType selfParamType,
+        SelfParameterType selfParamType,
         FlowState flow)
     {
         var conversion = CreateImplicitMoveConversion(selfArg.Type, selfArg.Syntax, selfArg.Variable,
-            selfParamType, flow, enact: true, selfArg.Syntax.ImplicitConversion);
+            selfParamType.ToUpperBound(), flow, enact: true, selfArg.Syntax.ImplicitConversion);
         if (conversion is not null)
             selfArg.Syntax.AddConversion(conversion);
     }
@@ -1413,11 +1417,11 @@ public class BasicBodyAnalyzer
 
     private static void AddImplicitFreezeIfNeeded(
         ExpressionResult selfArg,
-        ParameterType selfParamType,
+        SelfParameterType selfParamType,
         FlowState flow)
     {
         var conversion = CreateImplicitFreezeConversion(selfArg.Type, selfArg.Syntax, selfArg.Variable,
-            selfParamType, flow, enact: true, selfArg.Syntax.ImplicitConversion);
+            selfParamType.ToUpperBound(), flow, enact: true, selfArg.Syntax.ImplicitConversion);
         if (conversion is not null)
             selfArg.Syntax.AddConversion(conversion);
     }
@@ -1515,6 +1519,10 @@ public class BasicBodyAnalyzer
                             invocationExpression.Semantics = ExpressionSemantics.MutableReference;
                         else
                             invocationExpression.Semantics = ExpressionSemantics.ReadOnlyReference;
+                        break;
+                    case SelfViewpointType { Referent: ReferenceType }:
+                        // TODO this isn't really correct
+                        invocationExpression.Semantics = ExpressionSemantics.ReadOnlyReference;
                         break;
                     case FunctionType _:
                         invocationExpression.Semantics = ExpressionSemantics.ReadOnlyReference;
@@ -1825,7 +1833,7 @@ public class BasicBodyAnalyzer
                 DataType type = DataType.Void;
                 if (memberSymbol is FieldSymbol fieldSymbol)
                 {
-                    type = fieldSymbol.DataType;
+                    type = fieldSymbol.Type;
                     switch (type.Semantics)
                     {
                         default:
@@ -1955,8 +1963,8 @@ public class BasicBodyAnalyzer
             // Arity depends on the contextualized symbols because parameters can drop out with `void`
             if (s.Arity != arguments.Arity) return false;
             // Is self arg compatible?
-            if (s.SelfParameterType is ParameterType selfParameterType
-                && (arguments.Self is null || !TypesAreCompatible(arguments.Self, selfParameterType, flow, isSelf: true)))
+            if (s.SelfParameterType is SelfParameterType selfParameterType
+                && (arguments.Self is null || !TypesAreCompatible(arguments.Self, selfParameterType.ToUpperBound(), flow, isSelf: true)))
                 return false;
             // Are arguments compatible?
             return TypesAreCompatible(arguments, s.ParameterTypes, flow);
@@ -1983,7 +1991,7 @@ public class BasicBodyAnalyzer
         return symbols.Select(s => new Contextualized<TSymbol>(s, SelfParameterTypeOrNull(s), s.ParameterTypes, s.ReturnType));
     }
 
-    private static ParameterType? SelfParameterTypeOrNull(InvocableSymbol symbol)
+    private static SelfParameterType? SelfParameterTypeOrNull(InvocableSymbol symbol)
     {
         if (symbol is MethodSymbol { SelfParameterType: var selfType })
             return selfType;
@@ -1997,6 +2005,7 @@ public class BasicBodyAnalyzer
             UnknownType or IntegerValueType or OptionalType => null,
             ObjectType t => LookupSymbolForType(t),
             GenericParameterType t => LookupSymbolForType(t),
+            SelfViewpointType { Referent: var t } => LookupSymbolForType(t),
             IntegerType t => symbolTrees.PrimitiveSymbolTree
                                                   .GlobalSymbols
                                                   .OfType<PrimitiveTypeSymbol>()

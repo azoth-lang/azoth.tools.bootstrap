@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -10,12 +11,12 @@ public sealed class MethodSymbol : FunctionOrMethodSymbol
 {
     public override TypeSymbol ContainingSymbol { get; }
     public override SimpleName Name { get; }
-    public ParameterType SelfParameterType { get; }
+    public SelfParameterType SelfParameterType { get; }
 
     public MethodSymbol(
         TypeSymbol containingSymbol,
         SimpleName name,
-        ParameterType selfParameterType,
+        SelfParameterType selfParameterType,
         FixedList<ParameterType> parameterTypes,
         ReturnType returnType)
         : base(containingSymbol, name, parameterTypes, returnType)
@@ -42,7 +43,8 @@ public sealed class MethodSymbol : FunctionOrMethodSymbol
 
     public override string ToILString()
     {
-        string parameters = string.Join(", ", ParameterTypes.Prepend(SelfParameterType).Select(d => d.ToILString()));
-        return $"{ContainingSymbol.ToILString()}::{Name}({parameters}) -> {ReturnType.ToILString()}";
+        var parameterSeparator = ParameterTypes.Any() ? ", " : "";
+        string parameters = string.Join(", ", ParameterTypes.Select(d => d.ToILString()));
+        return $"{ContainingSymbol.ToILString()}::{Name}({SelfParameterType.ToILString()}{parameterSeparator}{parameters}) -> {ReturnType.ToILString()}";
     }
 }

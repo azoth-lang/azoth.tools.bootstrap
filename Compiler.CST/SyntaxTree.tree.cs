@@ -7,6 +7,8 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -22,9 +24,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(IAttributeSyntax),
     typeof(IGenericParameterSyntax),
     typeof(IParameterSyntax),
+    typeof(ISelfReferenceCapabilitySyntax),
     typeof(IReturnSyntax),
     typeof(ITypeSyntax),
-    typeof(IReferenceCapabilitySyntax),
     typeof(IParameterTypeSyntax),
     typeof(IReturnTypeSyntax),
     typeof(IStatementSyntax),
@@ -225,7 +227,7 @@ public partial interface ITraitMemberDeclarationSyntax : IMemberDeclarationSynta
 public partial interface IMethodDeclarationSyntax : IClassMemberDeclarationSyntax, ITraitMemberDeclarationSyntax, IInvocableDeclarationSyntax
 {
     new SimpleName Name { get; }
-    ISelfParameterSyntax SelfParameter { get; }
+    IMethodSelfParameterSyntax SelfParameter { get; }
     new FixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
     new AcyclicPromise<MethodSymbol> Symbol { get; }
@@ -244,7 +246,7 @@ public partial interface IConstructorDeclarationSyntax : IClassMemberDeclaration
 {
     new IClassDeclarationSyntax DeclaringType { get; }
     new SimpleName? Name { get; }
-    ISelfParameterSyntax SelfParameter { get; }
+    IConstructorSelfParameterSyntax SelfParameter { get; }
     new IBlockBodySyntax Body { get; }
     new AcyclicPromise<ConstructorSymbol> Symbol { get; }
 }
@@ -286,7 +288,7 @@ public partial interface IGenericParameterSyntax : ISyntax
 public partial interface IParameterSyntax : ISyntax
 {
     SimpleName? Name { get; }
-    IPromise<DataType> DataType { get; }
+    IPromise<Pseudotype> DataType { get; }
     bool Unused { get; }
 }
 
@@ -303,15 +305,41 @@ public partial interface INamedParameterSyntax : IParameterSyntax, IConstructorP
     new SimpleName Name { get; }
     Promise<int?> DeclarationNumber { get; }
     ITypeSyntax Type { get; }
+    new IPromise<DataType> DataType { get; }
     new Promise<VariableSymbol> Symbol { get; }
     IExpressionSyntax? DefaultValue { get; }
 }
 
+[Closed(
+    typeof(IConstructorSelfParameterSyntax),
+    typeof(IMethodSelfParameterSyntax))]
 public partial interface ISelfParameterSyntax : IParameterSyntax
 {
     bool IsLentBinding { get; }
-    IReferenceCapabilitySyntax Capability { get; }
     Promise<SelfParameterSymbol> Symbol { get; }
+}
+
+public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
+{
+    IReferenceCapabilitySyntax Capability { get; }
+    new IPromise<DataType> DataType { get; }
+}
+
+public partial interface IMethodSelfParameterSyntax : ISelfParameterSyntax
+{
+    ISelfReferenceCapabilitySyntax Capability { get; }
+}
+
+[Closed(
+    typeof(IReferenceCapabilityConstraintSyntax),
+    typeof(IReferenceCapabilitySyntax))]
+public partial interface ISelfReferenceCapabilitySyntax : ISyntax
+{
+}
+
+public partial interface IReferenceCapabilityConstraintSyntax : ISelfReferenceCapabilitySyntax
+{
+    ReferenceCapabilityConstraint Constraint { get; }
 }
 
 public partial interface IFieldParameterSyntax : IParameterSyntax, IConstructorParameterSyntax
@@ -383,7 +411,7 @@ public partial interface ICapabilityTypeSyntax : ITypeSyntax
     ITypeSyntax Referent { get; }
 }
 
-public partial interface IReferenceCapabilitySyntax : ISyntax
+public partial interface IReferenceCapabilitySyntax : ISelfReferenceCapabilitySyntax
 {
     FixedList<ICapabilityToken> Tokens { get; }
     DeclaredReferenceCapability Declared { get; }

@@ -17,6 +17,7 @@ internal class ReferenceCapabilitySyntax : Syntax, IReferenceCapabilitySyntax
 
     public FixedList<ICapabilityToken> Tokens { get; }
     public DeclaredReferenceCapability Declared { get; }
+    public FixedSet<DeclaredReferenceCapability> AllowedCapabilities { get; }
 
     public ReferenceCapabilitySyntax(
         TextSpan span,
@@ -26,7 +27,9 @@ internal class ReferenceCapabilitySyntax : Syntax, IReferenceCapabilitySyntax
     {
         Tokens = tokens.ToFixedList();
         Declared = declared;
+        AllowedCapabilities = Declared.Yield().ToFixedSet();
     }
 
     public override string ToString() => Declared.ToReferenceCapability().ToSourceString();
+
 }

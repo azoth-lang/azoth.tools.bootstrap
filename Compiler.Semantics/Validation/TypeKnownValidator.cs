@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 
@@ -26,7 +27,7 @@ public class TypeKnownValidator : SyntaxWalker
                 return;
             case IConstructorDeclarationSyntax constructorDeclaration:
                 WalkChildren(constructorDeclaration);
-                constructorDeclaration.SelfParameter.Symbol.Result.DataType.Known();
+                constructorDeclaration.SelfParameter.Symbol.Result.Type.Known();
                 constructorDeclaration.Symbol.Result.ReturnType.Known();
                 return;
             case IMethodDeclarationSyntax methodDeclaration:
@@ -47,7 +48,7 @@ public class TypeKnownValidator : SyntaxWalker
                 return;
             case IFieldDeclarationSyntax fieldDeclaration:
                 WalkChildren(fieldDeclaration);
-                fieldDeclaration.Symbol.Result.DataType.Known();
+                fieldDeclaration.Symbol.Result.Type.Known();
                 return;
             case ITypeSyntax type:
                 WalkChildren(type);
@@ -55,12 +56,12 @@ public class TypeKnownValidator : SyntaxWalker
                 return;
             case IVariableDeclarationStatementSyntax variableDeclaration:
                 WalkChildren(variableDeclaration);
-                variableDeclaration.Symbol.Result.DataType.Known();
+                variableDeclaration.Symbol.Result.Type.Known();
                 return;
             case IForeachExpressionSyntax foreachExpression:
                 WalkChildren(foreachExpression);
                 foreachExpression.ConvertedDataType.Known();
-                foreachExpression.Symbol.Result.DataType.Known();
+                foreachExpression.Symbol.Result.Type.Known();
                 return;
             case IExpressionSyntax expression:
                 WalkChildren(expression);

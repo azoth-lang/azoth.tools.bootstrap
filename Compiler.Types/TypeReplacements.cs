@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -36,6 +38,25 @@ internal sealed class TypeReplacements
                     else
                         replacements.Add(genericParameterType, ReplaceTypeParametersIn(typeArg));
                 }
+    }
+
+
+    public Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype)
+    {
+        return pseudotype switch
+        {
+            DataType type => ReplaceTypeParametersIn(type),
+            ObjectTypeConstraint type => ReplaceTypeParametersIn(type),
+            _ => throw ExhaustiveMatch.Failed(pseudotype)
+        };
+    }
+
+    public ObjectTypeConstraint ReplaceTypeParametersIn(ObjectTypeConstraint pseudotype)
+    {
+        var replacementType = ReplaceTypeParametersIn(pseudotype.BareType);
+        if (!ReferenceEquals(pseudotype.BareType, replacementType))
+            return new ObjectTypeConstraint(pseudotype.Capability, replacementType);
+        return pseudotype;
     }
 
     public DataType ReplaceTypeParametersIn(DataType type)
@@ -76,6 +97,13 @@ internal sealed class TypeReplacements
                     else
                         return replacementType.AccessedVia(capabilityViewpointType.Capability);
 
+                break;
+            }
+            case SelfViewpointType selfViewpointType:
+            {
+                var replacementType = ReplaceTypeParametersIn(selfViewpointType.Referent);
+                if (!ReferenceEquals(selfViewpointType.Referent, replacementType))
+                    return new SelfViewpointType(selfViewpointType.Capability, replacementType);
                 break;
             }
             case AnyType _:

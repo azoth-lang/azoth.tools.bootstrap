@@ -3,7 +3,9 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -20,11 +22,18 @@ public class SelfTypeResolver
     }
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-    public ObjectType EvaluateMethodSelfParameterType(
+    public Pseudotype EvaluateMethodSelfParameterType(
         DeclaredObjectType objectType,
-        IReferenceCapabilitySyntax capability,
-        FixedList<DataType> typeArguments) =>
-        objectType.With(capability.Declared.ToReferenceCapability(), typeArguments);
+        ISelfReferenceCapabilitySyntax capability,
+        FixedList<DataType> typeArguments)
+    {
+        return capability switch
+        {
+            IReferenceCapabilitySyntax syn => objectType.With(syn.Declared.ToReferenceCapability(), typeArguments),
+            IReferenceCapabilityConstraintSyntax syn => objectType.With(syn.Constraint, typeArguments),
+            _ => throw ExhaustiveMatch.Failed(capability)
+        };
+    }
 
     public ObjectType EvaluateConstructorSelfParameterType(
         DeclaredObjectType objectType,

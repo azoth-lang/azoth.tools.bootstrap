@@ -1,7 +1,9 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -20,6 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public sealed class ObjectType : ReferenceType
 {
     public override BareObjectType BareType { get; }
+
     public override DeclaredObjectType DeclaredType => BareType.DeclaredType;
 
     /// <summary>
@@ -73,6 +76,9 @@ public sealed class ObjectType : ReferenceType
 
     public override DataType ReplaceTypeParametersIn(DataType type)
         => BareType.ReplaceTypeParametersIn(type);
+
+    public override Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype)
+        => BareType.ReplaceTypeParametersIn(pseudotype);
 
     #region Equality
     public override bool Equals(DataType? other)

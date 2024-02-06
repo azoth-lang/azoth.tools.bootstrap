@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
@@ -9,14 +11,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 internal class MethodSignature : IEquatable<MethodSignature>
 {
     public SimpleName Name { get; }
-    public ParameterType SelfType { get; }
+    public SelfParameterType SelfType { get; }
     public FixedList<ParameterType> ParameterTypes { get; }
     public ReturnType ReturnType { get; }
     private readonly int hashCode;
 
     public MethodSignature(
         SimpleName name,
-        ParameterType selfType,
+        SelfParameterType selfType,
         FixedList<ParameterType> parameterTypes,
         ReturnType returnType)
     {
@@ -32,8 +34,7 @@ internal class MethodSignature : IEquatable<MethodSignature>
         if (ReferenceEquals(this, other)) return true;
         var selfType = (NonEmptyType)SelfType.Type;
         return Name.Equals(other.Name)
-               // TODO what about lent binding?
-               && SelfType.CanOverrideSelf(selfType.ReplaceTypeParametersIn(other.SelfType))
+               && SelfType.CanOverride(selfType.ReplaceTypeParametersIn(other.SelfType))
                && ParametersCompatible(selfType, other)
                && ReturnType.CanOverride(selfType.ReplaceTypeParametersIn(other.ReturnType));
     }
@@ -71,5 +72,8 @@ internal class MethodSignature : IEquatable<MethodSignature>
     #endregion
 
     public override string ToString()
-        => $"{Name}({string.Join(", ", ParameterTypes.Prepend(SelfType).Select(t => t.ToILString()))}) -> {ReturnType.ToILString()}";
+    {
+        var parameterTypes = ((IEnumerable<IParameterType>)ParameterTypes).Prepend(SelfType);
+        return $"{Name}({string.Join(", ", parameterTypes.Select(t => t.ToILString()))}) -> {ReturnType.ToILString()}";
+    }
 }

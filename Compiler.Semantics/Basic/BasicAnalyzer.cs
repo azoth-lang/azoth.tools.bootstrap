@@ -7,6 +7,8 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -149,8 +151,10 @@ public class BasicAnalyzer
 
         var inConstClass = method.DeclaringType.Symbol.Result.DeclaresType.IsConstType;
         var selfParameterType = symbol.SelfParameterType;
-        var selfCapability = ((ReferenceType)selfParameterType.Type).Capability;
-        if (inConstClass && !(selfCapability == ReferenceCapability.Constant || selfCapability == ReferenceCapability.Identity))
+        var selfType = selfParameterType.Type;
+        if (inConstClass &&
+           ((selfType is ReferenceType { Capability: var selfCapability } && selfCapability != ReferenceCapability.Constant && selfCapability != ReferenceCapability.Identity)
+           || selfType is ObjectTypeConstraint))
             diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(method.File, method.SelfParameter));
 
         ResolveBody(method);
@@ -205,7 +209,7 @@ public class BasicAnalyzer
                 break;
             case IConstructorDeclarationSyntax constructor:
             {
-                ReturnType returnType = new ReturnType(false, constructor.SelfParameter.Symbol.Result.DataType);
+                ReturnType returnType = new ReturnType(false, constructor.SelfParameter.DataType.Result);
                 var resolver = new BasicBodyAnalyzer(constructor, symbolTreeBuilder, symbolTrees,
                     stringSymbol, rangeSymbol, diagnostics, returnType);
                 resolver.ResolveTypes(constructor.Body);
@@ -220,7 +224,7 @@ public class BasicAnalyzer
         {
             var resolver = new BasicBodyAnalyzer(field, symbolTreeBuilder, symbolTrees,
                 stringSymbol, rangeSymbol, diagnostics);
-            resolver.CheckFieldInitializerType(field.Initializer, field.Symbol.Result.DataType);
+            resolver.CheckFieldInitializerType(field.Initializer, field.Symbol.Result.Type);
         }
     }
 }

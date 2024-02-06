@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -13,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(EmptyType),
     typeof(UnknownType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public abstract class DataType : IEquatable<DataType>
+public abstract class DataType : Pseudotype, IEquatable<DataType>
 {
     #region Standard Types
     public static readonly UnknownType Unknown = UnknownType.Instance;
@@ -57,11 +59,6 @@ public abstract class DataType : IEquatable<DataType>
     public virtual bool IsTypeOfValue => false;
 
     /// <summary>
-    /// A known type is one that has no unknown parts.
-    /// </summary>
-    public abstract bool IsFullyKnown { get; }
-
-    /// <summary>
     /// Whether this type allows for writing to instances of it.
     /// </summary>
     public virtual bool AllowsWrite => false;
@@ -78,6 +75,8 @@ public abstract class DataType : IEquatable<DataType>
     public abstract TypeSemantics Semantics { get; }
 
     private protected DataType() { }
+
+    public sealed override DataType ToUpperBound() => this;
 
     /// <summary>
     /// Convert types for literal constants to their corresponding types.
@@ -106,12 +105,6 @@ public abstract class DataType : IEquatable<DataType>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
     public virtual DataType AccessedVia(ReferenceCapability capability) => this;
 
-    [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
-#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
-    public sealed override string ToString()
-#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
-        => throw new NotSupportedException();
-
     #region Equality
     public abstract bool Equals(DataType? other);
 
@@ -128,14 +121,4 @@ public abstract class DataType : IEquatable<DataType>
 
     public static bool operator !=(DataType? left, DataType? right) => !Equals(left, right);
     #endregion
-
-    /// <summary>
-    /// How this type would be written in source code.
-    /// </summary>
-    public abstract string ToSourceCodeString();
-
-    /// <summary>
-    /// How this type would be written in IL.
-    /// </summary>
-    public abstract string ToILString();
 }

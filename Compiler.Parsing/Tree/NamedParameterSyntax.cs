@@ -34,7 +34,7 @@ internal class NamedParameterSyntax : ParameterSyntax, INamedParameterSyntax
         Type = typeSyntax;
         DefaultValue = defaultValue;
         IsLentBinding = isLentBinding;
-        DataType = Symbol.Select(s => s.DataType);
+        DataType = Symbol.Select(s => s.Type);
     }
 
     public override string ToString()

@@ -2,7 +2,9 @@ using System;
 using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -37,6 +39,9 @@ public sealed class BareObjectType : BareReferenceType
 
     public override ObjectType With(ReferenceCapability capability)
         => ObjectType.Create(capability, this);
+
+    public ObjectTypeConstraint With(ReferenceCapabilityConstraint capability)
+        => new(capability, this);
 
     #region Equality
     public override bool Equals(BareReferenceType? other)

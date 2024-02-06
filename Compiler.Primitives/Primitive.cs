@@ -2,7 +2,9 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using static Azoth.Tools.Bootstrap.Compiler.Primitives.SymbolBuilder;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
@@ -57,7 +59,7 @@ public static class Primitive
         var type = new PrimitiveTypeSymbol(integerType);
         tree.Add(type);
 
-        var integerParamType = new ParameterType(false, integerType);
+        var integerParamType = new SelfParameterType(false, integerType);
         var remainderMethod = new MethodSymbol(type, "remainder", integerParamType, Params(integerType), Return(integerType));
         var displayStringMethod = new MethodSymbol(type, "to_display_string", integerParamType, Params(), Return(stringType));
 

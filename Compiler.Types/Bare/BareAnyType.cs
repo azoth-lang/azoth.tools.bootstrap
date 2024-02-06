@@ -1,5 +1,6 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -19,9 +20,9 @@ public sealed class BareAnyType : BareReferenceType
     public override DeclaredAnyType DeclaredType => DeclaredReferenceType.Any;
 
     public override BareReferenceType AccessedVia(ReferenceCapability capability) => this;
-    public override ReferenceType With(ReferenceCapability capability) => new AnyType(capability);
+    public override AnyType With(ReferenceCapability capability) => new AnyType(capability);
 
-    #region Equals
+    #region Equality
     public override bool Equals(BareReferenceType? other) => ReferenceEquals(this, other);
 
     public override int GetHashCode() => HashCode.Combine(SpecialTypeName.Any);

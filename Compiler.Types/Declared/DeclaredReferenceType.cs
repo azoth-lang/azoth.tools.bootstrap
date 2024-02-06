@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -55,9 +56,11 @@ public abstract class DeclaredReferenceType : IEquatable<DeclaredReferenceType>
         GenericParameterDataTypes = GenericParameterTypes.ToFixedList<DataType>();
     }
 
+    public abstract BareReferenceType With(FixedList<DataType> typeArguments);
+
     public abstract ReferenceType With(ReferenceCapability capability, FixedList<DataType> typeArguments);
 
-    #region MyRegion
+    #region Equality
     public abstract bool Equals(DeclaredReferenceType? other);
 
     public override bool Equals(object? obj)

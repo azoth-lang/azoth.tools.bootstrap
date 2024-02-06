@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -54,6 +56,9 @@ public abstract class BareReferenceType : IEquatable<BareReferenceType>
 
     public DataType ReplaceTypeParametersIn(DataType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
+
+    public Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype)
+        => typeReplacements.Value.ReplaceTypeParametersIn(pseudotype);
 
     public abstract BareReferenceType AccessedVia(ReferenceCapability capability);
 

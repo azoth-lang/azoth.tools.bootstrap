@@ -3,6 +3,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
@@ -34,7 +35,7 @@ public sealed class ParameterSharingRelation
         {
             var setForParameter = DeclareVariable(sharingSets, parameterSymbol);
             if (setForParameter is null) continue;
-            if (parameterSymbol.DataType is not ReferenceType { Capability: var capability }) continue;
+            if (parameterSymbol.Type.ToUpperBound() is not ReferenceType { Capability: var capability }) continue;
 
             // These capabilities don't have to worry about external references
             if (capability == ReferenceCapability.Isolated || capability == ReferenceCapability.TemporarilyIsolated

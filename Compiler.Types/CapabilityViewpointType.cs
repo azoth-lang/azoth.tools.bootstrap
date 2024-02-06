@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -11,13 +12,15 @@ public sealed class CapabilityViewpointType : ViewpointType
         return new CapabilityViewpointType(capability, referent);
     }
 
+    public override ReferenceCapability Capability { get; }
+
+    public override GenericParameterType Referent { get; }
+
     private CapabilityViewpointType(ReferenceCapability capability, GenericParameterType referent)
-        : base(referent)
     {
         Capability = capability;
+        Referent = referent;
     }
-
-    public ReferenceCapability Capability { get; }
 
     #region Equals
     public override bool Equals(DataType? other)
@@ -32,7 +35,6 @@ public sealed class CapabilityViewpointType : ViewpointType
     public override int GetHashCode()
         => HashCode.Combine(Capability, Referent);
     #endregion
-
 
     public override string ToSourceCodeString()
         => $"{Capability.ToSourceString()}|>{Referent.ToSourceCodeString()}";

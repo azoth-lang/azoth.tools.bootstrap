@@ -8,6 +8,9 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -20,10 +23,10 @@ public class TypeResolver
 {
     private readonly CodeFile file;
     private readonly Diagnostics diagnostics;
-    private readonly DataType? selfType;
+    private readonly Pseudotype? selfType;
     private readonly ITypeSymbolBuilder? typeSymbolBuilder;
 
-    public TypeResolver(CodeFile file, Diagnostics diagnostics, DataType? selfType)
+    public TypeResolver(CodeFile file, Diagnostics diagnostics, Pseudotype? selfType)
     {
         this.file = file;
         this.diagnostics = diagnostics;
@@ -33,7 +36,7 @@ public class TypeResolver
     public TypeResolver(
         CodeFile file,
         Diagnostics diagnostics,
-        DataType? selfType,
+        Pseudotype? selfType,
         ITypeSymbolBuilder typeSymbolBuilder)
     {
         this.file = file;
@@ -88,18 +91,21 @@ public class TypeResolver
             }
             case ISelfViewpointTypeSyntax syn:
             {
-                var type = Evaluate(syn.Referent);
+                var referentType = Evaluate(syn.Referent);
                 if (selfType is ReferenceType { Capability: var capability }
-                        && type is GenericParameterType genericParameterType)
+                        && referentType is GenericParameterType genericParameterType)
                     return syn.NamedType = CapabilityViewpointType.Create(capability, genericParameterType);
 
-                if (selfType is not ReferenceType)
+                if (selfType is ObjectTypeConstraint { Capability: var capabilityConstraint })
+                    return syn.NamedType = new SelfViewpointType(capabilityConstraint, referentType);
+
+                if (selfType is not (ReferenceType or ObjectTypeConstraint))
                     diagnostics.Add(TypeError.SelfViewpointNotAvailable(file, syn));
 
-                if (type is not GenericParameterType)
+                if (referentType is not GenericParameterType)
                     diagnostics.Add(TypeError.SelfViewpointNotAppliedToTypeParameter(file, syn));
 
-                return syn.NamedType = type;
+                return syn.NamedType = referentType;
             }
         }
 

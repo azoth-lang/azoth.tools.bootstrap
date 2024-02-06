@@ -3,6 +3,8 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
@@ -36,7 +38,7 @@ public partial class Parser
         var lentBinding = Tokens.AcceptToken<ILentKeywordToken>();
         return Tokens.Current switch
         {
-            ICapabilityToken or ISelfKeywordToken => ParseSelfParameter(lentBinding),
+            ICapabilityToken or ICapabilityConstraintToken or ISelfKeywordToken => ParseMethodSelfParameter(lentBinding),
             _ => ParseFunctionParameter(lentBinding),
         };
     }
@@ -49,7 +51,7 @@ public partial class Parser
 
             case ICapabilityToken:
             case ISelfKeywordToken:
-                return ParseSelfParameter(lentBinding);
+                return ParseConstructorSelfParameter(lentBinding);
             case IDotToken _:
             {
                 if (lentBinding is not null)
@@ -69,13 +71,35 @@ public partial class Parser
         }
     }
 
-    private ISelfParameterSyntax ParseSelfParameter(ILentKeywordToken? lentBinding)
+    private IConstructorSelfParameterSyntax ParseConstructorSelfParameter(ILentKeywordToken? lentBinding)
     {
         bool isLentBinding = lentBinding is not null;
         var referenceCapability = ParseReferenceCapability()
                                   ?? ReferenceCapabilitySyntax.ImplicitReadOnly(Tokens.Current.Span.AtStart());
         var selfSpan = Tokens.Expect<ISelfKeywordToken>();
         var span = TextSpan.Covering(lentBinding?.Span, referenceCapability.Span, selfSpan);
-        return new SelfParameterSyntax(span, isLentBinding, referenceCapability);
+        return new ConstructorSelfParameterSyntax(span, isLentBinding, referenceCapability);
+    }
+
+    private IMethodSelfParameterSyntax ParseMethodSelfParameter(ILentKeywordToken? lentBinding)
+    {
+        bool isLentBinding = lentBinding is not null;
+        var referenceCapability = (ISelfReferenceCapabilitySyntax?)AcceptReferenceCapabilityConstraint()
+                                  ?? ParseReferenceCapability()
+                                  ?? ReferenceCapabilitySyntax.ImplicitReadOnly(Tokens.Current.Span.AtStart());
+        var selfSpan = Tokens.Expect<ISelfKeywordToken>();
+        var span = TextSpan.Covering(lentBinding?.Span, referenceCapability.Span, selfSpan);
+        return new MethodSelfParameterSyntax(span, isLentBinding, referenceCapability);
+    }
+
+    private IReferenceCapabilityConstraintSyntax? AcceptReferenceCapabilityConstraint()
+    {
+        var constraint = Tokens.AcceptToken<ICapabilityConstraintToken>();
+        if (constraint is null) return null;
+        return constraint switch
+        {
+            IReadableKeywordToken _ => new ReferenceCapabilityConstraintSyntax(constraint.Span, ReferenceCapabilityConstraint.Readable),
+            _ => throw ExhaustiveMatch.Failed(constraint),
+        };
     }
 }

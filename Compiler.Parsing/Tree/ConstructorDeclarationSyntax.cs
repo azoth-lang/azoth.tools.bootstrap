@@ -14,7 +14,7 @@ internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConst
     public IClassDeclarationSyntax DeclaringType { get; }
     public new SimpleName? Name { get; }
     ITypeDeclarationSyntax IMemberDeclarationSyntax.DeclaringType => DeclaringType;
-    public ISelfParameterSyntax SelfParameter { get; }
+    public IConstructorSelfParameterSyntax SelfParameter { get; }
     public new FixedList<IConstructorParameterSyntax> Parameters { get; }
     public virtual IBlockBodySyntax Body { get; }
     IBodySyntax IConcreteInvocableDeclarationSyntax.Body => Body;
@@ -27,7 +27,7 @@ internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConst
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
         SimpleName? name,
-        ISelfParameterSyntax selfParameter,
+        IConstructorSelfParameterSyntax selfParameter,
         FixedList<IConstructorParameterSyntax> parameters,
         IBlockBodySyntax body)
         : base(span, file, accessModifier, nameSpan, name, parameters,

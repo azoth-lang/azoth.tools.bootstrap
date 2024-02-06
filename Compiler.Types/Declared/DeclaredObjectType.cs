@@ -5,6 +5,9 @@ using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -152,8 +155,14 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         return With(ReferenceCapability.Isolated, GenericParameterDataTypes);
     }
 
+    public override BareObjectType With(FixedList<DataType> typeArguments)
+        => BareObjectType.Create(this, typeArguments);
+
     public override ObjectType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
-        => ObjectType.Create(capability, this, typeArguments);
+        => With(typeArguments).With(capability);
+
+    public ObjectTypeConstraint With(ReferenceCapabilityConstraint capability, FixedList<DataType> typeArguments)
+        => With(typeArguments).With(capability);
 
     /// <summary>
     /// Make a version of this type that is the default read reference capability for the type. That

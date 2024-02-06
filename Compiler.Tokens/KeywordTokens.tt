@@ -100,6 +100,7 @@
         "Out",
         "Independent",
         "Temp",
+        "Readable",
     }.AsReadOnly();
 #>
 using System;

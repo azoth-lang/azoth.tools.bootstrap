@@ -19,7 +19,7 @@ internal class FieldParameterSyntax : ParameterSyntax, IFieldParameterSyntax
     {
         Name = name;
         DefaultValue = defaultValue;
-        DataType = ReferencedSymbol.Select(s => s?.DataType ?? Types.DataType.Unknown);
+        DataType = ReferencedSymbol.Select(s => s?.Type ?? Types.DataType.Unknown);
     }
 
     public override string ToString()
