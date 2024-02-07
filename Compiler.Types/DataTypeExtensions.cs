@@ -5,6 +5,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
@@ -155,7 +156,7 @@ public static class DataTypeExtensions
         return source.Type.IsAssignableFrom(target.Type);
     }
 
-    public static bool IsAssignableFrom(ReturnType target, ReturnType source)
+    public static bool IsAssignableFrom(this ReturnType target, ReturnType source)
     {
         // TODO add more flexibility in lent
         if (target.IsLent != source.IsLent) return false;
@@ -163,6 +164,51 @@ public static class DataTypeExtensions
         // Return types need to be more general in the target than the source.
         return target.Type.IsAssignableFrom(source.Type);
     }
+
+    public static DataType ReplaceSelfWith(this DataType type, DataType selfType)
+    {
+        if (selfType is not ReferenceType selfReferenceType)
+            return type;
+        return type.ReplaceSelfWith(selfReferenceType.Capability);
+    }
+
+    public static DataType ReplaceSelfWith(this DataType type, ReferenceCapability capability)
+    {
+        return type switch
+        {
+            SelfViewpointType t => t.Referent.ReplaceSelfWith(capability).AccessedVia(capability),
+            //ReferenceType t => ReplaceSelfWith(t, capability),
+            //OptionalType t => ReplaceSelfWith(t, capability),
+            _ => type,
+        };
+    }
+
+    //private static DataType ReplaceSelfWith(ReferenceType type, ReferenceCapability capability)
+    //{
+    //    var bareType = type.BareType.ReplaceSelfWith(capability);
+    //    return ReferenceEquals(type.BareType, bareType) ? type : bareType.With(type.Capability);
+    //}
+
+    //private static DataType ReplaceSelfWith(OptionalType type, ReferenceCapability capability)
+    //{
+    //    var referent = type.Referent.ReplaceSelfWith(capability);
+    //    return ReferenceEquals(type.Referent, referent) ? type : new OptionalType(type);
+    //}
+
+    //private static BareReferenceType ReplaceSelfWith(this BareReferenceType type, ReferenceCapability capability)
+    //{
+    //    // TODO data type visitor and replacement
+    //    var typeArguments = type.TypeArguments.ReplaceSelfWith(capability);
+    //    if (type is not SelfBareReferenceType selfType)
+    //        return type;
+
+    //    return selfType.With(capability);
+    //}
+
+    //private static BareReferenceType ReplaceSelfWith(this BareReferenceType type, ReferenceCapability capability)
+    //{
+
+    //}
 
     /// <summary>
     /// Validates that a type as been assigned.

@@ -1356,7 +1356,7 @@ public class BasicBodyAnalyzer
             CheckTypeCompatibility(selfParamUpperBound.Type, selfResult.Syntax);
             CheckTypes(arguments, method.ParameterTypes, flow);
             arguments = arguments with { Self = selfResult };
-            invocation.DataType = method.ReturnType.Type;
+            invocation.DataType = method.ReturnType.Type.ReplaceSelfWith(selfResult.Type);
             AssignInvocationSemantics(invocation, invocation.DataType);
         }
         else
