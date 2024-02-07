@@ -71,18 +71,26 @@ public abstract class ReferenceType : NonEmptyType
 
     public override ReferenceType WithoutWrite() => With(Capability.WithoutWrite());
 
-    public override DataType AccessedVia(ReferenceCapability capability)
+    public override DataType AccessedVia(IReferenceCapabilityConstraint capability)
     {
-        // No field access from `id` hence error and unknown type
-        if (capability == ReferenceCapability.Identity)
-            return DataType.Unknown;
+        switch (capability)
+        {
+            case ReferenceCapability c:
+                // No field access from `id` hence error and unknown type
+                if (capability == ReferenceCapability.Identity)
+                    return DataType.Unknown;
 
-        var newCapability = Capability.AccessedVia(capability);
-        var bareType = BareType.AccessedVia(capability);
-        if (ReferenceEquals(bareType, BareType))
-            return With(newCapability);
+                var newCapability = Capability.AccessedVia(c);
+                var bareType = BareType.AccessedVia(c);
+                if (ReferenceEquals(bareType, BareType))
+                    return With(newCapability);
 
-        return bareType.With(newCapability);
+                return bareType.With(newCapability);
+            case ReferenceCapabilityConstraint c:
+                return new SelfViewpointType(c, this);
+            default:
+                throw ExhaustiveMatch.Failed(capability);
+        }
     }
 
     /// <summary>

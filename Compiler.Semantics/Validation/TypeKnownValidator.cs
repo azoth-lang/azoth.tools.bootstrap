@@ -63,6 +63,11 @@ public class TypeKnownValidator : SyntaxWalker
                 foreachExpression.ConvertedDataType.Known();
                 foreachExpression.Symbol.Result.Type.Known();
                 return;
+            case ISelfExpressionSyntax syn:
+                WalkChildren(syn);
+                syn.ConvertedDataType.Known();
+                syn.Pseudotype.Known();
+                return;
             case IExpressionSyntax expression:
                 WalkChildren(expression);
                 expression.ConvertedDataType.Known();

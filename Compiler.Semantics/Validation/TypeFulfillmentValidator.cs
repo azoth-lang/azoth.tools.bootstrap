@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 
 /// <summary>
-/// Validates that all types are fulfilled. That is that everything as an
+/// Validates that all types are fulfilled. That is that everything has an
 /// assigned type, even if that type is Unknown.
 /// </summary>
 public class TypeFulfillmentValidator : SyntaxWalker

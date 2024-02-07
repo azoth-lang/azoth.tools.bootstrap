@@ -92,10 +92,12 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     /// Return the type for when a value of this type is accessed via a type of the given value.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
-    public DataType AccessedVia(DataType contextType)
+    public DataType AccessedVia(Pseudotype contextType)
     {
         if (contextType is ReferenceType contextReferenceType)
             return AccessedVia(contextReferenceType.Capability);
+        if (contextType is ObjectTypeConstraint objectTypeConstraint)
+            return AccessedVia(objectTypeConstraint.Capability);
         return this;
     }
 
@@ -103,7 +105,7 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     /// Return the type for when a value of this type is accessed via a reference with the given capability.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
-    public virtual DataType AccessedVia(ReferenceCapability capability) => this;
+    public virtual DataType AccessedVia(IReferenceCapabilityConstraint capability) => this;
 
     #region Equality
     public abstract bool Equals(DataType? other);

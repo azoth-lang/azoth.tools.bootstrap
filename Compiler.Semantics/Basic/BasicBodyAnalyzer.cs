@@ -818,10 +818,11 @@ public class BasicBodyAnalyzer
             case IQualifiedNameExpressionSyntax exp:
             {
                 var contextResult = InferType(exp.Context, flow);
+                var contextType = exp.Context is ISelfExpressionSyntax self ? self.Pseudotype.Assigned() : contextResult.Type;
                 var member = exp.Member;
-                var contextSymbol = contextResult.Type is VoidType && exp.Context is INameExpressionSyntax context
+                var contextSymbol = contextType is VoidType && exp.Context is INameExpressionSyntax context
                     ? context.ReferencedSymbol.Result
-                    : LookupSymbolForType(contextResult.Type);
+                    : LookupSymbolForType(contextType);
                 if (contextSymbol is null)
                 {
                     member.ReferencedSymbol.Fulfill(null);
@@ -833,11 +834,11 @@ public class BasicBodyAnalyzer
                 var memberSymbols = symbolTrees.Children(contextSymbol)
                                                .Where(s => s.Name == member.Name).ToFixedList();
                 var type = InferReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
-                if (contextResult.Type is NonEmptyType nonEmptyContext)
+                if (contextType is NonEmptyType nonEmptyContext)
                     // resolve generic type fields
                     type = nonEmptyContext.ReplaceTypeParametersIn(type);
 
-                type = type.AccessedVia(contextResult.Type);
+                type = type.AccessedVia(contextType);
                 var resultVariable = contextResult.Variable;
                 var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 member.Semantics = semantics;
@@ -888,6 +889,8 @@ public class BasicBodyAnalyzer
                 var referenceSemantics = ExpressionSemantics.MutableReference;
                 exp.Semantics = type.Semantics.ToExpressionSemantics(referenceSemantics);
                 exp.DataType = type;
+                // Works for `readable` but won't work for any future capability constraints
+                exp.Pseudotype = selfSymbol?.Type is ObjectTypeConstraint ? selfSymbol.Type : type;
                 return new ExpressionResult(exp, variableResult);
             }
             case INoneLiteralExpressionSyntax exp:
@@ -985,6 +988,8 @@ public class BasicBodyAnalyzer
         const ExpressionSemantics semantics = ExpressionSemantics.IsolatedReference;
         exp.Referent.Semantics = semantics;
         exp.Referent.DataType = type;
+        if (exp.Referent is ISelfExpressionSyntax selfExpression)
+            selfExpression.Pseudotype = type;
         exp.Semantics = semantics;
         exp.DataType = type;
         return new ExpressionResult(exp);
@@ -1021,6 +1026,8 @@ public class BasicBodyAnalyzer
         const ExpressionSemantics semantics = ExpressionSemantics.ConstReference;
         exp.Referent.Semantics = semantics;
         exp.Referent.DataType = type;
+        if (exp.Referent is ISelfExpressionSyntax selfExpression)
+            selfExpression.Pseudotype = type;
         exp.Semantics = semantics;
         exp.DataType = type;
         return new ExpressionResult(exp);
@@ -1996,6 +2003,16 @@ public class BasicBodyAnalyzer
         if (symbol is MethodSymbol { SelfParameterType: var selfType })
             return selfType;
         return null;
+    }
+
+    private TypeSymbol? LookupSymbolForType(Pseudotype pseudotype)
+    {
+        return pseudotype switch
+        {
+            DataType t => LookupSymbolForType(t),
+            ObjectTypeConstraint t => LookupSymbolForType(t.BareType.DeclaredType),
+            _ => throw ExhaustiveMatch.Failed(pseudotype)
+        };
     }
 
     private TypeSymbol? LookupSymbolForType(DataType dataType)
