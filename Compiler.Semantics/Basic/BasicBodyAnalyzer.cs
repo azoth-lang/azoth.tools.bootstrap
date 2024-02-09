@@ -817,6 +817,8 @@ public class BasicBodyAnalyzer
             }
             case IQualifiedNameExpressionSyntax exp:
             {
+                if (exp.Member.Name == "value" && exp.Context is ISimpleNameExpressionSyntax c && c.Name == "pair")
+                    Debugger.Break();
                 var contextResult = InferType(exp.Context, flow);
                 var contextType = exp.Context is ISelfExpressionSyntax self ? self.Pseudotype.Assigned() : contextResult.Type;
                 var member = exp.Member;
@@ -834,11 +836,14 @@ public class BasicBodyAnalyzer
                 var memberSymbols = symbolTrees.Children(contextSymbol)
                                                .Where(s => s.Name == member.Name).ToFixedList();
                 var type = InferReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
+
+                // Access must be applied first so it can account for independent generic parameters.
+                type = type.AccessedVia(contextType);
+                // Then type parameters can be replaced now that they have the correct access
                 if (contextType is NonEmptyType nonEmptyContext)
                     // resolve generic type fields
                     type = nonEmptyContext.ReplaceTypeParametersIn(type);
 
-                type = type.AccessedVia(contextType);
                 var resultVariable = contextResult.Variable;
                 var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 member.Semantics = semantics;
