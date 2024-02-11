@@ -378,7 +378,7 @@ public class BasicBodyAnalyzer
             case (ObjectType { IsTemporarilyConstantReference: true } to, ObjectType { AllowsFreeze: true } from)
                 when to.BareType.IsAssignableFrom(targetAllowsWrite: false, from.BareType):
             {
-                if (enact) newResult = flow.LendConst(fromResult!);
+                if (enact) newResult = flow.TempFreeze(fromResult!);
                 return new FreezeConversion(priorConversion, ConversionKind.Temporary);
             }
             case (ObjectType { IsConstantReference: true } to, ObjectType { AllowsFreeze: true } from)
@@ -392,7 +392,7 @@ public class BasicBodyAnalyzer
             case (ObjectType { IsTemporarilyIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from)
                 when to.BareType.IsAssignableFrom(targetAllowsWrite: true, from.BareType):
             {
-                if (enact) newResult = flow.LendIso(fromResult!);
+                if (enact) newResult = flow.TempMove(fromResult!);
                 return new MoveConversion(priorConversion, ConversionKind.Temporary);
             }
             case (ObjectType { IsIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from)

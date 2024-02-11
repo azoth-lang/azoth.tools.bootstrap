@@ -24,7 +24,7 @@ public sealed class FlowState
     private readonly Diagnostics diagnostics;
     private readonly CodeFile file;
     private readonly ResultVariableFactory resultVariableFactory;
-    private readonly ImplicitLendFactory implicitLendFactory;
+    private readonly TempConversionFactory tempConversionFactory;
 
     private readonly Dictionary<ICapabilitySharingVariable, FlowCapability> capabilities;
 
@@ -59,7 +59,7 @@ public sealed class FlowState
         Dictionary<ICapabilitySharingVariable, FlowCapability> capabilities,
         IEnumerable<SharingSet> sharing,
         ResultVariableFactory resultVariableFactory,
-        ImplicitLendFactory implicitLendFactory)
+        TempConversionFactory tempConversionFactory)
     {
         this.diagnostics = diagnostics;
         this.file = file;
@@ -70,11 +70,11 @@ public sealed class FlowState
             foreach (var variable in set)
                 subsetFor.Add(variable, set);
         this.resultVariableFactory = resultVariableFactory;
-        this.implicitLendFactory = implicitLendFactory;
+        this.tempConversionFactory = tempConversionFactory;
     }
 
     public FlowState Fork()
-        => new(diagnostics, file, capabilities, sets.Select(s => new SharingSet(s)), resultVariableFactory, implicitLendFactory);
+        => new(diagnostics, file, capabilities, sets.Select(s => new SharingSet(s)), resultVariableFactory, tempConversionFactory);
 
     /// <summary>
     /// Declare the given symbol and combine it with the result variable.
@@ -254,31 +254,31 @@ public sealed class FlowState
     }
 
     /// <summary>
-    /// Mark the result as being lent const.
+    /// Mark the result as being `temp const`.
     /// </summary>
     /// <remarks>Because the current result must be at least temporarily const, all references in
     /// the sharing set must now not allow mutation.</remarks>
-    public ResultVariable LendConst(ResultVariable result)
-        => Lend(result, implicitLendFactory.CreateConstLend());
+    public ResultVariable TempFreeze(ResultVariable result)
+        => TemporarilyConvert(result, tempConversionFactory.CreateTempFreeze());
 
     /// <summary>
-    /// Mark the result as being lent iso.
+    /// Mark the result as being `temp iso`.
     /// </summary>
     /// <remarks>Because the current result must be at least temporarily iso, all references in
     /// the sharing set must now not allow mutation or read.</remarks>
-    public ResultVariable LendIso(ResultVariable result)
-        => Lend(result, implicitLendFactory.CreateIsoLend());
+    public ResultVariable TempMove(ResultVariable result)
+        => TemporarilyConvert(result, tempConversionFactory.CreateTempMove());
 
-    private ResultVariable Lend(ResultVariable result, ImplicitLend lend)
+    private ResultVariable TemporarilyConvert(ResultVariable result, TempConversion tempConversion)
     {
         _ = SharingSet(result);
         var borrowingResult = resultVariableFactory.Create();
-        TrackCapability(borrowingResult, lend.LendAs);
+        TrackCapability(borrowingResult, tempConversion.ConvertTo);
         SharingDeclare(borrowingResult, true);
-        SharingDeclare(lend.From, false);
-        SharingUnion(result, lend.From, null);
-        SharingDeclare(lend.To, true);
-        SharingUnion(borrowingResult, lend.To, null);
+        SharingDeclare(tempConversion.From, false);
+        SharingUnion(result, tempConversion.From, null);
+        SharingDeclare(tempConversion.To, true);
+        SharingUnion(borrowingResult, tempConversion.To, null);
         // Apply read/write restrictions because the level may have increased to that
         SetRestrictions(SharingSet(result), applyReadWriteRestriction: true);
         return borrowingResult;
@@ -386,8 +386,8 @@ public sealed class FlowState
         affectedSets.Add(set);
         if (!set.IsAlive) affectedSets.AddRange(SharingDropAll(set));
         if (set.Count == 0) sets.Remove(set);
-        if (variable is ImplicitLendTo lendTo)
-            affectedSets.AddRange(SharingDrop(lendTo.From));
+        if (variable is TempConversionTo tempConversionTo)
+            affectedSets.AddRange(SharingDrop(tempConversionTo.From));
         return affectedSets;
     }
 

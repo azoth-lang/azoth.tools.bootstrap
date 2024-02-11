@@ -98,7 +98,7 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
     public bool AllowsReadAliases { get; }
     /// <summary>
     /// Whether this kind of reference permits aliases that have been sequestered to temporarily
-    /// strengthen the capability of the reference. This is only relevant for `iso` and `const`.
+    /// strengthen the capability of the reference. This is only true for `temp iso` and `temp const`.
     /// </summary>
     public bool AllowsSequesteredAliases { get; }
 
