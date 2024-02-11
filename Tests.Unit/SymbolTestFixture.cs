@@ -118,8 +118,7 @@ public abstract class SymbolTestFixture
         bool? isConst = null,
         ReferenceCapability? referenceCapability = null)
     {
-        return new ReturnType(false,
-            DataType(name, containingPackage, containingNamespace, isConst, referenceCapability));
+        return new ReturnType(DataType(name, containingPackage, containingNamespace, isConst, referenceCapability));
     }
 
     protected ObjectTypeSymbol Type(

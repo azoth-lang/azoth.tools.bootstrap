@@ -12,7 +12,7 @@ internal static class SymbolBuilder
     public static FixedList<ParameterType> Params(params DataType[] types)
         => types.Select(t => new ParameterType(false, t)).ToFixedList();
 
-    public static ReturnType Return(DataType type) => new(false, type);
+    public static ReturnType Return(DataType type) => new(type);
 
     public static FunctionSymbol Function(Symbol containingSymbol, SimpleName name, FixedList<ParameterType> @params)
         => new(containingSymbol, name, new FunctionType(@params, ReturnType.Void));

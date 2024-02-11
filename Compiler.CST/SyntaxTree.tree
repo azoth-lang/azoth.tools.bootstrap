@@ -77,7 +77,7 @@ MethodSelfParameter: SelfParameter = IsLentBinding:'bool' Capability:SelfReferen
 SelfReferenceCapability;
 ReferenceCapabilityConstraint: SelfReferenceCapability = Constraint:'ReferenceCapabilityConstraint';
 FieldParameter: Parameter, ConstructorParameter = Name:'SimpleName' ReferencedSymbol:'Promise<FieldSymbol?>' DefaultValue:Expression?;
-Return = IsLent:'bool' Type;
+Return = Type; // Return type of a function or method
 
 // ---------- Function Parts
 Body: BodyOrBlock;
@@ -95,7 +95,7 @@ CapabilityType: Type = Capability:ReferenceCapability Referent:Type;
 ReferenceCapability: SelfReferenceCapability = Tokens:'ICapabilityToken'* Declared:'DeclaredReferenceCapability';
 FunctionType: Type = Parameters:ParameterType* Return:ReturnType;
 ParameterType = IsLent:'bool' Referent:Type;
-ReturnType = IsLent:'bool' Referent:Type;
+ReturnType = Referent:Type; // Return type of function type
 ViewpointType: Type = Referent:Type;
 CapabilityViewpointType: ViewpointType = Capability:ReferenceCapability Referent:Type;
 SelfViewpointType: ViewpointType = ReferencedSymbol:'Promise<SelfParameterSymbol?>' Referent:Type;

@@ -152,7 +152,7 @@ public class TypeResolver
     private ReturnType Evaluate(IReturnTypeSyntax syn)
     {
         var referent = Evaluate(syn.Referent);
-        return new ReturnType(syn.IsLent, referent);
+        return new ReturnType(referent);
     }
 
     /// <summary>

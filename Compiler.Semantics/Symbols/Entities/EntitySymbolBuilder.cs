@@ -94,7 +94,7 @@ public class EntitySymbolBuilder
         var selfParameterType = ResolveMethodSelfParameterType(file, method.SelfParameter, method.DeclaringType);
         var resolver = new TypeResolver(file, diagnostics, selfParameterType.Type);
         var parameterTypes = ResolveParameterTypes(resolver, method.Parameters, method.DeclaringType);
-        var returnType = ResolveReturnType(resolver, file, method.Return);
+        var returnType = ResolveReturnType(resolver, method.Return);
         var symbol = new MethodSymbol(declaringTypeSymbol, method.Name, selfParameterType, parameterTypes, returnType);
         method.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);
@@ -124,7 +124,7 @@ public class EntitySymbolBuilder
         var file = associatedFunction.File;
         var resolver = new TypeResolver(file, diagnostics, selfType: null);
         var parameterTypes = ResolveParameterTypes(resolver, associatedFunction.Parameters);
-        var returnType = ResolveReturnType(resolver, file, associatedFunction.Return);
+        var returnType = ResolveReturnType(resolver, associatedFunction.Return);
         var type = new FunctionType(parameterTypes, returnType);
         var declaringTypeSymbol = associatedFunction.DeclaringType.Symbol.Result;
         var symbol = new FunctionSymbol(declaringTypeSymbol, associatedFunction.Name, type);
@@ -153,7 +153,7 @@ public class EntitySymbolBuilder
         var file = function.File;
         var resolver = new TypeResolver(file, diagnostics, selfType: null);
         var parameterTypes = ResolveParameterTypes(resolver, function.Parameters);
-        var returnType = ResolveReturnType(resolver, file, function.Return);
+        var returnType = ResolveReturnType(resolver, function.Return);
         var type = new FunctionType(parameterTypes, returnType);
         var symbol = new FunctionSymbol(function.ContainingNamespaceSymbol, function.Name, type);
         function.Symbol.Fulfill(symbol);
@@ -431,23 +431,15 @@ public class EntitySymbolBuilder
         symbolTree.Add(symbol);
     }
 
-    private ReturnType ResolveReturnType(
+    private static ReturnType ResolveReturnType(
         TypeResolver resolver,
-        CodeFile file,
         IReturnSyntax? returnSyntax)
     {
         if (returnSyntax is null)
             return ReturnType.Void;
         DataType type = resolver.Evaluate(returnSyntax.Type);
-        var isLent = returnSyntax.IsLent;
-        if (isLent && type is ReferenceType { IsIdentityReference: true })
-        {
-            diagnostics.Add(TypeError.LentIdentity(file, returnSyntax.Span));
-            isLent = false;
-        }
-        return new ReturnType(isLent, type);
+        return new ReturnType(type);
     }
-
 
     private class TypeSymbolBuilder : ITypeSymbolBuilder, IEnumerable<ITypeDeclarationSyntax>
     {

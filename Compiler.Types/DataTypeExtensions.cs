@@ -157,13 +157,8 @@ public static class DataTypeExtensions
     }
 
     public static bool IsAssignableFrom(this ReturnType target, ReturnType source)
-    {
-        // TODO add more flexibility in lent
-        if (target.IsLent != source.IsLent) return false;
-
         // Return types need to be more general in the target than the source.
-        return target.Type.IsAssignableFrom(source.Type);
-    }
+        => target.Type.IsAssignableFrom(source.Type);
 
     public static DataType ReplaceSelfWith(this DataType type, DataType selfType)
     {

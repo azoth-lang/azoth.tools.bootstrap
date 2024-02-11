@@ -351,7 +351,6 @@ public partial interface IFieldParameterSyntax : IParameterSyntax, IConstructorP
 
 public partial interface IReturnSyntax : ISyntax
 {
-    bool IsLent { get; }
     ITypeSyntax Type { get; }
 }
 
@@ -431,7 +430,6 @@ public partial interface IParameterTypeSyntax : ISyntax
 
 public partial interface IReturnTypeSyntax : ISyntax
 {
-    bool IsLent { get; }
     ITypeSyntax Referent { get; }
 }
 

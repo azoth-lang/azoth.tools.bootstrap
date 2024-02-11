@@ -1,6 +1,6 @@
 published class List_Iterator[T]
 {
-    let list: const List[T];
+    let list: temp const List[T];
     var index: size;
 
 

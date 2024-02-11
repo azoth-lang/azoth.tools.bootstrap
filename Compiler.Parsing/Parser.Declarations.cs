@@ -157,10 +157,9 @@ public partial class Parser
         var rightArrow = Tokens.AcceptToken<IRightArrowToken>();
         if (rightArrow is null)
             return null;
-        var lent = Tokens.AcceptToken<ILentKeywordToken>();
         var type = ParseType();
         var span = TextSpan.Covering(rightArrow.Span, type.Span);
-        return new ReturnSyntax(span, lent is not null, type);
+        return new ReturnSyntax(span, type);
     }
     #endregion
 

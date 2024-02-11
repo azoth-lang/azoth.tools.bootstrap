@@ -246,9 +246,7 @@ public partial class Parser
 
     private IReturnTypeSyntax ParseReturnType()
     {
-        var lent = Tokens.AcceptToken<ILentKeywordToken>();
         var referent = ParseType();
-        var span = TextSpan.Covering(lent?.Span, referent.Span);
-        return new ReturnTypeSyntax(span, lent is not null, referent);
+        return new ReturnTypeSyntax(referent.Span, referent);
     }
 }

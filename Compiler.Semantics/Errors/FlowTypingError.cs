@@ -33,6 +33,6 @@ public static class FlowTypingError
     public static Diagnostic CannotReturnLent(CodeFile file, IReturnExpressionSyntax expression)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            4005, "Cannot return lent value from function with return type not declared `lent`");
+            4005, "Cannot return lent value from function");
     }
 }

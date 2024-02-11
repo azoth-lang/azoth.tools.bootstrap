@@ -62,6 +62,7 @@ internal static class Parser
                              .Where(l => !l.StartsWith(Program.DirectiveMarker, StringComparison.InvariantCulture)
                                          && !l.StartsWith("//", StringComparison.InvariantCulture)
                                          && !string.IsNullOrWhiteSpace(l))
+                             .Select(RemoveComment)
                              .Select(l => l.TrimEnd(';')) // TODO error if no semicolon
                              .ToList()!;
         foreach (var ruleLine in ruleLines)
@@ -78,6 +79,13 @@ internal static class Parser
 
             yield return new GrammarRule(nonterminal, parents, properties);
         }
+    }
+
+    private static string RemoveComment(string line)
+    {
+        var commentIndex = line.IndexOf("//", StringComparison.InvariantCulture);
+        // Must trim end because caller assumes line has been trimmed
+        return commentIndex == -1 ? line : line[..commentIndex].TrimEnd();
     }
 
     private static IEnumerable<GrammarProperty> ParseDefinition(string? definition)

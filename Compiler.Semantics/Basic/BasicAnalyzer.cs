@@ -209,7 +209,7 @@ public class BasicAnalyzer
                 break;
             case IConstructorDeclarationSyntax constructor:
             {
-                ReturnType returnType = new ReturnType(false, constructor.SelfParameter.DataType.Result);
+                ReturnType returnType = new ReturnType(constructor.SelfParameter.DataType.Result);
                 var resolver = new BasicBodyAnalyzer(constructor, symbolTreeBuilder, symbolTrees,
                     stringSymbol, rangeSymbol, diagnostics, returnType);
                 resolver.ResolveTypes(constructor.Body);

@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Framework;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 
 /// <summary>
-/// A contextualized invokable symbol
+/// A contextualized invokable symbol.
 /// </summary>
 /// <remarks>Contextualized symbols have type parameters replaced.</remarks>
 public class Contextualized<TSymbol>

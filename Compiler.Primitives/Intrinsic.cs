@@ -149,7 +149,7 @@ public static class Intrinsic
         tree.Add(constructor);
 
         // published fn get_fixed() -> F;
-        var getFixed = new MethodSymbol(classSymbol, "get_fixed", mutClassParamType, Params(), new ReturnType(false, fixedType));
+        var getFixed = new MethodSymbol(classSymbol, "get_fixed", mutClassParamType, Params(), Return(fixedType));
         tree.Add(getFixed);
 
         // published fn set_fixed(fixed: F);

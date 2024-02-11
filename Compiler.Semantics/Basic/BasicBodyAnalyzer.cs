@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -482,7 +481,7 @@ public class BasicBodyAnalyzer
                     result = AddImplicitConversionIfNeeded(result, expectedType, flow);
                     CheckTypeCompatibility(expectedType, exp.Value);
                     // TODO use proper check instead of `is not ValueType`
-                    if (!expectedReturnType.IsLent && flow.IsLent(result.Variable) && expectedReturnType.Type is not ValueType)
+                    if (flow.IsLent(result.Variable) && expectedReturnType.Type is not ValueType)
                         diagnostics.Add(FlowTypingError.CannotReturnLent(file, exp));
                     flow.Drop(result.Variable);
                 }
@@ -1169,23 +1168,11 @@ public class BasicBodyAnalyzer
         FlowState flow,
         IExpressionSyntax exp)
     {
-        IEnumerable<ExpressionResult> arguments;
-        if (returnType?.IsLent == true)
-        {
-            // When return is lent, only lent arguments are combined.
-            arguments = parameterTypes?.Zip(results.Arguments).Where(t => t.First.IsLent).Select(t => t.Second)
+        // Lent arguments are not combined.
+        var arguments = parameterTypes?.Zip(results.Arguments).Where(t => !t.First.IsLent).Select(t => t.Second)
                         ?? results.Arguments;
-            if (results.Self is not null && selfType?.IsLent == true)
-                arguments = arguments.Prepend(results.Self);
-        }
-        else
-        {
-            // When return is not lent, lent arguments are not combined.
-            arguments = parameterTypes?.Zip(results.Arguments).Where(t => !t.First.IsLent).Select(t => t.Second)
-                        ?? results.Arguments;
-            if (results.Self is not null && !selfType?.IsLent == true)
-                arguments = arguments.Prepend(results.Self);
-        }
+        if (results.Self is not null && !selfType?.IsLent == true)
+            arguments = arguments.Prepend(results.Self);
 
         return arguments.Select(r => r.Variable).Aggregate(default(ResultVariable?), (v1, v2) => flow.Combine(v1, v2, exp));
     }
@@ -1291,7 +1278,6 @@ public class BasicBodyAnalyzer
                     }
                     var methodSymbols = LookupSymbols<MethodSymbol>(typeSymbol, exp.Member);
 
-                    if (exp.Member.Name == "edit") Debugger.Break();
                     var method = InferSymbol(invocation, methodSymbols, args, flow);
 
                     return InferMethodInvocationType(invocation, method, args, flow);

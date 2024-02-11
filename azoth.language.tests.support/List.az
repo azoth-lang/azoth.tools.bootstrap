@@ -61,6 +61,6 @@ published class List[T]
         .items.shrink(0);
     }
 
-    published fn iterate(lent const self) -> lent mut List_Iterator[T]
+    published fn iterate(temp const self) -> mut List_Iterator[T]
         => new List_Iterator[T](self);
 }

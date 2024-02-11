@@ -19,7 +19,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
         ObjectType selfParameterType,
         FixedList<ParameterType> parameterTypes)
         : base(containingSymbol, name, parameterTypes,
-            new ReturnType(false, containingSymbol.DeclaresType.ToConstructorReturn(selfParameterType, parameterTypes)))
+            new ReturnType(containingSymbol.DeclaresType.ToConstructorReturn(selfParameterType, parameterTypes)))
     {
         ContainingSymbol = containingSymbol;
         SelfParameterType = selfParameterType;

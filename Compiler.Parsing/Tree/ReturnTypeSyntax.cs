@@ -5,15 +5,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class ReturnTypeSyntax : Syntax, IReturnTypeSyntax
 {
-    public bool IsLent { get; }
     public ITypeSyntax Referent { get; }
 
-    public ReturnTypeSyntax(TextSpan span, bool isLent, ITypeSyntax referent)
+    public ReturnTypeSyntax(TextSpan span, ITypeSyntax referent)
         : base(span)
     {
-        IsLent = isLent;
         Referent = referent;
     }
 
-    public override string ToString() => $"{(IsLent ? "lent " : "")}{Referent}";
+    public override string ToString() => Referent.ToString();
 }
