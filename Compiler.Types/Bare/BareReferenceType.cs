@@ -24,6 +24,8 @@ public abstract class BareReferenceType : IEquatable<BareReferenceType>
 
     public FixedList<DataType> TypeArguments { get; }
 
+    public bool HasIndependentTypeArguments { get; }
+
     private readonly Lazy<FixedSet<BareReferenceType>> supertypes;
     public FixedSet<BareReferenceType> Supertypes => supertypes.Value;
 
@@ -44,6 +46,7 @@ public abstract class BareReferenceType : IEquatable<BareReferenceType>
                 $"Number of type arguments must match. Given `[{typeArguments.ToILString()}]` for `{declaredType}`.",
                 nameof(typeArguments));
         TypeArguments = typeArguments;
+        HasIndependentTypeArguments = declaredType.HasIndependentGenericParameters || TypeArguments.Any(a => a.HasIndependentTypeArguments);
         IsFullyKnown = typeArguments.All(a => a.IsFullyKnown);
         typeReplacements = new(GetTypeReplacements);
         supertypes = new(GetSupertypes);

@@ -34,6 +34,8 @@ public abstract class DeclaredReferenceType : IEquatable<DeclaredReferenceType>
 
     public FixedList<GenericParameter> GenericParameters { get; }
 
+    public bool HasIndependentGenericParameters { get; }
+
     public bool AllowsVariance { get; }
 
     public FixedList<GenericParameterType> GenericParameterTypes { get; }
@@ -51,6 +53,7 @@ public abstract class DeclaredReferenceType : IEquatable<DeclaredReferenceType>
         IsConstType = isConstType;
         IsAbstract = isAbstract;
         GenericParameters = genericParametersTypes.Select(t => t.Parameter).ToFixedList();
+        HasIndependentGenericParameters = GenericParameters.Any(p => p.Variance == Variance.Independent);
         AllowsVariance = GenericParameters.Any(p => p.Variance != Variance.Invariant);
         GenericParameterTypes = genericParametersTypes;
         GenericParameterDataTypes = GenericParameterTypes.ToFixedList<DataType>();

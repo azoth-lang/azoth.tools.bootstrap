@@ -25,6 +25,8 @@ public sealed class ObjectType : ReferenceType
 
     public override DeclaredObjectType DeclaredType => BareType.DeclaredType;
 
+    public override bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
+
     /// <summary>
     /// Create a object type for a given class or trait.
     /// </summary>

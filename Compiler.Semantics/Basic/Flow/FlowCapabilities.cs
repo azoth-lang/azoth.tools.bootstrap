@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
+using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
@@ -21,8 +23,53 @@ public readonly struct FlowCapabilities
     public FlowCapabilities(ReferenceType type)
     {
         Outer = type.Capability;
-        // TODO properly compute type parameters capabilities
-        TypeParameters = FixedDictionary<TypeParameterIndex, FlowCapability>.Empty;
+        TypeParameters = FlowCapabilitiesForTypeParameters(type);
+    }
+
+    private static FixedDictionary<TypeParameterIndex, FlowCapability> FlowCapabilitiesForTypeParameters(ReferenceType type)
+    {
+        if (!type.HasIndependentTypeArguments)
+            return FixedDictionary<TypeParameterIndex, FlowCapability>.Empty;
+
+        var index = new Stack<int>();
+        return FlowCapabilitiesForTypeParameters(type, index).ToFixedDictionary();
+    }
+
+    private static IEnumerable<(TypeParameterIndex, FlowCapability)> FlowCapabilitiesForTypeParameters(
+        ReferenceType type,
+        Stack<int> parentIndex)
+        => FlowCapabilitiesForImmediateTypeParameters(type, parentIndex)
+            .Concat(FlowCapabilitiesForChildTypeParameters(type, parentIndex));
+
+
+    private static IEnumerable<(TypeParameterIndex, FlowCapability)> FlowCapabilitiesForImmediateTypeParameters(ReferenceType type, Stack<int> parentIndex)
+    {
+        var joinedTypeArguments = type.TypeArguments.Enumerate().EquiZip(type.DeclaredType.GenericParameters, (arg, param) => (arg.Index, Arg: arg.Value, Param: param));
+        var independentTypeArguments = joinedTypeArguments.Where(tuple => tuple.Param.Variance == Variance.Independent);
+        var independentReferenceTypeArguments = independentTypeArguments.Select(tuple => (tuple.Index, Arg: tuple.Arg as ReferenceType))
+                                                                        .Where(tuple => tuple.Arg is not null);
+
+        foreach (var (i, arg) in independentReferenceTypeArguments)
+        {
+            parentIndex.Push(i);
+            yield return (new TypeParameterIndex(parentIndex.ToFixedList()), arg!.Capability);
+            parentIndex.Pop();
+        }
+    }
+
+    private static IEnumerable<(TypeParameterIndex, FlowCapability)> FlowCapabilitiesForChildTypeParameters(
+        ReferenceType type,
+        Stack<int> parentIndex)
+    {
+        IEnumerable<(TypeParameterIndex, FlowCapability)> flowCapabilities = Enumerable.Empty<(TypeParameterIndex, FlowCapability)>();
+        foreach (var (arg, i) in type.TypeArguments.Enumerate().Where(tuple => tuple.Value is ReferenceType))
+        {
+            parentIndex.Push(i);
+            flowCapabilities = flowCapabilities.Concat(FlowCapabilitiesForTypeParameters((ReferenceType)arg, parentIndex));
+            parentIndex.Pop();
+        }
+
+        return flowCapabilities;
     }
 
     public FlowCapabilities(

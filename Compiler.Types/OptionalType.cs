@@ -14,7 +14,9 @@ public sealed class OptionalType : ValueType
 {
     public DataType Referent { get; }
 
-    public override bool IsFullyKnown { get; }
+    public override bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
+
+    public override bool IsFullyKnown => Referent.IsFullyKnown;
 
     public override TypeSemantics Semantics =>
         Referent.Semantics == TypeSemantics.Never
@@ -25,7 +27,6 @@ public sealed class OptionalType : ValueType
         if (referent is VoidType)
             throw new ArgumentException("Cannot create `void?` type", nameof(referent));
         Referent = referent;
-        IsFullyKnown = referent.IsFullyKnown;
     }
 
     #region Equals

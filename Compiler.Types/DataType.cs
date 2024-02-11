@@ -74,6 +74,8 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     /// </summary>
     public abstract TypeSemantics Semantics { get; }
 
+    public virtual bool HasIndependentTypeArguments => false;
+
     private protected DataType() { }
 
     public sealed override DataType ToUpperBound() => this;
