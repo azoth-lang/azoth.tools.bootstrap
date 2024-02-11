@@ -26,7 +26,7 @@ public sealed class FlowState
     private readonly ResultVariableFactory resultVariableFactory;
     private readonly TempConversionFactory tempConversionFactory;
 
-    private readonly Dictionary<ICapabilitySharingVariable, FlowCapability> capabilities;
+    private readonly Dictionary<ICapabilitySharingVariable, FlowCapabilities> capabilities;
 
     /// <summary>
     /// All the distinct subsets of variables
@@ -45,7 +45,7 @@ public sealed class FlowState
         : this(diagnostics, file, new(), parameterSharing.SharingSets.Select(s => s.MutableCopy()), new(), new())
     {
         foreach (var symbol in parameterSharing.Symbols)
-            TrackCapability(symbol);
+            TrackCapabilities(symbol);
     }
 
     public FlowState(Diagnostics diagnostics, CodeFile file)
@@ -56,7 +56,7 @@ public sealed class FlowState
     private FlowState(
         Diagnostics diagnostics,
         CodeFile file,
-        Dictionary<ICapabilitySharingVariable, FlowCapability> capabilities,
+        Dictionary<ICapabilitySharingVariable, FlowCapabilities> capabilities,
         IEnumerable<SharingSet> sharing,
         ResultVariableFactory resultVariableFactory,
         TempConversionFactory tempConversionFactory)
@@ -90,7 +90,7 @@ public sealed class FlowState
                 throw new InvalidOperationException("Symbol already declared.");
 
             SharingDeclare(bindingVariable, bindingVariable.IsLent);
-            TrackCapability(symbol);
+            TrackCapabilities(symbol);
             if (variable is not null)
                 SharingUnion(bindingVariable, variable, null);
         }
@@ -121,7 +121,10 @@ public sealed class FlowState
     public void Move(BindingSymbol symbol)
     {
         if (symbol.SharingIsTracked())
-            capabilities[(BindingVariable)symbol] = ReferenceCapability.Identity;
+        {
+            var variable = (BindingVariable)symbol;
+            capabilities[variable] = capabilities[variable].AfterMove();
+        }
 
         // Other types don't have capabilities and don't need to be tracked
         // Identity aren't tracked, this symbol is `id` now
@@ -144,11 +147,11 @@ public sealed class FlowState
     public void Restrict(ResultVariable? variable, DataType type)
     {
         if (variable is null
-            || !capabilities.TryGetValue(variable, out var flowCapability)
-            || type is not ReferenceType { Capability: var capability })
+            || !capabilities.TryGetValue(variable, out var flowCapabilities)
+            || type is not ReferenceType referenceType)
             return;
 
-        capabilities[variable] = flowCapability.With(capability);
+        capabilities[variable] = flowCapabilities.Restrict(referenceType);
     }
 
     public ResultVariable? Alias(BindingSymbol symbol)
@@ -157,17 +160,17 @@ public sealed class FlowState
             return null;
 
         BindingVariable variable = symbol;
-        var capability = (capabilities[variable] = capabilities[variable].WhenAliased()).Current;
+        var flowCapabilities = (capabilities[variable] = capabilities[variable].WhenAliased());
 
         // Other types don't have capabilities and don't need to be tracked
-        if (symbol.SharingIsTracked(capability))
+        if (symbol.SharingIsTracked(flowCapabilities))
         {
             var set = SharingSet(symbol);
 
             var result = resultVariableFactory.Create();
             set.Declare(result);
             subsetFor.Add(result, set);
-            TrackCapability(result, capability.OfAlias());
+            TrackCapabilities(result, flowCapabilities.OfAlias());
             return result;
         }
 
@@ -195,7 +198,7 @@ public sealed class FlowState
             // Other types don't have capabilities and don't need to be tracked
             return symbol.Type.ToUpperBound();
 
-        var current = capabilities[(BindingVariable)symbol].Current;
+        var current = capabilities[(BindingVariable)symbol].Outer.Current;
         return ((ReferenceType)symbol.Type.ToUpperBound()).With(transform(current));
     }
 
@@ -242,7 +245,7 @@ public sealed class FlowState
             if (sharingVariable is ICapabilitySharingVariable capabilityVariable)
             {
                 // The modified capability is what matters because lending can go out of scope later
-                var capability = capabilities[capabilityVariable].Modified;
+                var capability = capabilities[capabilityVariable].Outer.Modified;
                 if (capability.AllowsWrite)
                     return false;
             }
@@ -271,9 +274,10 @@ public sealed class FlowState
 
     private ResultVariable TemporarilyConvert(ResultVariable result, TempConversion tempConversion)
     {
-        _ = SharingSet(result);
+        _ = SharingSet(result); // Confirm that there is a sharing set for the result
         var borrowingResult = resultVariableFactory.Create();
-        TrackCapability(borrowingResult, tempConversion.ConvertTo);
+        var currentFlowCapabilities = capabilities[result];
+        TrackCapabilities(borrowingResult, currentFlowCapabilities.With(tempConversion.ConvertTo));
         SharingDeclare(borrowingResult, true);
         SharingDeclare(tempConversion.From, false);
         SharingUnion(result, tempConversion.From, null);
@@ -343,16 +347,16 @@ public sealed class FlowState
 
     public bool IsLent(ResultVariable? variable) => variable is not null && SharingSet(variable).IsLent;
 
-    private void TrackCapability(BindingSymbol symbol)
+    private void TrackCapabilities(BindingSymbol symbol)
     {
         if (symbol.SharingIsTracked() && symbol.Type.ToUpperBound() is ReferenceType type)
-            capabilities.Add((BindingVariable)symbol, type.Capability);
+            capabilities.Add((BindingVariable)symbol, new FlowCapabilities(type));
 
         // Other types don't have capabilities and don't need to be tracked
     }
 
-    private void TrackCapability(ResultVariable result, ReferenceCapability capability)
-        => capabilities.Add(result, capability);
+    private void TrackCapabilities(ResultVariable result, FlowCapabilities flowCapabilities)
+        => capabilities.Add(result, flowCapabilities);
 
     #region Sharing Management
     private SharingSet SharingSet(BindingVariable variable) => SharingSet((ISharingVariable)variable);

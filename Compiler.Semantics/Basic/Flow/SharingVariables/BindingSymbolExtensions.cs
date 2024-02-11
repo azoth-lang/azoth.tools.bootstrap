@@ -31,9 +31,9 @@ internal static class BindingSymbolExtensions
     /// <summary>
     /// Whether reference sharing is tracked for this symbol once it has the given capability.
     /// </summary
-    public static bool SharingIsTracked(this BindingSymbol symbol, ReferenceCapability? currentCapability)
+    public static bool SharingIsTracked(this BindingSymbol symbol, FlowCapabilities? flowCapabilities)
     {
-        if (currentCapability == ReferenceCapability.Identity) return false;
+        if (flowCapabilities?.Outer.Modified == ReferenceCapability.Identity) return false;
         return symbol.SharingIsTracked();
     }
 }

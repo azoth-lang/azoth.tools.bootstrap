@@ -34,6 +34,8 @@ public class FixedDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
         get => items.Count;
     }
 
+    public bool IsEmpty => items.Count == 0;
+
     [DebuggerStepThrough]
     public bool ContainsKey(TKey key) => items.ContainsKey(key);
 
