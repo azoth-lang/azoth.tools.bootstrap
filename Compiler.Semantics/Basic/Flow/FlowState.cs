@@ -98,6 +98,15 @@ public sealed class FlowState
         Drop(variable);
     }
 
+    public ResultVariable? CreateReturnResultVariable(DataType? type)
+    {
+        if (type is null || !type.SharingIsTracked())
+            return null;
+        var result = resultVariableFactory.Create();
+        SharingDeclare(result, false);
+        return result;
+    }
+
     public void Drop(BindingSymbol symbol) => LiftRemovedRestrictions(SharingDrop(symbol));
 
     public void Drop(ResultVariable? variable)
@@ -207,6 +216,7 @@ public sealed class FlowState
     /// variable representative of the new set.
     /// </summary>
     /// <remarks>If two <see cref="ResultVariable"/>s are passed in, one will be dropped.</remarks>
+    // TODO this only makes sense if the variables have the same type
     public ResultVariable? Combine(
         ResultVariable? leftVariable,
         ResultVariable? rightVariable,

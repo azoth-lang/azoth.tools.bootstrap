@@ -14,23 +14,24 @@ internal static class BindingSymbolExtensions
     {
         // Any lent parameter needs tracked
         if (symbol.IsLentBinding) return true;
+        return SharingIsTracked(symbol.Type);
+    }
+
+    public static bool SharingIsTracked(this Pseudotype pseudotype)
+    {
         // ObjectTypeConstraints need tracked because they act like read only references
-        if (symbol.Type is ObjectTypeConstraint) return true;
+        if (pseudotype is ObjectTypeConstraint) return true;
         // If it isn't a reference type, then no need to track it (all current value types are `const`)
-        if (symbol.Type is not ReferenceType { Capability: var capability }
-            // Identity capabilities never need tracked
-            || capability == ReferenceCapability.Identity) return false;
+        if (pseudotype is not ReferenceType { Capability: var capability })
+            return false;
 
-        // Even constant locals need tracked because they could alias a lent const
-        if (symbol is VariableSymbol { IsLocal: true }) return true;
-
-        // Parameters need tracked unless they are constant (identity has already been checked)
-        return capability != ReferenceCapability.Constant;
+        // Constant and Identity capabilities never need tracked
+        return capability != ReferenceCapability.Constant && capability != ReferenceCapability.Identity;
     }
 
     /// <summary>
     /// Whether reference sharing is tracked for this symbol once it has the given capability.
-    /// </summary
+    /// </summary>
     public static bool SharingIsTracked(this BindingSymbol symbol, FlowCapabilities? flowCapabilities)
     {
         if (flowCapabilities?.Outer.Modified == ReferenceCapability.Identity) return false;

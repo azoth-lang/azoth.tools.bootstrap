@@ -18,7 +18,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 public readonly struct FlowCapabilities
 {
     public FlowCapability Outer { get; }
-    public FixedDictionary<TypeParameterIndex, FlowCapability> TypeParameters { get; }
+    public FixedDictionary<TypeArgumentIndex, FlowCapability> TypeParameters { get; }
 
     public FlowCapabilities(ReferenceType type)
     {
@@ -26,23 +26,23 @@ public readonly struct FlowCapabilities
         TypeParameters = FlowCapabilitiesForTypeParameters(type);
     }
 
-    private static FixedDictionary<TypeParameterIndex, FlowCapability> FlowCapabilitiesForTypeParameters(ReferenceType type)
+    private static FixedDictionary<TypeArgumentIndex, FlowCapability> FlowCapabilitiesForTypeParameters(ReferenceType type)
     {
         if (!type.HasIndependentTypeArguments)
-            return FixedDictionary<TypeParameterIndex, FlowCapability>.Empty;
+            return FixedDictionary<TypeArgumentIndex, FlowCapability>.Empty;
 
         var index = new Stack<int>();
         return FlowCapabilitiesForTypeParameters(type, index).ToFixedDictionary();
     }
 
-    private static IEnumerable<(TypeParameterIndex, FlowCapability)> FlowCapabilitiesForTypeParameters(
+    private static IEnumerable<(TypeArgumentIndex, FlowCapability)> FlowCapabilitiesForTypeParameters(
         ReferenceType type,
         Stack<int> parentIndex)
         => FlowCapabilitiesForImmediateTypeParameters(type, parentIndex)
             .Concat(FlowCapabilitiesForChildTypeParameters(type, parentIndex));
 
 
-    private static IEnumerable<(TypeParameterIndex, FlowCapability)> FlowCapabilitiesForImmediateTypeParameters(ReferenceType type, Stack<int> parentIndex)
+    private static IEnumerable<(TypeArgumentIndex, FlowCapability)> FlowCapabilitiesForImmediateTypeParameters(ReferenceType type, Stack<int> parentIndex)
     {
         var joinedTypeArguments = type.TypeArguments.Enumerate().EquiZip(type.DeclaredType.GenericParameters, (arg, param) => (arg.Index, Arg: arg.Value, Param: param));
         var independentTypeArguments = joinedTypeArguments.Where(tuple => tuple.Param.Variance == Variance.Independent);
@@ -52,16 +52,16 @@ public readonly struct FlowCapabilities
         foreach (var (i, arg) in independentReferenceTypeArguments)
         {
             parentIndex.Push(i);
-            yield return (new TypeParameterIndex(parentIndex.ToFixedList()), arg!.Capability);
+            yield return (new TypeArgumentIndex(parentIndex.ToFixedList()), arg!.Capability);
             parentIndex.Pop();
         }
     }
 
-    private static IEnumerable<(TypeParameterIndex, FlowCapability)> FlowCapabilitiesForChildTypeParameters(
+    private static IEnumerable<(TypeArgumentIndex, FlowCapability)> FlowCapabilitiesForChildTypeParameters(
         ReferenceType type,
         Stack<int> parentIndex)
     {
-        IEnumerable<(TypeParameterIndex, FlowCapability)> flowCapabilities = Enumerable.Empty<(TypeParameterIndex, FlowCapability)>();
+        IEnumerable<(TypeArgumentIndex, FlowCapability)> flowCapabilities = Enumerable.Empty<(TypeArgumentIndex, FlowCapability)>();
         foreach (var (arg, i) in type.TypeArguments.Enumerate().Where(tuple => tuple.Value is ReferenceType))
         {
             parentIndex.Push(i);
@@ -74,10 +74,10 @@ public readonly struct FlowCapabilities
 
     public FlowCapabilities(
         FlowCapability outerCapability,
-        FixedDictionary<TypeParameterIndex, FlowCapability>? typeParametersCapabilities = null)
+        FixedDictionary<TypeArgumentIndex, FlowCapability>? typeParametersCapabilities = null)
     {
         Outer = outerCapability;
-        TypeParameters = typeParametersCapabilities ?? FixedDictionary<TypeParameterIndex, FlowCapability>.Empty;
+        TypeParameters = typeParametersCapabilities ?? FixedDictionary<TypeArgumentIndex, FlowCapability>.Empty;
     }
 
     public FlowCapabilities AfterMove() => new(Outer.AfterMove(), TypeParameters);
@@ -88,8 +88,22 @@ public readonly struct FlowCapabilities
     public FlowCapabilities WithRestrictions(CapabilityRestrictions restrictions)
         => new(Outer.WithRestrictions(restrictions), TypeParameters);
     public FlowCapabilities Restrict(ReferenceType referenceType)
-        // TODO restrict type parameters
-        => new(Outer.With(referenceType.Capability), TypeParameters);
+    {
+        var newOuter = Outer.With(referenceType.Capability);
+        if (TypeParameters.IsEmpty)
+            return new(newOuter, TypeParameters);
+
+        return new(newOuter, RestrictTypeParameters(referenceType).ToFixedDictionary());
+    }
+
+    private IEnumerable<(TypeArgumentIndex, FlowCapability)> RestrictTypeParameters(ReferenceType referenceType)
+    {
+        foreach (var (index, capability) in TypeParameters)
+        {
+            var argument = referenceType.ArgumentAt(index);
+            yield return (index, capability.With(argument.Capability));
+        }
+    }
 
     public override string ToString()
     {

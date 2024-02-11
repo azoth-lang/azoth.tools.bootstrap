@@ -22,6 +22,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using DataType = Azoth.Tools.Bootstrap.Compiler.Types.DataType;
 using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
@@ -690,7 +691,7 @@ public class BasicBodyAnalyzer
                     diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
                     exp.ReferencedSymbol.Fulfill(null);
                     exp.DataType = DataType.Unknown;
-                    resultVariable = CombineResults<ConstructorSymbol>(null, arguments, flow, exp);
+                    resultVariable = CombineResults<ConstructorSymbol>(null, arguments, flow);
                     return new ExpressionResult(exp, resultVariable);
                 }
 
@@ -699,38 +700,14 @@ public class BasicBodyAnalyzer
                     diagnostics.Add(OtherSemanticError.CannotConstructAbstractType(file, exp.Type));
                     exp.ReferencedSymbol.Fulfill(null);
                     exp.DataType = DataType.Unknown;
-                    resultVariable = CombineResults<ConstructorSymbol>(null, arguments, flow, exp);
+                    resultVariable = CombineResults<ConstructorSymbol>(null, arguments, flow);
                     return new ExpressionResult(exp, resultVariable);
                 }
 
                 var typeSymbol = exp.Type.ReferencedSymbol.Result ?? throw new NotImplementedException();
-                DataType constructedType;
-                var contextType = (NonEmptyType)constructingType;
                 var constructorSymbols = symbolTrees.Children(typeSymbol).OfType<ConstructorSymbol>().ToFixedSet();
-                var validOverloads = SelectOverload(contextType, constructorSymbols, arguments, flow);
-                switch (validOverloads.Count)
-                {
-                    case 0:
-                        diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
-                        exp.ReferencedSymbol.Fulfill(null);
-                        constructedType = DataType.Unknown;
-                        break;
-                    case 1:
-                        var constructor = validOverloads.Single();
-                        exp.ReferencedSymbol.Fulfill(constructor.Symbol);
-                        CheckTypes(arguments, constructor.ParameterTypes, flow);
-                        resultVariable = CombineResults(constructor, arguments, flow, exp);
-                        constructedType = constructor.ReturnType.Type;
-                        break;
-                    default:
-                        diagnostics.Add(NameBindingError.AmbiguousConstructorCall(file, exp.Span));
-                        exp.ReferencedSymbol.Fulfill(null);
-                        constructedType = DataType.Unknown;
-                        break;
-                }
-                exp.DataType = constructedType;
-                flow.Restrict(resultVariable, constructedType);
-                return new ExpressionResult(exp, resultVariable);
+                var constructor = InferSymbol(exp, constructorSymbols, arguments, flow);
+                return InferConstructorInvocationType(exp, constructor, arguments, flow);
             }
             case IForeachExpressionSyntax exp:
             {
@@ -840,6 +817,7 @@ public class BasicBodyAnalyzer
                     // resolve generic type fields
                     type = nonEmptyContext.ReplaceTypeParametersIn(type);
 
+                // TODO adjust associated flow capabilities
                 var resultVariable = contextResult.Variable;
                 var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 member.Semantics = semantics;
@@ -1145,36 +1123,67 @@ public class BasicBodyAnalyzer
         return parameter.Type.IsAssignableFrom(argType);
     }
 
+    /// <param name="invocable">The symbol being invoked or <see langword="null"/> if not fully known.</param>
     private static ResultVariable? CombineResults<TSymbol>(
         Contextualized<TSymbol>? invocable,
         ArgumentResults results,
-        FlowState flow,
-        IExpressionSyntax exp)
+        FlowState flow)
         where TSymbol : InvocableSymbol
-        => CombineResults(invocable?.SelfParameterType, invocable?.ParameterTypes, invocable?.ReturnType, results, flow, exp);
+        => CombineResults(invocable?.SelfParameterType, invocable?.ParameterTypes, invocable?.ReturnType, results, flow);
 
+    /// <param name="function">The function type being invoked or <see langword="null"/> if not fully known.</param>
     private static ResultVariable? CombineResults(
         FunctionType? function,
         ArgumentResults results,
-        FlowState flow,
-        IExpressionSyntax exp)
-        => CombineResults(null, function?.ParameterTypes, function?.ReturnType, results, flow, exp);
+        FlowState flow)
+        => CombineResults(null, function?.ParameterTypes, function?.ReturnType, results, flow);
 
     private static ResultVariable? CombineResults(
-        SelfParameterType? selfType,
+        SelfParameterType? selfParameterType,
         FixedList<ParameterType>? parameterTypes,
         ReturnType? returnType,
         ArgumentResults results,
-        FlowState flow,
-        IExpressionSyntax exp)
+        FlowState flow)
     {
-        // Lent arguments are not combined.
-        var arguments = parameterTypes?.Zip(results.Arguments).Where(t => !t.First.IsLent).Select(t => t.Second)
-                        ?? results.Arguments;
-        if (results.Self is not null && !selfType?.IsLent == true)
-            arguments = arguments.Prepend(results.Self);
+        var resultsToDrop = new List<ResultVariable>();
+        var resultType = returnType?.Type;
+        if (results.Self is not null)
+            resultType = resultType?.ReplaceSelfWith(results.Self.Type);
+        var returnResult = flow.CreateReturnResultVariable(resultType);
 
-        return arguments.Select(r => r.Variable).Aggregate(default(ResultVariable?), (v1, v2) => flow.Combine(v1, v2, exp));
+        if (results.Self is not null)
+            CombineParameterIntoReturn(results.Self, selfParameterType, returnResult, resultsToDrop, flow);
+
+        foreach (var (argument, i) in results.Arguments.Enumerate())
+            CombineParameterIntoReturn(argument, parameterTypes?[i], returnResult, resultsToDrop, flow);
+
+        foreach (var resultVariable in resultsToDrop)
+            flow.Drop(resultVariable);
+
+        return returnResult;
+    }
+
+    private static void CombineParameterIntoReturn<TParameterType>(
+        ExpressionResult argument,
+        TParameterType? parameterType,
+        ResultVariable? returnResult,
+        List<ResultVariable> resultsToDrop,
+        FlowState flow)
+        where TParameterType : struct, IParameterType
+    {
+        if (argument.Variable is null)
+            return;
+
+        var isLent = parameterType?.IsLent ?? false;
+        // Lent arguments are not combined.
+        if (!isLent)
+        {
+            if (returnResult is not null)
+                flow.SharingUnion(returnResult, argument.Variable, addCannotUnionError: null);
+            flow.Drop(argument.Variable);
+        }
+        else
+            resultsToDrop.Add(argument.Variable);
     }
 
     private ExpressionResult InferAssignmentTargetType(
@@ -1353,8 +1362,12 @@ public class BasicBodyAnalyzer
             invocation.Semantics = ExpressionSemantics.Never;
         }
 
-        var resultVariable = CombineResults(method, arguments, flow, invocation);
+        var resultVariable = CombineResults(method, arguments, flow);
         flow.Restrict(resultVariable, invocation.DataType.Assigned());
+
+        //invocation.DataType = resultVariable is null
+        //    ? method?.ReturnType.Type.ReplaceSelfWith(selfResult?.Type!) ?? DataType.Unknown
+        //    : flow.Type(resultVariable);
 
         // There are no types for functions
         invocation.Expression.DataType = DataType.Void;
@@ -1366,6 +1379,27 @@ public class BasicBodyAnalyzer
             nameExpression.Member.DataType = DataType.Void;
             nameExpression.Member.Semantics = ExpressionSemantics.Void;
         }
+
+        return new(invocation, resultVariable);
+    }
+
+    private ExpressionResult InferConstructorInvocationType(
+        INewObjectExpressionSyntax invocation,
+        Contextualized<ConstructorSymbol>? constructor,
+        ArgumentResults arguments,
+        FlowState flow)
+    {
+        if (constructor is not null)
+        {
+            CheckTypes(arguments, constructor.ParameterTypes, flow);
+            var returnType = constructor.ReturnType.Type;
+            invocation.DataType = returnType;
+        }
+        else
+            invocation.DataType = DataType.Unknown;
+
+        var resultVariable = CombineResults(constructor, arguments, flow);
+        flow.Restrict(resultVariable, invocation.DataType.Assigned());
 
         return new(invocation, resultVariable);
     }
@@ -1469,7 +1503,7 @@ public class BasicBodyAnalyzer
             invocation.Semantics = ExpressionSemantics.Never;
         }
 
-        var resultVariable = CombineResults(functionType, arguments, flow, invocation);
+        var resultVariable = CombineResults(functionType, arguments, flow);
         flow.Restrict(resultVariable, invocation.DataType.Assigned());
 
         // There are no types for functions
@@ -1687,6 +1721,38 @@ public class BasicBodyAnalyzer
             nameExpression.ReferencedSymbol.Fulfill(invocation.ReferencedSymbol.Result);
 
         return method;
+    }
+
+    private Contextualized<ConstructorSymbol>? InferSymbol(
+        INewObjectExpressionSyntax invocation,
+        FixedSet<ConstructorSymbol>? constructorSymbols,
+        ArgumentResults arguments,
+        FlowState flow)
+    {
+        Contextualized<ConstructorSymbol>? constructor = null;
+        if (constructorSymbols is not null)
+        {
+            var validOverloads = SelectOverload(invocation.Type.NamedType.Assigned(), constructorSymbols, arguments, flow);
+            switch (validOverloads.Count)
+            {
+                case 0:
+                    diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, invocation.Span));
+                    invocation.ReferencedSymbol.Fulfill(null);
+                    break;
+                case 1:
+                    constructor = validOverloads.Single();
+                    invocation.ReferencedSymbol.Fulfill(constructor.Symbol);
+                    break;
+                default:
+                    diagnostics.Add(NameBindingError.AmbiguousConstructorCall(file, invocation.Span));
+                    invocation.ReferencedSymbol.Fulfill(null);
+                    break;
+            }
+        }
+        else
+            invocation.ReferencedSymbol.Fulfill(null);
+
+        return constructor;
     }
 
     private TSymbol? InferSymbol<TNameSymbol, TSymbol>(
