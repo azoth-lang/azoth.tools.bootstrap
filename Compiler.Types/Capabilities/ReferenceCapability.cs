@@ -39,7 +39,7 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
     /// <summary>
     /// A reference that has read-only access and can be stored into fields etc.
     /// </summary>
-    public static readonly ReferenceCapability ReadOnly
+    public static readonly ReferenceCapability Read
         = new("read", "⧼read⧽", allowsWriteAliases: true, allowsReadAliases: true);
 
     /// <summary>
@@ -106,19 +106,19 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
     /// Does this capability allow a reference with it to be recovered to isolated if reference
     /// sharing permits.
     /// </summary>
-    public bool AllowsRecoverIsolation => this == Mutable || this == ReadOnly;
+    public bool AllowsRecoverIsolation => this == Mutable || this == Read;
 
     /// <summary>
     /// Does this capability allow a reference with it to be moved into isolated if reference
     /// sharing permits.
     /// </summary>
-    public bool AllowsMove => this == Mutable || this == ReadOnly || this == Isolated || this == TemporarilyIsolated;
+    public bool AllowsMove => this == Mutable || this == Read || this == Isolated || this == TemporarilyIsolated;
 
     /// <summary>
     /// Does this capability allow a reference with it to be frozen to const if reference
     /// sharing permits.
     /// </summary>
-    public bool AllowsFreeze => this == Mutable || this == ReadOnly || this == Isolated;
+    public bool AllowsFreeze => this == Mutable || this == Read || this == Isolated;
 
     private ReferenceCapability(
         string name,
@@ -195,7 +195,7 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
         // If it is init, there is only one non-writable init capability.
         if (AllowsInit) return InitReadOnly;
         // It is either `iso`, `temp iso`, or `mut`. Regardless, convert to `readonly`
-        return ReadOnly;
+        return Read;
     }
 
     public ReferenceCapability AccessedVia(ReferenceCapability capability)

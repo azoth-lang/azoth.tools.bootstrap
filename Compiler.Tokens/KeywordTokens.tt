@@ -33,6 +33,7 @@
         "New",
         //"Init",
         "Isolated",
+        "Read",
         "Const",
         "Id",
         "Lent",

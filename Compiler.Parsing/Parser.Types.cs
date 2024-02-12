@@ -24,13 +24,19 @@ public partial class Parser
 
     private ITypeSyntax ParseType()
     {
-        if (Tokens.Current is ISelfKeywordToken)
-            return ParseSelfViewpointType();
-        var capability = ParseReferenceCapability();
-        if (capability is not null && Tokens.Current is IRightTriangleToken)
-            return ParseTypeWithCapabilityViewpoint(capability);
+        switch (Tokens.Current)
+        {
+            case ISelfKeywordToken:
+                return ParseSelfViewpointType();
+            case IExplicitCapabilityToken:
+                return ParseTypeWithExplicitCapabilityViewpoint();
+            default:
+                var capability = AcceptStandardReferenceCapability();
+                if (capability is not null && Tokens.Current is IRightTriangleToken)
+                    return ParseTypeWithCapabilityViewpoint(capability);
 
-        return ParseTypeWithCapability(capability);
+                return ParseTypeWithCapability(capability);
+        }
     }
 
     private ITypeSyntax ParseSelfViewpointType()
@@ -43,7 +49,7 @@ public partial class Parser
         return ParseOptionalType(type);
     }
 
-    private IReferenceCapabilitySyntax? ParseReferenceCapability()
+    private IReferenceCapabilitySyntax? AcceptStandardReferenceCapability()
     {
         switch (Tokens.Current)
         {
@@ -79,21 +85,21 @@ public partial class Parser
                     case IConstKeywordToken _:
                         capability = TemporarilyConstant;
                         break;
-                    case ICapabilityToken capabilityToken:
+                    case IStandardCapabilityToken capabilityToken:
                     {
                         var errorSpan = TextSpan.Covering(tempKeyword.Span, capabilityToken.Span);
                         Add(ParseError.InvalidTempCapability(File, errorSpan));
-                        return ParseReferenceCapability();
+                        return AcceptStandardReferenceCapability();
                     }
                     default:
                         // Treat this as a read-only reference capability
                         Add(ParseError.InvalidTempCapability(File, tempKeyword.Span));
-                        return new ReferenceCapabilitySyntax(tempKeyword.Span, Enumerable.Empty<ICapabilityToken>(), ReadOnly);
+                        return new ReferenceCapabilitySyntax(tempKeyword.Span, Enumerable.Empty<IStandardCapabilityToken>(), Read);
                 }
 
-                var capabilityKeyword = Tokens.ConsumeToken<ICapabilityToken>();
+                var capabilityKeyword = Tokens.ConsumeToken<IStandardCapabilityToken>();
                 var span = TextSpan.Covering(tempKeyword.Span, capabilityKeyword.Span);
-                var tokens = tempKeyword.Yield<ICapabilityToken>().Append(capabilityKeyword);
+                var tokens = tempKeyword.Yield<IStandardCapabilityToken>().Append(capabilityKeyword);
                 return new ReferenceCapabilitySyntax(span, tokens, capability);
             }
             default:
@@ -118,6 +124,28 @@ public partial class Parser
         type = new CapabilityViewpointTypeSyntax(capability, type);
 
         return ParseOptionalType(type);
+    }
+
+    private ITypeSyntax ParseTypeWithExplicitCapabilityViewpoint()
+    {
+        var capability = ParseExplicitCapability();
+        _ = Tokens.Required<IRightTriangleToken>();
+        var type = ParseBareType();
+        type = new CapabilityViewpointTypeSyntax(capability, type);
+
+        return ParseOptionalType(type);
+    }
+
+    private IReferenceCapabilitySyntax ParseExplicitCapability()
+    {
+        var capability = Tokens.RequiredToken<IExplicitCapabilityToken>();
+        return capability switch
+        {
+            null => ReferenceCapabilitySyntax.ImplicitReadOnly(Tokens.Current.Span.AtStart()),
+            IReadKeywordToken readKeyword
+                => new ReferenceCapabilitySyntax(capability.Span, readKeyword.Yield(), Read),
+            _ => throw ExhaustiveMatch.Failed(capability),
+        };
     }
 
     private ITypeSyntax ParseOptionalType(ITypeSyntax type)

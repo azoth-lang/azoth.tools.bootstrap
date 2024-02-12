@@ -92,7 +92,7 @@ public static class Intrinsic
             Params(readBytesType, DataType.Size, DataType.Size), ReturnType.Never);
         tree.Add(abort);
 
-        var readAnyType = new AnyType(ReferenceCapability.ReadOnly);
+        var readAnyType = new AnyType(ReferenceCapability.Read);
         // fn identity_hash(value: Any) -> uint64 // TODO: should be nuint
         var identityHash = Function(intrinsicsNamespace, "identity_hash",
             Params(readAnyType), ReturnType.UInt64);

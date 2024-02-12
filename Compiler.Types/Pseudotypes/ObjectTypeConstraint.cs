@@ -18,7 +18,7 @@ public sealed class ObjectTypeConstraint : Pseudotype
     }
 
     public override DataType ToUpperBound()
-        => ObjectType.Create(ReferenceCapability.ReadOnly, BareType);
+        => ObjectType.Create(ReferenceCapability.Read, BareType);
 
     public override string ToILString() => $"{Capability} {BareType.ToILString()}";
 

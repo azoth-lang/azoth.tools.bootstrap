@@ -100,8 +100,8 @@ public class AnyTypeTests
     [Fact]
     public void Any_types_with_same_reference_capability_are_equal()
     {
-        var type1 = new AnyType(ReadOnly);
-        var type2 = new AnyType(ReadOnly);
+        var type1 = new AnyType(Read);
+        var type2 = new AnyType(Read);
 
         Assert.Equal(type1, type2);
     }
@@ -109,7 +109,7 @@ public class AnyTypeTests
     [Fact]
     public void Any_types_with_different_reference_capabilities_are_not_equal()
     {
-        var type1 = new AnyType(ReadOnly);
+        var type1 = new AnyType(Read);
         var type2 = new AnyType(Mutable);
 
         Assert.NotEqual(type1, type2);

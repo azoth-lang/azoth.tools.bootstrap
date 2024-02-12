@@ -134,7 +134,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         if (IsConstType) return With(ReferenceCapability.Constant, GenericParameterDataTypes);
         // Read only self constructors cannot return `mut` or `iso`
         if (!selfParameterType.AllowsWrite)
-            return With(ReferenceCapability.ReadOnly, GenericParameterDataTypes);
+            return With(ReferenceCapability.Read, GenericParameterDataTypes);
         foreach (var parameterType in parameterTypes)
             switch (parameterType.Type)
             {
@@ -169,7 +169,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// is either read-only or constant.
     /// </summary>
     public ObjectType WithRead(FixedList<DataType> typeArguments)
-        => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.ReadOnly, typeArguments);
+        => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Read, typeArguments);
 
     /// <summary>
     /// Make a version of this type that is the default mutate reference capability for the type.

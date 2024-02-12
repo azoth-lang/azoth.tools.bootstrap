@@ -12,7 +12,7 @@ internal class ReferenceCapabilitySyntax : Syntax, IReferenceCapabilitySyntax
     public static ReferenceCapabilitySyntax ImplicitReadOnly(TextSpan span)
     {
         Requires.That(nameof(span), span.Length == 0, "span must be empty");
-        return new(span, Enumerable.Empty<ICapabilityToken>(), DeclaredReferenceCapability.ReadOnly);
+        return new(span, Enumerable.Empty<ICapabilityToken>(), DeclaredReferenceCapability.Read);
     }
 
     public FixedList<ICapabilityToken> Tokens { get; }

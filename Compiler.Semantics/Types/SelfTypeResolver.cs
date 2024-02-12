@@ -43,7 +43,7 @@ public class SelfTypeResolver
         ReferenceCapability referenceCapability;
         switch (capability.Declared)
         {
-            case DeclaredReferenceCapability.ReadOnly:
+            case DeclaredReferenceCapability.Read:
                 referenceCapability = ReferenceCapability.InitReadOnly;
                 break;
             case DeclaredReferenceCapability.Mutable:

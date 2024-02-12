@@ -80,7 +80,7 @@ public partial class Parser
     // TODO return is really an either type
     private (ITypeSyntax? Type, IReferenceCapabilitySyntax? Capability) ParseVariableDeclarationType()
     {
-        var capability = ParseReferenceCapability();
+        var capability = AcceptStandardReferenceCapability();
 
         switch (Tokens.Current)
         {

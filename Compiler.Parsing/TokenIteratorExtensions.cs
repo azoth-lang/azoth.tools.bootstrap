@@ -160,16 +160,11 @@ public static class TokenIteratorExtensions
         return span;
     }
 
+    /// <summary>
+    /// Whether the we are at the end of something as indicated by the given token type or the end
+    /// of the file.
+    /// </summary>
     public static bool AtEnd<T>(this ITokenIterator<IToken> tokens)
         where T : IToken
-    {
-        switch (tokens.Current)
-        {
-            case T _:
-            case IEndOfFileToken _:
-                return true;
-            default:
-                return false;
-        }
-    }
+        => tokens.Current is T or IEndOfFileToken;
 }

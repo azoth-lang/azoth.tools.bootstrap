@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public abstract class ReferenceType : NonEmptyType
 {
     public ReferenceCapability Capability { get; }
-    public bool IsReadOnlyReference => Capability == ReferenceCapability.ReadOnly;
+    public bool IsReadOnlyReference => Capability == ReferenceCapability.Read;
     public bool IsConstantReference => Capability == ReferenceCapability.Constant;
     public bool IsTemporarilyConstantReference => Capability == ReferenceCapability.TemporarilyConstant;
     public bool IsIsolatedReference => Capability == ReferenceCapability.Isolated;
@@ -100,7 +100,7 @@ public abstract class ReferenceType : NonEmptyType
 
     public sealed override string ToSourceCodeString()
     {
-        if (Capability != ReferenceCapability.ReadOnly)
+        if (Capability != ReferenceCapability.Read)
             return $"{Capability.ToSourceString()} {BareType.ToSourceCodeString()}";
 
         return BareType.ToSourceCodeString();

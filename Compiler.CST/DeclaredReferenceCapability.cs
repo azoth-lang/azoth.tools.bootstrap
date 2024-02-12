@@ -13,7 +13,7 @@ public enum DeclaredReferenceCapability
     Isolated = 1,
     TemporarilyIsolated,
     Mutable,
-    ReadOnly, // read-only from this reference, possibly writable from others
+    Read, // read-only from this reference, possibly writable from others
     Constant,
     TemporarilyConstant,
     Identity
@@ -27,7 +27,7 @@ public static class DeclaredReferenceCapabilityExtensions
             DeclaredReferenceCapability.Isolated => ReferenceCapability.Isolated,
             DeclaredReferenceCapability.TemporarilyIsolated => ReferenceCapability.TemporarilyIsolated,
             DeclaredReferenceCapability.Mutable => ReferenceCapability.Mutable,
-            DeclaredReferenceCapability.ReadOnly => ReferenceCapability.ReadOnly,
+            DeclaredReferenceCapability.Read => ReferenceCapability.Read,
             DeclaredReferenceCapability.Constant => ReferenceCapability.Constant,
             DeclaredReferenceCapability.TemporarilyConstant => ReferenceCapability.TemporarilyConstant,
             DeclaredReferenceCapability.Identity => ReferenceCapability.Identity,

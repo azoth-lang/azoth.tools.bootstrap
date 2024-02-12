@@ -38,7 +38,8 @@ public partial class Parser
         var lentBinding = Tokens.AcceptToken<ILentKeywordToken>();
         return Tokens.Current switch
         {
-            ICapabilityToken or ICapabilityConstraintToken or ISelfKeywordToken => ParseMethodSelfParameter(lentBinding),
+            IStandardCapabilityToken or ICapabilityConstraintToken or ISelfKeywordToken
+                => ParseMethodSelfParameter(lentBinding),
             _ => ParseFunctionParameter(lentBinding),
         };
     }
@@ -49,7 +50,7 @@ public partial class Parser
         switch (Tokens.Current)
         {
 
-            case ICapabilityToken:
+            case IStandardCapabilityToken:
             case ISelfKeywordToken:
                 return ParseConstructorSelfParameter(lentBinding);
             case IDotToken _:
@@ -74,7 +75,7 @@ public partial class Parser
     private IConstructorSelfParameterSyntax ParseConstructorSelfParameter(ILentKeywordToken? lentBinding)
     {
         bool isLentBinding = lentBinding is not null;
-        var referenceCapability = ParseReferenceCapability()
+        var referenceCapability = AcceptStandardReferenceCapability()
                                   ?? ReferenceCapabilitySyntax.ImplicitReadOnly(Tokens.Current.Span.AtStart());
         var selfSpan = Tokens.Expect<ISelfKeywordToken>();
         var span = TextSpan.Covering(lentBinding?.Span, referenceCapability.Span, selfSpan);
@@ -85,7 +86,7 @@ public partial class Parser
     {
         bool isLentBinding = lentBinding is not null;
         var referenceCapability = (ISelfReferenceCapabilitySyntax?)AcceptReferenceCapabilityConstraint()
-                                  ?? ParseReferenceCapability()
+                                  ?? AcceptStandardReferenceCapability()
                                   ?? ReferenceCapabilitySyntax.ImplicitReadOnly(Tokens.Current.Span.AtStart());
         var selfSpan = Tokens.Expect<ISelfKeywordToken>();
         var span = TextSpan.Covering(lentBinding?.Span, referenceCapability.Span, selfSpan);
