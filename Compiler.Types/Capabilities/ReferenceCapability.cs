@@ -203,7 +203,7 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
         if (AllowsInit)
             throw new InvalidOperationException("Fields cannot have the init capability.");
         if (capability == Identity)
-            throw new InvalidOperationException("Cannot access fields via `id`.");
+            return this == Constant ? Constant : Identity;
 
         // Constant is contagious
         if (capability == Constant) return Constant;

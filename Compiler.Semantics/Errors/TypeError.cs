@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using UnaryOperator = Azoth.Tools.Bootstrap.Compiler.Core.Operators.UnaryOperator;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
@@ -157,5 +158,11 @@ public static class TypeError
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3022, $"Self viewpoint not available `{typeSyntax.ToString()}`.");
+    }
+
+    public static Diagnostic CannotAccessMutableBindingFieldOfIdentityReference(CodeFile file, ISimpleNameExpressionSyntax exp, Pseudotype contextType)
+    {
+        return new(file, exp.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+            3023, $"Cannot access `var` field `{exp.ToString()}` from type `{contextType.ToSourceCodeString()}`.");
     }
 }

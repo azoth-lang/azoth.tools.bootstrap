@@ -809,7 +809,7 @@ public class BasicBodyAnalyzer
                 }
                 var memberSymbols = symbolTrees.Children(contextSymbol)
                                                .Where(s => s.Name == member.Name).ToFixedList();
-                var type = InferReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
+                var type = InferReferencedSymbol(contextType, member, memberSymbols) ?? DataType.Unknown;
                 // Access must be applied first so it can account for independent generic parameters.
                 type = type.AccessedVia(contextType);
                 // Then type parameters can be replaced now that they have the correct access
@@ -1200,7 +1200,8 @@ public class BasicBodyAnalyzer
                 var member = exp.Member;
                 switch (contextResult.Type)
                 {
-                    case ReferenceType { AllowsWrite: false, AllowsInit: false } contextReferenceType:
+                    case ReferenceType { AllowsWrite: false, AllowsInit: false } contextReferenceType
+                        when contextReferenceType.Capability != ReferenceCapability.Identity: // Another error will be reported
                         diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(file, expression.Span, contextReferenceType));
                         goto default;
                     case UnknownType:
@@ -1213,7 +1214,7 @@ public class BasicBodyAnalyzer
                                 $"Missing context symbol for type {contextResult.Type.ToILString()}.");
                         var memberSymbols = symbolTrees.Children(contextSymbol).OfType<FieldSymbol>()
                                                        .Where(s => s.Name == member.Name).ToFixedList<Symbol>();
-                        type = InferReferencedSymbol(member, memberSymbols) ?? DataType.Unknown;
+                        type = InferReferencedSymbol(contextResult.Type, member, memberSymbols) ?? DataType.Unknown;
                         break;
                 }
 
@@ -1880,6 +1881,7 @@ public class BasicBodyAnalyzer
     }
 
     private DataType? InferReferencedSymbol(
+        Pseudotype contextType,
         ISimpleNameExpressionSyntax exp,
         FixedList<Symbol> matchingSymbols)
     {
@@ -1912,6 +1914,14 @@ public class BasicBodyAnalyzer
                             throw new InvalidOperationException("Can't move out of field");
                         case TypeSemantics.Void:
                             throw new InvalidOperationException("Can't assign semantics to void field");
+                    }
+
+                    if (fieldSymbol.IsMutableBinding
+                        && contextType is ReferenceType { Capability: var contextCapability }
+                        && contextCapability == ReferenceCapability.Identity)
+                    {
+                        diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(file, exp, contextType));
+                        type = DataType.Unknown;
                     }
                 }
 

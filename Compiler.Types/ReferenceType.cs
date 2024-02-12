@@ -76,10 +76,6 @@ public abstract class ReferenceType : NonEmptyType
         switch (capability)
         {
             case ReferenceCapability c:
-                // No field access from `id` hence error and unknown type
-                if (capability == ReferenceCapability.Identity)
-                    return DataType.Unknown;
-
                 var newCapability = Capability.AccessedVia(c);
                 var bareType = BareType.AccessedVia(c);
                 if (ReferenceEquals(bareType, BareType))
