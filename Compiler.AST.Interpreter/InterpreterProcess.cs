@@ -549,10 +549,16 @@ public class InterpreterProcess
                     case FunctionType _:
                     case ViewpointType _:
                         throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
-                    case ReferenceType _:
+                    case ObjectType _:
                         var vtable = self.ObjectValue.VTable;
                         var method = vtable[methodSignature];
                         return await CallMethodAsync(method, self, arguments).ConfigureAwait(false);
+                    case AnyType _:
+                        return methodSignature.Name.Text switch
+                        {
+                            "identity_hash" => IdentityHash(self),
+                            _ => throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}")
+                        };
                     case NumericType numericType:
                         return methodSignature.Name.Text switch
                         {
@@ -734,11 +740,6 @@ public class InterpreterProcess
         {
             string message = RawUtf8BytesToString(arguments);
             throw new Abort(message);
-        }
-        if (function == Intrinsic.IdentityHash)
-        {
-            var value = arguments[0].ObjectValue;
-            return AzothValue.U64((ulong)value.GetHashCode());
         }
         throw new NotImplementedException($"Intrinsic {function}");
     }
@@ -987,6 +988,9 @@ public class InterpreterProcess
         if (dataType is IntegerValueType) return AzothValue.Int(-value.IntValue);
         throw new NotImplementedException($"Negate {dataType.ToILString()}");
     }
+
+    private static AzothValue IdentityHash(AzothValue value)
+        => AzothValue.U64((ulong)value.ObjectValue.GetHashCode());
 
     private static AzothValue Remainder(
         AzothValue dividend,

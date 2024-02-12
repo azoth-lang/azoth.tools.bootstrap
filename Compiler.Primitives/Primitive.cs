@@ -4,7 +4,6 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
-using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using static Azoth.Tools.Bootstrap.Compiler.Primitives.SymbolBuilder;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
@@ -59,11 +58,12 @@ public static class Primitive
         var type = new PrimitiveTypeSymbol(integerType);
         tree.Add(type);
 
-        var integerParamType = new SelfParameterType(false, integerType);
-        var remainderMethod = new MethodSymbol(type, "remainder", integerParamType, Params(integerType), Return(integerType));
-        var displayStringMethod = new MethodSymbol(type, "to_display_string", integerParamType, Params(), Return(stringType));
+        var integerParamType = SelfParam(integerType);
 
+        var remainderMethod = new MethodSymbol(type, "remainder", integerParamType, Params(integerType), Return(integerType));
         tree.Add(remainderMethod);
+
+        var displayStringMethod = new MethodSymbol(type, "to_display_string", integerParamType, Params(), Return(stringType));
         tree.Add(displayStringMethod);
     }
 
@@ -77,5 +77,10 @@ public static class Primitive
     {
         var symbol = new PrimitiveTypeSymbol(DeclaredReferenceType.Any.With(ReferenceCapability.Mutable));
         tree.Add(symbol);
+
+        var idAnyType = new AnyType(ReferenceCapability.Identity);
+        // fn identity_hash(value: Any) -> uint64 // TODO: should be nuint
+        var identityHash = new MethodSymbol(symbol, "identity_hash", SelfParam(idAnyType), Params(), ReturnType.UInt64);
+        tree.Add(identityHash);
     }
 }

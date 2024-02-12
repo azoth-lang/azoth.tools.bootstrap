@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -683,6 +684,7 @@ public class BasicBodyAnalyzer
             }
             case INewObjectExpressionSyntax exp:
             {
+                if (exp.Type.Name.Text == "Hash_Dictionary" && exp.Arguments.Count == 2) Debugger.Break();
                 var arguments = InferArgumentTypes(exp.Arguments, flow);
                 var constructingType = typeResolver.EvaluateBareType(exp.Type);
                 ResultVariable? resultVariable = null;

@@ -3,7 +3,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
@@ -50,8 +49,6 @@ public static class Intrinsic
 
     public static readonly FunctionSymbol AbortRawUtf8Bytes = Find<FunctionSymbol>("ABORT_RAW_UTF8_BYTES");
 
-    public static readonly FunctionSymbol IdentityHash = Find<FunctionSymbol>("identity_hash");
-
     private static IEnumerable<T> Find<T>()
         => SymbolTree.Symbols.OfType<T>();
 
@@ -92,11 +89,7 @@ public static class Intrinsic
             Params(readBytesType, DataType.Size, DataType.Size), ReturnType.Never);
         tree.Add(abort);
 
-        var readAnyType = new AnyType(ReferenceCapability.Read);
-        // fn identity_hash(value: Any) -> uint64 // TODO: should be nuint
-        var identityHash = Function(intrinsicsNamespace, "identity_hash",
-            Params(readAnyType), ReturnType.UInt64);
-        tree.Add(identityHash);
+
 
         return tree.Build();
     }
