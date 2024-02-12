@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -73,7 +72,8 @@ internal class MethodSignature : IEquatable<MethodSignature>
 
     public override string ToString()
     {
-        var parameterTypes = ((IEnumerable<IParameterType>)ParameterTypes).Prepend(SelfType);
-        return $"{Name}({string.Join(", ", parameterTypes.Select(t => t.ToILString()))}) -> {ReturnType.ToILString()}";
+        var parameterSeparator = ParameterTypes.Any() ? ", " : "";
+        string parameters = string.Join(", ", ParameterTypes.Select(d => d.ToILString()));
+        return $"{Name}({SelfType.ToILString()}{parameterSeparator}{parameters}) -> {ReturnType.ToILString()}";
     }
 }

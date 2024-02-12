@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -684,7 +683,6 @@ public class BasicBodyAnalyzer
             }
             case INewObjectExpressionSyntax exp:
             {
-                if (exp.Type.Name.Text == "Hash_Dictionary" && exp.Arguments.Count == 2) Debugger.Break();
                 var arguments = InferArgumentTypes(exp.Arguments, flow);
                 var constructingType = typeResolver.EvaluateBareType(exp.Type);
                 ResultVariable? resultVariable = null;
@@ -2080,9 +2078,13 @@ public class BasicBodyAnalyzer
             GenericParameterType t => LookupSymbolForType(t),
             SelfViewpointType { Referent: var t } => LookupSymbolForType(t),
             IntegerType t => symbolTrees.PrimitiveSymbolTree
-                                                  .GlobalSymbols
-                                                  .OfType<PrimitiveTypeSymbol>()
-                                                  .Single(s => s.DeclaresType == t),
+                                        .GlobalSymbols
+                                        .OfType<PrimitiveTypeSymbol>()
+                                        .Single(s => s.DeclaresType == t),
+            AnyType => symbolTrees.PrimitiveSymbolTree
+                                    .GlobalSymbols
+                                    .OfType<PrimitiveTypeSymbol>()
+                                    .Single(s => s.DeclaresType is AnyType),
             _ => throw new NotImplementedException(
                 $"{nameof(LookupSymbolForType)} not implemented for {dataType.GetType().Name}")
         };

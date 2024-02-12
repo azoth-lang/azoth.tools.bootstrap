@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Framework;
@@ -13,14 +14,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 internal class TypeSymbolInheritor
 {
     private readonly ISymbolTreeBuilder symbolTree;
+    private readonly SymbolForest symbolTrees;
     private readonly IDictionary<ITypeDeclarationSyntax, bool> processed;
     private readonly FixedDictionary<TypeSymbol, ITypeDeclarationSyntax> typeDeclarationsInPackage;
 
     public TypeSymbolInheritor(
         ISymbolTreeBuilder symbolTree,
+        SymbolForest symbolTrees,
         IEnumerable<ITypeDeclarationSyntax> typeDeclarations)
     {
         this.symbolTree = symbolTree;
+        this.symbolTrees = symbolTrees;
         typeDeclarationsInPackage = typeDeclarations.ToFixedDictionary(t => (TypeSymbol)t.Symbol.Result);
         processed = typeDeclarationsInPackage.Values.ToDictionary(t => t, _ => false);
     }
@@ -43,6 +47,8 @@ internal class TypeSymbolInheritor
         foreach (var superTypeName in typeDeclaration.SupertypeNames)
             AddInheritedSymbols(typeSymbol, superTypeName);
 
+        AddInheritedSymbols(typeSymbol, Primitive.Any);
+
         processed[typeDeclaration] = true;
     }
 
@@ -61,7 +67,7 @@ internal class TypeSymbolInheritor
     private void AddInheritedSymbols(ObjectTypeSymbol typeSymbol, TypeSymbol baseSymbol)
     {
         var existingMembers = symbolTree.GetChildrenOf(typeSymbol).ToFixedSet();
-        foreach (var symbol in symbolTree.GetChildrenOf(baseSymbol))
+        foreach (var symbol in symbolTrees.Children(baseSymbol))
         {
             if (symbol is ConstructorSymbol)
                 continue;

@@ -24,19 +24,21 @@ public class EntitySymbolBuilder
 {
     private readonly Diagnostics diagnostics;
     private readonly ISymbolTreeBuilder symbolTree;
+    private readonly SymbolForest symbolTrees;
 
-    private EntitySymbolBuilder(Diagnostics diagnostics, ISymbolTreeBuilder symbolTree)
+    private EntitySymbolBuilder(Diagnostics diagnostics, ISymbolTreeBuilder symbolTree, SymbolForest symbolTrees)
     {
         this.diagnostics = diagnostics;
         this.symbolTree = symbolTree;
+        this.symbolTrees = symbolTrees;
     }
 
     public static void BuildFor(PackageSyntax<Package> package)
     {
-        var builder = new EntitySymbolBuilder(package.Diagnostics, package.SymbolTree);
+        var builder = new EntitySymbolBuilder(package.Diagnostics, package.SymbolTree, package.SymbolTrees);
         builder.Build(package.EntityDeclarations);
 
-        builder = new EntitySymbolBuilder(package.Diagnostics, package.TestingSymbolTree);
+        builder = new EntitySymbolBuilder(package.Diagnostics, package.TestingSymbolTree, package.SymbolTrees);
         builder.Build(package.TestingEntityDeclarations);
     }
 
@@ -51,7 +53,7 @@ public class EntitySymbolBuilder
         foreach (var entity in entities)
             BuildNonTypeEntitySymbol(entity);
 
-        var inheritor = new TypeSymbolInheritor(symbolTree, typeDeclarations);
+        var inheritor = new TypeSymbolInheritor(symbolTree, symbolTrees, typeDeclarations);
         inheritor.AddInheritedSymbols();
     }
 

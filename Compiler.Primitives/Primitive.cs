@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
@@ -11,6 +13,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
 public static class Primitive
 {
     public static readonly PrimitiveSymbolTree SymbolTree = DefinePrimitiveSymbols();
+
+    public static readonly PrimitiveTypeSymbol Any = Find<PrimitiveTypeSymbol>("Any");
+
+    public static readonly MethodSymbol IdentityHash = Find<MethodSymbol>(Any, "identity_hash");
+
+    private static IEnumerable<T> Find<T>() => SymbolTree.Symbols.OfType<T>();
+
+    private static T Find<T>(string name)
+        where T : Symbol
+        => Find<T>().Single(s => s.Name?.Text == name);
+
+    private static T Find<T>(Symbol containingSymbol, string? name)
+        where T : Symbol
+        => Find<T>().Single(s => s.ContainingSymbol == containingSymbol && s.Name?.Text == name);
 
     private static PrimitiveSymbolTree DefinePrimitiveSymbols()
     {

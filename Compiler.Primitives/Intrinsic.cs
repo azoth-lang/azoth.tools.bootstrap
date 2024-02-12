@@ -57,8 +57,8 @@ public static class Intrinsic
         => Find<T>().Single(s => s.Name?.Text == name);
 
     private static T Find<T>(Symbol containingSymbol, string? name)
-        where T : Symbol =>
-        Find<T>().Single(s => s.ContainingSymbol == containingSymbol && s.Name?.Text == name);
+        where T : Symbol
+        => Find<T>().Single(s => s.ContainingSymbol == containingSymbol && s.Name?.Text == name);
 
     private static FixedSymbolTree DefineIntrinsicSymbols()
     {

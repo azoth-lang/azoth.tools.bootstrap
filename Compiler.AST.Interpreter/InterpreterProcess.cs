@@ -536,6 +536,8 @@ public class InterpreterProcess
                 var methodSymbol = exp.ReferencedSymbol;
                 if (methodSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(methodSymbol, self, arguments);
+                if (methodSymbol == Primitive.IdentityHash)
+                    return IdentityHash(self);
                 var methodSignature = methodSignatures[methodSymbol];
 
                 var selfType = exp.Context.DataType;
@@ -549,16 +551,10 @@ public class InterpreterProcess
                     case FunctionType _:
                     case ViewpointType _:
                         throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
-                    case ObjectType _:
+                    case ReferenceType _:
                         var vtable = self.ObjectValue.VTable;
                         var method = vtable[methodSignature];
                         return await CallMethodAsync(method, self, arguments).ConfigureAwait(false);
-                    case AnyType _:
-                        return methodSignature.Name.Text switch
-                        {
-                            "identity_hash" => IdentityHash(self),
-                            _ => throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}")
-                        };
                     case NumericType numericType:
                         return methodSignature.Name.Text switch
                         {
