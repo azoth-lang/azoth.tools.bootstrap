@@ -379,7 +379,7 @@ public class EntitySymbolBuilder
                     var isLent = namedParam.IsLentBinding;
                     if (isLent && type is ReferenceType { IsIdentityReference: true })
                     {
-                        diagnostics.Add(TypeError.LentIdentity(file, namedParam.Span));
+                        diagnostics.Add(TypeError.LentConstOrIdentity(file, namedParam.Span, type));
                         isLent = false;
                     }
 
@@ -416,7 +416,7 @@ public class EntitySymbolBuilder
         bool isLent = selfParameter.IsLentBinding;
         if (isLent && selfType is ReferenceType { IsIdentityReference: true })
         {
-            diagnostics.Add(TypeError.LentIdentity(file, selfParameter.Span));
+            diagnostics.Add(TypeError.LentConstOrIdentity(file, selfParameter.Span, selfType));
             isLent = false;
         }
         return new SelfParameterType(isLent, selfType);

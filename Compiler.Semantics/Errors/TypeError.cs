@@ -112,16 +112,16 @@ public static class TypeError
             3014, $"Constructor self parameter cannot have reference capability `{capability.ToSourceString()}`. Only `mut` and read-only are allowed");
     }
 
-    public static Diagnostic LentIdentity(CodeFile file, TextSpan span)
+    public static Diagnostic LentConstOrIdentity(CodeFile file, TextSpan span, Pseudotype type)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3015, "Cannot have `lent id`");
+            3015, $"Cannot apply `lent` to `{type.ToSourceCodeString()}` because it is a fully `const` or `id` type");
     }
 
     public static Diagnostic OptionalPatternOnNonOptionalType(CodeFile file, IOptionalPatternSyntax pattern, DataType type)
     {
         return new(file, pattern.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3016, $"Optional pattern `{pattern}` cannot be applied to value of non-optional type {type.ToSourceCodeString()}");
+            3016, $"Optional pattern `{pattern}` cannot be applied to value of non-optional type `{type.ToSourceCodeString()}`");
     }
 
     public static Diagnostic ConstClassSelfParameterCannotHaveCapability(CodeFile file, ISelfParameterSyntax self)
