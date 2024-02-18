@@ -22,6 +22,8 @@ public sealed class OptionalType : NonEmptyType
         Referent.Semantics == TypeSemantics.Never
             ? TypeSemantics.CopyValue : Referent.Semantics;
 
+    private bool ReferentRequiresParens => Referent is FunctionType or ViewpointType;
+
     public OptionalType(DataType referent)
     {
         if (referent is VoidType)
@@ -43,7 +45,9 @@ public sealed class OptionalType : NonEmptyType
         => HashCode.Combine(typeof(OptionalType), Referent);
     #endregion
 
-    public override string ToSourceCodeString() => $"({Referent.ToSourceCodeString()})?";
+    public override string ToSourceCodeString()
+        => ReferentRequiresParens ? $"({Referent.ToSourceCodeString()})?" : $"{Referent.ToSourceCodeString()}?";
 
-    public override string ToILString() => $"({Referent.ToILString()})?";
+    public override string ToILString()
+        => ReferentRequiresParens ? $"({Referent.ToILString()})?" : $"{Referent.ToILString()}?";
 }
