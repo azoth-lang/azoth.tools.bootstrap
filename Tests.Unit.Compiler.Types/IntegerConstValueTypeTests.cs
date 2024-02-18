@@ -22,7 +22,7 @@ public class IntegerConstValueTypeTests
     {
         var type = new IntegerConstValueType(1);
 
-        Assert.True(type.IsTypeOfValue);
+        Assert.True(type.IsTypeOfConstValue);
     }
 
     [Fact]

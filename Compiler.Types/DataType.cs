@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using ExhaustiveMatching;
 
@@ -54,9 +55,9 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     public virtual bool IsEmpty => false;
 
     /// <summary>
-    /// Whether this is a type for literal values like specific integer or boolean values.
+    /// Whether this is a type for constant values like specific integer or boolean values.
     /// </summary>
-    public virtual bool IsTypeOfValue => false;
+    public virtual bool IsTypeOfConstValue => false;
 
     /// <summary>
     /// Whether this type allows for writing to instances of it.

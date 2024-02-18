@@ -1,6 +1,7 @@
 using System;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -10,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class IntegerConstValueType : IntegerType
 {
-    public override bool IsTypeOfValue => true;
+    public override bool IsTypeOfConstValue => true;
     public BigInteger Value { get; }
     public override bool IsFullyKnown => true;
 

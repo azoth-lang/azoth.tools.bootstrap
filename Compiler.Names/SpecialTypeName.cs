@@ -29,9 +29,9 @@ public sealed class SpecialTypeName : TypeName
     #endregion
 
     #region Constant Types
-    public static readonly SpecialTypeName True = new("True");
-    public static readonly SpecialTypeName False = new("False");
-    public static readonly SpecialTypeName ConstInt = new("ConstInt");
+    public static readonly SpecialTypeName True = new("Const_Value_True");
+    public static readonly SpecialTypeName False = new("Const_Value_False");
+    public static readonly SpecialTypeName ConstInt = new("Const_Value_Int");
     #endregion
 
     private SpecialTypeName(string text)

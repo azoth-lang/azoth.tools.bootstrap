@@ -17,6 +17,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -1995,6 +1996,7 @@ public class BasicBodyAnalyzer
         {
             // Safe conversions
             (BoolType, IntegerType) => true,
+            (BoolConstValueType, IntegerType) => true,
             (IntegerType { IsSigned: false }, BigIntegerType) => true,
             (IntegerType, BigIntegerType { IsSigned: true }) => true,
             (FixedSizeIntegerType from, FixedSizeIntegerType to)

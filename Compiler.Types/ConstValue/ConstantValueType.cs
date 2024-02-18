@@ -1,14 +1,20 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 
 /// <summary>
 /// The type of a constant value.
 /// </summary>
+[Closed(typeof(BoolConstValueType))]
 public abstract class ConstantValueType : NonEmptyType
 {
     public SpecialTypeName Name { get; }
+
+    public override bool IsTypeOfConstValue => true;
+
+    public override bool IsFullyKnown => true;
 
     public override TypeSemantics Semantics => TypeSemantics.CopyValue;
 

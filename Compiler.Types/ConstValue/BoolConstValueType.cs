@@ -1,18 +1,16 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 
 /// <summary>
 /// This is the type of a boolean constant value, it isn't possible to declare a variable of this
 /// type.
 /// </summary>
-public sealed class BoolConstValueType : BoolType
+public sealed class BoolConstValueType : ConstantValueType
 {
     internal new static readonly BoolConstValueType True = new(true);
     internal new static readonly BoolConstValueType False = new(false);
-
-    public override bool IsTypeOfValue => true;
 
     public bool Value { get; }
 

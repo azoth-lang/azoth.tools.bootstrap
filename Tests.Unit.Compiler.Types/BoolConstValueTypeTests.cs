@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Xunit;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
@@ -8,19 +9,11 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
 public class BoolConstValueTypeTests
 {
     [Fact]
-    public void Is_a_boolean_type()
-    {
-        var type = BoolConstValueType.True;
-
-        Assert.OfType<BoolType>(type);
-    }
-
-    [Fact]
     public void Is_constant()
     {
         var type = BoolConstValueType.True;
 
-        Assert.True(type.IsTypeOfValue);
+        Assert.True(type.IsTypeOfConstValue);
     }
 
     [Fact]
@@ -75,8 +68,15 @@ public class BoolConstValueTypeTests
     }
 
     [Fact]
-    public void Any_types_with_different_reference_capabilities_are_not_equal()
+    public void Bool_constant_types_with_different_value_are_not_equal()
     {
         Assert.NotEqual(BoolConstValueType.True, BoolConstValueType.False);
+    }
+
+    [Fact]
+    public void Bool_type_not_equal_to_bool_constant_type()
+    {
+        Assert.NotEqual<NonEmptyType>(BoolType.Instance, BoolConstValueType.True);
+        Assert.NotEqual<NonEmptyType>(BoolType.Instance, BoolConstValueType.False);
     }
 }

@@ -19,7 +19,7 @@ public class UnknownTypeTests
     {
         var type = UnknownType.Instance;
 
-        Assert.False(type.IsTypeOfValue);
+        Assert.False(type.IsTypeOfConstValue);
     }
 
     /// <summary>
