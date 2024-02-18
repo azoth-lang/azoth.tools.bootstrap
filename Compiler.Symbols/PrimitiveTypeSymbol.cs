@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-public class PrimitiveTypeSymbol : TypeSymbol
+public sealed class PrimitiveTypeSymbol : TypeSymbol
 {
     public override PackageSymbol? Package => null;
     public override Symbol? ContainingSymbol => null;
