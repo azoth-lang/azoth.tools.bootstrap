@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;

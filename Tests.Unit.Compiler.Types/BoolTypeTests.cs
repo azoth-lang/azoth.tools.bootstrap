@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Xunit;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;

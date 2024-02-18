@@ -1,6 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 /// <summary>
 /// Integer types whose exact bit length is architecture dependent and whose

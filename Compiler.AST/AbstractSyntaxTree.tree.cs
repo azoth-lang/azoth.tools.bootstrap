@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 

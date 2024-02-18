@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 

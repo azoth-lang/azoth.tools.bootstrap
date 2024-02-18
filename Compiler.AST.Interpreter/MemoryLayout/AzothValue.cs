@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout.BoundedLists;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 

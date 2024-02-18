@@ -3,6 +3,7 @@ using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 

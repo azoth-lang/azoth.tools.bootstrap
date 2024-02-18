@@ -2,7 +2,7 @@ using System;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 /// <summary>
 /// An integer represented in a fixed number of bits.

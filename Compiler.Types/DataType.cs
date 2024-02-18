@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using ExhaustiveMatching;
 

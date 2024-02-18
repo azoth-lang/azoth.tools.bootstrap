@@ -9,6 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using Attribute = Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree.Attribute;

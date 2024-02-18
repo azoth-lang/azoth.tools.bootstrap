@@ -1,6 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 public sealed class BoolType : SimpleType
 {
