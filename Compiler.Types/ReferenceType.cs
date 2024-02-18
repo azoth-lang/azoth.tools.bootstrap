@@ -17,7 +17,9 @@ public abstract class ReferenceType : NonEmptyType
     public bool IsIsolatedReference => Capability == ReferenceCapability.Isolated;
     public bool IsTemporarilyIsolatedReference => Capability == ReferenceCapability.TemporarilyIsolated;
     public bool IsIdentityReference => Capability == ReferenceCapability.Identity;
+
     public bool AllowsInit => Capability.AllowsInit;
+
     public override bool AllowsWrite => Capability.AllowsWrite;
 
     public override bool AllowsWriteAliases => Capability.AllowsWriteAliases;
@@ -60,6 +62,36 @@ public abstract class ReferenceType : NonEmptyType
     public virtual TypeName Name => DeclaredType.Name;
 
     public override TypeSemantics Semantics => TypeSemantics.Reference;
+
+    /// <summary>
+    /// Create a object type for a given class or trait.
+    /// </summary>
+    public static ObjectType Create(
+        ReferenceCapability capability,
+        SimpleName containingPackage,
+        NamespaceName containingNamespace,
+        bool isAbstract,
+        bool isConst,
+        bool isClass,
+        string name)
+        => Create(capability,
+            DeclaredObjectType.Create(containingPackage, containingNamespace, isAbstract, isConst, isClass, name),
+            FixedList<DataType>.Empty);
+
+    /// <summary>
+    /// Create a object type for a given class or trait.
+    /// </summary>
+    public static ObjectType Create(
+        ReferenceCapability capability,
+        DeclaredObjectType declaredType,
+        FixedList<DataType> typeArguments)
+        => Create(capability, BareObjectType.Create(declaredType, typeArguments));
+
+    /// <summary>
+    /// Create a object type for a given bare type.
+    /// </summary>
+    public static ObjectType Create(ReferenceCapability capability, BareObjectType bareType)
+        => new ObjectType(capability, bareType);
 
     private protected ReferenceType(ReferenceCapability capability, BareReferenceType bareType)
     {

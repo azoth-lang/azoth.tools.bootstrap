@@ -1,10 +1,8 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -27,38 +25,7 @@ public sealed class ObjectType : ReferenceType
 
     public override bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
 
-    /// <summary>
-    /// Create a object type for a given class or trait.
-    /// </summary>
-    public static ObjectType Create(
-        ReferenceCapability capability,
-        SimpleName containingPackage,
-        NamespaceName containingNamespace,
-        bool isAbstract,
-        bool isConst,
-        bool isClass,
-        string name)
-        => Create(capability, DeclaredObjectType.Create(containingPackage, containingNamespace,
-            isAbstract, isConst, isClass, name), FixedList<DataType>.Empty);
-
-    /// <summary>
-    /// Create a object type for a given class or trait.
-    /// </summary>
-    public static ObjectType Create(
-        ReferenceCapability capability,
-        DeclaredObjectType declaredType,
-        FixedList<DataType> typeArguments)
-        => Create(capability, BareObjectType.Create(declaredType, typeArguments));
-
-    /// <summary>
-    /// Create a object type for a given bare type.
-    /// </summary>
-    public static ObjectType Create(
-        ReferenceCapability capability,
-        BareObjectType bareType)
-        => new(capability, bareType);
-
-    private ObjectType(
+    internal ObjectType(
         ReferenceCapability capability,
         BareObjectType bareType)
         : base(capability, bareType)
