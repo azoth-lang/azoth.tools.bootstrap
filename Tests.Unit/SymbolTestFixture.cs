@@ -127,7 +127,7 @@ public abstract class SymbolTestFixture
     {
         return new ObjectTypeSymbol(
             ns ?? Package(),
-            dataType ?? DataType().DeclaredType);
+            dataType ?? (DeclaredObjectType)DataType().DeclaredType);
     }
 
     protected VariableSymbol Parameter(

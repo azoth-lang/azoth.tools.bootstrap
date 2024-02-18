@@ -7,9 +7,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-[Closed(
-    typeof(ObjectType),
-    typeof(AnyType))]
+[Closed(typeof(ObjectType))]
 public abstract class ReferenceType : NonEmptyType
 {
     public ReferenceCapability Capability { get; }

@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Xunit;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Symbols;
@@ -56,7 +57,7 @@ public class FunctionSymbolTests : SymbolTestFixture
         var parameters = Params(DataType("T1"), DataType("T2"));
         var funcA = Func("A", ns, parameters, ReturnType("T3"));
         var selfDataType = DataType("Class");
-        var selfType = Type(ns, selfDataType.DeclaredType);
+        var selfType = Type(ns, (DeclaredObjectType?)selfDataType.DeclaredType);
         var methodA = Method("A", selfType, SelfParam(selfDataType), parameters, ReturnType("T3"));
 
         // Note: assert false used to ensure which object Equals is called on

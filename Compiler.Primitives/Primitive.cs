@@ -91,10 +91,10 @@ public static class Primitive
 
     private static void BuildAnyTypeSymbol(SymbolTreeBuilder tree)
     {
-        var symbol = new PrimitiveTypeSymbol(DeclaredReferenceType.Any.With(ReferenceCapability.Mutable));
+        var symbol = new PrimitiveTypeSymbol(DeclaredReferenceType.Any);
         tree.Add(symbol);
 
-        var idAnyType = new AnyType(ReferenceCapability.Identity);
+        var idAnyType = DeclaredReferenceType.Any.With(ReferenceCapability.Identity);
         // fn identity_hash(value: Any) -> uint64 // TODO: should be nuint
         var identityHash = new MethodSymbol(symbol, "identity_hash", SelfParam(idAnyType), Params(), ReturnType.UInt64);
         tree.Add(identityHash);

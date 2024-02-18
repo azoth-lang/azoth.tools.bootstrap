@@ -52,8 +52,6 @@ public static class DataTypeExtensions
         {
             default:
                 throw ExhaustiveMatch.Failed(target);
-            case AnyType _:
-                return true;
             case ObjectType targetObjectType:
                 if (source is not ObjectType sourceObjectType) return false;
 

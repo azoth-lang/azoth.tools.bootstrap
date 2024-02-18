@@ -12,11 +12,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 /// <summary>
 /// An reference type without a reference capability.
 /// </summary>
-[Closed(typeof(BareObjectType), typeof(BareAnyType))]
+[Closed(typeof(BareObjectType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class BareReferenceType : IEquatable<BareReferenceType>
 {
-    public static readonly BareAnyType Any = BareAnyType.Instance;
+    public static readonly BareObjectType Any = BareObjectType.Create(DeclaredReferenceType.Any, FixedList<DataType>.Empty);
 
     public abstract DeclaredReferenceType DeclaredType { get; }
 

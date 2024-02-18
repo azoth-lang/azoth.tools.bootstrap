@@ -106,7 +106,6 @@ internal sealed class TypeReplacements
                     return new SelfViewpointType(selfViewpointType.Capability, replacementType);
                 break;
             }
-            case AnyType _:
             case SimpleType _:
             case EmptyType _:
             case UnknownType _:
@@ -130,7 +129,6 @@ internal sealed class TypeReplacements
         return type switch
         {
             BareObjectType objectType => ReplaceTypeParametersIn(objectType),
-            BareAnyType _ => type,
             _ => throw ExhaustiveMatch.Failed(type)
         };
     }

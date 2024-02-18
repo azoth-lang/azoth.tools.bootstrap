@@ -1,6 +1,7 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Xunit;
 using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.ReferenceCapability;
 
@@ -12,7 +13,7 @@ public class OptionalTypeTests
     [Fact]
     public void Optional_reference_has_reference_semantics()
     {
-        var optionalAny = new OptionalType(new AnyType(Isolated));
+        var optionalAny = new OptionalType(DeclaredReferenceType.Any.With(Isolated));
 
         Assert.Equal(TypeSemantics.Reference, optionalAny.Semantics);
     }

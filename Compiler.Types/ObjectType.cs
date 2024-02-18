@@ -23,7 +23,7 @@ public sealed class ObjectType : ReferenceType
 {
     public override BareObjectType BareType { get; }
 
-    public override DeclaredObjectType DeclaredType => BareType.DeclaredType;
+    public override DeclaredReferenceType DeclaredType => BareType.DeclaredType;
 
     public override bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
 
@@ -55,8 +55,8 @@ public sealed class ObjectType : ReferenceType
     /// </summary>
     public static ObjectType Create(
         ReferenceCapability capability,
-        BareObjectType bareType) =>
-        new(capability, bareType);
+        BareObjectType bareType)
+        => new(capability, bareType);
 
     private ObjectType(
         ReferenceCapability capability,

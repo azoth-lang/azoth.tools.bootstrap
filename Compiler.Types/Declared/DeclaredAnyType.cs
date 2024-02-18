@@ -22,19 +22,19 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
     public override SpecialTypeName Name => SpecialTypeName.Any;
     public override FixedSet<BareReferenceType> Supertypes => FixedSet<BareReferenceType>.Empty;
 
-    public override BareAnyType With(FixedList<DataType> typeArguments)
+    public override BareObjectType With(FixedList<DataType> typeArguments)
     {
         if (typeArguments.Count != 0)
             throw new ArgumentException($"`{SpecialTypeName.Any}` does not support type arguments.");
         return BareReferenceType.Any;
     }
 
-    public override AnyType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+    public override ObjectType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    [SuppressMessage("Performance", "CA1822:Mark members as static",
-        Justification = "OO")]
-    public AnyType With(ReferenceCapability capability) => new(capability);
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
+    public ObjectType With(ReferenceCapability capability)
+        => ObjectType.Create(capability, BareReferenceType.Any);
 
     #region Equals
     public override bool Equals(DeclaredReferenceType? other) => ReferenceEquals(this, other);

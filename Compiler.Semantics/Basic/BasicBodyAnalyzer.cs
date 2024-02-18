@@ -2091,10 +2091,6 @@ public class BasicBodyAnalyzer
                                         .GlobalSymbols
                                         .OfType<PrimitiveTypeSymbol>()
                                         .Single(s => s.DeclaresType == t),
-            AnyType => symbolTrees.PrimitiveSymbolTree
-                                    .GlobalSymbols
-                                    .OfType<PrimitiveTypeSymbol>()
-                                    .Single(s => s.DeclaresType is AnyType),
             _ => throw new NotImplementedException(
                 $"{nameof(LookupSymbolForType)} not implemented for {dataType.GetType().Name}")
         };
@@ -2102,6 +2098,20 @@ public class BasicBodyAnalyzer
 
     private TypeSymbol LookupSymbolForType(ObjectType type)
         => LookupSymbolForType(type.DeclaredType);
+
+    private TypeSymbol LookupSymbolForType(DeclaredReferenceType type)
+    {
+        return type switch
+        {
+            DeclaredAnyType t => LookupSymbolForType(t),
+            DeclaredObjectType t => LookupSymbolForType(t),
+            _ => throw ExhaustiveMatch.Failed(type),
+        };
+    }
+
+    private PrimitiveTypeSymbol LookupSymbolForType(DeclaredAnyType type)
+        => symbolTrees.PrimitiveSymbolTree.GlobalSymbols.OfType<PrimitiveTypeSymbol>()
+                      .Single(s => s.DeclaresType is ObjectType { DeclaredType: DeclaredAnyType });
 
     private TypeSymbol LookupSymbolForType(DeclaredObjectType type)
     {

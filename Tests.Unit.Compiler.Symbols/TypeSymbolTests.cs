@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Xunit;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Symbols;
@@ -11,8 +12,8 @@ public class TypeSymbolTests : SymbolTestFixture
     {
         var container = Package("my.package");
         var type = DataType("T1");
-        var sym1 = Type(container, type.DeclaredType);
-        var sym2 = Type(container, type.DeclaredType);
+        var sym1 = Type(container, (DeclaredObjectType?)type.DeclaredType);
+        var sym2 = Type(container, (DeclaredObjectType?)type.DeclaredType);
 
         Assert.Equal(sym1, sym2);
     }
@@ -22,9 +23,9 @@ public class TypeSymbolTests : SymbolTestFixture
     {
         var container = Package("my.package");
         var type1 = DataType("My_Class1");
-        var sym1 = Type(container, type1.DeclaredType);
+        var sym1 = Type(container, (DeclaredObjectType?)type1.DeclaredType);
         var type2 = DataType("My_Class2");
-        var sym2 = Type(container, type2.DeclaredType);
+        var sym2 = Type(container, (DeclaredObjectType?)type2.DeclaredType);
 
         Assert.NotEqual(sym1, sym2);
     }
@@ -34,9 +35,9 @@ public class TypeSymbolTests : SymbolTestFixture
     {
         var container = new PackageSymbol(Name("my.package"));
         var type1 = DataType("T1");
-        var sym1 = Type(container, type1.DeclaredType);
+        var sym1 = Type(container, (DeclaredObjectType?)type1.DeclaredType);
         var type2 = DataType("T2");
-        var sym2 = Type(container, type2.DeclaredType);
+        var sym2 = Type(container, (DeclaredObjectType?)type2.DeclaredType);
 
         Assert.NotEqual(sym1, sym2);
     }

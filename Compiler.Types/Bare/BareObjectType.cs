@@ -14,14 +14,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 /// </summary>
 public sealed class BareObjectType : BareReferenceType
 {
-    public override DeclaredObjectType DeclaredType { get; }
+    public override DeclaredReferenceType DeclaredType { get; }
 
     public static BareObjectType Create(
-        DeclaredObjectType declaredType,
+        DeclaredReferenceType declaredType,
         FixedList<DataType> typeArguments)
         => new(declaredType, typeArguments);
 
-    private BareObjectType(DeclaredObjectType declaredType, FixedList<DataType> typeArguments)
+    private BareObjectType(DeclaredReferenceType declaredType, FixedList<DataType> typeArguments)
         : base(declaredType, typeArguments)
     {
         DeclaredType = declaredType;

@@ -1,6 +1,7 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -11,6 +12,7 @@ public sealed class PrimitiveTypeSymbol : TypeSymbol
     public override Symbol? ContainingSymbol => null;
     public override SpecialTypeName Name { get; }
 
+    // TODO this should be DeclaredType
     public DataType DeclaresType { get; }
 
     public PrimitiveTypeSymbol(SimpleType declaresType)
@@ -29,11 +31,11 @@ public sealed class PrimitiveTypeSymbol : TypeSymbol
 
     /// <remarks>This is a little odd that it "declares" a specific reference type while the
     /// <see cref="ObjectTypeSymbol"/> declares a <see cref="DeclaredObjectType"/>.</remarks>
-    public PrimitiveTypeSymbol(AnyType declaresType)
+    public PrimitiveTypeSymbol(DeclaredAnyType declaresType)
         : base(declaresType.Name)
     {
         Name = declaresType.Name;
-        DeclaresType = declaresType;
+        DeclaresType = declaresType.With(ReferenceCapability.Mutable);
     }
 
     public override bool Equals(Symbol? other)
