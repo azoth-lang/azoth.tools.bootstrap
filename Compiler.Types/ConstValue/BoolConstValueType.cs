@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 /// This is the type of a boolean constant value, it isn't possible to declare a variable of this
 /// type.
 /// </summary>
-public sealed class BoolConstValueType : ConstantValueType
+public sealed class BoolConstValueType : ConstValueType
 {
     internal new static readonly BoolConstValueType True = new(true);
     internal new static readonly BoolConstValueType False = new(false);

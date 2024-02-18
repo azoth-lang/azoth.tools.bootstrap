@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 /// The type of a constant value.
 /// </summary>
 [Closed(typeof(BoolConstValueType))]
-public abstract class ConstantValueType : NonEmptyType
+public abstract class ConstValueType : NonEmptyType
 {
     public SpecialTypeName Name { get; }
 
@@ -18,7 +18,7 @@ public abstract class ConstantValueType : NonEmptyType
 
     public override TypeSemantics Semantics => TypeSemantics.CopyValue;
 
-    private protected ConstantValueType(SpecialTypeName name)
+    private protected ConstValueType(SpecialTypeName name)
     {
         Name = name;
     }
