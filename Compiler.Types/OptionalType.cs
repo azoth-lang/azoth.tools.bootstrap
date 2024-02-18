@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// types are like an immutable struct type `Optional[T]`. However, the value
 /// semantics are strange. They depend on the referent type.
 /// </summary>
-public sealed class OptionalType : ValueType
+public sealed class OptionalType : NonEmptyType
 {
     public DataType Referent { get; }
 
