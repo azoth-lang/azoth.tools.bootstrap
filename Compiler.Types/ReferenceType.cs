@@ -9,7 +9,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-public class ReferenceType : NonEmptyType
+public abstract class ReferenceType : NonEmptyType
 {
     public ReferenceCapability Capability { get; }
     public bool IsReadOnlyReference => Capability == ReferenceCapability.Read;
@@ -41,9 +41,9 @@ public class ReferenceType : NonEmptyType
     /// </summary>
     public bool AllowsFreeze => Capability.AllowsFreeze;
 
-    public BareReferenceType BareType { get; }
+    public abstract BareReferenceType BareType { get; }
 
-    public DeclaredReferenceType DeclaredType => BareType.DeclaredType;
+    public virtual DeclaredReferenceType DeclaredType => BareType.DeclaredType;
 
     public FixedList<DataType> TypeArguments => BareType.TypeArguments;
 
@@ -60,7 +60,7 @@ public class ReferenceType : NonEmptyType
     public SimpleName? ContainingPackage => DeclaredType.ContainingPackage;
     public NamespaceName ContainingNamespace => DeclaredType.ContainingNamespace;
 
-    public virtual TypeName Name => DeclaredType.Name;
+    public TypeName Name => DeclaredType.Name;
 
     public override TypeSemantics Semantics => TypeSemantics.Reference;
 
@@ -69,7 +69,7 @@ public class ReferenceType : NonEmptyType
     /// <summary>
     /// Create a object type for a given class or trait.
     /// </summary>
-    public static ReferenceType Create(
+    public static ReferenceType<DeclaredObjectType> Create(
         ReferenceCapability capability,
         SimpleName containingPackage,
         NamespaceName containingNamespace,
@@ -84,7 +84,7 @@ public class ReferenceType : NonEmptyType
     /// <summary>
     /// Create a object type for a given class or trait.
     /// </summary>
-    public static ReferenceType Create(
+    public static ReferenceType<DeclaredObjectType> Create(
         ReferenceCapability capability,
         DeclaredObjectType declaredType,
         FixedList<DataType> typeArguments)
@@ -93,13 +93,18 @@ public class ReferenceType : NonEmptyType
     /// <summary>
     /// Create a object type for a given bare type.
     /// </summary>
-    public static ReferenceType Create(ReferenceCapability capability, BareReferenceType bareType)
-        => new ReferenceType(capability, bareType);
+    public static ReferenceType<DeclaredObjectType> Create(ReferenceCapability capability, BareReferenceType<DeclaredObjectType> bareType)
+        => new(capability, bareType);
 
-    private ReferenceType(ReferenceCapability capability, BareReferenceType bareType)
+    /// <summary>
+    /// Create an `Any` type for a given bare type.
+    /// </summary>
+    public static ReferenceType<DeclaredAnyType> Create(ReferenceCapability capability, BareReferenceType<DeclaredAnyType> bareType)
+        => new(capability, bareType);
+
+    protected ReferenceType(ReferenceCapability capability)
     {
         Capability = capability;
-        BareType = bareType;
     }
 
     /// <remarks>For constant types, there can still be read only references. For example, inside
@@ -124,11 +129,7 @@ public class ReferenceType : NonEmptyType
         }
     }
 
-    public virtual ReferenceType With(ReferenceCapability referenceCapability)
-    {
-        if (referenceCapability == Capability) return this;
-        return new ReferenceType(referenceCapability, BareType);
-    }
+    public abstract ReferenceType With(ReferenceCapability referenceCapability);
 
     public override DataType ReplaceTypeParametersIn(DataType type)
         => BareType.ReplaceTypeParametersIn(type);
@@ -150,7 +151,7 @@ public class ReferenceType : NonEmptyType
         => HashCode.Combine(Capability, BareType);
     #endregion
 
-    public sealed override string ToSourceCodeString()
+    public override string ToSourceCodeString()
     {
         if (Capability != ReferenceCapability.Read)
             return $"{Capability.ToSourceString()} {BareType.ToSourceCodeString()}";
@@ -158,5 +159,25 @@ public class ReferenceType : NonEmptyType
         return BareType.ToSourceCodeString();
     }
 
-    public sealed override string ToILString() => $"{Capability.ToILString()} {BareType.ToILString()}";
+    public override string ToILString() => $"{Capability.ToILString()} {BareType.ToILString()}";
+}
+
+public sealed class ReferenceType<TDeclared> : ReferenceType
+    where TDeclared : DeclaredReferenceType
+{
+    public override BareReferenceType<TDeclared> BareType { get; }
+
+    public override TDeclared DeclaredType => BareType.DeclaredType;
+
+    internal ReferenceType(ReferenceCapability capability, BareReferenceType<TDeclared> bareType)
+        : base(capability)
+    {
+        BareType = bareType;
+    }
+
+    public override ReferenceType<TDeclared> With(ReferenceCapability referenceCapability)
+    {
+        if (referenceCapability == Capability) return this;
+        return new(referenceCapability, BareType);
+    }
 }

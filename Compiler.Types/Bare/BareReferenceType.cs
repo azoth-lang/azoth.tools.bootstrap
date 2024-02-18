@@ -14,9 +14,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 /// An reference type without a reference capability.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public class BareReferenceType : IEquatable<BareReferenceType>
+public abstract class BareReferenceType : IEquatable<BareReferenceType>
 {
-    public static readonly BareReferenceType Any = Create(DeclaredReferenceType.Any, FixedList<DataType>.Empty);
+    public static readonly BareReferenceType<DeclaredAnyType> Any = new(DeclaredReferenceType.Any, FixedList<DataType>.Empty);
 
     public bool AllowsVariance => DeclaredType.AllowsVariance;
 
@@ -35,17 +35,19 @@ public class BareReferenceType : IEquatable<BareReferenceType>
     /// </summary>
     public bool IsConstType => DeclaredType.IsConstType;
 
-    public virtual DeclaredReferenceType DeclaredType { get; }
+    public abstract DeclaredReferenceType DeclaredType { get; }
 
     private readonly Lazy<TypeReplacements> typeReplacements;
 
-    private BareReferenceType(DeclaredReferenceType declaredType, FixedList<DataType> typeArguments)
+    public static BareReferenceType<DeclaredObjectType> Create(DeclaredObjectType declaredType, FixedList<DataType> typeArguments)
+        => new(declaredType, typeArguments);
+
+    protected BareReferenceType(DeclaredReferenceType declaredType, FixedList<DataType> typeArguments)
     {
         if (declaredType.GenericParameters.Count != typeArguments.Count)
             throw new ArgumentException(
                 $"Number of type arguments must match. Given `[{typeArguments.ToILString()}]` for `{declaredType}`.",
                 nameof(typeArguments));
-        DeclaredType = declaredType;
         TypeArguments = typeArguments;
         HasIndependentTypeArguments = declaredType.HasIndependentGenericParameters || TypeArguments.Any(a => a.HasIndependentTypeArguments);
         IsFullyKnown = typeArguments.All(a => a.IsFullyKnown);
@@ -63,6 +65,15 @@ public class BareReferenceType : IEquatable<BareReferenceType>
 
     public Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype)
         => typeReplacements.Value.ReplaceTypeParametersIn(pseudotype);
+
+    public abstract BareReferenceType AccessedVia(ReferenceCapability capability);
+
+    public abstract BareReferenceType With(FixedList<DataType> typeArguments);
+
+    public abstract ReferenceType With(ReferenceCapability capability);
+
+    public ObjectTypeConstraint With(ReferenceCapabilityConstraint capability)
+        => new(capability, this);
 
     #region Equality
     public override bool Equals(object? obj)
@@ -96,27 +107,6 @@ public class BareReferenceType : IEquatable<BareReferenceType>
 #pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
         => throw new NotSupportedException();
 
-    public static BareReferenceType Create(
-        DeclaredReferenceType declaredType,
-        FixedList<DataType> typeArguments)
-        => new(declaredType, typeArguments);
-
-    public virtual BareReferenceType AccessedVia(ReferenceCapability capability)
-    {
-        if (DeclaredType.GenericParameters.All(p => p.Variance != Variance.Independent))
-            return this;
-        var newTypeArguments = DeclaredType.GenericParameters
-                                           .Zip(TypeArguments, (p, arg) => p.Variance == Variance.Independent ? arg.AccessedVia(capability) : arg)
-                                           .ToFixedList();
-        return Create(DeclaredType, newTypeArguments);
-    }
-
-    public virtual ReferenceType With(ReferenceCapability capability)
-        => ReferenceType.Create(capability, this);
-
-    public ObjectTypeConstraint With(ReferenceCapabilityConstraint capability)
-        => new(capability, this);
-
     public virtual string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
     public virtual string ToILString() => ToString(t => t.ToILString());
 
@@ -134,4 +124,30 @@ public class BareReferenceType : IEquatable<BareReferenceType>
         }
         return builder.ToString();
     }
+}
+
+public sealed class BareReferenceType<TDeclared> : BareReferenceType
+    where TDeclared : DeclaredReferenceType
+{
+    public override TDeclared DeclaredType { get; }
+
+    internal BareReferenceType(TDeclared declaredType, FixedList<DataType> typeArguments)
+        : base(declaredType, typeArguments)
+    {
+        DeclaredType = declaredType;
+    }
+
+    public override BareReferenceType<TDeclared> AccessedVia(ReferenceCapability capability)
+    {
+        if (DeclaredType.GenericParameters.All(p => p.Variance != Variance.Independent)) return this;
+        var newTypeArguments = DeclaredType.GenericParameters.Zip(TypeArguments,
+            (p, arg) => p.Variance == Variance.Independent ? arg.AccessedVia(capability) : arg).ToFixedList();
+        return new(DeclaredType, newTypeArguments);
+    }
+
+    public override BareReferenceType<TDeclared> With(FixedList<DataType> typeArguments)
+        => new(DeclaredType, typeArguments);
+
+    public override ReferenceType<TDeclared> With(ReferenceCapability capability)
+        => new ReferenceType<TDeclared>(capability, this);
 }

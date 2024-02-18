@@ -40,7 +40,6 @@ internal sealed class TypeReplacements
                 }
     }
 
-
     public Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype)
     {
         return pseudotype switch
@@ -67,7 +66,7 @@ internal sealed class TypeReplacements
             {
                 var replacementType = ReplaceTypeParametersIn(objectType.BareType);
                 if (!ReferenceEquals(objectType.BareType, replacementType))
-                    return ReferenceType.Create(objectType.Capability, replacementType);
+                    return replacementType.With(objectType.Capability);
                 break;
             }
             case OptionalType optionalType:
@@ -130,7 +129,7 @@ internal sealed class TypeReplacements
         if (ReferenceEquals(type.TypeArguments, replacementTypes))
             return type;
 
-        return BareReferenceType.Create(type.DeclaredType, replacementTypes);
+        return type.With(replacementTypes);
     }
 
     public ParameterType ReplaceTypeParametersIn(ParameterType type)
