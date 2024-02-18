@@ -162,7 +162,7 @@ public static class TypeError
 
     public static Diagnostic CannotAccessMutableBindingFieldOfIdentityReference(CodeFile file, ISimpleNameExpressionSyntax exp, Pseudotype contextType)
     {
-        return new(file, exp.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+        return new(file, exp.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3023, $"Cannot access `var` field `{exp.ToString()}` from type `{contextType.ToSourceCodeString()}`.");
     }
 }
