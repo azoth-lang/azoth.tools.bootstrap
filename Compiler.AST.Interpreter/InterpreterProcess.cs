@@ -157,7 +157,7 @@ public class InterpreterProcess
 
     private async Task<AzothValue> ConstructMainParameterAsync(DataType parameterType)
     {
-        if (parameterType is not ObjectType { TypeArguments.Count: 0 } type)
+        if (parameterType is not ReferenceType { TypeArguments.Count: 0 } type)
             throw new InvalidOperationException(
                 $"Parameter to main of type {parameterType.ToILString()} not supported");
 

@@ -281,7 +281,7 @@ public class EntitySymbolBuilder
         if (syn is IClassDeclarationSyntax { BaseTypeName: not null and var baseTypeName })
         {
             var baseType = resolver.EvaluateBareType(baseTypeName);
-            if (baseType is ObjectType { BareType: var bareType })
+            if (baseType is ReferenceType { BareType: var bareType })
             {
                 yield return bareType;
                 foreach (var inheritedType in bareType.Supertypes)
@@ -292,7 +292,7 @@ public class EntitySymbolBuilder
         foreach (var supertype in syn.SupertypeNames)
         {
             var superType = resolver.EvaluateBareType(supertype);
-            if (superType is ObjectType { BareType: var bareType })
+            if (superType is ReferenceType { BareType: var bareType })
             {
                 yield return bareType;
                 foreach (var inheritedType in bareType.Supertypes)
@@ -396,7 +396,7 @@ public class EntitySymbolBuilder
         }
     }
 
-    private ObjectType ResolveConstructorSelfParameterType(
+    private ReferenceType ResolveConstructorSelfParameterType(
         IConstructorSelfParameterSyntax selfParameter,
         IClassDeclarationSyntax declaringClass)
     {

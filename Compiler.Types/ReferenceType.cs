@@ -1,14 +1,15 @@
+using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-[Closed(typeof(ObjectType))]
-public abstract class ReferenceType : NonEmptyType
+public class ReferenceType : NonEmptyType
 {
     public ReferenceCapability Capability { get; }
     public bool IsReadOnlyReference => Capability == ReferenceCapability.Read;
@@ -40,9 +41,9 @@ public abstract class ReferenceType : NonEmptyType
     /// </summary>
     public bool AllowsFreeze => Capability.AllowsFreeze;
 
-    public virtual BareReferenceType BareType { get; }
+    public BareReferenceType BareType { get; }
 
-    public virtual DeclaredReferenceType DeclaredType => BareType.DeclaredType;
+    public DeclaredReferenceType DeclaredType => BareType.DeclaredType;
 
     public FixedList<DataType> TypeArguments => BareType.TypeArguments;
 
@@ -63,10 +64,12 @@ public abstract class ReferenceType : NonEmptyType
 
     public override TypeSemantics Semantics => TypeSemantics.Reference;
 
+    public override bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
+
     /// <summary>
     /// Create a object type for a given class or trait.
     /// </summary>
-    public static ObjectType Create(
+    public static ReferenceType Create(
         ReferenceCapability capability,
         SimpleName containingPackage,
         NamespaceName containingNamespace,
@@ -81,7 +84,7 @@ public abstract class ReferenceType : NonEmptyType
     /// <summary>
     /// Create a object type for a given class or trait.
     /// </summary>
-    public static ObjectType Create(
+    public static ReferenceType Create(
         ReferenceCapability capability,
         DeclaredObjectType declaredType,
         FixedList<DataType> typeArguments)
@@ -90,15 +93,17 @@ public abstract class ReferenceType : NonEmptyType
     /// <summary>
     /// Create a object type for a given bare type.
     /// </summary>
-    public static ObjectType Create(ReferenceCapability capability, BareReferenceType bareType)
-        => new ObjectType(capability, bareType);
+    public static ReferenceType Create(ReferenceCapability capability, BareReferenceType bareType)
+        => new ReferenceType(capability, bareType);
 
-    private protected ReferenceType(ReferenceCapability capability, BareReferenceType bareType)
+    private ReferenceType(ReferenceCapability capability, BareReferenceType bareType)
     {
         Capability = capability;
         BareType = bareType;
     }
 
+    /// <remarks>For constant types, there can still be read only references. For example, inside
+    /// the constructor.</remarks>
     public override ReferenceType WithoutWrite() => With(Capability.WithoutWrite());
 
     public override DataType AccessedVia(IReferenceCapabilityConstraint capability)
@@ -119,10 +124,31 @@ public abstract class ReferenceType : NonEmptyType
         }
     }
 
-    /// <summary>
-    /// Return the same type except with the given reference capability
-    /// </summary>
-    public abstract ReferenceType With(ReferenceCapability referenceCapability);
+    public virtual ReferenceType With(ReferenceCapability referenceCapability)
+    {
+        if (referenceCapability == Capability) return this;
+        return new ReferenceType(referenceCapability, BareType);
+    }
+
+    public override DataType ReplaceTypeParametersIn(DataType type)
+        => BareType.ReplaceTypeParametersIn(type);
+
+    public override Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype)
+        => BareType.ReplaceTypeParametersIn(pseudotype);
+
+    #region Equality
+    public override bool Equals(DataType? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is ReferenceType otherType
+               && Capability == otherType.Capability
+               && BareType == otherType.BareType;
+    }
+
+    public override int GetHashCode()
+        => HashCode.Combine(Capability, BareType);
+    #endregion
 
     public sealed override string ToSourceCodeString()
     {

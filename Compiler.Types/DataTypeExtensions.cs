@@ -48,21 +48,13 @@ public static class DataTypeExtensions
     {
         if (!target.Capability.IsAssignableFrom(source.Capability)) return false;
 
-        switch (target)
-        {
-            default:
-                throw ExhaustiveMatch.Failed(target);
-            case ObjectType targetObjectType:
-                if (source is not ObjectType sourceObjectType) return false;
+        if (IsAssignableFrom(target.BareType, target.AllowsWrite, source.BareType))
+            return true;
 
-                if (IsAssignableFrom(targetObjectType.BareType, targetObjectType.AllowsWrite, sourceObjectType.BareType))
-                    return true;
-
-                // TODO remove hack to allow string to exist in both primitives and stdlib
-                return target.Name == "String" && source.Name == "String"
-                    && target.ContainingNamespace == NamespaceName.Global
-                    && source.ContainingNamespace == NamespaceName.Global;
-        }
+        // TODO remove hack to allow string to exist in both primitives and stdlib
+        return target.Name == "String" && source.Name == "String"
+            && target.ContainingNamespace == NamespaceName.Global
+            && source.ContainingNamespace == NamespaceName.Global;
     }
 
     public static bool IsAssignableFrom(

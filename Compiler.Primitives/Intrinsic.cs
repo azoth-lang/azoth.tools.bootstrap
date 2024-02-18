@@ -18,7 +18,7 @@ public static class Intrinsic
 
     public static readonly DeclaredObjectType PromiseType = Promise.DeclaresType;
 
-    public static ObjectType PromiseOf(DataType type)
+    public static ReferenceType PromiseOf(DataType type)
         => PromiseType.WithRead(FixedList.Create(type));
 
     public static readonly ObjectTypeSymbol RawHybridBoundedList

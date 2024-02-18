@@ -111,7 +111,7 @@ public class BareReferenceType : IEquatable<BareReferenceType>
         return Create(DeclaredType, newTypeArguments);
     }
 
-    public virtual ObjectType With(ReferenceCapability capability)
+    public virtual ReferenceType With(ReferenceCapability capability)
         => ReferenceType.Create(capability, this);
 
     public ObjectTypeConstraint With(ReferenceCapabilityConstraint capability)

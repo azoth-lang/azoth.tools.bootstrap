@@ -113,7 +113,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// </summary>
     /// <remarks>This is always `init mut` because the type is being initialized and can be mutated
     /// inside the constructor via field initializers.</remarks>
-    public ObjectType ToDefaultConstructorSelf()
+    public ReferenceType ToDefaultConstructorSelf()
         => With(ReferenceCapability.InitMutable, GenericParameterDataTypes);
 
     /// <summary>
@@ -121,7 +121,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// </summary>
     /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
     /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
-    public ObjectType ToDefaultConstructorReturn()
+    public ReferenceType ToDefaultConstructorReturn()
         => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Isolated, GenericParameterDataTypes);
 
     /// <summary>
@@ -129,7 +129,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// </summary>
     /// <remarks>The capability of the return type is restricted by the parameter types because the
     /// newly constructed object could contain references to them.</remarks>
-    public ObjectType ToConstructorReturn(ReferenceType selfParameterType, IEnumerable<ParameterType> parameterTypes)
+    public ReferenceType ToConstructorReturn(ReferenceType selfParameterType, IEnumerable<ParameterType> parameterTypes)
     {
         if (IsConstType) return With(ReferenceCapability.Constant, GenericParameterDataTypes);
         // Read only self constructors cannot return `mut` or `iso`
@@ -158,7 +158,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     public override BareReferenceType With(FixedList<DataType> typeArguments)
         => BareReferenceType.Create(this, typeArguments);
 
-    public override ObjectType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+    public override ReferenceType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
     public ObjectTypeConstraint With(ReferenceCapabilityConstraint capability, FixedList<DataType> typeArguments)
@@ -168,14 +168,14 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// Make a version of this type that is the default read reference capability for the type. That
     /// is either read-only or constant.
     /// </summary>
-    public ObjectType WithRead(FixedList<DataType> typeArguments)
+    public ReferenceType WithRead(FixedList<DataType> typeArguments)
         => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Read, typeArguments);
 
     /// <summary>
     /// Make a version of this type that is the default mutate reference capability for the type.
     /// For constant types, that isn't allowed and a constant reference is returned.
     /// </summary>
-    public ObjectType WithMutate(FixedList<DataType> typeArguments)
+    public ReferenceType WithMutate(FixedList<DataType> typeArguments)
         => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Mutable, typeArguments);
 
     #region Equals

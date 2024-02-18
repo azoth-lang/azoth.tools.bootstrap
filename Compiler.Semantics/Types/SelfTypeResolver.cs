@@ -35,7 +35,7 @@ public class SelfTypeResolver
         };
     }
 
-    public ObjectType EvaluateConstructorSelfParameterType(
+    public ReferenceType EvaluateConstructorSelfParameterType(
         DeclaredObjectType objectType,
         IReferenceCapabilitySyntax capability,
         FixedList<DataType> typeArguments)

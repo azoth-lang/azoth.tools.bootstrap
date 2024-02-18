@@ -63,9 +63,9 @@ public class TypeResolver
             {
                 var capability = referenceCapability.Capability.Declared.ToReferenceCapability();
                 var type = Evaluate(referenceCapability.Referent, isAttribute: false, capability);
-                if (capability.AllowsWrite && type is ObjectType { IsDeclaredConstant: true } objectType)
+                if (capability.AllowsWrite && type is ReferenceType { IsDeclaredConstant: true } referenceType)
                     diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(file, referenceCapability, capability,
-                        objectType.DeclaredType));
+                        referenceType.DeclaredType));
                 return referenceCapability.NamedType = type;
             }
             case IOptionalTypeSyntax syn:

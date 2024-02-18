@@ -68,8 +68,8 @@ public class OptionalTypeTests
     [Fact]
     public void With_equal_referent_are_equal()
     {
-        var type1 = new OptionalType(ObjectType.Create(Mutable, "Package", Namespace("foo", "bar"), false, false, true, "Baz"));
-        var type2 = new OptionalType(ObjectType.Create(Mutable, "Package", Namespace("foo", "bar"), false, false, true, "Baz"));
+        var type1 = new OptionalType(ReferenceType.Create(Mutable, "Package", Namespace("foo", "bar"), false, false, true, "Baz"));
+        var type2 = new OptionalType(ReferenceType.Create(Mutable, "Package", Namespace("foo", "bar"), false, false, true, "Baz"));
 
         Assert.Equal(type1, type2);
     }

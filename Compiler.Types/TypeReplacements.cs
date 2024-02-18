@@ -63,11 +63,11 @@ internal sealed class TypeReplacements
     {
         switch (type)
         {
-            case ObjectType objectType:
+            case ReferenceType objectType:
             {
                 var replacementType = ReplaceTypeParametersIn(objectType.BareType);
                 if (!ReferenceEquals(objectType.BareType, replacementType))
-                    return ObjectType.Create(objectType.Capability, replacementType);
+                    return ReferenceType.Create(objectType.Capability, replacementType);
                 break;
             }
             case OptionalType optionalType:

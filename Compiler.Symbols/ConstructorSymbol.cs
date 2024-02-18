@@ -10,20 +10,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class ConstructorSymbol : InvocableSymbol
 {
     public override ObjectTypeSymbol ContainingSymbol { get; }
-    public ObjectType SelfParameterType { get; }
-    public new ObjectType ReturnType { get; }
+    public ReferenceType SelfParameterType { get; }
+    public new ReferenceType ReturnType { get; }
 
     public ConstructorSymbol(
         ObjectTypeSymbol containingSymbol,
         SimpleName? name,
-        ObjectType selfParameterType,
+        ReferenceType selfParameterType,
         FixedList<ParameterType> parameterTypes)
         : base(containingSymbol, name, parameterTypes,
             new ReturnType(containingSymbol.DeclaresType.ToConstructorReturn(selfParameterType, parameterTypes)))
     {
         ContainingSymbol = containingSymbol;
         SelfParameterType = selfParameterType;
-        ReturnType = (ObjectType)base.ReturnType.Type;
+        ReturnType = (ReferenceType)base.ReturnType.Type;
     }
 
     public static ConstructorSymbol CreateDefault(ObjectTypeSymbol containingSymbol)

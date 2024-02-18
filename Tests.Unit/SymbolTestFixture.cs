@@ -93,7 +93,7 @@ public abstract class SymbolTestFixture
             @return ?? mother.ReturnType);
     }
 
-    protected ObjectType DataType(
+    protected ReferenceType DataType(
         string? name = null,
         SimpleName? containingPackage = null,
         NamespaceName? containingNamespace = null,
@@ -101,7 +101,7 @@ public abstract class SymbolTestFixture
         ReferenceCapability? referenceCapability = null)
     {
         var finalName = Name(name) ?? DefaultName("DataType");
-        return ObjectType.Create(
+        return ReferenceType.Create(
             referenceCapability ?? ReferenceCapability.Constant,
             containingPackage ?? DefaultName("package"),
             containingNamespace ?? NamespaceName.Global,

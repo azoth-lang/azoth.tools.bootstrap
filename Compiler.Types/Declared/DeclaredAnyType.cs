@@ -29,12 +29,12 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
         return BareReferenceType.Any;
     }
 
-    public override ObjectType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+    public override ReferenceType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-    public ObjectType With(ReferenceCapability capability)
-        => ObjectType.Create(capability, BareReferenceType.Any);
+    public ReferenceType With(ReferenceCapability capability)
+        => ReferenceType.Create(capability, BareReferenceType.Any);
 
     #region Equals
     public override bool Equals(DeclaredReferenceType? other) => ReferenceEquals(this, other);

@@ -376,13 +376,13 @@ public class BasicBodyAnalyzer
                 var requireSigned = from.Value < 0;
                 return !requireSigned || to.IsSigned ? new NumericConversion(to, priorConversion) : null;
             }
-            case (ObjectType { IsTemporarilyConstantReference: true } to, ObjectType { AllowsFreeze: true } from)
+            case (ReferenceType { IsTemporarilyConstantReference: true } to, ReferenceType { AllowsFreeze: true } from)
                 when to.BareType.IsAssignableFrom(targetAllowsWrite: false, from.BareType):
             {
                 if (enact) newResult = flow.TempFreeze(fromResult!);
                 return new FreezeConversion(priorConversion, ConversionKind.Temporary);
             }
-            case (ObjectType { IsConstantReference: true } to, ObjectType { AllowsFreeze: true } from)
+            case (ReferenceType { IsConstantReference: true } to, ReferenceType { AllowsFreeze: true } from)
                 when to.BareType.IsAssignableFrom(targetAllowsWrite: false, from.BareType):
             {
                 // Try to recover const. Note a variable name can never be frozen because the result is an alias.
@@ -390,13 +390,13 @@ public class BasicBodyAnalyzer
                     return new FreezeConversion(priorConversion, ConversionKind.Recover);
                 return null;
             }
-            case (ObjectType { IsTemporarilyIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from)
+            case (ReferenceType { IsTemporarilyIsolatedReference: true } to, ReferenceType { AllowsRecoverIsolation: true } from)
                 when to.BareType.IsAssignableFrom(targetAllowsWrite: true, from.BareType):
             {
                 if (enact) newResult = flow.TempMove(fromResult!);
                 return new MoveConversion(priorConversion, ConversionKind.Temporary);
             }
-            case (ObjectType { IsIsolatedReference: true } to, ObjectType { AllowsRecoverIsolation: true } from)
+            case (ReferenceType { IsIsolatedReference: true } to, ReferenceType { AllowsRecoverIsolation: true } from)
                 when to.BareType.IsAssignableFrom(targetAllowsWrite: true, from.BareType):
             {
                 // Try to recover isolation. Note a variable name is never isolated because the result is an alias.
@@ -695,7 +695,7 @@ public class BasicBodyAnalyzer
                     return new ExpressionResult(exp, resultVariable);
                 }
 
-                if (constructingType is ObjectType { DeclaredType.IsAbstract: true })
+                if (constructingType is ReferenceType { DeclaredType.IsAbstract: true })
                 {
                     diagnostics.Add(OtherSemanticError.CannotConstructAbstractType(file, exp.Type));
                     exp.ReferencedSymbol.Fulfill(null);
@@ -917,7 +917,7 @@ public class BasicBodyAnalyzer
             case IAwaitExpressionSyntax exp:
             {
                 var result = InferType(exp.Expression, flow);
-                if (result.Type is not ObjectType { DeclaredType: { } declaredType } promiseType
+                if (result.Type is not ReferenceType { DeclaredType: { } declaredType } promiseType
                     || declaredType != Intrinsic.PromiseType)
                 {
                     diagnostics.Add(TypeError.CannotAwaitType(file, exp.Span, result.Type));
@@ -2084,7 +2084,7 @@ public class BasicBodyAnalyzer
         return dataType switch
         {
             UnknownType or IntegerValueType or OptionalType => null,
-            ObjectType t => LookupSymbolForType(t),
+            ReferenceType t => LookupSymbolForType(t),
             GenericParameterType t => LookupSymbolForType(t),
             SelfViewpointType { Referent: var t } => LookupSymbolForType(t),
             IntegerType t => symbolTrees.PrimitiveSymbolTree
@@ -2096,7 +2096,7 @@ public class BasicBodyAnalyzer
         };
     }
 
-    private TypeSymbol LookupSymbolForType(ObjectType type)
+    private TypeSymbol LookupSymbolForType(ReferenceType type)
         => LookupSymbolForType(type.DeclaredType);
 
     private TypeSymbol LookupSymbolForType(DeclaredReferenceType type)
@@ -2111,7 +2111,7 @@ public class BasicBodyAnalyzer
 
     private PrimitiveTypeSymbol LookupSymbolForType(DeclaredAnyType type)
         => symbolTrees.PrimitiveSymbolTree.GlobalSymbols.OfType<PrimitiveTypeSymbol>()
-                      .Single(s => s.DeclaresType is ObjectType { DeclaredType: DeclaredAnyType });
+                      .Single(s => s.DeclaresType is ReferenceType { DeclaredType: DeclaredAnyType });
 
     private TypeSymbol LookupSymbolForType(DeclaredObjectType type)
     {
