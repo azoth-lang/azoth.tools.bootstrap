@@ -1,24 +1,25 @@
 using System;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 
 /// <summary>
 /// This is the type of an integer constant value, it isn't possible to declare a
 /// variable to have this type.
 /// </summary>
-public sealed class IntegerConstValueType : IntegerType
+public sealed class IntegerConstValueType : ConstValueType, INumericType
 {
     public override bool IsTypeOfConstValue => true;
     public BigInteger Value { get; }
+    public bool IsSigned { get; }
     public override bool IsFullyKnown => true;
 
     public IntegerConstValueType(BigInteger value)
-        : base(SpecialTypeName.ConstInt, value < BigInteger.Zero)
+        : base(SpecialTypeName.ConstInt)
     {
         Value = value;
+        IsSigned = value.Sign < 0;
     }
 
     public bool IsUInt16 => Value >= UInt16.MinValue && Value <= UInt16.MaxValue;

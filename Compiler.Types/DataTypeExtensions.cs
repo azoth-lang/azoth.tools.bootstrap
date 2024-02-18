@@ -270,7 +270,6 @@ public static class DataTypeExtensions
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
     /// </summary>
-    /// <returns></returns>
     public static DataType? NumericOperatorCommonType(this DataType leftType, DataType rightType)
         => (leftType, rightType) switch
         {
@@ -287,6 +286,10 @@ public static class DataTypeExtensions
             (BigIntegerType left, IntegerType right)
                 => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
             (IntegerType left, BigIntegerType right)
+                => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
+            (BigIntegerType left, IntegerConstValueType right)
+                => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
+            (IntegerConstValueType left, BigIntegerType right)
                 => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
             (PointerSizedIntegerType left, PointerSizedIntegerType right)
                 => left.IsSigned || right.IsSigned ? DataType.Offset : DataType.Size,

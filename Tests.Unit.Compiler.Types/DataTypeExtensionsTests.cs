@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Xunit;
 using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.ReferenceCapability;
 

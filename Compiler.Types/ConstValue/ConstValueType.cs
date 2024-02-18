@@ -7,7 +7,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 /// <summary>
 /// The type of a constant value.
 /// </summary>
-[Closed(typeof(BoolConstValueType))]
+[Closed(
+    typeof(BoolConstValueType),
+    typeof(IntegerConstValueType))]
 public abstract class ConstValueType : NonEmptyType
 {
     public SpecialTypeName Name { get; }

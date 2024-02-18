@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Xunit;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
@@ -6,17 +7,6 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
 [Trait("Category", "Types")]
 public class IntegerConstValueTypeTests
 {
-    [Fact]
-    public void Is_integer_numeric_simple_value_type()
-    {
-        var type = new IntegerConstValueType(1);
-
-        Assert.OfType<IntegerType>(type);
-        Assert.OfType<NumericType>(type);
-        Assert.OfType<SimpleType>(type);
-        Assert.OfType<ValueType>(type);
-    }
-
     [Fact]
     public void Is_constant()
     {

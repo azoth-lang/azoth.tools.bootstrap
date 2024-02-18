@@ -2,6 +2,7 @@ using System;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 
@@ -26,7 +27,7 @@ internal static class Operations
             if (to == DataType.Size) return AzothValue.Size((nuint)(ulong)value.IntValue);
         }
 
-        if (from is BoolType)
+        if (from is BoolType or BoolConstValueType)
         {
             if (to == DataType.Byte) return AzothValue.Byte((byte)(value.BoolValue ? 1 : 0));
             if (to == DataType.Int32) return AzothValue.I32(value.BoolValue ? 1 : 0);

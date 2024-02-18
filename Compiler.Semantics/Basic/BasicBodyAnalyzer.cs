@@ -372,6 +372,10 @@ public class BasicBodyAnalyzer
                 return new NumericConversion(to, priorConversion);
             case (BigIntegerType to, IntegerType { IsSigned: false }):
                 return new NumericConversion(to, priorConversion);
+            case (BigIntegerType { IsSigned: true } to, IntegerConstValueType):
+                return new NumericConversion(to, priorConversion);
+            case (BigIntegerType to, IntegerConstValueType { IsSigned: false }):
+                return new NumericConversion(to, priorConversion);
             case (PointerSizedIntegerType to, IntegerConstValueType from):
             {
                 var requireSigned = from.Value < 0;
@@ -543,18 +547,18 @@ public class BasicBodyAnalyzer
                     (BoolConstValueType left, BinaryOperator.And, BoolConstValueType right) => left.And(right),
                     (BoolConstValueType left, BinaryOperator.Or, BoolConstValueType right) => left.Or(right),
 
-                    (NumericType, BinaryOperator.Plus, NumericType)
-                        or (NumericType, BinaryOperator.Minus, NumericType)
-                        or (NumericType, BinaryOperator.Asterisk, NumericType)
-                        or (NumericType, BinaryOperator.Slash, NumericType)
+                    (INumericType, BinaryOperator.Plus, INumericType)
+                        or (INumericType, BinaryOperator.Minus, INumericType)
+                        or (INumericType, BinaryOperator.Asterisk, INumericType)
+                        or (INumericType, BinaryOperator.Slash, INumericType)
                         => InferNumericOperatorType(leftResult, rightResult, flow),
-                    (NumericType, BinaryOperator.EqualsEquals, NumericType)
-                        or (NumericType, BinaryOperator.NotEqual, NumericType)
-                        or (OptionalType { Referent: NumericType }, BinaryOperator.NotEqual, OptionalType { Referent: NumericType })
-                        or (NumericType, BinaryOperator.LessThan, NumericType)
-                        or (NumericType, BinaryOperator.LessThanOrEqual, NumericType)
-                        or (NumericType, BinaryOperator.GreaterThan, NumericType)
-                        or (NumericType, BinaryOperator.GreaterThanOrEqual, NumericType)
+                    (INumericType, BinaryOperator.EqualsEquals, INumericType)
+                        or (INumericType, BinaryOperator.NotEqual, INumericType)
+                        or (OptionalType { Referent: INumericType }, BinaryOperator.NotEqual, OptionalType { Referent: INumericType })
+                        or (INumericType, BinaryOperator.LessThan, INumericType)
+                        or (INumericType, BinaryOperator.LessThanOrEqual, INumericType)
+                        or (INumericType, BinaryOperator.GreaterThan, INumericType)
+                        or (INumericType, BinaryOperator.GreaterThanOrEqual, INumericType)
                         => InferComparisonOperatorType(leftResult, rightResult, flow),
 
                     (BoolType, BinaryOperator.EqualsEquals, BoolType)

@@ -1013,8 +1013,7 @@ public class InterpreterProcess
     private async ValueTask<AzothValue> ToDisplayStringAsync(AzothValue value, NumericType type)
     {
         string displayString;
-        if (type is IntegerConstValueType) displayString = value.IntValue.ToString();
-        else if (type == DataType.Int) displayString = value.IntValue.ToString();
+        if (type == DataType.Int) displayString = value.IntValue.ToString();
         else if (type == DataType.UInt) displayString = value.IntValue.ToString();
         else if (type == DataType.Byte) displayString = value.ByteValue.ToString();
         else if (type == DataType.Int32) displayString = value.I32Value.ToString();
