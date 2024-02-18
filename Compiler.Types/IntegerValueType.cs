@@ -57,7 +57,6 @@ public sealed class IntegerValueType : IntegerType
         return Int8;
     }
 
-
     public IntegerType ToSmallestUnsignedIntegerType()
     {
         if (IsSigned)

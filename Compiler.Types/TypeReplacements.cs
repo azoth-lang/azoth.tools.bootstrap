@@ -108,6 +108,7 @@ internal sealed class TypeReplacements
             case SimpleType _:
             case EmptyType _:
             case UnknownType _:
+            case ConstantValueType _:
                 break;
             default:
                 throw ExhaustiveMatch.Failed(type);
