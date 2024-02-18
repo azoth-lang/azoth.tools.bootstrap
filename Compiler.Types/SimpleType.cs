@@ -18,10 +18,6 @@ public abstract class SimpleType : ValueType
         Name = name;
     }
 
-    public override string ToSourceCodeString() => Name.ToString();
-
-    public override string ToILString() => ToSourceCodeString();
-
     #region Equals
     public override bool Equals(DataType? other)
         // Most simple types are fixed instances, so a reference comparision suffices
@@ -29,4 +25,8 @@ public abstract class SimpleType : ValueType
 
     public override int GetHashCode() => HashCode.Combine(Name);
     #endregion
+
+    public override string ToSourceCodeString() => Name.ToString();
+
+    public override string ToILString() => ToSourceCodeString();
 }

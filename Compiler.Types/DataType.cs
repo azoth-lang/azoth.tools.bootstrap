@@ -81,7 +81,7 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     public sealed override DataType ToUpperBound() => this;
 
     /// <summary>
-    /// Convert types for literal constants to their corresponding types.
+    /// Convert types for constant values to their corresponding types.
     /// </summary>
     public virtual DataType ToNonConstantType() => this;
 
