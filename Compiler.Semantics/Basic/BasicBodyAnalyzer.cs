@@ -358,7 +358,7 @@ public class BasicBodyAnalyzer
                     return new NumericConversion(to, priorConversion);
 
                 return null;
-            case (FixedSizeIntegerType to, IntegerValueType from):
+            case (FixedSizeIntegerType to, IntegerConstValueType from):
             {
                 var requireSigned = from.Value < 0;
                 var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
@@ -371,7 +371,7 @@ public class BasicBodyAnalyzer
                 return new NumericConversion(to, priorConversion);
             case (BigIntegerType to, IntegerType { IsSigned: false }):
                 return new NumericConversion(to, priorConversion);
-            case (PointerSizedIntegerType to, IntegerValueType from):
+            case (PointerSizedIntegerType to, IntegerConstValueType from):
             {
                 var requireSigned = from.Value < 0;
                 return !requireSigned || to.IsSigned ? new NumericConversion(to, priorConversion) : null;
@@ -495,7 +495,7 @@ public class BasicBodyAnalyzer
                 return new ExpressionResult(exp);
             }
             case IIntegerLiteralExpressionSyntax exp:
-                exp.DataType = new IntegerValueType(exp.Value);
+                exp.DataType = new IntegerConstValueType(exp.Value);
                 return new ExpressionResult(exp);
             case IStringLiteralExpressionSyntax exp:
                 if (stringSymbol is null)
@@ -526,21 +526,21 @@ public class BasicBodyAnalyzer
 
                 DataType type = (leftResult.Type, @operator, rightResult.Type) switch
                 {
-                    (IntegerValueType left, BinaryOperator.Plus, IntegerValueType right) => left.Add(right),
-                    (IntegerValueType left, BinaryOperator.Minus, IntegerValueType right) => left.Subtract(right),
-                    (IntegerValueType left, BinaryOperator.Asterisk, IntegerValueType right) => left.Multiply(right),
-                    (IntegerValueType left, BinaryOperator.Slash, IntegerValueType right) => left.DivideBy(right),
-                    (IntegerValueType left, BinaryOperator.EqualsEquals, IntegerValueType right) => left.Equals(right),
-                    (IntegerValueType left, BinaryOperator.NotEqual, IntegerValueType right) => left.NotEquals(right),
-                    (IntegerValueType left, BinaryOperator.LessThan, IntegerValueType right) => left.LessThan(right),
-                    (IntegerValueType left, BinaryOperator.LessThanOrEqual, IntegerValueType right) => left.LessThanOrEqual(right),
-                    (IntegerValueType left, BinaryOperator.GreaterThan, IntegerValueType right) => left.GreaterThan(right),
-                    (IntegerValueType left, BinaryOperator.GreaterThanOrEqual, IntegerValueType right) => left.GreaterThanOrEqual(right),
+                    (IntegerConstValueType left, BinaryOperator.Plus, IntegerConstValueType right) => left.Add(right),
+                    (IntegerConstValueType left, BinaryOperator.Minus, IntegerConstValueType right) => left.Subtract(right),
+                    (IntegerConstValueType left, BinaryOperator.Asterisk, IntegerConstValueType right) => left.Multiply(right),
+                    (IntegerConstValueType left, BinaryOperator.Slash, IntegerConstValueType right) => left.DivideBy(right),
+                    (IntegerConstValueType left, BinaryOperator.EqualsEquals, IntegerConstValueType right) => left.Equals(right),
+                    (IntegerConstValueType left, BinaryOperator.NotEqual, IntegerConstValueType right) => left.NotEquals(right),
+                    (IntegerConstValueType left, BinaryOperator.LessThan, IntegerConstValueType right) => left.LessThan(right),
+                    (IntegerConstValueType left, BinaryOperator.LessThanOrEqual, IntegerConstValueType right) => left.LessThanOrEqual(right),
+                    (IntegerConstValueType left, BinaryOperator.GreaterThan, IntegerConstValueType right) => left.GreaterThan(right),
+                    (IntegerConstValueType left, BinaryOperator.GreaterThanOrEqual, IntegerConstValueType right) => left.GreaterThanOrEqual(right),
 
-                    (BoolValueType left, BinaryOperator.EqualsEquals, BoolValueType right) => left.Equals(right),
-                    (BoolValueType left, BinaryOperator.NotEqual, BoolValueType right) => left.NotEquals(right),
-                    (BoolValueType left, BinaryOperator.And, BoolValueType right) => left.And(right),
-                    (BoolValueType left, BinaryOperator.Or, BoolValueType right) => left.Or(right),
+                    (BoolConstValueType left, BinaryOperator.EqualsEquals, BoolConstValueType right) => left.Equals(right),
+                    (BoolConstValueType left, BinaryOperator.NotEqual, BoolConstValueType right) => left.NotEquals(right),
+                    (BoolConstValueType left, BinaryOperator.And, BoolConstValueType right) => left.And(right),
+                    (BoolConstValueType left, BinaryOperator.Or, BoolConstValueType right) => left.Or(right),
 
                     (NumericType, BinaryOperator.Plus, NumericType)
                         or (NumericType, BinaryOperator.Minus, NumericType)
@@ -628,7 +628,7 @@ public class BasicBodyAnalyzer
                     default:
                         throw ExhaustiveMatch.Failed(@operator);
                     case UnaryOperator.Not:
-                        if (result.Type is BoolValueType boolType)
+                        if (result.Type is BoolConstValueType boolType)
                             expType = boolType.Not();
                         else
                         {
@@ -642,7 +642,7 @@ public class BasicBodyAnalyzer
                     case UnaryOperator.Minus:
                         switch (result.Type)
                         {
-                            case IntegerValueType integerType:
+                            case IntegerConstValueType integerType:
                                 expType = integerType.Negate();
                                 break;
                             case FixedSizeIntegerType sizedIntegerType:
@@ -2083,7 +2083,7 @@ public class BasicBodyAnalyzer
     {
         return dataType switch
         {
-            UnknownType or IntegerValueType or OptionalType => null,
+            UnknownType or IntegerConstValueType or OptionalType => null,
             ReferenceType t => LookupSymbolForType(t),
             GenericParameterType t => LookupSymbolForType(t),
             SelfViewpointType { Referent: var t } => LookupSymbolForType(t),

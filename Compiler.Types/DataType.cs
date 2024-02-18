@@ -22,8 +22,8 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     public static readonly VoidType Void = VoidType.Instance;
     public static readonly NeverType Never = NeverType.Instance;
     public static readonly BoolType Bool = BoolType.Instance;
-    public static readonly BoolValueType True = BoolValueType.True;
-    public static readonly BoolValueType False = BoolValueType.False;
+    public static readonly BoolConstValueType True = BoolConstValueType.True;
+    public static readonly BoolConstValueType False = BoolConstValueType.False;
     public static readonly BigIntegerType Int = BigIntegerType.Int;
     public static readonly BigIntegerType UInt = BigIntegerType.UInt;
     public static readonly FixedSizeIntegerType Int8 = FixedSizeIntegerType.Int8;

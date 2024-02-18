@@ -5,16 +5,16 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 /// <summary>
-/// This is the type of integer value literals, it isn't possible to declare a
+/// This is the type of an integer constant value, it isn't possible to declare a
 /// variable to have this type.
 /// </summary>
-public sealed class IntegerValueType : IntegerType
+public sealed class IntegerConstValueType : IntegerType
 {
     public override bool IsTypeOfValue => true;
     public BigInteger Value { get; }
     public override bool IsFullyKnown => true;
 
-    public IntegerValueType(BigInteger value)
+    public IntegerConstValueType(BigInteger value)
         : base(SpecialTypeName.ConstInt, value < BigInteger.Zero)
     {
         Value = value;
@@ -23,21 +23,21 @@ public sealed class IntegerValueType : IntegerType
     public bool IsUInt16 => Value >= UInt16.MinValue && Value <= UInt16.MaxValue;
     public bool IsInt16 => Value >= Int16.MinValue && Value <= Int16.MaxValue;
 
-    public IntegerValueType Add(IntegerValueType right) => new(Value + right.Value);
-    public IntegerValueType Subtract(IntegerValueType right) => new(Value - right.Value);
-    public IntegerValueType Multiply(IntegerValueType right) => new(Value * right.Value);
-    public IntegerValueType DivideBy(IntegerValueType right) => new(Value / right.Value);
-    public IntegerValueType Negate() => new(-Value);
-    public BoolValueType Equals(IntegerValueType right) => Value == right.Value;
-    public BoolValueType NotEquals(IntegerValueType right) => Value != right.Value;
-    public BoolValueType LessThan(IntegerValueType right) => Value < right.Value;
-    public BoolValueType LessThanOrEqual(IntegerValueType right) => Value <= right.Value;
-    public BoolValueType GreaterThan(IntegerValueType right) => Value > right.Value;
-    public BoolValueType GreaterThanOrEqual(IntegerValueType right) => Value >= right.Value;
+    public IntegerConstValueType Add(IntegerConstValueType right) => new(Value + right.Value);
+    public IntegerConstValueType Subtract(IntegerConstValueType right) => new(Value - right.Value);
+    public IntegerConstValueType Multiply(IntegerConstValueType right) => new(Value * right.Value);
+    public IntegerConstValueType DivideBy(IntegerConstValueType right) => new(Value / right.Value);
+    public IntegerConstValueType Negate() => new(-Value);
+    public BoolConstValueType Equals(IntegerConstValueType right) => Value == right.Value;
+    public BoolConstValueType NotEquals(IntegerConstValueType right) => Value != right.Value;
+    public BoolConstValueType LessThan(IntegerConstValueType right) => Value < right.Value;
+    public BoolConstValueType LessThanOrEqual(IntegerConstValueType right) => Value <= right.Value;
+    public BoolConstValueType GreaterThan(IntegerConstValueType right) => Value > right.Value;
+    public BoolConstValueType GreaterThanOrEqual(IntegerConstValueType right) => Value >= right.Value;
 
     /// <summary>
     /// The default non-constant type to places values of this type in. For
-    /// <see cref="IntegerValueType"/>, that is <see cref="DataType.Int"/>.
+    /// <see cref="IntegerConstValueType"/>, that is <see cref="DataType.Int"/>.
     /// </summary>
     /// <remarks>It might be thought this should return the smallest integer type that contains
     /// the value. However, that would lead to unexpected behavior in some cases because small
@@ -73,7 +73,7 @@ public sealed class IntegerValueType : IntegerType
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is IntegerValueType otherType
+        return other is IntegerConstValueType otherType
                && Value == otherType.Value;
     }
 
