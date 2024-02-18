@@ -11,6 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 public abstract class DeclaredType
 {
     public static readonly DeclaredAnyType Any = DeclaredAnyType.Instance;
+
     public abstract SimpleName? ContainingPackage { get; }
     public abstract NamespaceName ContainingNamespace { get; }
 

@@ -15,6 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 /// A type that could have a reference capability applied, but without a reference capability.
 /// </summary>
 [Closed(typeof(BareReferenceType), typeof(BareValueType))]
+[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class BareType
 {
     public static readonly BareReferenceType<DeclaredAnyType> Any = new(DeclaredType.Any, FixedList<DataType>.Empty);

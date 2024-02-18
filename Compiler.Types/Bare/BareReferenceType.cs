@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -10,12 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 /// <summary>
 /// An reference type without a reference capability.
 /// </summary>
-[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class BareReferenceType : BareType, IEquatable<BareReferenceType>
 {
     public abstract override DeclaredReferenceType DeclaredType { get; }
 
-    protected BareReferenceType(DeclaredReferenceType declaredType, FixedList<DataType> typeArguments)
+    private protected BareReferenceType(DeclaredReferenceType declaredType, FixedList<DataType> typeArguments)
         : base(declaredType, typeArguments)
     {
     }
@@ -61,6 +59,8 @@ public sealed class BareReferenceType<TDeclared> : BareReferenceType
     internal BareReferenceType(TDeclared declaredType, FixedList<DataType> typeArguments)
         : base(declaredType, typeArguments)
     {
+        if (typeof(TDeclared).IsAbstract)
+            throw new ArgumentException($"The type parameter must be a concrete {nameof(DeclaredReferenceType)}.", nameof(TDeclared));
         DeclaredType = declaredType;
     }
 

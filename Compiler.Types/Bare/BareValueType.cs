@@ -1,3 +1,4 @@
+using System;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
@@ -11,7 +12,7 @@ public abstract class BareValueType : BareType
 {
     public abstract override DeclaredValueType DeclaredType { get; }
 
-    protected BareValueType(DeclaredType declaredType, FixedList<DataType> typeArguments)
+    private protected BareValueType(DeclaredType declaredType, FixedList<DataType> typeArguments)
         : base(declaredType, typeArguments) { }
 
     public abstract override BareValueType AccessedVia(ReferenceCapability capability);
@@ -29,6 +30,8 @@ public sealed class BareValueType<TDeclared> : BareValueType
     internal BareValueType(TDeclared declaredType, FixedList<DataType> typeArguments)
         : base(declaredType, typeArguments)
     {
+        if (typeof(TDeclared).IsAbstract)
+            throw new ArgumentException($"The type parameter must be a concrete {nameof(DeclaredValueType)}.", nameof(TDeclared));
         DeclaredType = declaredType;
     }
 
