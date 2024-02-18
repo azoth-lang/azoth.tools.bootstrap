@@ -22,7 +22,7 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
     public override SpecialTypeName Name => SpecialTypeName.Any;
     public override FixedSet<BareReferenceType> Supertypes => FixedSet<BareReferenceType>.Empty;
 
-    public override BareObjectType With(FixedList<DataType> typeArguments)
+    public override BareReferenceType With(FixedList<DataType> typeArguments)
     {
         if (typeArguments.Count != 0)
             throw new ArgumentException($"`{SpecialTypeName.Any}` does not support type arguments.");

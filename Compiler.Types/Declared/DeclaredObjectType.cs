@@ -155,8 +155,8 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         return With(ReferenceCapability.Isolated, GenericParameterDataTypes);
     }
 
-    public override BareObjectType With(FixedList<DataType> typeArguments)
-        => BareObjectType.Create(this, typeArguments);
+    public override BareReferenceType With(FixedList<DataType> typeArguments)
+        => BareReferenceType.Create(this, typeArguments);
 
     public override ObjectType With(ReferenceCapability capability, FixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);

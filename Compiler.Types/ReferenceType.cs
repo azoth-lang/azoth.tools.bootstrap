@@ -85,12 +85,12 @@ public abstract class ReferenceType : NonEmptyType
         ReferenceCapability capability,
         DeclaredObjectType declaredType,
         FixedList<DataType> typeArguments)
-        => Create(capability, BareObjectType.Create(declaredType, typeArguments));
+        => Create(capability, BareReferenceType.Create(declaredType, typeArguments));
 
     /// <summary>
     /// Create a object type for a given bare type.
     /// </summary>
-    public static ObjectType Create(ReferenceCapability capability, BareObjectType bareType)
+    public static ObjectType Create(ReferenceCapability capability, BareReferenceType bareType)
         => new ObjectType(capability, bareType);
 
     private protected ReferenceType(ReferenceCapability capability, BareReferenceType bareType)

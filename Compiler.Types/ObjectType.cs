@@ -19,7 +19,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </remarks>
 public sealed class ObjectType : ReferenceType
 {
-    public override BareObjectType BareType { get; }
+    public override BareReferenceType BareType { get; }
 
     public override DeclaredReferenceType DeclaredType => BareType.DeclaredType;
 
@@ -27,7 +27,7 @@ public sealed class ObjectType : ReferenceType
 
     internal ObjectType(
         ReferenceCapability capability,
-        BareObjectType bareType)
+        BareReferenceType bareType)
         : base(capability, bareType)
     {
         BareType = bareType;
