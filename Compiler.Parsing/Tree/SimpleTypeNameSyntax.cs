@@ -31,7 +31,7 @@ internal class SimpleTypeNameSyntax : TypeSyntax, ISimpleTypeNameSyntax
             containingLexicalScope = value;
         }
     }
-    public Name Name { get; }
+    public TypeName Name { get; }
     public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
 
     public SimpleTypeNameSyntax(TextSpan span, string name)

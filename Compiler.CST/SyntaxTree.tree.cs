@@ -98,7 +98,7 @@ public partial interface ILocalBindingSyntax : IBindingSyntax
 public partial interface IDeclarationSyntax : ISyntax, IHasContainingLexicalScope
 {
     CodeFile File { get; }
-    Name? Name { get; }
+    TypeName? Name { get; }
     TextSpan NameSpan { get; }
     IPromise<Symbol> Symbol { get; }
 }
@@ -137,7 +137,7 @@ public partial interface IConcreteInvocableDeclarationSyntax : IInvocableDeclara
 public partial interface INonMemberDeclarationSyntax : IDeclarationSyntax
 {
     NamespaceName ContainingNamespaceName { get; }
-    new Name Name { get; }
+    new TypeName Name { get; }
 }
 
 public partial interface INamespaceDeclarationSyntax : INonMemberDeclarationSyntax
@@ -155,7 +155,7 @@ public partial interface INamespaceDeclarationSyntax : INonMemberDeclarationSynt
     typeof(IFunctionDeclarationSyntax))]
 public partial interface INonMemberEntityDeclarationSyntax : IEntityDeclarationSyntax, INonMemberDeclarationSyntax
 {
-    new Name Name { get; }
+    new TypeName Name { get; }
 }
 
 [Closed(
@@ -386,7 +386,7 @@ public partial interface ITypeSyntax : ISyntax
     typeof(IParameterizedTypeSyntax))]
 public partial interface ITypeNameSyntax : ITypeSyntax, IHasContainingLexicalScope
 {
-    Name Name { get; }
+    TypeName Name { get; }
     Promise<TypeSymbol?> ReferencedSymbol { get; }
 }
 

@@ -12,7 +12,7 @@ public sealed class GenericTypeName : StandardTypeName
     }
 
     #region Equals
-    public override bool Equals(Name? other)
+    public override bool Equals(TypeName? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

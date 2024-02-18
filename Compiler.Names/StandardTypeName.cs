@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 [Closed(
     typeof(SimpleName),
     typeof(GenericTypeName))]
-public abstract class StandardTypeName : Name
+public abstract class StandardTypeName : TypeName
 {
     public static StandardTypeName Create(string text, int genericParameterCount)
         => genericParameterCount == 0 ? new SimpleName(text) : new GenericTypeName(text, genericParameterCount);

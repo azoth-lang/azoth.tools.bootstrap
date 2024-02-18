@@ -26,7 +26,7 @@ internal abstract class InvocableNonMemberEntityDeclarationSyntax : InvocableDec
         }
     }
 
-    public new Name Name { get; }
+    public new TypeName Name { get; }
 
     protected InvocableNonMemberEntityDeclarationSyntax(
         NamespaceName containingNamespaceName,

@@ -22,10 +22,10 @@ public abstract class Symbol : IEquatable<Symbol>
     /// <see cref="PackageSymbol"/>.
     /// </summary>
     public abstract Symbol? ContainingSymbol { get; }
-    public virtual Name? Name { get; }
+    public virtual TypeName? Name { get; }
     public bool IsGlobal => ContainingSymbol == Package;
 
-    private protected Symbol(Name? name)
+    private protected Symbol(TypeName? name)
     {
         Name = name;
     }

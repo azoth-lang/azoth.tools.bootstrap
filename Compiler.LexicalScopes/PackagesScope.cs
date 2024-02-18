@@ -22,9 +22,9 @@ public class PackagesScope : LexicalScope
     public override PackageSymbol? LookupPackage(SimpleName name)
         => packageAliases.TryGetValue(name, out var package) ? package : null;
 
-    public override IEnumerable<IPromise<Symbol>> LookupInGlobalScope(Name name)
+    public override IEnumerable<IPromise<Symbol>> LookupInGlobalScope(TypeName name)
         => Enumerable.Empty<IPromise<Symbol>>();
 
-    public override IEnumerable<IPromise<Symbol>> Lookup(Name name, bool includeNested = true)
+    public override IEnumerable<IPromise<Symbol>> Lookup(TypeName name, bool includeNested = true)
         => Enumerable.Empty<IPromise<Symbol>>();
 }

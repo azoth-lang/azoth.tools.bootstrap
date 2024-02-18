@@ -29,7 +29,7 @@ internal class ParameterizedTypeSyntax : TypeSyntax, IParameterizedTypeSyntax
             containingLexicalScope = value;
         }
     }
-    public Name Name { get; }
+    public TypeName Name { get; }
     public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
     public FixedList<ITypeSyntax> TypeArguments { get; }
 

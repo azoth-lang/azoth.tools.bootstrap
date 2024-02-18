@@ -13,7 +13,7 @@ internal sealed class FunctionDeclarationSyntax : InvocableNonMemberEntityDeclar
 {
     public FixedList<IAttributeSyntax> Attributes { get; }
     public new SimpleName Name { get; }
-    Name INonMemberEntityDeclarationSyntax.Name => Name;
+    TypeName INonMemberEntityDeclarationSyntax.Name => Name;
     public new FixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public IBodySyntax Body { [DebuggerStepThrough] get; }

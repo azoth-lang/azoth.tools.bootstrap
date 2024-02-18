@@ -290,7 +290,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
     {
         if (!usingDirectives.Any()) return containingScope;
 
-        var importedSymbols = new Dictionary<Name, HashSet<IPromise<Symbol>>>();
+        var importedSymbols = new Dictionary<TypeName, HashSet<IPromise<Symbol>>>();
         foreach (var usingDirective in usingDirectives)
         {
             if (!namespaces.TryGetValue(usingDirective.Name, out var ns))
@@ -316,7 +316,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         ITypeDeclarationSyntax typeSyntax,
         LexicalScope containingScope)
     {
-        var symbols = typeSyntax.GenericParameters.ToFixedDictionary(p => (Name)p.Name,
+        var symbols = typeSyntax.GenericParameters.ToFixedDictionary(p => (TypeName)p.Name,
                 p => FixedSet.Create<IPromise<Symbol>>(p.Symbol));
 
         return NestedScope.Create(containingScope, symbols);
@@ -326,7 +326,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
     {
         // Only "static" names are in scope. Other names must use `self.`
         var symbols = typeSyntax.Members.OfType<IAssociatedFunctionDeclarationSyntax>()
-                                .GroupBy(m => m.Name, m => m.Symbol).ToDictionary(e => (Name)e.Key,
+                                .GroupBy(m => m.Name, m => m.Symbol).ToDictionary(e => (TypeName)e.Key,
                                     e => e.ToFixedSet<IPromise<Symbol>>());
 
         return NestedScope.Create(containingScope, symbols.ToFixedDictionary());
@@ -338,7 +338,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
     {
         var symbols = parameters.OfType<INamedParameterSyntax>()
                                 .GroupBy(p => p.Name, p => p.Symbol)
-                                .ToFixedDictionary(e => (Name)e.Key, e => e.ToFixedSet<IPromise<Symbol>>());
+                                .ToFixedDictionary(e => (TypeName)e.Key, e => e.ToFixedSet<IPromise<Symbol>>());
         return NestedScope.Create(containingScope, symbols);
     }
 
@@ -347,7 +347,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         SimpleName name,
         IPromise<VariableSymbol> symbol)
     {
-        var symbols = new Dictionary<Name, FixedSet<IPromise<Symbol>>>()
+        var symbols = new Dictionary<TypeName, FixedSet<IPromise<Symbol>>>()
         {
             { name, symbol.Yield().ToFixedSet<IPromise<Symbol>>() }
         }.ToFixedDictionary();

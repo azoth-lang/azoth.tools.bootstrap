@@ -8,10 +8,10 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Names;
 
 /// <summary>
-/// A name.
+/// A name that could be the name of a type.
 /// </summary>
 [Closed(typeof(StandardTypeName), typeof(SpecialTypeName))]
-public abstract partial class Name : IEquatable<Name>
+public abstract partial class TypeName : IEquatable<TypeName>
 {
     public string Text { get; }
 
@@ -20,7 +20,7 @@ public abstract partial class Name : IEquatable<Name>
     /// </summary>
     public int GenericParameterCount { get; }
 
-    protected Name(string text, int genericParameterCount)
+    protected TypeName(string text, int genericParameterCount)
     {
         Text = text;
         if (TokenTypes.Keywords.Contains(Text)
@@ -35,20 +35,20 @@ public abstract partial class Name : IEquatable<Name>
     }
 
     #region Equals
-    public abstract bool Equals(Name? other);
+    public abstract bool Equals(TypeName? other);
 
     public sealed override bool Equals(object? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is Name otherTypeName && Equals(otherTypeName);
+        return other is TypeName otherTypeName && Equals(otherTypeName);
     }
 
     public abstract override int GetHashCode();
 
-    public static bool operator ==(Name? left, Name? right) => Equals(left, right);
+    public static bool operator ==(TypeName? left, TypeName? right) => Equals(left, right);
 
-    public static bool operator !=(Name? left, Name? right) => !Equals(left, right);
+    public static bool operator !=(TypeName? left, TypeName? right) => !Equals(left, right);
     #endregion
 
     public abstract StandardTypeName? WithAttributeSuffix();
@@ -57,7 +57,7 @@ public abstract partial class Name : IEquatable<Name>
 
     public abstract override string ToString();
 
-    public static implicit operator Name(string text) => new SimpleName(text);
+    public static implicit operator TypeName(string text) => new SimpleName(text);
 
     protected string QuotedText { get; }
 

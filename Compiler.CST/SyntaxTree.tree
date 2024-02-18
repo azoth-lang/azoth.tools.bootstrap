@@ -31,18 +31,18 @@ Binding = IsMutableBinding:'bool' Symbol:'IPromise<BindingSymbol>';
 LocalBinding: Binding = Symbol:'IPromise<NamedBindingSymbol>';
 
 // ---------- Declarations
-Declaration: 'ISyntax', 'IHasContainingLexicalScope' = File:'CodeFile' Name:'Name'? NameSpan:'TextSpan' Symbol:'IPromise<Symbol>';
+Declaration: 'ISyntax', 'IHasContainingLexicalScope' = File:'CodeFile' Name:'TypeName'? NameSpan:'TextSpan' Symbol:'IPromise<Symbol>';
 EntityDeclaration: Declaration = AccessModifier:'IAccessModifierToken'?;
 InvocableDeclaration: EntityDeclaration = Parameters:ConstructorParameter* Symbol:'IPromise<InvocableSymbol>';
 ConcreteInvocableDeclaration: InvocableDeclaration = Body;
 
 // ---------- Non-Member Declarations
-NonMemberDeclaration: Declaration = ContainingNamespaceName:'NamespaceName' Name:'Name';
+NonMemberDeclaration: Declaration = ContainingNamespaceName:'NamespaceName' Name:'TypeName';
 // TODO if a compound namespace declaration was actually mutiple declarations, it would simplify other things
 NamespaceDeclaration: NonMemberDeclaration = IsGlobalQualified:'bool' DeclaredNames:'NamespaceName' FullName:'NamespaceName' Symbol:'Promise<NamespaceOrPackageSymbol>' UsingDirectives:UsingDirective* Declarations:NonMemberDeclaration*;
 
 // ---------- Non-Member Entity Declarations
-NonMemberEntityDeclaration: EntityDeclaration, NonMemberDeclaration = Name:'Name';
+NonMemberEntityDeclaration: EntityDeclaration, NonMemberDeclaration = Name:'TypeName';
 TypeDeclaration: NonMemberEntityDeclaration = ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'StandardTypeName' GenericParameters:GenericParameter* Symbol:'AcyclicPromise<ObjectTypeSymbol>' SupertypeNames:TypeName* Members:MemberDeclaration*;
 ClassDeclaration: TypeDeclaration = AbstractModifier:'IAbstractKeywordToken'? IsAbstract:'bool' GenericParameters:GenericParameter* BaseTypeName:TypeName? SupertypeNames:TypeName* DefaultConstructorSymbol:'ConstructorSymbol'? Members:ClassMemberDeclaration*;
 TraitDeclaration: TypeDeclaration = GenericParameters:GenericParameter* SupertypeNames:TypeName* Members:TraitMemberDeclaration*;
@@ -86,7 +86,7 @@ ExpressionBody: Body = ResultStatement Statements:Statement*;
 
 // ---------- Types
 Type;
-TypeName: Type, 'IHasContainingLexicalScope' = Name:'Name' ReferencedSymbol:'Promise<TypeSymbol?>';
+TypeName: Type, 'IHasContainingLexicalScope' = Name:'TypeName' ReferencedSymbol:'Promise<TypeSymbol?>';
 SimpleTypeName: TypeName = ReferencedSymbol:'Promise<TypeSymbol?>';
 ParameterizedType: TypeName = TypeArguments:Type* ReferencedSymbol:'Promise<TypeSymbol?>';
 // TODO QualifiedTypeName

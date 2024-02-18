@@ -52,14 +52,14 @@ public abstract class ReferenceType : NonEmptyType
 
     /// <summary>
     /// Whether this type was declared `const` meaning that most references should be treated as
-    /// const.
+    /// `const`.
     /// </summary>
     public bool IsDeclaredConstant => DeclaredType.IsConstType;
 
     public SimpleName? ContainingPackage => DeclaredType.ContainingPackage;
     public NamespaceName ContainingNamespace => DeclaredType.ContainingNamespace;
 
-    public virtual Name Name => DeclaredType.Name;
+    public virtual TypeName Name => DeclaredType.Name;
 
     public override TypeSemantics Semantics => TypeSemantics.Reference;
 

@@ -27,14 +27,14 @@ internal abstract class DeclarationSyntax : Syntax, IDeclarationSyntax
     }
 
     public CodeFile File { get; }
-    public Name? Name { get; }
+    public TypeName? Name { get; }
     public TextSpan NameSpan { get; }
     public IPromise<Symbol> Symbol { get; }
 
     protected DeclarationSyntax(
         TextSpan span,
         CodeFile file,
-        Name? name,
+        TypeName? name,
         TextSpan nameSpan,
         IPromise<Symbol> symbol)
         : base(span)

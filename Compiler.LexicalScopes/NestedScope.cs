@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using SymbolDictionary = Azoth.Tools.Bootstrap.Framework.FixedDictionary<Azoth.Tools.Bootstrap.Compiler.Names.Name, Azoth.Tools.Bootstrap.Framework.FixedSet<Azoth.Tools.Bootstrap.Compiler.Core.Promises.IPromise<Azoth.Tools.Bootstrap.Compiler.Symbols.Symbol>>>;
+using SymbolDictionary = Azoth.Tools.Bootstrap.Framework.FixedDictionary<Azoth.Tools.Bootstrap.Compiler.Names.TypeName, Azoth.Tools.Bootstrap.Framework.FixedSet<Azoth.Tools.Bootstrap.Compiler.Core.Promises.IPromise<Azoth.Tools.Bootstrap.Compiler.Symbols.Symbol>>>;
 
 namespace Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 
@@ -45,10 +45,10 @@ public class NestedScope : LexicalScope
         this.symbolsInNestedScopes = symbolsInNestedScopes;
     }
 
-    public override IEnumerable<IPromise<Symbol>> LookupInGlobalScope(Name name)
+    public override IEnumerable<IPromise<Symbol>> LookupInGlobalScope(TypeName name)
         => !isGlobalScope ? containingScope.LookupInGlobalScope(name) : Lookup(name, false);
 
-    public override IEnumerable<IPromise<Symbol>> Lookup(Name name, bool includeNested = true)
+    public override IEnumerable<IPromise<Symbol>> Lookup(TypeName name, bool includeNested = true)
     {
         if (symbolsInScope.TryGetValue(name, out var symbols)) return symbols;
         if (includeNested && symbolsInNestedScopes.TryGetValue(name, out symbols)) return symbols;

@@ -30,7 +30,7 @@ public abstract class DeclaredReferenceType : IEquatable<DeclaredReferenceType>
 
     public bool IsAbstract { get; }
 
-    public abstract Name Name { get; }
+    public abstract TypeName Name { get; }
 
     public FixedList<GenericParameter> GenericParameters { get; }
 

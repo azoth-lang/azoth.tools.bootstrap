@@ -8,17 +8,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 internal class Namespace
 {
     public NamespaceName Name { get; }
-    public FixedDictionary<Name, FixedSet<IPromise<Symbol>>> Symbols { get; }
-    public FixedDictionary<Name, FixedSet<IPromise<Symbol>>> NestedSymbols { get; }
-    public FixedDictionary<Name, FixedSet<IPromise<Symbol>>> SymbolsInPackage { get; }
-    public FixedDictionary<Name, FixedSet<IPromise<Symbol>>> NestedSymbolsInPackage { get; }
+    public FixedDictionary<TypeName, FixedSet<IPromise<Symbol>>> Symbols { get; }
+    public FixedDictionary<TypeName, FixedSet<IPromise<Symbol>>> NestedSymbols { get; }
+    public FixedDictionary<TypeName, FixedSet<IPromise<Symbol>>> SymbolsInPackage { get; }
+    public FixedDictionary<TypeName, FixedSet<IPromise<Symbol>>> NestedSymbolsInPackage { get; }
 
     public Namespace(
         NamespaceName name,
-        FixedDictionary<Name, FixedSet<IPromise<Symbol>>> symbols,
-        FixedDictionary<Name, FixedSet<IPromise<Symbol>>> nestedSymbols,
-        FixedDictionary<Name, FixedSet<IPromise<Symbol>>> symbolsInPackage,
-        FixedDictionary<Name, FixedSet<IPromise<Symbol>>> nestedSymbolsInPackage)
+        FixedDictionary<TypeName, FixedSet<IPromise<Symbol>>> symbols,
+        FixedDictionary<TypeName, FixedSet<IPromise<Symbol>>> nestedSymbols,
+        FixedDictionary<TypeName, FixedSet<IPromise<Symbol>>> symbolsInPackage,
+        FixedDictionary<TypeName, FixedSet<IPromise<Symbol>>> nestedSymbolsInPackage)
     {
         Name = name;
         Symbols = symbols;

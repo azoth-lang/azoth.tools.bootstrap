@@ -3,7 +3,7 @@ using System;
 namespace Azoth.Tools.Bootstrap.Compiler.Names;
 
 /// <summary>
-/// A simple name that is not a type name.
+/// A simple name. That is, a name that is not qualified and does not have generic parameters.
 /// </summary>
 public sealed class SimpleName : StandardTypeName
 {
@@ -11,7 +11,7 @@ public sealed class SimpleName : StandardTypeName
         : base(text, 0) { }
 
     #region Equals
-    public override bool Equals(Name? other)
+    public override bool Equals(TypeName? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

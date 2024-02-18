@@ -25,13 +25,13 @@ internal abstract class NonMemberDeclarationSyntax : DeclarationSyntax, INonMemb
         }
     }
 
-    public new Name Name { get; }
+    public new TypeName Name { get; }
 
     protected NonMemberDeclarationSyntax(
         NamespaceName containingNamespaceName,
         TextSpan span,
         CodeFile file,
-        Name name,
+        TypeName name,
         TextSpan nameSpan,
         IPromise<Symbol> symbol)
         : base(span, file, name, nameSpan, symbol)
