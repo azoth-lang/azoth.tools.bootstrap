@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 public sealed class DeclaredObjectType : DeclaredReferenceType
 {
     private static readonly FixedSet<BareReferenceType> AnyType
-        = BareReferenceType.Any.Yield().ToFixedSet<BareReferenceType>();
+        = BareType.Any.Yield().ToFixedSet<BareReferenceType>();
     private static readonly Promise<FixedSet<BareReferenceType>> AnyTypePromise = new(AnyType);
 
     public static DeclaredObjectType Create(

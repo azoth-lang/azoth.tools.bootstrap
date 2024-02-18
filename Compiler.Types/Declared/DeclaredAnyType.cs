@@ -26,7 +26,7 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
     {
         if (typeArguments.Count != 0)
             throw new ArgumentException($"`{SpecialTypeName.Any}` does not support type arguments.");
-        return BareReferenceType.Any;
+        return BareType.Any;
     }
 
     public override ReferenceType<DeclaredAnyType> With(ReferenceCapability capability, FixedList<DataType> typeArguments)
@@ -34,7 +34,7 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
     public ReferenceType<DeclaredAnyType> With(ReferenceCapability capability)
-        => ReferenceType.Create(capability, BareReferenceType.Any);
+        => ReferenceType.Create(capability, BareType.Any);
 
     #region Equals
     public override bool Equals(DeclaredReferenceType? other) => ReferenceEquals(this, other);

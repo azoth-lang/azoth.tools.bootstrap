@@ -9,7 +9,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-public abstract class ReferenceType : NonEmptyType
+public abstract class ReferenceType : CapabilityType
 {
     public ReferenceCapability Capability { get; }
     public bool IsReadOnlyReference => Capability == ReferenceCapability.Read;
@@ -33,7 +33,7 @@ public abstract class ReferenceType : NonEmptyType
     /// <summary>
     /// Does this capability allow a reference with it to be moved if reference sharing permits.
     /// </summary>
-    public bool AllowsMove => Capability.AllowsMove && !BareType.IsConstType;
+    public bool AllowsMove => Capability.AllowsMove && !BareType.IsDeclaredConstType;
 
     /// <summary>
     /// Does this capability allow a reference with it to be frozen to const if reference

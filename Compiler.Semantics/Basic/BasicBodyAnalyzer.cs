@@ -2105,6 +2105,16 @@ public class BasicBodyAnalyzer
     private TypeSymbol LookupSymbolForType(ReferenceType type)
         => LookupSymbolForType(type.DeclaredType);
 
+    private TypeSymbol LookupSymbolForType(DeclaredType type)
+    {
+        return type switch
+        {
+            DeclaredReferenceType t => LookupSymbolForType(t),
+            DeclaredValueType t => throw new NotImplementedException(),
+            _ => throw ExhaustiveMatch.Failed(type),
+        };
+    }
+
     private TypeSymbol LookupSymbolForType(DeclaredReferenceType type)
     {
         return type switch

@@ -10,8 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// A type that at least in theory can be embodied by values.
 /// </summary>
 [Closed(
-    typeof(ReferenceType),
-    typeof(ValueType),
+    typeof(CapabilityType),
     typeof(GenericParameterType),
     typeof(ViewpointType),
     typeof(FunctionType),

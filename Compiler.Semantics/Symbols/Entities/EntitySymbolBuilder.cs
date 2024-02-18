@@ -275,7 +275,7 @@ public class EntitySymbolBuilder
         TypeSymbolBuilder typeDeclarations)
     {
         // Everything has `Any` as a supertype
-        yield return BareReferenceType.Any;
+        yield return BareType.Any;
 
         var resolver = new TypeResolver(syn.File, diagnostics, selfType: null, typeDeclarations);
         if (syn is IClassDeclarationSyntax { BaseTypeName: not null and var baseTypeName })

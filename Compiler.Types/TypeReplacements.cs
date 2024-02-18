@@ -19,7 +19,7 @@ internal sealed class TypeReplacements
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
     /// supertypes can be replaced with type arguments of this type.
     /// </summary>
-    public TypeReplacements(DeclaredReferenceType declaredType, FixedList<DataType> typeArguments)
+    public TypeReplacements(DeclaredType declaredType, FixedList<DataType> typeArguments)
     {
         replacements = declaredType.GenericParameterTypes.Zip(typeArguments)
                                    .ToDictionary(t => t.First, t => t.Second);
@@ -123,6 +123,14 @@ internal sealed class TypeReplacements
         if (replacements.TryGetValue(type, out var replacementType))
             return replacementType;
         return type;
+    }
+
+    public BareType ReplaceTypeParametersIn(BareType type)
+    {
+        var replacementTypes = ReplaceTypeParametersIn(type.TypeArguments);
+        if (ReferenceEquals(type.TypeArguments, replacementTypes)) return type;
+
+        return type.With(replacementTypes);
     }
 
     public BareReferenceType ReplaceTypeParametersIn(BareReferenceType type)

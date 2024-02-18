@@ -5,13 +5,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 public sealed class ObjectTypeConstraint : Pseudotype
 {
-    public BareReferenceType BareType { get; }
+    public BareType BareType { get; }
 
     public override bool IsFullyKnown => BareType.IsFullyKnown;
 
     public ReferenceCapabilityConstraint Capability { get; }
 
-    public ObjectTypeConstraint(ReferenceCapabilityConstraint capability, BareReferenceType bareType)
+    public ObjectTypeConstraint(ReferenceCapabilityConstraint capability, BareType bareType)
     {
         Capability = capability;
         BareType = bareType;

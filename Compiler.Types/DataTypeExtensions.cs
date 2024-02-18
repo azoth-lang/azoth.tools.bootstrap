@@ -58,6 +58,9 @@ public static class DataTypeExtensions
             && source.ContainingNamespace == NamespaceName.Global;
     }
 
+    public static bool IsAssignableFrom(this BareType target, bool targetAllowsWrite, BareType source)
+        => throw new NotImplementedException();
+
     public static bool IsAssignableFrom(
         this BareReferenceType target,
         bool targetAllowsWrite,
