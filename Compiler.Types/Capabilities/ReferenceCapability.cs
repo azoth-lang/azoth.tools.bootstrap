@@ -35,18 +35,17 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
     public static readonly ReferenceCapability InitMutable
         = new("init mut", "⧼init⧽ mut", init: true, allowsWrite: true);
 
-
     /// <summary>
     /// A reference that has read-only access and can be stored into fields etc.
     /// </summary>
     public static readonly ReferenceCapability Read
-        = new("read", "⧼read⧽", allowsWriteAliases: true, allowsReadAliases: true);
+        = new("read", "read", allowsWriteAliases: true, allowsReadAliases: true);
 
     /// <summary>
     /// An init reference that has read-only access.
     /// </summary>
     public static readonly ReferenceCapability InitReadOnly
-        = new("init read", "⧼init⧽ ⧼read⧽", init: true);
+        = new("init read", "⧼init⧽ read", init: true);
 
     /// <summary>
     /// A reference that has read-only access and there are no references that
@@ -243,12 +242,8 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
     /// <remarks>`id` references remain `id` otherwise they become `const`.</remarks>
     public ReferenceCapability Freeze() => this == Identity ? this : Constant;
 
-    [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
-#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
     public override string ToString()
-#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
         => throw new NotSupportedException();
-
 
     public string ToILString() => ilName;
 
