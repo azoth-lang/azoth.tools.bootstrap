@@ -264,6 +264,7 @@ public class EntitySymbolBuilder
         if (!supertypes.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
         supertypes.Fulfill(EvaluateSupertypes(syn, typeDeclarations).ToFixedSet());
+        return;
 
         void AddCircularDefinitionError()
         {

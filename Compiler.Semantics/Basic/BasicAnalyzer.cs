@@ -80,7 +80,7 @@ public class BasicAnalyzer
             default:
                 throw ExhaustiveMatch.Failed(entity);
             case ITraitDeclarationSyntax syn:
-                ResolveSupertypes(syn);
+                Resolve(syn);
                 break;
             case IClassDeclarationSyntax syn:
                 Resolve(syn);
@@ -131,6 +131,12 @@ public class BasicAnalyzer
         }
     }
 
+    private void Resolve(ITraitDeclarationSyntax trait)
+    {
+        ResolveSupertypes(trait);
+        CheckSupertypesAreOutputSafe(trait, trait.SupertypeNames);
+    }
+
     private void Resolve(IClassDeclarationSyntax @class)
     {
         if (@class.BaseTypeName is not null)
@@ -139,6 +145,23 @@ public class BasicAnalyzer
                 diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(@class.File, @class.Name, @class.BaseTypeName));
 
         ResolveSupertypes(@class);
+        CheckSupertypesAreOutputSafe(@class, @class.AllSupertypeNames.ToFixedList());
+    }
+
+    private void CheckSupertypesAreOutputSafe(
+        ITypeDeclarationSyntax typeDeclaration,
+        IFixedList<ITypeNameSyntax> allSuperTypes)
+    {
+        var declaresType = typeDeclaration.Symbol.Result.DeclaresType;
+        // TODO nest classes and traits need to be checked if nested inside of generic types
+        if (!declaresType.IsGeneric)
+            return;
+        foreach (var typeNameSyntax in allSuperTypes)
+        {
+            var type = typeNameSyntax.NamedType.Assigned();
+            if (!type.IsOutputSafe())
+                diagnostics.Add(TypeError.SupertypeMustBeOutputSafe(typeDeclaration.File, typeNameSyntax));
+        }
     }
 
     private void Resolve(IMethodDeclarationSyntax method)

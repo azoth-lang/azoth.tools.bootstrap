@@ -171,4 +171,10 @@ public static class TypeError
         return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3024, $"Reference capabilities cannot be applied to empty types `{typeSyntax.ToString()}`.");
     }
+
+    public static Diagnostic SupertypeMustBeOutputSafe(CodeFile file, ITypeNameSyntax typeSyntax)
+    {
+        return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3025, $"Supertype `{typeSyntax.ToString()}` is not output safe.");
+    }
 }
