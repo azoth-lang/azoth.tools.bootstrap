@@ -35,7 +35,7 @@ internal class InvocationExpressionSyntax : ExpressionSyntax, IInvocationExpress
     public InvocationExpressionSyntax(
         TextSpan span,
         IExpressionSyntax expression,
-        FixedList<IExpressionSyntax> arguments)
+        IFixedList<IExpressionSyntax> arguments)
         : base(span)
     {
         Expression = expression;

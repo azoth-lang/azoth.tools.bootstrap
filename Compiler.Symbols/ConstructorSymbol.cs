@@ -17,7 +17,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
         ObjectTypeSymbol containingSymbol,
         SimpleName? name,
         ReferenceType selfParameterType,
-        FixedList<ParameterType> parameterTypes)
+        IFixedList<ParameterType> parameterTypes)
         : base(containingSymbol, name, parameterTypes,
             new ReturnType(containingSymbol.DeclaresType.ToConstructorReturn(selfParameterType, parameterTypes)))
     {
@@ -27,7 +27,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
     }
 
     public static ConstructorSymbol CreateDefault(ObjectTypeSymbol containingSymbol)
-        => new(containingSymbol, null, containingSymbol.DeclaresType.ToDefaultConstructorSelf(), FixedList<ParameterType>.Empty);
+        => new(containingSymbol, null, containingSymbol.DeclaresType.ToDefaultConstructorSelf(), FixedList.Empty<ParameterType>());
 
     public override bool Equals(Symbol? other)
     {

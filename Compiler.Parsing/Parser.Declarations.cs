@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
 public partial class Parser
 {
-    public FixedList<INonMemberDeclarationSyntax> ParseNonMemberDeclarations<T>()
+    public IFixedList<INonMemberDeclarationSyntax> ParseNonMemberDeclarations<T>()
         where T : IToken
     {
         var declarations = new List<INonMemberDeclarationSyntax>();
@@ -65,7 +65,7 @@ public partial class Parser
     }
 
     private IFixedList<ITypeNameSyntax> ParseSupertypes()
-        => Tokens.Accept<ILessThanColonToken>() ? ParseTypeNames() : FixedList<ITypeNameSyntax>.Empty;
+        => Tokens.Accept<ILessThanColonToken>() ? ParseTypeNames() : FixedList.Empty<ITypeNameSyntax>();
 
     #region Parse Namespaces
     internal NamespaceDeclarationSyntax ParseNamespaceDeclaration(ModifierParser modifiers)
@@ -106,7 +106,7 @@ public partial class Parser
 
     #region Parse Functions
     internal IFunctionDeclarationSyntax ParseFunction(
-        FixedList<IAttributeSyntax> attributes,
+        IFixedList<IAttributeSyntax> attributes,
         ModifierParser modifiers)
     {
         var accessModifer = modifiers.ParseAccessModifier();
@@ -123,7 +123,7 @@ public partial class Parser
             accessModifer, identifier.Span, name, parameters, @return, body);
     }
 
-    private FixedList<TParameter> ParseParameters<TParameter>(Func<TParameter> parseParameter)
+    private IFixedList<TParameter> ParseParameters<TParameter>(Func<TParameter> parseParameter)
         where TParameter : class, IParameterSyntax
     {
         Tokens.Expect<IOpenParenToken>();
@@ -176,7 +176,7 @@ public partial class Parser
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
         var generic = AcceptGenericParameters();
-        var genericParameters = generic?.Parameters ?? FixedList<IGenericParameterSyntax>.Empty;
+        var genericParameters = generic?.Parameters ?? FixedList.Empty<IGenericParameterSyntax>();
         ITypeNameSyntax? baseClass = null;
         if (Tokens.Accept<IColonToken>()) baseClass = ParseTypeName();
         var superTypes = ParseSupertypes();
@@ -188,7 +188,7 @@ public partial class Parser
             baseClass, superTypes, bodyParser.ParseClassBody);
     }
 
-    private (FixedList<IGenericParameterSyntax> Parameters, TextSpan Span)? AcceptGenericParameters()
+    private (IFixedList<IGenericParameterSyntax> Parameters, TextSpan Span)? AcceptGenericParameters()
     {
         var openBracket = Tokens.AcceptToken<IOpenBracketToken>();
         if (openBracket is null) return null;
@@ -217,7 +217,7 @@ public partial class Parser
         };
     }
 
-    private (FixedList<IClassMemberDeclarationSyntax> Members, TextSpan Span) ParseClassBody(IClassDeclarationSyntax declaringType)
+    private (IFixedList<IClassMemberDeclarationSyntax> Members, TextSpan Span) ParseClassBody(IClassDeclarationSyntax declaringType)
     {
         var openBrace = Tokens.Expect<IOpenBraceToken>();
         var members = ParseClassMemberDeclarations(declaringType);
@@ -226,8 +226,8 @@ public partial class Parser
         return (members, span);
     }
 
-    private FixedList<IClassMemberDeclarationSyntax> ParseClassMemberDeclarations(IClassDeclarationSyntax declaringType) =>
-        ParseMany<IClassMemberDeclarationSyntax, ICloseBraceToken>(() => ParseClassMemberDeclaration(declaringType));
+    private IFixedList<IClassMemberDeclarationSyntax> ParseClassMemberDeclarations(IClassDeclarationSyntax declaringType)
+        => ParseMany<IClassMemberDeclarationSyntax, ICloseBraceToken>(() => ParseClassMemberDeclaration(declaringType));
 
     internal IClassMemberDeclarationSyntax ParseClassMemberDeclaration(IClassDeclarationSyntax classDeclaration)
     {
@@ -261,7 +261,7 @@ public partial class Parser
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
         var generic = AcceptGenericParameters();
-        var genericParameters = generic?.Parameters ?? FixedList<IGenericParameterSyntax>.Empty;
+        var genericParameters = generic?.Parameters ?? FixedList.Empty<IGenericParameterSyntax>();
         var superTypes = ParseSupertypes();
         var headerSpan = TextSpan.Covering(traitKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)));
@@ -270,7 +270,7 @@ public partial class Parser
             constModifier, moveModifier, identifier.Span, name, genericParameters, superTypes, bodyParser.ParseTraitBody);
     }
 
-    private (FixedList<ITraitMemberDeclarationSyntax> Members, TextSpan Span) ParseTraitBody(
+    private (IFixedList<ITraitMemberDeclarationSyntax> Members, TextSpan Span) ParseTraitBody(
         ITraitDeclarationSyntax declaringType)
     {
         var openBrace = Tokens.Expect<IOpenBraceToken>();
@@ -280,7 +280,7 @@ public partial class Parser
         return (members, span);
     }
 
-    private FixedList<ITraitMemberDeclarationSyntax> ParseTraitMemberDeclarations(ITraitDeclarationSyntax declaringType)
+    private IFixedList<ITraitMemberDeclarationSyntax> ParseTraitMemberDeclarations(ITraitDeclarationSyntax declaringType)
         => ParseMany<ITraitMemberDeclarationSyntax, ICloseBraceToken>(() => ParseTraitMemberDeclaration(declaringType));
 
     internal ITraitMemberDeclarationSyntax ParseTraitMemberDeclaration(ITraitDeclarationSyntax traitDeclaration)
@@ -326,7 +326,7 @@ public partial class Parser
             }
             else
             {
-                body = new BlockBodySyntax(Tokens.Current.Span.AtStart(), FixedList<IBodyStatementSyntax>.Empty);
+                body = new BlockBodySyntax(Tokens.Current.Span.AtStart(), FixedList.Empty<IBodyStatementSyntax>());
                 var semicolon = bodyParser.Tokens.Expect<ISemicolonToken>();
                 span = TextSpan.Covering(fn, semicolon);
                 Add(ParseError.AssociatedFunctionMissingBody(File, span, name));
@@ -415,7 +415,7 @@ public partial class Parser
             }
             else
             {
-                body = new BlockBodySyntax(Tokens.Current.Span.AtStart(), FixedList<IBodyStatementSyntax>.Empty);
+                body = new BlockBodySyntax(Tokens.Current.Span.AtStart(), FixedList.Empty<IBodyStatementSyntax>());
                 var semicolon = bodyParser.Tokens.Expect<ISemicolonToken>();
                 span = TextSpan.Covering(fn, semicolon);
                 Add(ParseError.AssociatedFunctionMissingBody(File, span, name));

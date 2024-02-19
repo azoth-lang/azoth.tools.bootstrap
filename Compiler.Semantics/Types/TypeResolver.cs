@@ -55,7 +55,7 @@ public class TypeResolver
             case null:
                 return null;
             case ISimpleTypeNameSyntax syn:
-                return ResolveType(syn, isAttribute: false, FixedList<DataType>.Empty, CreateType);
+                return ResolveType(syn, isAttribute: false, FixedList.Empty<DataType>(), CreateType);
             case IParameterizedTypeSyntax syn:
                 var typeArguments = Evaluate(syn.TypeArguments);
                 return ResolveType(syn, isAttribute: false, typeArguments, CreateType);
@@ -175,7 +175,7 @@ public class TypeResolver
     {
         return typeSyntax switch
         {
-            ISimpleTypeNameSyntax syn => ResolveType(syn, isAttribute, FixedList<DataType>.Empty, CreateType),
+            ISimpleTypeNameSyntax syn => ResolveType(syn, isAttribute, FixedList.Empty<DataType>(), CreateType),
             IParameterizedTypeSyntax syn
                 => ResolveType(syn, isAttribute, Evaluate(syn.TypeArguments), CreateType),
             _ => throw ExhaustiveMatch.Failed(typeSyntax)
@@ -219,13 +219,13 @@ public class TypeResolver
         }
     }
 
-    private FixedList<DataType> Evaluate(IEnumerable<ITypeSyntax> types)
+    private IFixedList<DataType> Evaluate(IEnumerable<ITypeSyntax> types)
         => types.Select(t => Evaluate(t)).ToFixedList();
 
     private DataType ResolveType(
         ITypeNameSyntax typeName,
         bool isAttribute,
-        FixedList<DataType> typeArguments,
+        IFixedList<DataType> typeArguments,
         Func<TypeSymbol, IFixedList<DataType>, DataType> createType)
     {
         var symbols = typeName.LookupInContainingScope(withAttributeSuffix: false).Select(EnsureBuilt).ToFixedList();

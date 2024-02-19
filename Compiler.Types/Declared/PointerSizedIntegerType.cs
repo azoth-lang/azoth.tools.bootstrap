@@ -21,7 +21,7 @@ public sealed class PointerSizedIntegerType : IntegerType
     private PointerSizedIntegerType(SpecialTypeName name, bool signed)
         : base(name, signed)
     {
-        BareType = new(this, FixedList<DataType>.Empty);
+        BareType = new(this, FixedList.Empty<DataType>());
         Type = BareType.With(ReferenceCapability.Constant);
     }
 

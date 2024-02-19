@@ -21,7 +21,7 @@ internal class ConstructorDeclaration : InvocableDeclaration, IConstructorDeclar
         ConstructorSymbol symbol,
         TextSpan nameSpan,
         ISelfParameter selfParameter,
-        FixedList<IConstructorParameter> parameters,
+        IFixedList<IConstructorParameter> parameters,
         IBody body)
         : base(file, span, symbol, nameSpan, parameters)
     {

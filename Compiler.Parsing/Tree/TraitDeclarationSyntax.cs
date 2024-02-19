@@ -21,9 +21,9 @@ internal class TraitDeclarationSyntax : TypeDeclarationSyntax<ITraitMemberDeclar
         IMoveKeywordToken? moveModifier,
         TextSpan nameSpan,
         string name,
-        FixedList<IGenericParameterSyntax> genericParameters,
+        IFixedList<IGenericParameterSyntax> genericParameters,
         IFixedList<ITypeNameSyntax> supertypes,
-        Func<ITraitDeclarationSyntax, (FixedList<ITraitMemberDeclarationSyntax>, TextSpan)> parseMembers)
+        Func<ITraitDeclarationSyntax, (IFixedList<ITraitMemberDeclarationSyntax>, TextSpan)> parseMembers)
         : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, moveModifier,
             nameSpan, StandardTypeName.Create(name, genericParameters.Count), genericParameters, supertypes)
     {

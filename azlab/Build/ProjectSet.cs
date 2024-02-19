@@ -225,7 +225,7 @@ internal class ProjectSet : IEnumerable<Project>
     private static CodeFile LoadCode(
         string path,
         string sourceDir,
-        FixedList<string> rootNamespace,
+        IFixedList<string> rootNamespace,
         bool isTest)
     {
         var relativeDirectory = Path.GetDirectoryName(Path.GetRelativePath(sourceDir, path)) ?? throw new InvalidOperationException("Null directory name");
@@ -248,7 +248,7 @@ internal class ProjectSet : IEnumerable<Project>
         return cacheDir;
     }
 
-    private static bool OutputDiagnostics(Project project, FixedList<Diagnostic> diagnostics, object consoleLock)
+    private static bool OutputDiagnostics(Project project, IFixedList<Diagnostic> diagnostics, object consoleLock)
     {
         if (!diagnostics.Any())
             return false;

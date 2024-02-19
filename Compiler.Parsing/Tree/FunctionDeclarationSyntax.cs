@@ -23,11 +23,11 @@ internal sealed class FunctionDeclarationSyntax : InvocableNonMemberEntityDeclar
         NamespaceName containingNamespaceName,
         TextSpan span,
         CodeFile file,
-        FixedList<IAttributeSyntax> attributes,
+        IFixedList<IAttributeSyntax> attributes,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
         SimpleName name,
-        FixedList<INamedParameterSyntax> parameters,
+        IFixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
         IBodySyntax body)
         : base(containingNamespaceName, span, file, accessModifier, nameSpan, name, parameters, new AcyclicPromise<FunctionSymbol>())

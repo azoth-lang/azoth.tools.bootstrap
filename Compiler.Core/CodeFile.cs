@@ -25,7 +25,7 @@ public class CodeFile
     }
 
     public static CodeFile Load(string path, bool isTest)
-        => Load(path, FixedList<string>.Empty, isTest);
+        => Load(path, FixedList.Empty<string>(), isTest);
 
     public static CodeFile Load(string path, IFixedList<string> @namespace, bool isTest)
     {

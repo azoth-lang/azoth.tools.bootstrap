@@ -27,7 +27,7 @@ public class Diagnostics : IEnumerable<Diagnostic>
 
     public void Add(IEnumerable<Diagnostic> diagnostics) => items.AddRange(diagnostics);
 
-    public FixedList<Diagnostic> Build()
+    public IFixedList<Diagnostic> Build()
     {
         items.Sort((d1, d2) => d1.StartPosition.CompareTo(d2.StartPosition));
         return items.ToFixedList();

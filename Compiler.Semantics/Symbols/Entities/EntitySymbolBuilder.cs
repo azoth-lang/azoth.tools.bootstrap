@@ -235,7 +235,7 @@ public class EntitySymbolBuilder
         }
     }
 
-    private static FixedList<GenericParameterType> BuildGenericParameterTypes(ITypeDeclarationSyntax type)
+    private static IFixedList<GenericParameterType> BuildGenericParameterTypes(ITypeDeclarationSyntax type)
     {
         var declaredType = new Promise<DeclaredObjectType>();
         return type.GenericParameters.Select(p => new GenericParameterType(declaredType, new GenericParameter(p.Variance, p.Name)))
@@ -244,7 +244,7 @@ public class EntitySymbolBuilder
 
     private static IEnumerable<GenericParameterTypeSymbol> BuildGenericParameterSymbols(
         ITypeDeclarationSyntax typeSyntax,
-        FixedList<GenericParameterType> genericParameterTypes)
+        IFixedList<GenericParameterType> genericParameterTypes)
     {
         var typeSymbol = typeSyntax.Symbol;
         foreach (var (syn, genericParameter) in typeSyntax.GenericParameters.Zip(genericParameterTypes))
@@ -301,7 +301,7 @@ public class EntitySymbolBuilder
         }
     }
 
-    private static FixedList<ParameterType> ResolveParameterTypes(
+    private static IFixedList<ParameterType> ResolveParameterTypes(
         TypeResolver resolver,
         IEnumerable<INamedParameterSyntax> parameters)
     {
@@ -315,7 +315,7 @@ public class EntitySymbolBuilder
         return types.ToFixedList();
     }
 
-    private FixedList<ParameterType> ResolveParameterTypes(
+    private IFixedList<ParameterType> ResolveParameterTypes(
         TypeResolver resolver,
         IEnumerable<IConstructorParameterSyntax> parameters,
         ITypeDeclarationSyntax declaringType)

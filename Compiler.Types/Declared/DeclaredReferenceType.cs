@@ -20,7 +20,7 @@ public abstract class DeclaredReferenceType : DeclaredType
     private protected DeclaredReferenceType(
         bool isConstType,
         bool isAbstract,
-        FixedList<GenericParameterType> genericParametersTypes)
+        IFixedList<GenericParameterType> genericParametersTypes)
         : base(isConstType, genericParametersTypes)
     {
         IsAbstract = isAbstract;

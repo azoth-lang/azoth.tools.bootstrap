@@ -9,7 +9,7 @@ internal class Body : AbstractSyntax, IBody
     public IFixedList<IBodyStatement> Statements { get; }
     IFixedList<IStatement> IBodyOrBlock.Statements => Statements;
 
-    public Body(TextSpan span, FixedList<IBodyStatement> statements)
+    public Body(TextSpan span, IFixedList<IBodyStatement> statements)
         : base(span)
     {
         Statements = statements;

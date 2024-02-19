@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 [Closed(typeof(SimpleType))]
 public abstract class DeclaredValueType : DeclaredType
 {
-    private protected DeclaredValueType(bool isConstType, FixedList<GenericParameterType> genericParametersTypes)
+    private protected DeclaredValueType(bool isConstType, IFixedList<GenericParameterType> genericParametersTypes)
         : base(isConstType, genericParametersTypes) { }
 
     public abstract override BareValueType With(IFixedList<DataType> typeArguments);

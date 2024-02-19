@@ -16,7 +16,7 @@ internal class FunctionReferenceInvocationExpression : Expression, IFunctionRefe
         DataType dataType,
         ExpressionSemantics semantics,
         IExpression referent,
-        FixedList<IExpression> arguments)
+        IFixedList<IExpression> arguments)
         : base(span, dataType, semantics)
     {
         Referent = referent;

@@ -11,7 +11,7 @@ public partial class Parser
     /// <summary>
     /// Accept items until not accepted
     /// </summary>
-    public static FixedList<T> AcceptMany<T>(Func<T?> acceptItem)
+    public static IFixedList<T> AcceptMany<T>(Func<T?> acceptItem)
         where T : class
     {
         return new Generator<T?>(acceptItem)
@@ -21,7 +21,7 @@ public partial class Parser
     /// <summary>
     /// Accept items as long as there is another separator
     /// </summary>
-    public FixedList<T> AcceptManySeparated<T, TSeparator>(Func<T?> acceptItem)
+    public IFixedList<T> AcceptManySeparated<T, TSeparator>(Func<T?> acceptItem)
         where T : class
         where TSeparator : class, IToken
     {
@@ -41,7 +41,7 @@ public partial class Parser
     /// <summary>
     /// Parse items until a terminator is found
     /// </summary>
-    public FixedList<T> ParseMany<T, TTerminator>(Func<T> parseItem)
+    public IFixedList<T> ParseMany<T, TTerminator>(Func<T> parseItem)
         where T : class
         where TTerminator : IToken
     {
@@ -56,7 +56,7 @@ public partial class Parser
     /// Parse an expected item and then parse additional items as long as there is
     /// a separator.
     /// </summary>
-    public FixedList<T> ParseManySeparated<T, TSeparator>(Func<T> parseItem)
+    public IFixedList<T> ParseManySeparated<T, TSeparator>(Func<T> parseItem)
         //where T : class
         where TSeparator : class, IToken
     {
@@ -72,7 +72,7 @@ public partial class Parser
     /// <summary>
     /// Parse items as long as there is another separator or until a terminator is found
     /// </summary>
-    public FixedList<T> ParseManySeparated<T, TSeparator, TTerminator>(Func<T> parseItem)
+    public IFixedList<T> ParseManySeparated<T, TSeparator, TTerminator>(Func<T> parseItem)
         where T : class
         where TSeparator : class, IToken
         where TTerminator : IToken

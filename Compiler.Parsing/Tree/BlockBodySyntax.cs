@@ -10,7 +10,7 @@ internal class BlockBodySyntax : Syntax, IBlockBodySyntax
     public IFixedList<IBodyStatementSyntax> Statements { [DebuggerStepThrough] get; }
     IFixedList<IStatementSyntax> IBodyOrBlockSyntax.Statements => Statements;
 
-    public BlockBodySyntax(TextSpan span, FixedList<IBodyStatementSyntax> statements)
+    public BlockBodySyntax(TextSpan span, IFixedList<IBodyStatementSyntax> statements)
         : base(span)
     {
         Statements = statements;

@@ -17,7 +17,7 @@ internal class NewObjectExpression : Expression, INewObjectExpression
         DataType dataType,
         ExpressionSemantics semantics,
         ConstructorSymbol referencedSymbol,
-        FixedList<IExpression> arguments)
+        IFixedList<IExpression> arguments)
         : base(span, dataType, semantics)
     {
         ReferencedSymbol = referencedSymbol;

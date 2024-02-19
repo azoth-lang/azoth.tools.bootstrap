@@ -26,7 +26,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         bool isClass,
         string name)
         => new(containingPackage, containingNamespace, isAbstract, isConst, isClass, name,
-            FixedList<GenericParameterType>.Empty, AnyTypePromise);
+            FixedList.Empty<GenericParameterType>(), AnyTypePromise);
 
     public static DeclaredObjectType Create(
         SimpleName containingPackage,
@@ -35,7 +35,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         bool isConst,
         bool isClass,
         string name,
-        FixedList<GenericParameterType> genericParameterTypes,
+        IFixedList<GenericParameterType> genericParameterTypes,
         IPromise<FixedSet<BareReferenceType>> superTypes)
         => new(containingPackage, containingNamespace, isAbstract, isConst, isClass,
             StandardTypeName.Create(name, genericParameterTypes.Count), genericParameterTypes, superTypes);
@@ -47,7 +47,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         bool isConst,
         bool isClass,
         StandardTypeName name,
-        FixedList<GenericParameterType> genericParametersTypes,
+        IFixedList<GenericParameterType> genericParametersTypes,
         IPromise<FixedSet<BareReferenceType>> superTypes)
     {
         Requires.That(nameof(genericParametersTypes), name.GenericParameterCount == genericParametersTypes.Count, "Count must match name count");
@@ -77,7 +77,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         bool isConstType,
         bool isClass,
         StandardTypeName name,
-        FixedList<GenericParameterType> genericParametersTypes,
+        IFixedList<GenericParameterType> genericParametersTypes,
         IPromise<FixedSet<BareReferenceType>> supertypes)
         : base(isConstType, isAbstract, genericParametersTypes)
     {

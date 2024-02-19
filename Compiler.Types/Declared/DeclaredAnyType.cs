@@ -11,9 +11,9 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
     internal static readonly DeclaredAnyType Instance = new();
 
     private DeclaredAnyType()
-        : base(isConstType: false, isAbstract: true, FixedList<GenericParameterType>.Empty)
+        : base(isConstType: false, isAbstract: true, FixedList.Empty<GenericParameterType>())
     {
-        BareType = new(this, FixedList<DataType>.Empty);
+        BareType = new(this, FixedList.Empty<DataType>());
     }
     #endregion
 

@@ -506,7 +506,7 @@ public class BasicBodyAnalyzer
             case IStringLiteralExpressionSyntax exp:
                 if (stringSymbol is null)
                     diagnostics.Add(TypeError.NotImplemented(file, exp.Span, "Could not find string type for string literal."));
-                exp.DataType = stringSymbol?.DeclaresType.With(ReferenceCapability.Constant, FixedList<DataType>.Empty)
+                exp.DataType = stringSymbol?.DeclaresType.With(ReferenceCapability.Constant, FixedList.Empty<DataType>())
                                ?? (DataType)DataType.Unknown;
                 return new ExpressionResult(exp);
             case IBoolLiteralExpressionSyntax exp:
@@ -1890,7 +1890,7 @@ public class BasicBodyAnalyzer
     private DataType? InferReferencedSymbol(
         Pseudotype contextType,
         ISimpleNameExpressionSyntax exp,
-        FixedList<Symbol> matchingSymbols)
+        IFixedList<Symbol> matchingSymbols)
     {
         switch (matchingSymbols.Count)
         {
@@ -1992,7 +1992,7 @@ public class BasicBodyAnalyzer
     {
         AddImplicitConversionIfNeeded(leftOperand, DataType.Int, flow);
         AddImplicitConversionIfNeeded(rightOperand, DataType.Int, flow);
-        return rangeSymbol?.DeclaresType.With(ReferenceCapability.Constant, FixedList<DataType>.Empty)
+        return rangeSymbol?.DeclaresType.With(ReferenceCapability.Constant, FixedList.Empty<DataType>())
                ?? (DataType)DataType.Unknown;
     }
 

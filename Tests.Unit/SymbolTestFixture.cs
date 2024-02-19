@@ -26,10 +26,10 @@ public abstract class SymbolTestFixture
     [return: NotNullIfNotNull(nameof(name))]
     protected static SimpleName? Name(string? name = null) => name is null ? null : new SimpleName(name);
 
-    protected FixedList<ParameterType> Params(int? count = null)
+    protected IFixedList<ParameterType> Params(int? count = null)
         => Enumerable.Range(1, count ?? ++unique).Select(_ => ParameterType.Int).ToFixedList();
 
-    protected static FixedList<ParameterType> Params(DataType param, params DataType[] @params)
+    protected static IFixedList<ParameterType> Params(DataType param, params DataType[] @params)
         => @params.Prepend(param).Select(t => new ParameterType(false, t)).ToFixedList();
 
     protected static SelfParameterType SelfParam(Pseudotype param) => new SelfParameterType(false, param);
@@ -72,7 +72,7 @@ public abstract class SymbolTestFixture
         return new MethodSymbol(
             containing,
             Name(name) ?? DefaultName("method"),
-            self ?? new SelfParameterType(false, containing.DeclaresType.With(ReferenceCapability.Read, FixedList<DataType>.Empty)),
+            self ?? new SelfParameterType(false, containing.DeclaresType.With(ReferenceCapability.Read, FixedList.Empty<DataType>())),
             @params ?? Params(),
             @return ?? ReturnType());
     }

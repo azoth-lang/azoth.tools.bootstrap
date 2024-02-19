@@ -11,8 +11,8 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Lexing.Helpers;
 public class LexResult
 {
     public CodeFile File { get; }
-    public FixedList<IToken> Tokens { get; }
-    public FixedList<Diagnostic> Diagnostics { get; }
+    public IFixedList<IToken> Tokens { get; }
+    public IFixedList<Diagnostic> Diagnostics { get; }
 
     public LexResult(ITokenIterator<IToken> iterator)
     {
@@ -60,7 +60,7 @@ public class LexResult
         return string.Concat(Tokens.Select(t => t.Text(File.Code)));
     }
 
-    public FixedList<PsuedoToken> ToPsuedoTokens()
+    public IFixedList<PsuedoToken> ToPsuedoTokens()
     {
         return Tokens.Select(t => PsuedoToken.For(t, File.Code)).ToFixedList();
     }

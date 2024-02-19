@@ -33,7 +33,7 @@ internal class ParameterizedTypeSyntax : TypeSyntax, IParameterizedTypeSyntax
     public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
     public IFixedList<ITypeSyntax> TypeArguments { get; }
 
-    public ParameterizedTypeSyntax(TextSpan span, string name, FixedList<ITypeSyntax> typeArguments)
+    public ParameterizedTypeSyntax(TextSpan span, string name, IFixedList<ITypeSyntax> typeArguments)
         : base(span)
     {
         TypeArguments = typeArguments;

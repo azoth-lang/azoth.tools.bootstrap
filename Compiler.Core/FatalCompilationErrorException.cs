@@ -5,9 +5,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core;
 
 public class FatalCompilationErrorException : Exception
 {
-    public FixedList<Diagnostic> Diagnostics { get; }
+    public IFixedList<Diagnostic> Diagnostics { get; }
 
-    public FatalCompilationErrorException(FixedList<Diagnostic> diagnostics)
+    public FatalCompilationErrorException(IFixedList<Diagnostic> diagnostics)
     {
         Diagnostics = diagnostics;
     }

@@ -87,7 +87,7 @@ public partial class TreeCodeTemplate
         return BaseProperties(rule, propertyName);
     }
 
-    private FixedList<GrammarRule> ChildRules(GrammarRule rule)
+    private IFixedList<GrammarRule> ChildRules(GrammarRule rule)
         => grammar.Rules.Where(r => r.Parents.Contains(rule.Nonterminal)).ToFixedList();
 
     private string ClosedType(GrammarRule rule)

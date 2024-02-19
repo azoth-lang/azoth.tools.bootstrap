@@ -41,19 +41,19 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
 
     public abstract TypeName Name { get; }
 
-    public FixedList<GenericParameter> GenericParameters { get; }
+    public IFixedList<GenericParameter> GenericParameters { get; }
     public bool HasIndependentGenericParameters { get; }
     public bool AllowsVariance { get; }
-    public FixedList<GenericParameterType> GenericParameterTypes { get; }
+    public IFixedList<GenericParameterType> GenericParameterTypes { get; }
 
     // TODO this is really awkward. There should be a subtype relationship
-    public FixedList<DataType> GenericParameterDataTypes { get; }
+    public IFixedList<DataType> GenericParameterDataTypes { get; }
     public abstract FixedSet<BareReferenceType> Supertypes { get; }
     public abstract TypeSemantics Semantics { get; }
 
     private protected DeclaredType(
         bool isConstType,
-        FixedList<GenericParameterType> genericParametersTypes)
+        IFixedList<GenericParameterType> genericParametersTypes)
     {
         IsConstType = isConstType;
         GenericParameters = genericParametersTypes.Select(t => t.Parameter).ToFixedList();

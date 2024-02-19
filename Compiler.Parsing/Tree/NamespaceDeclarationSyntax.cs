@@ -29,8 +29,8 @@ internal class NamespaceDeclarationSyntax : NonMemberDeclarationSyntax, INamespa
         bool isGlobalQualified,
         NamespaceName declaredNames,
         TextSpan nameSpan,
-        FixedList<IUsingDirectiveSyntax> usingDirectives,
-        FixedList<INonMemberDeclarationSyntax> declarations)
+        IFixedList<IUsingDirectiveSyntax> usingDirectives,
+        IFixedList<INonMemberDeclarationSyntax> declarations)
         : base(containingNamespaceName, span, file, declaredNames.Segments[^1], nameSpan, new Promise<NamespaceOrPackageSymbol>())
     {
         DeclaredNames = declaredNames;

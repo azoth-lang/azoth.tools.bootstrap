@@ -35,7 +35,7 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
         IMoveKeywordToken? moveModifier,
         TextSpan nameSpan,
         StandardTypeName name,
-        FixedList<IGenericParameterSyntax> genericParameters,
+        IFixedList<IGenericParameterSyntax> genericParameters,
         IFixedList<ITypeNameSyntax> supertypeNames)
         : base(containingNamespaceName, headerSpan, file, name, nameSpan, new AcyclicPromise<ObjectTypeSymbol>())
     {

@@ -21,7 +21,7 @@ internal class AbstractMethodDeclaration : InvocableDeclaration, IAbstractMethod
         MethodSymbol symbol,
         TextSpan nameSpan,
         ISelfParameter selfParameter,
-        FixedList<INamedParameter> parameters)
+        IFixedList<INamedParameter> parameters)
         : base(file, span, symbol, nameSpan, parameters.ToFixedList<IConstructorParameter>())
     {
         Symbol = symbol;

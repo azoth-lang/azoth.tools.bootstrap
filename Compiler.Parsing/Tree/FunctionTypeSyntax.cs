@@ -10,7 +10,7 @@ internal class FunctionTypeSyntax : TypeSyntax, IFunctionTypeSyntax
     public IFixedList<IParameterTypeSyntax> Parameters { get; }
     public IReturnTypeSyntax Return { get; }
 
-    public FunctionTypeSyntax(TextSpan span, FixedList<IParameterTypeSyntax> parameters, IReturnTypeSyntax @return)
+    public FunctionTypeSyntax(TextSpan span, IFixedList<IParameterTypeSyntax> parameters, IReturnTypeSyntax @return)
         : base(span)
     {
         Parameters = parameters;

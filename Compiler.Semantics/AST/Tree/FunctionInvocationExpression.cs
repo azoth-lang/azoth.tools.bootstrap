@@ -17,7 +17,7 @@ internal class FunctionInvocationExpression : Expression, IFunctionInvocationExp
         DataType dataType,
         ExpressionSemantics semantics,
         FunctionSymbol referencedSymbol,
-        FixedList<IExpression> arguments)
+        IFixedList<IExpression> arguments)
         : base(span, dataType, semantics)
     {
         ReferencedSymbol = referencedSymbol;

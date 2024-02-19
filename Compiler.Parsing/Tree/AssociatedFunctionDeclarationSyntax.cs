@@ -24,7 +24,7 @@ internal class AssociatedFunctionDeclarationSyntax : InvocableDeclarationSyntax,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
         SimpleName name,
-        FixedList<INamedParameterSyntax> parameters,
+        IFixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
         IBodySyntax body)
         : base(span, file, accessModifier, nameSpan, name, parameters, new AcyclicPromise<FunctionSymbol>())

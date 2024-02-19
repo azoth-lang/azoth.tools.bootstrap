@@ -30,8 +30,8 @@ public static class EnumerableExtensions
     }
 
     [DebuggerStepThrough]
-    public static FixedList<T> ToFixedList<T>(this IEnumerable<T> values)
-        => values as FixedList<T> ?? new FixedList<T>(values);
+    public static IFixedList<T> ToFixedList<T>(this IEnumerable<T> values)
+        => values as IFixedList<T> ?? FixedList.Create(values);
 
     [DebuggerStepThrough]
     public static FixedSet<T> ToFixedSet<T>(this IEnumerable<T> values)

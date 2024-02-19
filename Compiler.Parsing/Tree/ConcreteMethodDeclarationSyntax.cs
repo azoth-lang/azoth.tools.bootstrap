@@ -20,7 +20,7 @@ internal class ConcreteMethodDeclarationSyntax : MethodDeclarationSyntax, IConcr
         TextSpan nameSpan,
         SimpleName name,
         IMethodSelfParameterSyntax selfParameter,
-        FixedList<INamedParameterSyntax> parameters,
+        IFixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
         IBodySyntax body)
         : base(declaringType, span, file, accessModifier, nameSpan, name, selfParameter,

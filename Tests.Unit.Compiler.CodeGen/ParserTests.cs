@@ -432,8 +432,8 @@ public class ParserTests
         return new GrammarType(symbol, true, false, false);
     }
 
-    private static FixedList<T> FixedList<T>(params T[] values)
+    private static IFixedList<T> FixedList<T>(params T[] values)
     {
-        return new FixedList<T>(values);
+        return Framework.FixedList.Create(values);
     }
 }

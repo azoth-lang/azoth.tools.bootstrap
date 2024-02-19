@@ -17,7 +17,7 @@ internal class CompilationUnitSyntax : Syntax, ICompilationUnitSyntax
         NamespaceName implicitNamespaceName,
         TextSpan span,
         CodeFile file,
-        FixedList<IUsingDirectiveSyntax> usingDirectives,
+        IFixedList<IUsingDirectiveSyntax> usingDirectives,
         IFixedList<INonMemberDeclarationSyntax> declarations)
         : base(span)
     {
@@ -25,7 +25,7 @@ internal class CompilationUnitSyntax : Syntax, ICompilationUnitSyntax
         ImplicitNamespaceName = implicitNamespaceName;
         UsingDirectives = usingDirectives;
         Declarations = declarations;
-        Diagnostics = FixedList<Diagnostic>.Empty;
+        Diagnostics = FixedList.Empty<Diagnostic>();
     }
 
     public void Attach(IFixedList<Diagnostic> diagnostics)

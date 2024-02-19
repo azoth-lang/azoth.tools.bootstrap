@@ -185,7 +185,7 @@ internal class ASTBuilder
         return new FunctionDeclaration(syn.File, syn.Span, attributes, symbol, nameSpan, parameters, body);
     }
 
-    private static FixedList<IAttribute> BuildAttributes(IEnumerable<IAttributeSyntax> syn)
+    private static IFixedList<IAttribute> BuildAttributes(IEnumerable<IAttributeSyntax> syn)
         => syn.Select(BuildAttribute).ToFixedList();
 
     private static IAttribute BuildAttribute(IAttributeSyntax syn)
@@ -363,7 +363,7 @@ internal class ASTBuilder
         };
     }
 
-    private static FixedList<IExpression> BuildExpressions(IFixedList<IExpressionSyntax> expressions)
+    private static IFixedList<IExpression> BuildExpressions(IFixedList<IExpressionSyntax> expressions)
         // The compiler isn't able to correctly figure out the nullability here. That is actually
         // why this method even exists
         => expressions.Select(BuildExpression).ToFixedList()!;

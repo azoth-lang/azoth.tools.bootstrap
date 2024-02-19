@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
 public partial class Parser
 {
-    public FixedList<IUsingDirectiveSyntax> ParseUsingDirectives()
+    public IFixedList<IUsingDirectiveSyntax> ParseUsingDirectives()
         => AcceptMany(AcceptUsingDirective);
 
     public IUsingDirectiveSyntax? AcceptUsingDirective()

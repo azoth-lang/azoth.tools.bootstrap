@@ -15,7 +15,7 @@ public class Package : IHasSymbolTree
     public PackageSymbol Symbol { get; }
     public FixedSymbolTree SymbolTree { get; }
     public FixedSymbolTree TestingSymbolTree { get; }
-    public FixedList<Diagnostic> Diagnostics { get; }
+    public IFixedList<Diagnostic> Diagnostics { get; }
     public FixedSet<Package> References { get; }
     public IFunctionDeclaration? EntryPoint { get; }
 
@@ -24,7 +24,7 @@ public class Package : IHasSymbolTree
         FixedSet<INonMemberDeclaration> testingNonMemberDeclarations,
         FixedSymbolTree symbolTree,
         FixedSymbolTree testingSymbolTree,
-        FixedList<Diagnostic> diagnostics,
+        IFixedList<Diagnostic> diagnostics,
         FixedSet<Package> references,
         IFunctionDeclaration? entryPoint)
     {

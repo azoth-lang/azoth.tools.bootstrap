@@ -549,7 +549,7 @@ public partial class Parser
         return expression;
     }
 
-    public FixedList<IExpressionSyntax> ParseArguments()
+    public IFixedList<IExpressionSyntax> ParseArguments()
         => AcceptManySeparated<IExpressionSyntax, ICommaToken>(AcceptExpression);
 
     public IBlockOrResultSyntax ParseBlockOrResultExpression()

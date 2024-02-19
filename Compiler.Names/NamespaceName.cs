@@ -8,11 +8,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 
 public sealed class NamespaceName : IEquatable<NamespaceName>
 {
-    public static readonly NamespaceName Global = new(FixedList<SimpleName>.Empty);
+    public static readonly NamespaceName Global = new(FixedList.Empty<SimpleName>());
 
-    public FixedList<SimpleName> Segments { [DebuggerStepThrough] get; }
+    public IFixedList<SimpleName> Segments { [DebuggerStepThrough] get; }
 
-    public NamespaceName(FixedList<SimpleName> segments)
+    public NamespaceName(IFixedList<SimpleName> segments)
     {
         Segments = segments;
     }

@@ -19,7 +19,7 @@ internal class MethodInvocationExpression : Expression, IMethodInvocationExpress
         ExpressionSemantics semantics,
         IExpression context,
         MethodSymbol referencedSymbol,
-        FixedList<IExpression> arguments)
+        IFixedList<IExpression> arguments)
         : base(span, dataType, semantics)
     {
         Context = context;

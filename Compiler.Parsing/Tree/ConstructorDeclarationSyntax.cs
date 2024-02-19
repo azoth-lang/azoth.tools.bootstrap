@@ -28,7 +28,7 @@ internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConst
         TextSpan nameSpan,
         SimpleName? name,
         IConstructorSelfParameterSyntax selfParameter,
-        FixedList<IConstructorParameterSyntax> parameters,
+        IFixedList<IConstructorParameterSyntax> parameters,
         IBlockBodySyntax body)
         : base(span, file, accessModifier, nameSpan, name, parameters,
             new AcyclicPromise<ConstructorSymbol>())

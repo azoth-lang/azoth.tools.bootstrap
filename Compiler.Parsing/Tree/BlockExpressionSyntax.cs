@@ -13,7 +13,7 @@ internal class BlockExpressionSyntax : ExpressionSyntax, IBlockExpressionSyntax
 
     public BlockExpressionSyntax(
         TextSpan span,
-        FixedList<IStatementSyntax> statements)
+        IFixedList<IStatementSyntax> statements)
         : base(span)
     {
         Statements = statements;

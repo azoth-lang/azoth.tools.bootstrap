@@ -63,7 +63,7 @@ public abstract class ReferenceType : CapabilityType
         string name)
         => Create(capability,
             DeclaredObjectType.Create(containingPackage, containingNamespace, isAbstract, isConst, isClass, name),
-            FixedList<DataType>.Empty);
+            FixedList.Empty<DataType>());
 
     /// <summary>
     /// Create a object type for a given class or trait.
@@ -71,7 +71,7 @@ public abstract class ReferenceType : CapabilityType
     public static ReferenceType<DeclaredObjectType> Create(
         ReferenceCapability capability,
         DeclaredObjectType declaredType,
-        FixedList<DataType> typeArguments)
+        IFixedList<DataType> typeArguments)
         => Create(capability, Bare.BareType.Create(declaredType, typeArguments));
 
     /// <summary>

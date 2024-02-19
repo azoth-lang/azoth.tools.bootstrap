@@ -13,9 +13,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public readonly struct TypeArgumentIndex : IEquatable<TypeArgumentIndex>
 {
-    public FixedList<int> TreeIndex { get; }
+    public IFixedList<int> TreeIndex { get; }
 
-    public TypeArgumentIndex(FixedList<int> treeIndex)
+    public TypeArgumentIndex(IFixedList<int> treeIndex)
     {
         TreeIndex = treeIndex;
     }

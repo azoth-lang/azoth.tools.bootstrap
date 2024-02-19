@@ -15,7 +15,7 @@ internal abstract class InvocableDeclaration : Declaration, IInvocableDeclaratio
         TextSpan span,
         InvocableSymbol symbol,
         TextSpan nameSpan,
-        FixedList<IConstructorParameter> parameters)
+        IFixedList<IConstructorParameter> parameters)
         : base(file, span, symbol, nameSpan)
     {
         Symbol = symbol;

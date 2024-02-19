@@ -31,8 +31,8 @@ public abstract class BareType : IEquatable<BareType>
     public static readonly BareValueType<FixedSizeIntegerType> UInt32 = DeclaredType.UInt32.BareType;
     public static readonly BareValueType<FixedSizeIntegerType> Int64 = DeclaredType.Int64.BareType;
     public static readonly BareValueType<FixedSizeIntegerType> UInt64 = DeclaredType.UInt64.BareType;
-    public static readonly BareValueType<PointerSizedIntegerType> Size = new(DeclaredType.Size, FixedList<DataType>.Empty);
-    public static readonly BareValueType<PointerSizedIntegerType> Offset = new(DeclaredType.Offset, FixedList<DataType>.Empty);
+    public static readonly BareValueType<PointerSizedIntegerType> Size = new(DeclaredType.Size, FixedList.Empty<DataType>());
+    public static readonly BareValueType<PointerSizedIntegerType> Offset = new(DeclaredType.Offset, FixedList.Empty<DataType>());
 
     public static readonly BareReferenceType<DeclaredAnyType> Any = DeclaredType.Any.BareType;
     #endregion

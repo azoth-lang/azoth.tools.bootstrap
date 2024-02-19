@@ -114,7 +114,7 @@ public partial class ConformanceTests
         {
             var sourceDir = TestsSupportPackage.GetDirectory();
             var sourcePaths = CodeFiles.GetIn(sourceDir);
-            var rootNamespace = FixedList<string>.Empty;
+            var rootNamespace = FixedList.Empty<string>();
             var codeFiles = sourcePaths.Select(p => LoadCode(p, sourceDir, rootNamespace)).ToList();
             var package = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles,
                 Enumerable.Empty<CodeFile>(), FixedDictionary<SimpleName, Package>.Empty);
@@ -145,7 +145,7 @@ public partial class ConformanceTests
     private static CodeFile LoadCode(
         string path,
         string sourceDir,
-        FixedList<string> rootNamespace)
+        IFixedList<string> rootNamespace)
     {
         var relativeDirectory = Path.GetDirectoryName(Path.GetRelativePath(sourceDir, path)) ?? throw new InvalidOperationException();
         var ns = rootNamespace.Concat(relativeDirectory.SplitOrEmpty(Path.DirectorySeparatorChar)).ToFixedList();
@@ -156,7 +156,7 @@ public partial class ConformanceTests
         TestCase testCase,
         CodeFile codeFile,
         string code,
-        FixedList<Diagnostic> diagnostics)
+        IFixedList<Diagnostic> diagnostics)
     {
         // Check for compiler errors
         var expectCompileErrors = ExpectCompileErrors(code);

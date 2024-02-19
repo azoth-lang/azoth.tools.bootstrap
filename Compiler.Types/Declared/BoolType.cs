@@ -13,7 +13,7 @@ public sealed class BoolType : SimpleType
     private BoolType()
         : base(SpecialTypeName.Bool)
     {
-        BareType = new(this, FixedList<DataType>.Empty);
+        BareType = new(this, FixedList.Empty<DataType>());
         Type = BareType.With(ReferenceCapability.Constant);
     }
     #endregion

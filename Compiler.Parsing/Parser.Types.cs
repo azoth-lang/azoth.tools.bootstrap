@@ -212,7 +212,7 @@ public partial class Parser
     private IFixedList<ITypeNameSyntax> ParseTypeNames()
         => AcceptManySeparated<ITypeNameSyntax, ICommaToken>(ParseTypeName);
 
-    private (FixedList<ITypeSyntax> Arguments, TextSpan Span)? AcceptGenericTypeArguments()
+    private (IFixedList<ITypeSyntax> Arguments, TextSpan Span)? AcceptGenericTypeArguments()
     {
         var openBracket = Tokens.AcceptToken<IOpenBracketToken>();
         if (openBracket is null) return null;

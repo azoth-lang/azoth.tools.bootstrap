@@ -16,10 +16,10 @@ internal class FunctionDeclaration : InvocableDeclaration, IFunctionDeclaration
     public FunctionDeclaration(
         CodeFile file,
         TextSpan span,
-        FixedList<IAttribute> attributes,
+        IFixedList<IAttribute> attributes,
         FunctionSymbol symbol,
         TextSpan nameSpan,
-        FixedList<INamedParameter> parameters,
+        IFixedList<INamedParameter> parameters,
         IBody body)
         : base(file, span, symbol, nameSpan, parameters.ToFixedList<IConstructorParameter>())
     {

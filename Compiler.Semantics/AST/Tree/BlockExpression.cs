@@ -15,7 +15,7 @@ internal class BlockExpression : Expression, IBlockExpression
         TextSpan span,
         DataType dataType,
         ExpressionSemantics semantics,
-        FixedList<IStatement> statements)
+        IFixedList<IStatement> statements)
         : base(span, dataType, semantics)
     {
         Statements = statements;

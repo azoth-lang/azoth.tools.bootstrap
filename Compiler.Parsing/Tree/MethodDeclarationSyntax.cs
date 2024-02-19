@@ -25,7 +25,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
         TextSpan nameSpan,
         SimpleName name,
         IMethodSelfParameterSyntax selfParameter,
-        FixedList<INamedParameterSyntax> parameters,
+        IFixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return)
         : base(span, file, accessModifier, nameSpan, name,
             parameters, new AcyclicPromise<MethodSymbol>())

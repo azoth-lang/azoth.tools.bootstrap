@@ -12,8 +12,8 @@ public class Grammar
     public string Prefix { get; }
     public string Suffix { get; }
     public string ListType { get; }
-    public FixedList<string> UsingNamespaces { get; }
-    public FixedList<GrammarRule> Rules { get; }
+    public IFixedList<string> UsingNamespaces { get; }
+    public IFixedList<GrammarRule> Rules { get; }
 
     public Grammar(
         string? @namespace,

@@ -92,10 +92,10 @@ public static partial class StringExtensions
         return unescaped.ToString();
     }
 
-    public static FixedList<string> SplitOrEmpty(this string value, params char[] separators)
+    public static IFixedList<string> SplitOrEmpty(this string value, params char[] separators)
     {
         if (string.IsNullOrEmpty(value))
-            return FixedList<string>.Empty;
+            return FixedList.Empty<string>();
         return value.Split(separators).ToFixedList();
     }
 }

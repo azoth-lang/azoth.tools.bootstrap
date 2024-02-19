@@ -9,11 +9,11 @@ namespace Azoth.Tools.Bootstrap.Lab.Build;
 internal class Project
 {
     public string Path { get; }
-    public FixedList<string> RootNamespace { get; }
+    public IFixedList<string> RootNamespace { get; }
     public string Name { get; }
     public IFixedList<string> Authors { get; }
     public ProjectTemplate Template { get; }
-    public FixedList<ProjectReference> References { get; }
+    public IFixedList<ProjectReference> References { get; }
 
     public Project(
         ProjectConfig file,

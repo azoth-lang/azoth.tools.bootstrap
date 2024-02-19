@@ -44,7 +44,7 @@ public sealed class FixedSizeIntegerType : IntegerType
             MinValue = 0;
             MaxValue = BigInteger.Pow(2, Bits);
         }
-        BareType = new(this, FixedList<DataType>.Empty);
+        BareType = new(this, FixedList.Empty<DataType>());
         Type = BareType.With(ReferenceCapability.Constant);
     }
 

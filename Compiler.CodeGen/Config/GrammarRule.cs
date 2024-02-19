@@ -6,9 +6,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Config;
 public class GrammarRule
 {
     public GrammarSymbol Nonterminal { get; }
-    public FixedList<GrammarSymbol> Parents { get; }
+    public IFixedList<GrammarSymbol> Parents { get; }
 
-    public FixedList<GrammarProperty> Properties { get; }
+    public IFixedList<GrammarProperty> Properties { get; }
 
     public GrammarRule(
         GrammarSymbol nonterminal,

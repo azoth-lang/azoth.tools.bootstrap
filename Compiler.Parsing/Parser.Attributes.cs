@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
 public partial class Parser
 {
-    private FixedList<IAttributeSyntax> ParseAttributes()
+    private IFixedList<IAttributeSyntax> ParseAttributes()
         => AcceptMany(AcceptAttribute);
 
     private IAttributeSyntax? AcceptAttribute()

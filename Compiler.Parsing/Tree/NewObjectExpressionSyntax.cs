@@ -28,7 +28,7 @@ internal class NewObjectExpressionSyntax : ExpressionSyntax, INewObjectExpressio
         ITypeNameSyntax typeSyntax,
         SimpleName? constructorName,
         TextSpan? constructorNameSpan,
-        FixedList<IExpressionSyntax> arguments)
+        IFixedList<IExpressionSyntax> arguments)
         : base(span, ExpressionSemantics.IsolatedReference)
     {
         Type = typeSyntax;

@@ -10,7 +10,7 @@ internal class FakeCodeReference : CodeReference
     public static readonly FakeCodeReference Instance = new();
 
     private FakeCodeReference()
-        : base(FixedList<string>.Empty, isTesting: false)
+        : base(FixedList.Empty<string>(), isTesting: false)
     { }
     #endregion
 

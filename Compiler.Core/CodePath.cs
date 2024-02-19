@@ -10,7 +10,7 @@ public sealed class CodePath : CodeReference, ICodeFileSource
     public string Path { get; }
 
     public CodePath(string path, bool isTest)
-        : this(path, FixedList<string>.Empty, isTest)
+        : this(path, FixedList.Empty<string>(), isTest)
     {
     }
 

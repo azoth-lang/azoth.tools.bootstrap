@@ -22,7 +22,7 @@ internal class ConcreteMethodDeclaration : InvocableDeclaration, IConcreteMethod
         MethodSymbol symbol,
         TextSpan nameSpan,
         ISelfParameter selfParameter,
-        FixedList<INamedParameter> parameters,
+        IFixedList<INamedParameter> parameters,
         IBody body)
         : base(file, span, symbol, nameSpan,
             parameters.ToFixedList<IConstructorParameter>())

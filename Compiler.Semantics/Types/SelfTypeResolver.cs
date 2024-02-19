@@ -25,7 +25,7 @@ public class SelfTypeResolver
     public Pseudotype EvaluateMethodSelfParameterType(
         DeclaredObjectType objectType,
         ISelfReferenceCapabilitySyntax capability,
-        FixedList<DataType> typeArguments)
+        IFixedList<DataType> typeArguments)
     {
         return capability switch
         {
@@ -38,7 +38,7 @@ public class SelfTypeResolver
     public ReferenceType EvaluateConstructorSelfParameterType(
         DeclaredObjectType objectType,
         IReferenceCapabilitySyntax capability,
-        FixedList<DataType> typeArguments)
+        IFixedList<DataType> typeArguments)
     {
         ReferenceCapability referenceCapability;
         switch (capability.Declared)

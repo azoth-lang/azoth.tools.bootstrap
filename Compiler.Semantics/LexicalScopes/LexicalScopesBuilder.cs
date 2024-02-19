@@ -36,7 +36,7 @@ public class LexicalScopesBuilder
     private static void BuildFor(
         FixedSet<ICompilationUnitSyntax> compilationUnits,
         PackagesScope packagesScope,
-        FixedList<NonMemberSymbol> declarationSymbols)
+        IFixedList<NonMemberSymbol> declarationSymbols)
     {
         var namespaces = BuildNamespaces(declarationSymbols);
         var globalScope = BuildGlobalScope(packagesScope, namespaces[NamespaceName.Global]);
@@ -46,7 +46,7 @@ public class LexicalScopesBuilder
             builder.BuildFor(compilationUnit, globalScope);
     }
 
-    private static FixedList<NonMemberSymbol> GetAllNonMemberDeclarationSymbols(
+    private static IFixedList<NonMemberSymbol> GetAllNonMemberDeclarationSymbols(
         IEnumerable<NonMemberSymbol> primitiveEntitySymbols,
         ISymbolTree packageSymbolTree,
         IEnumerable<IEntityDeclarationSyntax> packageEntityDeclarations,
@@ -78,7 +78,7 @@ public class LexicalScopesBuilder
         => Primitive.SymbolTree.Symbols.Where(s => s.ContainingSymbol is null).Select(NonMemberSymbol.ForExternalSymbol);
 
     private static FixedDictionary<NamespaceName, Namespace> BuildNamespaces(
-        FixedList<NonMemberSymbol> declarationSymbols)
+        IFixedList<NonMemberSymbol> declarationSymbols)
     {
         // Use RequiredNamespace so that namespaces in the package will be created even if they are empty
         var namespaces = declarationSymbols.SelectMany(s => s.RequiredNamespace.NamespaceNames()).Distinct();
