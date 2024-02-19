@@ -113,16 +113,6 @@ public abstract class ReferenceType : CapabilityType
     public override int GetHashCode()
         => HashCode.Combine(Capability, BareType);
     #endregion
-
-    public override string ToSourceCodeString()
-    {
-        if (Capability != ReferenceCapability.Read)
-            return $"{Capability.ToSourceString()} {BareType.ToSourceCodeString()}";
-
-        return BareType.ToSourceCodeString();
-    }
-
-    public override string ToILString() => $"{Capability.ToILString()} {BareType.ToILString()}";
 }
 
 public sealed class ReferenceType<TDeclared> : ReferenceType

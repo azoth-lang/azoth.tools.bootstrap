@@ -73,4 +73,15 @@ public abstract class CapabilityType : NonEmptyType
     {
         Capability = capability;
     }
+
+    public sealed override string ToSourceCodeString()
+    {
+        if (Capability != ReferenceCapability.Read)
+            return $"{Capability.ToSourceString()} {BareType.ToSourceCodeString()}";
+
+        return BareType.ToSourceCodeString();
+    }
+
+    public sealed override string ToILString()
+        => $"{Capability.ToILString()} {BareType.ToILString()}";
 }

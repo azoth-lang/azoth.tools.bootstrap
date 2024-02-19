@@ -24,10 +24,6 @@ public abstract class ValueType : CapabilityType
 
     public override int GetHashCode() => HashCode.Combine(BareType);
     #endregion
-
-    public override string ToSourceCodeString() => BareType.ToSourceCodeString();
-
-    public override string ToILString() => BareType.ToILString();
 }
 
 public sealed class ValueType<TDeclared> : ValueType
