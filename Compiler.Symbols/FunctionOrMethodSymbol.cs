@@ -16,7 +16,7 @@ public abstract class FunctionOrMethodSymbol : InvocableSymbol
     protected FunctionOrMethodSymbol(
         Symbol containingSymbol,
         SimpleName name,
-        FixedList<ParameterType> parameterTypes,
+        IFixedList<ParameterType> parameterTypes,
         ReturnType returnType)
         : base(containingSymbol, name, parameterTypes, returnType)
     {

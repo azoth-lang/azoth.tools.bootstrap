@@ -6,7 +6,5 @@ public static class EnumExtensions
 {
     public static bool IsDefined<TEnum>(this TEnum value)
         where TEnum : struct, Enum
-    {
-        return Enum.IsDefined(typeof(TEnum), value);
-    }
+        => Enum.IsDefined(typeof(TEnum), value);
 }

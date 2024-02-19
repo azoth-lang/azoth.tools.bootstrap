@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class InvocationExpressionSyntax : ExpressionSyntax, IInvocationExpressionSyntax
 {
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
-    public FixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
+    public IFixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
     public Promise<Symbol?> ReferencedSymbol { get; } = new Promise<Symbol?>();
 
     private LexicalScope? containingLexicalScope;

@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 
-public readonly record struct ArgumentResults(ExpressionResult? Self, FixedList<ExpressionResult> Arguments)
+public readonly record struct ArgumentResults(ExpressionResult? Self, IFixedList<ExpressionResult> Arguments)
 {
     public IEnumerable<ExpressionResult> All => Self.YieldValue().Concat(Arguments);
 

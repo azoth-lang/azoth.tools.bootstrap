@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Framework;
 // These attributes make it so FixedSet<T> is displayed nicely in the debugger similar to Set<T>
 [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
 [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
-public class FixedSet<T> : IReadOnlySet<T>, IEquatable<FixedSet<T>>
+public sealed class FixedSet<T> : IReadOnlySet<T>, IEquatable<FixedSet<T>>
 {
     public static readonly FixedSet<T> Empty = new FixedSet<T>(Enumerable.Empty<T>());
 
@@ -19,6 +19,12 @@ public class FixedSet<T> : IReadOnlySet<T>, IEquatable<FixedSet<T>>
     public FixedSet(IEnumerable<T> items)
     {
         this.items = items.ToHashSet();
+    }
+
+    [DebuggerStepThrough]
+    public FixedSet(IEnumerable<T> items, IEqualityComparer<T> equalityComparer)
+    {
+        this.items = items.ToHashSet(equalityComparer);
     }
 
     [DebuggerStepThrough]

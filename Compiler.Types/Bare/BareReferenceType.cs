@@ -9,46 +9,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 /// <summary>
 /// An reference type without a reference capability.
 /// </summary>
-public abstract class BareReferenceType : BareType, IEquatable<BareReferenceType>
+public abstract class BareReferenceType : BareType
 {
     public abstract override DeclaredReferenceType DeclaredType { get; }
 
-    private protected BareReferenceType(DeclaredReferenceType declaredType, FixedList<DataType> typeArguments)
+    private protected BareReferenceType(DeclaredReferenceType declaredType, IFixedList<DataType> typeArguments)
         : base(declaredType, typeArguments)
     {
     }
 
     public abstract override BareReferenceType AccessedVia(ReferenceCapability capability);
 
-    public abstract override BareReferenceType With(FixedList<DataType> typeArguments);
+    public abstract override BareReferenceType With(IFixedList<DataType> typeArguments);
 
     public abstract override ReferenceType With(ReferenceCapability capability);
-
-    #region Equality
-    public override bool Equals(object? obj)
-    {
-        if (obj is null) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        return obj is BareReferenceType other && Equals(other);
-    }
-
-    public virtual bool Equals(BareReferenceType? other)
-    {
-        if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-        return other is BareReferenceType otherType
-               && DeclaredType == otherType.DeclaredType
-               && TypeArguments.Equals(otherType.TypeArguments);
-    }
-
-    public override int GetHashCode() => HashCode.Combine(DeclaredType, TypeArguments);
-
-    public static bool operator ==(BareReferenceType? left, BareReferenceType? right)
-        => Equals(left, right);
-
-    public static bool operator !=(BareReferenceType? left, BareReferenceType? right)
-        => !Equals(left, right);
-    #endregion
 }
 
 public sealed class BareReferenceType<TDeclared> : BareReferenceType
@@ -56,7 +30,7 @@ public sealed class BareReferenceType<TDeclared> : BareReferenceType
 {
     public override TDeclared DeclaredType { get; }
 
-    internal BareReferenceType(TDeclared declaredType, FixedList<DataType> typeArguments)
+    internal BareReferenceType(TDeclared declaredType, IFixedList<DataType> typeArguments)
         : base(declaredType, typeArguments)
     {
         if (typeof(TDeclared).IsAbstract)
@@ -72,9 +46,22 @@ public sealed class BareReferenceType<TDeclared> : BareReferenceType
         return new(DeclaredType, newTypeArguments);
     }
 
-    public override BareReferenceType<TDeclared> With(FixedList<DataType> typeArguments)
+    public override BareReferenceType<TDeclared> With(IFixedList<DataType> typeArguments)
         => new(DeclaredType, typeArguments);
 
     public override ReferenceType<TDeclared> With(ReferenceCapability capability)
         => new(capability, this);
+
+    #region Equality
+    public override bool Equals(BareType? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is BareReferenceType<TDeclared> otherType
+               && DeclaredType == otherType.DeclaredType
+               && TypeArguments.ItemsEquals(otherType.TypeArguments);
+    }
+
+    public override int GetHashCode() => HashCode.Combine(DeclaredType, TypeArguments);
+    #endregion
 }

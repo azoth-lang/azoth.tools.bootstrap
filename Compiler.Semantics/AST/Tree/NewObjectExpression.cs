@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 internal class NewObjectExpression : Expression, INewObjectExpression
 {
     public ConstructorSymbol ReferencedSymbol { get; }
-    public FixedList<IExpression> Arguments { get; }
+    public IFixedList<IExpression> Arguments { get; }
 
     public NewObjectExpression(
         TextSpan span,

@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class FunctionTypeSyntax : TypeSyntax, IFunctionTypeSyntax
 {
-    public FixedList<IParameterTypeSyntax> Parameters { get; }
+    public IFixedList<IParameterTypeSyntax> Parameters { get; }
     public IReturnTypeSyntax Return { get; }
 
     public FunctionTypeSyntax(TextSpan span, FixedList<IParameterTypeSyntax> parameters, IReturnTypeSyntax @return)

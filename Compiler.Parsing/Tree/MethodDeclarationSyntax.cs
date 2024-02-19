@@ -13,7 +13,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
     public ITypeDeclarationSyntax DeclaringType { get; }
     public new SimpleName Name { get; }
     public IMethodSelfParameterSyntax SelfParameter { get; }
-    public new FixedList<INamedParameterSyntax> Parameters { get; }
+    public new IFixedList<INamedParameterSyntax> Parameters { get; }
     public IReturnSyntax? Return { get; }
     public new AcyclicPromise<MethodSymbol> Symbol { get; }
 

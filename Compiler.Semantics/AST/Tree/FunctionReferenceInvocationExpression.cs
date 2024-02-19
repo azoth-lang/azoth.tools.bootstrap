@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 internal class FunctionReferenceInvocationExpression : Expression, IFunctionReferenceInvocationExpression
 {
     public IExpression Referent { get; }
-    public FixedList<IExpression> Arguments { get; }
+    public IFixedList<IExpression> Arguments { get; }
 
     public FunctionReferenceInvocationExpression(
         TextSpan span,

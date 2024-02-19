@@ -9,8 +9,8 @@ internal class ExpressionBodySyntax : Syntax, IExpressionBodySyntax
 {
     public IResultStatementSyntax ResultStatement { get; }
 
-    private readonly FixedList<IStatementSyntax> statements;
-    FixedList<IStatementSyntax> IBodyOrBlockSyntax.Statements { [DebuggerStepThrough] get => statements; }
+    private readonly IFixedList<IStatementSyntax> statements;
+    IFixedList<IStatementSyntax> IBodyOrBlockSyntax.Statements { [DebuggerStepThrough] get => statements; }
 
     public ExpressionBodySyntax(TextSpan span, IResultStatementSyntax resultStatement)
         : base(span)

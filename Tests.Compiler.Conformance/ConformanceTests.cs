@@ -129,7 +129,7 @@ public partial class ConformanceTests
         }
     }
 
-    private void ReportSupportCompilationErrors(FixedList<Diagnostic> diagnostics)
+    private void ReportSupportCompilationErrors(IFixedList<Diagnostic> diagnostics)
     {
         testOutput.WriteLine("Test Support Package Compiler Errors:");
         foreach (var diagnostic in diagnostics)

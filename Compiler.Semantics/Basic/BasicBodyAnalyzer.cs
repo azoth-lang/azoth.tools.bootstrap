@@ -1060,12 +1060,12 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private ArgumentResults InferArgumentTypes(FixedList<IExpressionSyntax> arguments, FlowState flow)
+    private ArgumentResults InferArgumentTypes(IFixedList<IExpressionSyntax> arguments, FlowState flow)
         => InferArgumentTypes(null, arguments, flow);
 
     private ArgumentResults InferArgumentTypes(
         ExpressionResult? selfArgument,
-        FixedList<IExpressionSyntax> arguments,
+        IFixedList<IExpressionSyntax> arguments,
         FlowState flow)
     {
         // Give each argument a distinct result
@@ -1147,7 +1147,7 @@ public class BasicBodyAnalyzer
 
     private static ResultVariable? CombineResults(
         SelfParameterType? selfParameterType,
-        FixedList<ParameterType>? parameterTypes,
+        IFixedList<ParameterType>? parameterTypes,
         ReturnType? returnType,
         ArgumentResults results,
         FlowState flow)

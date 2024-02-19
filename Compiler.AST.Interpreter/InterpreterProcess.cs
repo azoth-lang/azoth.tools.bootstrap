@@ -806,7 +806,7 @@ public class InterpreterProcess
     private VTable CreateVTable(IClassDeclaration @class)
         => new(@class, methodSignatures);
 
-    private async ValueTask<List<AzothValue>> ExecuteArgumentsAsync(FixedList<IExpression> arguments, LocalVariableScope variables)
+    private async ValueTask<List<AzothValue>> ExecuteArgumentsAsync(IFixedList<IExpression> arguments, LocalVariableScope variables)
     {
         var values = new List<AzothValue>(arguments.Count);
         // Execute arguments in order

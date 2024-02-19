@@ -12,7 +12,7 @@ internal class AbstractMethodDeclaration : InvocableDeclaration, IAbstractMethod
     public ITypeDeclaration DeclaringType { get; }
     public new MethodSymbol Symbol { get; }
     public ISelfParameter SelfParameter { get; }
-    public new FixedList<INamedParameter> Parameters { get; }
+    public new IFixedList<INamedParameter> Parameters { get; }
 
     public AbstractMethodDeclaration(
         CodeFile file,

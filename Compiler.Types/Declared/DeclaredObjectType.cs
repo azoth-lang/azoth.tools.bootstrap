@@ -155,27 +155,27 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         return With(ReferenceCapability.Isolated, GenericParameterDataTypes);
     }
 
-    public override BareReferenceType<DeclaredObjectType> With(FixedList<DataType> typeArguments)
+    public override BareReferenceType<DeclaredObjectType> With(IFixedList<DataType> typeArguments)
         => BareType.Create(this, typeArguments);
 
-    public override ReferenceType<DeclaredObjectType> With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+    public override ReferenceType<DeclaredObjectType> With(ReferenceCapability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public ObjectTypeConstraint With(ReferenceCapabilityConstraint capability, FixedList<DataType> typeArguments)
+    public ObjectTypeConstraint With(ReferenceCapabilityConstraint capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
     /// <summary>
     /// Make a version of this type that is the default read reference capability for the type. That
     /// is either read-only or constant.
     /// </summary>
-    public override ReferenceType<DeclaredObjectType> WithRead(FixedList<DataType> typeArguments)
+    public override ReferenceType<DeclaredObjectType> WithRead(IFixedList<DataType> typeArguments)
         => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Read, typeArguments);
 
     /// <summary>
     /// Make a version of this type that is the default mutate reference capability for the type.
     /// For constant types, that isn't allowed and a constant reference is returned.
     /// </summary>
-    public ReferenceType<DeclaredObjectType> WithMutate(FixedList<DataType> typeArguments)
+    public ReferenceType<DeclaredObjectType> WithMutate(IFixedList<DataType> typeArguments)
         => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Mutable, typeArguments);
 
     #region Equals
@@ -189,7 +189,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
             && IsAbstract == objectType.IsAbstract
             && IsConstType == objectType.IsConstType
             && Name == objectType.Name
-            && GenericParameters.Equals(objectType.GenericParameters);
+            && GenericParameters.ItemsEquals(objectType.GenericParameters);
     }
 
     public override int GetHashCode()

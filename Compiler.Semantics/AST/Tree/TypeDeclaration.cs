@@ -11,17 +11,17 @@ internal abstract class TypeDeclaration<TMember> : Declaration, ITypeDeclaration
     where TMember : IMemberDeclaration
 {
     public new ObjectTypeSymbol Symbol { get; }
-    public FixedList<ITypeDeclaration> Supertypes { get; }
-    public abstract FixedList<TMember> Members { get; }
-    FixedList<IMemberDeclaration> ITypeDeclaration.Members => members.Value;
-    private readonly Lazy<FixedList<IMemberDeclaration>> members;
+    public IFixedList<ITypeDeclaration> Supertypes { get; }
+    public abstract IFixedList<TMember> Members { get; }
+    IFixedList<IMemberDeclaration> ITypeDeclaration.Members => members.Value;
+    private readonly Lazy<IFixedList<IMemberDeclaration>> members;
 
     public TypeDeclaration(
         CodeFile file,
         TextSpan span,
         ObjectTypeSymbol symbol,
         TextSpan nameSpan,
-        FixedList<ITypeDeclaration> supertypes)
+        IFixedList<ITypeDeclaration> supertypes)
         : base(file, span, symbol, nameSpan)
     {
         Symbol = symbol;

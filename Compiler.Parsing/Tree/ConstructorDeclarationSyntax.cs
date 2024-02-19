@@ -15,7 +15,7 @@ internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConst
     public new SimpleName? Name { get; }
     ITypeDeclarationSyntax IMemberDeclarationSyntax.DeclaringType => DeclaringType;
     public IConstructorSelfParameterSyntax SelfParameter { get; }
-    public new FixedList<IConstructorParameterSyntax> Parameters { get; }
+    public new IFixedList<IConstructorParameterSyntax> Parameters { get; }
     public virtual IBlockBodySyntax Body { get; }
     IBodySyntax IConcreteInvocableDeclarationSyntax.Body => Body;
     public new AcyclicPromise<ConstructorSymbol> Symbol { get; }

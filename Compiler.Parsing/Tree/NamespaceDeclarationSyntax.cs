@@ -19,8 +19,8 @@ internal class NamespaceDeclarationSyntax : NonMemberDeclarationSyntax, INamespa
     public new SimpleName Name { get; }
     public NamespaceName FullName { get; }
     public new Promise<NamespaceOrPackageSymbol> Symbol { get; }
-    public FixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
-    public FixedList<INonMemberDeclarationSyntax> Declarations { get; }
+    public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
+    public IFixedList<INonMemberDeclarationSyntax> Declarations { get; }
 
     public NamespaceDeclarationSyntax(
         NamespaceName containingNamespaceName,

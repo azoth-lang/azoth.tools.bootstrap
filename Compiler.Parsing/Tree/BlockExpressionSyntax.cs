@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class BlockExpressionSyntax : ExpressionSyntax, IBlockExpressionSyntax
 {
-    public FixedList<IStatementSyntax> Statements { [DebuggerStepThrough] get; }
+    public IFixedList<IStatementSyntax> Statements { [DebuggerStepThrough] get; }
 
     public BlockExpressionSyntax(
         TextSpan span,

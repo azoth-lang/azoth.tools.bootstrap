@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// </summary>
 public sealed class ParameterSharingRelation
 {
-    public FixedList<BindingSymbol> Symbols { get; }
+    public IFixedList<BindingSymbol> Symbols { get; }
     public FixedSet<SharingSetSnapshot> SharingSets { get; }
 
     public ParameterSharingRelation(IEnumerable<BindingSymbol> parameterSymbols)
@@ -26,7 +26,7 @@ public sealed class ParameterSharingRelation
         => string.Join(", ", SharingSets.Select(s => $"{{{string.Join(", ", s)}}}"));
 
     #region Static Sharing Sets Builder Methods
-    private static FixedSet<SharingSetSnapshot> BuildSharingSets(FixedList<BindingSymbol> parameterSymbols)
+    private static FixedSet<SharingSetSnapshot> BuildSharingSets(IFixedList<BindingSymbol> parameterSymbols)
     {
         var sharingSets = new HashSet<SharingSet>();
         uint lentParameterNumber = 0;

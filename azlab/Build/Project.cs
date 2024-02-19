@@ -11,7 +11,7 @@ internal class Project
     public string Path { get; }
     public FixedList<string> RootNamespace { get; }
     public string Name { get; }
-    public FixedList<string> Authors { get; }
+    public IFixedList<string> Authors { get; }
     public ProjectTemplate Template { get; }
     public FixedList<ProjectReference> References { get; }
 

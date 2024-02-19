@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 internal class ClassDeclaration : TypeDeclaration<IClassMemberDeclaration>, IClassDeclaration
 {
     public IClassDeclaration? BaseClass { get; }
-    public override FixedList<IClassMemberDeclaration> Members { get; }
+    public override IFixedList<IClassMemberDeclaration> Members { get; }
     public ConstructorSymbol? DefaultConstructorSymbol { get; }
 
     public ClassDeclaration(
@@ -18,9 +18,9 @@ internal class ClassDeclaration : TypeDeclaration<IClassMemberDeclaration>, ICla
         ObjectTypeSymbol symbol,
         TextSpan nameSpan,
         IClassDeclaration? baseClass,
-        FixedList<ITypeDeclaration> supertypes,
+        IFixedList<ITypeDeclaration> supertypes,
         ConstructorSymbol? defaultConstructorSymbol,
-        Func<IClassDeclaration, FixedList<IClassMemberDeclaration>> buildMembers)
+        Func<IClassDeclaration, IFixedList<IClassMemberDeclaration>> buildMembers)
         : base(file, span, symbol, nameSpan, supertypes)
     {
         DefaultConstructorSymbol = defaultConstructorSymbol;

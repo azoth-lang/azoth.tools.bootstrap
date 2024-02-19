@@ -13,12 +13,12 @@ public abstract class BareValueType : BareType
 {
     public abstract override DeclaredValueType DeclaredType { get; }
 
-    private protected BareValueType(DeclaredType declaredType, FixedList<DataType> typeArguments)
+    private protected BareValueType(DeclaredType declaredType, IFixedList<DataType> typeArguments)
         : base(declaredType, typeArguments) { }
 
     public abstract override BareValueType AccessedVia(ReferenceCapability capability);
 
-    public abstract override BareValueType With(FixedList<DataType> typeArguments);
+    public abstract override BareValueType With(IFixedList<DataType> typeArguments);
 
     public abstract override ValueType With(ReferenceCapability capability);
 }
@@ -28,7 +28,7 @@ public sealed class BareValueType<TDeclared> : BareValueType
 {
     public override TDeclared DeclaredType { get; }
 
-    internal BareValueType(TDeclared declaredType, FixedList<DataType> typeArguments)
+    internal BareValueType(TDeclared declaredType, IFixedList<DataType> typeArguments)
         : base(declaredType, typeArguments)
     {
         if (typeof(TDeclared).IsAbstract)
@@ -44,10 +44,23 @@ public sealed class BareValueType<TDeclared> : BareValueType
         return new(DeclaredType, newTypeArguments);
     }
 
-    public override BareValueType<TDeclared> With(FixedList<DataType> typeArguments)
+    public override BareValueType<TDeclared> With(IFixedList<DataType> typeArguments)
         => new(DeclaredType, typeArguments);
 
     public override ValueType<TDeclared> With(ReferenceCapability capability)
         // TODO use capability
         => new(this);
+
+    #region Equality
+    public override bool Equals(BareType? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is BareValueType<TDeclared> otherType
+               && DeclaredType == otherType.DeclaredType
+               && TypeArguments.ItemsEquals(otherType.TypeArguments);
+    }
+
+    public override int GetHashCode() => HashCode.Combine(DeclaredType, TypeArguments);
+    #endregion
 }

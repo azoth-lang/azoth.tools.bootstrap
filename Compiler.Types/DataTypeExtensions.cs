@@ -98,8 +98,8 @@ public static class DataTypeExtensions
     private static bool IsAssignableFrom(
         DeclaredReferenceType declaredType,
         bool targetAllowsWrite,
-        FixedList<DataType> target,
-        FixedList<DataType> source)
+        IFixedList<DataType> target,
+        IFixedList<DataType> source)
     {
         for (int i = 0; i < declaredType.GenericParameters.Count; i++)
         {
@@ -258,7 +258,7 @@ public static class DataTypeExtensions
         return type;
     }
 
-    public static string ToILString(this FixedList<DataType> types)
+    public static string ToILString(this IFixedList<DataType> types)
         => string.Join(", ", types.Select(t => t.ToILString()));
 
     /// <summary>

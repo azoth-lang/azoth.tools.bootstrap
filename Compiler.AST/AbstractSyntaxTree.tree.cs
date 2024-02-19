@@ -30,7 +30,7 @@ public partial interface IAbstractSyntax
     typeof(IBlockExpression))]
 public partial interface IBodyOrBlock : IAbstractSyntax
 {
-    FixedList<IStatement> Statements { get; }
+    IFixedList<IStatement> Statements { get; }
 }
 
 [Closed(
@@ -90,7 +90,7 @@ public partial interface IExecutableDeclaration : IDeclaration
 public partial interface IInvocableDeclaration : IDeclaration
 {
     new InvocableSymbol Symbol { get; }
-    FixedList<IConstructorParameter> Parameters { get; }
+    IFixedList<IConstructorParameter> Parameters { get; }
 }
 
 [Closed(
@@ -108,7 +108,7 @@ public partial interface IConcreteInvocableDeclaration : IInvocableDeclaration, 
 public partial interface IConcreteFunctionInvocableDeclaration : IConcreteInvocableDeclaration
 {
     new FunctionSymbol Symbol { get; }
-    new FixedList<INamedParameter> Parameters { get; }
+    new IFixedList<INamedParameter> Parameters { get; }
 }
 
 [Closed(
@@ -124,25 +124,25 @@ public partial interface INonMemberDeclaration : IDeclaration
 public partial interface ITypeDeclaration : INonMemberDeclaration
 {
     new ObjectTypeSymbol Symbol { get; }
-    FixedList<ITypeDeclaration> Supertypes { get; }
-    FixedList<IMemberDeclaration> Members { get; }
+    IFixedList<ITypeDeclaration> Supertypes { get; }
+    IFixedList<IMemberDeclaration> Members { get; }
 }
 
 public partial interface IClassDeclaration : ITypeDeclaration
 {
     IClassDeclaration? BaseClass { get; }
-    new FixedList<IClassMemberDeclaration> Members { get; }
+    new IFixedList<IClassMemberDeclaration> Members { get; }
     ConstructorSymbol? DefaultConstructorSymbol { get; }
 }
 
 public partial interface ITraitDeclaration : ITypeDeclaration
 {
-    new FixedList<ITraitMemberDeclaration> Members { get; }
+    new IFixedList<ITraitMemberDeclaration> Members { get; }
 }
 
 public partial interface IFunctionDeclaration : INonMemberDeclaration, IConcreteFunctionInvocableDeclaration
 {
-    FixedList<IAttribute> Attributes { get; }
+    IFixedList<IAttribute> Attributes { get; }
     new FunctionSymbol Symbol { get; }
 }
 
@@ -177,7 +177,7 @@ public partial interface IMethodDeclaration : IClassMemberDeclaration, ITraitMem
 {
     new MethodSymbol Symbol { get; }
     ISelfParameter SelfParameter { get; }
-    FixedList<INamedParameter> Parameters { get; }
+    IFixedList<INamedParameter> Parameters { get; }
 }
 
 public partial interface IAbstractMethodDeclaration : IMethodDeclaration
@@ -187,7 +187,7 @@ public partial interface IAbstractMethodDeclaration : IMethodDeclaration
 public partial interface IConcreteMethodDeclaration : IMethodDeclaration, IConcreteInvocableDeclaration
 {
     new MethodSymbol Symbol { get; }
-    new FixedList<INamedParameter> Parameters { get; }
+    new IFixedList<INamedParameter> Parameters { get; }
 }
 
 public partial interface IConstructorDeclaration : IClassMemberDeclaration, IConcreteInvocableDeclaration
@@ -257,7 +257,7 @@ public partial interface IFieldParameter : IParameter, IConstructorParameter
 
 public partial interface IBody : IBodyOrBlock
 {
-    new FixedList<IBodyStatement> Statements { get; }
+    new IFixedList<IBodyStatement> Statements { get; }
 }
 
 [Closed(
@@ -375,7 +375,7 @@ public partial interface IBlockExpression : IExpression, IBlockOrResult, IBodyOr
 public partial interface INewObjectExpression : IExpression
 {
     ConstructorSymbol ReferencedSymbol { get; }
-    FixedList<IExpression> Arguments { get; }
+    IFixedList<IExpression> Arguments { get; }
 }
 
 public partial interface IUnsafeExpression : IExpression
@@ -523,7 +523,7 @@ public partial interface IExplicitSimpleTypeConversionExpression : IExplicitConv
     typeof(IFunctionReferenceInvocationExpression))]
 public partial interface IInvocationExpression : IExpression
 {
-    FixedList<IExpression> Arguments { get; }
+    IFixedList<IExpression> Arguments { get; }
 }
 
 public partial interface IFunctionInvocationExpression : IInvocationExpression

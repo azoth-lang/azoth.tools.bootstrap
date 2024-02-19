@@ -8,9 +8,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal class FunctionDeclaration : InvocableDeclaration, IFunctionDeclaration
 {
-    public FixedList<IAttribute> Attributes { get; }
+    public IFixedList<IAttribute> Attributes { get; }
     public new FunctionSymbol Symbol { get; }
-    public new FixedList<INamedParameter> Parameters { get; }
+    public new IFixedList<INamedParameter> Parameters { get; }
     public IBody Body { get; }
 
     public FunctionDeclaration(

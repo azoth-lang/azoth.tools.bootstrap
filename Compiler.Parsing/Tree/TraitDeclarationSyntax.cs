@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class TraitDeclarationSyntax : TypeDeclarationSyntax<ITraitMemberDeclarationSyntax>, ITraitDeclarationSyntax
 {
-    public override FixedList<ITraitMemberDeclarationSyntax> Members { get; }
+    public override IFixedList<ITraitMemberDeclarationSyntax> Members { get; }
 
     public TraitDeclarationSyntax(
         NamespaceName containingNamespaceName,
@@ -22,7 +22,7 @@ internal class TraitDeclarationSyntax : TypeDeclarationSyntax<ITraitMemberDeclar
         TextSpan nameSpan,
         string name,
         FixedList<IGenericParameterSyntax> genericParameters,
-        FixedList<ITypeNameSyntax> supertypes,
+        IFixedList<ITypeNameSyntax> supertypes,
         Func<ITraitDeclarationSyntax, (FixedList<ITraitMemberDeclarationSyntax>, TextSpan)> parseMembers)
         : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, moveModifier,
             nameSpan, StandardTypeName.Create(name, genericParameters.Count), genericParameters, supertypes)

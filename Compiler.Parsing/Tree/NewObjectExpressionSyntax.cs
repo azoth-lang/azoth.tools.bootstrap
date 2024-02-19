@@ -20,7 +20,7 @@ internal class NewObjectExpressionSyntax : ExpressionSyntax, INewObjectExpressio
     public ITypeNameSyntax Type { [DebuggerStepThrough] get; }
     public SimpleName? ConstructorName { [DebuggerStepThrough] get; }
     public TextSpan? ConstructorNameSpan { [DebuggerStepThrough] get; }
-    public FixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
+    public IFixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
     public Promise<ConstructorSymbol?> ReferencedSymbol { [DebuggerStepThrough] get; } = new Promise<ConstructorSymbol?>();
 
     public NewObjectExpressionSyntax(

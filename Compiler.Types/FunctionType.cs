@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class FunctionType : NonEmptyType
 {
-    public FunctionType(FixedList<ParameterType> parameterTypes, ReturnType returnType)
+    public FunctionType(IFixedList<ParameterType> parameterTypes, ReturnType returnType)
     {
         ParameterTypes = parameterTypes;
         ReturnType = returnType;
@@ -18,7 +18,7 @@ public sealed class FunctionType : NonEmptyType
         Semantics = TypeSemantics.Reference;
     }
 
-    public FixedList<ParameterType> ParameterTypes { get; }
+    public IFixedList<ParameterType> ParameterTypes { get; }
     public ReturnType ReturnType { get; }
 
     public override bool IsFullyKnown { get; }
@@ -30,7 +30,7 @@ public sealed class FunctionType : NonEmptyType
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is FunctionType otherType
-               && ParameterTypes.Equals(otherType.ParameterTypes)
+               && ParameterTypes.ItemsEquals(otherType.ParameterTypes)
                && ReturnType == otherType.ReturnType;
     }
 

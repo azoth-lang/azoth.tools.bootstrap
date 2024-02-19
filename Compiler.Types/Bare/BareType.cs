@@ -16,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 /// </summary>
 [Closed(typeof(BareReferenceType), typeof(BareValueType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public abstract class BareType
+public abstract class BareType : IEquatable<BareType>
 {
     #region Standard Types
     public static readonly BareValueType<BoolType> Bool = DeclaredType.Bool.BareType;
@@ -39,7 +39,7 @@ public abstract class BareType
 
     public abstract DeclaredType DeclaredType { get; }
     public bool AllowsVariance => DeclaredType.AllowsVariance;
-    public FixedList<DataType> TypeArguments { get; }
+    public IFixedList<DataType> TypeArguments { get; }
     public bool HasIndependentTypeArguments { get; }
 
     private readonly Lazy<FixedSet<BareReferenceType>> supertypes;
@@ -59,10 +59,10 @@ public abstract class BareType
 
     public static BareReferenceType<DeclaredObjectType> Create(
         DeclaredObjectType declaredType,
-        FixedList<DataType> typeArguments)
+        IFixedList<DataType> typeArguments)
         => new(declaredType, typeArguments);
 
-    private protected BareType(DeclaredType declaredType, FixedList<DataType> typeArguments)
+    private protected BareType(DeclaredType declaredType, IFixedList<DataType> typeArguments)
     {
         if (declaredType.GenericParameters.Count != typeArguments.Count)
             throw new ArgumentException(
@@ -90,12 +90,29 @@ public abstract class BareType
 
     public abstract BareType AccessedVia(ReferenceCapability capability);
 
-    public abstract BareType With(FixedList<DataType> typeArguments);
+    public abstract BareType With(IFixedList<DataType> typeArguments);
 
     public abstract CapabilityType With(ReferenceCapability capability);
 
     public ObjectTypeConstraint With(ReferenceCapabilityConstraint capability)
         => new(capability, this);
+
+    #region Equality
+    public sealed override bool Equals(object? obj)
+    {
+        if (obj is null) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        return obj is BareType other && Equals(other);
+    }
+
+    public abstract bool Equals(BareType? other);
+
+    public abstract override int GetHashCode();
+
+    public static bool operator ==(BareType? left, BareType? right) => Equals(left, right);
+
+    public static bool operator !=(BareType? left, BareType? right) => !Equals(left, right);
+    #endregion
 
     [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member

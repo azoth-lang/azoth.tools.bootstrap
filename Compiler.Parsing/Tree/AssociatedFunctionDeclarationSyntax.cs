@@ -12,7 +12,7 @@ internal class AssociatedFunctionDeclarationSyntax : InvocableDeclarationSyntax,
 {
     public ITypeDeclarationSyntax DeclaringType { get; }
     public new SimpleName Name { get; }
-    public new FixedList<INamedParameterSyntax> Parameters { get; }
+    public new IFixedList<INamedParameterSyntax> Parameters { get; }
     public IReturnSyntax? Return { get; }
     public IBodySyntax Body { get; }
     public new AcyclicPromise<FunctionSymbol> Symbol { get; }

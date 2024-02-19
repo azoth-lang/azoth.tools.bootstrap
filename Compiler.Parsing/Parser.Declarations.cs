@@ -64,7 +64,7 @@ public partial class Parser
         return new ModifierParser(modifierTokens);
     }
 
-    private FixedList<ITypeNameSyntax> ParseSupertypes()
+    private IFixedList<ITypeNameSyntax> ParseSupertypes()
         => Tokens.Accept<ILessThanColonToken>() ? ParseTypeNames() : FixedList<ITypeNameSyntax>.Empty;
 
     #region Parse Namespaces

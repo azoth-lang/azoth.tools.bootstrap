@@ -15,7 +15,7 @@ internal class ReferenceCapabilitySyntax : Syntax, IReferenceCapabilitySyntax
         return new(span, Enumerable.Empty<ICapabilityToken>(), DeclaredReferenceCapability.Read);
     }
 
-    public FixedList<ICapabilityToken> Tokens { get; }
+    public IFixedList<ICapabilityToken> Tokens { get; }
     public DeclaredReferenceCapability Declared { get; }
     public FixedSet<DeclaredReferenceCapability> AllowedCapabilities { get; }
 

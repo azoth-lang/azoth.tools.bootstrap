@@ -19,14 +19,14 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
     public IMoveKeywordToken? MoveModifier { get; }
     public bool IsMove { get; }
     public new StandardTypeName Name { get; }
-    public FixedList<IGenericParameterSyntax> GenericParameters { get; }
+    public IFixedList<IGenericParameterSyntax> GenericParameters { get; }
     public new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
-    public FixedList<ITypeNameSyntax> SupertypeNames { get; }
-    public abstract FixedList<TMember> Members { get; }
-    FixedList<IMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => members.Value;
-    private readonly Lazy<FixedList<IMemberDeclarationSyntax>> members;
+    public IFixedList<ITypeNameSyntax> SupertypeNames { get; }
+    public abstract IFixedList<TMember> Members { get; }
+    IFixedList<IMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => members.Value;
+    private readonly Lazy<IFixedList<IMemberDeclarationSyntax>> members;
 
-    public TypeDeclarationSyntax(
+    protected TypeDeclarationSyntax(
         NamespaceName containingNamespaceName,
         TextSpan headerSpan,
         CodeFile file,
@@ -36,7 +36,7 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
         TextSpan nameSpan,
         StandardTypeName name,
         FixedList<IGenericParameterSyntax> genericParameters,
-        FixedList<ITypeNameSyntax> supertypeNames)
+        IFixedList<ITypeNameSyntax> supertypeNames)
         : base(containingNamespaceName, headerSpan, file, name, nameSpan, new AcyclicPromise<ObjectTypeSymbol>())
     {
         AccessModifier = accessModifier;

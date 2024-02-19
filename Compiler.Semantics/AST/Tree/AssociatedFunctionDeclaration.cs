@@ -10,7 +10,7 @@ internal class AssociatedFunctionDeclaration : InvocableDeclaration, IAssociated
 {
     public ITypeDeclaration DeclaringType { get; }
     public new FunctionSymbol Symbol { get; }
-    public new FixedList<INamedParameter> Parameters { get; }
+    public new IFixedList<INamedParameter> Parameters { get; }
     public IBody Body { get; }
 
     public AssociatedFunctionDeclaration(

@@ -63,15 +63,15 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
         GenericParameterDataTypes = GenericParameterTypes.ToFixedList<DataType>();
     }
 
-    public abstract BareType With(FixedList<DataType> typeArguments);
+    public abstract BareType With(IFixedList<DataType> typeArguments);
 
-    public abstract CapabilityType With(ReferenceCapability capability, FixedList<DataType> typeArguments);
+    public abstract CapabilityType With(ReferenceCapability capability, IFixedList<DataType> typeArguments);
 
     /// <summary>
     /// Make a version of this type that is the default read reference capability for the type. That
     /// is either read-only or constant.
     /// </summary>
-    public virtual CapabilityType WithRead(FixedList<DataType> typeArguments)
+    public virtual CapabilityType WithRead(IFixedList<DataType> typeArguments)
         => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Read, typeArguments);
 
     #region Equality
@@ -88,7 +88,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
 
     public abstract override string ToString();
 
-    protected void RequiresEmpty(FixedList<DataType> typeArguments)
+    protected void RequiresEmpty(IFixedList<DataType> typeArguments)
     {
         if (typeArguments.Count != 0)
             throw new ArgumentException($"`{Name}` does not support type arguments.");

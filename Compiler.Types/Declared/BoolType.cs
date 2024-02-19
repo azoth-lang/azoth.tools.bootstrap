@@ -22,13 +22,13 @@ public sealed class BoolType : SimpleType
 
     public override ValueType<BoolType> Type { get; }
 
-    public override BareValueType<BoolType> With(FixedList<DataType> typeArguments)
+    public override BareValueType<BoolType> With(IFixedList<DataType> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;
     }
 
-    public override ValueType<BoolType> With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+    public override ValueType<BoolType> With(ReferenceCapability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
     public override ValueType<BoolType> With(ReferenceCapability capability)

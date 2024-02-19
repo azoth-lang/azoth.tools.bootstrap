@@ -25,13 +25,13 @@ public sealed class PointerSizedIntegerType : IntegerType
         Type = BareType.With(ReferenceCapability.Constant);
     }
 
-    public override BareValueType<PointerSizedIntegerType> With(FixedList<DataType> typeArguments)
+    public override BareValueType<PointerSizedIntegerType> With(IFixedList<DataType> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;
     }
 
-    public override ValueType<PointerSizedIntegerType> With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+    public override ValueType<PointerSizedIntegerType> With(ReferenceCapability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
     public override ValueType<PointerSizedIntegerType> With(ReferenceCapability capability)

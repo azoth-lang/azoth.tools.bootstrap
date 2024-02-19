@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal class BlockExpression : Expression, IBlockExpression
 {
-    public FixedList<IStatement> Statements { get; }
+    public IFixedList<IStatement> Statements { get; }
 
     public BlockExpression(
         TextSpan span,

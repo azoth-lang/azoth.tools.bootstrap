@@ -109,7 +109,7 @@ public class TypeResolver
             }
         }
 
-        static DataType CreateType(TypeSymbol symbol, FixedList<DataType> typeArguments)
+        static DataType CreateType(TypeSymbol symbol, IFixedList<DataType> typeArguments)
         {
             return symbol switch
             {
@@ -183,7 +183,7 @@ public class TypeResolver
 
         DataType CreateType(
             TypeSymbol symbol,
-            FixedList<DataType> typeArguments)
+            IFixedList<DataType> typeArguments)
         {
             switch (symbol)
             {
@@ -226,7 +226,7 @@ public class TypeResolver
         ITypeNameSyntax typeName,
         bool isAttribute,
         FixedList<DataType> typeArguments,
-        Func<TypeSymbol, FixedList<DataType>, DataType> createType)
+        Func<TypeSymbol, IFixedList<DataType>, DataType> createType)
     {
         var symbols = typeName.LookupInContainingScope(withAttributeSuffix: false).Select(EnsureBuilt).ToFixedList();
         if (isAttribute && !symbols.Any())

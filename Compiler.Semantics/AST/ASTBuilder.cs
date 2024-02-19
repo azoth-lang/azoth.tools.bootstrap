@@ -75,7 +75,7 @@ internal class ASTBuilder
         var defaultConstructorSymbol = syn.DefaultConstructorSymbol;
         return new ClassDeclaration(syn.File, syn.Span, symbol, nameSpan, baseClass, supertypes, defaultConstructorSymbol, BuildMembers);
 
-        FixedList<IClassMemberDeclaration> BuildMembers(IClassDeclaration c)
+        IFixedList<IClassMemberDeclaration> BuildMembers(IClassDeclaration c)
             => syn.Members.Select(m => BuildClassMember(c, m)).ToFixedList();
     }
 
@@ -88,7 +88,7 @@ internal class ASTBuilder
         var supertypes = syn.SupertypeNames.Select(n => (ITypeDeclaration)declarations[n.ReferencedSymbol.Result!].Value).ToFixedList();
         return new TraitDeclaration(syn.File, syn.Span, symbol, nameSpan, supertypes, BuildMembers);
 
-        FixedList<ITraitMemberDeclaration> BuildMembers(ITraitDeclaration t)
+        IFixedList<ITraitMemberDeclaration> BuildMembers(ITraitDeclaration t)
             => syn.Members.Select(m => BuildTraitMember(t, m)).ToFixedList();
     }
 
@@ -363,7 +363,7 @@ internal class ASTBuilder
         };
     }
 
-    private static FixedList<IExpression> BuildExpressions(FixedList<IExpressionSyntax> expressions)
+    private static FixedList<IExpression> BuildExpressions(IFixedList<IExpressionSyntax> expressions)
         // The compiler isn't able to correctly figure out the nullability here. That is actually
         // why this method even exists
         => expressions.Select(BuildExpression).ToFixedList()!;

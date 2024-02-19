@@ -41,9 +41,9 @@ public partial interface ICompilationUnitSyntax : ISyntax
 {
     CodeFile File { get; }
     NamespaceName ImplicitNamespaceName { get; }
-    FixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
-    FixedList<INonMemberDeclarationSyntax> Declarations { get; }
-    FixedList<Diagnostic> Diagnostics { get; }
+    IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
+    IFixedList<INonMemberDeclarationSyntax> Declarations { get; }
+    IFixedList<Diagnostic> Diagnostics { get; }
 }
 
 public partial interface IUsingDirectiveSyntax : ISyntax
@@ -56,7 +56,7 @@ public partial interface IUsingDirectiveSyntax : ISyntax
     typeof(IBlockExpressionSyntax))]
 public partial interface IBodyOrBlockSyntax : ISyntax
 {
-    FixedList<IStatementSyntax> Statements { get; }
+    IFixedList<IStatementSyntax> Statements { get; }
 }
 
 [Closed(
@@ -117,7 +117,7 @@ public partial interface IEntityDeclarationSyntax : IDeclarationSyntax
     typeof(IMethodDeclarationSyntax))]
 public partial interface IInvocableDeclarationSyntax : IEntityDeclarationSyntax
 {
-    FixedList<IConstructorParameterSyntax> Parameters { get; }
+    IFixedList<IConstructorParameterSyntax> Parameters { get; }
     new IPromise<InvocableSymbol> Symbol { get; }
 }
 
@@ -146,8 +146,8 @@ public partial interface INamespaceDeclarationSyntax : INonMemberDeclarationSynt
     NamespaceName DeclaredNames { get; }
     NamespaceName FullName { get; }
     new Promise<NamespaceOrPackageSymbol> Symbol { get; }
-    FixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
-    FixedList<INonMemberDeclarationSyntax> Declarations { get; }
+    IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
+    IFixedList<INonMemberDeclarationSyntax> Declarations { get; }
 }
 
 [Closed(
@@ -168,10 +168,10 @@ public partial interface ITypeDeclarationSyntax : INonMemberEntityDeclarationSyn
     IMoveKeywordToken? MoveModifier { get; }
     bool IsMove { get; }
     new StandardTypeName Name { get; }
-    FixedList<IGenericParameterSyntax> GenericParameters { get; }
+    IFixedList<IGenericParameterSyntax> GenericParameters { get; }
     new AcyclicPromise<ObjectTypeSymbol> Symbol { get; }
-    FixedList<ITypeNameSyntax> SupertypeNames { get; }
-    FixedList<IMemberDeclarationSyntax> Members { get; }
+    IFixedList<ITypeNameSyntax> SupertypeNames { get; }
+    IFixedList<IMemberDeclarationSyntax> Members { get; }
 }
 
 public partial interface IClassDeclarationSyntax : ITypeDeclarationSyntax
@@ -180,19 +180,19 @@ public partial interface IClassDeclarationSyntax : ITypeDeclarationSyntax
     bool IsAbstract { get; }
     ITypeNameSyntax? BaseTypeName { get; }
     ConstructorSymbol? DefaultConstructorSymbol { get; }
-    new FixedList<IClassMemberDeclarationSyntax> Members { get; }
+    new IFixedList<IClassMemberDeclarationSyntax> Members { get; }
 }
 
 public partial interface ITraitDeclarationSyntax : ITypeDeclarationSyntax
 {
-    new FixedList<ITraitMemberDeclarationSyntax> Members { get; }
+    new IFixedList<ITraitMemberDeclarationSyntax> Members { get; }
 }
 
 public partial interface IFunctionDeclarationSyntax : INonMemberEntityDeclarationSyntax, IConcreteInvocableDeclarationSyntax
 {
-    FixedList<IAttributeSyntax> Attributes { get; }
+    IFixedList<IAttributeSyntax> Attributes { get; }
     new SimpleName Name { get; }
-    new FixedList<INamedParameterSyntax> Parameters { get; }
+    new IFixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
     new AcyclicPromise<FunctionSymbol> Symbol { get; }
 }
@@ -228,7 +228,7 @@ public partial interface IMethodDeclarationSyntax : IClassMemberDeclarationSynta
 {
     new SimpleName Name { get; }
     IMethodSelfParameterSyntax SelfParameter { get; }
-    new FixedList<INamedParameterSyntax> Parameters { get; }
+    new IFixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
     new AcyclicPromise<MethodSymbol> Symbol { get; }
 }
@@ -239,7 +239,7 @@ public partial interface IAbstractMethodDeclarationSyntax : IMethodDeclarationSy
 
 public partial interface IConcreteMethodDeclarationSyntax : IMethodDeclarationSyntax, IConcreteInvocableDeclarationSyntax
 {
-    new FixedList<INamedParameterSyntax> Parameters { get; }
+    new IFixedList<INamedParameterSyntax> Parameters { get; }
 }
 
 public partial interface IConstructorDeclarationSyntax : IClassMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
@@ -263,7 +263,7 @@ public partial interface IFieldDeclarationSyntax : IClassMemberDeclarationSyntax
 public partial interface IAssociatedFunctionDeclarationSyntax : IClassMemberDeclarationSyntax, ITraitMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
 {
     new SimpleName Name { get; }
-    new FixedList<INamedParameterSyntax> Parameters { get; }
+    new IFixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
     new AcyclicPromise<FunctionSymbol> Symbol { get; }
 }
@@ -363,7 +363,7 @@ public partial interface IBodySyntax : IBodyOrBlockSyntax
 
 public partial interface IBlockBodySyntax : IBodySyntax
 {
-    new FixedList<IBodyStatementSyntax> Statements { get; }
+    new IFixedList<IBodyStatementSyntax> Statements { get; }
 }
 
 public partial interface IExpressionBodySyntax : IBodySyntax
@@ -396,7 +396,7 @@ public partial interface ISimpleTypeNameSyntax : ITypeNameSyntax
 
 public partial interface IParameterizedTypeSyntax : ITypeNameSyntax
 {
-    FixedList<ITypeSyntax> TypeArguments { get; }
+    IFixedList<ITypeSyntax> TypeArguments { get; }
 }
 
 public partial interface IOptionalTypeSyntax : ITypeSyntax
@@ -412,13 +412,13 @@ public partial interface ICapabilityTypeSyntax : ITypeSyntax
 
 public partial interface IReferenceCapabilitySyntax : ISelfReferenceCapabilitySyntax
 {
-    FixedList<ICapabilityToken> Tokens { get; }
+    IFixedList<ICapabilityToken> Tokens { get; }
     DeclaredReferenceCapability Declared { get; }
 }
 
 public partial interface IFunctionTypeSyntax : ITypeSyntax
 {
-    FixedList<IParameterTypeSyntax> Parameters { get; }
+    IFixedList<IParameterTypeSyntax> Parameters { get; }
     IReturnTypeSyntax Return { get; }
 }
 
@@ -567,7 +567,7 @@ public partial interface INewObjectExpressionSyntax : IExpressionSyntax
     ITypeNameSyntax Type { get; }
     SimpleName? ConstructorName { get; }
     TextSpan? ConstructorNameSpan { get; }
-    FixedList<IExpressionSyntax> Arguments { get; }
+    IFixedList<IExpressionSyntax> Arguments { get; }
     Promise<ConstructorSymbol?> ReferencedSymbol { get; }
 }
 
@@ -690,7 +690,7 @@ public partial interface IReturnExpressionSyntax : IExpressionSyntax
 public partial interface IInvocationExpressionSyntax : IExpressionSyntax, IHasContainingLexicalScope
 {
     IExpressionSyntax Expression { get; }
-    FixedList<IExpressionSyntax> Arguments { get; }
+    IFixedList<IExpressionSyntax> Arguments { get; }
     Promise<Symbol?> ReferencedSymbol { get; }
 }
 

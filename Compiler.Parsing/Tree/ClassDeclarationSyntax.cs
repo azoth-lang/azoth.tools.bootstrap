@@ -30,7 +30,7 @@ internal class ClassDeclarationSyntax : TypeDeclarationSyntax<IClassMemberDeclar
         string name,
         FixedList<IGenericParameterSyntax> genericParameters,
         ITypeNameSyntax? baseTypeName,
-        FixedList<ITypeNameSyntax> supertypesNames,
+        IFixedList<ITypeNameSyntax> supertypesNames,
         Func<IClassDeclarationSyntax, (FixedList<IClassMemberDeclarationSyntax>, TextSpan)> parseMembers)
         : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, moveModifier,
             nameSpan, StandardTypeName.Create(name, genericParameters.Count), genericParameters, supertypesNames)

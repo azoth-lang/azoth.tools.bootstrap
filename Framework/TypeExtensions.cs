@@ -13,7 +13,7 @@ public static class TypeExtensions
 
         var name = type.Name;
         var index = name.IndexOf("`", StringComparison.Ordinal);
-        name = name.Substring(0, index);
+        name = name[..index];
         var genericArguments = string.Join(',', type.GetGenericArguments().Select(GetFriendlyName));
         return $"{name}<{genericArguments}>";
     }
@@ -27,7 +27,26 @@ public static class TypeExtensions
     }
 
     public static bool HasCustomAttribute<TAttribute>(this Type type)
+        => type.GetCustomAttributes(true).OfType<TAttribute>().Any();
+
+    /// <summary>
+    /// Whether this type <c>T</c> implements <c>IEquatable&lt;T&gt;</c>.
+    /// </summary>
+    public static bool IsEquatable(this Type type)
+        => type.IsAssignableTo(typeof(IEquatable<>).MakeGenericType(type));
+
+    public static bool IsEquatableToSupertype(this Type type)
+        => type.IsEquatable() || type.GetInterfaces()
+                                     .Any(i => i.IsGenericType
+                                               && i.GetGenericTypeDefinition() == typeof(IEquatable<>)
+                                               && i.GenericTypeArguments[0].IsAssignableFrom(type));
+
+    /// <summary>
+    /// Whether this type <c>T?</c> implements <c>IEquatable&lt;T&gt;</c>.
+    /// </summary>
+    public static bool IsNullableOfEquatable(this Type type)
     {
-        return type.GetCustomAttributes(true).OfType<TAttribute>().Any();
+        var underlyingType = Nullable.GetUnderlyingType(type);
+        return underlyingType?.IsEquatable() ?? false;
     }
 }

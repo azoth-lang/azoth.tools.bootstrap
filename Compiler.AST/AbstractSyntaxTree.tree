@@ -1,7 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.AST;
 ◊base 'IAbstractSyntax';
 ◊prefix I;
-◊list FixedList;
+◊list IFixedList;
 ◊using System.Numerics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;

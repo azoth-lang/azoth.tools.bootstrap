@@ -11,7 +11,7 @@ internal class MethodInvocationExpression : Expression, IMethodInvocationExpress
 {
     public IExpression Context { get; }
     public MethodSymbol ReferencedSymbol { get; }
-    public FixedList<IExpression> Arguments { get; }
+    public IFixedList<IExpression> Arguments { get; }
 
     public MethodInvocationExpression(
         TextSpan span,

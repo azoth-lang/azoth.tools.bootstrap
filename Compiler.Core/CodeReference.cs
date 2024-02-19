@@ -7,11 +7,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core;
 /// template file the code was generated from.
 public abstract class CodeReference
 {
-    public FixedList<string> Namespace { get; }
+    public IFixedList<string> Namespace { get; }
 
     public bool IsTesting { get; }
 
-    protected CodeReference(FixedList<string> @namespace, bool isTesting)
+    protected CodeReference(IFixedList<string> @namespace, bool isTesting)
     {
         Namespace = @namespace;
         IsTesting = isTesting;

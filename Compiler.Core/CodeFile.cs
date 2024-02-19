@@ -27,7 +27,7 @@ public class CodeFile
     public static CodeFile Load(string path, bool isTest)
         => Load(path, FixedList<string>.Empty, isTest);
 
-    public static CodeFile Load(string path, FixedList<string> @namespace, bool isTest)
+    public static CodeFile Load(string path, IFixedList<string> @namespace, bool isTest)
     {
         var fullPath = Path.GetFullPath(path);
         return new CodeFile(new CodePath(fullPath, @namespace, isTest), new CodeText(File.ReadAllText(fullPath, Encoding)));

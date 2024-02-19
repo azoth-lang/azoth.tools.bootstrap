@@ -39,7 +39,7 @@ public abstract class SymbolTestFixture
     protected FunctionSymbol Func(
         string? name = null,
         NamespaceOrPackageSymbol? ns = null,
-        FixedList<ParameterType>? @params = null,
+        IFixedList<ParameterType>? @params = null,
         ReturnType? @return = null)
     {
         return new FunctionSymbol(
@@ -52,7 +52,7 @@ public abstract class SymbolTestFixture
         FunctionSymbol mother,
         string? name = null,
         NamespaceOrPackageSymbol? ns = null,
-        FixedList<ParameterType>? @params = null,
+        IFixedList<ParameterType>? @params = null,
         ReturnType? @return = null)
     {
         return new FunctionSymbol(
@@ -65,7 +65,7 @@ public abstract class SymbolTestFixture
         string? name = null,
         ObjectTypeSymbol? containing = null,
         SelfParameterType? self = null,
-        FixedList<ParameterType>? @params = null,
+        IFixedList<ParameterType>? @params = null,
         ReturnType? @return = null)
     {
         containing ??= Type();
@@ -82,7 +82,7 @@ public abstract class SymbolTestFixture
         string? name = null,
         ObjectTypeSymbol? containing = null,
         SelfParameterType? self = null,
-        FixedList<ParameterType>? @params = null,
+        IFixedList<ParameterType>? @params = null,
         ReturnType? @return = null)
     {
         return new MethodSymbol(

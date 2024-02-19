@@ -14,14 +14,14 @@ public class Contextualized<TSymbol>
 {
     public TSymbol Symbol { get; }
     public SelfParameterType? SelfParameterType { get; }
-    public FixedList<ParameterType> ParameterTypes { get; }
+    public IFixedList<ParameterType> ParameterTypes { get; }
     public int Arity => ParameterTypes.Count;
     public ReturnType ReturnType { get; }
 
     public Contextualized(
         TSymbol symbol,
         SelfParameterType? effectiveSelfType,
-        FixedList<ParameterType> parameterTypes,
+        IFixedList<ParameterType> parameterTypes,
         ReturnType returnType)
     {
         Symbol = symbol;

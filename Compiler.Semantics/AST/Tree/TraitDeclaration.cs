@@ -8,15 +8,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal class TraitDeclaration : TypeDeclaration<ITraitMemberDeclaration>, ITraitDeclaration
 {
-    public override FixedList<ITraitMemberDeclaration> Members { get; }
+    public override IFixedList<ITraitMemberDeclaration> Members { get; }
 
     public TraitDeclaration(
         CodeFile file,
         TextSpan span,
         ObjectTypeSymbol symbol,
         TextSpan nameSpan,
-        FixedList<ITypeDeclaration> supertypes,
-        Func<ITraitDeclaration, FixedList<ITraitMemberDeclaration>> buildMembers)
+        IFixedList<ITypeDeclaration> supertypes,
+        Func<ITraitDeclaration, IFixedList<ITraitMemberDeclaration>> buildMembers)
         : base(file, span, symbol, nameSpan, supertypes)
     {
         Members = buildMembers(this);

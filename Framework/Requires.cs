@@ -29,9 +29,9 @@ public static class Requires
 
     [DebuggerHidden]
     public static void ValidEnum<E>(string parameter, E value)
-        where E : Enum
+        where E : struct, Enum
     {
-        if (!Enum.IsDefined(typeof(E), value))
+        if (!value.IsDefined())
             throw new InvalidEnumArgumentException(parameter, Convert.ToInt32(value, CultureInfo.InvariantCulture), typeof(E));
     }
 

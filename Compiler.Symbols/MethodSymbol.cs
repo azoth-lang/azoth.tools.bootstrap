@@ -17,7 +17,7 @@ public sealed class MethodSymbol : FunctionOrMethodSymbol
         TypeSymbol containingSymbol,
         SimpleName name,
         SelfParameterType selfParameterType,
-        FixedList<ParameterType> parameterTypes,
+        IFixedList<ParameterType> parameterTypes,
         ReturnType returnType)
         : base(containingSymbol, name, parameterTypes, returnType)
     {

@@ -15,7 +15,7 @@ public abstract class CapabilityType : NonEmptyType
 
     public virtual DeclaredType DeclaredType => BareType.DeclaredType;
 
-    public FixedList<DataType> TypeArguments => BareType.TypeArguments;
+    public IFixedList<DataType> TypeArguments => BareType.TypeArguments;
 
     public override bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
 

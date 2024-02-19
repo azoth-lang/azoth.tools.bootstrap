@@ -12,7 +12,7 @@ internal class ConcreteMethodDeclaration : InvocableDeclaration, IConcreteMethod
     public ITypeDeclaration DeclaringType { get; }
     public new MethodSymbol Symbol { get; }
     public ISelfParameter SelfParameter { get; }
-    public new FixedList<INamedParameter> Parameters { get; }
+    public new IFixedList<INamedParameter> Parameters { get; }
     public IBody Body { get; }
 
     public ConcreteMethodDeclaration(

@@ -285,7 +285,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
     }
 
     private LexicalScope BuildUsingDirectivesScope(
-        FixedList<IUsingDirectiveSyntax> usingDirectives,
+        IFixedList<IUsingDirectiveSyntax> usingDirectives,
         LexicalScope containingScope)
     {
         if (!usingDirectives.Any()) return containingScope;

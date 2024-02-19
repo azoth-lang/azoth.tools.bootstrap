@@ -1,6 +1,6 @@
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Config;
 
-public class GrammarProperty
+public sealed class GrammarProperty
 {
     public string Name { get; }
     public GrammarType Type { get; }

@@ -14,14 +14,14 @@ public abstract class InvocableSymbol : Symbol
     public override PackageSymbol? Package { get; }
     public override Symbol ContainingSymbol { get; }
     public override SimpleName? Name { get; }
-    public FixedList<ParameterType> ParameterTypes { get; }
+    public IFixedList<ParameterType> ParameterTypes { get; }
     public int Arity => ParameterTypes.Count;
     public ReturnType ReturnType { get; }
 
     protected InvocableSymbol(
         Symbol containingSymbol,
         SimpleName? name,
-        FixedList<ParameterType> parameterTypes,
+        IFixedList<ParameterType> parameterTypes,
         ReturnType returnType)
         : base(name)
     {

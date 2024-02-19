@@ -24,13 +24,13 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
 
     public BareReferenceType<DeclaredAnyType> BareType { get; }
 
-    public override BareReferenceType<DeclaredAnyType> With(FixedList<DataType> typeArguments)
+    public override BareReferenceType<DeclaredAnyType> With(IFixedList<DataType> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;
     }
 
-    public override ReferenceType<DeclaredAnyType> With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+    public override ReferenceType<DeclaredAnyType> With(ReferenceCapability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
     public ReferenceType<DeclaredAnyType> With(ReferenceCapability capability)

@@ -26,7 +26,7 @@ public abstract class DeclaredReferenceType : DeclaredType
         IsAbstract = isAbstract;
     }
 
-    public abstract override BareReferenceType With(FixedList<DataType> typeArguments);
+    public abstract override BareReferenceType With(IFixedList<DataType> typeArguments);
 
-    public abstract override ReferenceType With(ReferenceCapability capability, FixedList<DataType> typeArguments);
+    public abstract override CapabilityType With(ReferenceCapability capability, IFixedList<DataType> typeArguments);
 }

@@ -11,10 +11,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal sealed class FunctionDeclarationSyntax : InvocableNonMemberEntityDeclarationSyntax, IFunctionDeclarationSyntax
 {
-    public FixedList<IAttributeSyntax> Attributes { get; }
+    public IFixedList<IAttributeSyntax> Attributes { get; }
     public new SimpleName Name { get; }
     TypeName INonMemberEntityDeclarationSyntax.Name => Name;
-    public new FixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public new IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public IBodySyntax Body { [DebuggerStepThrough] get; }
     public new AcyclicPromise<FunctionSymbol> Symbol { get; }

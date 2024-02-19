@@ -31,9 +31,9 @@ public abstract class SimpleType : DeclaredValueType
         Name = name;
     }
 
-    public abstract override BareValueType With(FixedList<DataType> typeArguments);
+    public abstract override BareValueType With(IFixedList<DataType> typeArguments);
 
-    public abstract override ValueType With(ReferenceCapability capability, FixedList<DataType> typeArguments);
+    public abstract override ValueType With(ReferenceCapability capability, IFixedList<DataType> typeArguments);
 
     public abstract ValueType With(ReferenceCapability capability);
 

@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal abstract class InvocableDeclarationSyntax : DeclarationSyntax, IInvocableDeclarationSyntax
 {
     public IAccessModifierToken? AccessModifier { get; }
-    public FixedList<IConstructorParameterSyntax> Parameters { get; }
+    public IFixedList<IConstructorParameterSyntax> Parameters { get; }
     public new IPromise<InvocableSymbol> Symbol { get; }
 
     protected InvocableDeclarationSyntax(
