@@ -86,7 +86,7 @@ public abstract class ReferenceType : CapabilityType
     public static ReferenceType<AnyType> Create(ReferenceCapability capability, BareReferenceType<AnyType> bareType)
         => new(capability, bareType);
 
-    protected ReferenceType(ReferenceCapability capability)
+    private protected ReferenceType(ReferenceCapability capability)
     {
         Capability = capability;
     }

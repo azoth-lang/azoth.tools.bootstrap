@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// lack of a value. For example, a function returning `void` doesn't return
 /// a value. A parameter of type `void` is dropped from the parameter list.
 /// </summary>
-public class VoidType : EmptyType
+public sealed class VoidType : EmptyType
 {
     #region Singleton
     internal static readonly VoidType Instance = new VoidType();
@@ -16,10 +16,6 @@ public class VoidType : EmptyType
         : base(SpecialTypeName.Void)
     { }
     #endregion
-
-    public override bool IsEmpty => true;
-
-    public override bool IsFullyKnown => true;
 
     public override TypeSemantics Semantics => TypeSemantics.Void;
 }
