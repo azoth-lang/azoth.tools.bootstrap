@@ -402,7 +402,7 @@ public class EntitySymbolBuilder
     {
         var declaredType = declaringClass.Symbol.Result.DeclaresType;
         var resolver = new SelfTypeResolver(declaringClass.File, diagnostics);
-        return resolver.EvaluateConstructorSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterDataTypes);
+        return resolver.EvaluateConstructorSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterTypes);
     }
 
     private SelfParameterType ResolveMethodSelfParameterType(
@@ -412,7 +412,7 @@ public class EntitySymbolBuilder
     {
         var declaredType = declaringType.Symbol.Result.DeclaresType;
         var resolver = new SelfTypeResolver(declaringType.File, diagnostics);
-        var selfType = resolver.EvaluateMethodSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterDataTypes);
+        var selfType = resolver.EvaluateMethodSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterTypes);
         bool isLent = selfParameter.IsLentBinding;
         if (isLent && selfType is ReferenceType { IsIdentityReference: true })
         {

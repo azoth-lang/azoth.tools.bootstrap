@@ -130,8 +130,8 @@ public static class Intrinsic
             isAbstract: false, isConst: false, isClass: true, "Raw_Hybrid_Bounded_List",
             GenericParameter.Invariant("F"), GenericParameter.Invariant("T"));
         var fixedType = classType.GenericParameterTypes[0];
-        var readClassParamType = new SelfParameterType(false, classType.WithRead(classType.GenericParameterDataTypes));
-        var mutClassType = classType.WithMutate(classType.GenericParameterDataTypes);
+        var readClassParamType = new SelfParameterType(false, classType.WithRead(classType.GenericParameterTypes));
+        var mutClassType = classType.WithMutate(classType.GenericParameterTypes);
         var mutClassParamType = new SelfParameterType(false, mutClassType);
         var itemType = classType.GenericParameterTypes[1];
         var classSymbol = new ObjectTypeSymbol(@namespace, classType);

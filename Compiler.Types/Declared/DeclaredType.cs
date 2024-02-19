@@ -45,9 +45,6 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public bool HasIndependentGenericParameters { get; }
     public bool AllowsVariance { get; }
     public IFixedList<GenericParameterType> GenericParameterTypes { get; }
-
-    // TODO this is really awkward. There should be a subtype relationship
-    public IFixedList<DataType> GenericParameterDataTypes { get; }
     public abstract FixedSet<BareReferenceType> Supertypes { get; }
     public abstract TypeSemantics Semantics { get; }
 
@@ -60,7 +57,6 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
         HasIndependentGenericParameters = GenericParameters.Any(p => p.Variance == Variance.Independent);
         AllowsVariance = GenericParameters.Any(p => p.Variance != Variance.Invariant);
         GenericParameterTypes = genericParametersTypes;
-        GenericParameterDataTypes = GenericParameterTypes.ToFixedList<DataType>();
     }
 
     public abstract BareType With(IFixedList<DataType> typeArguments);

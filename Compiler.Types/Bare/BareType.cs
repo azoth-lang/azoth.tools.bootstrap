@@ -114,10 +114,7 @@ public abstract class BareType : IEquatable<BareType>
     public static bool operator !=(BareType? left, BareType? right) => !Equals(left, right);
     #endregion
 
-    [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
-#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
     public sealed override string ToString()
-#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
         => throw new NotSupportedException();
 
     public virtual string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());

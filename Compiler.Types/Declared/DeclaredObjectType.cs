@@ -114,7 +114,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// <remarks>This is always `init mut` because the type is being initialized and can be mutated
     /// inside the constructor via field initializers.</remarks>
     public ReferenceType<DeclaredObjectType> ToDefaultConstructorSelf()
-        => With(ReferenceCapability.InitMutable, GenericParameterDataTypes);
+        => With(ReferenceCapability.InitMutable, GenericParameterTypes);
 
     /// <summary>
     /// Make a version of this type for use as the return type of the default constructor.
@@ -122,7 +122,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
     /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
     public ReferenceType<DeclaredObjectType> ToDefaultConstructorReturn()
-        => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Isolated, GenericParameterDataTypes);
+        => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Isolated, GenericParameterTypes);
 
     /// <summary>
     /// Determine the return type of a constructor with the given parameter types.
@@ -131,10 +131,10 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// newly constructed object could contain references to them.</remarks>
     public ReferenceType<DeclaredObjectType> ToConstructorReturn(ReferenceType selfParameterType, IEnumerable<ParameterType> parameterTypes)
     {
-        if (IsConstType) return With(ReferenceCapability.Constant, GenericParameterDataTypes);
+        if (IsConstType) return With(ReferenceCapability.Constant, GenericParameterTypes);
         // Read only self constructors cannot return `mut` or `iso`
         if (!selfParameterType.AllowsWrite)
-            return With(ReferenceCapability.Read, GenericParameterDataTypes);
+            return With(ReferenceCapability.Read, GenericParameterTypes);
         foreach (var parameterType in parameterTypes)
             switch (parameterType.Type)
             {
@@ -149,10 +149,10 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
                 case UnknownType:
                     continue;
                 default:
-                    return With(ReferenceCapability.Mutable, GenericParameterDataTypes);
+                    return With(ReferenceCapability.Mutable, GenericParameterTypes);
             }
 
-        return With(ReferenceCapability.Isolated, GenericParameterDataTypes);
+        return With(ReferenceCapability.Isolated, GenericParameterTypes);
     }
 
     public override BareReferenceType<DeclaredObjectType> With(IFixedList<DataType> typeArguments)
