@@ -1,6 +1,3 @@
-using System;
-using System.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -46,24 +43,5 @@ public static class PseudotypeExtensions
                 => target.BareType.IsAssignableFrom(target.AllowsWrite, constrainedObjectType.BareType),
             _ => throw ExhaustiveMatch.Failed(source)
         };
-    }
-
-    [DebuggerHidden]
-    public static Pseudotype Known(this Pseudotype? pseudotype)
-    {
-        if (!pseudotype.Assigned().IsFullyKnown)
-            throw new InvalidOperationException($"Type {pseudotype.ToILString()} not fully known.");
-
-        return pseudotype;
-    }
-
-    [DebuggerHidden]
-    public static Pseudotype Known(this IPromise<Pseudotype> promise)
-    {
-        var pseudotype = promise.Result;
-        if (!pseudotype.IsFullyKnown)
-            throw new InvalidOperationException($"Pseudotype {pseudotype.ToILString()} not fully known.");
-
-        return pseudotype;
     }
 }

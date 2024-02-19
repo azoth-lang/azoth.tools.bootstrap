@@ -1,5 +1,3 @@
-using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
@@ -212,38 +210,6 @@ public static class DataTypeExtensions
     //{
 
     //}
-
-
-    [DebuggerHidden]
-    public static DataType Known(this DataType? type)
-    {
-        if (!type.Assigned().IsFullyKnown)
-            throw new InvalidOperationException($"Type {type.ToILString()} not fully known.");
-
-        return type;
-    }
-
-    [DebuggerHidden]
-    public static ReturnType Known(this ReturnType returnType)
-    {
-        if (!returnType.Type.IsFullyKnown)
-            throw new InvalidOperationException($"Type {returnType.ToILString()} not fully known.");
-
-        return returnType;
-    }
-
-    [DebuggerHidden]
-    public static ReturnType Known(this ReturnType? returnType) => returnType.Assigned().Known();
-
-    [DebuggerHidden]
-    public static DataType Known(this IPromise<DataType> promise)
-    {
-        var type = promise.Result;
-        if (!type.IsFullyKnown)
-            throw new InvalidOperationException($"Type {type.ToILString()} not fully known.");
-
-        return type;
-    }
 
     public static string ToILString(this IFixedList<DataType> types)
         => string.Join(", ", types.Select(t => t.ToILString()));
