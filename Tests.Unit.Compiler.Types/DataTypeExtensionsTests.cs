@@ -31,7 +31,7 @@ public class DataTypeExtensionsTests
     [Fact]
     public void Underlying_reference_type_of_reference_type_is_itself()
     {
-        var referenceType = ReferenceType.Create(Mutable, "Package", "Foo", false, false, true, "Bar");
+        var referenceType = ReferenceType.CreateClass(Mutable, "Package", "Foo", false, false, "Bar");
 
         var underlyingType = referenceType.UnderlyingReferenceType();
 
@@ -41,7 +41,7 @@ public class DataTypeExtensionsTests
     [Fact]
     public void Underlying_reference_type_of_optional_reference_type_is_reference_type()
     {
-        var referenceType = ReferenceType.Create(Mutable, "Package", "Foo", false, false, true, "Bar");
+        var referenceType = ReferenceType.CreateClass(Mutable, "Package", "Foo", false, false, "Bar");
         var optionalType = new OptionalType(referenceType);
 
         var underlyingType = optionalType.UnderlyingReferenceType();

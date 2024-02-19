@@ -11,58 +11,35 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public abstract class ReferenceType : CapabilityType
 {
-    public ReferenceCapability Capability { get; }
-    public bool IsReadOnlyReference => Capability == ReferenceCapability.Read;
-    public bool IsConstantReference => Capability == ReferenceCapability.Constant;
-    public bool IsTemporarilyConstantReference => Capability == ReferenceCapability.TemporarilyConstant;
-    public bool IsIsolatedReference => Capability == ReferenceCapability.Isolated;
-    public bool IsTemporarilyIsolatedReference => Capability == ReferenceCapability.TemporarilyIsolated;
-    public bool IsIdentityReference => Capability == ReferenceCapability.Identity;
-
-    public bool AllowsInit => Capability.AllowsInit;
-
-    public override bool AllowsWrite => Capability.AllowsWrite;
-
-    public override bool AllowsWriteAliases => Capability.AllowsWriteAliases;
-
-    /// <summary>
-    /// Does this reference allow it to be recovered to isolated if reference sharing permits.
-    /// </summary>
-    public bool AllowsRecoverIsolation => Capability.AllowsRecoverIsolation;
-
-    /// <summary>
-    /// Does this capability allow a reference with it to be moved if reference sharing permits.
-    /// </summary>
-    public bool AllowsMove => Capability.AllowsMove && !BareType.IsDeclaredConstType;
-
-    /// <summary>
-    /// Does this capability allow a reference with it to be frozen to const if reference
-    /// sharing permits.
-    /// </summary>
-    public bool AllowsFreeze => Capability.AllowsFreeze;
-
     public abstract override BareReferenceType BareType { get; }
 
     public override DeclaredReferenceType DeclaredType => BareType.DeclaredType;
 
-    public SimpleName? ContainingPackage => DeclaredType.ContainingPackage;
-    public NamespaceName ContainingNamespace => DeclaredType.ContainingNamespace;
-
-    public TypeName Name => DeclaredType.Name;
-
     /// <summary>
-    /// Create a object type for a given class or trait.
+    /// Create a reference type for a class.
     /// </summary>
-    public static ReferenceType<ObjectType> Create(
+    public static ReferenceType<ObjectType> CreateClass(
         ReferenceCapability capability,
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConst,
-        bool isClass,
         string name)
         => Create(capability,
-            ObjectType.Create(containingPackage, containingNamespace, isAbstract, isConst, isClass, name),
+            ObjectType.CreateClass(containingPackage, containingNamespace, isAbstract, isConst, name),
+            FixedList.Empty<DataType>());
+
+    /// <summary>
+    /// Create a reference type for a trait.
+    /// </summary>
+    public static ReferenceType<ObjectType> Create(
+        ReferenceCapability capability,
+        SimpleName containingPackage,
+        NamespaceName containingNamespace,
+        bool isConst,
+        string name)
+        => Create(capability,
+            ObjectType.CreateTrait(containingPackage, containingNamespace, isConst, name),
             FixedList.Empty<DataType>());
 
     /// <summary>
@@ -77,18 +54,20 @@ public abstract class ReferenceType : CapabilityType
     /// <summary>
     /// Create a object type for a given bare type.
     /// </summary>
-    public static ReferenceType<ObjectType> Create(ReferenceCapability capability, BareReferenceType<ObjectType> bareType)
+    public static ReferenceType<ObjectType> Create(
+        ReferenceCapability capability, BareReferenceType<ObjectType> bareType)
         => new(capability, bareType);
 
     /// <summary>
     /// Create an `Any` type for a given bare type.
     /// </summary>
-    public static ReferenceType<AnyType> Create(ReferenceCapability capability, BareReferenceType<AnyType> bareType)
+    public static ReferenceType<AnyType> Create(
+        ReferenceCapability capability, BareReferenceType<AnyType> bareType)
         => new(capability, bareType);
 
     private protected ReferenceType(ReferenceCapability capability)
+        : base(capability)
     {
-        Capability = capability;
     }
 
     /// <remarks>For constant types, there can still be read only references. For example, inside

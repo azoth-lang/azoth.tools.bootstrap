@@ -10,7 +10,7 @@ public class ReferenceTypeTests
     [Fact]
     public void Has_reference_semantics()
     {
-        var type = ReferenceType.Create(Mutable, "Package", "Foo", false, false, true, "Bar");
+        var type = ReferenceType.CreateClass(Mutable, "Package", "Foo", false, false, "Bar");
 
         Assert.Equal(TypeSemantics.Reference, type.Semantics);
     }
@@ -18,7 +18,7 @@ public class ReferenceTypeTests
     [Fact]
     public void Convert_to_non_constant_type_is_same_type()
     {
-        var type = ReferenceType.Create(Isolated, "Package", "Foo", false, false, true, "Bar");
+        var type = ReferenceType.CreateClass(Isolated, "Package", "Foo", false, false, "Bar");
 
         var nonConstant = type.ToNonConstantType();
 
@@ -28,8 +28,8 @@ public class ReferenceTypeTests
     [Fact]
     public void With_same_name_and_reference_capability_are_equal()
     {
-        var type1 = ReferenceType.Create(Isolated, "Package", "Foo", false, false, true, "Bar");
-        var type2 = ReferenceType.Create(Isolated, "Package", "Foo", false, false, true, "Bar");
+        var type1 = ReferenceType.CreateClass(Isolated, "Package", "Foo", false, false, "Bar");
+        var type2 = ReferenceType.CreateClass(Isolated, "Package", "Foo", false, false, "Bar");
 
         Assert.Equal(type1, type2);
     }

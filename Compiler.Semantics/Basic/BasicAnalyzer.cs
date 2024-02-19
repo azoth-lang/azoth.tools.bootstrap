@@ -149,7 +149,7 @@ public class BasicAnalyzer
 
         var symbol = method.Symbol.Result;
 
-        var inConstClass = method.DeclaringType.Symbol.Result.DeclaresType.IsConstType;
+        var inConstClass = method.DeclaringType.Symbol.Result.DeclaresType.IsDeclaredConst;
         var selfParameterType = symbol.SelfParameterType;
         var selfType = selfParameterType.Type;
         if (inConstClass &&

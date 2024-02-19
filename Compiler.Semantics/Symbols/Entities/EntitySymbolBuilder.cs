@@ -187,8 +187,8 @@ public class EntitySymbolBuilder
         var genericParameterSymbols = BuildGenericParameterSymbols(@class, typeParameters).ToFixedList();
 
         var superTypes = new AcyclicPromise<FixedSet<BareReferenceType>>();
-        var classType = ObjectType.Create(packageName, @class.ContainingNamespaceName,
-            @class.IsAbstract, @class.IsConst, isClass: true, @class.Name, typeParameters, superTypes);
+        var classType = ObjectType.CreateClass(packageName, @class.ContainingNamespaceName,
+            @class.IsAbstract, @class.IsConst, @class.Name, typeParameters, superTypes);
 
         var classSymbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(classSymbol);
@@ -216,8 +216,8 @@ public class EntitySymbolBuilder
         var genericParameterSymbols = BuildGenericParameterSymbols(trait, typeParameters).ToFixedList();
 
         var superTypes = new AcyclicPromise<FixedSet<BareReferenceType>>();
-        var traitType = ObjectType.Create(packageName, trait.ContainingNamespaceName,
-            isAbstract: true, trait.IsConst, isClass: false, trait.Name, typeParameters, superTypes);
+        var traitType = ObjectType.CreateTrait(packageName, trait.ContainingNamespaceName,
+            trait.IsConst, trait.Name, typeParameters, superTypes);
 
         var traitSymbol = new ObjectTypeSymbol(trait.ContainingNamespaceSymbol, traitType);
         trait.Symbol.Fulfill(traitSymbol);

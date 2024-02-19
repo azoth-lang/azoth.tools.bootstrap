@@ -18,55 +18,88 @@ public sealed class ObjectType : DeclaredReferenceType
         = Declared.AnyType.Instance.BareType.Yield().ToFixedSet<BareReferenceType>();
     private static readonly Promise<FixedSet<BareReferenceType>> AnyTypePromise = new(AnyType);
 
-    public static ObjectType Create(
+    public static ObjectType CreateClass(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConst,
-        bool isClass,
         string name)
-        => new(containingPackage, containingNamespace, isAbstract, isConst, isClass, name,
+        => new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true, name,
             FixedList.Empty<GenericParameterType>(), AnyTypePromise);
 
-    public static ObjectType Create(
+    public static ObjectType CreateTrait(
+        SimpleName containingPackage,
+        NamespaceName containingNamespace,
+        bool isConst,
+        string name)
+        => new(containingPackage, containingNamespace, isAbstract: true, isConst, isClass: false, name,
+            FixedList.Empty<GenericParameterType>(), AnyTypePromise);
+
+    public static ObjectType CreateClass(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConst,
-        bool isClass,
         string name,
         IFixedList<GenericParameterType> genericParameterTypes,
         IPromise<FixedSet<BareReferenceType>> superTypes)
-        => new(containingPackage, containingNamespace, isAbstract, isConst, isClass,
+        => new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true,
             StandardTypeName.Create(name, genericParameterTypes.Count), genericParameterTypes, superTypes);
 
-    public static ObjectType Create(
+    public static ObjectType CreateClass(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConst,
-        bool isClass,
         StandardTypeName name,
         IFixedList<GenericParameterType> genericParametersTypes,
         IPromise<FixedSet<BareReferenceType>> superTypes)
     {
         Requires.That(nameof(genericParametersTypes), name.GenericParameterCount == genericParametersTypes.Count, "Count must match name count");
-        return new(containingPackage, containingNamespace, isAbstract, isConst, isClass, name,
+        return new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true, name,
             genericParametersTypes, superTypes);
     }
 
-    public static ObjectType Create(
+    public static ObjectType CreateTrait(
+        SimpleName containingPackage,
+        NamespaceName containingNamespace,
+        bool isConst,
+        StandardTypeName name,
+        IFixedList<GenericParameterType> genericParametersTypes,
+        IPromise<FixedSet<BareReferenceType>> superTypes)
+    {
+        Requires.That(nameof(genericParametersTypes), name.GenericParameterCount == genericParametersTypes.Count,
+            "Count must match name count");
+        return new(containingPackage, containingNamespace, isAbstract: true, isConst, isClass: false, name,
+            genericParametersTypes, superTypes);
+    }
+
+    public static ObjectType CreateClass(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConst,
-        bool isClass,
         string name,
         params GenericParameter[] genericParameters)
     {
         var declaringTypePromise = new Promise<ObjectType>();
-        var genericParametersTypes = genericParameters.Select(p => new GenericParameterType(declaringTypePromise, p)).ToFixedList();
-        return new(containingPackage, containingNamespace, isAbstract, isConst, isClass,
+        var genericParametersTypes = genericParameters
+            .Select(p => new GenericParameterType(declaringTypePromise, p)).ToFixedList();
+        return new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true,
+            StandardTypeName.Create(name, genericParameters.Length), genericParametersTypes, AnyTypePromise);
+    }
+
+    public static ObjectType CreateTrait(
+        SimpleName containingPackage,
+        NamespaceName containingNamespace,
+        bool isConst,
+        string name,
+        params GenericParameter[] genericParameters)
+    {
+        var declaringTypePromise = new Promise<ObjectType>();
+        var genericParametersTypes = genericParameters
+            .Select(p => new GenericParameterType(declaringTypePromise, p)).ToFixedList();
+        return new(containingPackage, containingNamespace, isAbstract: true, isConst, isClass: false,
             StandardTypeName.Create(name, genericParameters.Length), genericParametersTypes, AnyTypePromise);
     }
 
@@ -122,7 +155,7 @@ public sealed class ObjectType : DeclaredReferenceType
     /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
     /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
     public ReferenceType<ObjectType> ToDefaultConstructorReturn()
-        => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Isolated, GenericParameterTypes);
+        => With(IsDeclaredConst ? ReferenceCapability.Constant : ReferenceCapability.Isolated, GenericParameterTypes);
 
     /// <summary>
     /// Determine the return type of a constructor with the given parameter types.
@@ -131,7 +164,7 @@ public sealed class ObjectType : DeclaredReferenceType
     /// newly constructed object could contain references to them.</remarks>
     public ReferenceType<ObjectType> ToConstructorReturn(ReferenceType selfParameterType, IEnumerable<ParameterType> parameterTypes)
     {
-        if (IsConstType) return With(ReferenceCapability.Constant, GenericParameterTypes);
+        if (IsDeclaredConst) return With(ReferenceCapability.Constant, GenericParameterTypes);
         // Read only self constructors cannot return `mut` or `iso`
         if (!selfParameterType.AllowsWrite)
             return With(ReferenceCapability.Read, GenericParameterTypes);
@@ -169,14 +202,14 @@ public sealed class ObjectType : DeclaredReferenceType
     /// is either read-only or constant.
     /// </summary>
     public override ReferenceType<ObjectType> WithRead(IFixedList<DataType> typeArguments)
-        => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Read, typeArguments);
+        => With(IsDeclaredConst ? ReferenceCapability.Constant : ReferenceCapability.Read, typeArguments);
 
     /// <summary>
     /// Make a version of this type that is the default mutate reference capability for the type.
     /// For constant types, that isn't allowed and a constant reference is returned.
     /// </summary>
     public ReferenceType<ObjectType> WithMutate(IFixedList<DataType> typeArguments)
-        => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Mutable, typeArguments);
+        => With(IsDeclaredConst ? ReferenceCapability.Constant : ReferenceCapability.Mutable, typeArguments);
 
     #region Equals
     public override bool Equals(DeclaredType? other)
@@ -187,13 +220,13 @@ public sealed class ObjectType : DeclaredReferenceType
             && ContainingPackage == objectType.ContainingPackage
             && ContainingNamespace == objectType.ContainingNamespace
             && IsAbstract == objectType.IsAbstract
-            && IsConstType == objectType.IsConstType
+            && IsDeclaredConst == objectType.IsDeclaredConst
             && Name == objectType.Name
             && GenericParameters.ItemsEquals(objectType.GenericParameters);
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingPackage, ContainingNamespace, IsAbstract, IsConstType, Name, GenericParameters);
+        => HashCode.Combine(ContainingPackage, ContainingNamespace, IsAbstract, IsDeclaredConst, Name, GenericParameters);
     #endregion
 
     public override string ToString()

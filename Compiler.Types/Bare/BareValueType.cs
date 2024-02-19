@@ -48,8 +48,7 @@ public sealed class BareValueType<TDeclared> : BareValueType
         => new(DeclaredType, typeArguments);
 
     public override ValueType<TDeclared> With(ReferenceCapability capability)
-        // TODO use capability
-        => new(this);
+        => new(capability, this);
 
     #region Equality
     public override bool Equals(BareType? other)

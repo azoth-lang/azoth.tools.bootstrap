@@ -37,7 +37,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     /// Whether this type was declared `const` meaning that most references should be treated as
     /// const.
     /// </summary>
-    public bool IsConstType { get; }
+    public bool IsDeclaredConst { get; }
 
     public abstract TypeName Name { get; }
 
@@ -49,10 +49,10 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public abstract TypeSemantics Semantics { get; }
 
     private protected DeclaredType(
-        bool isConstType,
+        bool isDeclaredConst,
         IFixedList<GenericParameterType> genericParametersTypes)
     {
-        IsConstType = isConstType;
+        IsDeclaredConst = isDeclaredConst;
         GenericParameters = genericParametersTypes.Select(t => t.Parameter).ToFixedList();
         HasIndependentGenericParameters = GenericParameters.Any(p => p.Variance == Variance.Independent);
         AllowsVariance = GenericParameters.Any(p => p.Variance != Variance.Invariant);
@@ -68,7 +68,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     /// is either read-only or constant.
     /// </summary>
     public virtual CapabilityType WithRead(IFixedList<DataType> typeArguments)
-        => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Read, typeArguments);
+        => With(IsDeclaredConst ? ReferenceCapability.Constant : ReferenceCapability.Read, typeArguments);
 
     #region Equality
     public abstract bool Equals(DeclaredType? other);

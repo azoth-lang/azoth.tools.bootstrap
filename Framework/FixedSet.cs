@@ -44,6 +44,7 @@ public sealed class FixedSet<T> : IReadOnlySet<T>, IEquatable<FixedSet<T>>
     public override int GetHashCode()
     {
         HashCode hash = new HashCode();
+        hash.Add(Count);
         // Order the hash codes so there is a consistent hash order
         foreach (var item in items.OrderBy(i => i?.GetHashCode()))
             hash.Add(item);

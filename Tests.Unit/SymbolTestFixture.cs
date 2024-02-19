@@ -101,13 +101,12 @@ public abstract class SymbolTestFixture
         ReferenceCapability? referenceCapability = null)
     {
         var finalName = Name(name) ?? DefaultName("DataType");
-        return ReferenceType.Create(
+        return ReferenceType.CreateClass(
             referenceCapability ?? ReferenceCapability.Constant,
             containingPackage ?? DefaultName("package"),
             containingNamespace ?? NamespaceName.Global,
             isAbstract: false,
             isConst ?? false,
-            isClass: true,
             finalName.Text);
     }
 

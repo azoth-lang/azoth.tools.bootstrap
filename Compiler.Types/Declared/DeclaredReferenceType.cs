@@ -18,10 +18,10 @@ public abstract class DeclaredReferenceType : DeclaredType
     public override TypeSemantics Semantics => TypeSemantics.Reference;
 
     private protected DeclaredReferenceType(
-        bool isConstType,
+        bool isDeclaredConst,
         bool isAbstract,
         IFixedList<GenericParameterType> genericParametersTypes)
-        : base(isConstType, genericParametersTypes)
+        : base(isDeclaredConst, genericParametersTypes)
     {
         IsAbstract = isAbstract;
     }
