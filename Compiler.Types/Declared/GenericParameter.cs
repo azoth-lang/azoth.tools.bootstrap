@@ -2,7 +2,7 @@ using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 /// <summary>
 /// A generic parameter to a type.
@@ -29,6 +29,8 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
 
     public Variance Variance { get; }
 
+    public bool IsIndependent => Variance == Variance.Independent;
+
     public StandardTypeName Name { get; }
 
     // TODO When parameters can be values not just types, add: public DataType DataType { get; }
@@ -51,6 +53,6 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
     public static bool operator !=(GenericParameter? left, GenericParameter? right) => !Equals(left, right);
     #endregion
 
-    public override string ToString() =>
-        Variance == Variance.Invariant ? Name.ToString() : $"{Variance.ToSourceCodeString()} {Name}";
+    public override string ToString()
+        => Variance == Variance.Invariant ? Name.ToString() : $"{Variance.ToSourceCodeString()} {Name}";
 }

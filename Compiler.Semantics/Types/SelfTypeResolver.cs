@@ -23,7 +23,7 @@ public class SelfTypeResolver
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
     public Pseudotype EvaluateMethodSelfParameterType(
-        DeclaredObjectType objectType,
+        ObjectType objectType,
         ISelfReferenceCapabilitySyntax capability,
         IFixedList<DataType> typeArguments)
     {
@@ -36,7 +36,7 @@ public class SelfTypeResolver
     }
 
     public ReferenceType EvaluateConstructorSelfParameterType(
-        DeclaredObjectType objectType,
+        ObjectType objectType,
         IReferenceCapabilitySyntax capability,
         IFixedList<DataType> typeArguments)
     {

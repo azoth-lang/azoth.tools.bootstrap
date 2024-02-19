@@ -27,7 +27,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public static readonly PointerSizedIntegerType Size = PointerSizedIntegerType.Size;
     public static readonly PointerSizedIntegerType Offset = PointerSizedIntegerType.Offset;
 
-    public static readonly DeclaredAnyType Any = DeclaredAnyType.Instance;
+    public static readonly AnyType Any = AnyType.Instance;
     #endregion
 
     public abstract SimpleName? ContainingPackage { get; }

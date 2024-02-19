@@ -53,7 +53,7 @@ public abstract class ReferenceType : CapabilityType
     /// <summary>
     /// Create a object type for a given class or trait.
     /// </summary>
-    public static ReferenceType<DeclaredObjectType> Create(
+    public static ReferenceType<ObjectType> Create(
         ReferenceCapability capability,
         SimpleName containingPackage,
         NamespaceName containingNamespace,
@@ -62,28 +62,28 @@ public abstract class ReferenceType : CapabilityType
         bool isClass,
         string name)
         => Create(capability,
-            DeclaredObjectType.Create(containingPackage, containingNamespace, isAbstract, isConst, isClass, name),
+            ObjectType.Create(containingPackage, containingNamespace, isAbstract, isConst, isClass, name),
             FixedList.Empty<DataType>());
 
     /// <summary>
     /// Create a object type for a given class or trait.
     /// </summary>
-    public static ReferenceType<DeclaredObjectType> Create(
+    public static ReferenceType<ObjectType> Create(
         ReferenceCapability capability,
-        DeclaredObjectType declaredType,
+        ObjectType declaredType,
         IFixedList<DataType> typeArguments)
         => Create(capability, Bare.BareType.Create(declaredType, typeArguments));
 
     /// <summary>
     /// Create a object type for a given bare type.
     /// </summary>
-    public static ReferenceType<DeclaredObjectType> Create(ReferenceCapability capability, BareReferenceType<DeclaredObjectType> bareType)
+    public static ReferenceType<ObjectType> Create(ReferenceCapability capability, BareReferenceType<ObjectType> bareType)
         => new(capability, bareType);
 
     /// <summary>
     /// Create an `Any` type for a given bare type.
     /// </summary>
-    public static ReferenceType<DeclaredAnyType> Create(ReferenceCapability capability, BareReferenceType<DeclaredAnyType> bareType)
+    public static ReferenceType<AnyType> Create(ReferenceCapability capability, BareReferenceType<AnyType> bareType)
         => new(capability, bareType);
 
     protected ReferenceType(ReferenceCapability capability)

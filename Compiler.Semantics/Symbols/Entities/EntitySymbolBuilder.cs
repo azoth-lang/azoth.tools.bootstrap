@@ -187,7 +187,7 @@ public class EntitySymbolBuilder
         var genericParameterSymbols = BuildGenericParameterSymbols(@class, typeParameters).ToFixedList();
 
         var superTypes = new AcyclicPromise<FixedSet<BareReferenceType>>();
-        var classType = DeclaredObjectType.Create(packageName, @class.ContainingNamespaceName,
+        var classType = ObjectType.Create(packageName, @class.ContainingNamespaceName,
             @class.IsAbstract, @class.IsConst, isClass: true, @class.Name, typeParameters, superTypes);
 
         var classSymbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
@@ -216,7 +216,7 @@ public class EntitySymbolBuilder
         var genericParameterSymbols = BuildGenericParameterSymbols(trait, typeParameters).ToFixedList();
 
         var superTypes = new AcyclicPromise<FixedSet<BareReferenceType>>();
-        var traitType = DeclaredObjectType.Create(packageName, trait.ContainingNamespaceName,
+        var traitType = ObjectType.Create(packageName, trait.ContainingNamespaceName,
             isAbstract: true, trait.IsConst, isClass: false, trait.Name, typeParameters, superTypes);
 
         var traitSymbol = new ObjectTypeSymbol(trait.ContainingNamespaceSymbol, traitType);
@@ -237,8 +237,9 @@ public class EntitySymbolBuilder
 
     private static IFixedList<GenericParameterType> BuildGenericParameterTypes(ITypeDeclarationSyntax type)
     {
-        var declaredType = new Promise<DeclaredObjectType>();
-        return type.GenericParameters.Select(p => new GenericParameterType(declaredType, new GenericParameter(p.Variance, p.Name)))
+        var declaredType = new Promise<ObjectType>();
+        return type.GenericParameters
+                   .Select(p => new GenericParameterType(declaredType, new GenericParameter(p.Variance, p.Name)))
                    .ToFixedList();
     }
 
@@ -377,9 +378,9 @@ public class EntitySymbolBuilder
                 case INamedParameterSyntax namedParam:
                 {
                     var isLent = namedParam.IsLentBinding;
-                    if (isLent && type is ReferenceType { IsIdentityReference: true })
+                    if (isLent && !type.CanBeLent())
                     {
-                        diagnostics.Add(TypeError.LentConstOrIdentity(file, namedParam.Span, type));
+                        diagnostics.Add(TypeError.TypeCannotBeLent(file, namedParam.Span, type));
                         isLent = false;
                     }
 
@@ -414,9 +415,9 @@ public class EntitySymbolBuilder
         var resolver = new SelfTypeResolver(declaringType.File, diagnostics);
         var selfType = resolver.EvaluateMethodSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterTypes);
         bool isLent = selfParameter.IsLentBinding;
-        if (isLent && selfType is ReferenceType { IsIdentityReference: true })
+        if (isLent && !selfType.CanBeLent())
         {
-            diagnostics.Add(TypeError.LentConstOrIdentity(file, selfParameter.Span, selfType));
+            diagnostics.Add(TypeError.TypeCannotBeLent(file, selfParameter.Span, selfType));
             isLent = false;
         }
         return new SelfParameterType(isLent, selfType);

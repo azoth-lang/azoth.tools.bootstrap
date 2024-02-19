@@ -45,7 +45,7 @@ public readonly struct FlowCapabilities
     private static IEnumerable<(TypeArgumentIndex, FlowCapability)> FlowCapabilitiesForImmediateTypeParameters(ReferenceType type, Stack<int> parentIndex)
     {
         var joinedTypeArguments = type.TypeArguments.Enumerate().EquiZip(type.DeclaredType.GenericParameters, (arg, param) => (arg.Index, Arg: arg.Value, Param: param));
-        var independentTypeArguments = joinedTypeArguments.Where(tuple => tuple.Param.Variance == Variance.Independent);
+        var independentTypeArguments = joinedTypeArguments.Where(tuple => tuple.Param.IsIndependent);
         var independentReferenceTypeArguments = independentTypeArguments.Select(tuple => (tuple.Index, Arg: tuple.Arg as ReferenceType))
                                                                         .Where(tuple => tuple.Arg is not null);
 

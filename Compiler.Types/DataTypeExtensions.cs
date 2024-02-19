@@ -84,7 +84,7 @@ public static class DataTypeExtensions
             var declaredType = target.DeclaredType;
             var matchingDeclaredType = source.Supertypes.Prepend(source).Where(t => t.DeclaredType == declaredType);
             foreach (var sourceType in matchingDeclaredType)
-                if (IsAssignableFrom(declaredType, targetAllowsWrite, target.TypeArguments, sourceType.TypeArguments))
+                if (IsAssignableFrom(declaredType, targetAllowsWrite, target.GenericTypeArguments, sourceType.GenericTypeArguments))
                     return true;
         }
 

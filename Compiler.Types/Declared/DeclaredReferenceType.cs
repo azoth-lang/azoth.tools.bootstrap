@@ -9,8 +9,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 /// A reference type as it is declared without any capability or type arguments
 /// </summary>
 [Closed(
-    typeof(DeclaredObjectType),
-    typeof(DeclaredAnyType))]
+    typeof(ObjectType),
+    typeof(AnyType))]
 public abstract class DeclaredReferenceType : DeclaredType
 {
     public bool IsAbstract { get; }

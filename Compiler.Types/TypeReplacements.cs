@@ -26,7 +26,7 @@ internal sealed class TypeReplacements
                                    .ToDictionary(t => t.First, t => t.Second);
         foreach (var supertype in declaredType.Supertypes)
             if (supertype is BareReferenceType referenceType)
-                foreach (var (typeArg, i) in referenceType.TypeArguments.Enumerate())
+                foreach (var (typeArg, i) in referenceType.GenericTypeArguments.Enumerate())
                 {
                     var genericParameterType = referenceType.DeclaredType.GenericParameterTypes[i];
                     if (typeArg is GenericParameterType genericTypeArg)
@@ -135,16 +135,16 @@ internal sealed class TypeReplacements
 
     public BareType ReplaceTypeParametersIn(BareType type)
     {
-        var replacementTypes = ReplaceTypeParametersIn(type.TypeArguments);
-        if (ReferenceEquals(type.TypeArguments, replacementTypes)) return type;
+        var replacementTypes = ReplaceTypeParametersIn(type.GenericTypeArguments);
+        if (ReferenceEquals(type.GenericTypeArguments, replacementTypes)) return type;
 
         return type.With(replacementTypes);
     }
 
     public BareReferenceType ReplaceTypeParametersIn(BareReferenceType type)
     {
-        var replacementTypes = ReplaceTypeParametersIn(type.TypeArguments);
-        if (ReferenceEquals(type.TypeArguments, replacementTypes))
+        var replacementTypes = ReplaceTypeParametersIn(type.GenericTypeArguments);
+        if (ReferenceEquals(type.GenericTypeArguments, replacementTypes))
             return type;
 
         return type.With(replacementTypes);

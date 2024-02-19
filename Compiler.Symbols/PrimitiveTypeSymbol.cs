@@ -11,7 +11,7 @@ public sealed class PrimitiveTypeSymbol : TypeSymbol
     public override SpecialTypeName Name { get; }
     public DeclaredType DeclaresType { get; }
 
-    public PrimitiveTypeSymbol(DeclaredAnyType declaresType)
+    public PrimitiveTypeSymbol(AnyType declaresType)
         : base(declaresType.Name)
     {
         Name = declaresType.Name;

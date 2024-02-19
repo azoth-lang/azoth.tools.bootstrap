@@ -13,8 +13,8 @@ public abstract class BareReferenceType : BareType
 {
     public abstract override DeclaredReferenceType DeclaredType { get; }
 
-    private protected BareReferenceType(DeclaredReferenceType declaredType, IFixedList<DataType> typeArguments)
-        : base(declaredType, typeArguments)
+    private protected BareReferenceType(DeclaredReferenceType declaredType, IFixedList<DataType> genericTypeArguments)
+        : base(declaredType, genericTypeArguments)
     {
     }
 
@@ -30,8 +30,8 @@ public sealed class BareReferenceType<TDeclared> : BareReferenceType
 {
     public override TDeclared DeclaredType { get; }
 
-    internal BareReferenceType(TDeclared declaredType, IFixedList<DataType> typeArguments)
-        : base(declaredType, typeArguments)
+    internal BareReferenceType(TDeclared declaredType, IFixedList<DataType> genericTypeArguments)
+        : base(declaredType, genericTypeArguments)
     {
         if (typeof(TDeclared).IsAbstract)
             throw new ArgumentException($"The type parameter must be a concrete {nameof(DeclaredReferenceType)}.", nameof(TDeclared));
@@ -41,7 +41,7 @@ public sealed class BareReferenceType<TDeclared> : BareReferenceType
     public override BareReferenceType<TDeclared> AccessedVia(ReferenceCapability capability)
     {
         if (DeclaredType.GenericParameters.All(p => p.Variance != Variance.Independent)) return this;
-        var newTypeArguments = DeclaredType.GenericParameters.Zip(TypeArguments,
+        var newTypeArguments = DeclaredType.GenericParameters.Zip(GenericTypeArguments,
             (p, arg) => p.Variance == Variance.Independent ? arg.AccessedVia(capability) : arg).ToFixedList();
         return new(DeclaredType, newTypeArguments);
     }
@@ -59,9 +59,9 @@ public sealed class BareReferenceType<TDeclared> : BareReferenceType
         if (ReferenceEquals(this, other)) return true;
         return other is BareReferenceType<TDeclared> otherType
                && DeclaredType == otherType.DeclaredType
-               && TypeArguments.ItemsEquals(otherType.TypeArguments);
+               && GenericTypeArguments.ItemsEquals(otherType.GenericTypeArguments);
     }
 
-    public override int GetHashCode() => HashCode.Combine(DeclaredType, TypeArguments);
+    public override int GetHashCode() => HashCode.Combine(DeclaredType, GenericTypeArguments);
     #endregion
 }

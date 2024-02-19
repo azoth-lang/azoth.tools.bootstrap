@@ -12,11 +12,11 @@ public sealed class ObjectTypeSymbol : TypeSymbol
     public override PackageSymbol Package { get; }
     public override NamespaceOrPackageSymbol ContainingSymbol { get; }
     public override StandardTypeName Name { get; }
-    public DeclaredObjectType DeclaresType { get; }
+    public ObjectType DeclaresType { get; }
 
     public ObjectTypeSymbol(
         NamespaceOrPackageSymbol containingSymbol,
-        DeclaredObjectType declaresType)
+        ObjectType declaresType)
         : base(declaresType.Name)
     {
         // TODO check the declared type is in the containing namespace and package

@@ -93,7 +93,7 @@ public abstract class SymbolTestFixture
             @return ?? mother.ReturnType);
     }
 
-    protected ReferenceType<DeclaredObjectType> DataType(
+    protected ReferenceType<ObjectType> DataType(
         string? name = null,
         SimpleName? containingPackage = null,
         NamespaceName? containingNamespace = null,
@@ -123,7 +123,7 @@ public abstract class SymbolTestFixture
 
     protected ObjectTypeSymbol Type(
         NamespaceOrPackageSymbol? ns = null,
-        DeclaredObjectType? dataType = null)
+        ObjectType? dataType = null)
     {
         return new ObjectTypeSymbol(
             ns ?? Package(),

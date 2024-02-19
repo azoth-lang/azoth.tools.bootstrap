@@ -5,12 +5,12 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
-public sealed class DeclaredAnyType : DeclaredReferenceType
+public sealed class AnyType : DeclaredReferenceType
 {
     #region Singleton
-    internal static readonly DeclaredAnyType Instance = new();
+    internal static readonly AnyType Instance = new();
 
-    private DeclaredAnyType()
+    private AnyType()
         : base(isConstType: false, isAbstract: true, FixedList.Empty<GenericParameterType>())
     {
         BareType = new(this, FixedList.Empty<DataType>());
@@ -22,18 +22,18 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
     public override SpecialTypeName Name => SpecialTypeName.Any;
     public override FixedSet<BareReferenceType> Supertypes => FixedSet<BareReferenceType>.Empty;
 
-    public BareReferenceType<DeclaredAnyType> BareType { get; }
+    public BareReferenceType<AnyType> BareType { get; }
 
-    public override BareReferenceType<DeclaredAnyType> With(IFixedList<DataType> typeArguments)
+    public override BareReferenceType<AnyType> With(IFixedList<DataType> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;
     }
 
-    public override ReferenceType<DeclaredAnyType> With(ReferenceCapability capability, IFixedList<DataType> typeArguments)
+    public override ReferenceType<AnyType> With(ReferenceCapability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public ReferenceType<DeclaredAnyType> With(ReferenceCapability capability)
+    public ReferenceType<AnyType> With(ReferenceCapability capability)
         => ReferenceType.Create(capability, BareType);
 
     #region Equals

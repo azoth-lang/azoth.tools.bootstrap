@@ -16,7 +16,7 @@ public static class Intrinsic
 
     public static readonly ObjectTypeSymbol Promise = Find<ObjectTypeSymbol>("Promise");
 
-    public static readonly DeclaredObjectType PromiseType = Promise.DeclaresType;
+    public static readonly ObjectType PromiseType = Promise.DeclaresType;
 
     public static ReferenceType PromiseOf(DataType type)
         => PromiseType.WithRead(FixedList.Create(type));
@@ -101,10 +101,10 @@ public static class Intrinsic
         return azothNamespace;
     }
 
-    private static DeclaredObjectType BuildPromiseSymbol(NamespaceSymbol azothNamespace, SymbolTreeBuilder tree)
+    private static ObjectType BuildPromiseSymbol(NamespaceSymbol azothNamespace, SymbolTreeBuilder tree)
     {
         var intrinsicsPackage = azothNamespace.Package;
-        var promiseType = DeclaredObjectType.Create(intrinsicsPackage.Name, azothNamespace.NamespaceName,
+        var promiseType = ObjectType.Create(intrinsicsPackage.Name, azothNamespace.NamespaceName,
                        isAbstract: false, isConst: false, isClass: true, "Promise", GenericParameter.Out("T"));
         var classSymbol = new ObjectTypeSymbol(azothNamespace, promiseType);
         tree.Add(classSymbol);
@@ -112,7 +112,7 @@ public static class Intrinsic
         return promiseType;
     }
 
-    private static DeclaredObjectType BuildSpecializedCollectionSymbols(
+    private static ObjectType BuildSpecializedCollectionSymbols(
         NamespaceSymbol azothNamespace,
         SymbolTreeBuilder tree)
     {
@@ -124,9 +124,9 @@ public static class Intrinsic
         return BuildRawHybridBoundedListSymbol(tree, specializedNamespace);
     }
 
-    private static DeclaredObjectType BuildRawHybridBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
+    private static ObjectType BuildRawHybridBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
     {
-        var classType = DeclaredObjectType.Create(@namespace.Package.Name, @namespace.NamespaceName,
+        var classType = ObjectType.Create(@namespace.Package.Name, @namespace.NamespaceName,
             isAbstract: false, isConst: false, isClass: true, "Raw_Hybrid_Bounded_List",
             GenericParameter.Invariant("F"), GenericParameter.Invariant("T"));
         var fixedType = classType.GenericParameterTypes[0];

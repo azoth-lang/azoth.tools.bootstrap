@@ -12,13 +12,13 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
-public sealed class DeclaredObjectType : DeclaredReferenceType
+public sealed class ObjectType : DeclaredReferenceType
 {
     private static readonly FixedSet<BareReferenceType> AnyType
-        = DeclaredAnyType.Instance.BareType.Yield().ToFixedSet<BareReferenceType>();
+        = Declared.AnyType.Instance.BareType.Yield().ToFixedSet<BareReferenceType>();
     private static readonly Promise<FixedSet<BareReferenceType>> AnyTypePromise = new(AnyType);
 
-    public static DeclaredObjectType Create(
+    public static ObjectType Create(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
@@ -28,7 +28,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         => new(containingPackage, containingNamespace, isAbstract, isConst, isClass, name,
             FixedList.Empty<GenericParameterType>(), AnyTypePromise);
 
-    public static DeclaredObjectType Create(
+    public static ObjectType Create(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
@@ -40,7 +40,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         => new(containingPackage, containingNamespace, isAbstract, isConst, isClass,
             StandardTypeName.Create(name, genericParameterTypes.Count), genericParameterTypes, superTypes);
 
-    public static DeclaredObjectType Create(
+    public static ObjectType Create(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
@@ -55,7 +55,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
             genericParametersTypes, superTypes);
     }
 
-    public static DeclaredObjectType Create(
+    public static ObjectType Create(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
@@ -64,13 +64,13 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         string name,
         params GenericParameter[] genericParameters)
     {
-        var declaringTypePromise = new Promise<DeclaredObjectType>();
+        var declaringTypePromise = new Promise<ObjectType>();
         var genericParametersTypes = genericParameters.Select(p => new GenericParameterType(declaringTypePromise, p)).ToFixedList();
         return new(containingPackage, containingNamespace, isAbstract, isConst, isClass,
             StandardTypeName.Create(name, genericParameters.Length), genericParametersTypes, AnyTypePromise);
     }
 
-    private DeclaredObjectType(
+    private ObjectType(
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
@@ -113,7 +113,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// </summary>
     /// <remarks>This is always `init mut` because the type is being initialized and can be mutated
     /// inside the constructor via field initializers.</remarks>
-    public ReferenceType<DeclaredObjectType> ToDefaultConstructorSelf()
+    public ReferenceType<ObjectType> ToDefaultConstructorSelf()
         => With(ReferenceCapability.InitMutable, GenericParameterTypes);
 
     /// <summary>
@@ -121,7 +121,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// </summary>
     /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
     /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
-    public ReferenceType<DeclaredObjectType> ToDefaultConstructorReturn()
+    public ReferenceType<ObjectType> ToDefaultConstructorReturn()
         => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Isolated, GenericParameterTypes);
 
     /// <summary>
@@ -129,7 +129,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// </summary>
     /// <remarks>The capability of the return type is restricted by the parameter types because the
     /// newly constructed object could contain references to them.</remarks>
-    public ReferenceType<DeclaredObjectType> ToConstructorReturn(ReferenceType selfParameterType, IEnumerable<ParameterType> parameterTypes)
+    public ReferenceType<ObjectType> ToConstructorReturn(ReferenceType selfParameterType, IEnumerable<ParameterType> parameterTypes)
     {
         if (IsConstType) return With(ReferenceCapability.Constant, GenericParameterTypes);
         // Read only self constructors cannot return `mut` or `iso`
@@ -155,10 +155,10 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         return With(ReferenceCapability.Isolated, GenericParameterTypes);
     }
 
-    public override BareReferenceType<DeclaredObjectType> With(IFixedList<DataType> typeArguments)
+    public override BareReferenceType<ObjectType> With(IFixedList<DataType> typeArguments)
         => BareType.Create(this, typeArguments);
 
-    public override ReferenceType<DeclaredObjectType> With(ReferenceCapability capability, IFixedList<DataType> typeArguments)
+    public override ReferenceType<ObjectType> With(ReferenceCapability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
     public ObjectTypeConstraint With(ReferenceCapabilityConstraint capability, IFixedList<DataType> typeArguments)
@@ -168,14 +168,14 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// Make a version of this type that is the default read reference capability for the type. That
     /// is either read-only or constant.
     /// </summary>
-    public override ReferenceType<DeclaredObjectType> WithRead(IFixedList<DataType> typeArguments)
+    public override ReferenceType<ObjectType> WithRead(IFixedList<DataType> typeArguments)
         => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Read, typeArguments);
 
     /// <summary>
     /// Make a version of this type that is the default mutate reference capability for the type.
     /// For constant types, that isn't allowed and a constant reference is returned.
     /// </summary>
-    public ReferenceType<DeclaredObjectType> WithMutate(IFixedList<DataType> typeArguments)
+    public ReferenceType<ObjectType> WithMutate(IFixedList<DataType> typeArguments)
         => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Mutable, typeArguments);
 
     #region Equals
@@ -183,7 +183,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is DeclaredObjectType objectType
+        return other is ObjectType objectType
             && ContainingPackage == objectType.ContainingPackage
             && ContainingNamespace == objectType.ContainingNamespace
             && IsAbstract == objectType.IsAbstract

@@ -112,7 +112,7 @@ public static class TypeError
             3014, $"Constructor self parameter cannot have reference capability `{capability.ToSourceString()}`. Only `mut` and read-only are allowed");
     }
 
-    public static Diagnostic LentConstOrIdentity(CodeFile file, TextSpan span, Pseudotype type)
+    public static Diagnostic TypeCannotBeLent(CodeFile file, TextSpan span, Pseudotype type)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3015, $"Cannot apply `lent` to `{type.ToSourceCodeString()}` because it is a fully `const` or `id` type");

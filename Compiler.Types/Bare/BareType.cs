@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -34,12 +35,14 @@ public abstract class BareType : IEquatable<BareType>
     public static readonly BareValueType<PointerSizedIntegerType> Size = new(DeclaredType.Size, FixedList.Empty<DataType>());
     public static readonly BareValueType<PointerSizedIntegerType> Offset = new(DeclaredType.Offset, FixedList.Empty<DataType>());
 
-    public static readonly BareReferenceType<DeclaredAnyType> Any = DeclaredType.Any.BareType;
+    public static readonly BareReferenceType<AnyType> Any = DeclaredType.Any.BareType;
     #endregion
 
     public abstract DeclaredType DeclaredType { get; }
     public bool AllowsVariance => DeclaredType.AllowsVariance;
-    public IFixedList<DataType> TypeArguments { get; }
+    public IFixedList<DataType> GenericTypeArguments { get; }
+    public IEnumerable<GenericParameterArgument> GenericParameterArguments
+        => DeclaredType.GenericParameters.Zip(GenericTypeArguments, (p, a) => new GenericParameterArgument(p, a));
     public bool HasIndependentTypeArguments { get; }
 
     private readonly Lazy<FixedSet<BareReferenceType>> supertypes;
@@ -57,27 +60,27 @@ public abstract class BareType : IEquatable<BareType>
 
     private readonly Lazy<TypeReplacements> typeReplacements;
 
-    public static BareReferenceType<DeclaredObjectType> Create(
-        DeclaredObjectType declaredType,
+    public static BareReferenceType<ObjectType> Create(
+        ObjectType declaredType,
         IFixedList<DataType> typeArguments)
         => new(declaredType, typeArguments);
 
-    private protected BareType(DeclaredType declaredType, IFixedList<DataType> typeArguments)
+    private protected BareType(DeclaredType declaredType, IFixedList<DataType> genericTypeArguments)
     {
-        if (declaredType.GenericParameters.Count != typeArguments.Count)
+        if (declaredType.GenericParameters.Count != genericTypeArguments.Count)
             throw new ArgumentException(
-                $"Number of type arguments must match. Given `[{typeArguments.ToILString()}]` for `{declaredType}`.",
-                nameof(typeArguments));
-        TypeArguments = typeArguments;
+                $"Number of type arguments must match. Given `[{genericTypeArguments.ToILString()}]` for `{declaredType}`.",
+                nameof(genericTypeArguments));
+        GenericTypeArguments = genericTypeArguments;
         HasIndependentTypeArguments = declaredType.HasIndependentGenericParameters
-                                      || TypeArguments.Any(a => a.HasIndependentTypeArguments);
-        IsFullyKnown = typeArguments.All(a => a.IsFullyKnown);
+                                      || GenericTypeArguments.Any(a => a.HasIndependentTypeArguments);
+        IsFullyKnown = genericTypeArguments.All(a => a.IsFullyKnown);
 
         typeReplacements = new(GetTypeReplacements);
         supertypes = new(GetSupertypes);
     }
 
-    private TypeReplacements GetTypeReplacements() => new(DeclaredType, TypeArguments);
+    private TypeReplacements GetTypeReplacements() => new(DeclaredType, GenericTypeArguments);
 
     private FixedSet<BareReferenceType> GetSupertypes() =>
         DeclaredType.Supertypes.Select(typeReplacements.Value.ReplaceTypeParametersIn).ToFixedSet();
@@ -126,10 +129,10 @@ public abstract class BareType : IEquatable<BareType>
         builder.Append(DeclaredType.ContainingNamespace);
         if (DeclaredType.ContainingNamespace != NamespaceName.Global) builder.Append('.');
         builder.Append(DeclaredType.Name.ToBareString());
-        if (TypeArguments.Any())
+        if (GenericTypeArguments.Any())
         {
             builder.Append('[');
-            builder.AppendJoin(", ", TypeArguments.Select(toString));
+            builder.AppendJoin(", ", GenericTypeArguments.Select(toString));
             builder.Append(']');
         }
         return builder.ToString();

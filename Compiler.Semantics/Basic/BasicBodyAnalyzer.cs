@@ -2125,8 +2125,8 @@ public class BasicBodyAnalyzer
     {
         return type switch
         {
-            DeclaredAnyType t => LookupSymbolForType(t),
-            DeclaredObjectType t => LookupSymbolForType(t),
+            AnyType t => LookupSymbolForType(t),
+            ObjectType t => LookupSymbolForType(t),
             _ => throw ExhaustiveMatch.Failed(type),
         };
     }
@@ -2144,11 +2144,11 @@ public class BasicBodyAnalyzer
         => symbolTrees.PrimitiveSymbolTree.GlobalSymbols.OfType<PrimitiveTypeSymbol>()
                       .Single(s => s.DeclaresType == type);
 
-    private PrimitiveTypeSymbol LookupSymbolForType(DeclaredAnyType type)
+    private PrimitiveTypeSymbol LookupSymbolForType(AnyType type)
         => symbolTrees.PrimitiveSymbolTree.GlobalSymbols.OfType<PrimitiveTypeSymbol>()
                       .Single(s => s.DeclaresType == type);
 
-    private TypeSymbol LookupSymbolForType(DeclaredObjectType type)
+    private TypeSymbol LookupSymbolForType(ObjectType type)
     {
         var contextSymbols = symbolTrees.Packages.SafeCast<Symbol>();
         foreach (var name in type.ContainingNamespace.Segments)

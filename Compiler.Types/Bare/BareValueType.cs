@@ -39,7 +39,7 @@ public sealed class BareValueType<TDeclared> : BareValueType
     public override BareValueType<TDeclared> AccessedVia(ReferenceCapability capability)
     {
         if (DeclaredType.GenericParameters.All(p => p.Variance != Variance.Independent)) return this;
-        var newTypeArguments = DeclaredType.GenericParameters.Zip(TypeArguments,
+        var newTypeArguments = DeclaredType.GenericParameters.Zip(GenericTypeArguments,
             (p, arg) => p.Variance == Variance.Independent ? arg.AccessedVia(capability) : arg).ToFixedList();
         return new(DeclaredType, newTypeArguments);
     }
@@ -58,9 +58,9 @@ public sealed class BareValueType<TDeclared> : BareValueType
         if (ReferenceEquals(this, other)) return true;
         return other is BareValueType<TDeclared> otherType
                && DeclaredType == otherType.DeclaredType
-               && TypeArguments.ItemsEquals(otherType.TypeArguments);
+               && GenericTypeArguments.ItemsEquals(otherType.GenericTypeArguments);
     }
 
-    public override int GetHashCode() => HashCode.Combine(DeclaredType, TypeArguments);
+    public override int GetHashCode() => HashCode.Combine(DeclaredType, GenericTypeArguments);
     #endregion
 }
