@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using ExhaustiveMatching;
 
@@ -48,13 +47,6 @@ public static class PseudotypeExtensions
             _ => throw ExhaustiveMatch.Failed(source)
         };
     }
-
-    /// <summary>
-    /// Validates that a type as been assigned.
-    /// </summary>
-    [DebuggerHidden]
-    public static Pseudotype Assigned([NotNull] this Pseudotype? pseudotype)
-        => pseudotype ?? throw new InvalidOperationException("Pseudotype not assigned.");
 
     [DebuggerHidden]
     public static Pseudotype Known(this Pseudotype? pseudotype)

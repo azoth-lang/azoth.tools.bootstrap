@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 
@@ -24,6 +25,8 @@ public readonly record struct ReturnType(DataType Type)
 
     public bool ReferenceEquals(ReturnType other)
         => ReferenceEquals(Type, other.Type);
+
+    public override string ToString() => throw new NotSupportedException();
 
     public string ToILString() => Type.ToILString();
 

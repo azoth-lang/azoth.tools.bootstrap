@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
@@ -24,6 +25,8 @@ public readonly record struct ParameterType(bool IsLent, DataType Type) : IParam
 
     public bool ReferenceEquals(ParameterType other)
         => IsLent == other.IsLent && ReferenceEquals(Type, other.Type);
+
+    public override string ToString() => throw new NotSupportedException();
 
     public string ToILString() => IsLent ? $"lent {Type.ToILString()}" : Type.ToILString();
 
