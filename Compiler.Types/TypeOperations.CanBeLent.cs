@@ -7,7 +7,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-public static partial class OperationExtensions
+public static partial class TypeOperations
 {
     public static bool CanBeLent(this ReferenceCapability capability)
         => capability != ReferenceCapability.Identity && capability != ReferenceCapability.Constant;
