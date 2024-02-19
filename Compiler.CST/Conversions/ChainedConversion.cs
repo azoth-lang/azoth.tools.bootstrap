@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 /// </summary>
 [Closed(
     typeof(OptionalConversion),
-    typeof(NumericConversion),
+    typeof(SimpleTypeConversion),
     typeof(LiftedConversion),
     typeof(MoveConversion),
     typeof(FreezeConversion))]

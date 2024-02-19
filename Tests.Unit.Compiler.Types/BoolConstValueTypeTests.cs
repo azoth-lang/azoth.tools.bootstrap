@@ -1,7 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Xunit;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
@@ -72,12 +71,5 @@ public class BoolConstValueTypeTests
     public void Bool_constant_types_with_different_value_are_not_equal()
     {
         Assert.NotEqual(BoolConstValueType.True, BoolConstValueType.False);
-    }
-
-    [Fact]
-    public void Bool_type_not_equal_to_bool_constant_type()
-    {
-        Assert.NotEqual<NonEmptyType>(BoolType.Instance, BoolConstValueType.True);
-        Assert.NotEqual<NonEmptyType>(BoolType.Instance, BoolConstValueType.False);
     }
 }

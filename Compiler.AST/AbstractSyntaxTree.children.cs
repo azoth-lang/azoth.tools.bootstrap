@@ -155,7 +155,7 @@ public static class IAbstractSyntaxExtensions
                 if (n.Value is not null)
                     yield return n.Value;
                 yield break;
-            case IImplicitNumericConversionExpression n:
+            case IImplicitSimpleTypeConversionExpression n:
                 yield return n.Expression;
                 yield break;
             case IImplicitOptionalConversionExpression n:
@@ -164,7 +164,7 @@ public static class IAbstractSyntaxExtensions
             case IImplicitLiftedConversionExpression n:
                 yield return n.Expression;
                 yield break;
-            case IExplicitNumericConversionExpression n:
+            case IExplicitSimpleTypeConversionExpression n:
                 yield return n.Expression;
                 yield break;
             case IFunctionInvocationExpression n:

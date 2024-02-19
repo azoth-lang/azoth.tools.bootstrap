@@ -481,7 +481,7 @@ public partial interface IReturnExpression : IExpression
 }
 
 [Closed(
-    typeof(IImplicitNumericConversionExpression),
+    typeof(IImplicitSimpleTypeConversionExpression),
     typeof(IImplicitOptionalConversionExpression),
     typeof(IImplicitLiftedConversionExpression))]
 public partial interface IImplicitConversionExpression : IExpression
@@ -489,9 +489,9 @@ public partial interface IImplicitConversionExpression : IExpression
     IExpression Expression { get; }
 }
 
-public partial interface IImplicitNumericConversionExpression : IImplicitConversionExpression
+public partial interface IImplicitSimpleTypeConversionExpression : IImplicitConversionExpression
 {
-    NumericType ConvertToType { get; }
+    SimpleType ConvertToType { get; }
 }
 
 public partial interface IImplicitOptionalConversionExpression : IImplicitConversionExpression
@@ -505,16 +505,16 @@ public partial interface IImplicitLiftedConversionExpression : IImplicitConversi
 }
 
 [Closed(
-    typeof(IExplicitNumericConversionExpression))]
+    typeof(IExplicitSimpleTypeConversionExpression))]
 public partial interface IExplicitConversionExpression : IExpression
 {
     IExpression Expression { get; }
     bool IsOptional { get; }
 }
 
-public partial interface IExplicitNumericConversionExpression : IExplicitConversionExpression
+public partial interface IExplicitSimpleTypeConversionExpression : IExplicitConversionExpression
 {
-    NumericType ConvertToType { get; }
+    SimpleType ConvertToType { get; }
 }
 
 [Closed(

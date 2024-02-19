@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 public sealed class DeclaredObjectType : DeclaredReferenceType
 {
     private static readonly FixedSet<BareReferenceType> AnyType
-        = BareType.Any.Yield().ToFixedSet<BareReferenceType>();
+        = DeclaredAnyType.Instance.BareType.Yield().ToFixedSet<BareReferenceType>();
     private static readonly Promise<FixedSet<BareReferenceType>> AnyTypePromise = new(AnyType);
 
     public static DeclaredObjectType Create(
@@ -144,7 +144,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
                 case OptionalType { Referent: ReferenceType } when parameterType.IsLent:
                 case OptionalType { Referent: ReferenceType { IsConstantReference: true } }:
                 case OptionalType { Referent: ReferenceType { IsIsolatedReference: true } }:
-                case SimpleType:
+                case ValueType:
                 case EmptyType:
                 case UnknownType:
                     continue;
@@ -156,7 +156,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     }
 
     public override BareReferenceType<DeclaredObjectType> With(FixedList<DataType> typeArguments)
-        => BareReferenceType.Create(this, typeArguments);
+        => BareType.Create(this, typeArguments);
 
     public override ReferenceType<DeclaredObjectType> With(ReferenceCapability capability, FixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
@@ -168,7 +168,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
     /// Make a version of this type that is the default read reference capability for the type. That
     /// is either read-only or constant.
     /// </summary>
-    public ReferenceType<DeclaredObjectType> WithRead(FixedList<DataType> typeArguments)
+    public override ReferenceType<DeclaredObjectType> WithRead(FixedList<DataType> typeArguments)
         => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Read, typeArguments);
 
     /// <summary>
@@ -179,7 +179,7 @@ public sealed class DeclaredObjectType : DeclaredReferenceType
         => With(IsConstType ? ReferenceCapability.Constant : ReferenceCapability.Mutable, typeArguments);
 
     #region Equals
-    public override bool Equals(DeclaredReferenceType? other)
+    public override bool Equals(DeclaredType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

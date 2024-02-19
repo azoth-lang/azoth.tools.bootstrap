@@ -4,6 +4,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 [Closed(
+    typeof(EmptyTypeSymbol),
     typeof(PrimitiveTypeSymbol),
     typeof(ObjectTypeSymbol),
     typeof(GenericParameterTypeSymbol))]

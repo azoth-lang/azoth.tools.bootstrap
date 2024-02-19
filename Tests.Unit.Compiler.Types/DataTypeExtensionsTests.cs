@@ -8,16 +8,6 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
 [Trait("Category", "Types")]
 public class DataTypeExtensionsTests
 {
-    [Fact]
-    public void Bool_constant_types_is_assignable_to_bool_type()
-    {
-        var trueAssignable = DataType.Bool.IsAssignableFrom(DataType.True);
-        var falseAssignable = DataType.Bool.IsAssignableFrom(DataType.False);
-
-        Assert.True(trueAssignable, $"{DataType.True.ToILString()} not assignable to {DataType.Bool.ToILString()}");
-        Assert.True(falseAssignable, $"{DataType.False.ToILString()} not assignable to {DataType.Bool.ToILString()}");
-    }
-
     /// <summary>
     /// A numeric conversion is required
     /// </summary>

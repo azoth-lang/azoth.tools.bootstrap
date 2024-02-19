@@ -13,6 +13,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using Attribute = Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree.Attribute;
+using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST;
 
@@ -353,7 +354,7 @@ internal class ASTBuilder
         return conversion switch
         {
             LiftedConversion _ => BuildImplicitLiftedConversionExpression(expression, conversion),
-            NumericConversion _ => BuildImplicitNumericConversionExpression(expression, conversion),
+            SimpleTypeConversion c => BuildImplicitSimpleTypeConversionExpression(expression, c),
             OptionalConversion _ => BuildImplicitOptionalConversionExpression(expression, conversion),
             MoveConversion moveConversion => BuildMoveConversionExpression(expression, moveConversion),
             FreezeConversion freezeConversion => BuildFreezeConversionExpression(expression, freezeConversion),
@@ -503,12 +504,12 @@ internal class ASTBuilder
         return new ImplicitLiftedConversion(expression.Span, convertToType, semantics, expression, (OptionalType)convertToType);
     }
 
-    private static IImplicitNumericConversionExpression BuildImplicitNumericConversionExpression(
+    private static IImplicitSimpleTypeConversionExpression BuildImplicitSimpleTypeConversionExpression(
         IExpression expression,
-        Conversion conversion)
+        SimpleTypeConversion conversion)
     {
-        var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
-        return new ImplicitNumericConversionExpression(expression.Span, semantics, expression, (NumericType)convertToType);
+        var (_, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
+        return new ImplicitSimpleTypeConversionExpression(expression.Span, semantics, expression, conversion.To);
     }
 
     private static IImplicitOptionalConversionExpression BuildImplicitOptionalConversionExpression(
@@ -713,23 +714,17 @@ internal class ASTBuilder
     private static IExpression BuildConversionExpression(IConversionExpressionSyntax syn)
     {
         var referent = BuildExpression(syn.Referent);
-        if (syn.Operator == ConversionOperator.Safe)
-            return BuildImplicitNumericConversionExpression(referent, syn);
 
         // TODO support non-numeric conversions
         var semantics = syn.ConvertedSemantics!.Value;
-        var expressionType = syn.DataType.Assigned();
-        var isOptional = syn.Operator == ConversionOperator.Optional;
-        var convertToType = (NumericType)syn.ConvertToType.NamedType.Assigned();
-        return new ExplicitNumericConversion(syn.Span, expressionType, semantics, referent, isOptional, convertToType);
-    }
+        var convertToType = (ValueType)syn.ConvertToType.NamedType.Assigned();
+        var convertToSimpleType = (SimpleType)convertToType.DeclaredType;
 
-    private static IExpression BuildImplicitNumericConversionExpression(
-        IExpression expression, IConversionExpressionSyntax conversion)
-    {
-        var convertToType = (NumericType)conversion.ConvertToType.NamedType.Assigned();
-        var semantics = conversion.ConvertedSemantics.Assigned();
-        return new ImplicitNumericConversionExpression(expression.Span, semantics, expression, convertToType);
+        if (syn.Operator == ConversionOperator.Safe)
+            return new ImplicitSimpleTypeConversionExpression(syn.Span, semantics, referent, convertToSimpleType);
+
+        var isOptional = syn.Operator == ConversionOperator.Optional;
+        return new ExplicitSimpleTypeConversion(syn.Span, semantics, referent, isOptional, convertToSimpleType);
     }
 
     private static IExpression BuildPatternMatchExpression(IPatternMatchExpressionSyntax syn)

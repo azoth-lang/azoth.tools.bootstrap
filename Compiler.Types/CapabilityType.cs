@@ -1,3 +1,6 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -8,4 +11,25 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 [Closed(typeof(ReferenceType), typeof(ValueType))]
 public abstract class CapabilityType : NonEmptyType
 {
+    public abstract BareType BareType { get; }
+
+    public virtual DeclaredType DeclaredType => BareType.DeclaredType;
+
+    public FixedList<DataType> TypeArguments => BareType.TypeArguments;
+
+    public override bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
+
+    public FixedSet<BareReferenceType> Supertypes => BareType.Supertypes;
+
+    public override bool IsFullyKnown => BareType.IsFullyKnown;
+
+    /// <summary>
+    /// Whether this type was declared `const` meaning that most references should be treated as
+    /// `const`.
+    /// </summary>
+    public bool IsDeclaredConstant => DeclaredType.IsConstType;
+
+    public override TypeSemantics Semantics => BareType.Semantics;
+
+    private protected CapabilityType() { }
 }

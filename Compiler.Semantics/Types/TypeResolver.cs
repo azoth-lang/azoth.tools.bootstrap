@@ -111,15 +111,14 @@ public class TypeResolver
 
         static DataType CreateType(TypeSymbol symbol, FixedList<DataType> typeArguments)
         {
-            var type = symbol switch
+            return symbol switch
             {
-                // TODO WithoutWrite() is a hack for handling `Any`
-                PrimitiveTypeSymbol sym => sym.DeclaresType.WithoutWrite(),
+                PrimitiveTypeSymbol sym => sym.DeclaresType.WithRead(typeArguments),
                 ObjectTypeSymbol sym => sym.DeclaresType.WithRead(typeArguments),
                 GenericParameterTypeSymbol sym => sym.DeclaresType,
+                EmptyTypeSymbol sym => sym.DeclaresType,
                 _ => throw ExhaustiveMatch.Failed(symbol)
             };
-            return type;
         }
     }
 
@@ -191,18 +190,15 @@ public class TypeResolver
                 default:
                     throw ExhaustiveMatch.Failed(symbol);
                 case PrimitiveTypeSymbol sym:
-                    var type = sym.DeclaresType;
-                    // TODO Hack to handle `Any`
-                    if (type is ReferenceType referenceType)
-                    {
-                        // If capability not provided, then this is for a constructor or something
-                        // and reading the value doesn't matter, it exists to name the type.
-                        capability ??= ReferenceCapability.Identity;
-                        // Compatibility of the capability with the type is not checked here. That
-                        // is done on the capability type syntax.
-                        type = referenceType.With(capability);
-                    }
-                    return type;
+                {
+                    var declaredType = sym.DeclaresType;
+                    // If capability not provided, then this is for a constructor or something
+                    // and reading the value doesn't matter, it exists to name the type.
+                    capability ??= ReferenceCapability.Identity;
+                    // Compatibility of the capability with the type is not checked here. That
+                    // is done on the capability type syntax.
+                    return declaredType.With(capability, typeArguments);
+                }
                 case ObjectTypeSymbol sym:
                     var declaredObjectType = sym.DeclaresType;
                     // If capability not provided, then this is for a constructor or something
@@ -214,6 +210,10 @@ public class TypeResolver
                 case GenericParameterTypeSymbol sym:
                     if (capability is not null)
                         diagnostics.Add(TypeError.CapabilityAppliedToTypeParameter(file, typeSyntax));
+                    return sym.DeclaresType;
+                case EmptyTypeSymbol sym:
+                    if (capability is not null)
+                        diagnostics.Add(TypeError.CapabilityAppliedToEmptyType(file, typeSyntax));
                     return sym.DeclaresType;
             }
         }

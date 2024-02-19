@@ -1,23 +1,21 @@
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
-internal class ExplicitNumericConversion : ExplicitConversionExpression, IExplicitNumericConversionExpression
+internal class ExplicitSimpleTypeConversion : ExplicitConversionExpression, IExplicitSimpleTypeConversionExpression
 {
-    public NumericType ConvertToType { get; }
+    public SimpleType ConvertToType { get; }
 
-    public ExplicitNumericConversion(
+    public ExplicitSimpleTypeConversion(
         TextSpan span,
-        DataType dataType,
         ExpressionSemantics semantics,
         IExpression expression,
         bool isOptional,
-        NumericType convertToType)
-        : base(span, dataType, semantics, expression, isOptional)
+        SimpleType convertToType)
+        : base(span, convertToType.Type, semantics, expression, isOptional)
     {
         ConvertToType = convertToType;
     }
@@ -25,6 +23,6 @@ internal class ExplicitNumericConversion : ExplicitConversionExpression, IExplic
     public override string ToString()
     {
         var @operator = IsOptional ? "as?" : "as!";
-        return $"{Expression.ToGroupedString(OperatorPrecedence.Min)} {@operator} {ConvertToType.ToILString()}";
+        return $"{Expression.ToGroupedString(OperatorPrecedence.Min)} {@operator} {ConvertToType}";
     }
 }

@@ -1,4 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
@@ -9,8 +12,25 @@ public sealed class BoolType : SimpleType
 
     private BoolType()
         : base(SpecialTypeName.Bool)
-    { }
+    {
+        BareType = new(this, FixedList<DataType>.Empty);
+        Type = BareType.With(ReferenceCapability.Constant);
+    }
     #endregion
 
-    public override bool IsFullyKnown => true;
+    public override BareValueType<BoolType> BareType { get; }
+
+    public override ValueType<BoolType> Type { get; }
+
+    public override BareValueType<BoolType> With(FixedList<DataType> typeArguments)
+    {
+        RequiresEmpty(typeArguments);
+        return BareType;
+    }
+
+    public override ValueType<BoolType> With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+        => With(typeArguments).With(capability);
+
+    public override ValueType<BoolType> With(ReferenceCapability capability)
+        => BareType.With(capability);
 }

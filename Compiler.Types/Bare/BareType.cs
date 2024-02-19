@@ -18,7 +18,24 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class BareType
 {
-    public static readonly BareReferenceType<DeclaredAnyType> Any = new(DeclaredType.Any, FixedList<DataType>.Empty);
+    #region Standard Types
+    public static readonly BareValueType<BoolType> Bool = DeclaredType.Bool.BareType;
+
+    public static readonly BareValueType<BigIntegerType> Int = DeclaredType.Int.BareType;
+    public static readonly BareValueType<BigIntegerType> UInt = DeclaredType.UInt.BareType;
+    public static readonly BareValueType<FixedSizeIntegerType> Int8 = DeclaredType.Int8.BareType;
+    public static readonly BareValueType<FixedSizeIntegerType> Byte = DeclaredType.Byte.BareType;
+    public static readonly BareValueType<FixedSizeIntegerType> Int16 = DeclaredType.Int16.BareType;
+    public static readonly BareValueType<FixedSizeIntegerType> UInt16 = DeclaredType.UInt16.BareType;
+    public static readonly BareValueType<FixedSizeIntegerType> Int32 = DeclaredType.Int32.BareType;
+    public static readonly BareValueType<FixedSizeIntegerType> UInt32 = DeclaredType.UInt32.BareType;
+    public static readonly BareValueType<FixedSizeIntegerType> Int64 = DeclaredType.Int64.BareType;
+    public static readonly BareValueType<FixedSizeIntegerType> UInt64 = DeclaredType.UInt64.BareType;
+    public static readonly BareValueType<PointerSizedIntegerType> Size = new(DeclaredType.Size, FixedList<DataType>.Empty);
+    public static readonly BareValueType<PointerSizedIntegerType> Offset = new(DeclaredType.Offset, FixedList<DataType>.Empty);
+
+    public static readonly BareReferenceType<DeclaredAnyType> Any = DeclaredType.Any.BareType;
+    #endregion
 
     public abstract DeclaredType DeclaredType { get; }
     public bool AllowsVariance => DeclaredType.AllowsVariance;
@@ -35,6 +52,8 @@ public abstract class BareType
     /// const.
     /// </summary>
     public bool IsDeclaredConstType => DeclaredType.IsConstType;
+
+    public TypeSemantics Semantics => DeclaredType.Semantics;
 
     private readonly Lazy<TypeReplacements> typeReplacements;
 

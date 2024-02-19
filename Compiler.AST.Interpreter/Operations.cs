@@ -4,12 +4,13 @@ using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 
 internal static class Operations
 {
-    public static AzothValue Convert(this AzothValue value, DataType from, NumericType to, bool isOptional)
+    public static AzothValue Convert(this AzothValue value, DataType from, ValueType to, bool isOptional)
     {
         if (from is IntegerConstValueType)
         {
@@ -28,7 +29,7 @@ internal static class Operations
             if (to == DataType.Size) return AzothValue.Size((nuint)(ulong)value.IntValue);
         }
 
-        if (from is BoolType or BoolConstValueType)
+        if (from is ValueType<BoolType> or BoolConstValueType)
         {
             if (to == DataType.Byte) return AzothValue.Byte((byte)(value.BoolValue ? 1 : 0));
             if (to == DataType.Int32) return AzothValue.I32(value.BoolValue ? 1 : 0);
@@ -37,6 +38,7 @@ internal static class Operations
             if (to == DataType.Size) return AzothValue.Size((nuint)(value.BoolValue ? 1 : 0));
             if (to == DataType.Int) return AzothValue.Int(value.BoolValue ? BigInteger.One : BigInteger.Zero);
             if (to == DataType.UInt) return AzothValue.Int(value.BoolValue ? BigInteger.One : BigInteger.Zero);
+            if (to == DataType.Bool) return value;
         }
 
         if (from == DataType.Byte)
@@ -67,7 +69,7 @@ internal static class Operations
             if (to == DataType.Int) return value;
 
             var fromValue = value.IntValue;
-            if (to is FixedSizeIntegerType fixedSizeIntegerType)
+            if (to is ValueType<FixedSizeIntegerType> { DeclaredType: var fixedSizeIntegerType })
             {
                 var isSigned = fromValue.Sign < 0;
                 if (isSigned && (!fixedSizeIntegerType.IsSigned

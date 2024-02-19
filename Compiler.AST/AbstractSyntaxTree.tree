@@ -8,6 +8,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 'IAbstractSyntax' = Span:'TextSpan';
@@ -111,13 +112,13 @@ ReturnExpression: Expression = Value:Expression?;
 // ---------- Implicit Conversion Expressions
 ImplicitConversionExpression: Expression = Expression DataType:'DataType';
 //ImplicitImmutabilityConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'ObjectType';
-ImplicitNumericConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'NumericType';
+ImplicitSimpleTypeConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'SimpleType';
 ImplicitOptionalConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'OptionalType';
 ImplicitLiftedConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'OptionalType';
 
 // ----------- Explicit Conversion Expressions
 ExplicitConversionExpression: Expression = Expression IsOptional:'bool' DataType:'DataType';
-ExplicitNumericConversionExpression: ExplicitConversionExpression = Expression ConvertToType:'NumericType';
+ExplicitSimpleTypeConversionExpression: ExplicitConversionExpression = Expression ConvertToType:'SimpleType';
 
 // ---------- Invocation Expressions
 InvocationExpression: Expression = Arguments:Expression*;

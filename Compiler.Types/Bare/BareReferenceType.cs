@@ -76,5 +76,5 @@ public sealed class BareReferenceType<TDeclared> : BareReferenceType
         => new(DeclaredType, typeArguments);
 
     public override ReferenceType<TDeclared> With(ReferenceCapability capability)
-        => new ReferenceType<TDeclared>(capability, this);
+        => new(capability, this);
 }

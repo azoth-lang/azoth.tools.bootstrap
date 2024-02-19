@@ -17,6 +17,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 
@@ -340,15 +341,15 @@ public class InterpreterProcess
             case IReturnExpression exp:
                 if (exp.Value is null) throw new Return();
                 throw new Return(await ExecuteAsync(exp.Value, variables).ConfigureAwait(false));
-            case IImplicitNumericConversionExpression exp:
+            case IImplicitSimpleTypeConversionExpression exp:
             {
                 var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
-                return value.Convert(exp.Expression.DataType, exp.ConvertToType, false);
+                return value.Convert(exp.Expression.DataType, exp.ConvertToType.Type, false);
             }
-            case IExplicitNumericConversionExpression exp:
+            case IExplicitSimpleTypeConversionExpression exp:
             {
                 var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
-                return value.Convert(exp.Expression.DataType, exp.ConvertToType, exp.IsOptional);
+                return value.Convert(exp.Expression.DataType, exp.ConvertToType.Type, exp.IsOptional);
             }
             case IIntegerLiteralExpression exp:
                 return AzothValue.Int(exp.Value);
@@ -547,7 +548,6 @@ public class InterpreterProcess
                 {
                     case EmptyType _:
                     case UnknownType _:
-                    case BoolType _:
                     case OptionalType _:
                     case GenericParameterType _:
                     case FunctionType _:
@@ -558,13 +558,17 @@ public class InterpreterProcess
                         var vtable = self.ObjectValue.VTable;
                         var method = vtable[methodSignature];
                         return await CallMethodAsync(method, self, arguments).ConfigureAwait(false);
-                    case NumericType numericType:
+                    case ValueType valueType:
+                    {
+                        if (valueType is not ValueType { DeclaredType: NumericType })
+                            throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
                         return methodSignature.Name.Text switch
                         {
-                            "remainder" => Remainder(self, arguments[0], numericType),
-                            "to_display_string" => await ToDisplayStringAsync(self, numericType),
+                            "remainder" => Remainder(self, arguments[0], valueType),
+                            "to_display_string" => await ToDisplayStringAsync(self, valueType),
                             _ => throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}")
                         };
+                    }
                     default:
                         throw ExhaustiveMatch.Failed(selfType);
                 }
@@ -647,7 +651,7 @@ public class InterpreterProcess
                 var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
                 if (value.IsNone) return value;
                 // TODO handle other lifted conversions
-                return value.Convert(exp.Expression.DataType, (NumericType)exp.ConvertToType.Referent, false);
+                return value.Convert(exp.Expression.DataType, (ValueType)exp.ConvertToType.Referent, false);
             }
             case IPatternMatchExpression exp:
             {
@@ -994,7 +998,7 @@ public class InterpreterProcess
     private static AzothValue Remainder(
         AzothValue dividend,
         AzothValue divisor,
-        NumericType type)
+        ValueType type)
     {
         if (type == DataType.Int) return AzothValue.Int(dividend.IntValue % divisor.IntValue);
         if (type == DataType.UInt) return AzothValue.Int(dividend.IntValue % divisor.IntValue);
@@ -1011,7 +1015,7 @@ public class InterpreterProcess
         throw new NotImplementedException($"Remainder {type.ToILString()}");
     }
 
-    private async ValueTask<AzothValue> ToDisplayStringAsync(AzothValue value, NumericType type)
+    private async ValueTask<AzothValue> ToDisplayStringAsync(AzothValue value, ValueType type)
     {
         string displayString;
         if (type == DataType.Int) displayString = value.IntValue.ToString();

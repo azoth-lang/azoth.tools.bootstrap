@@ -1,5 +1,3 @@
-using System;
-using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -14,7 +12,9 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
 
     private DeclaredAnyType()
         : base(isConstType: false, isAbstract: true, FixedList<GenericParameterType>.Empty)
-    { }
+    {
+        BareType = new(this, FixedList<DataType>.Empty);
+    }
     #endregion
 
     public override SimpleName? ContainingPackage => null;
@@ -22,22 +22,22 @@ public sealed class DeclaredAnyType : DeclaredReferenceType
     public override SpecialTypeName Name => SpecialTypeName.Any;
     public override FixedSet<BareReferenceType> Supertypes => FixedSet<BareReferenceType>.Empty;
 
+    public BareReferenceType<DeclaredAnyType> BareType { get; }
+
     public override BareReferenceType<DeclaredAnyType> With(FixedList<DataType> typeArguments)
     {
-        if (typeArguments.Count != 0)
-            throw new ArgumentException($"`{SpecialTypeName.Any}` does not support type arguments.");
-        return BareType.Any;
+        RequiresEmpty(typeArguments);
+        return BareType;
     }
 
     public override ReferenceType<DeclaredAnyType> With(ReferenceCapability capability, FixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
     public ReferenceType<DeclaredAnyType> With(ReferenceCapability capability)
-        => ReferenceType.Create(capability, BareType.Any);
+        => ReferenceType.Create(capability, BareType);
 
     #region Equals
-    public override bool Equals(DeclaredReferenceType? other) => ReferenceEquals(this, other);
+    public override bool Equals(DeclaredType? other) => ReferenceEquals(this, other);
 
     public override int GetHashCode() => Name.GetHashCode();
     #endregion

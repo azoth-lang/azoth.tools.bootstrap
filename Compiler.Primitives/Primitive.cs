@@ -38,19 +38,19 @@ public static class Primitive
         // Simple Types
         BuildBoolSymbol(tree);
 
-        BuildIntegerTypeSymbol(tree, DataType.Int, stringType);
-        BuildIntegerTypeSymbol(tree, DataType.UInt, stringType);
-        BuildIntegerTypeSymbol(tree, DataType.Int8, stringType);
-        BuildIntegerTypeSymbol(tree, DataType.Byte, stringType);
-        BuildIntegerTypeSymbol(tree, DataType.Int16, stringType);
-        BuildIntegerTypeSymbol(tree, DataType.UInt16, stringType);
-        BuildIntegerTypeSymbol(tree, DataType.Int32, stringType);
-        BuildIntegerTypeSymbol(tree, DataType.UInt32, stringType);
-        BuildIntegerTypeSymbol(tree, DataType.Int64, stringType);
-        BuildIntegerTypeSymbol(tree, DataType.UInt64, stringType);
+        BuildIntegerTypeSymbol(tree, DeclaredType.Int, stringType);
+        BuildIntegerTypeSymbol(tree, DeclaredType.UInt, stringType);
+        BuildIntegerTypeSymbol(tree, DeclaredType.Int8, stringType);
+        BuildIntegerTypeSymbol(tree, DeclaredType.Byte, stringType);
+        BuildIntegerTypeSymbol(tree, DeclaredType.Int16, stringType);
+        BuildIntegerTypeSymbol(tree, DeclaredType.UInt16, stringType);
+        BuildIntegerTypeSymbol(tree, DeclaredType.Int32, stringType);
+        BuildIntegerTypeSymbol(tree, DeclaredType.UInt32, stringType);
+        BuildIntegerTypeSymbol(tree, DeclaredType.Int64, stringType);
+        BuildIntegerTypeSymbol(tree, DeclaredType.UInt64, stringType);
 
-        BuildIntegerTypeSymbol(tree, DataType.Size, stringType);
-        BuildIntegerTypeSymbol(tree, DataType.Offset, stringType);
+        BuildIntegerTypeSymbol(tree, DeclaredType.Size, stringType);
+        BuildIntegerTypeSymbol(tree, DeclaredType.Offset, stringType);
 
         BuildEmptyTypeSymbol(tree, DataType.Void);
         BuildEmptyTypeSymbol(tree, DataType.Never);
@@ -62,7 +62,7 @@ public static class Primitive
 
     private static void BuildBoolSymbol(SymbolTreeBuilder tree)
     {
-        var symbol = new PrimitiveTypeSymbol(DataType.Bool);
+        var symbol = new PrimitiveTypeSymbol(DeclaredType.Bool);
         tree.Add(symbol);
     }
 
@@ -74,9 +74,9 @@ public static class Primitive
         var type = new PrimitiveTypeSymbol(integerType);
         tree.Add(type);
 
-        var integerParamType = SelfParam(integerType);
+        var integerParamType = SelfParam(integerType.Type);
 
-        var remainderMethod = new MethodSymbol(type, "remainder", integerParamType, Params(integerType), Return(integerType));
+        var remainderMethod = new MethodSymbol(type, "remainder", integerParamType, Params(integerType.Type), Return(integerType.Type));
         tree.Add(remainderMethod);
 
         var displayStringMethod = new MethodSymbol(type, "to_display_string", integerParamType, Params(), Return(stringType));
@@ -85,16 +85,16 @@ public static class Primitive
 
     private static void BuildEmptyTypeSymbol(SymbolTreeBuilder tree, EmptyType emptyType)
     {
-        var symbol = new PrimitiveTypeSymbol(emptyType);
+        var symbol = new EmptyTypeSymbol(emptyType);
         tree.Add(symbol);
     }
 
     private static void BuildAnyTypeSymbol(SymbolTreeBuilder tree)
     {
-        var symbol = new PrimitiveTypeSymbol(DeclaredReferenceType.Any);
+        var symbol = new PrimitiveTypeSymbol(DeclaredType.Any);
         tree.Add(symbol);
 
-        var idAnyType = DeclaredReferenceType.Any.With(ReferenceCapability.Identity);
+        var idAnyType = DeclaredType.Any.With(ReferenceCapability.Identity);
         // fn identity_hash(value: Any) -> uint64 // TODO: should be nuint
         var identityHash = new MethodSymbol(symbol, "identity_hash", SelfParam(idAnyType), Params(), ReturnType.UInt64);
         tree.Add(identityHash);

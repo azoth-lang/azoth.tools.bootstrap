@@ -1,8 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Xunit;
-using DT = Azoth.Tools.Bootstrap.Compiler.Types.DataType;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Symbols;
 
@@ -12,7 +10,7 @@ public class SymbolTests : SymbolTestFixture
     [Fact]
     public void Symbol_not_in_namespace_is_global()
     {
-        var symbol = new PrimitiveTypeSymbol(DT.Void);
+        var symbol = new PrimitiveTypeSymbol(DeclaredType.Byte);
 
         Assert.True(symbol.IsGlobal);
     }

@@ -354,32 +354,33 @@ public class BasicBodyAnalyzer
                     priorConversion = conversion;
                 }
                 return new OptionalConversion(priorConversion);
-            case (FixedSizeIntegerType to, FixedSizeIntegerType from):
-                if (to.Bits > from.Bits && (!from.IsSigned || to.IsSigned))
-                    return new NumericConversion(to, priorConversion);
-
+            case (ValueType<BoolType> to, BoolConstValueType from):
+                return new SimpleTypeConversion(to.DeclaredType, priorConversion);
+            case (ValueType<FixedSizeIntegerType> to, ValueType<FixedSizeIntegerType> from):
+                if (to.DeclaredType.Bits > from.DeclaredType.Bits && (!from.DeclaredType.IsSigned || to.DeclaredType.IsSigned))
+                    return new SimpleTypeConversion(to.DeclaredType, priorConversion);
                 return null;
-            case (FixedSizeIntegerType to, IntegerConstValueType from):
+            case (ValueType<FixedSizeIntegerType> to, IntegerConstValueType from):
             {
                 var requireSigned = from.Value < 0;
-                var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
-                if (to.Bits >= bits && (!requireSigned || to.IsSigned))
-                    return new NumericConversion(to, priorConversion);
+                var bits = from.Value.GetByteCount(!to.DeclaredType.IsSigned) * 8;
+                if (to.DeclaredType.Bits >= bits && (!requireSigned || to.DeclaredType.IsSigned))
+                    return new SimpleTypeConversion(to.DeclaredType, priorConversion);
 
                 return null;
             }
-            case (BigIntegerType { IsSigned: true } to, IntegerType):
-                return new NumericConversion(to, priorConversion);
-            case (BigIntegerType to, IntegerType { IsSigned: false }):
-                return new NumericConversion(to, priorConversion);
-            case (BigIntegerType { IsSigned: true } to, IntegerConstValueType):
-                return new NumericConversion(to, priorConversion);
-            case (BigIntegerType to, IntegerConstValueType { IsSigned: false }):
-                return new NumericConversion(to, priorConversion);
-            case (PointerSizedIntegerType to, IntegerConstValueType from):
+            case (ValueType<BigIntegerType> { DeclaredType.IsSigned: true } to, ValueType { DeclaredType: IntegerType }):
+                return new SimpleTypeConversion(to.DeclaredType, priorConversion);
+            case (ValueType<BigIntegerType> to, ValueType { DeclaredType: IntegerType { IsSigned: false } }):
+                return new SimpleTypeConversion(to.DeclaredType, priorConversion);
+            case (ValueType<BigIntegerType> { DeclaredType.IsSigned: true } to, IntegerConstValueType):
+                return new SimpleTypeConversion(to.DeclaredType, priorConversion);
+            case (ValueType<BigIntegerType> to, IntegerConstValueType { IsSigned: false }):
+                return new SimpleTypeConversion(to.DeclaredType, priorConversion);
+            case (ValueType<PointerSizedIntegerType> to, IntegerConstValueType from):
             {
                 var requireSigned = from.Value < 0;
-                return !requireSigned || to.IsSigned ? new NumericConversion(to, priorConversion) : null;
+                return !requireSigned || to.DeclaredType.IsSigned ? new SimpleTypeConversion(to.DeclaredType, priorConversion) : null;
             }
             case (ReferenceType { IsTemporarilyConstantReference: true } to, ReferenceType { AllowsFreeze: true } from)
                 when to.BareType.IsAssignableFrom(targetAllowsWrite: false, from.BareType):
@@ -547,29 +548,29 @@ public class BasicBodyAnalyzer
                     (BoolConstValueType left, BinaryOperator.And, BoolConstValueType right) => left.And(right),
                     (BoolConstValueType left, BinaryOperator.Or, BoolConstValueType right) => left.Or(right),
 
-                    (INumericType, BinaryOperator.Plus, INumericType)
-                        or (INumericType, BinaryOperator.Minus, INumericType)
-                        or (INumericType, BinaryOperator.Asterisk, INumericType)
-                        or (INumericType, BinaryOperator.Slash, INumericType)
-                        => InferNumericOperatorType(leftResult, rightResult, flow),
-                    (INumericType, BinaryOperator.EqualsEquals, INumericType)
-                        or (INumericType, BinaryOperator.NotEqual, INumericType)
-                        or (OptionalType { Referent: INumericType }, BinaryOperator.NotEqual, OptionalType { Referent: INumericType })
-                        or (INumericType, BinaryOperator.LessThan, INumericType)
-                        or (INumericType, BinaryOperator.LessThanOrEqual, INumericType)
-                        or (INumericType, BinaryOperator.GreaterThan, INumericType)
-                        or (INumericType, BinaryOperator.GreaterThanOrEqual, INumericType)
-                        => InferComparisonOperatorType(leftResult, rightResult, flow),
-
-                    (BoolType, BinaryOperator.EqualsEquals, BoolType)
-                        or (BoolType, BinaryOperator.NotEqual, BoolType)
-                        or (BoolType, BinaryOperator.And, BoolType)
-                        or (BoolType, BinaryOperator.Or, BoolType)
-                        => DataType.Bool,
-
                     (ReferenceType, BinaryOperator.EqualsEquals, ReferenceType)
                         or (ReferenceType, BinaryOperator.NotEqual, ReferenceType)
                         => InferReferenceEqualityOperatorType(leftOperand, rightOperand),
+
+                    (ValueType<BoolType>, BinaryOperator.EqualsEquals, ValueType<BoolType>)
+                        or (ValueType<BoolType>, BinaryOperator.NotEqual, ValueType<BoolType>)
+                        or (ValueType<BoolType>, BinaryOperator.And, ValueType<BoolType>)
+                        or (ValueType<BoolType>, BinaryOperator.Or, ValueType<BoolType>)
+                        => DataType.Bool,
+
+                    (NonEmptyType, BinaryOperator.Plus, NonEmptyType)
+                        or (NonEmptyType, BinaryOperator.Minus, NonEmptyType)
+                        or (NonEmptyType, BinaryOperator.Asterisk, NonEmptyType)
+                        or (NonEmptyType, BinaryOperator.Slash, NonEmptyType)
+                        => InferNumericOperatorType(leftResult, rightResult, flow),
+                    (NonEmptyType, BinaryOperator.EqualsEquals, NonEmptyType)
+                        or (NonEmptyType, BinaryOperator.NotEqual, NonEmptyType)
+                        or (OptionalType { Referent: NonEmptyType }, BinaryOperator.NotEqual, OptionalType { Referent: NonEmptyType })
+                        or (NonEmptyType, BinaryOperator.LessThan, NonEmptyType)
+                        or (NonEmptyType, BinaryOperator.LessThanOrEqual, NonEmptyType)
+                        or (NonEmptyType, BinaryOperator.GreaterThan, NonEmptyType)
+                        or (NonEmptyType, BinaryOperator.GreaterThanOrEqual, NonEmptyType)
+                        => InferComparisonOperatorType(leftResult, rightResult, flow),
 
                     (_, BinaryOperator.DotDot, _)
                         or (_, BinaryOperator.LessThanDotDot, _)
@@ -650,10 +651,10 @@ public class BasicBodyAnalyzer
                             case IntegerConstValueType integerType:
                                 expType = integerType.Negate();
                                 break;
-                            case FixedSizeIntegerType sizedIntegerType:
-                                expType = sizedIntegerType.WithSign();
+                            case ValueType<FixedSizeIntegerType> sizedIntegerType:
+                                expType = sizedIntegerType.DeclaredType.WithSign().Type;
                                 break;
-                            case BigIntegerType:
+                            case ValueType<BigIntegerType>:
                                 // Even if unsigned before, it is signed now
                                 expType = DataType.Int;
                                 break;
@@ -670,7 +671,8 @@ public class BasicBodyAnalyzer
                     case UnaryOperator.Plus:
                         switch (result.Type)
                         {
-                            case NumericType:
+                            case ValueType { DeclaredType: IntegerType }:
+                            case IntegerConstValueType:
                             case UnknownType _:
                                 expType = result.Type;
                                 break;
@@ -1999,16 +2001,17 @@ public class BasicBodyAnalyzer
         return (expression.ConvertedDataType.Assigned(), convertToType) switch
         {
             // Safe conversions
-            (BoolType, IntegerType) => true,
-            (BoolConstValueType, IntegerType) => true,
-            (IntegerType { IsSigned: false }, BigIntegerType) => true,
-            (IntegerType, BigIntegerType { IsSigned: true }) => true,
-            (FixedSizeIntegerType from, FixedSizeIntegerType to)
-                when from.Bits < to.Bits || (from.Bits == to.Bits && from.IsSigned == to.IsSigned)
+            (ValueType<BoolType>, ValueType { DeclaredType: IntegerType }) => true,
+            (BoolConstValueType, ValueType { DeclaredType: IntegerType }) => true,
+            (ValueType { DeclaredType: IntegerType { IsSigned: false } }, ValueType { DeclaredType: BigIntegerType }) => true,
+            (ValueType { DeclaredType: IntegerType }, ValueType { DeclaredType: BigIntegerType { IsSigned: true } }) => true,
+            (ValueType<FixedSizeIntegerType> from, ValueType<FixedSizeIntegerType> to)
+                when from.DeclaredType.Bits < to.DeclaredType.Bits
+                     || (from.DeclaredType.Bits == to.DeclaredType.Bits && from.DeclaredType.IsSigned == to.DeclaredType.IsSigned)
                 => true,
             // TODO conversions for constants
             // Unsafe conversions
-            (IntegerType, IntegerType) => !safeOnly,
+            (ValueType { DeclaredType: IntegerType }, ValueType { DeclaredType: IntegerType }) => !safeOnly,
             _ => convertToType.IsAssignableFrom(expression.ConvertedDataType),
         };
     }
@@ -2089,18 +2092,21 @@ public class BasicBodyAnalyzer
     {
         return dataType switch
         {
-            UnknownType or IntegerConstValueType or OptionalType => null,
+            UnknownType _ => null,
+            ConstValueType _ => null,
+            OptionalType _ => null,
+            EmptyType _ => null,
+            FunctionType _ => null,
             ReferenceType t => LookupSymbolForType(t),
+            ValueType t => LookupSymbolForType(t),
             GenericParameterType t => LookupSymbolForType(t),
-            SelfViewpointType { Referent: var t } => LookupSymbolForType(t),
-            IntegerType t => symbolTrees.PrimitiveSymbolTree
-                                        .GlobalSymbols
-                                        .OfType<PrimitiveTypeSymbol>()
-                                        .Single(s => s.DeclaresType == t),
-            _ => throw new NotImplementedException(
-                $"{nameof(LookupSymbolForType)} not implemented for {dataType.GetType().Name}")
+            ViewpointType t => LookupSymbolForType(t.Referent),
+            _ => throw ExhaustiveMatch.Failed(dataType),
         };
     }
+
+    private TypeSymbol LookupSymbolForType(ValueType type)
+        => LookupSymbolForType(type.DeclaredType);
 
     private TypeSymbol LookupSymbolForType(ReferenceType type)
         => LookupSymbolForType(type.DeclaredType);
@@ -2110,7 +2116,7 @@ public class BasicBodyAnalyzer
         return type switch
         {
             DeclaredReferenceType t => LookupSymbolForType(t),
-            DeclaredValueType t => throw new NotImplementedException(),
+            DeclaredValueType t => LookupSymbolForType(t),
             _ => throw ExhaustiveMatch.Failed(type),
         };
     }
@@ -2125,9 +2131,22 @@ public class BasicBodyAnalyzer
         };
     }
 
+    private TypeSymbol LookupSymbolForType(DeclaredValueType type)
+    {
+        return type switch
+        {
+            SimpleType t => LookupSymbolForType(t),
+            _ => throw ExhaustiveMatch.Failed(type),
+        };
+    }
+
+    private TypeSymbol LookupSymbolForType(SimpleType type)
+        => symbolTrees.PrimitiveSymbolTree.GlobalSymbols.OfType<PrimitiveTypeSymbol>()
+                      .Single(s => s.DeclaresType == type);
+
     private PrimitiveTypeSymbol LookupSymbolForType(DeclaredAnyType type)
         => symbolTrees.PrimitiveSymbolTree.GlobalSymbols.OfType<PrimitiveTypeSymbol>()
-                      .Single(s => s.DeclaresType is ReferenceType { DeclaredType: DeclaredAnyType });
+                      .Single(s => s.DeclaresType == type);
 
     private TypeSymbol LookupSymbolForType(DeclaredObjectType type)
     {

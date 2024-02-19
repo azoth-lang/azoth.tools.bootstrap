@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
@@ -63,11 +64,19 @@ internal sealed class TypeReplacements
     {
         switch (type)
         {
-            case ReferenceType objectType:
+            case ValueType t:
             {
-                var replacementType = ReplaceTypeParametersIn(objectType.BareType);
-                if (!ReferenceEquals(objectType.BareType, replacementType))
-                    return replacementType.With(objectType.Capability);
+                var replacementType = ReplaceTypeParametersIn(t.BareType);
+                if (!ReferenceEquals(t.BareType, replacementType))
+                    // TODO use proper capability
+                    return replacementType.With(ReferenceCapability.Constant);
+                break;
+            }
+            case ReferenceType t:
+            {
+                var replacementType = ReplaceTypeParametersIn(t.BareType);
+                if (!ReferenceEquals(t.BareType, replacementType))
+                    return replacementType.With(t.Capability);
                 break;
             }
             case OptionalType optionalType:
@@ -106,7 +115,6 @@ internal sealed class TypeReplacements
                     return new SelfViewpointType(selfViewpointType.Capability, replacementType);
                 break;
             }
-            case SimpleType _:
             case EmptyType _:
             case UnknownType _:
             case ConstValueType _:

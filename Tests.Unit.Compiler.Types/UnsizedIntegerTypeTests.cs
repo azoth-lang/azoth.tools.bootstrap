@@ -16,14 +16,6 @@ public class UnsizedIntegerTypeTests
     }
 
     [Fact]
-    public void Size_is_known_type()
-    {
-        var type = PointerSizedIntegerType.Size;
-
-        Assert.True(type.IsFullyKnown);
-    }
-
-    [Fact]
     public void Size_has_copy_semantics()
     {
         var type = PointerSizedIntegerType.Size;
@@ -37,14 +29,6 @@ public class UnsizedIntegerTypeTests
         var type = PointerSizedIntegerType.Offset;
 
         Assert.True(type.IsSigned);
-    }
-
-    [Fact]
-    public void Offset_is_known_type()
-    {
-        var type = PointerSizedIntegerType.Offset;
-
-        Assert.True(type.IsFullyKnown);
     }
 
     [Fact]

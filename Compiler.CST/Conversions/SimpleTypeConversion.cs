@@ -8,11 +8,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 /// <summary>
 /// Conversion between numeric types. For example `int32` to `int64`.
 /// </summary>
-public sealed class NumericConversion : ChainedConversion
+public sealed class SimpleTypeConversion : ChainedConversion
 {
-    public NumericType To { [DebuggerStepThrough] get; }
+    public SimpleType To { [DebuggerStepThrough] get; }
 
-    public NumericConversion(NumericType to, Conversion priorConversion)
+    public SimpleTypeConversion(SimpleType to, Conversion priorConversion)
         : base(priorConversion)
     {
         To = to;
@@ -22,6 +22,6 @@ public sealed class NumericConversion : ChainedConversion
     {
         (type, semantics) = PriorConversion.Apply(type, semantics);
         // TODO check that the incoming type and semantics can work with numeric conversion
-        return (To, ExpressionSemantics.CopyValue);
+        return (To.Type, ExpressionSemantics.CopyValue);
     }
 }

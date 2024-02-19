@@ -5,6 +5,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 [Closed(typeof(NumericType), typeof(IntegerConstValueType))]
-public interface INumericType
+internal interface INumericType
 {
+    DataType Type { get; }
 }

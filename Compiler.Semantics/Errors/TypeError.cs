@@ -165,4 +165,10 @@ public static class TypeError
         return new(file, exp.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3023, $"Cannot access `var` field `{exp.ToString()}` from type `{contextType.ToSourceCodeString()}`.");
     }
+
+    public static Diagnostic CapabilityAppliedToEmptyType(CodeFile file, ITypeNameSyntax typeSyntax)
+    {
+        return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+            3024, $"Reference capabilities cannot be applied to empty types `{typeSyntax.ToString()}`.");
+    }
 }

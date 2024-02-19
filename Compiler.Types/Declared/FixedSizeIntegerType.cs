@@ -1,6 +1,9 @@
 using System;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
@@ -19,9 +22,12 @@ public sealed class FixedSizeIntegerType : IntegerType
     internal new static readonly FixedSizeIntegerType UInt64 = new(SpecialTypeName.UInt64, 64);
 
     public int Bits { get; }
-    public override bool IsFullyKnown => true;
     public BigInteger MaxValue;
     public BigInteger MinValue;
+
+    public override BareValueType<FixedSizeIntegerType> BareType { get; }
+
+    public override ValueType<FixedSizeIntegerType> Type { get; }
 
     private FixedSizeIntegerType(SpecialTypeName name, int bits)
         : base(name, bits < 0)
@@ -38,6 +44,8 @@ public sealed class FixedSizeIntegerType : IntegerType
             MinValue = 0;
             MaxValue = BigInteger.Pow(2, Bits);
         }
+        BareType = new(this, FixedList<DataType>.Empty);
+        Type = BareType.With(ReferenceCapability.Constant);
     }
 
     /// <summary>
@@ -52,5 +60,15 @@ public sealed class FixedSizeIntegerType : IntegerType
         return Int;
     }
 
-    private static readonly BigInteger Two = 2;
+    public override BareValueType<FixedSizeIntegerType> With(FixedList<DataType> typeArguments)
+    {
+        RequiresEmpty(typeArguments);
+        return BareType;
+    }
+
+    public override ValueType<FixedSizeIntegerType> With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+        => With(typeArguments).With(capability);
+
+    public override ValueType<FixedSizeIntegerType> With(ReferenceCapability capability)
+        => BareType.With(capability);
 }

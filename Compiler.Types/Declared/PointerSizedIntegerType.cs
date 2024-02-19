@@ -1,4 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
@@ -11,10 +14,26 @@ public sealed class PointerSizedIntegerType : IntegerType
     internal new static readonly PointerSizedIntegerType Size = new(SpecialTypeName.Size, false);
     internal new static readonly PointerSizedIntegerType Offset = new(SpecialTypeName.Offset, true);
 
-    public override bool IsFullyKnown => true;
+    public override BareValueType<PointerSizedIntegerType> BareType { get; }
+
+    public override ValueType<PointerSizedIntegerType> Type { get; }
 
     private PointerSizedIntegerType(SpecialTypeName name, bool signed)
         : base(name, signed)
     {
+        BareType = new(this, FixedList<DataType>.Empty);
+        Type = BareType.With(ReferenceCapability.Constant);
     }
+
+    public override BareValueType<PointerSizedIntegerType> With(FixedList<DataType> typeArguments)
+    {
+        RequiresEmpty(typeArguments);
+        return BareType;
+    }
+
+    public override ValueType<PointerSizedIntegerType> With(ReferenceCapability capability, FixedList<DataType> typeArguments)
+        => With(typeArguments).With(capability);
+
+    public override ValueType<PointerSizedIntegerType> With(ReferenceCapability capability)
+        => BareType.With(capability);
 }

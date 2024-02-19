@@ -26,13 +26,10 @@ public static class DataTypeExtensions
         return (target, source) switch
         {
             (_, _) when target.Equals(source) => true,
-            (UnknownType, _)
-                or (_, UnknownType)
-                or (BoolType, BoolConstValueType)
-                or (_, NeverType)
-                or (BigIntegerType { IsSigned: true }, IntegerType)
-                or (BigIntegerType, IntegerType { IsSigned: false })
+            (UnknownType, _) or (_, UnknownType) or (_, NeverType)
                 => true,
+            (ValueType t, ValueType s)
+                => IsAssignableFrom(t, s),
             (ReferenceType targetReference, ReferenceType sourceReference)
                 => IsAssignableFrom(targetReference, sourceReference),
             (OptionalType targetOptional, OptionalType sourceOptional)
@@ -44,6 +41,10 @@ public static class DataTypeExtensions
             _ => false
         };
     }
+
+    public static bool IsAssignableFrom(this ValueType target, ValueType source)
+        //if (!target.Capability.IsAssignableFrom(source.Capability)) return false;
+        => IsAssignableFrom(target.BareType, source.BareType);
 
     public static bool IsAssignableFrom(this ReferenceType target, ReferenceType source)
     {
@@ -59,12 +60,21 @@ public static class DataTypeExtensions
     }
 
     public static bool IsAssignableFrom(this BareType target, bool targetAllowsWrite, BareType source)
-        => throw new NotImplementedException();
+    {
+        return target switch
+        {
+            BareReferenceType t => t.IsAssignableFrom(targetAllowsWrite, source),
+            BareValueType t => t.IsAssignableFrom(source),
+            _ => throw ExhaustiveMatch.Failed(target)
+        };
+    }
 
+    /// <remarks>We currently support implicit boxing, so any bare type with the correct supertype
+    /// is assignable.</remarks>
     public static bool IsAssignableFrom(
         this BareReferenceType target,
         bool targetAllowsWrite,
-        BareReferenceType source)
+        BareType source)
     {
         if (source.Equals(target) || source.Supertypes.Contains(target))
             return true;
@@ -80,6 +90,10 @@ public static class DataTypeExtensions
 
         return false;
     }
+
+    public static bool IsAssignableFrom(this BareValueType target, BareType source)
+        // Because a value type is never the supertype, we only need to check for equality.
+        => source.Equals(target);
 
     private static bool IsAssignableFrom(
         DeclaredReferenceType declaredType,
@@ -278,14 +292,23 @@ public static class DataTypeExtensions
         {
             ({ IsFullyKnown: false }, _) => DataType.Unknown,
             (_, { IsFullyKnown: false }) => DataType.Unknown,
-            (NumericType left, NeverType) => left,
-            (NeverType, NumericType right) => right,
+            (NonEmptyType left, NeverType) => left.AsNumericType()?.Type,
+            (NeverType, NonEmptyType right) => right.AsNumericType()?.Type,
             (OptionalType { Referent: var left }, OptionalType { Referent: var right })
                 => left.NumericOperatorCommonType(right).ToOptional(),
-            (OptionalType { Referent: var left }, _)
-                => left.NumericOperatorCommonType(rightType).ToOptional(),
-            (_, OptionalType { Referent: var right })
-                => leftType.NumericOperatorCommonType(right).ToOptional(),
+            (OptionalType { Referent: var left }, _) => left.NumericOperatorCommonType(rightType).ToOptional(),
+            (_, OptionalType { Referent: var right }) => leftType.NumericOperatorCommonType(right).ToOptional(),
+            (NonEmptyType left, NonEmptyType right)
+                => left.AsNumericType()?.NumericOperatorCommonType(right.AsNumericType()),
+            _ => null,
+        };
+
+    /// <summary>
+    /// Determine what the common type for two numeric types for a numeric operator is.
+    /// </summary>
+    internal static DataType? NumericOperatorCommonType(this INumericType? leftType, INumericType? rightType)
+        => (leftType, rightType) switch
+        {
             (BigIntegerType left, IntegerType right)
                 => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
             (IntegerType left, BigIntegerType right)
@@ -298,23 +321,23 @@ public static class DataTypeExtensions
                 => left.IsSigned || right.IsSigned ? DataType.Offset : DataType.Size,
             (PointerSizedIntegerType { IsSigned: true }, IntegerConstValueType { IsInt16: true })
                 or (PointerSizedIntegerType { IsSigned: false }, IntegerConstValueType { IsUInt16: true })
-                => leftType,
+                => leftType.Type,
             (PointerSizedIntegerType left, IntegerConstValueType right)
                 => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
             (IntegerConstValueType { IsInt16: true }, PointerSizedIntegerType { IsSigned: true })
                 or (IntegerConstValueType { IsUInt16: true }, PointerSizedIntegerType { IsSigned: false })
-                => rightType,
+                => rightType.Type,
             (IntegerConstValueType left, PointerSizedIntegerType right)
                 => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
             (FixedSizeIntegerType left, FixedSizeIntegerType right)
                 when left.IsSigned == right.IsSigned
-                => left.Bits >= right.Bits ? left : right,
+                => (left.Bits >= right.Bits ? left : right).Type,
             (FixedSizeIntegerType { IsSigned: true } left, FixedSizeIntegerType right)
                 when left.Bits > right.Bits
-                => left,
+                => left.Type,
             (FixedSizeIntegerType left, FixedSizeIntegerType { IsSigned: true } right)
                 when left.Bits < right.Bits
-                => right,
+                => right.Type,
             (FixedSizeIntegerType { IsSigned: true } left, IntegerConstValueType right)
                 when left.IsSigned || right.IsSigned
                 => left.NumericOperatorCommonType(right.ToSmallestSignedIntegerType()),
@@ -326,5 +349,13 @@ public static class DataTypeExtensions
             (IntegerConstValueType { IsSigned: false } left, FixedSizeIntegerType { IsSigned: false } right)
                 => left.ToSmallestSignedIntegerType().NumericOperatorCommonType(right),
             _ => null
+        };
+
+    private static INumericType? AsNumericType(this NonEmptyType type)
+        => type switch
+        {
+            ValueType { DeclaredType: NumericType t } => t,
+            IntegerConstValueType t => t,
+            _ => null,
         };
 }

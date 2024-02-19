@@ -41,30 +41,14 @@ public abstract class ReferenceType : CapabilityType
     /// </summary>
     public bool AllowsFreeze => Capability.AllowsFreeze;
 
-    public abstract BareReferenceType BareType { get; }
+    public abstract override BareReferenceType BareType { get; }
 
-    public virtual DeclaredReferenceType DeclaredType => BareType.DeclaredType;
-
-    public FixedList<DataType> TypeArguments => BareType.TypeArguments;
-
-    public FixedSet<BareReferenceType> Supertypes => BareType.Supertypes;
-
-    public override bool IsFullyKnown => BareType.IsFullyKnown;
-
-    /// <summary>
-    /// Whether this type was declared `const` meaning that most references should be treated as
-    /// `const`.
-    /// </summary>
-    public bool IsDeclaredConstant => DeclaredType.IsConstType;
+    public override DeclaredReferenceType DeclaredType => BareType.DeclaredType;
 
     public SimpleName? ContainingPackage => DeclaredType.ContainingPackage;
     public NamespaceName ContainingNamespace => DeclaredType.ContainingNamespace;
 
     public TypeName Name => DeclaredType.Name;
-
-    public override TypeSemantics Semantics => TypeSemantics.Reference;
-
-    public override bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
 
     /// <summary>
     /// Create a object type for a given class or trait.
@@ -88,7 +72,7 @@ public abstract class ReferenceType : CapabilityType
         ReferenceCapability capability,
         DeclaredObjectType declaredType,
         FixedList<DataType> typeArguments)
-        => Create(capability, BareReferenceType.Create(declaredType, typeArguments));
+        => Create(capability, Bare.BareType.Create(declaredType, typeArguments));
 
     /// <summary>
     /// Create a object type for a given bare type.
@@ -172,6 +156,8 @@ public sealed class ReferenceType<TDeclared> : ReferenceType
     internal ReferenceType(ReferenceCapability capability, BareReferenceType<TDeclared> bareType)
         : base(capability)
     {
+        if (typeof(TDeclared).IsAbstract)
+            throw new ArgumentException($"The type parameter must be a concrete {nameof(DeclaredReferenceType)}.", nameof(TDeclared));
         BareType = bareType;
     }
 

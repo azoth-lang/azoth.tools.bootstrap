@@ -23,21 +23,21 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     public static readonly UnknownType Unknown = UnknownType.Instance;
     public static readonly VoidType Void = VoidType.Instance;
     public static readonly NeverType Never = NeverType.Instance;
-    public static readonly BoolType Bool = BoolType.Instance;
+    public static readonly ValueType<BoolType> Bool = DeclaredType.Bool.Type;
     public static readonly BoolConstValueType True = BoolConstValueType.True;
     public static readonly BoolConstValueType False = BoolConstValueType.False;
-    public static readonly BigIntegerType Int = BigIntegerType.Int;
-    public static readonly BigIntegerType UInt = BigIntegerType.UInt;
-    public static readonly FixedSizeIntegerType Int8 = FixedSizeIntegerType.Int8;
-    public static readonly FixedSizeIntegerType Byte = FixedSizeIntegerType.Byte;
-    public static readonly FixedSizeIntegerType Int16 = FixedSizeIntegerType.Int16;
-    public static readonly FixedSizeIntegerType UInt16 = FixedSizeIntegerType.UInt16;
-    public static readonly FixedSizeIntegerType Int32 = FixedSizeIntegerType.Int32;
-    public static readonly FixedSizeIntegerType UInt32 = FixedSizeIntegerType.UInt32;
-    public static readonly FixedSizeIntegerType Int64 = FixedSizeIntegerType.Int64;
-    public static readonly FixedSizeIntegerType UInt64 = FixedSizeIntegerType.UInt64;
-    public static readonly PointerSizedIntegerType Size = PointerSizedIntegerType.Size;
-    public static readonly PointerSizedIntegerType Offset = PointerSizedIntegerType.Offset;
+    public static readonly ValueType<BigIntegerType> Int = DeclaredType.Int.Type;
+    public static readonly ValueType<BigIntegerType> UInt = DeclaredType.UInt.Type;
+    public static readonly ValueType<FixedSizeIntegerType> Int8 = DeclaredType.Int8.Type;
+    public static readonly ValueType<FixedSizeIntegerType> Byte = DeclaredType.Byte.Type;
+    public static readonly ValueType<FixedSizeIntegerType> Int16 = DeclaredType.Int16.Type;
+    public static readonly ValueType<FixedSizeIntegerType> UInt16 = DeclaredType.UInt16.Type;
+    public static readonly ValueType<FixedSizeIntegerType> Int32 = DeclaredType.Int32.Type;
+    public static readonly ValueType<FixedSizeIntegerType> UInt32 = DeclaredType.UInt32.Type;
+    public static readonly ValueType<FixedSizeIntegerType> Int64 = DeclaredType.Int64.Type;
+    public static readonly ValueType<FixedSizeIntegerType> UInt64 = DeclaredType.UInt64.Type;
+    public static readonly ValueType<PointerSizedIntegerType> Size = DeclaredType.Size.Type;
+    public static readonly ValueType<PointerSizedIntegerType> Offset = DeclaredType.Offset.Type;
 
     /// <summary>
     /// The value `none` has this type, which is `never?`.

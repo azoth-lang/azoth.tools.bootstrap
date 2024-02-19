@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
@@ -36,11 +37,17 @@ public sealed class BareValueType<TDeclared> : BareValueType
     }
 
     public override BareValueType<TDeclared> AccessedVia(ReferenceCapability capability)
-        => throw new System.NotImplementedException();
+    {
+        if (DeclaredType.GenericParameters.All(p => p.Variance != Variance.Independent)) return this;
+        var newTypeArguments = DeclaredType.GenericParameters.Zip(TypeArguments,
+            (p, arg) => p.Variance == Variance.Independent ? arg.AccessedVia(capability) : arg).ToFixedList();
+        return new(DeclaredType, newTypeArguments);
+    }
 
     public override BareValueType<TDeclared> With(FixedList<DataType> typeArguments)
-        => throw new System.NotImplementedException();
+        => new(DeclaredType, typeArguments);
 
-    public override ValueType/*<TDeclared>*/ With(ReferenceCapability capability)
-        => throw new System.NotImplementedException();
+    public override ValueType<TDeclared> With(ReferenceCapability capability)
+        // TODO use capability
+        => new(this);
 }

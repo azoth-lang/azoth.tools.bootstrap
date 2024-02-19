@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout.BoundedLists;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 
@@ -27,7 +27,7 @@ internal readonly struct AzothValue
     [FieldOffset(0)] public readonly IRawBoundedList RawBoundedListValue;
     [FieldOffset(0)] public readonly Task<AzothValue> PromiseValue;
     [FieldOffset(0)] public readonly FunctionReference FunctionReferenceValue;
-    [FieldOffset(0)] private readonly ValueType value;
+    [FieldOffset(0)] private readonly SimpleValueType value;
 
     public bool IsNone => ReferenceEquals(value.Reference, NoneFlag);
     public bool BoolValue => value.Simple.BoolValue;
@@ -137,7 +137,7 @@ internal readonly struct AzothValue
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     #endregion
 
-    public AzothValue Increment(NumericType numberType)
+    public AzothValue Increment(ValueType numberType)
     {
         if (numberType == DataType.Int || numberType == DataType.UInt) return Int(IntValue + 1);
         if (numberType == DataType.Int8) return I8((sbyte)(I8Value + 1));
@@ -154,7 +154,7 @@ internal readonly struct AzothValue
         throw new NotImplementedException($"Increment of {numberType}");
     }
 
-    public AzothValue Decrement(NumericType numberType)
+    public AzothValue Decrement(ValueType numberType)
     {
         if (numberType == DataType.Int || numberType == DataType.UInt) return Int(IntValue - 1);
         if (numberType == DataType.Int8) return I8((sbyte)(I8Value - 1));
@@ -171,7 +171,7 @@ internal readonly struct AzothValue
         throw new NotImplementedException($"Decrement of {numberType.ToILString()}");
     }
 
-    public BigInteger ToBigInteger(NumericType numberType)
+    public BigInteger ToBigInteger(ValueType numberType)
     {
         if (numberType == DataType.Int || numberType == DataType.UInt) return IntValue;
         if (numberType == DataType.Int8) return I8Value;
@@ -206,7 +206,7 @@ internal readonly struct AzothValue
         [FieldOffset(0)] public nuint SizeValue;
     }
 
-    private struct ValueType
+    private struct SimpleValueType
     {
         public object? Reference;
         public SimpleValue Simple;
