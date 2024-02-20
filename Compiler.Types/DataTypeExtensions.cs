@@ -115,15 +115,15 @@ public static class DataTypeExtensions
                         if (targetAllowsWrite)
                             return false;
 
-                        if (from is not ReferenceType fromReference || to is not ReferenceType toReference)
+                        if (from is not CapabilityType fromCapabilityType
+                            || to is not CapabilityType toCapabilityType)
                             return false;
 
-                        if (fromReference.BareType != toReference.BareType
+                        if (fromCapabilityType.BareType != toCapabilityType.BareType
                             // TODO does this handle `iso` and `id` correctly?
-                            || !toReference.Capability.IsAssignableFrom(fromReference.Capability))
+                            || !toCapabilityType.Capability.IsAssignableFrom(fromCapabilityType.Capability))
                             return false;
                     }
-
                     break;
                 case ParameterVariance.Covariant:
                     if (!to.IsAssignableFrom(from))

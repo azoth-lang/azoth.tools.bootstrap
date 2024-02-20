@@ -288,15 +288,19 @@ public class BasicAnalyzer
                 // Mutable bindings can be both read and written to, so they must be both input and output
                 // safe (i.e. invariant).
                 if (!type.IsInputAndOutputSafe())
-                    diagnostics.Add(TypeError.VarFieldMustBeIndependentSafe(field.File, field, type));
+                    diagnostics.Add(TypeError.VarFieldMustBeInputAndOutputSafe(field.File, field, type));
             }
             else
             {
                 // Immutable bindings can only be read, so they must be output safe.
                 if (!type.IsOutputSafe())
-                    diagnostics.Add(TypeError.VarFieldMustBeIndependentSafe(field.File, field, type));
+                    diagnostics.Add(TypeError.LetFieldMustBeOutputSafe(field.File, field, type));
             }
         }
+
+        // Fields must also maintain the independence of independent type parameters
+        if (!type.MaintainsIndependence())
+            diagnostics.Add(TypeError.FieldMustMaintainIndependence(field.File, field, type));
 
         if (field.Initializer is not null)
         {

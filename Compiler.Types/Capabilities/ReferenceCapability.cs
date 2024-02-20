@@ -175,14 +175,12 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
     }
 
     public bool IsAssignableFrom(IReferenceCapabilityConstraint from)
-    {
-        return from switch
+        => from switch
         {
             ReferenceCapability fromCapability => IsAssignableFrom(fromCapability),
             ReferenceCapabilityConstraint _ => false,
             _ => throw ExhaustiveMatch.Failed(from),
         };
-    }
 
     /// <summary>
     /// This capability with any write ability removed.

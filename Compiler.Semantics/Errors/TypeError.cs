@@ -190,15 +190,21 @@ public static class TypeError
             3027, $"Return type `{type.ToSourceCodeString()}` is not output safe.");
     }
 
-    public static Diagnostic VarFieldMustBeIndependentSafe(CodeFile file, IFieldDeclarationSyntax fieldSyntax, DataType type)
+    public static Diagnostic VarFieldMustBeInputAndOutputSafe(CodeFile file, IFieldDeclarationSyntax fieldSyntax, DataType type)
     {
         return new(file, fieldSyntax.Type.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3028, $"The field `{fieldSyntax.Name}` declared with `var` of type `{type.ToSourceCodeString()}` is not independent safe.");
+            3028, $"The field `{fieldSyntax.Name}` declared with `var` of type `{type.ToSourceCodeString()}` is not input and output safe.");
     }
 
-    public static Diagnostic LetFieldMustBeIndependentSafe(CodeFile file, IFieldDeclarationSyntax fieldSyntax, DataType type)
+    public static Diagnostic LetFieldMustBeOutputSafe(CodeFile file, IFieldDeclarationSyntax fieldSyntax, DataType type)
     {
         return new(file, fieldSyntax.Type.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3029, $"The field `{fieldSyntax.Name}` declared with `let` of type `{type.ToSourceCodeString()}` is not output safe.");
+    }
+
+    public static Diagnostic FieldMustMaintainIndependence(CodeFile file, IFieldDeclarationSyntax fieldSyntax, DataType type)
+    {
+        return new(file, fieldSyntax.Type.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3030, $"The field `{fieldSyntax.Name}` of type `{type.ToSourceCodeString()}` does not maintain the independence of the type parameters.");
     }
 }
