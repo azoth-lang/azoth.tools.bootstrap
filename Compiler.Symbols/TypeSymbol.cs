@@ -12,6 +12,8 @@ public abstract class TypeSymbol : Symbol
 {
     public override TypeName Name { get; }
 
+    public bool IsGlobal => ContainingSymbol == Package;
+
     protected TypeSymbol(TypeName name)
         : base(name)
     {

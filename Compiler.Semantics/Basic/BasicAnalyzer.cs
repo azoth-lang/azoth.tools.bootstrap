@@ -275,11 +275,34 @@ public class BasicAnalyzer
 
     private void ResolveInitializer(IFieldDeclarationSyntax field)
     {
+        var fieldSymbol = field.Symbol.Result;
+        var type = fieldSymbol.Type;
+
+        // Check variance safety. Only public fields need their safety checked. Effectively, they
+        // have getters and setters. Private and protected fields are only accessed from within the
+        // class where the exact type parameters are known, so they are always safe.
+        if (field.AccessModifier.ToAccessModifier() >= AccessModifier.Public)
+        {
+            if (fieldSymbol.IsMutableBinding)
+            {
+                // Mutable bindings can be both read and written to, so they must be both input and output
+                // safe (i.e. invariant). However, they can also be independent, hence independent safe.
+                if (!type.IsIndependentSafe())
+                    diagnostics.Add(TypeError.VarFieldMustBeIndependentSafe(field.File, field, type));
+            }
+            else
+            {
+                // Immutable bindings can only be read, so they must be output safe.
+                if (!type.IsOutputSafe())
+                    diagnostics.Add(TypeError.VarFieldMustBeIndependentSafe(field.File, field, type));
+            }
+        }
+
         if (field.Initializer is not null)
         {
             var resolver = new BasicBodyAnalyzer(field, symbolTreeBuilder, symbolTrees,
                 stringSymbol, rangeSymbol, diagnostics);
-            resolver.CheckFieldInitializerType(field.Initializer, field.Symbol.Result.Type);
+            resolver.CheckFieldInitializerType(field.Initializer, type);
         }
     }
 }

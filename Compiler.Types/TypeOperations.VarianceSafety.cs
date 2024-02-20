@@ -13,6 +13,9 @@ public static partial class TypeOperations
     public static bool IsInputSafe(this Pseudotype type)
         => type.IsVarianceSafe(Variance.Contravariant);
 
+    public static bool IsIndependentSafe(this Pseudotype type)
+        => type.IsVarianceSafe(Variance.Independent);
+
     private static bool IsVarianceSafe(this Pseudotype type, Variance variance)
     {
         return type switch

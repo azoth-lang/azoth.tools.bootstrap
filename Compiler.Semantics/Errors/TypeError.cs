@@ -186,7 +186,19 @@ public static class TypeError
 
     public static Diagnostic ReturnTypeMustBeOutputSafe(CodeFile file, ITypeSyntax typeSyntax, DataType type)
     {
-        return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3026,
-            $"Return type `{type.ToSourceCodeString()}` is not output safe.");
+        return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3027, $"Return type `{type.ToSourceCodeString()}` is not output safe.");
+    }
+
+    public static Diagnostic VarFieldMustBeIndependentSafe(CodeFile file, IFieldDeclarationSyntax fieldSyntax, DataType type)
+    {
+        return new(file, fieldSyntax.Type.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3028, $"The field `{fieldSyntax.Name}` declared with `var` of type `{type.ToSourceCodeString()}` is not independent safe.");
+    }
+
+    public static Diagnostic LetFieldMustBeIndependentSafe(CodeFile file, IFieldDeclarationSyntax fieldSyntax, DataType type)
+    {
+        return new(file, fieldSyntax.Type.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3029, $"The field `{fieldSyntax.Name}` declared with `let` of type `{type.ToSourceCodeString()}` is not output safe.");
     }
 }

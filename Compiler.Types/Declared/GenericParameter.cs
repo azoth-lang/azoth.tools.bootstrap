@@ -14,6 +14,9 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
     public static GenericParameter Invariant(StandardTypeName name)
         => new(Variance.Invariant, name);
 
+    public static GenericParameter Independent(StandardTypeName name)
+        => new(Variance.Independent, name);
+
     public static GenericParameter Out(StandardTypeName name)
         => new(Variance.Covariant, name);
 

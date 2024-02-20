@@ -129,7 +129,7 @@ public static class Intrinsic
     {
         var classType = ObjectType.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
             isAbstract: false, isConst: false, "Raw_Hybrid_Bounded_List",
-            GenericParameter.Invariant("F"), GenericParameter.Invariant("T"));
+            GenericParameter.Independent("F"), GenericParameter.Independent("T"));
         var fixedType = classType.GenericParameterTypes[0];
         var readClassParamType = new SelfParameter(false, classType.WithRead(classType.GenericParameterTypes));
         var mutClassType = classType.WithMutate(classType.GenericParameterTypes);
