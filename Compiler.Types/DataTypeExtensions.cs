@@ -142,17 +142,17 @@ public static class DataTypeExtensions
 
     public static bool IsAssignableFrom(this FunctionType target, FunctionType source)
     {
-        if (target.ParameterTypes.Count != source.ParameterTypes.Count)
+        if (target.Parameters.Count != source.Parameters.Count)
             return false;
 
-        foreach (var (targetParameter, sourceParameter) in target.ParameterTypes.Zip(source.ParameterTypes))
+        foreach (var (targetParameter, sourceParameter) in target.Parameters.Zip(source.Parameters))
             if (!targetParameter.IsAssignableFrom(sourceParameter))
                 return false;
 
-        return IsAssignableFrom(target.ReturnType, source.ReturnType);
+        return IsAssignableFrom(target.Return, source.Return);
     }
 
-    public static bool IsAssignableFrom(this ParameterType target, ParameterType source)
+    public static bool IsAssignableFrom(this Parameter target, Parameter source)
     {
         // TODO add more flexibility in lent
         if (target.IsLent != source.IsLent) return false;

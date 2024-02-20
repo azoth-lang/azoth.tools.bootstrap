@@ -25,7 +25,8 @@ public static class VarianceExtensions
     internal static bool CompatibleWith(this Variance variance, Variance other)
         => variance switch
         {
-            Variance.Contravariant => other is Variance.Contravariant or Variance.Invariant,
+            // TODO is this correct that Independent is compatible with Contravariant (just like Invariant)?
+            Variance.Contravariant => other is Variance.Contravariant or Variance.Independent or Variance.Invariant,
             Variance.Invariant => other is Variance.Invariant,
             Variance.Independent => other is Variance.Independent or Variance.Invariant,
             Variance.Covariant

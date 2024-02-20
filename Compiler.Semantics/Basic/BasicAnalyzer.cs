@@ -94,8 +94,8 @@ public class BasicAnalyzer
             case IFunctionDeclarationSyntax syn:
                 Resolve(syn);
                 break;
-            case IInvocableDeclarationSyntax syn:
-                ResolveBody(syn);
+            case IAssociatedFunctionDeclarationSyntax syn:
+                Resolve(syn);
                 break;
             case IFieldDeclarationSyntax syn:
                 ResolveInitializer(syn);
@@ -180,13 +180,33 @@ public class BasicAnalyzer
            || selfType is ObjectTypeConstraint))
             diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(method.File, method.SelfParameter));
 
+        CheckParameterTypesAreInputSafe(method);
         ResolveBody(method);
+    }
+
+    private void CheckParameterTypesAreInputSafe(IMethodDeclarationSyntax method)
+    {
+        // TODO do generic methods and functions need to be checked?
+        // Only methods declared in generic types need checked
+        if (method.Symbol.Result.ContainingSymbol is not ObjectTypeSymbol { DeclaresType.IsGeneric: true })
+            return;
+        // The `self` parameter does not get checked for variance safety. It will always operate on
+        // the original type so it is safe.
+        foreach (var parameter in method.Parameters)
+        {
+            var type = parameter.DataType.Result;
+            if (!type.IsInputSafe())
+                diagnostics.Add(TypeError.ParameterMustBeInputSafe(method.File, parameter, type));
+        }
     }
 
     private void Resolve(IConstructorDeclarationSyntax constructor)
     {
         if (constructor.SelfParameter.IsLentBinding)
             diagnostics.Add(OtherSemanticError.LentConstructorSelf(constructor.File, constructor.SelfParameter));
+
+        // Constructors are like associated functions, so they don't need their parameters or
+        // return type checked for variance safety.
 
         ResolveBody(constructor);
     }
@@ -196,6 +216,11 @@ public class BasicAnalyzer
         ResolveAttributes(func);
         ResolveBody(func);
     }
+
+    private void Resolve(IAssociatedFunctionDeclarationSyntax associatedFunction)
+        // Associated functions aren't called from instances, so their type parameters always act as
+        // if they were invariant. This means they don't need to be checked for variance safety.
+        => ResolveBody(associatedFunction);
 
     private void ResolveBody(IInvocableDeclarationSyntax declaration)
     {

@@ -142,10 +142,10 @@ public class TypeResolver
         }
     }
 
-    private ParameterType Evaluate(IParameterTypeSyntax syn)
+    private Parameter Evaluate(IParameterTypeSyntax syn)
     {
         var referent = Evaluate(syn.Referent);
-        return new ParameterType(syn.IsLent, referent);
+        return new Parameter(syn.IsLent, referent);
     }
 
     private ReturnType Evaluate(IReturnTypeSyntax syn)

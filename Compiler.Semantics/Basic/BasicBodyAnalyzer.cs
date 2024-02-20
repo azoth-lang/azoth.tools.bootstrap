@@ -300,7 +300,7 @@ public class BasicBodyAnalyzer
     /// </summary>
     private static ExpressionResult AddImplicitConversionIfNeeded(
         ExpressionResult expression,
-        ParameterType expectedType,
+        Parameter expectedType,
         FlowState flow)
     {
         var syntax = expression.Syntax;
@@ -1079,7 +1079,7 @@ public class BasicBodyAnalyzer
         return new ArgumentResults(selfArgument, inferences);
     }
 
-    private void CheckTypes(ArgumentResults arguments, IEnumerable<ParameterType> expectedTypes, FlowState flow)
+    private void CheckTypes(ArgumentResults arguments, IEnumerable<Parameter> expectedTypes, FlowState flow)
     {
         foreach (var (arg, parameter) in arguments.Arguments.Zip(expectedTypes))
         {
@@ -1089,7 +1089,7 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private static bool TypesAreCompatible(ArgumentResults arguments, IEnumerable<ParameterType> expectedTypes, FlowState flow)
+    private static bool TypesAreCompatible(ArgumentResults arguments, IEnumerable<Parameter> expectedTypes, FlowState flow)
     {
         foreach (var (arg, parameter) in arguments.Arguments.Zip(expectedTypes))
             if (!TypesAreCompatible(arg, parameter, flow))
@@ -1098,7 +1098,7 @@ public class BasicBodyAnalyzer
         return true;
     }
 
-    private static bool TypesAreCompatible(ExpressionResult arg, ParameterType parameter, FlowState flow, bool isSelf = false)
+    private static bool TypesAreCompatible(ExpressionResult arg, Parameter parameter, FlowState flow, bool isSelf = false)
     {
         var argType = arg.Type;
         var priorConversion = arg.Syntax.ImplicitConversion;
@@ -1143,11 +1143,11 @@ public class BasicBodyAnalyzer
         FunctionType? function,
         ArgumentResults results,
         FlowState flow)
-        => CombineResults(null, function?.ParameterTypes, function?.ReturnType, results, flow);
+        => CombineResults(null, function?.Parameters, function?.Return, results, flow);
 
     private static ResultVariable? CombineResults(
-        SelfParameterType? selfParameterType,
-        IFixedList<ParameterType>? parameterTypes,
+        SelfParameter? selfParameterType,
+        IFixedList<Parameter>? parameterTypes,
         ReturnType? returnType,
         ArgumentResults results,
         FlowState flow)
@@ -1176,7 +1176,7 @@ public class BasicBodyAnalyzer
         ResultVariable? returnResult,
         List<ResultVariable> resultsToDrop,
         FlowState flow)
-        where TParameterType : struct, IParameterType
+        where TParameterType : struct, IParameter
     {
         if (argument.Variable is null)
             return;
@@ -1414,7 +1414,7 @@ public class BasicBodyAnalyzer
 
     private static void AddImplicitMoveIfNeeded(
         ExpressionResult selfArg,
-        SelfParameterType selfParamType,
+        SelfParameter selfParamType,
         FlowState flow)
     {
         var conversion = CreateImplicitMoveConversion(selfArg.Type, selfArg.Syntax, selfArg.Variable,
@@ -1427,16 +1427,16 @@ public class BasicBodyAnalyzer
         DataType selfArgType,
         IExpressionSyntax selfArgSyntax,
         ResultVariable? selfArgVariable,
-        ParameterType selfParamType,
+        Parameter selfParam,
         FlowState flow,
         bool enact,
         Conversion priorConversion)
     {
         // Implicit moves never happen if the parameter is lent. `lent` is an explicit request not
         // to force the caller to have `iso`.
-        if (selfParamType.IsLent) return null;
+        if (selfParam.IsLent) return null;
 
-        if (selfParamType.Type is not ReferenceType { IsIsolatedReference: true } toType
+        if (selfParam.Type is not ReferenceType { IsIsolatedReference: true } toType
             || selfArgType is not ReferenceType { AllowsRecoverIsolation: true } fromType)
             return null;
 
@@ -1454,7 +1454,7 @@ public class BasicBodyAnalyzer
 
     private static void AddImplicitFreezeIfNeeded(
         ExpressionResult selfArg,
-        SelfParameterType selfParamType,
+        SelfParameter selfParamType,
         FlowState flow)
     {
         var conversion = CreateImplicitFreezeConversion(selfArg.Type, selfArg.Syntax, selfArg.Variable,
@@ -1467,16 +1467,16 @@ public class BasicBodyAnalyzer
         DataType selfArgType,
         IExpressionSyntax selfArgSyntax,
         ResultVariable? selfArgVariable,
-        ParameterType selfParamType,
+        Parameter selfParam,
         FlowState flow,
         bool enact,
         Conversion priorConversion)
     {
         // Implicit freezes never happen if the parameter is lent. `lent` is an explicit request not
         // to force the caller to have `const`
-        if (selfParamType.IsLent) return null;
+        if (selfParam.IsLent) return null;
 
-        if (selfParamType.Type is not ReferenceType { IsConstantReference: true } toType
+        if (selfParam.Type is not ReferenceType { IsConstantReference: true } toType
             || selfArgType is not ReferenceType { AllowsFreeze: true } fromType)
             return null;
 
@@ -1500,8 +1500,8 @@ public class BasicBodyAnalyzer
     {
         if (functionType is not null)
         {
-            CheckTypes(arguments, functionType.ParameterTypes, flow);
-            var returnType = functionType.ReturnType.Type;
+            CheckTypes(arguments, functionType.Parameters, flow);
+            var returnType = functionType.Return.Type;
             invocation.DataType = returnType;
             AssignInvocationSemantics(invocation, returnType);
         }
@@ -2043,7 +2043,7 @@ public class BasicBodyAnalyzer
             // Arity depends on the contextualized symbols because parameters can drop out with `void`
             if (s.Arity != arguments.Arity) return false;
             // Is self arg compatible?
-            if (s.SelfParameterType is SelfParameterType selfParameterType
+            if (s.SelfParameterType is SelfParameter selfParameterType
                 && (arguments.Self is null || !TypesAreCompatible(arguments.Self, selfParameterType.ToUpperBound(), flow, isSelf: true)))
                 return false;
             // Are arguments compatible?
@@ -2062,16 +2062,16 @@ public class BasicBodyAnalyzer
             return symbols.Select(s =>
             {
                 var effectiveSelfType = context.ReplaceTypeParametersIn(SelfParameterTypeOrNull(s));
-                var effectiveParameterTypes = s.ParameterTypes.Select(context.ReplaceTypeParametersIn)
+                var effectiveParameterTypes = s.Parameters.Select(context.ReplaceTypeParametersIn)
                                                .Where(p => p.Type is NonEmptyType).ToFixedList();
                 var effectiveReturnType = context.ReplaceTypeParametersIn(s.ReturnType);
                 return new Contextualized<TSymbol>(s, effectiveSelfType, effectiveParameterTypes, effectiveReturnType);
             });
 
-        return symbols.Select(s => new Contextualized<TSymbol>(s, SelfParameterTypeOrNull(s), s.ParameterTypes, s.ReturnType));
+        return symbols.Select(s => new Contextualized<TSymbol>(s, SelfParameterTypeOrNull(s), s.Parameters, s.ReturnType));
     }
 
-    private static SelfParameterType? SelfParameterTypeOrNull(InvocableSymbol symbol)
+    private static SelfParameter? SelfParameterTypeOrNull(InvocableSymbol symbol)
     {
         if (symbol is MethodSymbol { SelfParameterType: var selfType })
             return selfType;

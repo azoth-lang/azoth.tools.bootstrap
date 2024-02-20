@@ -11,15 +11,15 @@ public sealed class MethodSymbol : FunctionOrMethodSymbol
 {
     public override TypeSymbol ContainingSymbol { get; }
     public override SimpleName Name { get; }
-    public SelfParameterType SelfParameterType { get; }
+    public SelfParameter SelfParameterType { get; }
 
     public MethodSymbol(
         TypeSymbol containingSymbol,
         SimpleName name,
-        SelfParameterType selfParameterType,
-        IFixedList<ParameterType> parameterTypes,
+        SelfParameter selfParameterType,
+        IFixedList<Parameter> parameters,
         ReturnType returnType)
-        : base(containingSymbol, name, parameterTypes, returnType)
+        : base(containingSymbol, name, parameters, returnType)
     {
         ContainingSymbol = containingSymbol;
         Name = name;
@@ -34,17 +34,17 @@ public sealed class MethodSymbol : FunctionOrMethodSymbol
                && ContainingSymbol == otherMethod.ContainingSymbol
                && Name == otherMethod.Name
                && SelfParameterType == otherMethod.SelfParameterType
-               && ParameterTypes.SequenceEqual(otherMethod.ParameterTypes)
+               && Parameters.SequenceEqual(otherMethod.Parameters)
                && ReturnType == otherMethod.ReturnType;
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(Name, SelfParameterType, ParameterTypes, ReturnType);
+        => HashCode.Combine(Name, SelfParameterType, Parameters, ReturnType);
 
     public override string ToILString()
     {
-        var parameterSeparator = ParameterTypes.Any() ? ", " : "";
-        string parameters = string.Join(", ", ParameterTypes.Select(d => d.ToILString()));
+        var parameterSeparator = Parameters.Any() ? ", " : "";
+        string parameters = string.Join(", ", Parameters.Select(d => d.ToILString()));
         return $"{ContainingSymbol.ToILString()}::{Name}({SelfParameterType.ToILString()}{parameterSeparator}{parameters}) -> {ReturnType.ToILString()}";
     }
 }

@@ -1,3 +1,5 @@
+using Azoth.Tools.Bootstrap.Framework;
+
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
 /// <summary>
@@ -5,4 +7,5 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 /// </summary>
 public partial interface IInvocableDeclarationSyntax
 {
+    IFixedList<IParameterSyntax> AllParameters { get; }
 }

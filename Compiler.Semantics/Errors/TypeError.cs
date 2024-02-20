@@ -177,4 +177,10 @@ public static class TypeError
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3025, $"Supertype `{typeSyntax.ToString()}` is not output safe.");
     }
+
+    public static Diagnostic ParameterMustBeInputSafe(CodeFile file, IParameterSyntax typeSyntax, Pseudotype type)
+    {
+        return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3026, $"Parameter `{typeSyntax.ToString()}` with type `{type.ToSourceCodeString()}` is not input safe.");
+    }
 }

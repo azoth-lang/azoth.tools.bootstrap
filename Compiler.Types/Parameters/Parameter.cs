@@ -9,18 +9,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 /// was declared `lent`. This type packages those to values.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public readonly record struct SelfParameterType(bool IsLent, Pseudotype Type) : IParameterType
+public readonly record struct Parameter(bool IsLent, DataType Type) : IParameter
 {
-    public static readonly ParameterType Int = new(false, DataType.Int);
+    public static readonly Parameter Int = new(false, DataType.Int);
+
+    Pseudotype IParameter.Type => Type;
 
     public bool IsFullyKnown => Type.IsFullyKnown;
 
-    public bool CanOverride(SelfParameterType baseParameterType)
-        => (!baseParameterType.IsLent || IsLent) && baseParameterType.Type.IsAssignableFrom(Type);
+    public bool CanOverride(Parameter baseParameter)
+        => (!baseParameter.IsLent || IsLent) && Type.IsAssignableFrom(baseParameter.Type);
 
-    public ParameterType ToUpperBound() => new(IsLent, Type.ToUpperBound());
+    public bool CanOverrideSelf(Parameter baseSelfParameter)
+        => (!baseSelfParameter.IsLent || IsLent) && baseSelfParameter.Type.IsAssignableFrom(Type);
 
-    public bool ReferenceEquals(ParameterType other)
+    public bool ReferenceEquals(Parameter other)
         => IsLent == other.IsLent && ReferenceEquals(Type, other.Type);
 
     public override string ToString() => throw new NotSupportedException();

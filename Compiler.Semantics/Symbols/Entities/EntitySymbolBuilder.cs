@@ -303,26 +303,26 @@ public class EntitySymbolBuilder
         }
     }
 
-    private static IFixedList<ParameterType> ResolveParameterTypes(
+    private static IFixedList<Parameter> ResolveParameterTypes(
         TypeResolver resolver,
         IEnumerable<INamedParameterSyntax> parameters)
     {
-        var types = new List<ParameterType>();
+        var types = new List<Parameter>();
         foreach (var parameter in parameters)
         {
             var type = resolver.Evaluate(parameter.Type);
-            types.Add(new ParameterType(parameter.IsLentBinding, type));
+            types.Add(new Parameter(parameter.IsLentBinding, type));
         }
 
         return types.ToFixedList();
     }
 
-    private IFixedList<ParameterType> ResolveParameterTypes(
+    private IFixedList<Parameter> ResolveParameterTypes(
         TypeResolver resolver,
         IEnumerable<IConstructorParameterSyntax> parameters,
         ITypeDeclarationSyntax declaringType)
     {
-        var types = new List<ParameterType>();
+        var types = new List<Parameter>();
         foreach (var parameter in parameters)
             switch (parameter)
             {
@@ -331,7 +331,7 @@ public class EntitySymbolBuilder
                 case INamedParameterSyntax namedParameter:
                 {
                     var type = resolver.Evaluate(namedParameter.Type);
-                    types.Add(new ParameterType(namedParameter.IsLentBinding, type));
+                    types.Add(new Parameter(namedParameter.IsLentBinding, type));
                     break;
                 }
                 case IFieldParameterSyntax fieldParameter:
@@ -340,7 +340,7 @@ public class EntitySymbolBuilder
                                               .SingleOrDefault(f => f.Name == fieldParameter.Name);
                     if (field is null)
                     {
-                        types.Add(new ParameterType(false, DataType.Unknown));
+                        types.Add(new Parameter(false, DataType.Unknown));
                         fieldParameter.ReferencedSymbol.Fulfill(null);
                         throw new NotImplementedException("Report diagnostic about field parameter without matching field");
                     }
@@ -348,7 +348,7 @@ public class EntitySymbolBuilder
                     {
                         var fieldSymbol = BuildFieldSymbol(field);
                         fieldParameter.ReferencedSymbol.Fulfill(fieldSymbol);
-                        types.Add(new ParameterType(false, fieldSymbol.Type));
+                        types.Add(new Parameter(false, fieldSymbol.Type));
                     }
                     break;
                 }
@@ -361,7 +361,7 @@ public class EntitySymbolBuilder
         InvocableSymbol containingSymbol,
         CodeFile file,
         IEnumerable<IConstructorParameterSyntax> parameters,
-        IEnumerable<ParameterType> parameterTypes)
+        IEnumerable<Parameter> parameterTypes)
         => BuildParameterSymbols(containingSymbol, file, parameters, parameterTypes.Select(pt => pt.Type));
 
     private void BuildParameterSymbols(
@@ -407,7 +407,7 @@ public class EntitySymbolBuilder
         return resolver.EvaluateConstructorSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterTypes);
     }
 
-    private SelfParameterType ResolveMethodSelfParameterType(
+    private SelfParameter ResolveMethodSelfParameterType(
         CodeFile file,
         IMethodSelfParameterSyntax selfParameter,
         ITypeDeclarationSyntax declaringType)
@@ -421,7 +421,7 @@ public class EntitySymbolBuilder
             diagnostics.Add(TypeError.TypeCannotBeLent(file, selfParameter.Span, selfType));
             isLent = false;
         }
-        return new SelfParameterType(isLent, selfType);
+        return new SelfParameter(isLent, selfType);
     }
 
     private void BuildSelfParameterSymbol(

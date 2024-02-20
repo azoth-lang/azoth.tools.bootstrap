@@ -16,7 +16,7 @@ internal class MethodSignatureCache
         return new MethodSignature(
             symbol.Name,
             symbol.SelfParameterType,
-            symbol.ParameterTypes,
+            symbol.Parameters,
             symbol.ReturnType);
     }
 }

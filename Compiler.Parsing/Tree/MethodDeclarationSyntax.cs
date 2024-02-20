@@ -1,3 +1,4 @@
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -14,6 +15,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
     public new SimpleName Name { get; }
     public IMethodSelfParameterSyntax SelfParameter { get; }
     public new IFixedList<INamedParameterSyntax> Parameters { get; }
+    public override IFixedList<IParameterSyntax> AllParameters { get; }
     public IReturnSyntax? Return { get; }
     public new AcyclicPromise<MethodSymbol> Symbol { get; }
 
@@ -34,6 +36,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters;
+        AllParameters = parameters.Prepend<IParameterSyntax>(selfParameter).ToFixedList();
         Return = @return;
         Symbol = (AcyclicPromise<MethodSymbol>)base.Symbol;
     }

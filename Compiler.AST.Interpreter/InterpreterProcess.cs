@@ -90,7 +90,7 @@ public class InterpreterProcess
         {
             var entryPoint = package.EntryPoint!;
             var arguments = new List<AzothValue>();
-            foreach (var parameterType in entryPoint.Symbol.ParameterTypes)
+            foreach (var parameterType in entryPoint.Symbol.Parameters)
                 arguments.Add(await ConstructMainParameterAsync(parameterType.Type));
 
             var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);

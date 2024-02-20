@@ -3,8 +3,8 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 
-[Closed(typeof(ParameterType), typeof(SelfParameterType))]
-public interface IParameterType
+[Closed(typeof(Parameter), typeof(SelfParameter))]
+public interface IParameter
 {
     bool IsLent { get; }
 

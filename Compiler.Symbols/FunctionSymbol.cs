@@ -17,7 +17,7 @@ public sealed class FunctionSymbol : FunctionOrMethodSymbol
         Symbol containingSymbol,
         SimpleName name,
         FunctionType type)
-        : base(containingSymbol, name, type.ParameterTypes, type.ReturnType)
+        : base(containingSymbol, name, type.Parameters, type.Return)
     {
         Name = name;
         Type = type;
@@ -30,13 +30,13 @@ public sealed class FunctionSymbol : FunctionOrMethodSymbol
         return other is FunctionSymbol otherFunction
                && ContainingSymbol == otherFunction.ContainingSymbol
                && Name == otherFunction.Name
-               && ParameterTypes.SequenceEqual(otherFunction.ParameterTypes)
+               && Parameters.SequenceEqual(otherFunction.Parameters)
                && ReturnType == otherFunction.ReturnType;
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingSymbol, Name, ParameterTypes, ReturnType);
+        => HashCode.Combine(ContainingSymbol, Name, Parameters, ReturnType);
 
     public override string ToILString()
-        => $"{ContainingSymbol.ToILString()}.{Name}({string.Join(", ", ParameterTypes.Select(d => d.ToILString()))}) -> {ReturnType.ToILString()}";
+        => $"{ContainingSymbol.ToILString()}.{Name}({string.Join(", ", Parameters.Select(d => d.ToILString()))}) -> {ReturnType.ToILString()}";
 }

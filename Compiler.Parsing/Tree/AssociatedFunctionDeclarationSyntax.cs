@@ -13,6 +13,7 @@ internal class AssociatedFunctionDeclarationSyntax : InvocableDeclarationSyntax,
     public ITypeDeclarationSyntax DeclaringType { get; }
     public new SimpleName Name { get; }
     public new IFixedList<INamedParameterSyntax> Parameters { get; }
+    public override IFixedList<IParameterSyntax> AllParameters => Parameters;
     public IReturnSyntax? Return { get; }
     public IBodySyntax Body { get; }
     public new AcyclicPromise<FunctionSymbol> Symbol { get; }

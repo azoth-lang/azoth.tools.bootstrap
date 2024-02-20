@@ -10,16 +10,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class FunctionType : NonEmptyType
 {
-    public FunctionType(IFixedList<ParameterType> parameterTypes, ReturnType returnType)
+    public FunctionType(IFixedList<Parameter> parameters, ReturnType @return)
     {
-        ParameterTypes = parameterTypes;
-        ReturnType = returnType;
-        IsFullyKnown = parameterTypes.All(p => p.IsFullyKnown) && returnType.IsFullyKnown;
+        Parameters = parameters;
+        Return = @return;
+        IsFullyKnown = parameters.All(p => p.IsFullyKnown) && @return.IsFullyKnown;
         Semantics = TypeSemantics.Reference;
     }
 
-    public IFixedList<ParameterType> ParameterTypes { get; }
-    public ReturnType ReturnType { get; }
+    public IFixedList<Parameter> Parameters { get; }
+    public ReturnType Return { get; }
 
     public override bool IsFullyKnown { get; }
     public override TypeSemantics Semantics { get; }
@@ -30,16 +30,16 @@ public sealed class FunctionType : NonEmptyType
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is FunctionType otherType
-               && ParameterTypes.ItemsEquals(otherType.ParameterTypes)
-               && ReturnType == otherType.ReturnType;
+               && Parameters.ItemsEquals(otherType.Parameters)
+               && Return == otherType.Return;
     }
 
-    public override int GetHashCode() => HashCode.Combine(ParameterTypes, ReturnType);
+    public override int GetHashCode() => HashCode.Combine(Parameters, Return);
     #endregion
 
     public override string ToSourceCodeString()
-        => $"({string.Join(", ", ParameterTypes.Select(t => t.ToSourceCodeString()))}) -> {ReturnType.ToSourceCodeString()}";
+        => $"({string.Join(", ", Parameters.Select(t => t.ToSourceCodeString()))}) -> {Return.ToSourceCodeString()}";
 
     public override string ToILString()
-        => $"({string.Join(", ", ParameterTypes.Select(t => t.ToILString()))}) -> {ReturnType.ToILString()}";
+        => $"({string.Join(", ", Parameters.Select(t => t.ToILString()))}) -> {Return.ToILString()}";
 }

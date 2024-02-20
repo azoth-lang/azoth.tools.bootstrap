@@ -17,7 +17,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
         ObjectTypeSymbol containingSymbol,
         SimpleName? name,
         ReferenceType selfParameterType,
-        IFixedList<ParameterType> parameterTypes)
+        IFixedList<Parameter> parameterTypes)
         : base(containingSymbol, name, parameterTypes,
             new ReturnType(containingSymbol.DeclaresType.ToConstructorReturn(selfParameterType, parameterTypes)))
     {
@@ -27,7 +27,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
     }
 
     public static ConstructorSymbol CreateDefault(ObjectTypeSymbol containingSymbol)
-        => new(containingSymbol, null, containingSymbol.DeclaresType.ToDefaultConstructorSelf(), FixedList.Empty<ParameterType>());
+        => new(containingSymbol, null, containingSymbol.DeclaresType.ToDefaultConstructorSelf(), FixedList.Empty<Parameter>());
 
     public override bool Equals(Symbol? other)
     {
@@ -36,16 +36,16 @@ public sealed class ConstructorSymbol : InvocableSymbol
         return other is ConstructorSymbol otherConstructor
                && ContainingSymbol == otherConstructor.ContainingSymbol
                && Name == otherConstructor.Name
-               && ParameterTypes.SequenceEqual(otherConstructor.ParameterTypes);
+               && Parameters.SequenceEqual(otherConstructor.Parameters);
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingSymbol, Name, ParameterTypes);
+        => HashCode.Combine(ContainingSymbol, Name, Parameters);
 
     public override string ToILString()
     {
         var name = Name is null ? $" {Name}" : "";
-        var selfParameterType = new ParameterType(false, SelfParameterType);
-        return $"{ContainingSymbol}::new{name}({string.Join(", ", ParameterTypes.Prepend(selfParameterType).Select(d => d.ToILString()))})";
+        var selfParameterType = new Parameter(false, SelfParameterType);
+        return $"{ContainingSymbol}::new{name}({string.Join(", ", Parameters.Prepend(selfParameterType).Select(d => d.ToILString()))})";
     }
 }

@@ -1,8 +1,7 @@
-published class List_Iterator[T]
+published class List_Iterator[out T]
 {
     let list: temp const List[T];
     var index: size;
-
 
     public new(mut self, .list)
     {

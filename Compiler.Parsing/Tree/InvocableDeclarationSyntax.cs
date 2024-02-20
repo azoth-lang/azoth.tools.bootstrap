@@ -13,6 +13,7 @@ internal abstract class InvocableDeclarationSyntax : DeclarationSyntax, IInvocab
 {
     public IAccessModifierToken? AccessModifier { get; }
     public IFixedList<IConstructorParameterSyntax> Parameters { get; }
+    public abstract IFixedList<IParameterSyntax> AllParameters { get; }
     public new IPromise<InvocableSymbol> Symbol { get; }
 
     protected InvocableDeclarationSyntax(

@@ -13,15 +13,15 @@ public class Contextualized<TSymbol>
     where TSymbol : InvocableSymbol
 {
     public TSymbol Symbol { get; }
-    public SelfParameterType? SelfParameterType { get; }
-    public IFixedList<ParameterType> ParameterTypes { get; }
+    public SelfParameter? SelfParameterType { get; }
+    public IFixedList<Parameter> ParameterTypes { get; }
     public int Arity => ParameterTypes.Count;
     public ReturnType ReturnType { get; }
 
     public Contextualized(
         TSymbol symbol,
-        SelfParameterType? effectiveSelfType,
-        IFixedList<ParameterType> parameterTypes,
+        SelfParameter? effectiveSelfType,
+        IFixedList<Parameter> parameterTypes,
         ReturnType returnType)
     {
         Symbol = symbol;

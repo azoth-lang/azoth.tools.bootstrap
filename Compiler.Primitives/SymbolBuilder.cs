@@ -9,16 +9,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
 
 internal static class SymbolBuilder
 {
-    public static SelfParameterType SelfParam(DataType type) => new(false, type);
+    public static SelfParameter SelfParam(DataType type) => new(false, type);
 
-    public static IFixedList<ParameterType> Params(params DataType[] types)
-        => types.Select(t => new ParameterType(false, t)).ToFixedList();
+    public static IFixedList<Parameter> Params(params DataType[] types)
+        => types.Select(t => new Parameter(false, t)).ToFixedList();
 
     public static ReturnType Return(DataType type) => new(type);
 
-    public static FunctionSymbol Function(Symbol containingSymbol, SimpleName name, IFixedList<ParameterType> @params)
+    public static FunctionSymbol Function(Symbol containingSymbol, SimpleName name, IFixedList<Parameter> @params)
         => new(containingSymbol, name, new FunctionType(@params, ReturnType.Void));
 
-    public static FunctionSymbol Function(Symbol containingSymbol, SimpleName name, IFixedList<ParameterType> @params, ReturnType @return)
+    public static FunctionSymbol Function(Symbol containingSymbol, SimpleName name, IFixedList<Parameter> @params, ReturnType @return)
         => new(containingSymbol, name, new FunctionType(@params, @return));
 }

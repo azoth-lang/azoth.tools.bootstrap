@@ -15,6 +15,7 @@ internal sealed class FunctionDeclarationSyntax : InvocableNonMemberEntityDeclar
     public new SimpleName Name { get; }
     TypeName INonMemberEntityDeclarationSyntax.Name => Name;
     public new IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public override IFixedList<IParameterSyntax> AllParameters => Parameters;
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public IBodySyntax Body { [DebuggerStepThrough] get; }
     public new AcyclicPromise<FunctionSymbol> Symbol { get; }

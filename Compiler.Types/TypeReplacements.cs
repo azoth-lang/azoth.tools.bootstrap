@@ -90,10 +90,10 @@ internal sealed class TypeReplacements
                 return ReplaceTypeParametersIn(genericParameterType);
             case FunctionType functionType:
             {
-                var replacementParameterTypes = ReplaceTypeParametersIn(functionType.ParameterTypes);
-                var replacementReturnType = ReplaceTypeParametersIn(functionType.ReturnType);
-                if (!ReferenceEquals(functionType.ParameterTypes, replacementParameterTypes)
-                    || !functionType.ReturnType.ReferenceEquals(replacementReturnType))
+                var replacementParameterTypes = ReplaceTypeParametersIn(functionType.Parameters);
+                var replacementReturnType = ReplaceTypeParametersIn(functionType.Return);
+                if (!ReferenceEquals(functionType.Parameters, replacementParameterTypes)
+                    || !functionType.Return.ReferenceEquals(replacementReturnType))
                     return new FunctionType(replacementParameterTypes, replacementReturnType);
                 break;
             }
@@ -150,7 +150,7 @@ internal sealed class TypeReplacements
         return type.With(replacementTypes);
     }
 
-    public ParameterType ReplaceTypeParametersIn(ParameterType type)
+    public Parameter ReplaceTypeParametersIn(Parameter type)
         => type with { Type = ReplaceTypeParametersIn(type.Type) };
 
     public ReturnType ReplaceTypeParametersIn(ReturnType returnType)
@@ -170,9 +170,9 @@ internal sealed class TypeReplacements
         return typesReplaced ? replacementTypes.ToFixedList() : types;
     }
 
-    private IFixedList<ParameterType> ReplaceTypeParametersIn(IFixedList<ParameterType> types)
+    private IFixedList<Parameter> ReplaceTypeParametersIn(IFixedList<Parameter> types)
     {
-        var replacementTypes = new List<ParameterType>();
+        var replacementTypes = new List<Parameter>();
         var typesReplaced = false;
         foreach (var type in types)
         {

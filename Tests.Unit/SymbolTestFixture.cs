@@ -26,20 +26,20 @@ public abstract class SymbolTestFixture
     [return: NotNullIfNotNull(nameof(name))]
     protected static SimpleName? Name(string? name = null) => name is null ? null : new SimpleName(name);
 
-    protected IFixedList<ParameterType> Params(int? count = null)
-        => Enumerable.Range(1, count ?? ++unique).Select(_ => ParameterType.Int).ToFixedList();
+    protected IFixedList<Parameter> Params(int? count = null)
+        => Enumerable.Range(1, count ?? ++unique).Select(_ => Compiler.Types.Parameters.Parameter.Int).ToFixedList();
 
-    protected static IFixedList<ParameterType> Params(DataType param, params DataType[] @params)
-        => @params.Prepend(param).Select(t => new ParameterType(false, t)).ToFixedList();
+    protected static IFixedList<Parameter> Params(DataType param, params DataType[] @params)
+        => @params.Prepend(param).Select(t => new Parameter(false, t)).ToFixedList();
 
-    protected static SelfParameterType SelfParam(Pseudotype param) => new SelfParameterType(false, param);
+    protected static SelfParameter SelfParam(Pseudotype param) => new SelfParameter(false, param);
 
-    protected static ParameterType Param(DataType param) => new ParameterType(false, param);
+    protected static Parameter Param(DataType param) => new Parameter(false, param);
 
     protected FunctionSymbol Func(
         string? name = null,
         NamespaceOrPackageSymbol? ns = null,
-        IFixedList<ParameterType>? @params = null,
+        IFixedList<Parameter>? @params = null,
         ReturnType? @return = null)
     {
         return new FunctionSymbol(
@@ -52,27 +52,27 @@ public abstract class SymbolTestFixture
         FunctionSymbol mother,
         string? name = null,
         NamespaceOrPackageSymbol? ns = null,
-        IFixedList<ParameterType>? @params = null,
+        IFixedList<Parameter>? @params = null,
         ReturnType? @return = null)
     {
         return new FunctionSymbol(
             ns ?? mother.ContainingSymbol,
             Name(name) ?? mother.Name,
-            new FunctionType(@params ?? mother.ParameterTypes, @return ?? mother.ReturnType));
+            new FunctionType(@params ?? mother.Parameters, @return ?? mother.ReturnType));
     }
 
     protected MethodSymbol Method(
         string? name = null,
         ObjectTypeSymbol? containing = null,
-        SelfParameterType? self = null,
-        IFixedList<ParameterType>? @params = null,
+        SelfParameter? self = null,
+        IFixedList<Parameter>? @params = null,
         ReturnType? @return = null)
     {
         containing ??= Type();
         return new MethodSymbol(
             containing,
             Name(name) ?? DefaultName("method"),
-            self ?? new SelfParameterType(false, containing.DeclaresType.With(ReferenceCapability.Read, FixedList.Empty<DataType>())),
+            self ?? new SelfParameter(false, containing.DeclaresType.With(ReferenceCapability.Read, FixedList.Empty<DataType>())),
             @params ?? Params(),
             @return ?? ReturnType());
     }
@@ -81,15 +81,15 @@ public abstract class SymbolTestFixture
         MethodSymbol mother,
         string? name = null,
         ObjectTypeSymbol? containing = null,
-        SelfParameterType? self = null,
-        IFixedList<ParameterType>? @params = null,
+        SelfParameter? self = null,
+        IFixedList<Parameter>? @params = null,
         ReturnType? @return = null)
     {
         return new MethodSymbol(
             containing ?? mother.ContainingSymbol,
             Name(name) ?? mother.Name,
             self ?? mother.SelfParameterType,
-            @params ?? mother.ParameterTypes,
+            @params ?? mother.Parameters,
             @return ?? mother.ReturnType);
     }
 

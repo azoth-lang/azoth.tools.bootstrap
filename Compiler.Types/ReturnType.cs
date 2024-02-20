@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 /// <summary>
-/// This was created to mirror <see cref="ParameterType"/> when return types needed `lent` support
+/// This was created to mirror <see cref="Parameter"/> when return types needed `lent` support
 /// the same as parameters. `lent` return has been removed, but this is being left around for now
 /// in case it is useful in the future. If it is not, it will be removed.
 /// </summary>

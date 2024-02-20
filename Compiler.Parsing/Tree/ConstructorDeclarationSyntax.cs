@@ -16,6 +16,7 @@ internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConst
     ITypeDeclarationSyntax IMemberDeclarationSyntax.DeclaringType => DeclaringType;
     public IConstructorSelfParameterSyntax SelfParameter { get; }
     public new IFixedList<IConstructorParameterSyntax> Parameters { get; }
+    public override IFixedList<IParameterSyntax> AllParameters { get; }
     public virtual IBlockBodySyntax Body { get; }
     IBodySyntax IConcreteInvocableDeclarationSyntax.Body => Body;
     public new AcyclicPromise<ConstructorSymbol> Symbol { get; }
@@ -37,6 +38,7 @@ internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConst
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters;
+        AllParameters = parameters.Prepend<IParameterSyntax>(selfParameter).ToFixedList();
         Body = body;
         Symbol = (AcyclicPromise<ConstructorSymbol>)base.Symbol;
     }

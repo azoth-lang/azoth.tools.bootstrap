@@ -14,7 +14,7 @@ public class ConstructorTests : SymbolTestFixture
 
         Assert.Equal(type, defaultConstructor.ContainingSymbol);
         Assert.Null(defaultConstructor.Name);
-        Assert.Empty(defaultConstructor.ParameterTypes);
+        Assert.Empty(defaultConstructor.Parameters);
         Assert.Equal(0, defaultConstructor.Arity);
     }
 }
