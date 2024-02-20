@@ -22,26 +22,13 @@ public static class ParameterVarianceExtensions
             _ => throw ExhaustiveMatch.Failed(variance),
         };
 
-    internal static bool CompatibleWith(this ParameterVariance variance, ParameterVariance other)
+    internal static TypeVariance ToTypeVariance(this ParameterVariance variance)
         => variance switch
         {
-            // TODO is this correct that Independent is compatible with Contravariant (just like Invariant)?
-            ParameterVariance.Contravariant => other is ParameterVariance.Contravariant or ParameterVariance.Independent or ParameterVariance.Invariant,
-            ParameterVariance.Invariant => other is ParameterVariance.Invariant or ParameterVariance.Independent,
-            ParameterVariance.Independent => other is ParameterVariance.Independent or ParameterVariance.Invariant,
-            ParameterVariance.Covariant
-                => other is ParameterVariance.Covariant or ParameterVariance.Independent or ParameterVariance.Invariant,
-            _ => throw ExhaustiveMatch.Failed(variance),
-        };
-
-    internal static ParameterVariance Antivariance(this ParameterVariance variance)
-        => variance switch
-        {
-            ParameterVariance.Contravariant => ParameterVariance.Covariant,
-            ParameterVariance.Invariant => ParameterVariance.Invariant,
-            // TODO not sure if this is correct for Independent
-            ParameterVariance.Independent => ParameterVariance.Independent,
-            ParameterVariance.Covariant => ParameterVariance.Contravariant,
+            ParameterVariance.Contravariant => TypeVariance.Contravariant,
+            ParameterVariance.Invariant => TypeVariance.Invariant,
+            ParameterVariance.Independent => TypeVariance.Invariant,
+            ParameterVariance.Covariant => TypeVariance.Covariant,
             _ => throw ExhaustiveMatch.Failed(variance),
         };
 }

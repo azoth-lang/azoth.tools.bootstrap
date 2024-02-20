@@ -286,8 +286,8 @@ public class BasicAnalyzer
             if (fieldSymbol.IsMutableBinding)
             {
                 // Mutable bindings can be both read and written to, so they must be both input and output
-                // safe (i.e. invariant). However, they can also be independent, hence independent safe.
-                if (!type.IsIndependentSafe())
+                // safe (i.e. invariant).
+                if (!type.IsInputAndOutputSafe())
                     diagnostics.Add(TypeError.VarFieldMustBeIndependentSafe(field.File, field, type));
             }
             else

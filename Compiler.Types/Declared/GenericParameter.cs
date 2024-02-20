@@ -32,6 +32,8 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
 
     public ParameterVariance ParameterVariance { get; }
 
+    public TypeVariance TypeVariance => ParameterVariance.ToTypeVariance();
+
     public bool IsIndependent => ParameterVariance == ParameterVariance.Independent;
 
     public StandardTypeName Name { get; }
