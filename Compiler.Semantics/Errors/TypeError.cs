@@ -178,9 +178,15 @@ public static class TypeError
             3025, $"Supertype `{typeSyntax.ToString()}` is not output safe.");
     }
 
-    public static Diagnostic ParameterMustBeInputSafe(CodeFile file, IParameterSyntax typeSyntax, Pseudotype type)
+    public static Diagnostic ParameterMustBeInputSafe(CodeFile file, IParameterSyntax parameterSyntax, DataType type)
     {
-        return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3026, $"Parameter `{typeSyntax.ToString()}` with type `{type.ToSourceCodeString()}` is not input safe.");
+        return new(file, parameterSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3026, $"Parameter `{parameterSyntax.ToString()}` with type `{type.ToSourceCodeString()}` is not input safe.");
+    }
+
+    public static Diagnostic ReturnTypeMustBeOutputSafe(CodeFile file, ITypeSyntax typeSyntax, DataType type)
+    {
+        return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 3026,
+            $"Return type `{type.ToSourceCodeString()}` is not output safe.");
     }
 }

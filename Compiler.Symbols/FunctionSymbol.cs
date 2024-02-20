@@ -31,12 +31,12 @@ public sealed class FunctionSymbol : FunctionOrMethodSymbol
                && ContainingSymbol == otherFunction.ContainingSymbol
                && Name == otherFunction.Name
                && Parameters.SequenceEqual(otherFunction.Parameters)
-               && ReturnType == otherFunction.ReturnType;
+               && Return == otherFunction.Return;
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingSymbol, Name, Parameters, ReturnType);
+        => HashCode.Combine(ContainingSymbol, Name, Parameters, Return);
 
     public override string ToILString()
-        => $"{ContainingSymbol.ToILString()}.{Name}({string.Join(", ", Parameters.Select(d => d.ToILString()))}) -> {ReturnType.ToILString()}";
+        => $"{ContainingSymbol.ToILString()}.{Name}({string.Join(", ", Parameters.Select(d => d.ToILString()))}) -> {Return.ToILString()}";
 }

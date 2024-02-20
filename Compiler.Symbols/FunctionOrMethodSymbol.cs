@@ -17,8 +17,8 @@ public abstract class FunctionOrMethodSymbol : InvocableSymbol
         Symbol containingSymbol,
         SimpleName name,
         IFixedList<Parameter> parameters,
-        ReturnType returnType)
-        : base(containingSymbol, name, parameters, returnType)
+        Return @return)
+        : base(containingSymbol, name, parameters, @return)
     {
         Name = name;
     }

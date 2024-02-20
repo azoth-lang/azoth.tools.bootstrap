@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class FunctionType : NonEmptyType
 {
-    public FunctionType(IFixedList<Parameter> parameters, ReturnType @return)
+    public FunctionType(IFixedList<Parameter> parameters, Return @return)
     {
         Parameters = parameters;
         Return = @return;
@@ -19,7 +19,7 @@ public sealed class FunctionType : NonEmptyType
     }
 
     public IFixedList<Parameter> Parameters { get; }
-    public ReturnType Return { get; }
+    public Return Return { get; }
 
     public override bool IsFullyKnown { get; }
     public override TypeSemantics Semantics { get; }

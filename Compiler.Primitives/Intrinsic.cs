@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 using static Azoth.Tools.Bootstrap.Compiler.Primitives.SymbolBuilder;
+using Return = Azoth.Tools.Bootstrap.Compiler.Types.Return;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
 
@@ -81,12 +82,12 @@ public static class Intrinsic
 
         // fn read_raw_utf8_bytes_line(bytes: mut Raw_Bounded_List[byte], start: size) -> size
         var readLine = Function(intrinsicsNamespace, "read_raw_utf8_bytes_line",
-            Params(DataType.Size, DataType.Size), ReturnType.Size);
+            Params(DataType.Size, DataType.Size), Return.Size);
         tree.Add(readLine);
 
         // fn ABORT_RAW_UTF8_BYTES(bytes: Raw_Bounded_List[byte], start: size, byte_count: size) -> never
         var abort = Function(intrinsicsNamespace, "ABORT_RAW_UTF8_BYTES",
-            Params(readBytesType, DataType.Size, DataType.Size), ReturnType.Never);
+            Params(readBytesType, DataType.Size, DataType.Size), Return.Never);
         tree.Add(abort);
 
 
@@ -146,16 +147,16 @@ public static class Intrinsic
         tree.Add(getFixed);
 
         // published fn set_fixed(fixed: F);
-        var setFixed = new MethodSymbol(classSymbol, "set_fixed", mutClassParamType, Params(), ReturnType.Void);
+        var setFixed = new MethodSymbol(classSymbol, "set_fixed", mutClassParamType, Params(), Return.Void);
         tree.Add(setFixed);
 
         // published fn get_capacity() -> size;
-        var capacity = new MethodSymbol(classSymbol, "get_capacity", readClassParamType, Params(), ReturnType.Size);
+        var capacity = new MethodSymbol(classSymbol, "get_capacity", readClassParamType, Params(), Return.Size);
         tree.Add(capacity);
 
         // Given setters are not implemented, making this a function for now
         // published fn get_count() -> size
-        var count = new MethodSymbol(classSymbol, "get_count", readClassParamType, Params(), ReturnType.Size);
+        var count = new MethodSymbol(classSymbol, "get_count", readClassParamType, Params(), Return.Size);
         tree.Add(count);
 
         // published /* unsafe */ fn at(self, index: size) -> T
@@ -166,17 +167,17 @@ public static class Intrinsic
         // published /* unsafe */ fn set_at(mut self, index: size, T value)
         // TODO replace with at method returning a `ref var`
         var setAt = new MethodSymbol(classSymbol, "set_at", mutClassParamType,
-            Params(DataType.Size, itemType), ReturnType.Void);
+            Params(DataType.Size, itemType), Return.Void);
         tree.Add(setAt);
 
         // published fn add(mut self, value: T);
         var add = new MethodSymbol(classSymbol, "add", mutClassParamType,
-            Params(itemType), ReturnType.Void);
+            Params(itemType), Return.Void);
         tree.Add(add);
 
         // published fn shrink(mut self, count: size)
         var shrink = new MethodSymbol(classSymbol, "shrink", mutClassParamType,
-            Params(DataType.Size), ReturnType.Void);
+            Params(DataType.Size), Return.Void);
         tree.Add(shrink);
 
         return classType;

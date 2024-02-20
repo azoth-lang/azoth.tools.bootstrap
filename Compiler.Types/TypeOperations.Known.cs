@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -30,16 +30,16 @@ public static partial class TypeOperations
     }
 
     [DebuggerHidden]
-    public static ReturnType Known(this ReturnType returnType)
+    public static Return Known(this Return @return)
     {
-        if (!returnType.Type.IsFullyKnown)
-            throw new InvalidOperationException($"Type {returnType.ToILString()} not fully known.");
+        if (!@return.Type.IsFullyKnown)
+            throw new InvalidOperationException($"Type {@return.ToILString()} not fully known.");
 
-        return returnType;
+        return @return;
     }
 
     [DebuggerHidden]
-    public static ReturnType Known(this ReturnType? returnType) => returnType.Assigned().Known();
+    public static Return Known(this Return? returnType) => returnType.Assigned().Known();
 
     [DebuggerHidden]
     public static DataType Known(this IPromise<DataType> promise)

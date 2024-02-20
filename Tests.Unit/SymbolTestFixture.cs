@@ -40,7 +40,7 @@ public abstract class SymbolTestFixture
         string? name = null,
         NamespaceOrPackageSymbol? ns = null,
         IFixedList<Parameter>? @params = null,
-        ReturnType? @return = null)
+        Return? @return = null)
     {
         return new FunctionSymbol(
             ns ?? Namespace(),
@@ -53,12 +53,12 @@ public abstract class SymbolTestFixture
         string? name = null,
         NamespaceOrPackageSymbol? ns = null,
         IFixedList<Parameter>? @params = null,
-        ReturnType? @return = null)
+        Return? @return = null)
     {
         return new FunctionSymbol(
             ns ?? mother.ContainingSymbol,
             Name(name) ?? mother.Name,
-            new FunctionType(@params ?? mother.Parameters, @return ?? mother.ReturnType));
+            new FunctionType(@params ?? mother.Parameters, @return ?? mother.Return));
     }
 
     protected MethodSymbol Method(
@@ -66,7 +66,7 @@ public abstract class SymbolTestFixture
         ObjectTypeSymbol? containing = null,
         SelfParameter? self = null,
         IFixedList<Parameter>? @params = null,
-        ReturnType? @return = null)
+        Return? @return = null)
     {
         containing ??= Type();
         return new MethodSymbol(
@@ -83,14 +83,14 @@ public abstract class SymbolTestFixture
         ObjectTypeSymbol? containing = null,
         SelfParameter? self = null,
         IFixedList<Parameter>? @params = null,
-        ReturnType? @return = null)
+        Return? @return = null)
     {
         return new MethodSymbol(
             containing ?? mother.ContainingSymbol,
             Name(name) ?? mother.Name,
             self ?? mother.SelfParameterType,
             @params ?? mother.Parameters,
-            @return ?? mother.ReturnType);
+            @return ?? mother.Return);
     }
 
     protected ReferenceType<ObjectType> DataType(
@@ -110,14 +110,14 @@ public abstract class SymbolTestFixture
             finalName.Text);
     }
 
-    protected ReturnType ReturnType(
+    protected Return ReturnType(
         string? name = null,
         SimpleName? containingPackage = null,
         NamespaceName? containingNamespace = null,
         bool? isConst = null,
         ReferenceCapability? referenceCapability = null)
     {
-        return new ReturnType(DataType(name, containingPackage, containingNamespace, isConst, referenceCapability));
+        return new Return(DataType(name, containingPackage, containingNamespace, isConst, referenceCapability));
     }
 
     protected ObjectTypeSymbol Type(

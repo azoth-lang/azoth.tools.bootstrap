@@ -435,14 +435,14 @@ public class EntitySymbolBuilder
         symbolTree.Add(symbol);
     }
 
-    private static ReturnType ResolveReturnType(
+    private static Return ResolveReturnType(
         TypeResolver resolver,
         IReturnSyntax? returnSyntax)
     {
         if (returnSyntax is null)
-            return ReturnType.Void;
+            return Return.Void;
         DataType type = resolver.Evaluate(returnSyntax.Type);
-        return new ReturnType(type);
+        return new Return(type);
     }
 
     private class TypeSymbolBuilder : ITypeSymbolBuilder, IEnumerable<ITypeDeclarationSyntax>

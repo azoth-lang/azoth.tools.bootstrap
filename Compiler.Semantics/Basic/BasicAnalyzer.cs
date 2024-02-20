@@ -180,16 +180,19 @@ public class BasicAnalyzer
            || selfType is ObjectTypeConstraint))
             diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(method.File, method.SelfParameter));
 
-        CheckParameterTypesAreInputSafe(method);
+        CheckParameterAndReturnAreVarianceSafe(method);
         ResolveBody(method);
     }
 
-    private void CheckParameterTypesAreInputSafe(IMethodDeclarationSyntax method)
+    private void CheckParameterAndReturnAreVarianceSafe(IMethodDeclarationSyntax method)
     {
         // TODO do generic methods and functions need to be checked?
+
+        var methodSymbol = method.Symbol.Result;
         // Only methods declared in generic types need checked
-        if (method.Symbol.Result.ContainingSymbol is not ObjectTypeSymbol { DeclaresType.IsGeneric: true })
+        if (methodSymbol.ContainingSymbol is not ObjectTypeSymbol { DeclaresType.IsGeneric: true })
             return;
+
         // The `self` parameter does not get checked for variance safety. It will always operate on
         // the original type so it is safe.
         foreach (var parameter in method.Parameters)
@@ -198,6 +201,10 @@ public class BasicAnalyzer
             if (!type.IsInputSafe())
                 diagnostics.Add(TypeError.ParameterMustBeInputSafe(method.File, parameter, type));
         }
+
+        var returnType = methodSymbol.Return.Type;
+        if (!returnType.IsOutputSafe())
+            diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(method.File, method.Return!.Type, returnType));
     }
 
     private void Resolve(IConstructorDeclarationSyntax constructor)
@@ -232,7 +239,7 @@ public class BasicAnalyzer
             {
                 var resolver = new BasicBodyAnalyzer(function, symbolTreeBuilder, symbolTrees,
                     stringSymbol, rangeSymbol, diagnostics,
-                    function.Symbol.Result.ReturnType);
+                    function.Symbol.Result.Return);
                 resolver.ResolveTypes(function.Body);
                 break;
             }
@@ -240,7 +247,7 @@ public class BasicAnalyzer
             {
                 var resolver = new BasicBodyAnalyzer(associatedFunction, symbolTreeBuilder, symbolTrees,
                     stringSymbol, rangeSymbol, diagnostics,
-                    associatedFunction.Symbol.Result.ReturnType);
+                    associatedFunction.Symbol.Result.Return);
                 resolver.ResolveTypes(associatedFunction.Body);
                 break;
             }
@@ -248,7 +255,7 @@ public class BasicAnalyzer
             {
                 var resolver = new BasicBodyAnalyzer(method, symbolTreeBuilder,
                     symbolTrees, stringSymbol, rangeSymbol, diagnostics,
-                    method.Symbol.Result.ReturnType);
+                    method.Symbol.Result.Return);
                 resolver.ResolveTypes(method.Body);
                 break;
             }
@@ -257,9 +264,9 @@ public class BasicAnalyzer
                 break;
             case IConstructorDeclarationSyntax constructor:
             {
-                ReturnType returnType = new ReturnType(constructor.SelfParameter.DataType.Result);
+                Return @return = new Return(constructor.SelfParameter.DataType.Result);
                 var resolver = new BasicBodyAnalyzer(constructor, symbolTreeBuilder, symbolTrees,
-                    stringSymbol, rangeSymbol, diagnostics, returnType);
+                    stringSymbol, rangeSymbol, diagnostics, @return);
                 resolver.ResolveTypes(constructor.Body);
                 break;
             }

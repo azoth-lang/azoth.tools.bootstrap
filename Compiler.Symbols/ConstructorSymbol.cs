@@ -11,7 +11,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
 {
     public override ObjectTypeSymbol ContainingSymbol { get; }
     public ReferenceType SelfParameterType { get; }
-    public new ReferenceType ReturnType { get; }
+    public ReferenceType ReturnType { get; }
 
     public ConstructorSymbol(
         ObjectTypeSymbol containingSymbol,
@@ -19,11 +19,11 @@ public sealed class ConstructorSymbol : InvocableSymbol
         ReferenceType selfParameterType,
         IFixedList<Parameter> parameterTypes)
         : base(containingSymbol, name, parameterTypes,
-            new ReturnType(containingSymbol.DeclaresType.ToConstructorReturn(selfParameterType, parameterTypes)))
+            new Return(containingSymbol.DeclaresType.ToConstructorReturn(selfParameterType, parameterTypes)))
     {
         ContainingSymbol = containingSymbol;
         SelfParameterType = selfParameterType;
-        ReturnType = (ReferenceType)base.ReturnType.Type;
+        ReturnType = (ReferenceType)base.Return.Type;
     }
 
     public static ConstructorSymbol CreateDefault(ObjectTypeSymbol containingSymbol)

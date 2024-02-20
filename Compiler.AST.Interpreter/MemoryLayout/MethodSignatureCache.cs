@@ -17,6 +17,6 @@ internal class MethodSignatureCache
             symbol.Name,
             symbol.SelfParameterType,
             symbol.Parameters,
-            symbol.ReturnType);
+            symbol.Return);
     }
 }

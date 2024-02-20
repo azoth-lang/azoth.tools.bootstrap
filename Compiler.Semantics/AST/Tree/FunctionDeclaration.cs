@@ -31,7 +31,7 @@ internal class FunctionDeclaration : InvocableDeclaration, IFunctionDeclaration
 
     public override string ToString()
     {
-        var returnType = Symbol.ReturnType != ReturnType.Void ? " -> " + Symbol.ReturnType.ToILString() : "";
+        var returnType = Symbol.Return != Return.Void ? " -> " + Symbol.Return.ToILString() : "";
         return $"fn {Symbol.ContainingSymbol}.{Symbol.Name}({string.Join(", ", Parameters)}){returnType} {Body}";
     }
 }

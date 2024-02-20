@@ -81,6 +81,6 @@ public abstract class NonEmptyType : DataType
     /// with the type arguments from this type (assuming it has them).
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
-    public ReturnType ReplaceTypeParametersIn(ReturnType returnType)
-        => returnType with { Type = ReplaceTypeParametersIn(returnType.Type) };
+    public Return ReplaceTypeParametersIn(Return @return)
+        => @return with { Type = ReplaceTypeParametersIn(@return.Type) };
 }

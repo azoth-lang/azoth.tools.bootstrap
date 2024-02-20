@@ -44,7 +44,7 @@ public class BasicBodyAnalyzer
     private readonly ObjectTypeSymbol? stringSymbol;
     private readonly ObjectTypeSymbol? rangeSymbol;
     private readonly Diagnostics diagnostics;
-    private readonly ReturnType? returnType;
+    private readonly Return? returnType;
     private readonly TypeResolver typeResolver;
     private readonly ParameterSharingRelation parameterSharing;
 
@@ -55,9 +55,9 @@ public class BasicBodyAnalyzer
         ObjectTypeSymbol? stringSymbol,
         ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
-        ReturnType returnType)
+        Return @return)
         : this(containingDeclaration, null, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, returnType)
+            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, @return)
     { }
     public BasicBodyAnalyzer(
         IAssociatedFunctionDeclarationSyntax containingDeclaration,
@@ -66,9 +66,9 @@ public class BasicBodyAnalyzer
         ObjectTypeSymbol? stringSymbol,
         ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
-        ReturnType returnType)
+        Return @return)
         : this(containingDeclaration, null, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, returnType)
+            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, @return)
     { }
 
     public BasicBodyAnalyzer(
@@ -78,12 +78,12 @@ public class BasicBodyAnalyzer
         ObjectTypeSymbol? stringSymbol,
         ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
-        ReturnType returnType)
+        Return @return)
         : this(containingDeclaration, containingDeclaration.SelfParameter.DataType.Result,
             containingDeclaration.Parameters.OfType<INamedParameterSyntax>()
                                  .Select(p => p.Symbol.Result)
                                  .Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, returnType)
+            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, @return)
     { }
 
     public BasicBodyAnalyzer(
@@ -93,10 +93,10 @@ public class BasicBodyAnalyzer
         ObjectTypeSymbol? stringSymbol,
         ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
-        ReturnType returnType)
+        Return @return)
         : this(containingDeclaration, containingDeclaration.SelfParameter.DataType.Result,
             containingDeclaration.Parameters.Select(p => p.Symbol.Result).Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, returnType)
+            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, @return)
     { }
 
     public BasicBodyAnalyzer(
@@ -119,7 +119,7 @@ public class BasicBodyAnalyzer
         ObjectTypeSymbol? stringSymbol,
         ObjectTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
-        ReturnType? returnType)
+        Return? returnType)
     {
         file = containingDeclaration.File;
         containingSymbol = (InvocableSymbol)containingDeclaration.Symbol.Result;
@@ -1148,7 +1148,7 @@ public class BasicBodyAnalyzer
     private static ResultVariable? CombineResults(
         SelfParameter? selfParameterType,
         IFixedList<Parameter>? parameterTypes,
-        ReturnType? returnType,
+        Return? returnType,
         ArgumentResults results,
         FlowState flow)
     {
@@ -1835,16 +1835,16 @@ public class BasicBodyAnalyzer
         if (iterableSymbol is null) return ForeachNoIterateOrNextMethod();
 
         var iterateMethod = symbolTrees.Children(iterableSymbol).OfType<MethodSymbol>()
-                                       .SingleOrDefault(s => s.Name == "iterate" && s.Arity == 0 && s.ReturnType.Type is NonEmptyType);
+                                       .SingleOrDefault(s => s.Name == "iterate" && s.Arity == 0 && s.Return.Type is NonEmptyType);
 
         exp.IterateMethod.Fulfill(iterateMethod);
 
-        var iteratorType = iterateMethod is not null ? iterableType.ReplaceTypeParametersIn(iterateMethod.ReturnType.Type) : iterableType;
+        var iteratorType = iterateMethod is not null ? iterableType.ReplaceTypeParametersIn(iterateMethod.Return.Type) : iterableType;
         var iteratorSymbol = LookupSymbolForType(iteratorType);
         if (iteratorSymbol is null) return ForeachNoIterateOrNextMethod();
 
         var nextMethod = symbolTrees.Children(iteratorSymbol).OfType<MethodSymbol>()
-                                    .SingleOrDefault(s => s.Name == "next" && s.Arity == 0 && s.ReturnType.Type is OptionalType);
+                                    .SingleOrDefault(s => s.Name == "next" && s.Arity == 0 && s.Return.Type is OptionalType);
 
         if (nextMethod is null)
         {
@@ -1856,7 +1856,7 @@ public class BasicBodyAnalyzer
         exp.NextMethod.Fulfill(nextMethod);
 
         // iteratorType is NonEmptyType because it has a `next()` method
-        DataType iteratedType = nextMethod.ReturnType.Type is OptionalType optionalType
+        DataType iteratedType = nextMethod.Return.Type is OptionalType optionalType
             ? ((NonEmptyType)iteratorType).ReplaceTypeParametersIn(optionalType.Referent)
             : throw new UnreachableCodeException();
 
@@ -2064,11 +2064,11 @@ public class BasicBodyAnalyzer
                 var effectiveSelfType = context.ReplaceTypeParametersIn(SelfParameterTypeOrNull(s));
                 var effectiveParameterTypes = s.Parameters.Select(context.ReplaceTypeParametersIn)
                                                .Where(p => p.Type is NonEmptyType).ToFixedList();
-                var effectiveReturnType = context.ReplaceTypeParametersIn(s.ReturnType);
+                var effectiveReturnType = context.ReplaceTypeParametersIn(s.Return);
                 return new Contextualized<TSymbol>(s, effectiveSelfType, effectiveParameterTypes, effectiveReturnType);
             });
 
-        return symbols.Select(s => new Contextualized<TSymbol>(s, SelfParameterTypeOrNull(s), s.Parameters, s.ReturnType));
+        return symbols.Select(s => new Contextualized<TSymbol>(s, SelfParameterTypeOrNull(s), s.Parameters, s.Return));
     }
 
     private static SelfParameter? SelfParameterTypeOrNull(InvocableSymbol symbol)

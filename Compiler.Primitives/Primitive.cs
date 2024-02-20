@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using static Azoth.Tools.Bootstrap.Compiler.Primitives.SymbolBuilder;
+using Return = Azoth.Tools.Bootstrap.Compiler.Types.Return;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
 
@@ -96,7 +97,7 @@ public static class Primitive
 
         var idAnyType = DeclaredType.Any.With(ReferenceCapability.Identity);
         // fn identity_hash(value: Any) -> uint64 // TODO: should be nuint
-        var identityHash = new MethodSymbol(symbol, "identity_hash", SelfParam(idAnyType), Params(), ReturnType.UInt64);
+        var identityHash = new MethodSymbol(symbol, "identity_hash", SelfParam(idAnyType), Params(), Return.UInt64);
         tree.Add(identityHash);
     }
 }

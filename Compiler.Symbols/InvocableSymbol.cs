@@ -16,19 +16,19 @@ public abstract class InvocableSymbol : Symbol
     public override SimpleName? Name { get; }
     public IFixedList<Parameter> Parameters { get; }
     public int Arity => Parameters.Count;
-    public ReturnType ReturnType { get; }
+    public Return Return { get; }
 
     protected InvocableSymbol(
         Symbol containingSymbol,
         SimpleName? name,
         IFixedList<Parameter> parameters,
-        ReturnType returnType)
+        Return @return)
         : base(name)
     {
         Package = containingSymbol.Package;
         ContainingSymbol = containingSymbol;
         Name = name;
         Parameters = parameters;
-        ReturnType = returnType;
+        Return = @return;
     }
 }

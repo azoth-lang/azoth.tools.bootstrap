@@ -17,6 +17,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using Return = Azoth.Tools.Bootstrap.Compiler.Types.Return;
 using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
@@ -96,8 +97,8 @@ public class InterpreterProcess
             var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
             // Flush any buffered output
             await standardOutputWriter.FlushAsync().ConfigureAwait(false);
-            var returnType = entryPoint.Symbol.ReturnType;
-            if (returnType == ReturnType.Void)
+            var returnType = entryPoint.Symbol.Return;
+            if (returnType == Return.Void)
                 exitCode = 0;
             else if (returnType.Type == DataType.Byte)
                 exitCode = returnValue.ByteValue;
@@ -185,7 +186,7 @@ public class InterpreterProcess
                 await ExecuteAsync(statement, variables).ConfigureAwait(false);
             return default;
         }
-        catch (Return @return)
+        catch (ControlFlow.Return @return)
         {
             return @return.Value;
         }
@@ -240,7 +241,7 @@ public class InterpreterProcess
                 await ExecuteAsync(statement, variables).ConfigureAwait(false);
             return self;
         }
-        catch (Return)
+        catch (ControlFlow.Return)
         {
             return self;
         }
@@ -291,7 +292,7 @@ public class InterpreterProcess
                 await ExecuteAsync(statement, variables).ConfigureAwait(false);
             return default;
         }
-        catch (Return @return)
+        catch (ControlFlow.Return @return)
         {
             return @return.Value;
         }
@@ -339,8 +340,8 @@ public class InterpreterProcess
             case INoneLiteralExpression _:
                 return AzothValue.None;
             case IReturnExpression exp:
-                if (exp.Value is null) throw new Return();
-                throw new Return(await ExecuteAsync(exp.Value, variables).ConfigureAwait(false));
+                if (exp.Value is null) throw new ControlFlow.Return();
+                throw new ControlFlow.Return(await ExecuteAsync(exp.Value, variables).ConfigureAwait(false));
             case IImplicitSimpleTypeConversionExpression exp:
             {
                 var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);

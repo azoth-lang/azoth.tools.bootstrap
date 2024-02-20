@@ -18,8 +18,8 @@ public sealed class MethodSymbol : FunctionOrMethodSymbol
         SimpleName name,
         SelfParameter selfParameterType,
         IFixedList<Parameter> parameters,
-        ReturnType returnType)
-        : base(containingSymbol, name, parameters, returnType)
+        Return @return)
+        : base(containingSymbol, name, parameters, @return)
     {
         ContainingSymbol = containingSymbol;
         Name = name;
@@ -35,16 +35,16 @@ public sealed class MethodSymbol : FunctionOrMethodSymbol
                && Name == otherMethod.Name
                && SelfParameterType == otherMethod.SelfParameterType
                && Parameters.SequenceEqual(otherMethod.Parameters)
-               && ReturnType == otherMethod.ReturnType;
+               && Return == otherMethod.Return;
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(Name, SelfParameterType, Parameters, ReturnType);
+        => HashCode.Combine(Name, SelfParameterType, Parameters, Return);
 
     public override string ToILString()
     {
         var parameterSeparator = Parameters.Any() ? ", " : "";
         string parameters = string.Join(", ", Parameters.Select(d => d.ToILString()));
-        return $"{ContainingSymbol.ToILString()}::{Name}({SelfParameterType.ToILString()}{parameterSeparator}{parameters}) -> {ReturnType.ToILString()}";
+        return $"{ContainingSymbol.ToILString()}::{Name}({SelfParameterType.ToILString()}{parameterSeparator}{parameters}) -> {Return.ToILString()}";
     }
 }
