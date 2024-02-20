@@ -34,7 +34,7 @@ public sealed class GenericParameterType : NonEmptyType
     public override DataType AccessedVia(IReferenceCapabilityConstraint capability)
     {
         // Independent type parameters are not affected by the capability
-        if (Parameter.Variance == Variance.Independent) return this;
+        if (Parameter.ParameterVariance == ParameterVariance.Independent) return this;
         return capability switch
         {
             ReferenceCapability c => CapabilityViewpointType.Create(c, this),

@@ -9,17 +9,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class GenericParameterSyntax : Syntax, IGenericParameterSyntax
 {
-    public Variance Variance { get; }
+    public ParameterVariance ParameterVariance { get; }
     public SimpleName Name { get; }
     public Promise<GenericParameterTypeSymbol> Symbol { get; } = new();
 
-    public GenericParameterSyntax(TextSpan span, Variance variance, SimpleName name)
+    public GenericParameterSyntax(TextSpan span, ParameterVariance variance, SimpleName name)
         : base(span)
     {
-        Variance = variance;
+        ParameterVariance = variance;
         Name = name;
     }
 
     public override string ToString()
-        => Variance == Variance.Invariant ? Name.ToString() : $"{Variance.ToSourceCodeString()} {Name}";
+        => ParameterVariance == ParameterVariance.Invariant ? Name.ToString() : $"{ParameterVariance.ToSourceCodeString()} {Name}";
 }

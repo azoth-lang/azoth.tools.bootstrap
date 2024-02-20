@@ -199,21 +199,21 @@ public partial class Parser
 
     private IGenericParameterSyntax? AcceptGenericParameter()
     {
-        var (variance, varianceSpan) = ParseVariance();
+        var (variance, varianceSpan) = ParseParameterVariance();
         var identifier = Tokens.AcceptToken<IIdentifierToken>();
         if (identifier is null) return null;
         var span = TextSpan.Covering(varianceSpan, identifier.Span);
         return new GenericParameterSyntax(span, variance, identifier.Value);
     }
 
-    private (Variance, TextSpan) ParseVariance()
+    private (ParameterVariance, TextSpan) ParseParameterVariance()
     {
         return Tokens.Current switch
         {
-            IInKeywordToken _ => (Variance.Contravariant, Tokens.Consume<IInKeywordToken>()),
-            IIndependentKeywordToken _ => (Variance.Independent, Tokens.Consume<IIndependentKeywordToken>()),
-            IOutKeywordToken _ => (Variance.Covariant, Tokens.Consume<IOutKeywordToken>()),
-            _ => (Variance.Invariant, Tokens.Current.Span.AtStart())
+            IInKeywordToken _ => (ParameterVariance.Contravariant, Tokens.Consume<IInKeywordToken>()),
+            IIndependentKeywordToken _ => (ParameterVariance.Independent, Tokens.Consume<IIndependentKeywordToken>()),
+            IOutKeywordToken _ => (ParameterVariance.Covariant, Tokens.Consume<IOutKeywordToken>()),
+            _ => (ParameterVariance.Invariant, Tokens.Current.Span.AtStart())
         };
     }
 

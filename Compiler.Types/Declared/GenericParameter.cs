@@ -12,27 +12,27 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 public sealed class GenericParameter : IEquatable<GenericParameter>
 {
     public static GenericParameter Invariant(StandardTypeName name)
-        => new(Variance.Invariant, name);
+        => new(ParameterVariance.Invariant, name);
 
     public static GenericParameter Independent(StandardTypeName name)
-        => new(Variance.Independent, name);
+        => new(ParameterVariance.Independent, name);
 
     public static GenericParameter Out(StandardTypeName name)
-        => new(Variance.Covariant, name);
+        => new(ParameterVariance.Covariant, name);
 
     public static GenericParameter In(StandardTypeName name)
-        => new(Variance.Contravariant, name);
+        => new(ParameterVariance.Contravariant, name);
 
-    public GenericParameter(Variance variance, StandardTypeName name)
+    public GenericParameter(ParameterVariance parameterVariance, StandardTypeName name)
     {
         Requires.That(nameof(name), name.GenericParameterCount == 0, "Cannot have generic parameters");
-        Variance = variance;
+        ParameterVariance = parameterVariance;
         Name = name;
     }
 
-    public Variance Variance { get; }
+    public ParameterVariance ParameterVariance { get; }
 
-    public bool IsIndependent => Variance == Variance.Independent;
+    public bool IsIndependent => ParameterVariance == ParameterVariance.Independent;
 
     public StandardTypeName Name { get; }
 
@@ -43,13 +43,13 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return Variance == other.Variance && Name.Equals(other.Name);
+        return ParameterVariance == other.ParameterVariance && Name.Equals(other.Name);
     }
 
     public override bool Equals(object? obj)
         => obj is GenericParameter other && Equals(other);
 
-    public override int GetHashCode() => HashCode.Combine(Variance, Name);
+    public override int GetHashCode() => HashCode.Combine(ParameterVariance, Name);
 
     public static bool operator ==(GenericParameter? left, GenericParameter? right) => Equals(left, right);
 
@@ -57,5 +57,5 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
     #endregion
 
     public override string ToString()
-        => Variance == Variance.Invariant ? Name.ToString() : $"{Variance.ToSourceCodeString()} {Name}";
+        => ParameterVariance == ParameterVariance.Invariant ? Name.ToString() : $"{ParameterVariance.ToSourceCodeString()} {Name}";
 }

@@ -8,19 +8,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public static partial class TypeOperations
 {
     public static bool IsOutputSafe(this Pseudotype type)
-        => type.IsVarianceSafe(Variance.Covariant);
+        => type.IsVarianceSafe(ParameterVariance.Covariant);
 
     public static bool IsInputSafe(this Pseudotype type)
-        => type.IsVarianceSafe(Variance.Contravariant);
+        => type.IsVarianceSafe(ParameterVariance.Contravariant);
 
     public static bool IsIndependentSafe(this Pseudotype type)
-        => type.IsVarianceSafe(Variance.Independent);
+        => type.IsVarianceSafe(ParameterVariance.Independent);
 
-    private static bool IsVarianceSafe(this Pseudotype type, Variance variance)
+    private static bool IsVarianceSafe(this Pseudotype type, ParameterVariance variance)
     {
         return type switch
         {
-            GenericParameterType t => variance.CompatibleWith(t.Parameter.Variance),
+            GenericParameterType t => variance.CompatibleWith(t.Parameter.ParameterVariance),
             // TODO does the viewpoint or constraint need to be checked?
             CapabilityType t => t.BareType.IsVarianceSafe(variance),
             ViewpointType t => t.Referent.IsVarianceSafe(variance),
@@ -35,7 +35,7 @@ public static partial class TypeOperations
         };
     }
 
-    private static bool IsVarianceSafe(this FunctionType type, Variance variance)
+    private static bool IsVarianceSafe(this FunctionType type, ParameterVariance variance)
     {
         // The parameters are `in` (contravariant)
         foreach (var parameter in type.Parameters)
@@ -49,26 +49,26 @@ public static partial class TypeOperations
         return true;
     }
 
-    private static bool IsVarianceSafe(this BareType type, Variance variance)
+    private static bool IsVarianceSafe(this BareType type, ParameterVariance variance)
     {
         foreach (var (parameter, argument) in type.GenericParameterArguments)
-            switch (parameter.Variance)
+            switch (parameter.ParameterVariance)
             {
                 default:
-                    throw ExhaustiveMatch.Failed(parameter.Variance);
-                case Variance.Contravariant: // i.e. `in`
+                    throw ExhaustiveMatch.Failed(parameter.ParameterVariance);
+                case ParameterVariance.Contravariant: // i.e. `in`
                     if (!argument.IsVarianceSafe(variance.Antivariance()))
                         return false;
                     break;
-                case Variance.Invariant:
-                    if (!argument.IsVarianceSafe(Variance.Invariant))
+                case ParameterVariance.Invariant:
+                    if (!argument.IsVarianceSafe(ParameterVariance.Invariant))
                         return false;
                     break;
-                case Variance.Independent: // i.e. `ind`
-                    if (!argument.IsVarianceSafe(Variance.Independent))
+                case ParameterVariance.Independent: // i.e. `ind`
+                    if (!argument.IsVarianceSafe(ParameterVariance.Independent))
                         return false;
                     break;
-                case Variance.Covariant: // i.e. `out`
+                case ParameterVariance.Covariant: // i.e. `out`
                     if (!argument.IsVarianceSafe(variance))
                         return false;
                     break;

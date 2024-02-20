@@ -40,9 +40,9 @@ public sealed class BareReferenceType<TDeclared> : BareReferenceType
 
     public override BareReferenceType<TDeclared> AccessedVia(ReferenceCapability capability)
     {
-        if (DeclaredType.GenericParameters.All(p => p.Variance != Variance.Independent)) return this;
+        if (DeclaredType.GenericParameters.All(p => p.ParameterVariance != ParameterVariance.Independent)) return this;
         var newTypeArguments = DeclaredType.GenericParameters.Zip(GenericTypeArguments,
-            (p, arg) => p.Variance == Variance.Independent ? arg.AccessedVia(capability) : arg).ToFixedList();
+            (p, arg) => p.ParameterVariance == ParameterVariance.Independent ? arg.AccessedVia(capability) : arg).ToFixedList();
         return new(DeclaredType, newTypeArguments);
     }
 

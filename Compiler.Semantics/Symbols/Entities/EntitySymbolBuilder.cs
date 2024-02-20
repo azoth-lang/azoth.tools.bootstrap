@@ -239,7 +239,7 @@ public class EntitySymbolBuilder
     {
         var declaredType = new Promise<ObjectType>();
         return type.GenericParameters
-                   .Select(p => new GenericParameterType(declaredType, new GenericParameter(p.Variance, p.Name)))
+                   .Select(p => new GenericParameterType(declaredType, new GenericParameter(p.ParameterVariance, p.Name)))
                    .ToFixedList();
     }
 

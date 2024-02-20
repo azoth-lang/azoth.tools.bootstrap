@@ -102,13 +102,13 @@ public static class DataTypeExtensions
         {
             var from = source[i];
             var to = target[i];
-            switch (declaredType.GenericParameters[i].Variance)
+            switch (declaredType.GenericParameters[i].ParameterVariance)
             {
-                case Variance.Invariant:
+                case ParameterVariance.Invariant:
                     if (from != to)
                         return false;
                     break;
-                case Variance.Independent:
+                case ParameterVariance.Independent:
                     if (from != to)
                     {
                         // When target allows write, acts invariant
@@ -125,16 +125,16 @@ public static class DataTypeExtensions
                     }
 
                     break;
-                case Variance.Covariant:
+                case ParameterVariance.Covariant:
                     if (!to.IsAssignableFrom(from))
                         return false;
                     break;
-                case Variance.Contravariant:
+                case ParameterVariance.Contravariant:
                     if (!from.IsAssignableFrom(to))
                         return false;
                     break;
                 default:
-                    throw ExhaustiveMatch.Failed(declaredType.GenericParameters[i].Variance);
+                    throw ExhaustiveMatch.Failed(declaredType.GenericParameters[i].ParameterVariance);
             }
         }
         return true;
