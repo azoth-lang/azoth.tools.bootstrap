@@ -13,7 +13,7 @@ internal class GenericParameterSyntax : Syntax, IGenericParameterSyntax
     public SimpleName Name { get; }
     public Promise<GenericParameterTypeSymbol> Symbol { get; } = new();
 
-    public GenericParameterSyntax(TextSpan span, ParameterVariance variance, SimpleName name)
+    public GenericParameterSyntax(TextSpan span, SimpleName name, ParameterVariance variance)
         : base(span)
     {
         ParameterVariance = variance;

@@ -199,11 +199,11 @@ public partial class Parser
 
     private IGenericParameterSyntax? AcceptGenericParameter()
     {
-        var (variance, varianceSpan) = ParseParameterVariance();
         var identifier = Tokens.AcceptToken<IIdentifierToken>();
         if (identifier is null) return null;
-        var span = TextSpan.Covering(varianceSpan, identifier.Span);
-        return new GenericParameterSyntax(span, variance, identifier.Value);
+        var (variance, varianceSpan) = ParseParameterVariance();
+        var span = TextSpan.Covering(identifier.Span, varianceSpan);
+        return new GenericParameterSyntax(span, identifier.Value, variance);
     }
 
     private (ParameterVariance, TextSpan) ParseParameterVariance()

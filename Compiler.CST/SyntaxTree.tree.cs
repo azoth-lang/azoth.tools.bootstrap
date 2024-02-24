@@ -275,8 +275,8 @@ public partial interface IAttributeSyntax : ISyntax
 
 public partial interface IGenericParameterSyntax : ISyntax
 {
-    ParameterVariance ParameterVariance { get; }
     SimpleName Name { get; }
+    ParameterVariance ParameterVariance { get; }
     Promise<GenericParameterTypeSymbol> Symbol { get; }
 }
 
