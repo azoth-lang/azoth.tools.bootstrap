@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34024.191
@@ -84,7 +84,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "azm", "azm\azm.csproj", "{6
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.AST.Interpreter", "Compiler.AST.Interpreter\Compiler.AST.Interpreter.csproj", "{A0F93255-B6DB-468C-A4BA-8A26F607993D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Unit.Compiler.AST.Interpreter", "Tests.Unit.Compiler.AST.Interpreter\Tests.Unit.Compiler.AST.Interpreter.csproj", "{F52BC75F-BEB7-402C-8450-F49CEEA5C32A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Unit.Compiler.AST.Interpreter", "Tests.Unit.Compiler.AST.Interpreter\Tests.Unit.Compiler.AST.Interpreter.csproj", "{F52BC75F-BEB7-402C-8450-F49CEEA5C32A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

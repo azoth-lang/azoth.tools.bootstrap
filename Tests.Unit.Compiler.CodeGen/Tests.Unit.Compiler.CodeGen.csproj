@@ -1,17 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-
+    <TargetFramework>net8.0</TargetFramework>
     <IsPackable>false</IsPackable>
-
     <AssemblyName>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.CodeGen</AssemblyName>
-
     <RootNamespace>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.CodeGen</RootNamespace>
-
     <LangVersion>default</LangVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="ExhaustiveMatching.Analyzer" Version="0.5.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
@@ -26,10 +20,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Compiler.CodeGen\Compiler.CodeGen.csproj" />
     <ProjectReference Include="..\Tests.Asserts\Tests.Asserts.csproj" />
   </ItemGroup>
-
 </Project>

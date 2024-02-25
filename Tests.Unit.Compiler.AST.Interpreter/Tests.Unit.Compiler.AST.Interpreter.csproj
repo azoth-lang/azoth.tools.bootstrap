@@ -1,16 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <RootNamespace>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.AST.Interpreter</RootNamespace>
     <AssemblyName>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.AST.Interpreter</AssemblyName>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="ExhaustiveMatching.Analyzer" Version="0.5.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
@@ -25,14 +22,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Compiler.AST.Interpreter\Compiler.AST.Interpreter.csproj" />
     <ProjectReference Include="..\Tests.Asserts\Tests.Asserts.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="MemoryLayout\" />
   </ItemGroup>
-
 </Project>
