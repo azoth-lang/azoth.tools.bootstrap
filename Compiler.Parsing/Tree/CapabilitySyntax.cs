@@ -3,6 +3,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -17,7 +18,8 @@ internal class CapabilitySyntax : Syntax, ICapabilitySyntax
 
     public IFixedList<ICapabilityToken> Tokens { get; }
     public DeclaredCapability Declared { get; }
-    public FixedSet<DeclaredCapability> AllowedCapabilities { get; }
+    public Capability Capability { get; }
+    ICapabilityConstraint ICapabilityConstraintSyntax.Constraint => Capability;
 
     public CapabilitySyntax(
         TextSpan span,
@@ -27,9 +29,8 @@ internal class CapabilitySyntax : Syntax, ICapabilitySyntax
     {
         Tokens = tokens.ToFixedList();
         Declared = declared;
-        AllowedCapabilities = Declared.Yield().ToFixedSet();
+        Capability = Declared.ToCapability();
     }
 
-    public override string ToString() => Declared.ToReferenceCapability().ToSourceString();
-
+    public override string ToString() => Declared.ToCapability().ToSourceCodeString();
 }

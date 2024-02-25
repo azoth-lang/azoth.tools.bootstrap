@@ -10,6 +10,8 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
@@ -48,22 +50,23 @@ public class TypeResolver
 
     [return: NotNullIfNotNull(nameof(typeSyntax))]
     public DataType? Evaluate(ITypeSyntax? typeSyntax)
+        => typeSyntax is not null ? Evaluate(typeSyntax, mustBeConstructable: false) : null;
+
+    private DataType Evaluate(ITypeSyntax typeSyntax, bool mustBeConstructable)
     {
         switch (typeSyntax)
         {
             default:
                 throw ExhaustiveMatch.Failed(typeSyntax);
-            case null:
-                return null;
             case ISimpleTypeNameSyntax syn:
                 return ResolveType(syn, isAttribute: false, FixedList.Empty<DataType>(), CreateType);
             case IParameterizedTypeSyntax syn:
-                var typeArguments = Evaluate(syn.TypeArguments);
+                var typeArguments = Evaluate(syn.TypeArguments, mustBeConstructable);
                 return ResolveType(syn, isAttribute: false, typeArguments, CreateType);
             case ICapabilityTypeSyntax referenceCapability:
             {
-                var capability = referenceCapability.Capability.Declared.ToReferenceCapability();
-                var type = Evaluate(referenceCapability.Referent, isAttribute: false, capability);
+                var capability = referenceCapability.Capability.Declared.ToCapability();
+                var type = Evaluate(capability, referenceCapability.Referent, isAttribute: false, mustBeConstructable: mustBeConstructable);
                 if (capability.AllowsWrite && type is ReferenceType { IsDeclaredConst: true } referenceType)
                     diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(file, referenceCapability, capability,
                         referenceType.DeclaredType));
@@ -71,7 +74,7 @@ public class TypeResolver
             }
             case IOptionalTypeSyntax syn:
             {
-                var referent = Evaluate(syn.Referent);
+                var referent = Evaluate(syn.Referent, mustBeConstructable);
                 return syn.NamedType = new OptionalType(referent);
             }
             case IFunctionTypeSyntax syn:
@@ -82,8 +85,8 @@ public class TypeResolver
             }
             case ICapabilityViewpointTypeSyntax syn:
             {
-                var capability = syn.Capability.Declared.ToReferenceCapability();
-                var type = Evaluate(syn.Referent);
+                var capability = syn.Capability.Declared.ToCapability();
+                var type = Evaluate(syn.Referent, mustBeConstructable);
                 if (type is GenericParameterType genericParameterType)
                     return syn.NamedType = CapabilityViewpointType.Create(capability, genericParameterType);
 
@@ -92,7 +95,7 @@ public class TypeResolver
             }
             case ISelfViewpointTypeSyntax syn:
             {
-                var referentType = Evaluate(syn.Referent);
+                var referentType = Evaluate(syn.Referent, mustBeConstructable);
                 if (selfType is ReferenceType { Capability: var capability }
                         && referentType is GenericParameterType genericParameterType)
                     return syn.NamedType = CapabilityViewpointType.Create(capability, genericParameterType);
@@ -123,17 +126,17 @@ public class TypeResolver
         }
     }
 
-    private DataType Evaluate(ITypeSyntax typeSyntax, bool isAttribute, Capability capability)
+    private DataType Evaluate(Capability capability, ITypeSyntax typeSyntax, bool isAttribute, bool mustBeConstructable)
     {
         switch (typeSyntax)
         {
             default:
                 throw ExhaustiveMatch.Failed(typeSyntax);
             case ISimpleTypeNameSyntax syn:
-                _ = Evaluate(syn, isAttribute, capability);
+                _ = Evaluate(capability, syn, isAttribute, mustBeConstructable);
                 return syn.NamedType!;
             case IParameterizedTypeSyntax syn:
-                _ = Evaluate(syn, isAttribute, capability);
+                _ = Evaluate(capability, syn, isAttribute, mustBeConstructable);
                 return syn.NamedType!;
             case ICapabilityTypeSyntax _:
             case IOptionalTypeSyntax _:
@@ -144,15 +147,16 @@ public class TypeResolver
     }
 
     private DataType Evaluate(
-         ITypeNameSyntax typeSyntax,
-         bool isAttribute,
-         Capability capability)
+        Capability capability,
+        ITypeNameSyntax typeSyntax,
+        bool isAttribute,
+        bool mustBeConstructable)
     {
         return typeSyntax switch
         {
             ISimpleTypeNameSyntax syn => ResolveType(syn, isAttribute, FixedList.Empty<DataType>(), CreateType),
             IParameterizedTypeSyntax syn
-                => ResolveType(syn, isAttribute, Evaluate(syn.TypeArguments), CreateType),
+                => ResolveType(syn, isAttribute, Evaluate(syn.TypeArguments, mustBeConstructable), CreateType),
             _ => throw ExhaustiveMatch.Failed(typeSyntax)
         };
 
@@ -188,13 +192,13 @@ public class TypeResolver
 
     private Parameter Evaluate(IParameterTypeSyntax syn)
     {
-        var referent = Evaluate(syn.Referent);
+        var referent = Evaluate(syn.Referent, mustBeConstructable: false);
         return new Parameter(syn.IsLent, referent);
     }
 
     private Return Evaluate(IReturnTypeSyntax syn)
     {
-        var referent = Evaluate(syn.Referent);
+        var referent = Evaluate(syn.Referent, mustBeConstructable: false);
         return new Return(referent);
     }
 
@@ -202,7 +206,7 @@ public class TypeResolver
     /// Evaluate a type that does not have any reference capability.
     /// </summary>
     /// <remarks>This is used for new expressions and base types.</remarks>
-    public BareType? EvaluateBareType(ITypeNameSyntax typeSyntax)
+    public BareType? EvaluateConstructableBareType(ITypeNameSyntax typeSyntax)
         => EvaluateBareType(typeSyntax, isAttribute: false);
 
     public BareType? EvaluateAttribute(ITypeNameSyntax typeSyntax)
@@ -216,7 +220,7 @@ public class TypeResolver
         {
             ISimpleTypeNameSyntax syn => ResolveType(syn, isAttribute, FixedList.Empty<DataType>(), CreateType),
             IParameterizedTypeSyntax syn
-                => ResolveType(syn, isAttribute, Evaluate(syn.TypeArguments), CreateType),
+                => ResolveType(syn, isAttribute, Evaluate(syn.TypeArguments, mustBeConstructable: true), CreateType),
             _ => throw ExhaustiveMatch.Failed(typeSyntax)
         };
 
@@ -235,7 +239,7 @@ public class TypeResolver
                 }
                 case ObjectTypeSymbol sym:
                     var declaredObjectType = sym.DeclaresType;
-                    return declaredObjectType.With(typeArguments);
+                    return CheckTypeArgumentsAreConstructable(declaredObjectType.With(typeArguments), typeSyntax);
                 case GenericParameterTypeSymbol _:
                     diagnostics.Add(TypeError.TypeParameterCannotBeUsedHere(file, typeSyntax));
                     return null;
@@ -246,8 +250,8 @@ public class TypeResolver
         }
     }
 
-    private IFixedList<DataType> Evaluate(IEnumerable<ITypeSyntax> types)
-        => types.Select(t => Evaluate(t)).ToFixedList();
+    private IFixedList<DataType> Evaluate(IEnumerable<ITypeSyntax> types, bool mustBeConstructable)
+        => types.Select(t => Evaluate(t, mustBeConstructable)).ToFixedList();
 
     private DataType ResolveType(
         ITypeNameSyntax typeName,
@@ -311,5 +315,62 @@ public class TypeResolver
         if (typeSymbolBuilder is null)
             throw new InvalidOperationException("All type symbols should already be built");
         return typeSymbolBuilder.Build(promise);
+    }
+
+    private BareType? CheckTypeArgumentsAreConstructable(BareType type, ITypeSyntax typeSyntax)
+    {
+        var constructable = true;
+        foreach (var (param, arg) in type.GenericParameterArguments)
+            constructable &= CheckTypeArgumentIsConstructable(param, arg, typeSyntax);
+
+        return constructable ? type : null;
+    }
+
+    private bool CheckTypeArgumentIsConstructable(GenericParameter param, DataType arg, ITypeSyntax typeSyntax)
+    {
+        switch (arg)
+        {
+            case CapabilityType capabilityType:
+                if (!param.Constraint.IsAssignableFrom(capabilityType.Capability))
+                {
+                    diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(file, typeSyntax, param, capabilityType));
+                    return false;
+                }
+                break;
+            case OptionalType optionalType:
+                return CheckTypeArgumentIsConstructable(param, optionalType.Referent, typeSyntax);
+            case GenericParameterType genericParameterType:
+                if (!param.Constraint.IsAssignableFrom(genericParameterType.Parameter.Constraint))
+                {
+                    diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(file, typeSyntax, param, genericParameterType));
+                    return false;
+                }
+                break;
+            case CapabilityViewpointType viewpointType:
+                // TODO handle capabilities on the generic parameter
+                if (!param.Constraint.IsAssignableFrom(viewpointType.Capability))
+                {
+                    diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(file, typeSyntax, param, viewpointType));
+                    return false;
+                }
+                break;
+            case SelfViewpointType selfViewpointType:
+                // TODO handle capabilities on the referent
+                if (!param.Constraint.IsAssignableFrom(selfViewpointType.Capability))
+                {
+                    diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(file, typeSyntax, param, selfViewpointType));
+                    return false;
+                }
+                break;
+            case EmptyType _:
+            case UnknownType _:
+            case FunctionType _:
+            case ConstValueType _:
+                // ignore
+                break;
+            default:
+                throw ExhaustiveMatch.Failed(arg);
+        }
+        return true;
     }
 }

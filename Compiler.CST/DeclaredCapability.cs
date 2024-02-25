@@ -21,7 +21,7 @@ public enum DeclaredCapability
 
 public static class DeclaredReferenceCapabilityExtensions
 {
-    public static Capability ToReferenceCapability(this DeclaredCapability capability)
+    public static Capability ToCapability(this DeclaredCapability capability)
         => capability switch
         {
             DeclaredCapability.Isolated => Capability.Isolated,

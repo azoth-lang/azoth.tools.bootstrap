@@ -239,7 +239,7 @@ public class EntitySymbolBuilder
     {
         var declaredType = new Promise<ObjectType>();
         return type.GenericParameters
-                   .Select(p => new GenericParameterType(declaredType, new GenericParameter(p.ParameterVariance, p.Name)))
+                   .Select(p => new GenericParameterType(declaredType, new GenericParameter(p.Constraint.Constraint, p.Name, p.ParameterVariance)))
                    .ToFixedList();
     }
 
@@ -282,7 +282,7 @@ public class EntitySymbolBuilder
         var resolver = new TypeResolver(syn.File, diagnostics, selfType: null, typeDeclarations);
         if (syn is IClassDeclarationSyntax { BaseTypeName: not null and var baseTypeName })
         {
-            var superType = resolver.EvaluateBareType(baseTypeName);
+            var superType = resolver.EvaluateConstructableBareType(baseTypeName);
             if (superType is BareReferenceType bareType)
             {
                 yield return bareType;
@@ -293,7 +293,7 @@ public class EntitySymbolBuilder
 
         foreach (var supertype in syn.SupertypeNames)
         {
-            var superType = resolver.EvaluateBareType(supertype);
+            var superType = resolver.EvaluateConstructableBareType(supertype);
             if (superType is BareReferenceType bareType)
             {
                 yield return bareType;

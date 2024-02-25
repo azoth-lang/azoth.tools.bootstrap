@@ -102,14 +102,14 @@ public static class TypeError
     public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, ISyntax expression, Capability capability, DeclaredReferenceType type)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3013, $"Cannot use `{capability.ToSourceString()}` on constant type `{type}`");
+            3013, $"Cannot use `{capability.ToSourceCodeString()}` on constant type `{type}`");
     }
 
     public static Diagnostic InvalidConstructorSelfParameterCapability(CodeFile file, ICapabilitySyntax syn)
     {
-        var capability = syn.Declared.ToReferenceCapability();
+        var capability = syn.Declared.ToCapability();
         return new(file, syn.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3014, $"Constructor self parameter cannot have reference capability `{capability.ToSourceString()}`. Only `mut` and read-only are allowed");
+            3014, $"Constructor self parameter cannot have reference capability `{capability.ToSourceCodeString()}`. Only `mut` and read-only are allowed");
     }
 
     public static Diagnostic TypeCannotBeLent(CodeFile file, TextSpan span, Pseudotype type)
@@ -218,5 +218,11 @@ public static class TypeError
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3032, $"Empty type `{typeSyntax}` cannot be used here.");
+    }
+
+    public static Diagnostic CapabilityNotCompatibleWithConstraint(CodeFile file, ITypeSyntax typeSyntax, GenericParameter parameter, DataType arg)
+    {
+        return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3033, $"In `{typeSyntax}` the capability of `{arg.ToSourceCodeString()}` is not compatible with the capability constraint on `{parameter}`.");
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
@@ -106,7 +107,7 @@ public static class Intrinsic
     {
         var intrinsicsPackage = azothNamespace.Package;
         var promiseType = ObjectType.CreateClass(intrinsicsPackage.Name, azothNamespace.NamespaceName,
-                       isAbstract: false, isConst: false, "Promise", GenericParameter.Out("T"));
+                       isAbstract: false, isConst: false, "Promise", GenericParameter.Out(CapabilitySet.Any, "T"));
         var classSymbol = new ObjectTypeSymbol(azothNamespace, promiseType);
         tree.Add(classSymbol);
 
@@ -129,7 +130,7 @@ public static class Intrinsic
     {
         var classType = ObjectType.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
             isAbstract: false, isConst: false, "Raw_Hybrid_Bounded_List",
-            GenericParameter.Independent("F"), GenericParameter.Independent("T"));
+            GenericParameter.Independent(CapabilitySet.Aliasable, "F"), GenericParameter.Independent(CapabilitySet.Aliasable, "T"));
         var fixedType = classType.GenericParameterTypes[0];
         var readClassParamType = new SelfParameter(false, classType.WithRead(classType.GenericParameterTypes));
         var mutClassType = classType.WithMutate(classType.GenericParameterTypes);

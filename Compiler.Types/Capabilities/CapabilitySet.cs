@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ExhaustiveMatching;
 using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.Capability;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
+[DebuggerDisplay("{ToILString()}")]
 public sealed class CapabilitySet : ICapabilityConstraint
 {
     /// <summary>
@@ -61,5 +64,9 @@ public sealed class CapabilitySet : ICapabilityConstraint
             _ => throw ExhaustiveMatch.Failed(from)
         };
 
-    public override string ToString() => name;
+    public override string ToString() => throw new NotSupportedException();
+
+    public string ToILString() => name;
+
+    public string ToSourceCodeString() => name;
 }

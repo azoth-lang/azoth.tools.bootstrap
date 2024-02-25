@@ -245,5 +245,5 @@ public sealed class Capability : ICapabilityConstraint
 
     public string ToILString() => ilName;
 
-    public string ToSourceString() => sourceCodeName;
+    public string ToSourceCodeString() => sourceCodeName;
 }

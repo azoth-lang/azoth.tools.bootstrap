@@ -13,10 +13,7 @@ public abstract class Pseudotype
 
     public abstract DataType ToUpperBound();
 
-    [Obsolete("Use ToSourceCodeString() or ToILString() instead", error: true)]
-#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
     public sealed override string ToString()
-#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
         => throw new NotSupportedException();
 
     /// <summary>

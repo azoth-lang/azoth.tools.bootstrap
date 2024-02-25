@@ -267,7 +267,7 @@ public class BasicBodyAnalyzer
                         throw new NotImplementedException(
                             "Compile error: can't infer mutability for non reference type");
 
-                    type = referenceType.With(inferCapability.Declared.ToReferenceCapability());
+                    type = referenceType.With(inferCapability.Declared.ToCapability());
                 }
 
                 return type;
@@ -692,9 +692,17 @@ public class BasicBodyAnalyzer
             case INewObjectExpressionSyntax exp:
             {
                 var arguments = InferArgumentTypes(exp.Arguments, flow);
-                var constructingType = typeResolver.EvaluateBareType(exp.Type);
+                var constructingType = typeResolver.EvaluateConstructableBareType(exp.Type);
                 ResultVariable? resultVariable = null;
-                if (!constructingType?.IsFullyKnown ?? true)
+                if (constructingType is null)
+                {
+                    exp.ReferencedSymbol.Fulfill(null);
+                    exp.DataType = DataType.Unknown;
+                    resultVariable = CombineResults<ConstructorSymbol>(null, arguments, flow);
+                    return new ExpressionResult(exp, resultVariable);
+                }
+
+                if (!constructingType.IsFullyKnown)
                 {
                     diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
                     exp.ReferencedSymbol.Fulfill(null);

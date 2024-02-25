@@ -1,5 +1,7 @@
 using System;
+using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -11,32 +13,35 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 /// That is why this class exists to ease refactoring later.</remarks>
 public sealed class GenericParameter : IEquatable<GenericParameter>
 {
-    public static GenericParameter Invariant(StandardTypeName name)
-        => new(ParameterVariance.Invariant, name);
+    public static GenericParameter Invariant(ICapabilityConstraint constraint, StandardTypeName name)
+        => new(constraint, name, ParameterVariance.Invariant);
 
-    public static GenericParameter Independent(StandardTypeName name)
-        => new(ParameterVariance.Independent, name);
+    public static GenericParameter Independent(ICapabilityConstraint constraint, StandardTypeName name)
+        => new(constraint, name, ParameterVariance.Independent);
 
-    public static GenericParameter Out(StandardTypeName name)
-        => new(ParameterVariance.Covariant, name);
+    public static GenericParameter Out(ICapabilityConstraint constraint, StandardTypeName name)
+        => new(constraint, name, ParameterVariance.Covariant);
 
-    public static GenericParameter In(StandardTypeName name)
-        => new(ParameterVariance.Contravariant, name);
+    public static GenericParameter In(ICapabilityConstraint constraint, StandardTypeName name)
+        => new(constraint, name, ParameterVariance.Contravariant);
 
-    public GenericParameter(ParameterVariance parameterVariance, StandardTypeName name)
+    public GenericParameter(ICapabilityConstraint constraint, StandardTypeName name, ParameterVariance parameterVariance)
     {
         Requires.That(nameof(name), name.GenericParameterCount == 0, "Cannot have generic parameters");
+        Constraint = constraint;
         ParameterVariance = parameterVariance;
         Name = name;
     }
+
+    public ICapabilityConstraint Constraint { get; }
+
+    public StandardTypeName Name { get; }
 
     public ParameterVariance ParameterVariance { get; }
 
     public TypeVariance TypeVariance => ParameterVariance.ToTypeVariance();
 
     public bool IsIndependent => ParameterVariance == ParameterVariance.Independent;
-
-    public StandardTypeName Name { get; }
 
     // TODO When parameters can be values not just types, add: public DataType DataType { get; }
 
@@ -59,5 +64,15 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
     #endregion
 
     public override string ToString()
-        => ParameterVariance == ParameterVariance.Invariant ? Name.ToString() : $"{ParameterVariance.ToSourceCodeString()} {Name}";
+    {
+        var builder = new StringBuilder();
+        var constraint = Constraint.ToSourceCodeString();
+        if (constraint.Length != 0)
+            builder.Append(constraint).Append(' ');
+        builder.Append(Name);
+        var variance = ParameterVariance.ToSourceCodeString();
+        if (variance.Length != 0)
+            builder.Append(' ').Append(variance);
+        return builder.ToString();
+    }
 }

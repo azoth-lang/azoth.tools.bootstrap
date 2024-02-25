@@ -29,7 +29,7 @@ public class SelfTypeResolver
     {
         return capability switch
         {
-            ICapabilitySyntax syn => objectType.With(syn.Declared.ToReferenceCapability(), typeArguments),
+            ICapabilitySyntax syn => objectType.With(syn.Declared.ToCapability(), typeArguments),
             ICapabilitySetSyntax syn => objectType.With(syn.Constraint, typeArguments),
             _ => throw ExhaustiveMatch.Failed(capability)
         };

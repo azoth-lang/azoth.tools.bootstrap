@@ -37,7 +37,7 @@ public sealed class CapabilityViewpointType : ViewpointType
     #endregion
 
     public override string ToSourceCodeString()
-        => $"{Capability.ToSourceString()}|>{Referent.ToSourceCodeString()}";
+        => $"{Capability.ToSourceCodeString()}|>{Referent.ToSourceCodeString()}";
 
     public override string ToILString() => $"{Capability.ToILString()}|>{Referent.ToILString()}";
 }

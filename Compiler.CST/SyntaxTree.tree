@@ -74,7 +74,7 @@ NamedParameter: Parameter, ConstructorParameter, LocalBinding = IsMutableBinding
 SelfParameter: Parameter = IsLentBinding:'bool' Symbol:'Promise<SelfParameterSymbol>';
 ConstructorSelfParameter: SelfParameter = IsLentBinding:'bool' Capability DataType:'IPromise<DataType>' Symbol:'Promise<SelfParameterSymbol>';
 MethodSelfParameter: SelfParameter = IsLentBinding:'bool' Capability:CapabilityConstraint Symbol:'Promise<SelfParameterSymbol>';
-CapabilityConstraint;
+CapabilityConstraint = Constraint:'ICapabilityConstraint';
 CapabilitySet: CapabilityConstraint = Constraint:'CapabilitySet';
 FieldParameter: Parameter, ConstructorParameter = Name:'SimpleName' ReferencedSymbol:'Promise<FieldSymbol?>' DefaultValue:Expression?;
 Return = Type; // Return type of a function or method
@@ -92,7 +92,7 @@ ParameterizedType: TypeName = TypeArguments:Type* ReferencedSymbol:'Promise<Type
 // TODO QualifiedTypeName
 OptionalType: Type = Referent:Type;
 CapabilityType: Type = Capability Referent:Type;
-Capability: CapabilityConstraint = Tokens:'ICapabilityToken'* Declared:'DeclaredCapability';
+Capability: CapabilityConstraint = Tokens:'ICapabilityToken'* Declared:'DeclaredCapability' Capability:'Capability';
 FunctionType: Type = Parameters:ParameterType* Return:ReturnType;
 ParameterType = IsLent:'bool' Referent:Type;
 ReturnType = Referent:Type; // Return type of function type
