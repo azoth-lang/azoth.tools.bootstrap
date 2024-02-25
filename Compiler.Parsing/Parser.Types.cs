@@ -1,4 +1,3 @@
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -6,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
-using static Azoth.Tools.Bootstrap.Compiler.CST.DeclaredReferenceCapability;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
@@ -31,7 +29,7 @@ public partial class Parser
             case IExplicitCapabilityToken:
                 return ParseTypeWithExplicitCapabilityViewpoint();
             default:
-                var capability = AcceptStandardReferenceCapability();
+                var capability = AcceptStandardCapability();
                 if (capability is not null && Tokens.Current is IRightTriangleToken)
                     return ParseTypeWithCapabilityViewpoint(capability);
 
@@ -49,66 +47,7 @@ public partial class Parser
         return ParseOptionalType(type);
     }
 
-    private IReferenceCapabilitySyntax? AcceptStandardReferenceCapability()
-    {
-        switch (Tokens.Current)
-        {
-            case IIsolatedKeywordToken _:
-            {
-                var isolatedKeyword = Tokens.ConsumeToken<IIsolatedKeywordToken>();
-                return new ReferenceCapabilitySyntax(isolatedKeyword.Span, isolatedKeyword.Yield(), Isolated);
-            }
-            case IMutableKeywordToken _:
-            {
-                var mutableKeyword = Tokens.ConsumeToken<IMutableKeywordToken>();
-                return new ReferenceCapabilitySyntax(mutableKeyword.Span, mutableKeyword.Yield(), Mutable);
-            }
-            case IConstKeywordToken _:
-            {
-                var constKeyword = Tokens.ConsumeToken<IConstKeywordToken>();
-                return new ReferenceCapabilitySyntax(constKeyword.Span, constKeyword.Yield(), Constant);
-            }
-            case IIdKeywordToken _:
-            {
-                var idKeyword = Tokens.ConsumeToken<IIdKeywordToken>();
-                return new ReferenceCapabilitySyntax(idKeyword.Span, idKeyword.Yield(), Identity);
-            }
-            case ITempKeywordToken _:
-            {
-                var tempKeyword = Tokens.ConsumeToken<ITempKeywordToken>();
-                DeclaredReferenceCapability capability;
-                switch (Tokens.Current)
-                {
-                    case IIsolatedKeywordToken _:
-                        capability = TemporarilyIsolated;
-                        break;
-                    case IConstKeywordToken _:
-                        capability = TemporarilyConstant;
-                        break;
-                    case IStandardCapabilityToken capabilityToken:
-                    {
-                        var errorSpan = TextSpan.Covering(tempKeyword.Span, capabilityToken.Span);
-                        Add(ParseError.InvalidTempCapability(File, errorSpan));
-                        return AcceptStandardReferenceCapability();
-                    }
-                    default:
-                        // Treat this as a read-only reference capability
-                        Add(ParseError.InvalidTempCapability(File, tempKeyword.Span));
-                        return new ReferenceCapabilitySyntax(tempKeyword.Span, Enumerable.Empty<IStandardCapabilityToken>(), Read);
-                }
-
-                var capabilityKeyword = Tokens.ConsumeToken<IStandardCapabilityToken>();
-                var span = TextSpan.Covering(tempKeyword.Span, capabilityKeyword.Span);
-                var tokens = tempKeyword.Yield<IStandardCapabilityToken>().Append(capabilityKeyword);
-                return new ReferenceCapabilitySyntax(span, tokens, capability);
-            }
-            default:
-                // Could be a readable reference capability, or could be a value type
-                return null;
-        }
-    }
-
-    private ITypeSyntax ParseTypeWithCapability(IReferenceCapabilitySyntax? capability)
+    private ITypeSyntax ParseTypeWithCapability(ICapabilitySyntax? capability)
     {
         var type = ParseBareType();
         if (capability is not null)
@@ -117,7 +56,7 @@ public partial class Parser
         return ParseOptionalType(type);
     }
 
-    private ITypeSyntax ParseTypeWithCapabilityViewpoint(IReferenceCapabilitySyntax capability)
+    private ITypeSyntax ParseTypeWithCapabilityViewpoint(ICapabilitySyntax capability)
     {
         _ = Tokens.Consume<IRightTriangleToken>();
         var type = ParseBareType();
@@ -134,18 +73,6 @@ public partial class Parser
         type = new CapabilityViewpointTypeSyntax(capability, type);
 
         return ParseOptionalType(type);
-    }
-
-    private IReferenceCapabilitySyntax ParseExplicitCapability()
-    {
-        var capability = Tokens.RequiredToken<IExplicitCapabilityToken>();
-        return capability switch
-        {
-            null => ReferenceCapabilitySyntax.ImplicitReadOnly(Tokens.Current.Span.AtStart()),
-            IReadKeywordToken readKeyword
-                => new ReferenceCapabilitySyntax(capability.Span, readKeyword.Yield(), Read),
-            _ => throw ExhaustiveMatch.Failed(capability),
-        };
     }
 
     private ITypeSyntax ParseOptionalType(ITypeSyntax type)

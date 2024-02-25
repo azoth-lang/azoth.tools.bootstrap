@@ -72,7 +72,7 @@ public abstract class SymbolTestFixture
         return new MethodSymbol(
             containing,
             Name(name) ?? DefaultName("method"),
-            self ?? new SelfParameter(false, containing.DeclaresType.With(ReferenceCapability.Read, FixedList.Empty<DataType>())),
+            self ?? new SelfParameter(false, containing.DeclaresType.With(Capability.Read, FixedList.Empty<DataType>())),
             @params ?? Params(),
             @return ?? ReturnType());
     }
@@ -98,11 +98,11 @@ public abstract class SymbolTestFixture
         SimpleName? containingPackage = null,
         NamespaceName? containingNamespace = null,
         bool? isConst = null,
-        ReferenceCapability? referenceCapability = null)
+        Capability? referenceCapability = null)
     {
         var finalName = Name(name) ?? DefaultName("DataType");
         return ReferenceType.CreateClass(
-            referenceCapability ?? ReferenceCapability.Constant,
+            referenceCapability ?? Capability.Constant,
             containingPackage ?? DefaultName("package"),
             containingNamespace ?? NamespaceName.Global,
             isAbstract: false,
@@ -115,7 +115,7 @@ public abstract class SymbolTestFixture
         SimpleName? containingPackage = null,
         NamespaceName? containingNamespace = null,
         bool? isConst = null,
-        ReferenceCapability? referenceCapability = null)
+        Capability? referenceCapability = null)
     {
         return new Return(DataType(name, containingPackage, containingNamespace, isConst, referenceCapability));
     }

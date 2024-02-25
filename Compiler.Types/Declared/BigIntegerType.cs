@@ -18,7 +18,7 @@ public sealed class BigIntegerType : IntegerType
         : base(name, signed)
     {
         BareType = new(this, FixedList.Empty<DataType>());
-        Type = BareType.With(ReferenceCapability.Constant);
+        Type = BareType.With(Capability.Constant);
     }
 
     public override BareValueType<BigIntegerType> With(IFixedList<DataType> typeArguments)
@@ -27,9 +27,9 @@ public sealed class BigIntegerType : IntegerType
         return BareType;
     }
 
-    public override ValueType<BigIntegerType> With(ReferenceCapability capability, IFixedList<DataType> typeArguments)
+    public override ValueType<BigIntegerType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override ValueType<BigIntegerType> With(ReferenceCapability capability)
+    public override ValueType<BigIntegerType> With(Capability capability)
         => BareType.With(capability);
 }

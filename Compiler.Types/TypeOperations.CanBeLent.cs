@@ -9,11 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public static partial class TypeOperations
 {
-    public static bool CanBeLent(this ReferenceCapability capability)
-        => capability != ReferenceCapability.Identity && capability != ReferenceCapability.Constant;
+    public static bool CanBeLent(this Capability capability)
+        => capability != Capability.Identity && capability != Capability.Constant;
 
-    public static bool CanBeLent(this ReferenceCapabilityConstraint capability)
-        => capability == ReferenceCapabilityConstraint.Readable;
+    public static bool CanBeLent(this CapabilitySet capability)
+        => capability == CapabilitySet.Readable;
 
     public static bool CanBeLent(this Pseudotype type)
         => type switch

@@ -93,6 +93,7 @@ public static class ISyntaxExtensions
                 yield return n.TypeName;
                 yield break;
             case IGenericParameterSyntax n:
+                yield return n.Constraint;
                 yield break;
             case INamedParameterSyntax n:
                 yield return n.Type;
@@ -105,7 +106,7 @@ public static class ISyntaxExtensions
             case IMethodSelfParameterSyntax n:
                 yield return n.Capability;
                 yield break;
-            case IReferenceCapabilityConstraintSyntax n:
+            case ICapabilitySetSyntax n:
                 yield break;
             case IFieldParameterSyntax n:
                 if (n.DefaultValue is not null)
@@ -136,7 +137,7 @@ public static class ISyntaxExtensions
                 yield return n.Capability;
                 yield return n.Referent;
                 yield break;
-            case IReferenceCapabilitySyntax n:
+            case ICapabilitySyntax n:
                 yield break;
             case IFunctionTypeSyntax n:
                 foreach (var child in n.Parameters)

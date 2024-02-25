@@ -99,13 +99,13 @@ public static class TypeError
             3012, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstantType().ToSourceCodeString()}` to type `{toType.ToNonConstantType().ToSourceCodeString()}`");
     }
 
-    public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, ISyntax expression, ReferenceCapability capability, DeclaredReferenceType type)
+    public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, ISyntax expression, Capability capability, DeclaredReferenceType type)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3013, $"Cannot use `{capability.ToSourceString()}` on constant type `{type}`");
     }
 
-    public static Diagnostic InvalidConstructorSelfParameterCapability(CodeFile file, IReferenceCapabilitySyntax syn)
+    public static Diagnostic InvalidConstructorSelfParameterCapability(CodeFile file, ICapabilitySyntax syn)
     {
         var capability = syn.Declared.ToReferenceCapability();
         return new(file, syn.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,

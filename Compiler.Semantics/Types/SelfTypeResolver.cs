@@ -24,46 +24,46 @@ public class SelfTypeResolver
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
     public Pseudotype EvaluateMethodSelfParameterType(
         ObjectType objectType,
-        ISelfReferenceCapabilitySyntax capability,
+        ICapabilityConstraintSyntax capability,
         IFixedList<DataType> typeArguments)
     {
         return capability switch
         {
-            IReferenceCapabilitySyntax syn => objectType.With(syn.Declared.ToReferenceCapability(), typeArguments),
-            IReferenceCapabilityConstraintSyntax syn => objectType.With(syn.Constraint, typeArguments),
+            ICapabilitySyntax syn => objectType.With(syn.Declared.ToReferenceCapability(), typeArguments),
+            ICapabilitySetSyntax syn => objectType.With(syn.Constraint, typeArguments),
             _ => throw ExhaustiveMatch.Failed(capability)
         };
     }
 
     public ReferenceType EvaluateConstructorSelfParameterType(
         ObjectType objectType,
-        IReferenceCapabilitySyntax capability,
+        ICapabilitySyntax syntax,
         IFixedList<DataType> typeArguments)
     {
-        ReferenceCapability referenceCapability;
-        switch (capability.Declared)
+        Capability capability;
+        switch (syntax.Declared)
         {
-            case DeclaredReferenceCapability.Read:
-                referenceCapability = ReferenceCapability.InitReadOnly;
+            case DeclaredCapability.Read:
+                capability = Capability.InitReadOnly;
                 break;
-            case DeclaredReferenceCapability.Mutable:
-                referenceCapability = ReferenceCapability.InitMutable;
+            case DeclaredCapability.Mutable:
+                capability = Capability.InitMutable;
                 break;
-            case DeclaredReferenceCapability.Isolated:
-            case DeclaredReferenceCapability.TemporarilyIsolated:
-                diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, capability));
-                referenceCapability = ReferenceCapability.InitMutable;
+            case DeclaredCapability.Isolated:
+            case DeclaredCapability.TemporarilyIsolated:
+                diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, syntax));
+                capability = Capability.InitMutable;
                 break;
-            case DeclaredReferenceCapability.Constant:
-            case DeclaredReferenceCapability.TemporarilyConstant:
-            case DeclaredReferenceCapability.Identity:
-                diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, capability));
-                referenceCapability = ReferenceCapability.InitReadOnly;
+            case DeclaredCapability.Constant:
+            case DeclaredCapability.TemporarilyConstant:
+            case DeclaredCapability.Identity:
+                diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, syntax));
+                capability = Capability.InitReadOnly;
                 break;
             default:
-                throw ExhaustiveMatch.Failed(capability.Declared);
+                throw ExhaustiveMatch.Failed(syntax.Declared);
         }
 
-        return objectType.With(referenceCapability, typeArguments);
+        return objectType.With(capability, typeArguments);
     }
 }

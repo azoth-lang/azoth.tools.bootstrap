@@ -69,7 +69,7 @@ internal sealed class TypeReplacements
                 var replacementType = ReplaceTypeParametersIn(t.BareType);
                 if (!ReferenceEquals(t.BareType, replacementType))
                     // TODO use proper capability
-                    return replacementType.With(ReferenceCapability.Constant);
+                    return replacementType.With(Capability.Constant);
                 break;
             }
             case ReferenceType t:

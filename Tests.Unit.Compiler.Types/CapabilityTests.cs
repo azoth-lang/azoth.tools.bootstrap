@@ -1,10 +1,10 @@
 using Xunit;
-using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.ReferenceCapability;
+using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.Capability;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
 
 [Trait("Category", "Types")]
-public class ReferenceCapabilityTests
+public class CapabilityTests
 {
     [Theory]
     [MemberData(nameof(AssignableFromData))]

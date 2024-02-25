@@ -31,14 +31,14 @@ public sealed class GenericParameterType : NonEmptyType
         Parameter = parameter;
     }
 
-    public override DataType AccessedVia(IReferenceCapabilityConstraint capability)
+    public override DataType AccessedVia(ICapabilityConstraint capability)
     {
         // Independent type parameters are not affected by the capability
         if (Parameter.ParameterVariance == ParameterVariance.Independent) return this;
         return capability switch
         {
-            ReferenceCapability c => CapabilityViewpointType.Create(c, this),
-            ReferenceCapabilityConstraint c => new SelfViewpointType(c, this),
+            Capability c => CapabilityViewpointType.Create(c, this),
+            CapabilitySet c => new SelfViewpointType(c, this),
             _ => throw ExhaustiveMatch.Failed(capability),
         };
     }

@@ -243,7 +243,7 @@ public class BasicBodyAnalyzer
     /// </summary>
     private static DataType InferDeclarationType(
         IExpressionSyntax expression,
-        IReferenceCapabilitySyntax? inferCapability)
+        ICapabilitySyntax? inferCapability)
     {
         var type = expression.DataType.Assigned();
         if (!type.IsFullyKnown) return DataType.Unknown;
@@ -433,7 +433,7 @@ public class BasicBodyAnalyzer
                 var result = InferType(exp.Referent, flow);
                 DataType type;
                 if (result.Type is ReferenceType referenceType)
-                    type = referenceType.With(ReferenceCapability.Identity);
+                    type = referenceType.With(Capability.Identity);
                 else
                 {
                     diagnostics.Add(TypeError.CannotIdNonReferenceType(file, exp.Span, result.Type));
@@ -506,7 +506,7 @@ public class BasicBodyAnalyzer
             case IStringLiteralExpressionSyntax exp:
                 if (stringSymbol is null)
                     diagnostics.Add(TypeError.NotImplemented(file, exp.Span, "Could not find string type for string literal."));
-                exp.DataType = stringSymbol?.DeclaresType.With(ReferenceCapability.Constant, FixedList.Empty<DataType>())
+                exp.DataType = stringSymbol?.DeclaresType.With(Capability.Constant, FixedList.Empty<DataType>())
                                ?? (DataType)DataType.Unknown;
                 return new ExpressionResult(exp);
             case IBoolLiteralExpressionSyntax exp:
@@ -955,7 +955,7 @@ public class BasicBodyAnalyzer
                     diagnostics.Add(TypeError.NotImplemented(file, exp.Span, "Reference capability does not allow moving"));
                 else if (!flow.IsIsolated(symbol))
                     diagnostics.Add(FlowTypingError.CannotMoveValue(file, exp));
-                type = referenceType.IsTemporarilyIsolatedReference ? type : referenceType.With(ReferenceCapability.Isolated);
+                type = referenceType.IsTemporarilyIsolatedReference ? type : referenceType.With(Capability.Isolated);
                 flow.Move(symbol);
                 break;
             case ValueType { Semantics: TypeSemantics.MoveValue } valueType:
@@ -996,7 +996,7 @@ public class BasicBodyAnalyzer
                 if (!flow.CanFreeze(symbol))
                     diagnostics.Add(FlowTypingError.CannotFreezeValue(file, exp));
 
-                type = referenceType.With(ReferenceCapability.Constant);
+                type = referenceType.With(Capability.Constant);
                 flow.Freeze(symbol);
                 break;
             case UnknownType:
@@ -1208,7 +1208,7 @@ public class BasicBodyAnalyzer
                 switch (contextResult.Type)
                 {
                     case ReferenceType { AllowsWrite: false, AllowsInit: false } contextReferenceType
-                        when contextReferenceType.Capability != ReferenceCapability.Identity: // Another error will be reported
+                        when contextReferenceType.Capability != Capability.Identity: // Another error will be reported
                         diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(file, expression.Span, contextReferenceType));
                         goto default;
                     case UnknownType:
@@ -1550,7 +1550,7 @@ public class BasicBodyAnalyzer
                 switch (returnType)
                 {
                     case ReferenceType referenceType:
-                        if (referenceType.Capability == ReferenceCapability.Isolated)
+                        if (referenceType.Capability == Capability.Isolated)
                             invocationExpression.Semantics = ExpressionSemantics.IsolatedReference;
                         else if (referenceType.AllowsWrite)
                             invocationExpression.Semantics = ExpressionSemantics.MutableReference;
@@ -1925,7 +1925,7 @@ public class BasicBodyAnalyzer
 
                     if (fieldSymbol.IsMutableBinding
                         && contextType is ReferenceType { Capability: var contextCapability }
-                        && contextCapability == ReferenceCapability.Identity)
+                        && contextCapability == Capability.Identity)
                     {
                         diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(file, exp, contextType));
                         type = DataType.Unknown;
@@ -1992,7 +1992,7 @@ public class BasicBodyAnalyzer
     {
         AddImplicitConversionIfNeeded(leftOperand, DataType.Int, flow);
         AddImplicitConversionIfNeeded(rightOperand, DataType.Int, flow);
-        return rangeSymbol?.DeclaresType.With(ReferenceCapability.Constant, FixedList.Empty<DataType>())
+        return rangeSymbol?.DeclaresType.With(Capability.Constant, FixedList.Empty<DataType>())
                ?? (DataType)DataType.Unknown;
     }
 

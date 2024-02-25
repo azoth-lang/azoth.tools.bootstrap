@@ -4,13 +4,13 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
 
 public class ReferenceCapabilityAssignmentTestCase
 {
-    public ReferenceCapability From { get; }
-    public ReferenceCapability To { get; }
+    public Capability From { get; }
+    public Capability To { get; }
     public bool Assignable { get; }
 
     public ReferenceCapabilityAssignmentTestCase(
-        ReferenceCapability from,
-        ReferenceCapability to,
+        Capability from,
+        Capability to,
         bool assignable)
     {
         From = from;

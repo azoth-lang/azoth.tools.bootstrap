@@ -10,13 +10,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// <remarks>Typically, this applies only to the outermost capability of a type. However, if a type
 /// has independent type parameters, then this may apply to the type parameters as well.</remarks>
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public readonly record struct FlowCapability(ReferenceCapability Original)
+public readonly record struct FlowCapability(Capability Original)
 {
     /// <summary>
     /// The capability after it has been modified by aliasing, freezing, etc.
     /// </summary>
     /// <remarks>This is not the actual capability at the moment. That is <see cref="Current"/>.</remarks>
-    public ReferenceCapability Modified { get; init; } = Original;
+    public Capability Modified { get; init; } = Original;
 
     /// <summary>
     /// Any temporary restrictions on the capability (i.e. from a temporarily freeze or move).
@@ -26,16 +26,16 @@ public readonly record struct FlowCapability(ReferenceCapability Original)
     /// <summary>
     /// The current capability, taking into account modifications and restrictions.
     /// </summary>
-    public ReferenceCapability Current
+    public Capability Current
         => Restrictions switch
         {
-            CapabilityRestrictions.ReadWrite => ReferenceCapability.Identity,
+            CapabilityRestrictions.ReadWrite => Capability.Identity,
             CapabilityRestrictions.Write => Modified.WithoutWrite(),
             CapabilityRestrictions.None => Modified,
             _ => throw ExhaustiveMatch.Failed(Restrictions)
         };
 
-    public static implicit operator FlowCapability(ReferenceCapability capability)
+    public static implicit operator FlowCapability(Capability capability)
         => new(capability);
 
     public FlowCapability WhenAliased() => this with { Modified = Modified.WhenAliased() };
@@ -44,9 +44,9 @@ public readonly record struct FlowCapability(ReferenceCapability Original)
 
     public FlowCapability AfterFreeze() => this with { Modified = Modified.Freeze() };
 
-    public FlowCapability AfterMove() => this with { Modified = ReferenceCapability.Identity };
+    public FlowCapability AfterMove() => this with { Modified = Capability.Identity };
 
-    public FlowCapability With(ReferenceCapability capability) => this with { Modified = capability };
+    public FlowCapability With(Capability capability) => this with { Modified = capability };
     public FlowCapability WithRestrictions(CapabilityRestrictions restrictions)
         => this with { Restrictions = restrictions };
 

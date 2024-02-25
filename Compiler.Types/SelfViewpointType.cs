@@ -5,11 +5,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public sealed class SelfViewpointType : ViewpointType
 {
-    public override ReferenceCapabilityConstraint Capability { get; }
+    public override CapabilitySet Capability { get; }
 
     public override DataType Referent { get; }
 
-    public SelfViewpointType(ReferenceCapabilityConstraint capability, DataType referent)
+    public SelfViewpointType(CapabilitySet capability, DataType referent)
     {
         Capability = capability;
         Referent = referent;

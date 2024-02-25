@@ -9,16 +9,16 @@ public sealed class ObjectTypeConstraint : Pseudotype
 
     public override bool IsFullyKnown => BareType.IsFullyKnown;
 
-    public ReferenceCapabilityConstraint Capability { get; }
+    public CapabilitySet Capability { get; }
 
-    public ObjectTypeConstraint(ReferenceCapabilityConstraint capability, BareType bareType)
+    public ObjectTypeConstraint(CapabilitySet capability, BareType bareType)
     {
         Capability = capability;
         BareType = bareType;
     }
 
     public override DataType ToUpperBound()
-        => BareType.With(ReferenceCapability.Read);
+        => BareType.With(Capabilities.Capability.Read);
 
     public override string ToILString() => $"{Capability} {BareType.ToILString()}";
 

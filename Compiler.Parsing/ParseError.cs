@@ -144,4 +144,10 @@ internal static class ParseError
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2021, "This reference capability does not support `temp`.");
     }
+
+    public static Diagnostic ExplicitRead(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2022, "Explicit `read` capability should not be used here. Omit capability for implicit read.");
+    }
 }

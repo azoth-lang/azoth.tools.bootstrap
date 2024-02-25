@@ -8,5 +8,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(IAccessModifierToken),
     typeof(ITypeKindKeywordToken),
     typeof(IBooleanLiteralToken),
-    typeof(ICapabilityToken))]
+    typeof(ICapabilityToken),
+    typeof(ICapabilitySetToken))]
 public partial interface IKeywordToken : IEssentialToken { }

@@ -200,7 +200,7 @@ public sealed class FlowState
     public DataType AliasType(BindingSymbol? symbol)
         => Type(symbol, c => c.OfAlias());
 
-    private DataType Type(BindingSymbol? symbol, Func<ReferenceCapability, ReferenceCapability> transform)
+    private DataType Type(BindingSymbol? symbol, Func<Capability, Capability> transform)
     {
         if (symbol is null) return DataType.Unknown;
         if (!symbol.SharingIsTracked())

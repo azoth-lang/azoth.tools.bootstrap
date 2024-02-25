@@ -34,7 +34,7 @@ public static class Primitive
         var tree = SymbolTreeBuilder.CreateForPrimitives();
 
         // TODO: This is a hack to "have" a string type from here. Replace by extending primitive types with string related methods.
-        var stringType = ReferenceType.CreateClass(ReferenceCapability.Constant, "", NamespaceName.Global, false, false, "String");
+        var stringType = ReferenceType.CreateClass(Capability.Constant, "", NamespaceName.Global, false, false, "String");
 
         // Simple Types
         BuildBoolSymbol(tree);
@@ -95,7 +95,7 @@ public static class Primitive
         var symbol = new PrimitiveTypeSymbol(DeclaredType.Any);
         tree.Add(symbol);
 
-        var idAnyType = DeclaredType.Any.With(ReferenceCapability.Identity);
+        var idAnyType = DeclaredType.Any.With(Capability.Identity);
         // fn identity_hash(value: Any) -> uint64 // TODO: should be nuint
         var identityHash = new MethodSymbol(symbol, "identity_hash", SelfParam(idAnyType), Params(), Return.UInt64);
         tree.Add(identityHash);

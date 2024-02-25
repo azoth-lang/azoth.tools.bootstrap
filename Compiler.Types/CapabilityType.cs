@@ -13,13 +13,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 [Closed(typeof(ReferenceType), typeof(ValueType))]
 public abstract class CapabilityType : NonEmptyType
 {
-    public ReferenceCapability Capability { get; }
-    public bool IsReadOnlyReference => Capability == ReferenceCapability.Read;
-    public bool IsConstantReference => Capability == ReferenceCapability.Constant;
-    public bool IsTemporarilyConstantReference => Capability == ReferenceCapability.TemporarilyConstant;
-    public bool IsIsolatedReference => Capability == ReferenceCapability.Isolated;
-    public bool IsTemporarilyIsolatedReference => Capability == ReferenceCapability.TemporarilyIsolated;
-    public bool IsIdentityReference => Capability == ReferenceCapability.Identity;
+    public Capability Capability { get; }
+    public bool IsReadOnlyReference => Capability == Capability.Read;
+    public bool IsConstantReference => Capability == Capability.Constant;
+    public bool IsTemporarilyConstantReference => Capability == Capability.TemporarilyConstant;
+    public bool IsIsolatedReference => Capability == Capability.Isolated;
+    public bool IsTemporarilyIsolatedReference => Capability == Capability.TemporarilyIsolated;
+    public bool IsIdentityReference => Capability == Capability.Identity;
 
     public bool AllowsInit => Capability.AllowsInit;
 
@@ -69,14 +69,14 @@ public abstract class CapabilityType : NonEmptyType
 
     public sealed override TypeSemantics Semantics => BareType.Semantics;
 
-    private protected CapabilityType(ReferenceCapability capability)
+    private protected CapabilityType(Capability capability)
     {
         Capability = capability;
     }
 
     public sealed override string ToSourceCodeString()
     {
-        if (Capability != ReferenceCapability.Read)
+        if (Capability != Capability.Read)
             return $"{Capability.ToSourceString()} {BareType.ToSourceCodeString()}";
 
         return BareType.ToSourceCodeString();

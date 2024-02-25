@@ -11,7 +11,7 @@ public abstract class ValueType : CapabilityType
 
     public override DeclaredValueType DeclaredType => BareType.DeclaredType;
 
-    private protected ValueType(ReferenceCapability capability)
+    private protected ValueType(Capability capability)
         : base(capability) { }
 
     #region Equality
@@ -33,7 +33,7 @@ public sealed class ValueType<TDeclared> : ValueType
 
     public override TDeclared DeclaredType => BareType.DeclaredType;
 
-    internal ValueType(ReferenceCapability capability, BareValueType<TDeclared> bareType)
+    internal ValueType(Capability capability, BareValueType<TDeclared> bareType)
         : base(capability)
     {
         if (typeof(TDeclared).IsAbstract)

@@ -21,8 +21,8 @@ public class MoveConversion : ChainedConversion
         if (type is not ReferenceType { AllowsRecoverIsolation: true } referenceType)
             throw new InvalidOperationException($"Cannot move type '{type.ToILString()}'");
         var capability = Kind == ConversionKind.Temporary
-            ? ReferenceCapability.TemporarilyIsolated
-            : ReferenceCapability.Isolated;
+            ? Capability.TemporarilyIsolated
+            : Capability.Isolated;
         return (referenceType.With(capability), ExpressionSemantics.IsolatedReference);
     }
 }

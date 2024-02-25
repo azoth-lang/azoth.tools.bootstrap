@@ -63,7 +63,7 @@ public partial class Parser
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
         ITypeSyntax? type = null;
-        IReferenceCapabilitySyntax? capability = null;
+        ICapabilitySyntax? capability = null;
         if (Tokens.Accept<IColonToken>())
             (type, capability) = ParseVariableDeclarationType();
 
@@ -78,16 +78,16 @@ public partial class Parser
     }
 
     // TODO return is really an either type
-    private (ITypeSyntax? Type, IReferenceCapabilitySyntax? Capability) ParseVariableDeclarationType()
+    private (ITypeSyntax? Type, ICapabilitySyntax? Capability) ParseVariableDeclarationType()
     {
-        var capability = AcceptStandardReferenceCapability();
+        var capability = AcceptStandardCapability();
 
         switch (Tokens.Current)
         {
             case IEqualsToken _:
             case ISemicolonToken _:
                 if (capability is null)
-                    // Error on `let x := ....;`
+                    // Error on `let x := ...` or `let x :;`
                     Add(ParseError.MissingType(File, Tokens.Current.Span.AtStart()));
                 return (null, capability);
             default:

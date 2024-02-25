@@ -84,7 +84,7 @@ public readonly struct FlowCapabilities
     public FlowCapabilities AfterFreeze() => new(Outer.AfterFreeze(), TypeParameters);
     public FlowCapabilities WhenAliased() => new(Outer.WhenAliased(), TypeParameters);
     public FlowCapabilities OfAlias() => new(Outer.OfAlias(), TypeParameters);
-    public FlowCapabilities With(ReferenceCapability capability) => new(Outer.With(capability), TypeParameters);
+    public FlowCapabilities With(Capability capability) => new(Outer.With(capability), TypeParameters);
     public FlowCapabilities WithRestrictions(CapabilityRestrictions restrictions)
         => new(Outer.WithRestrictions(restrictions), TypeParameters);
     public FlowCapabilities Restrict(ReferenceType referenceType)

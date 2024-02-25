@@ -24,7 +24,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(IAttributeSyntax),
     typeof(IGenericParameterSyntax),
     typeof(IParameterSyntax),
-    typeof(ISelfReferenceCapabilitySyntax),
+    typeof(ICapabilityConstraintSyntax),
     typeof(IReturnSyntax),
     typeof(ITypeSyntax),
     typeof(IParameterTypeSyntax),
@@ -275,6 +275,7 @@ public partial interface IAttributeSyntax : ISyntax
 
 public partial interface IGenericParameterSyntax : ISyntax
 {
+    ICapabilityConstraintSyntax Constraint { get; }
     SimpleName Name { get; }
     ParameterVariance ParameterVariance { get; }
     Promise<GenericParameterTypeSymbol> Symbol { get; }
@@ -321,25 +322,25 @@ public partial interface ISelfParameterSyntax : IParameterSyntax
 
 public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
 {
-    IReferenceCapabilitySyntax Capability { get; }
+    ICapabilitySyntax Capability { get; }
     new IPromise<DataType> DataType { get; }
 }
 
 public partial interface IMethodSelfParameterSyntax : ISelfParameterSyntax
 {
-    ISelfReferenceCapabilitySyntax Capability { get; }
+    ICapabilityConstraintSyntax Capability { get; }
 }
 
 [Closed(
-    typeof(IReferenceCapabilityConstraintSyntax),
-    typeof(IReferenceCapabilitySyntax))]
-public partial interface ISelfReferenceCapabilitySyntax : ISyntax
+    typeof(ICapabilitySetSyntax),
+    typeof(ICapabilitySyntax))]
+public partial interface ICapabilityConstraintSyntax : ISyntax
 {
 }
 
-public partial interface IReferenceCapabilityConstraintSyntax : ISelfReferenceCapabilitySyntax
+public partial interface ICapabilitySetSyntax : ICapabilityConstraintSyntax
 {
-    ReferenceCapabilityConstraint Constraint { get; }
+    CapabilitySet Constraint { get; }
 }
 
 public partial interface IFieldParameterSyntax : IParameterSyntax, IConstructorParameterSyntax
@@ -406,14 +407,14 @@ public partial interface IOptionalTypeSyntax : ITypeSyntax
 
 public partial interface ICapabilityTypeSyntax : ITypeSyntax
 {
-    IReferenceCapabilitySyntax Capability { get; }
+    ICapabilitySyntax Capability { get; }
     ITypeSyntax Referent { get; }
 }
 
-public partial interface IReferenceCapabilitySyntax : ISelfReferenceCapabilitySyntax
+public partial interface ICapabilitySyntax : ICapabilityConstraintSyntax
 {
     IFixedList<ICapabilityToken> Tokens { get; }
-    DeclaredReferenceCapability Declared { get; }
+    DeclaredCapability Declared { get; }
 }
 
 public partial interface IFunctionTypeSyntax : ITypeSyntax
@@ -443,7 +444,7 @@ public partial interface IViewpointTypeSyntax : ITypeSyntax
 
 public partial interface ICapabilityViewpointTypeSyntax : IViewpointTypeSyntax
 {
-    IReferenceCapabilitySyntax Capability { get; }
+    ICapabilitySyntax Capability { get; }
 }
 
 public partial interface ISelfViewpointTypeSyntax : IViewpointTypeSyntax
@@ -475,7 +476,7 @@ public partial interface IVariableDeclarationStatementSyntax : IBodyStatementSyn
     TextSpan NameSpan { get; }
     SimpleName Name { get; }
     Promise<int?> DeclarationNumber { get; }
-    IReferenceCapabilitySyntax? Capability { get; }
+    ICapabilitySyntax? Capability { get; }
     ITypeSyntax? Type { get; }
     new Promise<VariableSymbol> Symbol { get; }
     IExpressionSyntax? Initializer { get; }

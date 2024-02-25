@@ -199,11 +199,13 @@ public partial class Parser
 
     private IGenericParameterSyntax? AcceptGenericParameter()
     {
+        var constraint = AcceptExplicitCapabilityConstraint()
+                         ?? CapabilitySetSyntax.ImplicitAliasable(Tokens.Current.Span.AtStart());
         var identifier = Tokens.AcceptToken<IIdentifierToken>();
         if (identifier is null) return null;
         var (variance, varianceSpan) = ParseParameterVariance();
         var span = TextSpan.Covering(identifier.Span, varianceSpan);
-        return new GenericParameterSyntax(span, identifier.Value, variance);
+        return new GenericParameterSyntax(span, constraint, identifier.Value, variance);
     }
 
     private (ParameterVariance, TextSpan) ParseParameterVariance()
@@ -473,8 +475,8 @@ public partial class Parser
         {
             Add(ParseError.MissingSelfParameter(File, expectedSelfParameterLocation));
             // For simplicity of downstream code, make up a fake self parameter
-            var selfReferenceCapability = new ReferenceCapabilitySyntax(expectedSelfParameterLocation,
-                Enumerable.Empty<ICapabilityToken>(), DeclaredReferenceCapability.Mutable);
+            var selfReferenceCapability = new CapabilitySyntax(expectedSelfParameterLocation,
+                Enumerable.Empty<ICapabilityToken>(), DeclaredCapability.Mutable);
             selfParameter = new ConstructorSelfParameterSyntax(expectedSelfParameterLocation, false, selfReferenceCapability);
         }
         else if (parameters[0] is not ISelfParameterSyntax)

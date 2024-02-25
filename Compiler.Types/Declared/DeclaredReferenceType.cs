@@ -28,5 +28,5 @@ public abstract class DeclaredReferenceType : DeclaredType
 
     public abstract override BareReferenceType With(IFixedList<DataType> typeArguments);
 
-    public abstract override CapabilityType With(ReferenceCapability capability, IFixedList<DataType> typeArguments);
+    public abstract override CapabilityType With(Capability capability, IFixedList<DataType> typeArguments);
 }

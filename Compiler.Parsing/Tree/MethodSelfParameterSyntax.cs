@@ -9,10 +9,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class ConstructorSelfParameterSyntax : ParameterSyntax, IConstructorSelfParameterSyntax
 {
     public bool IsLentBinding { get; }
-    public IReferenceCapabilitySyntax Capability { get; }
+    public ICapabilitySyntax Capability { get; }
     public Promise<SelfParameterSymbol> Symbol { get; } = new Promise<SelfParameterSymbol>();
     public override IPromise<DataType> DataType { get; }
-    public ConstructorSelfParameterSyntax(TextSpan span, bool isLentBinding, IReferenceCapabilitySyntax capability)
+    public ConstructorSelfParameterSyntax(TextSpan span, bool isLentBinding, ICapabilitySyntax capability)
         : base(span, null)
     {
         Capability = capability;

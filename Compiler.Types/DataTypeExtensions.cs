@@ -172,7 +172,7 @@ public static class DataTypeExtensions
         return type.ReplaceSelfWith(selfReferenceType.Capability);
     }
 
-    public static DataType ReplaceSelfWith(this DataType type, ReferenceCapability capability)
+    public static DataType ReplaceSelfWith(this DataType type, Capability capability)
     {
         return type switch
         {

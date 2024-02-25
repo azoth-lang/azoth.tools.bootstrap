@@ -122,7 +122,7 @@ public class TypeResolver
         }
     }
 
-    private DataType Evaluate(ITypeSyntax typeSyntax, bool isAttribute, ReferenceCapability capability)
+    private DataType Evaluate(ITypeSyntax typeSyntax, bool isAttribute, Capability capability)
     {
         switch (typeSyntax)
         {
@@ -171,7 +171,7 @@ public class TypeResolver
     private DataType EvaluateBareType(
         ITypeNameSyntax typeSyntax,
         bool isAttribute,
-        ReferenceCapability? capability)
+        Capability? capability)
     {
         return typeSyntax switch
         {
@@ -194,7 +194,7 @@ public class TypeResolver
                     var declaredType = sym.DeclaresType;
                     // If capability not provided, then this is for a constructor or something
                     // and reading the value doesn't matter, it exists to name the type.
-                    capability ??= ReferenceCapability.Identity;
+                    capability ??= Capability.Identity;
                     // Compatibility of the capability with the type is not checked here. That
                     // is done on the capability type syntax.
                     return declaredType.With(capability, typeArguments);
@@ -203,7 +203,7 @@ public class TypeResolver
                     var declaredObjectType = sym.DeclaresType;
                     // If capability not provided, then this is for a constructor or something
                     // and reading the value doesn't matter, it exists to name the type.
-                    capability ??= ReferenceCapability.Identity;
+                    capability ??= Capability.Identity;
                     // Compatibility of the capability with the type is not checked here. That
                     // is done on the capability type syntax.
                     return declaredObjectType.With(capability, typeArguments);

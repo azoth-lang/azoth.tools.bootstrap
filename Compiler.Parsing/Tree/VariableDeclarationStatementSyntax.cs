@@ -17,7 +17,7 @@ internal class VariableDeclarationStatementSyntax : StatementSyntax, IVariableDe
     IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public ITypeSyntax? Type { [DebuggerStepThrough] get; }
-    public IReferenceCapabilitySyntax? Capability { [DebuggerStepThrough] get; }
+    public ICapabilitySyntax? Capability { [DebuggerStepThrough] get; }
     public IExpressionSyntax? Initializer { [DebuggerStepThrough] get; }
 
     public VariableDeclarationStatementSyntax(
@@ -26,7 +26,7 @@ internal class VariableDeclarationStatementSyntax : StatementSyntax, IVariableDe
         SimpleName name,
         TextSpan nameSpan,
         ITypeSyntax? typeSyntax,
-        IReferenceCapabilitySyntax? capability,
+        ICapabilitySyntax? capability,
         IExpressionSyntax? initializer)
         : base(span)
     {

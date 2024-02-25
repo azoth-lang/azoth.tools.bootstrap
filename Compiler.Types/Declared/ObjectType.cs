@@ -147,7 +147,7 @@ public sealed class ObjectType : DeclaredReferenceType
     /// <remarks>This is always `init mut` because the type is being initialized and can be mutated
     /// inside the constructor via field initializers.</remarks>
     public ReferenceType<ObjectType> ToDefaultConstructorSelf()
-        => With(ReferenceCapability.InitMutable, GenericParameterTypes);
+        => With(Capability.InitMutable, GenericParameterTypes);
 
     /// <summary>
     /// Make a version of this type for use as the return type of the default constructor.
@@ -155,7 +155,7 @@ public sealed class ObjectType : DeclaredReferenceType
     /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
     /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
     public ReferenceType<ObjectType> ToDefaultConstructorReturn()
-        => With(IsDeclaredConst ? ReferenceCapability.Constant : ReferenceCapability.Isolated, GenericParameterTypes);
+        => With(IsDeclaredConst ? Capability.Constant : Capability.Isolated, GenericParameterTypes);
 
     /// <summary>
     /// Determine the return type of a constructor with the given parameter types.
@@ -164,10 +164,10 @@ public sealed class ObjectType : DeclaredReferenceType
     /// newly constructed object could contain references to them.</remarks>
     public ReferenceType<ObjectType> ToConstructorReturn(ReferenceType selfParameterType, IEnumerable<Parameter> parameterTypes)
     {
-        if (IsDeclaredConst) return With(ReferenceCapability.Constant, GenericParameterTypes);
+        if (IsDeclaredConst) return With(Capability.Constant, GenericParameterTypes);
         // Read only self constructors cannot return `mut` or `iso`
         if (!selfParameterType.AllowsWrite)
-            return With(ReferenceCapability.Read, GenericParameterTypes);
+            return With(Capability.Read, GenericParameterTypes);
         foreach (var parameterType in parameterTypes)
             switch (parameterType.Type)
             {
@@ -182,19 +182,19 @@ public sealed class ObjectType : DeclaredReferenceType
                 case UnknownType:
                     continue;
                 default:
-                    return With(ReferenceCapability.Mutable, GenericParameterTypes);
+                    return With(Capability.Mutable, GenericParameterTypes);
             }
 
-        return With(ReferenceCapability.Isolated, GenericParameterTypes);
+        return With(Capability.Isolated, GenericParameterTypes);
     }
 
     public override BareReferenceType<ObjectType> With(IFixedList<DataType> typeArguments)
         => BareType.Create(this, typeArguments);
 
-    public override ReferenceType<ObjectType> With(ReferenceCapability capability, IFixedList<DataType> typeArguments)
+    public override ReferenceType<ObjectType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public ObjectTypeConstraint With(ReferenceCapabilityConstraint capability, IFixedList<DataType> typeArguments)
+    public ObjectTypeConstraint With(CapabilitySet capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
     /// <summary>
@@ -202,14 +202,14 @@ public sealed class ObjectType : DeclaredReferenceType
     /// is either read-only or constant.
     /// </summary>
     public override ReferenceType<ObjectType> WithRead(IFixedList<DataType> typeArguments)
-        => With(IsDeclaredConst ? ReferenceCapability.Constant : ReferenceCapability.Read, typeArguments);
+        => With(IsDeclaredConst ? Capability.Constant : Capability.Read, typeArguments);
 
     /// <summary>
     /// Make a version of this type that is the default mutate reference capability for the type.
     /// For constant types, that isn't allowed and a constant reference is returned.
     /// </summary>
     public ReferenceType<ObjectType> WithMutate(IFixedList<DataType> typeArguments)
-        => With(IsDeclaredConst ? ReferenceCapability.Constant : ReferenceCapability.Mutable, typeArguments);
+        => With(IsDeclaredConst ? Capability.Constant : Capability.Mutable, typeArguments);
 
     #region Equals
     public override bool Equals(DeclaredType? other)

@@ -91,13 +91,13 @@ public abstract class BareType : IEquatable<BareType>
     public Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype)
         => typeReplacements.Value.ReplaceTypeParametersIn(pseudotype);
 
-    public abstract BareType AccessedVia(ReferenceCapability capability);
+    public abstract BareType AccessedVia(Capability capability);
 
     public abstract BareType With(IFixedList<DataType> typeArguments);
 
-    public abstract CapabilityType With(ReferenceCapability capability);
+    public abstract CapabilityType With(Capability capability);
 
-    public ObjectTypeConstraint With(ReferenceCapabilityConstraint capability)
+    public ObjectTypeConstraint With(CapabilitySet capability)
         => new(capability, this);
 
     #region Equality

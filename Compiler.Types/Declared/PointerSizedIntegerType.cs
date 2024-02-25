@@ -22,7 +22,7 @@ public sealed class PointerSizedIntegerType : IntegerType
         : base(name, signed)
     {
         BareType = new(this, FixedList.Empty<DataType>());
-        Type = BareType.With(ReferenceCapability.Constant);
+        Type = BareType.With(Capability.Constant);
     }
 
     public override BareValueType<PointerSizedIntegerType> With(IFixedList<DataType> typeArguments)
@@ -31,9 +31,9 @@ public sealed class PointerSizedIntegerType : IntegerType
         return BareType;
     }
 
-    public override ValueType<PointerSizedIntegerType> With(ReferenceCapability capability, IFixedList<DataType> typeArguments)
+    public override ValueType<PointerSizedIntegerType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override ValueType<PointerSizedIntegerType> With(ReferenceCapability capability)
+    public override ValueType<PointerSizedIntegerType> With(Capability capability)
         => BareType.With(capability);
 }

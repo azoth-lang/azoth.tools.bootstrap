@@ -9,18 +9,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 public class TempConversion
 {
     public static TempConversion CreateTempFreeze(TempConversion? currentConversion)
-        => new TempConversion(currentConversion, CapabilityRestrictions.Write, ReferenceCapability.TemporarilyConstant);
+        => new TempConversion(currentConversion, CapabilityRestrictions.Write, Capability.TemporarilyConstant);
 
     public static TempConversion CreateTempMove(TempConversion? currentConversion)
-        => new TempConversion(currentConversion, CapabilityRestrictions.ReadWrite, ReferenceCapability.TemporarilyIsolated);
+        => new TempConversion(currentConversion, CapabilityRestrictions.ReadWrite, Capability.TemporarilyIsolated);
 
     public ulong Number { get; }
     public CapabilityRestrictions RestrictionsImposed { get; }
-    public ReferenceCapability ConvertTo { get; }
+    public Capability ConvertTo { get; }
     public TempConversionFrom From { get; set; }
     public TempConversionTo To { get; set; }
 
-    private TempConversion(TempConversion? currentConversion, CapabilityRestrictions restrictionsImposed, ReferenceCapability convertTo)
+    private TempConversion(TempConversion? currentConversion, CapabilityRestrictions restrictionsImposed, Capability convertTo)
     {
         if (!convertTo.AllowsSequesteredAliases)
             throw new ArgumentException("Must be a temporarily capability.", nameof(convertTo));

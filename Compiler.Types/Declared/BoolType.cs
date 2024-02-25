@@ -14,7 +14,7 @@ public sealed class BoolType : SimpleType
         : base(SpecialTypeName.Bool)
     {
         BareType = new(this, FixedList.Empty<DataType>());
-        Type = BareType.With(ReferenceCapability.Constant);
+        Type = BareType.With(Capability.Constant);
     }
     #endregion
 
@@ -28,9 +28,9 @@ public sealed class BoolType : SimpleType
         return BareType;
     }
 
-    public override ValueType<BoolType> With(ReferenceCapability capability, IFixedList<DataType> typeArguments)
+    public override ValueType<BoolType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override ValueType<BoolType> With(ReferenceCapability capability)
+    public override ValueType<BoolType> With(Capability capability)
         => BareType.With(capability);
 }

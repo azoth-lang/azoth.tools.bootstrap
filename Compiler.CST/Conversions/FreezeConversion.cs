@@ -21,8 +21,8 @@ public class FreezeConversion : ChainedConversion
         if (type is not ReferenceType { AllowsFreeze: true } referenceType)
             throw new InvalidOperationException($"Cannot freeze type '{type.ToILString()}'");
         var capability = Kind == ConversionKind.Temporary
-            ? ReferenceCapability.TemporarilyConstant
-            : ReferenceCapability.Constant;
+            ? Capability.TemporarilyConstant
+            : Capability.Constant;
         return (referenceType.With(capability), ExpressionSemantics.ConstReference);
     }
 }

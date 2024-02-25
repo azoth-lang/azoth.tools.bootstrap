@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 [Closed(typeof(CapabilityViewpointType), typeof(SelfViewpointType))]
 public abstract class ViewpointType : NonEmptyType
 {
-    public abstract IReferenceCapabilityConstraint Capability { get; }
+    public abstract ICapabilityConstraint Capability { get; }
 
     public abstract DataType Referent { get; }
 

@@ -5,14 +5,14 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 [DebuggerDisplay("{ToILString()}")]
-public sealed class ReferenceCapability : IReferenceCapabilityConstraint
+public sealed class Capability : ICapabilityConstraint
 {
     /// <summary>
     /// A reference that has write access and is the sole reference into an isolated sub-graph. That
     /// is, there are no other references into the object graph reachable from this reference and no
     /// references out from those objects to non-constant objects.
     /// </summary>
-    public static readonly ReferenceCapability Isolated = new("iso", allowsWrite: true);
+    public static readonly Capability Isolated = new("iso", allowsWrite: true);
 
     /// <summary>
     /// A reference that has write access and is <i>temporarily</i> the sole reference into an
@@ -20,52 +20,52 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
     /// from this reference and no references out from those objects to non-constant objects. Except
     /// that there can be sequestered aliases into the object graph.
     /// </summary>
-    public static readonly ReferenceCapability TemporarilyIsolated
+    public static readonly Capability TemporarilyIsolated
         = new("temp iso", allowsWrite: true, allowsSequesteredAliases: true);
 
     /// <summary>
     /// A reference that has write access and can be stored into fields etc.
     /// </summary>
-    public static readonly ReferenceCapability Mutable
+    public static readonly Capability Mutable
         = new("mut", allowsWrite: true, allowsWriteAliases: true, allowsReadAliases: true);
 
     /// <summary>
     /// An init reference that has write access.
     /// </summary>
-    public static readonly ReferenceCapability InitMutable
+    public static readonly Capability InitMutable
         = new("init mut", "⧼init⧽ mut", init: true, allowsWrite: true);
 
     /// <summary>
     /// A reference that has read-only access and can be stored into fields etc.
     /// </summary>
-    public static readonly ReferenceCapability Read
+    public static readonly Capability Read
         = new("read", "read", allowsWriteAliases: true, allowsReadAliases: true);
 
     /// <summary>
     /// An init reference that has read-only access.
     /// </summary>
-    public static readonly ReferenceCapability InitReadOnly
+    public static readonly Capability InitReadOnly
         = new("init read", "⧼init⧽ read", init: true);
 
     /// <summary>
     /// A reference that has read-only access and there are no references that
     /// can mutate this object.
     /// </summary>
-    public static readonly ReferenceCapability Constant
+    public static readonly Capability Constant
         = new("const", allowsReadAliases: true);
 
     /// <summary>
     /// A reference that has read-only access and there are <i>temporarily</i> no references that
     /// can mutate this object. There can be sequestered references that can mutate the object.
     /// </summary>
-    public static readonly ReferenceCapability TemporarilyConstant
+    public static readonly Capability TemporarilyConstant
         = new("temp const", allowsReadAliases: true, allowsSequesteredAliases: true);
 
     /// <summary>
     /// A reference that can be used to identify an object but not read or
     /// write to it.
     /// </summary>
-    public static readonly ReferenceCapability Identity
+    public static readonly Capability Identity
         = new("id", allowsWriteAliases: true, allowsRead: false, allowsReadAliases: true);
 
     private readonly string ilName;
@@ -119,7 +119,7 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
     /// </summary>
     public bool AllowsFreeze => this == Mutable || this == Read || this == Isolated;
 
-    private ReferenceCapability(
+    private Capability(
         string name,
         bool init = false,
         bool allowsWrite = false,
@@ -132,7 +132,7 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
     {
     }
 
-    private ReferenceCapability(
+    private Capability(
         string ilName,
         string sourceCodeName,
         bool init = false,
@@ -158,7 +158,7 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
     /// </summary>
     /// <remarks>This ignores `lent` because "swapping" means there are times where a lent reference
     /// is passed to something expecting a non-lent reference. The rules are context dependent.</remarks>
-    public bool IsAssignableFrom(ReferenceCapability from)
+    public bool IsAssignableFrom(Capability from)
     {
         // Can't change `init`
         if (AllowsInit != from.AllowsInit) return false;
@@ -174,18 +174,18 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
         return true;
     }
 
-    public bool IsAssignableFrom(IReferenceCapabilityConstraint from)
+    public bool IsAssignableFrom(ICapabilityConstraint from)
         => from switch
         {
-            ReferenceCapability fromCapability => IsAssignableFrom(fromCapability),
-            ReferenceCapabilityConstraint _ => false,
+            Capability fromCapability => IsAssignableFrom(fromCapability),
+            CapabilitySet _ => false,
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
     /// <summary>
     /// This capability with any write ability removed.
     /// </summary>
-    public ReferenceCapability WithoutWrite()
+    public Capability WithoutWrite()
     {
         // Already not writable. Just return this. That will preserve the correct other attributes
         if (!AllowsWrite) return this;
@@ -195,7 +195,7 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
         return Read;
     }
 
-    public ReferenceCapability AccessedVia(ReferenceCapability capability)
+    public Capability AccessedVia(Capability capability)
     {
         if (AllowsInit)
             throw new InvalidOperationException("Fields cannot have the init capability.");
@@ -220,7 +220,7 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
     /// </summary>
     /// <remarks>Even though the behavior is the same as <see cref="OfAlias"/> the operation is
     /// logically distinct.</remarks>
-    public ReferenceCapability WhenAliased()
+    public Capability WhenAliased()
         => this == Isolated ? Mutable : this;
 
     /// <summary>
@@ -228,7 +228,7 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
     /// </summary>
     /// <remarks>Even though the behavior is the same as <see cref="WhenAliased"/> the operation is
     /// logically distinct.</remarks>
-    public ReferenceCapability OfAlias()
+    public Capability OfAlias()
     {
         if (this == Isolated) return Mutable;
         return this;
@@ -238,7 +238,7 @@ public sealed class ReferenceCapability : IReferenceCapabilityConstraint
     /// The reference capability if the referenced object were frozen.
     /// </summary>
     /// <remarks>`id` references remain `id` otherwise they become `const`.</remarks>
-    public ReferenceCapability Freeze() => this == Identity ? this : Constant;
+    public Capability Freeze() => this == Identity ? this : Constant;
 
     public override string ToString()
         => throw new NotSupportedException();

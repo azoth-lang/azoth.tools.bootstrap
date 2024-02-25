@@ -5,18 +5,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public sealed class CapabilityViewpointType : ViewpointType
 {
-    public static DataType Create(ReferenceCapability capability, GenericParameterType referent)
+    public static DataType Create(Capability capability, GenericParameterType referent)
     {
-        if (capability == ReferenceCapability.Mutable || capability == ReferenceCapability.InitMutable)
+        if (capability == Capabilities.Capability.Mutable || capability == Capabilities.Capability.InitMutable)
             return referent;
         return new CapabilityViewpointType(capability, referent);
     }
 
-    public override ReferenceCapability Capability { get; }
+    public override Capability Capability { get; }
 
     public override GenericParameterType Referent { get; }
 
-    private CapabilityViewpointType(ReferenceCapability capability, GenericParameterType referent)
+    private CapabilityViewpointType(Capability capability, GenericParameterType referent)
     {
         Capability = capability;
         Referent = referent;

@@ -9,15 +9,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class GenericParameterSyntax : Syntax, IGenericParameterSyntax
 {
-    public ParameterVariance ParameterVariance { get; }
+    public ICapabilityConstraintSyntax Constraint { get; }
     public SimpleName Name { get; }
+    public ParameterVariance ParameterVariance { get; }
     public Promise<GenericParameterTypeSymbol> Symbol { get; } = new();
 
-    public GenericParameterSyntax(TextSpan span, SimpleName name, ParameterVariance variance)
+    public GenericParameterSyntax(
+        TextSpan span,
+        ICapabilityConstraintSyntax constraint,
+        SimpleName name,
+        ParameterVariance variance)
         : base(span)
     {
-        ParameterVariance = variance;
+        Constraint = constraint;
         Name = name;
+        ParameterVariance = variance;
     }
 
     public override string ToString()

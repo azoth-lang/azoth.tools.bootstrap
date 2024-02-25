@@ -16,11 +16,11 @@ public abstract class BareValueType : BareType
     private protected BareValueType(DeclaredType declaredType, IFixedList<DataType> typeArguments)
         : base(declaredType, typeArguments) { }
 
-    public abstract override BareValueType AccessedVia(ReferenceCapability capability);
+    public abstract override BareValueType AccessedVia(Capability capability);
 
     public abstract override BareValueType With(IFixedList<DataType> typeArguments);
 
-    public abstract override ValueType With(ReferenceCapability capability);
+    public abstract override ValueType With(Capability capability);
 }
 
 public sealed class BareValueType<TDeclared> : BareValueType
@@ -36,7 +36,7 @@ public sealed class BareValueType<TDeclared> : BareValueType
         DeclaredType = declaredType;
     }
 
-    public override BareValueType<TDeclared> AccessedVia(ReferenceCapability capability)
+    public override BareValueType<TDeclared> AccessedVia(Capability capability)
     {
         if (DeclaredType.GenericParameters.All(p => p.ParameterVariance != ParameterVariance.Independent)) return this;
         var newTypeArguments = DeclaredType.GenericParameters.Zip(GenericTypeArguments,
@@ -47,7 +47,7 @@ public sealed class BareValueType<TDeclared> : BareValueType
     public override BareValueType<TDeclared> With(IFixedList<DataType> typeArguments)
         => new(DeclaredType, typeArguments);
 
-    public override ValueType<TDeclared> With(ReferenceCapability capability)
+    public override ValueType<TDeclared> With(Capability capability)
         => new(capability, this);
 
     #region Equality

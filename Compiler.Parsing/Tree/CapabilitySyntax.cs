@@ -7,22 +7,22 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class ReferenceCapabilitySyntax : Syntax, IReferenceCapabilitySyntax
+internal class CapabilitySyntax : Syntax, ICapabilitySyntax
 {
-    public static ReferenceCapabilitySyntax ImplicitReadOnly(TextSpan span)
+    public static CapabilitySyntax ImplicitReadOnly(TextSpan span)
     {
         Requires.That(nameof(span), span.Length == 0, "span must be empty");
-        return new(span, Enumerable.Empty<ICapabilityToken>(), DeclaredReferenceCapability.Read);
+        return new(span, Enumerable.Empty<ICapabilityToken>(), DeclaredCapability.Read);
     }
 
     public IFixedList<ICapabilityToken> Tokens { get; }
-    public DeclaredReferenceCapability Declared { get; }
-    public FixedSet<DeclaredReferenceCapability> AllowedCapabilities { get; }
+    public DeclaredCapability Declared { get; }
+    public FixedSet<DeclaredCapability> AllowedCapabilities { get; }
 
-    public ReferenceCapabilitySyntax(
+    public CapabilitySyntax(
         TextSpan span,
         IEnumerable<ICapabilityToken> tokens,
-        DeclaredReferenceCapability declared)
+        DeclaredCapability declared)
         : base(span)
     {
         Tokens = tokens.ToFixedList();

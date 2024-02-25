@@ -33,9 +33,9 @@ public abstract class SimpleType : DeclaredValueType
 
     public abstract override BareValueType With(IFixedList<DataType> typeArguments);
 
-    public abstract override ValueType With(ReferenceCapability capability, IFixedList<DataType> typeArguments);
+    public abstract override ValueType With(Capability capability, IFixedList<DataType> typeArguments);
 
-    public abstract ValueType With(ReferenceCapability capability);
+    public abstract ValueType With(Capability capability);
 
     #region Equals
     public override bool Equals(DeclaredType? other)

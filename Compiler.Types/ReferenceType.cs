@@ -19,7 +19,7 @@ public abstract class ReferenceType : CapabilityType
     /// Create a reference type for a class.
     /// </summary>
     public static ReferenceType<ObjectType> CreateClass(
-        ReferenceCapability capability,
+        Capability capability,
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
@@ -33,7 +33,7 @@ public abstract class ReferenceType : CapabilityType
     /// Create a reference type for a trait.
     /// </summary>
     public static ReferenceType<ObjectType> Create(
-        ReferenceCapability capability,
+        Capability capability,
         SimpleName containingPackage,
         NamespaceName containingNamespace,
         bool isConst,
@@ -46,7 +46,7 @@ public abstract class ReferenceType : CapabilityType
     /// Create a object type for a given class or trait.
     /// </summary>
     public static ReferenceType<ObjectType> Create(
-        ReferenceCapability capability,
+        Capability capability,
         ObjectType declaredType,
         IFixedList<DataType> typeArguments)
         => Create(capability, Bare.BareType.Create(declaredType, typeArguments));
@@ -55,17 +55,17 @@ public abstract class ReferenceType : CapabilityType
     /// Create a object type for a given bare type.
     /// </summary>
     public static ReferenceType<ObjectType> Create(
-        ReferenceCapability capability, BareReferenceType<ObjectType> bareType)
+        Capability capability, BareReferenceType<ObjectType> bareType)
         => new(capability, bareType);
 
     /// <summary>
     /// Create an `Any` type for a given bare type.
     /// </summary>
     public static ReferenceType<AnyType> Create(
-        ReferenceCapability capability, BareReferenceType<AnyType> bareType)
+        Capability capability, BareReferenceType<AnyType> bareType)
         => new(capability, bareType);
 
-    private protected ReferenceType(ReferenceCapability capability)
+    private protected ReferenceType(Capability capability)
         : base(capability)
     {
     }
@@ -74,25 +74,25 @@ public abstract class ReferenceType : CapabilityType
     /// the constructor.</remarks>
     public override ReferenceType WithoutWrite() => With(Capability.WithoutWrite());
 
-    public override DataType AccessedVia(IReferenceCapabilityConstraint capability)
+    public override DataType AccessedVia(ICapabilityConstraint capability)
     {
         switch (capability)
         {
-            case ReferenceCapability c:
+            case Capability c:
                 var newCapability = Capability.AccessedVia(c);
                 var bareType = BareType.AccessedVia(c);
                 if (ReferenceEquals(bareType, BareType))
                     return With(newCapability);
 
                 return bareType.With(newCapability);
-            case ReferenceCapabilityConstraint c:
+            case CapabilitySet c:
                 return new SelfViewpointType(c, this);
             default:
                 throw ExhaustiveMatch.Failed(capability);
         }
     }
 
-    public abstract ReferenceType With(ReferenceCapability referenceCapability);
+    public abstract ReferenceType With(Capability capability);
 
     public override DataType ReplaceTypeParametersIn(DataType type)
         => BareType.ReplaceTypeParametersIn(type);
@@ -122,7 +122,7 @@ public sealed class ReferenceType<TDeclared> : ReferenceType
 
     public override TDeclared DeclaredType => BareType.DeclaredType;
 
-    internal ReferenceType(ReferenceCapability capability, BareReferenceType<TDeclared> bareType)
+    internal ReferenceType(Capability capability, BareReferenceType<TDeclared> bareType)
         : base(capability)
     {
         if (typeof(TDeclared).IsAbstract)
@@ -130,9 +130,9 @@ public sealed class ReferenceType<TDeclared> : ReferenceType
         BareType = bareType;
     }
 
-    public override ReferenceType<TDeclared> With(ReferenceCapability referenceCapability)
+    public override ReferenceType<TDeclared> With(Capability capability)
     {
-        if (referenceCapability == Capability) return this;
-        return new(referenceCapability, BareType);
+        if (capability == Capability) return this;
+        return new(capability, BareType);
     }
 }

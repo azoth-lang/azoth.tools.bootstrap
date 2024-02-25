@@ -109,7 +109,7 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     /// Return the type for when a value of this type is accessed via a reference with the given capability.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
-    public virtual DataType AccessedVia(IReferenceCapabilityConstraint capability) => this;
+    public virtual DataType AccessedVia(ICapabilityConstraint capability) => this;
 
     #region Equality
     public abstract bool Equals(DataType? other);

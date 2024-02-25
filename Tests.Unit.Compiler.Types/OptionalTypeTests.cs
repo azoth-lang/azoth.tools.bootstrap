@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Xunit;
-using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.ReferenceCapability;
+using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.Capability;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
 

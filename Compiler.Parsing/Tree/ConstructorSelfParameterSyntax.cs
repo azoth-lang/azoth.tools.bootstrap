@@ -9,12 +9,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class MethodSelfParameterSyntax : ParameterSyntax, IMethodSelfParameterSyntax
 {
     public bool IsLentBinding { get; }
-    public ISelfReferenceCapabilitySyntax Capability { get; }
+    public ICapabilityConstraintSyntax Capability { get; }
     public Promise<SelfParameterSymbol> Symbol { get; } = new Promise<SelfParameterSymbol>();
     public override IPromise<Pseudotype> DataType { get; }
 
     public MethodSelfParameterSyntax(TextSpan span, bool isLentBinding,
-        ISelfReferenceCapabilitySyntax capability)
+        ICapabilityConstraintSyntax capability)
         : base(span, null)
     {
         Capability = capability;

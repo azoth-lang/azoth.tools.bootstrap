@@ -62,14 +62,14 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
 
     public abstract BareType With(IFixedList<DataType> typeArguments);
 
-    public abstract CapabilityType With(ReferenceCapability capability, IFixedList<DataType> typeArguments);
+    public abstract CapabilityType With(Capability capability, IFixedList<DataType> typeArguments);
 
     /// <summary>
     /// Make a version of this type that is the default read reference capability for the type. That
     /// is either read-only or constant.
     /// </summary>
     public virtual CapabilityType WithRead(IFixedList<DataType> typeArguments)
-        => With(IsDeclaredConst ? ReferenceCapability.Constant : ReferenceCapability.Read, typeArguments);
+        => With(IsDeclaredConst ? Capability.Constant : Capability.Read, typeArguments);
 
     #region Equality
     public abstract bool Equals(DeclaredType? other);

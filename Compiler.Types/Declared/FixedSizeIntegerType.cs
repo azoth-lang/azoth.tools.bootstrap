@@ -45,7 +45,7 @@ public sealed class FixedSizeIntegerType : IntegerType
             MaxValue = BigInteger.Pow(2, Bits);
         }
         BareType = new(this, FixedList.Empty<DataType>());
-        Type = BareType.With(ReferenceCapability.Constant);
+        Type = BareType.With(Capability.Constant);
     }
 
     /// <summary>
@@ -66,9 +66,9 @@ public sealed class FixedSizeIntegerType : IntegerType
         return BareType;
     }
 
-    public override ValueType<FixedSizeIntegerType> With(ReferenceCapability capability, IFixedList<DataType> typeArguments)
+    public override ValueType<FixedSizeIntegerType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override ValueType<FixedSizeIntegerType> With(ReferenceCapability capability)
+    public override ValueType<FixedSizeIntegerType> With(Capability capability)
         => BareType.With(capability);
 }
