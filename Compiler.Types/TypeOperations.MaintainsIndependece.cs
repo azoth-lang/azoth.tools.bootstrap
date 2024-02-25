@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using ExhaustiveMatching;
 
@@ -17,16 +19,28 @@ public static partial class TypeOperations
     {
         return type switch
         {
-            GenericParameterType t => !t.Parameter.IsIndependent || context == Independence.Allowed,
+            GenericParameterType t => MaintainsIndependence(t, context),
             CapabilityType t => t.BareType.MaintainsIndependence(context),
             ViewpointType t => t.Referent.MaintainsIndependence(context),
             EmptyType _ => true,
             UnknownType _ => true,
             ConstValueType _ => true,
             // The referent of an optional type is basically `out T` (covariant)
-            OptionalType t => t.Referent.MaintainsIndependence(context.ChildAllows(false)),
+            OptionalType t => t.Referent.MaintainsIndependence(context.Child(Independence.Disallowed)),
             FunctionType t => t.MaintainsIndependence(),
             _ => throw ExhaustiveMatch.Failed(type),
+        };
+    }
+
+    private static bool MaintainsIndependence(GenericParameterType type, Independence context)
+    {
+        return type.Parameter switch
+        {
+            { HasIndependence: false } => true,
+            { ParameterVariance: ParameterVariance.SharableIndependent }
+                => context >= Independence.ShareableAllowed,
+            { ParameterVariance: ParameterVariance.Independent } => context == Independence.Allowed,
+            _ => throw new UnreachableException(),
         };
     }
 
@@ -38,13 +52,23 @@ public static partial class TypeOperations
                 default:
                     throw ExhaustiveMatch.Failed(parameter.TypeVariance);
                 case ParameterVariance.Contravariant: // i.e. `in`
+                    var childIndependence = parameter.Constraint == CapabilitySet.Shareable
+                        ? Independence.ShareableAllowed
+                        : Independence.Disallowed;
+                    if (!argument.MaintainsIndependence(context.Child(childIndependence)))
+                        return false;
+                    break;
                 case ParameterVariance.Invariant:
                 case ParameterVariance.Covariant: // i.e. `out`
-                    if (!argument.MaintainsIndependence(context.ChildAllows(false)))
+                    if (!argument.MaintainsIndependence(context.Child(Independence.Disallowed)))
+                        return false;
+                    break;
+                case ParameterVariance.SharableIndependent: // i.e. `shareable ind`
+                    if (!argument.MaintainsIndependence(context.Child(Independence.ShareableAllowed)))
                         return false;
                     break;
                 case ParameterVariance.Independent: // i.e. `ind`
-                    if (!argument.MaintainsIndependence(context.ChildAllows(true)))
+                    if (!argument.MaintainsIndependence(context.Child(Independence.Allowed)))
                         return false;
                     break;
             }
@@ -73,10 +97,10 @@ public static partial class TypeOperations
         /// </summary>
         Blocked = 1,
         Disallowed,
+        ShareableAllowed,
         Allowed,
     }
 
-    private static Independence ChildAllows(this Independence context, bool allowed)
-        => context == Independence.Blocked ? Independence.Blocked
-            : (allowed ? Independence.Allowed : Independence.Disallowed);
+    private static Independence Child(this Independence context, Independence independence)
+        => context == Independence.Blocked ? Independence.Blocked : independence;
 }

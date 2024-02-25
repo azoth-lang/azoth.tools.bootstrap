@@ -41,7 +41,7 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
 
     public TypeVariance TypeVariance => ParameterVariance.ToTypeVariance();
 
-    public bool IsIndependent => ParameterVariance == ParameterVariance.Independent;
+    public bool HasIndependence => ParameterVariance is ParameterVariance.Independent or ParameterVariance.SharableIndependent;
 
     // TODO When parameters can be values not just types, add: public DataType DataType { get; }
 
@@ -67,7 +67,7 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
     {
         var builder = new StringBuilder();
         var constraint = Constraint.ToSourceCodeString();
-        if (constraint.Length != 0)
+        if (Constraint != CapabilitySet.Aliasable && constraint.Length != 0)
             builder.Append(constraint).Append(' ');
         builder.Append(Name);
         var variance = ParameterVariance.ToSourceCodeString();

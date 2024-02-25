@@ -214,9 +214,18 @@ public partial class Parser
         {
             IInKeywordToken _ => (ParameterVariance.Contravariant, Tokens.Consume<IInKeywordToken>()),
             IIndependentKeywordToken _ => (ParameterVariance.Independent, Tokens.Consume<IIndependentKeywordToken>()),
+            IShareableKeywordToken _ => ParseSharableIndependentParameterVariance(),
             IOutKeywordToken _ => (ParameterVariance.Covariant, Tokens.Consume<IOutKeywordToken>()),
             _ => (ParameterVariance.Invariant, Tokens.Current.Span.AtStart())
         };
+    }
+
+    private (ParameterVariance, TextSpan) ParseSharableIndependentParameterVariance()
+    {
+        var shareableKeyword = Tokens.Required<IShareableKeywordToken>();
+        var independentKeyword = Tokens.Required<IIndependentKeywordToken>();
+        var span = TextSpan.Covering(shareableKeyword, independentKeyword);
+        return (ParameterVariance.SharableIndependent, span);
     }
 
     private (IFixedList<IClassMemberDeclarationSyntax> Members, TextSpan Span) ParseClassBody(IClassDeclarationSyntax declaringType)

@@ -29,8 +29,8 @@ public sealed class SelfViewpointType : ViewpointType
     #endregion
 
     public override string ToSourceCodeString()
-        => $"{Capability} self|>{Referent.ToSourceCodeString()}";
+        => $"{Capability.ToSourceCodeString()} self|>{Referent.ToSourceCodeString()}";
 
     public override string ToILString()
-        => $"{Capability} self|>{Referent.ToILString()}";
+        => $"{Capability.ToILString()} self|>{Referent.ToILString()}";
 }

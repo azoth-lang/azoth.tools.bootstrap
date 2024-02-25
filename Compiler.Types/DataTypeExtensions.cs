@@ -125,6 +125,27 @@ public static class DataTypeExtensions
                             return false;
                     }
                     break;
+                case ParameterVariance.SharableIndependent:
+                    if (from != to)
+                    {
+                        // When target allows write, acts invariant
+                        if (targetAllowsWrite) return false;
+
+                        if (from is not CapabilityType fromCapabilityType || to is not CapabilityType toCapabilityType)
+                            return false;
+
+                        if (fromCapabilityType.BareType != toCapabilityType.BareType
+                            // TODO does this handle `iso` and `id` correctly?
+                            || !toCapabilityType.Capability.IsAssignableFrom(fromCapabilityType.Capability))
+                            return false;
+
+                        if (toCapabilityType.Capability == Capability.Identity
+                           && fromCapabilityType.Capability == Capability.Constant)
+                            return false;
+
+                        // TODO what about `temp const`?
+                    }
+                    break;
                 case ParameterVariance.Covariant:
                     if (!to.IsAssignableFrom(from))
                         return false;

@@ -44,7 +44,7 @@ public static partial class TypeOperations
         };
 
     public static bool CanBeLent(this GenericParameterArgument arg)
-        => (arg.Parameter.IsIndependent && arg.Argument.CanBeLent())
+        => (arg.Parameter.HasIndependence && arg.Argument.CanBeLent())
            || arg.Argument.ArgumentsCanBeLent();
 
     public static bool ArgumentsCanBeLent(this BareType type)

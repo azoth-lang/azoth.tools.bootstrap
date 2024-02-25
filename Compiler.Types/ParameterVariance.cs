@@ -6,17 +6,19 @@ public enum ParameterVariance
 {
     Contravariant = -1,
     Invariant = 0,
-    Independent = 1,
-    Covariant = 2,
+    SharableIndependent = 1,
+    Independent = 2,
+    Covariant = 3,
 }
 
 public static class ParameterVarianceExtensions
 {
-    public static string ToSourceCodeString(this ParameterVariance variance) =>
-        variance switch
+    public static string ToSourceCodeString(this ParameterVariance variance)
+        => variance switch
         {
             ParameterVariance.Contravariant => "in",
             ParameterVariance.Invariant => "",
+            ParameterVariance.SharableIndependent => "sharable ind",
             ParameterVariance.Independent => "ind",
             ParameterVariance.Covariant => "out",
             _ => throw ExhaustiveMatch.Failed(variance),
@@ -27,6 +29,7 @@ public static class ParameterVarianceExtensions
         {
             ParameterVariance.Contravariant => TypeVariance.Contravariant,
             ParameterVariance.Invariant => TypeVariance.Invariant,
+            ParameterVariance.SharableIndependent => TypeVariance.Invariant,
             ParameterVariance.Independent => TypeVariance.Invariant,
             ParameterVariance.Covariant => TypeVariance.Covariant,
             _ => throw ExhaustiveMatch.Failed(variance),
