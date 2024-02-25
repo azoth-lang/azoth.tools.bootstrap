@@ -8,4 +8,5 @@ public interface IReferenceCapabilityConstraint
     bool IsAssignableFrom(IReferenceCapabilityConstraint from);
     bool AllowsRead { get; }
     bool AllowsWrite { get; }
+    bool AllowsWriteAliases { get; }
 }
