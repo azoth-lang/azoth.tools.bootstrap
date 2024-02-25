@@ -48,7 +48,7 @@ public class DotNetFrameworkTests
         task = GetValueAsync(() => task);
 
         var delayTask = Task.Delay((int)TimeSpan.FromSeconds(2).TotalMilliseconds);
-        var completedTask = await Task.WhenAny(task, delayTask).ConfigureAwait(false);
+        var completedTask = await Task.WhenAny(task, delayTask);
         Assert.Equal(delayTask, completedTask);
     }
 
@@ -60,7 +60,7 @@ public class DotNetFrameworkTests
         t2 = GetValueAsync(() => t1);
 
         var delayTask = Task.Delay((int)TimeSpan.FromSeconds(2).TotalMilliseconds);
-        var completedTask = await Task.WhenAny(t1, delayTask).ConfigureAwait(false);
+        var completedTask = await Task.WhenAny(t1, delayTask);
         Assert.Equal(delayTask, completedTask);
     }
 
