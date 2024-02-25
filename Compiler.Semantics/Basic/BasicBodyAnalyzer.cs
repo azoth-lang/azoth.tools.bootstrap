@@ -16,6 +16,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -693,7 +694,7 @@ public class BasicBodyAnalyzer
                 var arguments = InferArgumentTypes(exp.Arguments, flow);
                 var constructingType = typeResolver.EvaluateBareType(exp.Type);
                 ResultVariable? resultVariable = null;
-                if (!constructingType.IsFullyKnown)
+                if (!constructingType?.IsFullyKnown ?? true)
                 {
                     diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
                     exp.ReferencedSymbol.Fulfill(null);
@@ -702,7 +703,7 @@ public class BasicBodyAnalyzer
                     return new ExpressionResult(exp, resultVariable);
                 }
 
-                if (constructingType is ReferenceType { DeclaredType.IsAbstract: true })
+                if (constructingType is BareReferenceType { DeclaredType.IsAbstract: true })
                 {
                     diagnostics.Add(OtherSemanticError.CannotConstructAbstractType(file, exp.Type));
                     exp.ReferencedSymbol.Fulfill(null);

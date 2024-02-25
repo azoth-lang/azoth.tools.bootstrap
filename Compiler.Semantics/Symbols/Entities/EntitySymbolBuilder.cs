@@ -282,11 +282,11 @@ public class EntitySymbolBuilder
         var resolver = new TypeResolver(syn.File, diagnostics, selfType: null, typeDeclarations);
         if (syn is IClassDeclarationSyntax { BaseTypeName: not null and var baseTypeName })
         {
-            var baseType = resolver.EvaluateBareType(baseTypeName);
-            if (baseType is ReferenceType { BareType: var bareType })
+            var superType = resolver.EvaluateBareType(baseTypeName);
+            if (superType is BareReferenceType bareType)
             {
                 yield return bareType;
-                foreach (var inheritedType in bareType.Supertypes)
+                foreach (var inheritedType in superType.Supertypes)
                     yield return inheritedType;
             }
         }
@@ -294,7 +294,7 @@ public class EntitySymbolBuilder
         foreach (var supertype in syn.SupertypeNames)
         {
             var superType = resolver.EvaluateBareType(supertype);
-            if (superType is ReferenceType { BareType: var bareType })
+            if (superType is BareReferenceType bareType)
             {
                 yield return bareType;
                 foreach (var inheritedType in bareType.Supertypes)

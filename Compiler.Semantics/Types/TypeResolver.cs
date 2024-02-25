@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -129,10 +130,10 @@ public class TypeResolver
             default:
                 throw ExhaustiveMatch.Failed(typeSyntax);
             case ISimpleTypeNameSyntax syn:
-                _ = EvaluateBareType(syn, isAttribute, capability);
+                _ = Evaluate(syn, isAttribute, capability);
                 return syn.NamedType!;
             case IParameterizedTypeSyntax syn:
-                _ = EvaluateBareType(syn, isAttribute, capability);
+                _ = Evaluate(syn, isAttribute, capability);
                 return syn.NamedType!;
             case ICapabilityTypeSyntax _:
             case IOptionalTypeSyntax _:
@@ -142,36 +143,10 @@ public class TypeResolver
         }
     }
 
-    private Parameter Evaluate(IParameterTypeSyntax syn)
-    {
-        var referent = Evaluate(syn.Referent);
-        return new Parameter(syn.IsLent, referent);
-    }
-
-    private Return Evaluate(IReturnTypeSyntax syn)
-    {
-        var referent = Evaluate(syn.Referent);
-        return new Return(referent);
-    }
-
-    /// <summary>
-    /// Evaluate a type that should not have any reference capability.
-    /// </summary>
-    /// <remarks>This is used for new expressions and base types. It assigns an `id` reference
-    /// capability to the type.</remarks>
-    // TODO should this return `BareType`?
-    public DataType EvaluateBareType(ITypeNameSyntax typeSyntax)
-        => EvaluateBareType(typeSyntax, isAttribute: false, capability: null);
-
-    // TODO should this return `BareType`?
-    public DataType EvaluateAttribute(ITypeNameSyntax typeSyntax)
-        => EvaluateBareType(typeSyntax, isAttribute: true, capability: null);
-
-    // TODO should this return `BareType`?
-    private DataType EvaluateBareType(
-        ITypeNameSyntax typeSyntax,
-        bool isAttribute,
-        Capability? capability)
+    private DataType Evaluate(
+         ITypeNameSyntax typeSyntax,
+         bool isAttribute,
+         Capability capability)
     {
         return typeSyntax switch
         {
@@ -192,29 +167,81 @@ public class TypeResolver
                 case PrimitiveTypeSymbol sym:
                 {
                     var declaredType = sym.DeclaresType;
-                    // If capability not provided, then this is for a constructor or something
-                    // and reading the value doesn't matter, it exists to name the type.
-                    capability ??= Capability.Identity;
                     // Compatibility of the capability with the type is not checked here. That
                     // is done on the capability type syntax.
                     return declaredType.With(capability, typeArguments);
                 }
                 case ObjectTypeSymbol sym:
                     var declaredObjectType = sym.DeclaresType;
-                    // If capability not provided, then this is for a constructor or something
-                    // and reading the value doesn't matter, it exists to name the type.
-                    capability ??= Capability.Identity;
                     // Compatibility of the capability with the type is not checked here. That
                     // is done on the capability type syntax.
                     return declaredObjectType.With(capability, typeArguments);
                 case GenericParameterTypeSymbol sym:
-                    if (capability is not null)
-                        diagnostics.Add(TypeError.CapabilityAppliedToTypeParameter(file, typeSyntax));
+                    diagnostics.Add(TypeError.CapabilityAppliedToTypeParameter(file, typeSyntax));
                     return sym.DeclaresType;
                 case EmptyTypeSymbol sym:
-                    if (capability is not null)
-                        diagnostics.Add(TypeError.CapabilityAppliedToEmptyType(file, typeSyntax));
+                    diagnostics.Add(TypeError.CapabilityAppliedToEmptyType(file, typeSyntax));
                     return sym.DeclaresType;
+            }
+        }
+    }
+
+    private Parameter Evaluate(IParameterTypeSyntax syn)
+    {
+        var referent = Evaluate(syn.Referent);
+        return new Parameter(syn.IsLent, referent);
+    }
+
+    private Return Evaluate(IReturnTypeSyntax syn)
+    {
+        var referent = Evaluate(syn.Referent);
+        return new Return(referent);
+    }
+
+    /// <summary>
+    /// Evaluate a type that does not have any reference capability.
+    /// </summary>
+    /// <remarks>This is used for new expressions and base types.</remarks>
+    public BareType? EvaluateBareType(ITypeNameSyntax typeSyntax)
+        => EvaluateBareType(typeSyntax, isAttribute: false);
+
+    public BareType? EvaluateAttribute(ITypeNameSyntax typeSyntax)
+        => EvaluateBareType(typeSyntax, isAttribute: true);
+
+    private BareType? EvaluateBareType(
+        ITypeNameSyntax typeSyntax,
+        bool isAttribute)
+    {
+        return typeSyntax switch
+        {
+            ISimpleTypeNameSyntax syn => ResolveType(syn, isAttribute, FixedList.Empty<DataType>(), CreateType),
+            IParameterizedTypeSyntax syn
+                => ResolveType(syn, isAttribute, Evaluate(syn.TypeArguments), CreateType),
+            _ => throw ExhaustiveMatch.Failed(typeSyntax)
+        };
+
+        BareType? CreateType(
+           TypeSymbol symbol,
+           IFixedList<DataType> typeArguments)
+        {
+            switch (symbol)
+            {
+                default:
+                    throw ExhaustiveMatch.Failed(symbol);
+                case PrimitiveTypeSymbol sym:
+                {
+                    var declaredType = sym.DeclaresType;
+                    return declaredType.With(typeArguments);
+                }
+                case ObjectTypeSymbol sym:
+                    var declaredObjectType = sym.DeclaresType;
+                    return declaredObjectType.With(typeArguments);
+                case GenericParameterTypeSymbol _:
+                    diagnostics.Add(TypeError.TypeParameterCannotBeUsedHere(file, typeSyntax));
+                    return null;
+                case EmptyTypeSymbol _:
+                    diagnostics.Add(TypeError.EmptyTypeCannotBeUsedHere(file, typeSyntax));
+                    return null;
             }
         }
     }
@@ -245,6 +272,36 @@ public class TypeResolver
                 diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
                 typeName.ReferencedSymbol.Fulfill(null);
                 return typeName.NamedType = DataType.Unknown;
+        }
+    }
+
+    private BareType? ResolveType(
+        ITypeNameSyntax typeName,
+        bool isAttribute,
+        IFixedList<DataType> typeArguments,
+        Func<TypeSymbol, IFixedList<DataType>, BareType?> createType)
+    {
+        var symbols = typeName.LookupInContainingScope(withAttributeSuffix: false).Select(EnsureBuilt).ToFixedList();
+        if (isAttribute && !symbols.Any())
+            symbols = typeName.LookupInContainingScope(withAttributeSuffix: true).Select(EnsureBuilt).ToFixedList();
+        switch (symbols.Count)
+        {
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindName(file, typeName.Span));
+                typeName.ReferencedSymbol.Fulfill(null);
+                typeName.NamedType = DataType.Unknown;
+                return null;
+            case 1:
+                var symbol = symbols.Single();
+                typeName.ReferencedSymbol.Fulfill(symbol);
+                var bareType = createType(symbol, typeArguments);
+                typeName.NamedType = (DataType?)bareType?.With(Capability.Identity) ?? DataType.Unknown;
+                return bareType;
+            default:
+                diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
+                typeName.ReferencedSymbol.Fulfill(null);
+                typeName.NamedType = DataType.Unknown;
+                return null;
         }
     }
 

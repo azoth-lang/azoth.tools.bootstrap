@@ -207,4 +207,16 @@ public static class TypeError
         return new(file, fieldSyntax.Type.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3030, $"The field `{fieldSyntax.Name}` of type `{type.ToSourceCodeString()}` does not maintain the independence of the type parameters.");
     }
+
+    public static Diagnostic TypeParameterCannotBeUsedHere(CodeFile file, ITypeNameSyntax typeSyntax)
+    {
+        return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3031, $"Type parameter `{typeSyntax}` cannot be used here.");
+    }
+
+    public static Diagnostic EmptyTypeCannotBeUsedHere(CodeFile file, ITypeNameSyntax typeSyntax)
+    {
+        return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3032, $"Empty type `{typeSyntax}` cannot be used here.");
+    }
 }
