@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(IVoidKeywordToken),
     typeof(INeverKeywordToken),
     typeof(IBoolKeywordToken),
-    typeof(IAnyKeywordToken),
+    typeof(IAnyTypeKeywordToken),
     //typeof(ITypeKeywordToken),
     typeof(IIntKeywordToken),
     typeof(IUIntKeywordToken),
@@ -28,7 +28,7 @@ public interface IPrimitiveTypeToken : IEssentialToken { }
 public partial interface IVoidKeywordToken : IPrimitiveTypeToken { }
 public partial interface INeverKeywordToken : IPrimitiveTypeToken { }
 public partial interface IBoolKeywordToken : IPrimitiveTypeToken { }
-public partial interface IAnyKeywordToken : IPrimitiveTypeToken { }
+public partial interface IAnyTypeKeywordToken : IPrimitiveTypeToken { }
 //public partial interface ITypeKeywordToken : IPrimitiveTypeToken { }
 public partial interface IIntKeywordToken : IPrimitiveTypeToken { }
 public partial interface IUIntKeywordToken : IPrimitiveTypeToken { }

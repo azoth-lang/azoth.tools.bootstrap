@@ -229,7 +229,7 @@ public partial class Parser
             IVoidKeywordToken _ => SpecialTypeName.Void,
             INeverKeywordToken _ => SpecialTypeName.Never,
             IBoolKeywordToken _ => SpecialTypeName.Bool,
-            IAnyKeywordToken _ => SpecialTypeName.Any,
+            IAnyTypeKeywordToken _ => SpecialTypeName.Any,
 
             IIntKeywordToken _ => SpecialTypeName.Int,
             IUIntKeywordToken _ => SpecialTypeName.UInt,

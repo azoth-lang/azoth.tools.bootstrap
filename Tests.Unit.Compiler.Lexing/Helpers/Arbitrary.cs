@@ -319,7 +319,7 @@ public static class Arbitrary
         { "as", typeof(IAsKeywordToken) },
         { "as!", typeof(IAsExclamationKeywordToken) },
         { "as?", typeof(IAsQuestionKeywordToken) },
-        { "Any", typeof(IAnyKeywordToken) },
+        { "Any", typeof(IAnyTypeKeywordToken) },
         { "never", typeof(INeverKeywordToken) },
         { "trait", typeof(ITraitKeywordToken) },
         //{ "float16", typeof(IFloat16KeywordToken) },

@@ -78,7 +78,7 @@
         "Break",
         "Next",
         //"Override",
-        "Any",
+        "AnyType",
         "True",
         "False",
         "As",

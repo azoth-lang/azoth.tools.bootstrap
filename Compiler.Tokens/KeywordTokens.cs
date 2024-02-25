@@ -56,7 +56,7 @@ public static partial class TokenTypes
         typeof(WhileKeywordToken),
         typeof(BreakKeywordToken),
         typeof(NextKeywordToken),
-        typeof(AnyKeywordToken),
+        typeof(AnyTypeKeywordToken),
         typeof(TrueKeywordToken),
         typeof(FalseKeywordToken),
         typeof(AsKeywordToken),
@@ -221,8 +221,8 @@ public static partial class TokenFactory
     public static INextKeywordToken NextKeyword(TextSpan span)
         => new NextKeywordToken(span);
 
-    public static IAnyKeywordToken AnyKeyword(TextSpan span)
-        => new AnyKeywordToken(span);
+    public static IAnyTypeKeywordToken AnyTypeKeyword(TextSpan span)
+        => new AnyTypeKeywordToken(span);
 
     public static ITrueKeywordToken TrueKeyword(TextSpan span)
         => new TrueKeywordToken(span);
@@ -328,7 +328,7 @@ public static partial class TokenFactory
     typeof(IWhileKeywordToken),
     typeof(IBreakKeywordToken),
     typeof(INextKeywordToken),
-    typeof(IAnyKeywordToken),
+    typeof(IAnyTypeKeywordToken),
     typeof(ITrueKeywordToken),
     typeof(IFalseKeywordToken),
     typeof(IAsKeywordToken),
@@ -773,10 +773,10 @@ internal partial class NextKeywordToken : Token, INextKeywordToken
     }
 }
 
-public partial interface IAnyKeywordToken : IKeywordToken { }
-internal partial class AnyKeywordToken : Token, IAnyKeywordToken
+public partial interface IAnyTypeKeywordToken : IKeywordToken { }
+internal partial class AnyTypeKeywordToken : Token, IAnyTypeKeywordToken
 {
-    public AnyKeywordToken(TextSpan span)
+    public AnyTypeKeywordToken(TextSpan span)
         : base(span)
     {
     }
