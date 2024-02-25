@@ -337,6 +337,10 @@ public static class Arbitrary
         { "ind", typeof(IIndependentKeywordToken) },
         { "temp", typeof(ITempKeywordToken) },
         { "readable", typeof(IReadableKeywordToken) },
+        { "shareable", typeof(IShareableKeywordToken) },
+        { "aliasable", typeof(IAliasableKeywordToken) },
+        { "sendable", typeof(ISendableKeywordToken) },
+        { "any", typeof(IAnyKeywordToken) },
     }.ToFixedDictionary();
 
     private readonly record struct AppendedToken(IEnumerable<PsuedoToken> Items, PsuedoToken? LastToken)

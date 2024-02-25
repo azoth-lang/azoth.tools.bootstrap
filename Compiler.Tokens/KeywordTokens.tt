@@ -102,6 +102,10 @@
         "Independent",
         "Temp",
         "Readable",
+        "Shareable",
+        "Aliasable",
+        "Sendable",
+        "Any",
     }.AsReadOnly();
 #>
 using System;

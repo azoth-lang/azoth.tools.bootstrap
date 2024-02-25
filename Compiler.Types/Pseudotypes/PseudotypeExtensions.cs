@@ -27,11 +27,11 @@ public static class PseudotypeExtensions
     }
 
     public static bool IsAssignableFrom(this ObjectTypeConstraint target, ReferenceType source)
-        => target.BareType.IsAssignableFrom(target.Capability.AllowsWrite, source.BareType)
+        => target.BareType.IsAssignableFrom(target.Capability.AnyCapabilityAllowsWrite, source.BareType)
            && target.Capability.IsAssignableFrom(source.Capability);
 
     public static bool IsAssignableFrom(this ObjectTypeConstraint target, ObjectTypeConstraint source)
-        => target.BareType.IsAssignableFrom(target.Capability.AllowsWrite, source.BareType)
+        => target.BareType.IsAssignableFrom(target.Capability.AnyCapabilityAllowsWrite, source.BareType)
            && target.Capability.IsAssignableFrom(source.Capability);
 
     public static bool IsAssignableFrom(this ReferenceType target, Pseudotype source)

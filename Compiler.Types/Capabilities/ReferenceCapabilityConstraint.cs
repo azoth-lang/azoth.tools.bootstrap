@@ -1,3 +1,9 @@
+using System.Collections.Frozen;
+using System.Collections.Generic;
+using System.Linq;
+using ExhaustiveMatching;
+using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.ReferenceCapability;
+
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 public sealed class ReferenceCapabilityConstraint : IReferenceCapabilityConstraint
@@ -5,34 +11,55 @@ public sealed class ReferenceCapabilityConstraint : IReferenceCapabilityConstrai
     /// <summary>
     /// Any capability that is directly readable without conversion (i.e. `mut`, `const`, `temp const`, `read`).
     /// </summary>
-    ///
-    public static readonly ReferenceCapabilityConstraint Readable = new("readable");
+    public static readonly ReferenceCapabilityConstraint Readable
+        = new("readable", Mutable, Constant, TemporarilyConstant, Read);
 
-    // shareable (i.e. `const, `id`)
+    /// <summary>
+    /// Any capability that can be shared between more than one thread (i.e. `const`, `id`).
+    /// </summary>
+    public static readonly ReferenceCapabilityConstraint Shareable
+        = new("shareable", Constant, Identity);
 
-    // any (i.e. `iso`, `temp iso`, `mut`, `const`, `temp const`, `read`, `id`)
+    /// <summary>
+    /// Any capability that can alias itself (i.e. `mut`, `const`, `temp const`, `read`, `id`).
+    /// </summary>
+    /// <remarks>This is the default capability constraint for type parameters.</remarks>
+    public static readonly ReferenceCapabilityConstraint Aliasable
+        = new("aliasable", Mutable, Constant, TemporarilyConstant, Read, Identity);
 
-    // aliasable (default) (`mut`, `const`, `temp const`, `read`, `id`)
+    /// <summary>
+    /// Any capability that can be sent between threads (i.e. `iso`, `const`, `id`).
+    /// </summary>
+    public static readonly ReferenceCapabilityConstraint Sendable
+        = new("sendable", Isolated, Constant, Identity);
 
-    // sendable (i.e. `iso`, `const`, `id`)
+    /// <summary>
+    /// Any capability whatsoever (i.e. `iso`, `temp iso`, `mut`, `const`, `temp const`, `read`, `id`).
+    /// </summary>
+    public static readonly ReferenceCapabilityConstraint Any
+        = new("any", Isolated, TemporarilyIsolated, Mutable, Constant, TemporarilyConstant, Read, Identity);
 
-    public bool AllowsRead => true;
+    public IReadOnlySet<ReferenceCapability> AllowedCapabilities { get; }
 
-    public bool AllowsWrite => false;
+    public bool AnyCapabilityAllowsWrite { get; }
 
-    public bool AllowsWriteAliases => true;
-
-    private ReferenceCapabilityConstraint(string name)
+    private ReferenceCapabilityConstraint(string name, params ReferenceCapability[] allowedCapabilities)
     {
         this.name = name;
+        AllowedCapabilities = allowedCapabilities.ToFrozenSet();
+        AnyCapabilityAllowsWrite = AllowedCapabilities.Any(capability => capability.AllowsWrite);
     }
 
     private readonly string name;
 
-    // TODO is it correct this can't be assigned from `iso` or `temp iso`? May be allowed because it's a subtype of `mut`
     public bool IsAssignableFrom(IReferenceCapabilityConstraint from)
-        // i.e. can be read from and isn't `iso` or `temp iso`
-        => from.AllowsRead && !(from.AllowsWrite && !from.AllowsWriteAliases);
+        => from switch
+        {
+            ReferenceCapability capability => AllowedCapabilities.Contains(capability),
+            ReferenceCapabilityConstraint constraint
+                => AllowedCapabilities.IsSupersetOf(constraint.AllowedCapabilities),
+            _ => throw ExhaustiveMatch.Failed(from)
+        };
 
     public override string ToString() => name;
 }

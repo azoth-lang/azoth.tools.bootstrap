@@ -75,6 +75,10 @@ public static partial class TokenTypes
         typeof(IndependentKeywordToken),
         typeof(TempKeywordToken),
         typeof(ReadableKeywordToken),
+        typeof(ShareableKeywordToken),
+        typeof(AliasableKeywordToken),
+        typeof(SendableKeywordToken),
+        typeof(AnyKeywordToken),
     }.AsReadOnly();
 }
 
@@ -278,6 +282,18 @@ public static partial class TokenFactory
     public static IReadableKeywordToken ReadableKeyword(TextSpan span)
         => new ReadableKeywordToken(span);
 
+    public static IShareableKeywordToken ShareableKeyword(TextSpan span)
+        => new ShareableKeywordToken(span);
+
+    public static IAliasableKeywordToken AliasableKeyword(TextSpan span)
+        => new AliasableKeywordToken(span);
+
+    public static ISendableKeywordToken SendableKeyword(TextSpan span)
+        => new SendableKeywordToken(span);
+
+    public static IAnyKeywordToken AnyKeyword(TextSpan span)
+        => new AnyKeywordToken(span);
+
 }
 
 [Closed(
@@ -346,7 +362,11 @@ public static partial class TokenFactory
     typeof(IOutKeywordToken),
     typeof(IIndependentKeywordToken),
     typeof(ITempKeywordToken),
-    typeof(IReadableKeywordToken))]
+    typeof(IReadableKeywordToken),
+    typeof(IShareableKeywordToken),
+    typeof(IAliasableKeywordToken),
+    typeof(ISendableKeywordToken),
+    typeof(IAnyKeywordToken))]
 public partial interface IKeywordToken : IToken { }
 
 
@@ -939,6 +959,42 @@ public partial interface IReadableKeywordToken : IKeywordToken { }
 internal partial class ReadableKeywordToken : Token, IReadableKeywordToken
 {
     public ReadableKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IShareableKeywordToken : IKeywordToken { }
+internal partial class ShareableKeywordToken : Token, IShareableKeywordToken
+{
+    public ShareableKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IAliasableKeywordToken : IKeywordToken { }
+internal partial class AliasableKeywordToken : Token, IAliasableKeywordToken
+{
+    public AliasableKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface ISendableKeywordToken : IKeywordToken { }
+internal partial class SendableKeywordToken : Token, ISendableKeywordToken
+{
+    public SendableKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IAnyKeywordToken : IKeywordToken { }
+internal partial class AnyKeywordToken : Token, IAnyKeywordToken
+{
+    public AnyKeywordToken(TextSpan span)
         : base(span)
     {
     }

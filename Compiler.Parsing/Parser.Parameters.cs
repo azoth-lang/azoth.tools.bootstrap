@@ -100,6 +100,10 @@ public partial class Parser
         return constraint switch
         {
             IReadableKeywordToken _ => new ReferenceCapabilityConstraintSyntax(constraint.Span, ReferenceCapabilityConstraint.Readable),
+            IShareableKeywordToken _ => new(constraint.Span, ReferenceCapabilityConstraint.Shareable),
+            IAliasableKeywordToken _ => new(constraint.Span, ReferenceCapabilityConstraint.Aliasable),
+            ISendableKeywordToken _ => new(constraint.Span, ReferenceCapabilityConstraint.Sendable),
+            IAnyKeywordToken _ => new(constraint.Span, ReferenceCapabilityConstraint.Any),
             _ => throw ExhaustiveMatch.Failed(constraint),
         };
     }
