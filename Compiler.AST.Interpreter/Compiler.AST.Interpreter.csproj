@@ -4,7 +4,7 @@
     <AssemblyName>Azoth.Tools.Bootstrap.Compiler.AST.Interpreter</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Compiler.AST.Interpreter</RootNamespace>
     <Nullable>enable</Nullable>
-    <LangVersion>default</LangVersion>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -23,5 +23,21 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Compiler.AST\Compiler.AST.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="MemoryLayout\Experiment\AzothLayout.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>AzothLayout.partial.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="MemoryLayout\Experiment\AzothLayout.partial.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AzothLayout.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>
