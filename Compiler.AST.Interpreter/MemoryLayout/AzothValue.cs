@@ -11,9 +11,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 /// <summary>
 /// A compact structure for representing Azoth values.
 /// </summary>
-/// <remarks><para>This struct is laid out in memory so that the first part is a reference and the second
-/// is primitive value. This corresponds with the internal layout of <see cref="BigInteger"/> which
-/// stores the bit array in the first part and the <see cref="Int32"/> value second.</para>
+/// <remarks><para>This struct is laid out in memory so that the first part is a reference and the
+/// second is a primitive value. This corresponds with the internal layout of <see cref="BigInteger"/>
+/// which stores the bit array in the first part and the <see cref="Int32"/> value second.</para>
 ///
 /// <para>Since small value <see cref="BigInteger"/>s have a null reference, a special flag reference
 /// must be used to indicate `none`.</para></remarks>

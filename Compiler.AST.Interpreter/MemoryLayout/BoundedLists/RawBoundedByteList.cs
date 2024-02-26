@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout.BoundedLists;
 
-internal class RawBoundedByteList : RawBoundedList<byte>
+internal sealed class RawBoundedByteList : RawBoundedList<byte>
 {
     public RawBoundedByteList(nuint capacity)
         : base(capacity, false) { }

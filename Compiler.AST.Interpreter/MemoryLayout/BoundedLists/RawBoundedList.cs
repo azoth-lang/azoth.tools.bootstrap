@@ -1,6 +1,6 @@
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout.BoundedLists;
 
-internal class RawBoundedList : RawBoundedList<AzothValue>
+internal sealed class RawBoundedList : RawBoundedList<AzothValue>
 {
     public RawBoundedList(nuint capacity) : base(capacity, true) { }
 
