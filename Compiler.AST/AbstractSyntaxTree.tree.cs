@@ -550,6 +550,7 @@ public partial interface IExplicitSimpleTypeConversionExpression : IExplicitConv
 
 [Closed(
     typeof(IFunctionInvocationExpression),
+    typeof(IInitializerInvocationExpression),
     typeof(IMethodInvocationExpression),
     typeof(IFunctionReferenceInvocationExpression))]
 public partial interface IInvocationExpression : IExpression
@@ -560,6 +561,11 @@ public partial interface IInvocationExpression : IExpression
 public partial interface IFunctionInvocationExpression : IInvocationExpression
 {
     FunctionSymbol ReferencedSymbol { get; }
+}
+
+public partial interface IInitializerInvocationExpression : IInvocationExpression
+{
+    InitializerSymbol ReferencedSymbol { get; }
 }
 
 public partial interface IMethodInvocationExpression : IInvocationExpression

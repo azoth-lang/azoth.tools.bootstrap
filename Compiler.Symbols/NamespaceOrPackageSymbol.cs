@@ -13,7 +13,6 @@ public abstract class NamespaceOrPackageSymbol : Symbol
     public override SimpleName Name { get; }
 
     protected NamespaceOrPackageSymbol(PackageSymbol package, NamespaceOrPackageSymbol? containingSymbol, SimpleName name)
-        : base(name)
     {
         Package = package;
         NamespaceName = containingSymbol is null

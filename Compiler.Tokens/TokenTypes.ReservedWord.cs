@@ -23,7 +23,6 @@ public partial class TokenTypes
         "forever",
         "get",
         "implicit",
-        "init",
         "invariant",
         "match",
         "may",

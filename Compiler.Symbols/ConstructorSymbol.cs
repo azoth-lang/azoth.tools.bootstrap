@@ -11,6 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class ConstructorSymbol : InvocableSymbol
 {
     public override UserTypeSymbol ContainingSymbol { get; }
+    public override SimpleName? Name { get; }
     public ReferenceType SelfParameterType { get; }
     public ReferenceType ReturnType { get; }
 
@@ -19,16 +20,19 @@ public sealed class ConstructorSymbol : InvocableSymbol
         SimpleName? name,
         ReferenceType selfParameterType,
         IFixedList<Parameter> parameterTypes)
-        : base(containingSymbol, name, parameterTypes,
+        : base(parameterTypes,
             new Return(((ObjectType)containingSymbol.DeclaresType).ToConstructorReturn(selfParameterType, parameterTypes)))
     {
         ContainingSymbol = containingSymbol;
+        Name = name;
         SelfParameterType = selfParameterType;
         ReturnType = (ReferenceType)base.Return.Type;
     }
 
     public static ConstructorSymbol CreateDefault(UserTypeSymbol containingSymbol)
-        => new(containingSymbol, null, ((ObjectType)containingSymbol.DeclaresType).ToDefaultConstructorSelf(), FixedList.Empty<Parameter>());
+        => new(containingSymbol, null,
+            ((ObjectType)containingSymbol.DeclaresType).ToDefaultConstructorSelf(),
+            FixedList.Empty<Parameter>());
 
     public override bool Equals(Symbol? other)
     {
@@ -45,7 +49,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
 
     public override string ToILString()
     {
-        var name = Name is null ? $" {Name}" : "";
+        var name = Name is null ? $".{Name}" : "";
         var selfParameterType = new Parameter(false, SelfParameterType);
         return $"{ContainingSymbol}::new{name}({string.Join(", ", Parameters.Prepend(selfParameterType).Select(d => d.ToILString()))})";
     }

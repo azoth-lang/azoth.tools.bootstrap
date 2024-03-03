@@ -183,6 +183,10 @@ public static class IAbstractSyntaxExtensions
                 foreach (var child in n.Arguments)
                     yield return child;
                 yield break;
+            case IInitializerInvocationExpression n:
+                foreach (var child in n.Arguments)
+                    yield return child;
+                yield break;
             case IMethodInvocationExpression n:
                 yield return n.Context;
                 foreach (var child in n.Arguments)

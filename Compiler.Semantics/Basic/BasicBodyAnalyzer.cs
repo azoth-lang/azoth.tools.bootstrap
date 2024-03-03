@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -1293,6 +1294,7 @@ public class BasicBodyAnalyzer
         // * Namespaced function invocation
         // * Method invocation
         // * Function type invocation
+        // * Initializer invocation
 
         ArgumentResults args;
         FunctionType? functionType = null;
@@ -1329,7 +1331,7 @@ public class BasicBodyAnalyzer
 
                 if (exp.Context is INameExpressionSyntax { ReferencedSymbol.Result: Symbol contextSymbol })
                 {
-                    var functionSymbols = LookupSymbols<FunctionSymbol>(contextSymbol, exp.Member);
+                    var functionSymbols = LookupSymbols<FunctionOrInitializerSymbol>(contextSymbol, exp.Member);
                     functionType = InferSymbol(invocation, functionSymbols, args, flow);
                 }
 
@@ -1352,8 +1354,9 @@ public class BasicBodyAnalyzer
                     break;
                 }
 
-                var functionSymbols = LookupSymbols<FunctionSymbol>(exp);
-                functionType = InferSymbol(invocation, functionSymbols, args, flow);
+                if (exp.Name == "test") Debugger.Break();
+                var functionOrInitializerSymbols = LookupSymbols<FunctionOrInitializerSymbol>(exp);
+                functionType = InferSymbol(invocation, functionOrInitializerSymbols, args, flow);
                 break;
             }
             default:
@@ -1688,11 +1691,11 @@ public class BasicBodyAnalyzer
 
     private FunctionType? InferSymbol(
         IInvocationExpressionSyntax invocation,
-        FixedSet<FunctionSymbol> functionSymbols,
+        FixedSet<FunctionOrInitializerSymbol> functionOrInitializerSymbols,
         ArgumentResults arguments,
         FlowState flow)
     {
-        var validOverloads = SelectOverload(null, functionSymbols, arguments, flow);
+        var validOverloads = SelectOverload(null, functionOrInitializerSymbols, arguments, flow);
         FunctionType? functionType;
         switch (validOverloads.Count)
         {
@@ -1702,9 +1705,9 @@ public class BasicBodyAnalyzer
                 functionType = null;
                 break;
             case 1:
-                var function = validOverloads.Single();
-                invocation.ReferencedSymbol.Fulfill(function.Symbol);
-                functionType = new FunctionType(function.ParameterTypes, function.ReturnType);
+                var functionOrInitializer = validOverloads.Single();
+                invocation.ReferencedSymbol.Fulfill(functionOrInitializer.Symbol);
+                functionType = new FunctionType(functionOrInitializer.ParameterTypes, functionOrInitializer.ReturnType);
                 break;
             default:
                 diagnostics.Add(NameBindingError.AmbiguousFunctionCall(file, invocation));

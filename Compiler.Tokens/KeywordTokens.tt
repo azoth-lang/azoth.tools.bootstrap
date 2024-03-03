@@ -33,7 +33,7 @@
         "Class",
         "Function",
         "New",
-        //"Init",
+        "Init",
         "Isolated",
         "Read",
         "Const",

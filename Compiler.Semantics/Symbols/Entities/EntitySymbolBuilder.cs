@@ -259,7 +259,6 @@ public class EntitySymbolBuilder
         }
     }
 
-
     private void BuildTraitSymbol(ITraitDeclarationSyntax trait, TypeSymbolBuilder typeDeclarations)
     {
         if (!trait.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;

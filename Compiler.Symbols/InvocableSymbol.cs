@@ -7,28 +7,22 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 [Closed(
-    typeof(FunctionOrMethodSymbol),
-    typeof(ConstructorSymbol),
-    typeof(InitializerSymbol))]
+    typeof(FunctionOrInitializerSymbol),
+    typeof(MethodSymbol),
+    typeof(ConstructorSymbol))]
 public abstract class InvocableSymbol : Symbol
 {
-    public override PackageSymbol? Package { get; }
-    public override Symbol ContainingSymbol { get; }
-    public override SimpleName? Name { get; }
+    public override PackageSymbol? Package => ContainingSymbol.Package;
+    public abstract override Symbol ContainingSymbol { get; }
+    public abstract override SimpleName? Name { get; }
     public IFixedList<Parameter> Parameters { get; }
     public int Arity => Parameters.Count;
     public Return Return { get; }
 
     protected InvocableSymbol(
-        Symbol containingSymbol,
-        SimpleName? name,
         IFixedList<Parameter> parameters,
         Return @return)
-        : base(name)
     {
-        Package = containingSymbol.Package;
-        ContainingSymbol = containingSymbol;
-        Name = name;
         Parameters = parameters;
         Return = @return;
     }

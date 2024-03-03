@@ -6,10 +6,11 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 /// <summary>
-/// A symbol for a function
+/// A symbol for a standalone or associated function.
 /// </summary>
-public sealed class FunctionSymbol : FunctionOrMethodSymbol
+public sealed class FunctionSymbol : FunctionOrInitializerSymbol
 {
+    public override Symbol ContainingSymbol { get; }
     public override SimpleName Name { get; }
     public FunctionType Type { get; }
 
@@ -17,8 +18,9 @@ public sealed class FunctionSymbol : FunctionOrMethodSymbol
         Symbol containingSymbol,
         SimpleName name,
         FunctionType type)
-        : base(containingSymbol, name, type.Parameters, type.Return)
+        : base(name, type.Parameters, type.Return)
     {
+        ContainingSymbol = containingSymbol;
         Name = name;
         Type = type;
     }

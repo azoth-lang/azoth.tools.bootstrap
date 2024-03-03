@@ -34,6 +34,7 @@ public static partial class TokenTypes
         typeof(ClassKeywordToken),
         typeof(FunctionKeywordToken),
         typeof(NewKeywordToken),
+        typeof(InitKeywordToken),
         typeof(IsolatedKeywordToken),
         typeof(ReadKeywordToken),
         typeof(ConstKeywordToken),
@@ -161,6 +162,9 @@ public static partial class TokenFactory
 
     public static INewKeywordToken NewKeyword(TextSpan span)
         => new NewKeywordToken(span);
+
+    public static IInitKeywordToken InitKeyword(TextSpan span)
+        => new InitKeywordToken(span);
 
     public static IIsolatedKeywordToken IsolatedKeyword(TextSpan span)
         => new IsolatedKeywordToken(span);
@@ -334,6 +338,7 @@ public static partial class TokenFactory
     typeof(IClassKeywordToken),
     typeof(IFunctionKeywordToken),
     typeof(INewKeywordToken),
+    typeof(IInitKeywordToken),
     typeof(IIsolatedKeywordToken),
     typeof(IReadKeywordToken),
     typeof(IConstKeywordToken),
@@ -605,6 +610,15 @@ public partial interface INewKeywordToken : IKeywordToken { }
 internal partial class NewKeywordToken : Token, INewKeywordToken
 {
     public NewKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IInitKeywordToken : IKeywordToken { }
+internal partial class InitKeywordToken : Token, IInitKeywordToken
+{
+    public InitKeywordToken(TextSpan span)
         : base(span)
     {
     }

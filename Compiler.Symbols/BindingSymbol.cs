@@ -22,7 +22,6 @@ public abstract class BindingSymbol : Symbol
         bool isMutableBinding,
         bool isLentBinding,
         SimpleName? name)
-        : base(name)
     {
         Package = containingSymbol.Package ?? throw new ArgumentNullException(nameof(containingSymbol));
         ContainingSymbol = containingSymbol;

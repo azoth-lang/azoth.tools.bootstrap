@@ -9,47 +9,53 @@ using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-public sealed class InitializerSymbol : InvocableSymbol
+/// <remarks>Named initializers show up as invocable symbols inside of their containing type.
+/// Unnamed initializers show up as invocable symbols alongside their contain type.</remarks>
+public sealed class InitializerSymbol : FunctionOrInitializerSymbol
 {
-    // TODO fix types
-    public override UserTypeSymbol ContainingSymbol { get; }
+    public UserTypeSymbol ContainingTypeSymbol { get; }
+    public override Symbol ContainingSymbol { get; }
+    public SimpleName? InitializerName { get; }
     public ValueType SelfParameterType { get; }
     public ValueType ReturnType { get; }
 
     public InitializerSymbol(
-        UserTypeSymbol containingSymbol,
-        SimpleName? name,
+        UserTypeSymbol containingTypeSymbol,
+        SimpleName? initializerName,
         ValueType selfParameterType,
         IFixedList<Parameter> parameterTypes)
-        : base(containingSymbol, name, parameterTypes,
-            new Return(((StructType)containingSymbol.DeclaresType).ToInitializerReturn(selfParameterType, parameterTypes)))
+        : base(initializerName ?? containingTypeSymbol.Name.Text, parameterTypes,
+            new Return(((StructType)containingTypeSymbol.DeclaresType).ToInitializerReturn(selfParameterType, parameterTypes)))
     {
-        ContainingSymbol = containingSymbol;
+        bool isNamed = initializerName is not null;
+        ContainingTypeSymbol = containingTypeSymbol;
+        ContainingSymbol = isNamed ? containingTypeSymbol : containingTypeSymbol.ContainingSymbol;
+        InitializerName = initializerName;
         SelfParameterType = selfParameterType;
         ReturnType = (ValueType)base.Return.Type;
     }
 
-    public static InitializerSymbol CreateDefault(UserTypeSymbol containingSymbol)
-        => new(containingSymbol, null, ((StructType)containingSymbol.DeclaresType).ToDefaultInitializerSelf(),
+    public static InitializerSymbol CreateDefault(UserTypeSymbol containingTypeSymbol)
+        => new(containingTypeSymbol, null,
+            ((StructType)containingTypeSymbol.DeclaresType).ToDefaultInitializerSelf(),
             FixedList.Empty<Parameter>());
 
     public override bool Equals(Symbol? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is ConstructorSymbol otherConstructor
-            && ContainingSymbol == otherConstructor.ContainingSymbol
-            && Name == otherConstructor.Name
-            && Parameters.SequenceEqual(otherConstructor.Parameters);
+        return other is InitializerSymbol otherInitializer
+            && ContainingTypeSymbol == otherInitializer.ContainingTypeSymbol
+            && InitializerName == otherInitializer.InitializerName
+            && Parameters.SequenceEqual(otherInitializer.Parameters);
     }
 
-    public override int GetHashCode() => HashCode.Combine(ContainingSymbol, Name, Parameters);
+    public override int GetHashCode() => HashCode.Combine(ContainingTypeSymbol, InitializerName, Parameters);
 
     public override string ToILString()
     {
-        var name = Name is null ? $" {Name}" : "";
+        var name = InitializerName is null ? $".{InitializerName}" : "";
         var selfParameterType = new Parameter(false, SelfParameterType);
-        return
-            $"{ContainingSymbol}::new{name}({string.Join(", ", Parameters.Prepend(selfParameterType).Select(d => d.ToILString()))})";
+        return $"{ContainingTypeSymbol}::init{name}({string.Join(", ", Parameters.Prepend(selfParameterType).Select(d => d.ToILString()))})";
     }
 }

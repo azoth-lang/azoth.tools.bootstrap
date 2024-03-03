@@ -23,6 +23,7 @@ internal readonly struct AzothValue
     private static readonly object NoneFlag = new();
 
     [FieldOffset(0)] public readonly AzothObject ObjectValue;
+    [FieldOffset(0)] public readonly AzothStruct StructValue;
     [FieldOffset(0)] public readonly BigInteger IntValue;
     [FieldOffset(0)] public readonly IRawBoundedList RawBoundedListValue;
     [FieldOffset(0)] public readonly Task<AzothValue> PromiseValue;
@@ -48,6 +49,7 @@ internal readonly struct AzothValue
     public static readonly AzothValue None = new();
 
     public static AzothValue Object(AzothObject value) => new(value);
+    public static AzothValue Struct(AzothStruct value) => new(value);
     public static AzothValue Int(BigInteger value) => new(value);
     public static AzothValue RawBoundedList(IRawBoundedList value) => new(value);
     public static AzothValue Promise(Task<AzothValue> value) => new(value);
@@ -76,6 +78,10 @@ internal readonly struct AzothValue
     private AzothValue(AzothObject value)
     {
         ObjectValue = value;
+    }
+    private AzothValue(AzothStruct value)
+    {
+        StructValue = value;
     }
     private AzothValue(BigInteger value)
     {

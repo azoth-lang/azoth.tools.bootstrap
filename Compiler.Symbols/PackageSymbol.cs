@@ -27,5 +27,5 @@ public class PackageSymbol : NamespaceOrPackageSymbol
 
     public override int GetHashCode() => HashCode.Combine(Name);
 
-    public override string ToILString() => $"{Name}::.";
+    public override string ToILString() => $"{Name}::";
 }

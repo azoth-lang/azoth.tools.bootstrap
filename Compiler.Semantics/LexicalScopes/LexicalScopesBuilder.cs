@@ -57,9 +57,14 @@ public class LexicalScopesBuilder
                                                  .OfType<NamespaceSymbol>()
                                                  .Select(NonMemberSymbol.ForPackageNamespace);
 
-        var packageSymbols = packageEntityDeclarations
+        var packageNonMemberEntitySymbols = packageEntityDeclarations
                                     .OfType<INonMemberEntityDeclarationSyntax>()
                                     .Select(NonMemberSymbol.For);
+
+        var packageUnnamedInitializerSymbols = packageEntityDeclarations
+                                               .OfType<IInitializerDeclarationSyntax>()
+                                               .Where(initializer => initializer.Name is null)
+                                               .Select(NonMemberSymbol.For);
 
         // TODO it might be better to go to the declarations and get their symbols (once that is implemented)
         var referencedSymbols = referencedSymbolTrees
@@ -69,7 +74,8 @@ public class LexicalScopesBuilder
                                        .Select(NonMemberSymbol.ForExternalSymbol);
         return primitiveEntitySymbols
                .Concat(packageNamespaces)
-               .Concat(packageSymbols)
+               .Concat(packageNonMemberEntitySymbols)
+               .Concat(packageUnnamedInitializerSymbols)
                .Concat(referencedSymbols)
                .ToFixedList();
     }

@@ -305,6 +305,8 @@ public partial class Parser
         {
             case IFunctionKeywordToken _:
                 return ParseStructMemberFunction(structDeclaration, modifiers);
+            case IInitKeywordToken _:
+                return ParseInitializer(structDeclaration, modifiers);
             case ILetKeywordToken _:
                 return ParseField(structDeclaration, false, modifiers);
             case IVarKeywordToken _:
@@ -517,7 +519,7 @@ public partial class Parser
         }
     }
 
-    internal ConstructorDeclarationSyntax ParseConstructor(
+    internal IConstructorDeclarationSyntax ParseConstructor(
         IClassDeclarationSyntax declaringType,
         ModifierParser modifiers)
     {
@@ -555,6 +557,46 @@ public partial class Parser
         var span = TextSpan.Covering(newKeywordSpan, body.Span);
         return new ConstructorDeclarationSyntax(declaringType, span, File, accessModifer,
             TextSpan.Covering(newKeywordSpan, identifier?.Span), name, selfParameter, constructorParameters, body);
+    }
+
+    internal IInitializerDeclarationSyntax ParseInitializer(
+        IStructDeclarationSyntax declaringType,
+        ModifierParser modifiers)
+    {
+        var accessModifer = modifiers.ParseAccessModifier();
+        modifiers.ParseEndOfModifiers();
+        var initKeywordSpan = Tokens.Consume<IInitKeywordToken>();
+        var identifier = Tokens.AcceptToken<IIdentifierToken>();
+        var name = identifier is null ? null : (SimpleName)identifier.Value;
+        var bodyParser = BodyParser();
+        // Self parameter is expected to be after the current token which is expected to be `(`
+        var expectedSelfParameterLocation = Tokens.Current.Span.AtEnd();
+        var parameters = bodyParser.ParseParameters(bodyParser.ParseInitializerParameter);
+
+        var selfParameter = parameters.OfType<IInitializerSelfParameterSyntax>().FirstOrDefault();
+        var constructorParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>())
+                                              .Cast<IConstructorOrInitializerParameterSyntax>()
+                                              .ToFixedList();
+
+        if (selfParameter is null)
+        {
+            Add(ParseError.MissingSelfParameter(File, expectedSelfParameterLocation));
+            // For simplicity of downstream code, make up a fake self parameter
+            var selfReferenceCapability = new CapabilitySyntax(expectedSelfParameterLocation,
+                Enumerable.Empty<ICapabilityToken>(), DeclaredCapability.Mutable);
+            selfParameter = new InitializerSelfParameterSyntax(expectedSelfParameterLocation, false, selfReferenceCapability);
+        }
+        else if (parameters[0] is not ISelfParameterSyntax)
+            Add(ParseError.SelfParameterMustBeFirst(File, selfParameter.Span));
+
+        foreach (var extraSelfParameter in parameters.OfType<ISelfParameterSyntax>().Skip(1))
+            Add(ParseError.ExtraSelfParameter(File, extraSelfParameter.Span));
+
+        var body = bodyParser.ParseBlockBody();
+        // For now, just say constructors have no annotations
+        var span = TextSpan.Covering(initKeywordSpan, body.Span);
+        return new InitializerDeclarationSyntax(declaringType, span, File, accessModifer,
+            TextSpan.Covering(initKeywordSpan, identifier?.Span), name, selfParameter, constructorParameters, body);
     }
 
     internal IStructMemberDeclarationSyntax ParseStructMemberFunction(

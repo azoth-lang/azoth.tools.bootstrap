@@ -70,6 +70,34 @@ public partial class Parser
         }
     }
 
+    public IParameterSyntax ParseInitializerParameter()
+    {
+        var lentBinding = Tokens.AcceptToken<ILentKeywordToken>();
+        switch (Tokens.Current)
+        {
+
+            case IStandardCapabilityToken:
+            case ISelfKeywordToken:
+                return ParseInitializerSelfParameter(lentBinding);
+            case IDotToken _:
+            {
+                if (lentBinding is not null) Add(ParseError.LentFieldParameter(File, lentBinding.Span));
+
+                var dot = Tokens.Consume<IDotToken>();
+                var identifier = Tokens.RequiredToken<IIdentifierToken>();
+                var equals = Tokens.AcceptToken<IEqualsToken>();
+                IExpressionSyntax? defaultValue = null;
+                if (equals is not null) defaultValue = ParseExpression();
+                var span = TextSpan.Covering(dot, identifier.Span, defaultValue?.Span);
+                SimpleName name = identifier.Value;
+                return new FieldParameterSyntax(span, name, defaultValue);
+            }
+            default:
+                return ParseFunctionParameter(lentBinding);
+        }
+    }
+
+
     private IConstructorSelfParameterSyntax ParseConstructorSelfParameter(ILentKeywordToken? lentBinding)
     {
         bool isLentBinding = lentBinding is not null;
@@ -77,6 +105,15 @@ public partial class Parser
         var selfSpan = Tokens.Expect<ISelfKeywordToken>();
         var span = TextSpan.Covering(lentBinding?.Span, referenceCapability.Span, selfSpan);
         return new ConstructorSelfParameterSyntax(span, isLentBinding, referenceCapability);
+    }
+
+    private IInitializerSelfParameterSyntax ParseInitializerSelfParameter(ILentKeywordToken? lentBinding)
+    {
+        bool isLentBinding = lentBinding is not null;
+        var referenceCapability = ParseStandardCapability();
+        var selfSpan = Tokens.Expect<ISelfKeywordToken>();
+        var span = TextSpan.Covering(lentBinding?.Span, referenceCapability.Span, selfSpan);
+        return new InitializerSelfParameterSyntax(span, isLentBinding, referenceCapability);
     }
 
     private IMethodSelfParameterSyntax ParseMethodSelfParameter(ILentKeywordToken? lentBinding)

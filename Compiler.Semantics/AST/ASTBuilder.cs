@@ -509,7 +509,7 @@ internal class ASTBuilder
                 var context = BuildExpression(qualifiedName.Context);
                 return new MethodInvocationExpression(syn.Span, type, semantics, context, method, arguments);
             case InitializerSymbol initializer:
-                throw new NotImplementedException("Initializer invocation not yet implemented.");
+                return new InitializerInvocationExpression(syn.Span, type, semantics, initializer, arguments);
             case BindingSymbol _:
                 throw new InvalidOperationException("Invocation expression cannot invoke a binding symbol.");
             case TypeSymbol _:

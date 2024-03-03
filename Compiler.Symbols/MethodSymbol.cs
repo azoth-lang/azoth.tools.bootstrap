@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-public sealed class MethodSymbol : FunctionOrMethodSymbol
+public sealed class MethodSymbol : InvocableSymbol
 {
     public override TypeSymbol ContainingSymbol { get; }
     public override SimpleName Name { get; }
@@ -19,7 +19,7 @@ public sealed class MethodSymbol : FunctionOrMethodSymbol
         SelfParameter selfParameterType,
         IFixedList<Parameter> parameters,
         Return @return)
-        : base(containingSymbol, name, parameters, @return)
+        : base(parameters, @return)
     {
         ContainingSymbol = containingSymbol;
         Name = name;

@@ -127,6 +127,7 @@ ExplicitSimpleTypeConversionExpression: ExplicitConversionExpression = Expressio
 // ---------- Invocation Expressions
 InvocationExpression: Expression = Arguments:Expression*;
 FunctionInvocationExpression: InvocationExpression = ReferencedSymbol:'FunctionSymbol' Arguments:Expression*;
+InitializerInvocationExpression: InvocationExpression = ReferencedSymbol:'InitializerSymbol' Arguments:Expression*;
 MethodInvocationExpression: InvocationExpression = Context:Expression ReferencedSymbol:'MethodSymbol' Arguments:Expression*;
 FunctionReferenceInvocationExpression: InvocationExpression = Referent:Expression Arguments:Expression*;
 

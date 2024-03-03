@@ -15,7 +15,6 @@ public abstract class TypeSymbol : Symbol
     public bool IsGlobal => ContainingSymbol == Package;
 
     protected TypeSymbol(TypeName name)
-        : base(name)
     {
         Name = name;
     }

@@ -39,6 +39,7 @@ public class InterpreterProcess
     private readonly Task executionTask;
     private readonly FixedDictionary<FunctionSymbol, IConcreteFunctionInvocableDeclaration> functions;
     private readonly FixedDictionary<ConstructorSymbol, IConstructorDeclaration?> constructors;
+    private readonly FixedDictionary<InitializerSymbol, IInitializerDeclaration?> initializers;
     private readonly FixedDictionary<UserTypeSymbol, IClassOrStructDeclaration> classesOrStructs;
     private readonly IClassDeclaration stringClass;
     private readonly IConstructorDeclaration stringConstructor;
@@ -72,6 +73,16 @@ public class InterpreterProcess
                        .Concat(allDeclarations
                                .OfType<IConstructorDeclaration>()
                                .Select(c => (c.Symbol, (IConstructorDeclaration?)c)))
+                       .ToFixedDictionary();
+
+        var defaultInitializerSymbols = allDeclarations
+                                       .OfType<IStructDeclaration>()
+                                       .Select(c => c.DefaultInitializerSymbol).WhereNotNull();
+        initializers = defaultInitializerSymbols
+                       .Select(c => (c, default(IInitializerDeclaration)))
+                       .Concat(allDeclarations
+                               .OfType<IInitializerDeclaration>()
+                               .Select(c => (c.Symbol, (IInitializerDeclaration?)c)))
                        .ToFixedDictionary();
 
         // TODO pointing both of these to a memory stream is probably wrong. Need something that acts like a pipe.
@@ -273,6 +284,74 @@ public class InterpreterProcess
                            .Single(c => c.Arity == 0);
     }
 
+    private async Task<AzothValue> InitializeStruct(
+        IStructDeclaration @struct,
+        InitializerSymbol initializerSymbol,
+        IEnumerable<AzothValue> arguments)
+    {
+        var self = AzothValue.Struct(new AzothStruct());
+        return await CallInitializerAsync(@struct, initializerSymbol, self, arguments).ConfigureAwait(false);
+    }
+
+    private async Task<AzothValue> CallInitializerAsync(
+        IStructDeclaration @struct,
+        InitializerSymbol initializerSymbol,
+        AzothValue self,
+        IEnumerable<AzothValue> arguments)
+    {
+        // TODO run field initializers
+        var initializer = initializers[initializerSymbol];
+        // Default constructor is null
+        if (initializer is null) return await CallDefaultInitializerAsync(@struct, self);
+        return await CallInitializerAsync(initializer, self, arguments).ConfigureAwait(false);
+    }
+
+    private async ValueTask<AzothValue> CallInitializerAsync(
+        IInitializerDeclaration initializer,
+        AzothValue self,
+        IEnumerable<AzothValue> arguments)
+    {
+        try
+        {
+            var variables = new LocalVariableScope();
+            variables.Add(initializer.SelfParameter.Symbol, self);
+            foreach (var (arg, parameter) in arguments.Zip(initializer.Parameters))
+                switch (parameter)
+                {
+                    default:
+                        throw ExhaustiveMatch.Failed(parameter);
+                    case IFieldParameter fieldParameter:
+                        self.ObjectValue[fieldParameter.ReferencedSymbol.Name] = arg;
+                        break;
+                    case INamedParameter p:
+                        variables.Add(p.Symbol, arg);
+                        break;
+                }
+
+            foreach (var statement in initializer.Body.Statements)
+                await ExecuteAsync(statement, variables).ConfigureAwait(false);
+            return self;
+        }
+        catch (ControlFlow.Return)
+        {
+            return self;
+        }
+    }
+
+    /// <summary>
+    /// Call the implicit default initializer for a type that has no constructors.
+    /// </summary>
+    private ValueTask<AzothValue> CallDefaultInitializerAsync(IStructDeclaration @struct, AzothValue self)
+    {
+        // Initialize fields to default values
+        var fields = @struct.Members.OfType<IFieldDeclaration>();
+        foreach (var field in fields)
+            self.ObjectValue[field.Symbol.Name] = new AzothValue();
+
+        return ValueTask.FromResult(self);
+    }
+
+
     private async ValueTask<AzothValue> CallMethodAsync(
         IMethodDeclaration method,
         AzothValue self,
@@ -367,6 +446,13 @@ public class InterpreterProcess
                 var function = await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
                 return await function.FunctionReferenceValue.CallAsync(arguments).ConfigureAwait(false);
+            }
+            case IInitializerInvocationExpression exp:
+            {
+                var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
+                var initializerSymbol = exp.ReferencedSymbol;
+                var @struct = (IStructDeclaration)classesOrStructs[initializerSymbol.ContainingTypeSymbol];
+                return await InitializeStruct(@struct, initializerSymbol, arguments).ConfigureAwait(false);
             }
             case IBoolLiteralExpression exp:
                 return AzothValue.Bool(exp.Value);

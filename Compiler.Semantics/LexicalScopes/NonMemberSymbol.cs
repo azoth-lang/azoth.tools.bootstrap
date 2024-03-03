@@ -14,6 +14,9 @@ internal class NonMemberSymbol
     public static NonMemberSymbol For(INonMemberEntityDeclarationSyntax declaration)
         => new NonMemberSymbol(declaration);
 
+    public static NonMemberSymbol For(IInitializerDeclarationSyntax declaration)
+        => new NonMemberSymbol(declaration);
+
     public static NonMemberSymbol ForExternalSymbol(Symbol symbol)
         => new NonMemberSymbol(symbol);
 
@@ -39,6 +42,17 @@ internal class NonMemberSymbol
         InCurrentPackage = true;
         ContainingNamespace = declaration.ContainingNamespaceName;
         Name = declaration.Name;
+        RequiredNamespace = ContainingNamespace;
+        Symbol = declaration.Symbol;
+    }
+
+    private NonMemberSymbol(IInitializerDeclarationSyntax declaration)
+    {
+        if (declaration.Name is not null)
+            throw new ArgumentException("Must be for an unnamed initializer");
+        InCurrentPackage = true;
+        ContainingNamespace = declaration.DeclaringType.ContainingNamespaceName;
+        Name = declaration.DeclaringType.Name.Text;
         RequiredNamespace = ContainingNamespace;
         Symbol = declaration.Symbol;
     }
