@@ -25,6 +25,8 @@
         "UInt64",
         "Size",
         "Offset",
+        "NInt",
+        "NUInt",
         "Bool",
         "Never",
         "Return",

@@ -26,6 +26,8 @@ public sealed class SpecialTypeName : TypeName
     public static readonly SpecialTypeName UInt64 = new("uint64");
     public static readonly SpecialTypeName Size = new("size");
     public static readonly SpecialTypeName Offset = new("offset");
+    public static readonly SpecialTypeName NInt = new("nint");
+    public static readonly SpecialTypeName NUInt = new("nuint");
     #endregion
 
     #region Constant Types

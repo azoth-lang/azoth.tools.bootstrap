@@ -172,6 +172,9 @@ public partial class Parser
 
             ISizeKeywordToken _ => SpecialTypeName.Size,
             IOffsetKeywordToken _ => SpecialTypeName.Offset,
+
+            INIntKeywordToken _ => SpecialTypeName.NInt,
+            INUIntKeywordToken _ => SpecialTypeName.NUInt,
             _ => throw ExhaustiveMatch.Failed(keyword)
         };
 

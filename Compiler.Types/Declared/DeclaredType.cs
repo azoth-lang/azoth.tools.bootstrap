@@ -26,6 +26,8 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public static readonly FixedSizeIntegerType UInt64 = FixedSizeIntegerType.UInt64;
     public static readonly PointerSizedIntegerType Size = PointerSizedIntegerType.Size;
     public static readonly PointerSizedIntegerType Offset = PointerSizedIntegerType.Offset;
+    public static readonly PointerSizedIntegerType NInt = PointerSizedIntegerType.NInt;
+    public static readonly PointerSizedIntegerType NUInt = PointerSizedIntegerType.NUInt;
 
     public static readonly AnyType Any = AnyType.Instance;
     #endregion

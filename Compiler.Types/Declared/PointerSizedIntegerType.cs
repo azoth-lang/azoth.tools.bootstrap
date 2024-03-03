@@ -1,3 +1,4 @@
+using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -13,6 +14,8 @@ public sealed class PointerSizedIntegerType : IntegerType
 {
     internal new static readonly PointerSizedIntegerType Size = new(SpecialTypeName.Size, false);
     internal new static readonly PointerSizedIntegerType Offset = new(SpecialTypeName.Offset, true);
+    internal new static readonly PointerSizedIntegerType NInt = new(SpecialTypeName.NInt, true);
+    internal new static readonly PointerSizedIntegerType NUInt = new(SpecialTypeName.NUInt, false);
 
     public override BareValueType<PointerSizedIntegerType> BareType { get; }
 
@@ -23,6 +26,19 @@ public sealed class PointerSizedIntegerType : IntegerType
     {
         BareType = new(this, FixedList.Empty<DataType>());
         Type = BareType.With(Capability.Constant);
+    }
+
+    /// <summary>
+    /// The current type but signed.
+    /// </summary>
+    /// <remarks>If the current type is already signed then this doesn't change anything. If the
+    /// current type is unsigned, then this returns the next larger integer type.</remarks>
+    public IntegerType WithSign()
+    {
+        if (IsSigned) return this;
+        if (this == Size) return Offset;
+        if (this == NUInt) return NInt;
+        throw new NotImplementedException();
     }
 
     public override BareValueType<PointerSizedIntegerType> With(IFixedList<DataType> typeArguments)

@@ -26,6 +26,8 @@ public static partial class TokenTypes
         typeof(UInt64KeywordToken),
         typeof(SizeKeywordToken),
         typeof(OffsetKeywordToken),
+        typeof(NIntKeywordToken),
+        typeof(NUIntKeywordToken),
         typeof(BoolKeywordToken),
         typeof(NeverKeywordToken),
         typeof(ReturnKeywordToken),
@@ -134,6 +136,12 @@ public static partial class TokenFactory
 
     public static IOffsetKeywordToken OffsetKeyword(TextSpan span)
         => new OffsetKeywordToken(span);
+
+    public static INIntKeywordToken NIntKeyword(TextSpan span)
+        => new NIntKeywordToken(span);
+
+    public static INUIntKeywordToken NUIntKeyword(TextSpan span)
+        => new NUIntKeywordToken(span);
 
     public static IBoolKeywordToken BoolKeyword(TextSpan span)
         => new BoolKeywordToken(span);
@@ -314,6 +322,8 @@ public static partial class TokenFactory
     typeof(IUInt64KeywordToken),
     typeof(ISizeKeywordToken),
     typeof(IOffsetKeywordToken),
+    typeof(INIntKeywordToken),
+    typeof(INUIntKeywordToken),
     typeof(IBoolKeywordToken),
     typeof(INeverKeywordToken),
     typeof(IReturnKeywordToken),
@@ -518,6 +528,24 @@ public partial interface IOffsetKeywordToken : IKeywordToken { }
 internal partial class OffsetKeywordToken : Token, IOffsetKeywordToken
 {
     public OffsetKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface INIntKeywordToken : IKeywordToken { }
+internal partial class NIntKeywordToken : Token, INIntKeywordToken
+{
+    public NIntKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface INUIntKeywordToken : IKeywordToken { }
+internal partial class NUIntKeywordToken : Token, INUIntKeywordToken
+{
+    public NUIntKeywordToken(TextSpan span)
         : base(span)
     {
     }

@@ -38,6 +38,8 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     public static readonly ValueType<FixedSizeIntegerType> UInt64 = DeclaredType.UInt64.Type;
     public static readonly ValueType<PointerSizedIntegerType> Size = DeclaredType.Size.Type;
     public static readonly ValueType<PointerSizedIntegerType> Offset = DeclaredType.Offset.Type;
+    public static readonly ValueType<PointerSizedIntegerType> NInt = DeclaredType.NInt.Type;
+    public static readonly ValueType<PointerSizedIntegerType> NUInt = DeclaredType.NUInt.Type;
 
     /// <summary>
     /// The value `none` has this type, which is `never?`.

@@ -659,6 +659,9 @@ public class BasicBodyAnalyzer
                                 // Even if unsigned before, it is signed now
                                 expType = DataType.Int;
                                 break;
+                            case ValueType<PointerSizedIntegerType> pointerSizedIntegerType:
+                                expType = pointerSizedIntegerType.DeclaredType.WithSign().Type;
+                                break;
                             case UnknownType:
                                 expType = DataType.Unknown;
                                 break;

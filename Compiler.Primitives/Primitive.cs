@@ -52,6 +52,8 @@ public static class Primitive
 
         BuildIntegerTypeSymbol(tree, DeclaredType.Size, stringType);
         BuildIntegerTypeSymbol(tree, DeclaredType.Offset, stringType);
+        BuildIntegerTypeSymbol(tree, DeclaredType.NInt, stringType);
+        BuildIntegerTypeSymbol(tree, DeclaredType.NUInt, stringType);
 
         BuildEmptyTypeSymbol(tree, DataType.Void);
         BuildEmptyTypeSymbol(tree, DataType.Never);

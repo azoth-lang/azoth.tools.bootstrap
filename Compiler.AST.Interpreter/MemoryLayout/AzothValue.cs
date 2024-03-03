@@ -41,6 +41,8 @@ internal readonly struct AzothValue
     public ulong U64Value => value.Simple.U64Value;
     public nint OffsetValue => value.Simple.OffsetValue;
     public nuint SizeValue => value.Simple.SizeValue;
+    public nint NIntValue => value.Simple.NIntValue;
+    public nuint NUIntValue => value.Simple.NUIntValue;
 
     #region Static Factory Methods/Properties
     public static readonly AzothValue None = new();
@@ -61,6 +63,8 @@ internal readonly struct AzothValue
     public static AzothValue U64(ulong value) => new(value);
     public static AzothValue Offset(nint value) => new(value);
     public static AzothValue Size(nuint value) => new(value);
+    public static AzothValue NInt(nint value) => new(value);
+    public static AzothValue NUInt(nuint value) => new(value);
     #endregion
 
     #region Private Constructors
@@ -204,6 +208,8 @@ internal readonly struct AzothValue
         //[FieldOffset(0)] public double F64Value;
         [FieldOffset(0)] public nint OffsetValue;
         [FieldOffset(0)] public nuint SizeValue;
+        [FieldOffset(0)] public nint NIntValue;
+        [FieldOffset(0)] public nuint NUIntValue;
     }
 
     private struct SimpleValueType

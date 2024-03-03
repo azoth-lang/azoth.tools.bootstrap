@@ -19,7 +19,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(IInt64KeywordToken),
     typeof(IUInt64KeywordToken),
     typeof(ISizeKeywordToken),
-    typeof(IOffsetKeywordToken)
+    typeof(IOffsetKeywordToken),
+    typeof(INIntKeywordToken),
+    typeof(INUIntKeywordToken)
 //typeof(IFloat32KeywordToken),
 //typeof(IFloat64KeywordToken)
 )]
@@ -42,6 +44,7 @@ public partial interface IInt64KeywordToken : IPrimitiveTypeToken { }
 public partial interface IUInt64KeywordToken : IPrimitiveTypeToken { }
 public partial interface ISizeKeywordToken : IPrimitiveTypeToken { }
 public partial interface IOffsetKeywordToken : IPrimitiveTypeToken { }
-
+public partial interface INIntKeywordToken : IPrimitiveTypeToken { }
+public partial interface INUIntKeywordToken : IPrimitiveTypeToken { }
 //public partial interface IFloat32KeywordToken : IPrimitiveTypeToken { }
 //public partial interface IFloat64KeywordToken : IPrimitiveTypeToken { }

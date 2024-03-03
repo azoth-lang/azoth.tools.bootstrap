@@ -836,6 +836,8 @@ public class InterpreterProcess
         if (type == DataType.UInt64) return AzothValue.U64(left.U64Value + right.U64Value);
         if (type == DataType.Offset) return AzothValue.Offset(left.OffsetValue + right.OffsetValue);
         if (type == DataType.Size) return AzothValue.Size(left.SizeValue + right.SizeValue);
+        if (type == DataType.NInt) return AzothValue.NInt(left.NIntValue + right.NIntValue);
+        if (type == DataType.NUInt) return AzothValue.NUInt(left.NUIntValue + right.NUIntValue);
         throw new NotImplementedException($"Add {type.ToILString()}");
     }
 
@@ -860,6 +862,8 @@ public class InterpreterProcess
         if (type == DataType.UInt64) return AzothValue.U64(left.U64Value - right.U64Value);
         if (type == DataType.Offset) return AzothValue.Offset(left.OffsetValue - right.OffsetValue);
         if (type == DataType.Size) return AzothValue.Size(left.SizeValue - right.SizeValue);
+        if (type == DataType.NInt) return AzothValue.NInt(left.NIntValue - right.NIntValue);
+        if (type == DataType.NUInt) return AzothValue.NUInt(left.NUIntValue - right.NUIntValue);
         throw new NotImplementedException($"Subtract {type.ToILString()}");
     }
 
@@ -883,6 +887,8 @@ public class InterpreterProcess
         if (type == DataType.UInt64) return AzothValue.U64(left.U64Value * right.U64Value);
         if (type == DataType.Offset) return AzothValue.Offset(left.OffsetValue * right.OffsetValue);
         if (type == DataType.Size) return AzothValue.Size(left.SizeValue * right.SizeValue);
+        if (type == DataType.NInt) return AzothValue.NInt(left.NIntValue * right.NIntValue);
+        if (type == DataType.NUInt) return AzothValue.NUInt(left.NUIntValue * right.NUIntValue);
         throw new NotImplementedException($"Multiply {type.ToILString()}");
     }
 
@@ -906,6 +912,8 @@ public class InterpreterProcess
         if (type == DataType.UInt64) return AzothValue.U64(left.U64Value / right.U64Value);
         if (type == DataType.Offset) return AzothValue.Offset(left.OffsetValue / right.OffsetValue);
         if (type == DataType.Size) return AzothValue.Size(left.SizeValue / right.SizeValue);
+        if (type == DataType.NInt) return AzothValue.NInt(left.NIntValue / right.NIntValue);
+        if (type == DataType.NUInt) return AzothValue.NUInt(left.NUIntValue / right.NUIntValue);
         throw new NotImplementedException($"Divide {type.ToILString()}");
     }
 
@@ -941,6 +949,8 @@ public class InterpreterProcess
         if (type == DataType.UInt64) return left.U64Value.Equals(right.U64Value);
         if (type == DataType.Offset) return left.OffsetValue.Equals(right.OffsetValue);
         if (type == DataType.Size) return left.SizeValue.Equals(right.SizeValue);
+        if (type == DataType.NInt) return left.NIntValue.Equals(right.NIntValue);
+        if (type == DataType.NUInt) return left.NUIntValue.Equals(right.NUIntValue);
         if (type is ReferenceType { IsIdentityReference: true })
             return ReferenceEquals(left.ObjectValue, right.ObjectValue);
         throw new NotImplementedException($"Compare equality of `{type.ToILString()}`.");
@@ -977,6 +987,8 @@ public class InterpreterProcess
         if (type == DataType.UInt64) return left.U64Value.CompareTo(right.U64Value);
         if (type == DataType.Offset) return left.OffsetValue.CompareTo(right.OffsetValue);
         if (type == DataType.Size) return left.SizeValue.CompareTo(right.SizeValue);
+        if (type == DataType.NInt) return left.NIntValue.CompareTo(right.NIntValue);
+        if (type == DataType.NUInt) return left.NUIntValue.CompareTo(right.NUIntValue);
         throw new NotImplementedException($"Compare `{type.ToILString()}`.");
     }
 
@@ -989,6 +1001,8 @@ public class InterpreterProcess
         if (dataType == DataType.Int16) return AzothValue.I16((short)-value.I16Value);
         if (dataType == DataType.Int32) return AzothValue.I32(-value.I32Value);
         if (dataType == DataType.Int64) return AzothValue.I64(-value.I64Value);
+        if (dataType == DataType.Offset) return AzothValue.Offset(-value.OffsetValue);
+        if (dataType == DataType.NInt) return AzothValue.NInt(-value.NIntValue);
         if (dataType is IntegerConstValueType) return AzothValue.Int(-value.IntValue);
         throw new NotImplementedException($"Negate {dataType.ToILString()}");
     }
@@ -1013,6 +1027,8 @@ public class InterpreterProcess
         if (type == DataType.UInt64) return AzothValue.U64(dividend.U64Value % divisor.U64Value);
         if (type == DataType.Offset) return AzothValue.Offset(dividend.OffsetValue % divisor.OffsetValue);
         if (type == DataType.Size) return AzothValue.Size(dividend.SizeValue % divisor.SizeValue);
+        if (type == DataType.NInt) return AzothValue.Offset(dividend.NIntValue % divisor.NIntValue);
+        if (type == DataType.NUInt) return AzothValue.Size(dividend.NUIntValue % divisor.NUIntValue);
         throw new NotImplementedException($"Remainder {type.ToILString()}");
     }
 
@@ -1026,6 +1042,8 @@ public class InterpreterProcess
         else if (type == DataType.UInt32) displayString = value.U32Value.ToString();
         else if (type == DataType.Offset) displayString = value.OffsetValue.ToString();
         else if (type == DataType.Size) displayString = value.SizeValue.ToString();
+        else if (type == DataType.NInt) displayString = value.NIntValue.ToString();
+        else if (type == DataType.NUInt) displayString = value.NUIntValue.ToString();
         else throw new NotImplementedException($"to_display_string({type.ToILString()})");
 
         return await ConstructStringAsync(displayString).ConfigureAwait(false);
