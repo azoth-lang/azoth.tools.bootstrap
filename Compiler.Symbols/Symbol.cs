@@ -22,6 +22,10 @@ public abstract class Symbol : IEquatable<Symbol>
     /// <see cref="PackageSymbol"/>.
     /// </summary>
     public abstract Symbol? ContainingSymbol { get; }
+    /// <summary>
+    /// The type symbol, if any, that acts as the context for this symbol.
+    /// </summary>
+    public abstract TypeSymbol? ContextTypeSymbol { get; }
     public abstract TypeName? Name { get; }
 
     private protected Symbol()

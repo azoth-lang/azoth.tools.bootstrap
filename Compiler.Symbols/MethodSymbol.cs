@@ -10,6 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class MethodSymbol : InvocableSymbol
 {
     public override TypeSymbol ContainingSymbol { get; }
+    public override TypeSymbol ContextTypeSymbol => ContainingSymbol;
     public override SimpleName Name { get; }
     public SelfParameter SelfParameterType { get; }
 

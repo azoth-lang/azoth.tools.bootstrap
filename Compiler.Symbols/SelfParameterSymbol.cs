@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class SelfParameterSymbol : BindingSymbol
 {
     public override InvocableSymbol ContainingSymbol { get; }
-
+    public override TypeSymbol? ContextTypeSymbol => null;
     public override Pseudotype Type { get; }
 
     public SelfParameterSymbol(InvocableSymbol containingSymbol, bool isLent, Pseudotype type)

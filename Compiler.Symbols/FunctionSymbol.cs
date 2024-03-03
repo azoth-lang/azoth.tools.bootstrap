@@ -11,6 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class FunctionSymbol : FunctionOrInitializerSymbol
 {
     public override Symbol ContainingSymbol { get; }
+    public override TypeSymbol? ContextTypeSymbol => null;
     public override SimpleName Name { get; }
     public FunctionType Type { get; }
 

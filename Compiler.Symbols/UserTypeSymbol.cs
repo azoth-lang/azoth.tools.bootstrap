@@ -11,6 +11,7 @@ public sealed class UserTypeSymbol : TypeSymbol
 {
     public override PackageSymbol Package { get; }
     public override NamespaceOrPackageSymbol ContainingSymbol { get; }
+    public override TypeSymbol? ContextTypeSymbol => null;
     public override StandardTypeName Name { get; }
     public IDeclaredUserType DeclaresType { get; }
 

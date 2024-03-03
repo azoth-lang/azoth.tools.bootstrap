@@ -1354,7 +1354,6 @@ public class BasicBodyAnalyzer
                     break;
                 }
 
-                if (exp.Name == "test") Debugger.Break();
                 var functionOrInitializerSymbols = LookupSymbols<FunctionOrInitializerSymbol>(exp);
                 functionType = InferSymbol(invocation, functionOrInitializerSymbols, args, flow);
                 break;

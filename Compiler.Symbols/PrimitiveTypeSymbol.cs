@@ -8,6 +8,7 @@ public sealed class PrimitiveTypeSymbol : TypeSymbol
 {
     public override PackageSymbol? Package => null;
     public override Symbol? ContainingSymbol => null;
+    public override TypeSymbol? ContextTypeSymbol => null;
     public override SpecialTypeName Name { get; }
     public DeclaredType DeclaresType { get; }
 

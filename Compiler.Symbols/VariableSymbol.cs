@@ -27,6 +27,7 @@ public sealed class VariableSymbol : NamedBindingSymbol
         => new(containingSymbol, isMutableBinding, isLentBinding, name, declarationNumber, dataType, true);
 
     public override InvocableSymbol ContainingSymbol { get; }
+    public override TypeSymbol? ContextTypeSymbol => null;
     public int? DeclarationNumber { get; }
     public bool IsParameter { get; }
     public bool IsLocal => !IsParameter;

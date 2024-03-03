@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// Unnamed initializers show up as invocable symbols alongside their contain type.</remarks>
 public sealed class InitializerSymbol : FunctionOrInitializerSymbol
 {
-    public UserTypeSymbol ContainingTypeSymbol { get; }
+    public override UserTypeSymbol ContextTypeSymbol { get; }
     public override Symbol ContainingSymbol { get; }
     public SimpleName? InitializerName { get; }
     public ValueType SelfParameterType { get; }
@@ -28,7 +28,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
             new Return(((StructType)containingTypeSymbol.DeclaresType).ToInitializerReturn(selfParameterType, parameterTypes)))
     {
         bool isNamed = initializerName is not null;
-        ContainingTypeSymbol = containingTypeSymbol;
+        ContextTypeSymbol = containingTypeSymbol;
         ContainingSymbol = isNamed ? containingTypeSymbol : containingTypeSymbol.ContainingSymbol;
         InitializerName = initializerName;
         SelfParameterType = selfParameterType;
@@ -45,17 +45,18 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is InitializerSymbol otherInitializer
-            && ContainingTypeSymbol == otherInitializer.ContainingTypeSymbol
+            && ContextTypeSymbol == otherInitializer.ContextTypeSymbol
             && InitializerName == otherInitializer.InitializerName
             && Parameters.SequenceEqual(otherInitializer.Parameters);
     }
 
-    public override int GetHashCode() => HashCode.Combine(ContainingTypeSymbol, InitializerName, Parameters);
+    public override int GetHashCode()
+        => HashCode.Combine(ContextTypeSymbol, InitializerName, Parameters);
 
     public override string ToILString()
     {
         var name = InitializerName is null ? $".{InitializerName}" : "";
         var selfParameterType = new Parameter(false, SelfParameterType);
-        return $"{ContainingTypeSymbol}::init{name}({string.Join(", ", Parameters.Prepend(selfParameterType).Select(d => d.ToILString()))})";
+        return $"{ContextTypeSymbol}::init{name}({string.Join(", ", Parameters.Prepend(selfParameterType).Select(d => d.ToILString()))})";
     }
 }

@@ -6,10 +6,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class FieldSymbol : NamedBindingSymbol
 {
-    public override TypeSymbol ContainingSymbol { get; }
+    public override UserTypeSymbol ContainingSymbol { get; }
+    public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
 
     public FieldSymbol(
-        TypeSymbol containingSymbol,
+        UserTypeSymbol containingSymbol,
         SimpleName name,
         bool isMutableBinding,
         DataType dataType)

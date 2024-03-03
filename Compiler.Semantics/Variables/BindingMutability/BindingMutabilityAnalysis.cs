@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.BindingMutability;
 
@@ -34,28 +35,51 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<BindingFlags>
         var definitelyUnassigned = BindingFlags.ForVariablesAndFields(declaration, symbolTree, true);
         if (declaration is IInvocableDeclaration invocable)
         {
-            // All parameters are assigned
+            // All named parameters are assigned
             var namedParameters = invocable.Parameters.OfType<INamedParameter>();
             var parameterSymbols = namedParameters.Select(p => p.Symbol);
             definitelyUnassigned = definitelyUnassigned.Set(parameterSymbols, false);
+            // All field parameters assign their fields
+            var fieldParameters = invocable.Parameters.OfType<IFieldParameter>();
+            var fieldSymbols = fieldParameters.Select(p => p.ReferencedSymbol);
+            definitelyUnassigned = definitelyUnassigned.Set(fieldSymbols, false);
 
-            if (invocable is IConcreteMethodDeclaration method)
+            switch (invocable)
             {
-                // self parameter is assigned
-                var selfParameterSymbol = method.SelfParameter.Symbol;
-                definitelyUnassigned = definitelyUnassigned.Set(selfParameterSymbol, false);
-                // fields are assigned
-                var typeSymbol = method.DeclaringType.Symbol;
-                var fieldSymbols = symbolTree.GetChildrenOf(typeSymbol).OfType<FieldSymbol>();
-                definitelyUnassigned = definitelyUnassigned.Set(fieldSymbols, false);
-            }
-            if (invocable is IConstructorDeclaration constructor)
-            {
-                // self parameter is assigned
-                var selfParameterSymbol = constructor.SelfParameter.Symbol;
-                definitelyUnassigned = definitelyUnassigned.Set(selfParameterSymbol, false);
-                // fields are not assigned
-                // TODO does this depend on field initializers
+                default:
+                    throw ExhaustiveMatch.Failed(invocable);
+                case IConcreteMethodDeclaration method:
+                {
+                    // self parameter is assigned
+                    var selfParameterSymbol = method.SelfParameter.Symbol;
+                    definitelyUnassigned = definitelyUnassigned.Set(selfParameterSymbol, false);
+                    // fields are assigned
+                    var typeSymbol = method.DeclaringType.Symbol;
+                    fieldSymbols = symbolTree.GetChildrenOf(typeSymbol).OfType<FieldSymbol>();
+                    definitelyUnassigned = definitelyUnassigned.Set(fieldSymbols, false);
+                    break;
+                }
+                case IConstructorDeclaration constructor:
+                {
+                    // self parameter is assigned
+                    var selfParameterSymbol = constructor.SelfParameter.Symbol;
+                    definitelyUnassigned = definitelyUnassigned.Set(selfParameterSymbol, false);
+                    // fields are not assigned
+                    // TODO does this depend on field initializers
+                    break;
+                }
+                case IInitializerDeclaration initializer:
+                {
+                    // self parameter is assigned
+                    var selfParameterSymbol = initializer.SelfParameter.Symbol;
+                    definitelyUnassigned = definitelyUnassigned.Set(selfParameterSymbol, false);
+                    // fields are not assigned
+                    // TODO does this depend on field initializers
+                    break;
+                }
+                case IConcreteFunctionInvocableDeclaration _:
+                    // No extra work to do
+                    break;
             }
         }
         return definitelyUnassigned;

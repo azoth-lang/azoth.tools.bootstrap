@@ -9,6 +9,7 @@ public sealed class GenericParameterTypeSymbol : TypeSymbol
     private readonly IPromise<UserTypeSymbol> containingSymbol;
     public override PackageSymbol Package => ContainingSymbol.Package ?? throw new ArgumentNullException();
     public override UserTypeSymbol ContainingSymbol => containingSymbol.Result;
+    public override UserTypeSymbol ContextTypeSymbol => containingSymbol.Result;
     public GenericParameterType DeclaresType { get; }
 
     public GenericParameterTypeSymbol(

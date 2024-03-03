@@ -13,6 +13,7 @@ public class PackageSymbol : NamespaceOrPackageSymbol
 {
     public override PackageSymbol Package => this;
     public override Symbol? ContainingSymbol => null;
+    public override TypeSymbol? ContextTypeSymbol => null;
 
     public PackageSymbol(SimpleName name)
         : base(null!, null, name) { }

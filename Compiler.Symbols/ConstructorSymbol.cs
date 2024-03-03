@@ -11,6 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class ConstructorSymbol : InvocableSymbol
 {
     public override UserTypeSymbol ContainingSymbol { get; }
+    public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public override SimpleName? Name { get; }
     public ReferenceType SelfParameterType { get; }
     public ReferenceType ReturnType { get; }

@@ -8,6 +8,7 @@ public sealed class EmptyTypeSymbol : TypeSymbol
 {
     public override PackageSymbol? Package => null;
     public override Symbol? ContainingSymbol => null;
+    public override TypeSymbol? ContextTypeSymbol => null;
     public override SpecialTypeName Name { get; }
     public EmptyType DeclaresType { get; }
 

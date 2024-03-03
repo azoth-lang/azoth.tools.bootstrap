@@ -451,7 +451,7 @@ public class InterpreterProcess
             {
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
                 var initializerSymbol = exp.ReferencedSymbol;
-                var @struct = (IStructDeclaration)classesOrStructs[initializerSymbol.ContainingTypeSymbol];
+                var @struct = (IStructDeclaration)classesOrStructs[initializerSymbol.ContextTypeSymbol];
                 return await InitializeStruct(@struct, initializerSymbol, arguments).ConfigureAwait(false);
             }
             case IBoolLiteralExpression exp:
