@@ -31,8 +31,8 @@ public class BindingFlags
     {
         var executableSymbol = declaration.Symbol;
         var variables = symbolTree.GetChildrenOf(executableSymbol).Cast<BindingSymbol>();
-        var fields = executableSymbol.ContainingSymbol is ObjectTypeSymbol containingObjectTypeSymbol
-            ? symbolTree.GetChildrenOf(containingObjectTypeSymbol).OfType<FieldSymbol>()
+        var fields = executableSymbol.ContainingSymbol is UserTypeSymbol containingUserTypeSymbol
+            ? symbolTree.GetChildrenOf(containingUserTypeSymbol).OfType<FieldSymbol>()
             : Enumerable.Empty<FieldSymbol>();
         var symbolMap = variables.Concat(fields).Enumerate().ToFixedDictionary();
         var flags = new BitArray(symbolMap.Count, defaultValue);

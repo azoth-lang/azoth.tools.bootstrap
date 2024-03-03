@@ -20,7 +20,7 @@ internal static class BindingSymbolExtensions
     public static bool SharingIsTracked(this Pseudotype pseudotype)
     {
         // ObjectTypeConstraints need tracked because they act like read only references
-        if (pseudotype is ObjectTypeConstraint) return true;
+        if (pseudotype is CapabilityTypeConstraint) return true;
         // If it isn't a reference type, then no need to track it (all current value types are `const`)
         if (pseudotype is not ReferenceType { Capability: var capability })
             return false;

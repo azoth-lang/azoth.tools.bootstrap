@@ -100,10 +100,10 @@ public class TypeResolver
                         && referentType is GenericParameterType genericParameterType)
                     return syn.NamedType = CapabilityViewpointType.Create(capability, genericParameterType);
 
-                if (selfType is ObjectTypeConstraint { Capability: var capabilityConstraint })
+                if (selfType is CapabilityTypeConstraint { Capability: var capabilityConstraint })
                     return syn.NamedType = new SelfViewpointType(capabilityConstraint, referentType);
 
-                if (selfType is not (ReferenceType or ObjectTypeConstraint))
+                if (selfType is not (ReferenceType or CapabilityTypeConstraint))
                     diagnostics.Add(TypeError.SelfViewpointNotAvailable(file, syn));
 
                 if (referentType is not GenericParameterType)
@@ -118,7 +118,7 @@ public class TypeResolver
             return symbol switch
             {
                 PrimitiveTypeSymbol sym => sym.DeclaresType.WithRead(typeArguments),
-                ObjectTypeSymbol sym => sym.DeclaresType.WithRead(typeArguments),
+                UserTypeSymbol sym => sym.DeclaresType.WithRead(typeArguments),
                 GenericParameterTypeSymbol sym => sym.DeclaresType,
                 EmptyTypeSymbol sym => sym.DeclaresType,
                 _ => throw ExhaustiveMatch.Failed(symbol)
@@ -175,7 +175,7 @@ public class TypeResolver
                     // is done on the capability type syntax.
                     return declaredType.With(capability, typeArguments);
                 }
-                case ObjectTypeSymbol sym:
+                case UserTypeSymbol sym:
                     var declaredObjectType = sym.DeclaresType;
                     // Compatibility of the capability with the type is not checked here. That
                     // is done on the capability type syntax.
@@ -237,7 +237,7 @@ public class TypeResolver
                     var declaredType = sym.DeclaresType;
                     return declaredType.With(typeArguments);
                 }
-                case ObjectTypeSymbol sym:
+                case UserTypeSymbol sym:
                     var declaredObjectType = sym.DeclaresType;
                     return CheckTypeArgumentsAreConstructable(declaredObjectType.With(typeArguments), typeSyntax);
                 case GenericParameterTypeSymbol _:

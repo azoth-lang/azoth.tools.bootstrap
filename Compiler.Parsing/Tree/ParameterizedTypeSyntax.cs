@@ -48,7 +48,7 @@ internal class ParameterizedTypeSyntax : TypeSyntax, IParameterizedTypeSyntax
         var name = withAttributeSuffix ? Name.WithAttributeSuffix() : Name;
         if (name is null) return Enumerable.Empty<IPromise<TypeSymbol>>();
 
-        return containingLexicalScope.Lookup(name).Select(p => p.Downcast().As<ObjectTypeSymbol>())
+        return containingLexicalScope.Lookup(name).Select(p => p.Downcast().As<UserTypeSymbol>())
                                      .WhereNotNull();
     }
 

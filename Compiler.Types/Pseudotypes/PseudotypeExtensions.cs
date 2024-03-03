@@ -9,28 +9,28 @@ public static class PseudotypeExtensions
         return (target, source) switch
         {
             (DataType targetType, DataType sourceType) => DataTypeExtensions.IsAssignableFrom(targetType, sourceType),
-            (ObjectTypeConstraint targetType, ReferenceType sourceType) => targetType.IsAssignableFrom(sourceType),
-            (ObjectTypeConstraint targetType, ObjectTypeConstraint sourceType) => targetType.IsAssignableFrom(sourceType),
+            (CapabilityTypeConstraint targetType, ReferenceType sourceType) => targetType.IsAssignableFrom(sourceType),
+            (CapabilityTypeConstraint targetType, CapabilityTypeConstraint sourceType) => targetType.IsAssignableFrom(sourceType),
             _ => false,
         };
     }
 
-    public static bool IsAssignableFrom(this ObjectTypeConstraint target, Pseudotype source)
+    public static bool IsAssignableFrom(this CapabilityTypeConstraint target, Pseudotype source)
     {
         return source switch
         {
             ReferenceType objectType => target.IsAssignableFrom(objectType),
-            ObjectTypeConstraint objectTypeConstraint => target.IsAssignableFrom(objectTypeConstraint),
+            CapabilityTypeConstraint objectTypeConstraint => target.IsAssignableFrom(objectTypeConstraint),
             DataType _ => false,
             _ => throw ExhaustiveMatch.Failed(source),
         };
     }
 
-    public static bool IsAssignableFrom(this ObjectTypeConstraint target, ReferenceType source)
+    public static bool IsAssignableFrom(this CapabilityTypeConstraint target, ReferenceType source)
         => target.BareType.IsAssignableFrom(target.Capability.AnyCapabilityAllowsWrite, source.BareType)
            && target.Capability.IsAssignableFrom(source.Capability);
 
-    public static bool IsAssignableFrom(this ObjectTypeConstraint target, ObjectTypeConstraint source)
+    public static bool IsAssignableFrom(this CapabilityTypeConstraint target, CapabilityTypeConstraint source)
         => target.BareType.IsAssignableFrom(target.Capability.AnyCapabilityAllowsWrite, source.BareType)
            && target.Capability.IsAssignableFrom(source.Capability);
 
@@ -39,8 +39,8 @@ public static class PseudotypeExtensions
         return source switch
         {
             DataType sourceType => target.IsAssignableFrom(sourceType),
-            ObjectTypeConstraint constrainedObjectType
-                => target.BareType.IsAssignableFrom(target.AllowsWrite, constrainedObjectType.BareType),
+            CapabilityTypeConstraint capabilityTypeConstraint
+                => target.BareType.IsAssignableFrom(target.AllowsWrite, capabilityTypeConstraint.BareType),
             _ => throw ExhaustiveMatch.Failed(source)
         };
     }

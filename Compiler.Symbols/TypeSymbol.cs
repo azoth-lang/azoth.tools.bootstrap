@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 [Closed(
     typeof(EmptyTypeSymbol),
     typeof(PrimitiveTypeSymbol),
-    typeof(ObjectTypeSymbol),
+    typeof(UserTypeSymbol),
     typeof(GenericParameterTypeSymbol))]
 public abstract class TypeSymbol : Symbol
 {

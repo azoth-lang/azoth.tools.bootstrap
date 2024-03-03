@@ -24,7 +24,7 @@ public static partial class TypeOperations
             // TODO does the viewpoint or constraint need to be checked?
             CapabilityType t => t.BareType.IsVarianceSafe(variance),
             ViewpointType t => t.Referent.IsVarianceSafe(variance),
-            ObjectTypeConstraint t => t.BareType.IsVarianceSafe(variance),
+            CapabilityTypeConstraint t => t.BareType.IsVarianceSafe(variance),
             EmptyType _ => true,
             UnknownType _ => true,
             ConstValueType _ => true,

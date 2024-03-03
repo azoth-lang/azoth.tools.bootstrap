@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -9,25 +10,25 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class ConstructorSymbol : InvocableSymbol
 {
-    public override ObjectTypeSymbol ContainingSymbol { get; }
+    public override UserTypeSymbol ContainingSymbol { get; }
     public ReferenceType SelfParameterType { get; }
     public ReferenceType ReturnType { get; }
 
     public ConstructorSymbol(
-        ObjectTypeSymbol containingSymbol,
+        UserTypeSymbol containingSymbol,
         SimpleName? name,
         ReferenceType selfParameterType,
         IFixedList<Parameter> parameterTypes)
         : base(containingSymbol, name, parameterTypes,
-            new Return(containingSymbol.DeclaresType.ToConstructorReturn(selfParameterType, parameterTypes)))
+            new Return(((ObjectType)containingSymbol.DeclaresType).ToConstructorReturn(selfParameterType, parameterTypes)))
     {
         ContainingSymbol = containingSymbol;
         SelfParameterType = selfParameterType;
         ReturnType = (ReferenceType)base.Return.Type;
     }
 
-    public static ConstructorSymbol CreateDefault(ObjectTypeSymbol containingSymbol)
-        => new(containingSymbol, null, containingSymbol.DeclaresType.ToDefaultConstructorSelf(), FixedList.Empty<Parameter>());
+    public static ConstructorSymbol CreateDefault(UserTypeSymbol containingSymbol)
+        => new(containingSymbol, null, ((ObjectType)containingSymbol.DeclaresType).ToDefaultConstructorSelf(), FixedList.Empty<Parameter>());
 
     public override bool Equals(Symbol? other)
     {

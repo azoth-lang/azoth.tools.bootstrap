@@ -3,7 +3,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
-[Closed(typeof(DataType), typeof(ObjectTypeConstraint))]
+[Closed(typeof(DataType), typeof(CapabilityTypeConstraint))]
 public abstract class Pseudotype
 {
     /// <summary>

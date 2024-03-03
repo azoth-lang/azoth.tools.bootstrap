@@ -15,7 +15,7 @@ internal class ClassDeclaration : TypeDeclaration<IClassMemberDeclaration>, ICla
     public ClassDeclaration(
         CodeFile file,
         TextSpan span,
-        ObjectTypeSymbol symbol,
+        UserTypeSymbol symbol,
         TextSpan nameSpan,
         IClassDeclaration? baseClass,
         IFixedList<ITypeDeclaration> supertypes,

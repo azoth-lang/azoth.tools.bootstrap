@@ -52,7 +52,7 @@ internal class TypeSymbolInheritor
         processed[typeDeclaration] = true;
     }
 
-    private void AddInheritedSymbols(ObjectTypeSymbol typeSymbol, ITypeNameSyntax supertypeName)
+    private void AddInheritedSymbols(UserTypeSymbol typeSymbol, ITypeNameSyntax supertypeName)
     {
         var supertypeSymbol = supertypeName.ReferencedSymbol.Result;
         if (supertypeSymbol is null)
@@ -64,7 +64,7 @@ internal class TypeSymbolInheritor
         AddInheritedSymbols(typeSymbol, supertypeSymbol);
     }
 
-    private void AddInheritedSymbols(ObjectTypeSymbol typeSymbol, TypeSymbol baseSymbol)
+    private void AddInheritedSymbols(UserTypeSymbol typeSymbol, TypeSymbol baseSymbol)
     {
         var existingMembers = symbolTree.GetChildrenOf(typeSymbol).ToFixedSet();
         foreach (var symbol in symbolTrees.Children(baseSymbol))

@@ -119,20 +119,33 @@ public partial interface INonMemberDeclaration : IDeclaration
 }
 
 [Closed(
-    typeof(IClassDeclaration),
+    typeof(IClassOrStructDeclaration),
     typeof(ITraitDeclaration))]
 public partial interface ITypeDeclaration : INonMemberDeclaration
 {
-    new ObjectTypeSymbol Symbol { get; }
+    new UserTypeSymbol Symbol { get; }
     IFixedList<ITypeDeclaration> Supertypes { get; }
     IFixedList<IMemberDeclaration> Members { get; }
 }
 
-public partial interface IClassDeclaration : ITypeDeclaration
+[Closed(
+    typeof(IClassDeclaration),
+    typeof(IStructDeclaration))]
+public partial interface IClassOrStructDeclaration : ITypeDeclaration
+{
+}
+
+public partial interface IClassDeclaration : IClassOrStructDeclaration
 {
     IClassDeclaration? BaseClass { get; }
     new IFixedList<IClassMemberDeclaration> Members { get; }
     ConstructorSymbol? DefaultConstructorSymbol { get; }
+}
+
+public partial interface IStructDeclaration : IClassOrStructDeclaration
+{
+    InitializerSymbol? DefaultInitializerSymbol { get; }
+    new IFixedList<IStructMemberDeclaration> Members { get; }
 }
 
 public partial interface ITraitDeclaration : ITypeDeclaration
@@ -148,6 +161,7 @@ public partial interface IFunctionDeclaration : INonMemberDeclaration, IConcrete
 
 [Closed(
     typeof(IClassMemberDeclaration),
+    typeof(IStructMemberDeclaration),
     typeof(ITraitMemberDeclaration))]
 public partial interface IMemberDeclaration : IDeclaration
 {
@@ -160,6 +174,14 @@ public partial interface IMemberDeclaration : IDeclaration
     typeof(IFieldDeclaration),
     typeof(IAssociatedFunctionDeclaration))]
 public partial interface IClassMemberDeclaration : IMemberDeclaration
+{
+}
+
+[Closed(
+    typeof(IConcreteMethodDeclaration),
+    typeof(IFieldDeclaration),
+    typeof(IAssociatedFunctionDeclaration))]
+public partial interface IStructMemberDeclaration : IMemberDeclaration
 {
 }
 
@@ -184,7 +206,7 @@ public partial interface IAbstractMethodDeclaration : IMethodDeclaration
 {
 }
 
-public partial interface IConcreteMethodDeclaration : IMethodDeclaration, IConcreteInvocableDeclaration
+public partial interface IConcreteMethodDeclaration : IMethodDeclaration, IStructMemberDeclaration, IConcreteInvocableDeclaration
 {
     new MethodSymbol Symbol { get; }
     new IFixedList<INamedParameter> Parameters { get; }
@@ -197,13 +219,13 @@ public partial interface IConstructorDeclaration : IClassMemberDeclaration, ICon
     ISelfParameter SelfParameter { get; }
 }
 
-public partial interface IFieldDeclaration : IClassMemberDeclaration, IExecutableDeclaration, IBinding
+public partial interface IFieldDeclaration : IClassMemberDeclaration, IStructMemberDeclaration, IExecutableDeclaration, IBinding
 {
-    new IClassDeclaration DeclaringType { get; }
+    new IClassOrStructDeclaration DeclaringType { get; }
     new FieldSymbol Symbol { get; }
 }
 
-public partial interface IAssociatedFunctionDeclaration : IClassMemberDeclaration, ITraitMemberDeclaration, IConcreteFunctionInvocableDeclaration
+public partial interface IAssociatedFunctionDeclaration : IClassMemberDeclaration, IStructMemberDeclaration, ITraitMemberDeclaration, IConcreteFunctionInvocableDeclaration
 {
     new FunctionSymbol Symbol { get; }
 }

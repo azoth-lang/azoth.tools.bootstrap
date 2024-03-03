@@ -18,12 +18,12 @@ public static partial class TypeOperations
     public static bool CanBeLent(this Pseudotype type)
         => type switch
         {
-            ObjectTypeConstraint t => t.CanBeLent(),
+            CapabilityTypeConstraint t => t.CanBeLent(),
             DataType t => t.CanBeLent(),
             _ => throw ExhaustiveMatch.Failed(type)
         };
 
-    public static bool CanBeLent(this ObjectTypeConstraint type)
+    public static bool CanBeLent(this CapabilityTypeConstraint type)
         => type.Capability.CanBeLent() || type.BareType.ArgumentsCanBeLent();
 
     public static bool CanBeLent(this DataType type)

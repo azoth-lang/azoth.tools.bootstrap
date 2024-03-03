@@ -13,7 +13,7 @@ internal class TraitDeclaration : TypeDeclaration<ITraitMemberDeclaration>, ITra
     public TraitDeclaration(
         CodeFile file,
         TextSpan span,
-        ObjectTypeSymbol symbol,
+        UserTypeSymbol symbol,
         TextSpan nameSpan,
         IFixedList<ITypeDeclaration> supertypes,
         Func<ITraitDeclaration, IFixedList<ITraitMemberDeclaration>> buildMembers)

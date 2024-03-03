@@ -33,8 +33,10 @@ ConcreteFunctionInvocableDeclaration: ConcreteInvocableDeclaration = Symbol:'Fun
 
 // ---------- Non-Member Declarations
 NonMemberDeclaration: Declaration;
-TypeDeclaration: NonMemberDeclaration = Symbol:'ObjectTypeSymbol' Supertypes:TypeDeclaration* Members:MemberDeclaration*;
-ClassDeclaration: TypeDeclaration = BaseClass:ClassDeclaration? Supertypes:TypeDeclaration* Members:ClassMemberDeclaration* DefaultConstructorSymbol:'ConstructorSymbol'?;
+TypeDeclaration: NonMemberDeclaration = Symbol:'UserTypeSymbol' Supertypes:TypeDeclaration* Members:MemberDeclaration*;
+ClassOrStructDeclaration: TypeDeclaration;
+ClassDeclaration: ClassOrStructDeclaration = BaseClass:ClassDeclaration? Supertypes:TypeDeclaration* Members:ClassMemberDeclaration* DefaultConstructorSymbol:'ConstructorSymbol'?;
+StructDeclaration: ClassOrStructDeclaration = Supertypes:TypeDeclaration* DefaultInitializerSymbol:'InitializerSymbol'? Members:StructMemberDeclaration*;
 TraitDeclaration: TypeDeclaration = Supertypes:TypeDeclaration* Members:TraitMemberDeclaration*;
 FunctionDeclaration: NonMemberDeclaration, ConcreteFunctionInvocableDeclaration = Attributes:Attribute* Symbol:'FunctionSymbol' Parameters:NamedParameter* Body;
 
@@ -42,13 +44,14 @@ FunctionDeclaration: NonMemberDeclaration, ConcreteFunctionInvocableDeclaration 
 // Note: by declaring the DeclaringType property type with quotes, it avoids the system assuming it must represent a child node
 MemberDeclaration: Declaration = DeclaringType:'ITypeDeclaration';
 ClassMemberDeclaration: MemberDeclaration;
+StructMemberDeclaration: MemberDeclaration;
 TraitMemberDeclaration: MemberDeclaration;
 MethodDeclaration: ClassMemberDeclaration, TraitMemberDeclaration = Symbol:'MethodSymbol' SelfParameter Parameters:NamedParameter*;
 AbstractMethodDeclaration: MethodDeclaration = SelfParameter Parameters:NamedParameter*;
-ConcreteMethodDeclaration: MethodDeclaration, ConcreteInvocableDeclaration = Symbol:'MethodSymbol' SelfParameter Parameters:NamedParameter* Body;
+ConcreteMethodDeclaration: MethodDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration = Symbol:'MethodSymbol' SelfParameter Parameters:NamedParameter* Body;
 ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclaration' Symbol:'ConstructorSymbol' SelfParameter Parameters:ConstructorParameter* Body;
-FieldDeclaration: ClassMemberDeclaration, ExecutableDeclaration, Binding = DeclaringType:'IClassDeclaration' Symbol:'FieldSymbol';
-AssociatedFunctionDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, ConcreteFunctionInvocableDeclaration = Symbol:'FunctionSymbol' Parameters:NamedParameter* Body;
+FieldDeclaration: ClassMemberDeclaration, StructMemberDeclaration, ExecutableDeclaration, Binding = DeclaringType:'IClassOrStructDeclaration' Symbol:'FieldSymbol';
+AssociatedFunctionDeclaration: ClassMemberDeclaration, StructMemberDeclaration, TraitMemberDeclaration, ConcreteFunctionInvocableDeclaration = Symbol:'FunctionSymbol' Parameters:NamedParameter* Body;
 
 // ---------- Attributes
 Attribute = ReferencedSymbol:'TypeSymbol';

@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
-public sealed class ObjectTypeConstraint : Pseudotype
+public sealed class CapabilityTypeConstraint : Pseudotype
 {
     public BareType BareType { get; }
 
@@ -11,7 +11,7 @@ public sealed class ObjectTypeConstraint : Pseudotype
 
     public CapabilitySet Capability { get; }
 
-    public ObjectTypeConstraint(CapabilitySet capability, BareType bareType)
+    public CapabilityTypeConstraint(CapabilitySet capability, BareType bareType)
     {
         Capability = capability;
         BareType = bareType;

@@ -57,6 +57,7 @@ internal class ASTBuilder
         return entity switch
         {
             IClassDeclarationSyntax syn => BuildClass(syn, declarations),
+            IStructDeclarationSyntax syn => BuildStruct(syn, declarations),
             ITraitDeclarationSyntax syn => BuildTrait(syn, declarations),
             IFunctionDeclarationSyntax syn => BuildFunction(syn),
             _ => throw ExhaustiveMatch.Failed(entity)
@@ -79,6 +80,23 @@ internal class ASTBuilder
             => syn.Members.Select(m => BuildClassMember(c, m)).ToFixedList();
     }
 
+    private static IStructDeclaration BuildStruct(
+        IStructDeclarationSyntax syn,
+        IReadOnlyDictionary<Symbol, Lazy<INonMemberDeclaration>> declarations)
+    {
+        var symbol = syn.Symbol.Result;
+        var nameSpan = syn.NameSpan;
+        var supertypes = syn.SupertypeNames
+                            .Select(n => (ITypeDeclaration)declarations[n.ReferencedSymbol.Result!].Value)
+                            .ToFixedList();
+        var defaultInitializerSymbol = syn.DefaultInitializerSymbol;
+        return new StructDeclaration(syn.File, syn.Span, symbol, nameSpan, supertypes,
+            defaultInitializerSymbol, BuildMembers);
+
+        IFixedList<IStructMemberDeclaration> BuildMembers(IStructDeclaration s)
+            => syn.Members.Select(m => BuildStructMember(s, m)).ToFixedList();
+    }
+
     private static ITraitDeclaration BuildTrait(
         ITraitDeclarationSyntax syn,
         IReadOnlyDictionary<Symbol, Lazy<INonMemberDeclaration>> declarations)
@@ -94,7 +112,7 @@ internal class ASTBuilder
 
     private static IClassMemberDeclaration BuildClassMember(
         IClassDeclaration declaringClass,
-        IMemberDeclarationSyntax member)
+        IClassMemberDeclarationSyntax member)
     {
         return member switch
         {
@@ -103,6 +121,19 @@ internal class ASTBuilder
             IConcreteMethodDeclarationSyntax syn => BuildConcreteMethod(declaringClass, syn),
             IConstructorDeclarationSyntax syn => BuildConstructor(declaringClass, syn),
             IFieldDeclarationSyntax syn => BuildField(declaringClass, syn),
+            _ => throw ExhaustiveMatch.Failed(member)
+        };
+    }
+
+    private static IStructMemberDeclaration BuildStructMember(
+        IStructDeclaration declaringStruct,
+        IStructMemberDeclarationSyntax member)
+    {
+        return member switch
+        {
+            IAssociatedFunctionDeclarationSyntax syn => BuildAssociatedFunction(declaringStruct, syn),
+            IConcreteMethodDeclarationSyntax syn => BuildConcreteMethod(declaringStruct, syn),
+            IFieldDeclarationSyntax syn => BuildField(declaringStruct, syn),
             _ => throw ExhaustiveMatch.Failed(member)
         };
     }
@@ -167,12 +198,12 @@ internal class ASTBuilder
     }
 
     private static IFieldDeclaration BuildField(
-        IClassDeclaration declaringClass,
+        IClassOrStructDeclaration declaringType,
         IFieldDeclarationSyntax syn)
     {
         var symbol = syn.Symbol.Result;
         var nameSpan = syn.NameSpan;
-        return new FieldDeclaration(syn.File, syn.Span, declaringClass, symbol, nameSpan);
+        return new FieldDeclaration(syn.File, syn.Span, declaringType, symbol, nameSpan);
     }
 
     private static IFunctionDeclaration BuildFunction(IFunctionDeclarationSyntax syn)
@@ -463,6 +494,8 @@ internal class ASTBuilder
                 var qualifiedName = (IQualifiedNameExpressionSyntax)syn.Expression;
                 var context = BuildExpression(qualifiedName.Context);
                 return new MethodInvocationExpression(syn.Span, type, semantics, context, method, arguments);
+            case InitializerSymbol initializer:
+                throw new NotImplementedException("Initializer invocation not yet implemented.");
             case BindingSymbol _:
                 throw new InvalidOperationException("Invocation expression cannot invoke a binding symbol.");
             case TypeSymbol _:

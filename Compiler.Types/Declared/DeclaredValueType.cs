@@ -4,7 +4,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
-[Closed(typeof(SimpleType))]
+[Closed(typeof(SimpleType), typeof(StructType))]
 public abstract class DeclaredValueType : DeclaredType
 {
     private protected DeclaredValueType(bool isConstType, IFixedList<GenericParameterType> genericParametersTypes)

@@ -6,13 +6,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class GenericParameterTypeSymbol : TypeSymbol
 {
-    private readonly IPromise<ObjectTypeSymbol> containingSymbol;
+    private readonly IPromise<UserTypeSymbol> containingSymbol;
     public override PackageSymbol Package => ContainingSymbol.Package ?? throw new ArgumentNullException();
-    public override ObjectTypeSymbol ContainingSymbol => containingSymbol.Result;
+    public override UserTypeSymbol ContainingSymbol => containingSymbol.Result;
     public GenericParameterType DeclaresType { get; }
 
     public GenericParameterTypeSymbol(
-        IPromise<ObjectTypeSymbol> containingSymbol,
+        IPromise<UserTypeSymbol> containingSymbol,
         GenericParameterType declaresType)
         : base(declaresType.Name)
     {

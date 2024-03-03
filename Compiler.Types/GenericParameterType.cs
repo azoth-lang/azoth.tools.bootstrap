@@ -13,8 +13,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class GenericParameterType : NonEmptyType
 {
-    public Promise<ObjectType> DeclaringTypePromise { get; }
-    public ObjectType DeclaringType => DeclaringTypePromise.Result;
+    public Promise<IDeclaredUserType> DeclaringTypePromise { get; }
+    public IDeclaredUserType DeclaringType => DeclaringTypePromise.Result;
 
     public GenericParameter Parameter { get; }
 
@@ -25,7 +25,7 @@ public sealed class GenericParameterType : NonEmptyType
     // TODO the type semantics isn't actually known because it is generic
     public override TypeSemantics Semantics => TypeSemantics.CopyValue;
 
-    public GenericParameterType(Promise<ObjectType> declaringTypePromise, GenericParameter parameter)
+    public GenericParameterType(Promise<IDeclaredUserType> declaringTypePromise, GenericParameter parameter)
     {
         DeclaringTypePromise = declaringTypePromise;
         Parameter = parameter;

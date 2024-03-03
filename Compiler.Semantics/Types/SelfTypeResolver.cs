@@ -23,14 +23,14 @@ public class SelfTypeResolver
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
     public Pseudotype EvaluateMethodSelfParameterType(
-        ObjectType objectType,
+        IDeclaredUserType userType,
         ICapabilityConstraintSyntax capability,
         IFixedList<DataType> typeArguments)
     {
         return capability switch
         {
-            ICapabilitySyntax syn => objectType.With(syn.Declared.ToCapability(), typeArguments),
-            ICapabilitySetSyntax syn => objectType.With(syn.Constraint, typeArguments),
+            ICapabilitySyntax syn => userType.With(syn.Declared.ToCapability(), typeArguments),
+            ICapabilitySetSyntax syn => userType.With(syn.Constraint, typeArguments),
             _ => throw ExhaustiveMatch.Failed(capability)
         };
     }

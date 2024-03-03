@@ -35,15 +35,15 @@ public class BasicAnalyzer
 {
     private readonly ISymbolTreeBuilder symbolTreeBuilder;
     private readonly SymbolForest symbolTrees;
-    private readonly ObjectTypeSymbol? stringSymbol;
-    private readonly ObjectTypeSymbol? rangeSymbol;
+    private readonly UserTypeSymbol? stringSymbol;
+    private readonly UserTypeSymbol? rangeSymbol;
     private readonly Diagnostics diagnostics;
 
     private BasicAnalyzer(
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        ObjectTypeSymbol? stringSymbol,
-        ObjectTypeSymbol? rangeSymbol,
+        UserTypeSymbol? stringSymbol,
+        UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics)
     {
         this.symbolTreeBuilder = symbolTreeBuilder;
@@ -55,8 +55,8 @@ public class BasicAnalyzer
 
     public static void Check(
         PackageSyntax<Package> package,
-        ObjectTypeSymbol? stringSymbol,
-        ObjectTypeSymbol? rangeSymbol)
+        UserTypeSymbol? stringSymbol,
+        UserTypeSymbol? rangeSymbol)
     {
         // Analyze standard code (*.az)
         var analyzer = new BasicAnalyzer(package.SymbolTree, package.SymbolTrees, stringSymbol, rangeSymbol, package.Diagnostics);
@@ -79,10 +79,13 @@ public class BasicAnalyzer
         {
             default:
                 throw ExhaustiveMatch.Failed(entity);
+            case IClassDeclarationSyntax syn:
+                Resolve(syn);
+                break;
             case ITraitDeclarationSyntax syn:
                 Resolve(syn);
                 break;
-            case IClassDeclarationSyntax syn:
+            case IStructDeclarationSyntax syn:
                 Resolve(syn);
                 break;
             case IMethodDeclarationSyntax syn:
@@ -107,7 +110,7 @@ public class BasicAnalyzer
     {
         // TODO error for duplicates
         foreach (var supertype in type.SupertypeNames)
-            if (supertype.ReferencedSymbol.Result is not ObjectTypeSymbol)
+            if (supertype.ReferencedSymbol.Result is not UserTypeSymbol)
                 diagnostics.Add(OtherSemanticError.SupertypeMustBeClassOrTrait(type.File, type.Name, supertype));
     }
 
@@ -131,17 +134,11 @@ public class BasicAnalyzer
         }
     }
 
-    private void Resolve(ITraitDeclarationSyntax trait)
-    {
-        ResolveSupertypes(trait);
-        CheckSupertypesAreOutputSafe(trait, trait.SupertypeNames);
-    }
-
     private void Resolve(IClassDeclarationSyntax @class)
     {
         if (@class.BaseTypeName is not null)
             // TODO error for duplicates
-            if (@class.BaseTypeName.ReferencedSymbol.Result is not ObjectTypeSymbol { DeclaresType.IsClass: true })
+            if (@class.BaseTypeName.ReferencedSymbol.Result is not UserTypeSymbol { DeclaresType.IsClass: true })
                 diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(@class.File, @class.Name, @class.BaseTypeName));
 
         ResolveSupertypes(@class);
@@ -164,6 +161,18 @@ public class BasicAnalyzer
         }
     }
 
+    private void Resolve(IStructDeclarationSyntax @struct)
+    {
+        ResolveSupertypes(@struct);
+        CheckSupertypesAreOutputSafe(@struct, @struct.SupertypeNames);
+    }
+
+    private void Resolve(ITraitDeclarationSyntax trait)
+    {
+        ResolveSupertypes(trait);
+        CheckSupertypesAreOutputSafe(trait, trait.SupertypeNames);
+    }
+
     private void Resolve(IMethodDeclarationSyntax method)
     {
         var concreteClass = method.DeclaringType is IClassDeclarationSyntax { IsAbstract: false };
@@ -177,7 +186,7 @@ public class BasicAnalyzer
         var selfType = selfParameterType.Type;
         if (inConstClass &&
            ((selfType is CapabilityType { Capability: var selfCapability } && selfCapability != Capability.Constant && selfCapability != Capability.Identity)
-           || selfType is ObjectTypeConstraint))
+           || selfType is CapabilityTypeConstraint))
             diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(method.File, method.SelfParameter));
 
         CheckParameterAndReturnAreVarianceSafe(method);
@@ -190,7 +199,7 @@ public class BasicAnalyzer
 
         var methodSymbol = method.Symbol.Result;
         // Only methods declared in generic types need checked
-        if (methodSymbol.ContainingSymbol is not ObjectTypeSymbol { DeclaresType.IsGeneric: true })
+        if (methodSymbol.ContainingSymbol is not UserTypeSymbol { DeclaresType.IsGeneric: true })
             return;
 
         // The `self` parameter does not get checked for variance safety. It will always operate on

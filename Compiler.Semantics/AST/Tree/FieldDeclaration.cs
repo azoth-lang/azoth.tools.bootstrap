@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal class FieldDeclaration : Declaration, IFieldDeclaration
 {
-    public IClassDeclaration DeclaringType { get; }
+    public IClassOrStructDeclaration DeclaringType { get; }
     ITypeDeclaration IMemberDeclaration.DeclaringType => DeclaringType;
     public new FieldSymbol Symbol { get; }
     BindingSymbol IBinding.Symbol => Symbol;
@@ -14,13 +14,13 @@ internal class FieldDeclaration : Declaration, IFieldDeclaration
     public FieldDeclaration(
         CodeFile file,
         TextSpan span,
-        IClassDeclaration declaringClass,
+        IClassOrStructDeclaration declaringType,
         FieldSymbol symbol,
         TextSpan nameSpan)
         : base(file, span, symbol, nameSpan)
     {
         Symbol = symbol;
-        DeclaringType = declaringClass;
+        DeclaringType = declaringType;
     }
 
     public override string ToString() => Symbol + ";";

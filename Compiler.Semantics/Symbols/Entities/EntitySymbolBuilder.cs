@@ -172,6 +172,9 @@ public class EntitySymbolBuilder
             case IClassDeclarationSyntax @class:
                 BuildClassSymbol(@class, typeDeclarations);
                 break;
+            case IStructDeclarationSyntax @struct:
+                BuildStructSymbol(@struct, typeDeclarations);
+                break;
             case ITraitDeclarationSyntax trait:
                 BuildTraitSymbol(trait, typeDeclarations);
                 break;
@@ -190,7 +193,7 @@ public class EntitySymbolBuilder
         var classType = ObjectType.CreateClass(packageName, @class.ContainingNamespaceName,
             @class.IsAbstract, @class.IsConst, @class.Name, typeParameters, superTypes);
 
-        var classSymbol = new ObjectTypeSymbol(@class.ContainingNamespaceSymbol, classType);
+        var classSymbol = new UserTypeSymbol(@class.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(classSymbol);
 
         BuildSupertypes(@class, superTypes, typeDeclarations);
@@ -207,6 +210,36 @@ public class EntitySymbolBuilder
         }
     }
 
+    private void BuildStructSymbol(IStructDeclarationSyntax @struct, TypeSymbolBuilder typeDeclarations)
+    {
+        if (!@struct.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
+
+        var packageName = @struct.ContainingNamespaceSymbol.Package.Name;
+        var typeParameters = BuildGenericParameterTypes(@struct);
+        var genericParameterSymbols = BuildGenericParameterSymbols(@struct, typeParameters).ToFixedList();
+
+        var superTypes = new AcyclicPromise<FixedSet<BareReferenceType>>();
+        var structType = StructType.Create(packageName, @struct.ContainingNamespaceName,
+            @struct.IsConst, @struct.Name, typeParameters, superTypes);
+
+        var classSymbol = new UserTypeSymbol(@struct.ContainingNamespaceSymbol, structType);
+        @struct.Symbol.Fulfill(classSymbol);
+
+        BuildSupertypes(@struct, superTypes, typeDeclarations);
+
+        symbolTree.Add(classSymbol);
+
+        symbolTree.Add(genericParameterSymbols);
+        @struct.CreateDefaultInitializer(symbolTree);
+        return;
+
+        void AddCircularDefinitionError()
+        {
+            diagnostics.Add(OtherSemanticError.CircularDefinition(@struct.File, @struct.NameSpan, @struct));
+        }
+    }
+
+
     private void BuildTraitSymbol(ITraitDeclarationSyntax trait, TypeSymbolBuilder typeDeclarations)
     {
         if (!trait.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
@@ -219,7 +252,7 @@ public class EntitySymbolBuilder
         var traitType = ObjectType.CreateTrait(packageName, trait.ContainingNamespaceName,
             trait.IsConst, trait.Name, typeParameters, superTypes);
 
-        var traitSymbol = new ObjectTypeSymbol(trait.ContainingNamespaceSymbol, traitType);
+        var traitSymbol = new UserTypeSymbol(trait.ContainingNamespaceSymbol, traitType);
         trait.Symbol.Fulfill(traitSymbol);
 
         BuildSupertypes(trait, superTypes, typeDeclarations);
@@ -237,7 +270,7 @@ public class EntitySymbolBuilder
 
     private static IFixedList<GenericParameterType> BuildGenericParameterTypes(ITypeDeclarationSyntax type)
     {
-        var declaredType = new Promise<ObjectType>();
+        var declaredType = new Promise<IDeclaredUserType>();
         return type.GenericParameters
                    .Select(p => new GenericParameterType(declaredType, new GenericParameter(p.Constraint.Constraint, p.Name, p.ParameterVariance)))
                    .ToFixedList();
@@ -402,7 +435,7 @@ public class EntitySymbolBuilder
         IConstructorSelfParameterSyntax selfParameter,
         IClassDeclarationSyntax declaringClass)
     {
-        var declaredType = declaringClass.Symbol.Result.DeclaresType;
+        var declaredType = (ObjectType)declaringClass.Symbol.Result.DeclaresType;
         var resolver = new SelfTypeResolver(declaringClass.File, diagnostics);
         return resolver.EvaluateConstructorSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterTypes);
     }

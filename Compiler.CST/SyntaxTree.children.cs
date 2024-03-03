@@ -39,6 +39,14 @@ public static class ISyntaxExtensions
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
+            case IStructDeclarationSyntax n:
+                foreach (var child in n.GenericParameters)
+                    yield return child;
+                foreach (var child in n.SupertypeNames)
+                    yield return child;
+                foreach (var child in n.Members)
+                    yield return child;
+                yield break;
             case ITraitDeclarationSyntax n:
                 foreach (var child in n.GenericParameters)
                     yield return child;

@@ -21,7 +21,7 @@ public class SymbolTests : SymbolTestFixture
         var ns = Namespace();
         var type = ObjectType.CreateClass(ns.Package!.Name, ns.Name, isAbstract: false,
             isConst: false, "My_Class");
-        var symbol = new ObjectTypeSymbol(ns, type);
+        var symbol = new UserTypeSymbol(ns, type);
 
         Assert.False(symbol.IsGlobal);
     }

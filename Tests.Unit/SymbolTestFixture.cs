@@ -63,7 +63,7 @@ public abstract class SymbolTestFixture
 
     protected MethodSymbol Method(
         string? name = null,
-        ObjectTypeSymbol? containing = null,
+        UserTypeSymbol? containing = null,
         SelfParameter? self = null,
         IFixedList<Parameter>? @params = null,
         Return? @return = null)
@@ -80,7 +80,7 @@ public abstract class SymbolTestFixture
     protected static MethodSymbol Method(
         MethodSymbol mother,
         string? name = null,
-        ObjectTypeSymbol? containing = null,
+        UserTypeSymbol? containing = null,
         SelfParameter? self = null,
         IFixedList<Parameter>? @params = null,
         Return? @return = null)
@@ -120,11 +120,11 @@ public abstract class SymbolTestFixture
         return new Return(DataType(name, containingPackage, containingNamespace, isConst, referenceCapability));
     }
 
-    protected ObjectTypeSymbol Type(
+    protected UserTypeSymbol Type(
         NamespaceOrPackageSymbol? ns = null,
         ObjectType? dataType = null)
     {
-        return new ObjectTypeSymbol(
+        return new UserTypeSymbol(
             ns ?? Package(),
             dataType ?? DataType().DeclaredType);
     }

@@ -47,16 +47,16 @@ internal sealed class TypeReplacements
         return pseudotype switch
         {
             DataType type => ReplaceTypeParametersIn(type),
-            ObjectTypeConstraint type => ReplaceTypeParametersIn(type),
+            CapabilityTypeConstraint type => ReplaceTypeParametersIn(type),
             _ => throw ExhaustiveMatch.Failed(pseudotype)
         };
     }
 
-    public ObjectTypeConstraint ReplaceTypeParametersIn(ObjectTypeConstraint pseudotype)
+    public CapabilityTypeConstraint ReplaceTypeParametersIn(CapabilityTypeConstraint pseudotype)
     {
         var replacementType = ReplaceTypeParametersIn(pseudotype.BareType);
         if (!ReferenceEquals(pseudotype.BareType, replacementType))
-            return new ObjectTypeConstraint(pseudotype.Capability, replacementType);
+            return new CapabilityTypeConstraint(pseudotype.Capability, replacementType);
         return pseudotype;
     }
 

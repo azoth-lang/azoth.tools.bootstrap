@@ -42,8 +42,8 @@ public class BasicBodyAnalyzer
     private readonly InvocableSymbol containingSymbol;
     private readonly ISymbolTreeBuilder symbolTreeBuilder;
     private readonly SymbolForest symbolTrees;
-    private readonly ObjectTypeSymbol? stringSymbol;
-    private readonly ObjectTypeSymbol? rangeSymbol;
+    private readonly UserTypeSymbol? stringSymbol;
+    private readonly UserTypeSymbol? rangeSymbol;
     private readonly Diagnostics diagnostics;
     private readonly Return? returnType;
     private readonly TypeResolver typeResolver;
@@ -53,8 +53,8 @@ public class BasicBodyAnalyzer
         IFunctionDeclarationSyntax containingDeclaration,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        ObjectTypeSymbol? stringSymbol,
-        ObjectTypeSymbol? rangeSymbol,
+        UserTypeSymbol? stringSymbol,
+        UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return @return)
         : this(containingDeclaration, null, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
@@ -64,8 +64,8 @@ public class BasicBodyAnalyzer
         IAssociatedFunctionDeclarationSyntax containingDeclaration,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        ObjectTypeSymbol? stringSymbol,
-        ObjectTypeSymbol? rangeSymbol,
+        UserTypeSymbol? stringSymbol,
+        UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return @return)
         : this(containingDeclaration, null, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
@@ -76,8 +76,8 @@ public class BasicBodyAnalyzer
         IConstructorDeclarationSyntax containingDeclaration,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        ObjectTypeSymbol? stringSymbol,
-        ObjectTypeSymbol? rangeSymbol,
+        UserTypeSymbol? stringSymbol,
+        UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return @return)
         : this(containingDeclaration, containingDeclaration.SelfParameter.DataType.Result,
@@ -91,8 +91,8 @@ public class BasicBodyAnalyzer
         IConcreteMethodDeclarationSyntax containingDeclaration,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        ObjectTypeSymbol? stringSymbol,
-        ObjectTypeSymbol? rangeSymbol,
+        UserTypeSymbol? stringSymbol,
+        UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return @return)
         : this(containingDeclaration, containingDeclaration.SelfParameter.DataType.Result,
@@ -104,8 +104,8 @@ public class BasicBodyAnalyzer
         IFieldDeclarationSyntax containingDeclaration,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        ObjectTypeSymbol? stringSymbol,
-        ObjectTypeSymbol? rangeSymbol,
+        UserTypeSymbol? stringSymbol,
+        UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics)
         : this(containingDeclaration, null, Enumerable.Empty<BindingSymbol>(),
             symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, null)
@@ -117,8 +117,8 @@ public class BasicBodyAnalyzer
         IEnumerable<BindingSymbol> parameterSymbols,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        ObjectTypeSymbol? stringSymbol,
-        ObjectTypeSymbol? rangeSymbol,
+        UserTypeSymbol? stringSymbol,
+        UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return? returnType)
     {
@@ -888,7 +888,7 @@ public class BasicBodyAnalyzer
                 exp.Semantics = type.Semantics.ToExpressionSemantics(referenceSemantics);
                 exp.DataType = type;
                 // Works for `readable` but won't work for any future capability constraints
-                exp.Pseudotype = selfSymbol?.Type is ObjectTypeConstraint ? selfSymbol.Type : type;
+                exp.Pseudotype = selfSymbol?.Type is CapabilityTypeConstraint ? selfSymbol.Type : type;
                 return new ExpressionResult(exp, variableResult);
             }
             case INoneLiteralExpressionSyntax exp:
@@ -937,7 +937,7 @@ public class BasicBodyAnalyzer
             {
                 var result = InferType(exp.Expression, flow);
                 if (result.Type is not ReferenceType { DeclaredType: { } declaredType } promiseType
-                    || declaredType != Intrinsic.PromiseType)
+                    || !declaredType.Equals(Intrinsic.PromiseType))
                 {
                     diagnostics.Add(TypeError.CannotAwaitType(file, exp.Span, result.Type));
                     exp.Semantics = ExpressionSemantics.CopyValue;
@@ -1659,6 +1659,7 @@ public class BasicBodyAnalyzer
                 throw ExhaustiveMatch.Failed(containingSymbol);
             case MethodSymbol _:
             case ConstructorSymbol _:
+            case InitializerSymbol _:
                 var symbols = LookupSymbols<SelfParameterSymbol>(containingSymbol);
                 return InferSymbol(selfExpression, symbols);
             case FunctionSymbol _:
@@ -2095,7 +2096,7 @@ public class BasicBodyAnalyzer
         return pseudotype switch
         {
             DataType t => LookupSymbolForType(t),
-            ObjectTypeConstraint t => LookupSymbolForType(t.BareType.DeclaredType),
+            CapabilityTypeConstraint t => LookupSymbolForType(t.BareType.DeclaredType),
             _ => throw ExhaustiveMatch.Failed(pseudotype)
         };
     }
@@ -2138,7 +2139,7 @@ public class BasicBodyAnalyzer
         return type switch
         {
             AnyType t => LookupSymbolForType(t),
-            ObjectType t => LookupSymbolForType(t),
+            ObjectType t => LookupSymbolForType((IDeclaredUserType)t),
             _ => throw ExhaustiveMatch.Failed(type),
         };
     }
@@ -2148,6 +2149,7 @@ public class BasicBodyAnalyzer
         return type switch
         {
             SimpleType t => LookupSymbolForType(t),
+            StructType t => LookupSymbolForType((IDeclaredUserType)t),
             _ => throw ExhaustiveMatch.Failed(type),
         };
     }
@@ -2160,14 +2162,12 @@ public class BasicBodyAnalyzer
         => symbolTrees.PrimitiveSymbolTree.GlobalSymbols.OfType<PrimitiveTypeSymbol>()
                       .Single(s => s.DeclaresType == type);
 
-    private TypeSymbol LookupSymbolForType(ObjectType type)
+    private TypeSymbol LookupSymbolForType(IDeclaredUserType type)
     {
         var contextSymbols = symbolTrees.Packages.SafeCast<Symbol>();
         foreach (var name in type.ContainingNamespace.Segments)
-        {
             contextSymbols = contextSymbols.SelectMany(c => symbolTrees.Children(c))
                                            .Where(s => s.Name == name);
-        }
 
         return contextSymbols.SelectMany(symbolTrees.Children).OfType<TypeSymbol>()
                              .Single(s => s.Name == type.Name);

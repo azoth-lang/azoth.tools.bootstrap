@@ -70,7 +70,7 @@ public class SemanticAnalyzer
         EntitySymbolBuilder.BuildFor(packageSyntax);
 
 
-        var globalObjectTypeSymbols = packageSyntax.SymbolTrees.GlobalSymbols.OfType<ObjectTypeSymbol>().ToFixedList();
+        var globalObjectTypeSymbols = packageSyntax.SymbolTrees.GlobalSymbols.OfType<UserTypeSymbol>().ToFixedList();
         // TODO handle `String` better
         var stringSymbol = globalObjectTypeSymbols.SingleOrDefault(s => s.Name == "String");
         // TODO handle `range` better

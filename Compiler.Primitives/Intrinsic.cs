@@ -16,15 +16,15 @@ public static class Intrinsic
 {
     public static readonly FixedSymbolTree SymbolTree = DefineIntrinsicSymbols();
 
-    public static readonly ObjectTypeSymbol Promise = Find<ObjectTypeSymbol>("Promise");
+    public static readonly UserTypeSymbol Promise = Find<UserTypeSymbol>("Promise");
 
-    public static readonly ObjectType PromiseType = Promise.DeclaresType;
+    public static readonly IDeclaredUserType PromiseType = Promise.DeclaresType;
 
-    public static ReferenceType PromiseOf(DataType type)
+    public static CapabilityType PromiseOf(DataType type)
         => PromiseType.WithRead(FixedList.Create(type));
 
-    public static readonly ObjectTypeSymbol RawHybridBoundedList
-        = Find<ObjectTypeSymbol>("Raw_Hybrid_Bounded_List");
+    public static readonly UserTypeSymbol RawHybridBoundedList
+        = Find<UserTypeSymbol>("Raw_Hybrid_Bounded_List");
 
     public static readonly ConstructorSymbol NewRawBoundedList
         = Find<ConstructorSymbol>(RawHybridBoundedList, null);
@@ -91,8 +91,6 @@ public static class Intrinsic
             Params(readBytesType, DataType.Size, DataType.Size), Return.Never);
         tree.Add(abort);
 
-
-
         return tree.Build();
     }
 
@@ -108,7 +106,7 @@ public static class Intrinsic
         var intrinsicsPackage = azothNamespace.Package;
         var promiseType = ObjectType.CreateClass(intrinsicsPackage.Name, azothNamespace.NamespaceName,
                        isAbstract: false, isConst: false, "Promise", GenericParameter.Out(CapabilitySet.Any, "T"));
-        var classSymbol = new ObjectTypeSymbol(azothNamespace, promiseType);
+        var classSymbol = new UserTypeSymbol(azothNamespace, promiseType);
         tree.Add(classSymbol);
 
         return promiseType;
@@ -136,7 +134,7 @@ public static class Intrinsic
         var mutClassType = classType.WithMutate(classType.GenericParameterTypes);
         var mutClassParamType = new SelfParameter(false, mutClassType);
         var itemType = classType.GenericParameterTypes[1];
-        var classSymbol = new ObjectTypeSymbol(@namespace, classType);
+        var classSymbol = new UserTypeSymbol(@namespace, classType);
         tree.Add(classSymbol);
 
         // published new(.fixed, .capacity) {...}

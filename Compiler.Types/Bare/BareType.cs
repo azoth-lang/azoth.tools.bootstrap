@@ -65,6 +65,11 @@ public abstract class BareType : IEquatable<BareType>
         IFixedList<DataType> typeArguments)
         => new(declaredType, typeArguments);
 
+    public static BareValueType<StructType> Create(
+        StructType declaredType,
+        IFixedList<DataType> typeArguments)
+        => new(declaredType, typeArguments);
+
     private protected BareType(DeclaredType declaredType, IFixedList<DataType> genericTypeArguments)
     {
         if (declaredType.GenericParameters.Count != genericTypeArguments.Count)
@@ -97,7 +102,7 @@ public abstract class BareType : IEquatable<BareType>
 
     public abstract CapabilityType With(Capability capability);
 
-    public ObjectTypeConstraint With(CapabilitySet capability)
+    public CapabilityTypeConstraint With(CapabilitySet capability)
         => new(capability, this);
 
     #region Equality

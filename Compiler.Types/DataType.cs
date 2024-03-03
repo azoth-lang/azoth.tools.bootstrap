@@ -100,10 +100,10 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
     public DataType AccessedVia(Pseudotype contextType)
     {
-        if (contextType is ReferenceType contextReferenceType)
-            return AccessedVia(contextReferenceType.Capability);
-        if (contextType is ObjectTypeConstraint objectTypeConstraint)
-            return AccessedVia(objectTypeConstraint.Capability);
+        if (contextType is CapabilityType capabilityType)
+            return AccessedVia(capabilityType.Capability);
+        if (contextType is CapabilityTypeConstraint capabilityTypeConstraint)
+            return AccessedVia(capabilityTypeConstraint.Capability);
         return this;
     }
 

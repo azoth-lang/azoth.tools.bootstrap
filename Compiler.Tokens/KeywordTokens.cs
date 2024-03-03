@@ -45,6 +45,7 @@ public static partial class TokenTypes
         typeof(InKeywordToken),
         typeof(IfKeywordToken),
         typeof(ElseKeywordToken),
+        typeof(StructKeywordToken),
         typeof(UnsafeKeywordToken),
         typeof(SafeKeywordToken),
         typeof(SelfKeywordToken),
@@ -194,6 +195,9 @@ public static partial class TokenFactory
     public static IElseKeywordToken ElseKeyword(TextSpan span)
         => new ElseKeywordToken(span);
 
+    public static IStructKeywordToken StructKeyword(TextSpan span)
+        => new StructKeywordToken(span);
+
     public static IUnsafeKeywordToken UnsafeKeyword(TextSpan span)
         => new UnsafeKeywordToken(span);
 
@@ -341,6 +345,7 @@ public static partial class TokenFactory
     typeof(IInKeywordToken),
     typeof(IIfKeywordToken),
     typeof(IElseKeywordToken),
+    typeof(IStructKeywordToken),
     typeof(IUnsafeKeywordToken),
     typeof(ISafeKeywordToken),
     typeof(ISelfKeywordToken),
@@ -699,6 +704,15 @@ public partial interface IElseKeywordToken : IKeywordToken { }
 internal partial class ElseKeywordToken : Token, IElseKeywordToken
 {
     public ElseKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IStructKeywordToken : IKeywordToken { }
+internal partial class StructKeywordToken : Token, IStructKeywordToken
+{
+    public StructKeywordToken(TextSpan span)
         : base(span)
     {
     }

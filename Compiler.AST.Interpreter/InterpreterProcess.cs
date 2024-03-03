@@ -39,7 +39,7 @@ public class InterpreterProcess
     private readonly Task executionTask;
     private readonly FixedDictionary<FunctionSymbol, IConcreteFunctionInvocableDeclaration> functions;
     private readonly FixedDictionary<ConstructorSymbol, IConstructorDeclaration?> constructors;
-    private readonly FixedDictionary<ObjectTypeSymbol, IClassDeclaration> classes;
+    private readonly FixedDictionary<UserTypeSymbol, IClassOrStructDeclaration> classesOrStructs;
     private readonly IClassDeclaration stringClass;
     private readonly IConstructorDeclaration stringConstructor;
     private readonly IClassDeclaration? rangeClass;
@@ -58,11 +58,11 @@ public class InterpreterProcess
                     .OfType<IConcreteFunctionInvocableDeclaration>()
                     .ToFixedDictionary(f => f.Symbol);
 
-        classes = allDeclarations.OfType<IClassDeclaration>()
+        classesOrStructs = allDeclarations.OfType<IClassOrStructDeclaration>()
                                  .ToFixedDictionary(c => c.Symbol);
-        stringClass = classes.Values.Single(c => c.Symbol.Name == "String");
+        stringClass = classesOrStructs.Values.OfType<IClassDeclaration>().Single(c => c.Symbol.Name == "String");
         stringConstructor = stringClass.Members.OfType<IConstructorDeclaration>().Single(c => c.Parameters.Count == 3);
-        rangeClass = classes.Values.SingleOrDefault(c => c.Symbol.Name == "range");
+        rangeClass = classesOrStructs.Values.OfType<IClassDeclaration>().SingleOrDefault(c => c.Symbol.Name == "range");
         rangeConstructor = rangeClass?.Members.OfType<IConstructorDeclaration>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
         var defaultConstructorSymbols = allDeclarations
                                         .OfType<IClassDeclaration>()
@@ -167,7 +167,7 @@ public class InterpreterProcess
 
         // TODO further restrict what can be passed to main
 
-        var @class = classes.Values.Single(c => c.Symbol.DeclaresType == type.DeclaredType);
+        var @class = classesOrStructs.Values.OfType<IClassDeclaration>().Single(c => c.Symbol.DeclaresType.Equals(type.DeclaredType));
         var constructorSymbol = @class.DefaultConstructorSymbol
             ?? @class.Members.OfType<IConstructorDeclaration>().Select(c => c.Symbol)
                      .Single(c => c.Arity == 0);
@@ -581,7 +581,7 @@ public class InterpreterProcess
                 var objectTypeSymbol = constructorSymbol.ContainingSymbol;
                 if (objectTypeSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(constructorSymbol, arguments).ConfigureAwait(false);
-                var @class = classes[objectTypeSymbol];
+                var @class = (IClassDeclaration)classesOrStructs[objectTypeSymbol];
                 return await ConstructClass(@class, constructorSymbol, arguments);
             }
             case ISelfExpression exp:
