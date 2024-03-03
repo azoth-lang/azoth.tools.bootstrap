@@ -25,7 +25,7 @@ internal class ConcreteMethodDeclaration : InvocableDeclaration, IConcreteMethod
         IFixedList<INamedParameter> parameters,
         IBody body)
         : base(file, span, symbol, nameSpan,
-            parameters.ToFixedList<IConstructorParameter>())
+            parameters.ToFixedList<IConstructorOrInitializerParameter>())
     {
         Symbol = symbol;
         Parameters = parameters;

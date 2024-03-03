@@ -21,7 +21,7 @@ internal class AssociatedFunctionDeclaration : InvocableDeclaration, IAssociated
         TextSpan nameSpan,
         IFixedList<INamedParameter> parameters,
         IBody body)
-        : base(file, span, symbol, nameSpan, parameters.ToFixedList<IConstructorParameter>())
+        : base(file, span, symbol, nameSpan, parameters.ToFixedList<IConstructorOrInitializerParameter>())
     {
         Symbol = symbol;
         Parameters = parameters;

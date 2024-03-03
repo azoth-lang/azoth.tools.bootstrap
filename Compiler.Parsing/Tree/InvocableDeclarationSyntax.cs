@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal abstract class InvocableDeclarationSyntax : DeclarationSyntax, IInvocableDeclarationSyntax
 {
     public IAccessModifierToken? AccessModifier { get; }
-    public IFixedList<IConstructorParameterSyntax> Parameters { get; }
+    public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
     public abstract IFixedList<IParameterSyntax> AllParameters { get; }
     public new IPromise<InvocableSymbol> Symbol { get; }
 
@@ -22,7 +22,7 @@ internal abstract class InvocableDeclarationSyntax : DeclarationSyntax, IInvocab
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
         SimpleName? name,
-        IEnumerable<IConstructorParameterSyntax> parameters,
+        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
         IPromise<InvocableSymbol> symbol)
         : base(span, file, name, nameSpan, symbol)
     {

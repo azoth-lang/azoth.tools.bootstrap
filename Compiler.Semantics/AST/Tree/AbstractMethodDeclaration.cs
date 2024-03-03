@@ -22,7 +22,7 @@ internal class AbstractMethodDeclaration : InvocableDeclaration, IAbstractMethod
         TextSpan nameSpan,
         ISelfParameter selfParameter,
         IFixedList<INamedParameter> parameters)
-        : base(file, span, symbol, nameSpan, parameters.ToFixedList<IConstructorParameter>())
+        : base(file, span, symbol, nameSpan, parameters.ToFixedList<IConstructorOrInitializerParameter>())
     {
         Symbol = symbol;
         SelfParameter = selfParameter;

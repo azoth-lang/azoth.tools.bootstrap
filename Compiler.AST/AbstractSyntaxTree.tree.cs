@@ -90,13 +90,14 @@ public partial interface IExecutableDeclaration : IDeclaration
 public partial interface IInvocableDeclaration : IDeclaration
 {
     new InvocableSymbol Symbol { get; }
-    IFixedList<IConstructorParameter> Parameters { get; }
+    IFixedList<IConstructorOrInitializerParameter> Parameters { get; }
 }
 
 [Closed(
     typeof(IConcreteFunctionInvocableDeclaration),
     typeof(IConcreteMethodDeclaration),
-    typeof(IConstructorDeclaration))]
+    typeof(IConstructorDeclaration),
+    typeof(IInitializerDeclaration))]
 public partial interface IConcreteInvocableDeclaration : IInvocableDeclaration, IExecutableDeclaration
 {
     IBody Body { get; }
@@ -179,6 +180,7 @@ public partial interface IClassMemberDeclaration : IMemberDeclaration
 
 [Closed(
     typeof(IConcreteMethodDeclaration),
+    typeof(IInitializerDeclaration),
     typeof(IFieldDeclaration),
     typeof(IAssociatedFunctionDeclaration))]
 public partial interface IStructMemberDeclaration : IMemberDeclaration
@@ -219,6 +221,13 @@ public partial interface IConstructorDeclaration : IClassMemberDeclaration, ICon
     ISelfParameter SelfParameter { get; }
 }
 
+public partial interface IInitializerDeclaration : IStructMemberDeclaration, IConcreteInvocableDeclaration
+{
+    new IStructDeclaration DeclaringType { get; }
+    new InitializerSymbol Symbol { get; }
+    ISelfParameter SelfParameter { get; }
+}
+
 public partial interface IFieldDeclaration : IClassMemberDeclaration, IStructMemberDeclaration, IExecutableDeclaration, IBinding
 {
     new IClassOrStructDeclaration DeclaringType { get; }
@@ -236,7 +245,7 @@ public partial interface IAttribute : IAbstractSyntax
 }
 
 [Closed(
-    typeof(IConstructorParameter),
+    typeof(IConstructorOrInitializerParameter),
     typeof(IBindingParameter),
     typeof(INamedParameter),
     typeof(ISelfParameter),
@@ -249,7 +258,7 @@ public partial interface IParameter : IAbstractSyntax
 [Closed(
     typeof(INamedParameter),
     typeof(IFieldParameter))]
-public partial interface IConstructorParameter : IParameter
+public partial interface IConstructorOrInitializerParameter : IParameter
 {
 }
 
@@ -260,7 +269,7 @@ public partial interface IBindingParameter : IParameter, IBinding
 {
 }
 
-public partial interface INamedParameter : IParameter, IConstructorParameter, IBindingParameter, ILocalBinding
+public partial interface INamedParameter : IParameter, IConstructorOrInitializerParameter, IBindingParameter, ILocalBinding
 {
     new VariableSymbol Symbol { get; }
     IExpression? DefaultValue { get; }
@@ -271,7 +280,7 @@ public partial interface ISelfParameter : IParameter, IBindingParameter
     new SelfParameterSymbol Symbol { get; }
 }
 
-public partial interface IFieldParameter : IParameter, IConstructorParameter
+public partial interface IFieldParameter : IParameter, IConstructorOrInitializerParameter
 {
     FieldSymbol ReferencedSymbol { get; }
     IExpression? DefaultValue { get; }

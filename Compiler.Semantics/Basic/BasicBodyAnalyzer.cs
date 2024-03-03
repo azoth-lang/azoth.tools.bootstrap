@@ -88,6 +88,21 @@ public class BasicBodyAnalyzer
     { }
 
     public BasicBodyAnalyzer(
+        IInitializerDeclarationSyntax containingDeclaration,
+        ISymbolTreeBuilder symbolTreeBuilder,
+        SymbolForest symbolTrees,
+        UserTypeSymbol? stringSymbol,
+        UserTypeSymbol? rangeSymbol,
+        Diagnostics diagnostics,
+        Return @return)
+        : this(containingDeclaration, containingDeclaration.SelfParameter.DataType.Result,
+            containingDeclaration.Parameters.OfType<INamedParameterSyntax>()
+                                 .Select(p => p.Symbol.Result)
+                                 .Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
+            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, @return)
+    { }
+
+    public BasicBodyAnalyzer(
         IConcreteMethodDeclarationSyntax containingDeclaration,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,

@@ -150,4 +150,10 @@ internal static class ParseError
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2022, "Explicit `read` capability should not be used here. Omit capability for implicit read.");
     }
+
+    public static Diagnostic StructMethodMissingBody(CodeFile file, TextSpan span, SimpleName name)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2023, $"Method `{name}` is missing a method body");
+    }
 }

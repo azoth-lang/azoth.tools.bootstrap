@@ -17,6 +17,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 
@@ -73,6 +74,9 @@ public class EntitySymbolBuilder
             case IConstructorDeclarationSyntax constructor:
                 BuildConstructorSymbol(constructor);
                 break;
+            case IInitializerDeclarationSyntax initializer:
+                BuildInitializerSymbol(initializer);
+                break;
             case IAssociatedFunctionDeclarationSyntax associatedFunction:
                 BuildAssociatedFunctionSymbol(associatedFunction);
                 break;
@@ -118,6 +122,22 @@ public class EntitySymbolBuilder
         symbolTree.Add(symbol);
         BuildSelfParameterSymbol(symbol, constructor.SelfParameter, selfParameterType, isConstructor: true);
         BuildParameterSymbols(symbol, file, constructor.Parameters, parameterTypes);
+    }
+
+    private void BuildInitializerSymbol(IInitializerDeclarationSyntax initializer)
+    {
+        initializer.Symbol.BeginFulfilling();
+        var file = initializer.File;
+        var selfParameterType = ResolveInitializerSelfParameterType(initializer.SelfParameter, initializer.DeclaringType);
+        var resolver = new TypeResolver(file, diagnostics, selfParameterType);
+        var parameterTypes = ResolveParameterTypes(resolver, initializer.Parameters, initializer.DeclaringType);
+
+        var declaringStructSymbol = initializer.DeclaringType.Symbol.Result;
+        var symbol = new InitializerSymbol(declaringStructSymbol, initializer.Name, selfParameterType, parameterTypes);
+        initializer.Symbol.Fulfill(symbol);
+        symbolTree.Add(symbol);
+        BuildSelfParameterSymbol(symbol, initializer.SelfParameter, selfParameterType, isConstructor: true);
+        BuildParameterSymbols(symbol, file, initializer.Parameters, parameterTypes);
     }
 
     private void BuildAssociatedFunctionSymbol(IAssociatedFunctionDeclarationSyntax associatedFunction)
@@ -352,7 +372,7 @@ public class EntitySymbolBuilder
 
     private IFixedList<Parameter> ResolveParameterTypes(
         TypeResolver resolver,
-        IEnumerable<IConstructorParameterSyntax> parameters,
+        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
         ITypeDeclarationSyntax declaringType)
     {
         var types = new List<Parameter>();
@@ -393,14 +413,14 @@ public class EntitySymbolBuilder
     private void BuildParameterSymbols(
         InvocableSymbol containingSymbol,
         CodeFile file,
-        IEnumerable<IConstructorParameterSyntax> parameters,
+        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
         IEnumerable<Parameter> parameterTypes)
         => BuildParameterSymbols(containingSymbol, file, parameters, parameterTypes.Select(pt => pt.Type));
 
     private void BuildParameterSymbols(
         InvocableSymbol containingSymbol,
         CodeFile file,
-        IEnumerable<IConstructorParameterSyntax> parameters,
+        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
         IEnumerable<DataType> types)
     {
         foreach (var (param, type) in parameters.Zip(types))
@@ -438,6 +458,16 @@ public class EntitySymbolBuilder
         var declaredType = (ObjectType)declaringClass.Symbol.Result.DeclaresType;
         var resolver = new SelfTypeResolver(declaringClass.File, diagnostics);
         return resolver.EvaluateConstructorSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterTypes);
+    }
+
+    private ValueType ResolveInitializerSelfParameterType(
+        IInitializerSelfParameterSyntax selfParameter,
+        IStructDeclarationSyntax declaringStruct)
+    {
+        var declaredType = (StructType)declaringStruct.Symbol.Result.DeclaresType;
+        var resolver = new SelfTypeResolver(declaringStruct.File, diagnostics);
+        return resolver.EvaluateInitializerSelfParameterType(declaredType, selfParameter.Capability,
+            declaredType.GenericParameterTypes);
     }
 
     private SelfParameter ResolveMethodSelfParameterType(

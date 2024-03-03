@@ -15,7 +15,7 @@ internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConst
     public new SimpleName? Name { get; }
     ITypeDeclarationSyntax IMemberDeclarationSyntax.DeclaringType => DeclaringType;
     public IConstructorSelfParameterSyntax SelfParameter { get; }
-    public new IFixedList<IConstructorParameterSyntax> Parameters { get; }
+    public new IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
     public override IFixedList<IParameterSyntax> AllParameters { get; }
     public virtual IBlockBodySyntax Body { get; }
     IBodySyntax IConcreteInvocableDeclarationSyntax.Body => Body;
@@ -29,7 +29,7 @@ internal class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConst
         TextSpan nameSpan,
         SimpleName? name,
         IConstructorSelfParameterSyntax selfParameter,
-        IFixedList<IConstructorParameterSyntax> parameters,
+        IFixedList<IConstructorOrInitializerParameterSyntax> parameters,
         IBlockBodySyntax body)
         : base(span, file, accessModifier, nameSpan, name, parameters,
             new AcyclicPromise<ConstructorSymbol>())

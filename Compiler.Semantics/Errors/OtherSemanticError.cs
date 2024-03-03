@@ -75,10 +75,10 @@ public static class OtherSemanticError
             6012, $"Field `{name}` declared with `let` cannot be assigned");
     }
 
-    public static Diagnostic LentConstructorSelf(CodeFile file, ISelfParameterSyntax self)
+    public static Diagnostic LentConstructorOrInitializerSelf(CodeFile file, ISelfParameterSyntax self)
     {
         return new(file, self.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            6013, "Constructor `self` parameter cannot be `lent`");
+            6013, "Constructor or initializer `self` parameter cannot be `lent`");
     }
 
     public static Diagnostic CircularDefinition(CodeFile file, TextSpan span, ITypeDeclarationSyntax type)

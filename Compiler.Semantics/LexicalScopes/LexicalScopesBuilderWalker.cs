@@ -333,7 +333,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
     }
 
     private static LexicalScope BuildBodyScope(
-        IEnumerable<IConstructorParameterSyntax> parameters,
+        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
         LexicalScope containingScope)
     {
         var symbols = parameters.OfType<INamedParameterSyntax>()

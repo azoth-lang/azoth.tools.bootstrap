@@ -6,19 +6,19 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
-internal sealed class ConstructorDeclaration : InvocableDeclaration, IConstructorDeclaration
+internal sealed class InitializerDeclaration : InvocableDeclaration, IInitializerDeclaration
 {
-    public IClassDeclaration DeclaringType { get; }
+    public IStructDeclaration DeclaringType { get; }
     ITypeDeclaration IMemberDeclaration.DeclaringType => DeclaringType;
-    public new ConstructorSymbol Symbol { get; }
+    public new InitializerSymbol Symbol { get; }
     public ISelfParameter SelfParameter { get; }
     public IBody Body { get; }
 
-    public ConstructorDeclaration(
+    public InitializerDeclaration(
         CodeFile file,
         TextSpan span,
-        IClassDeclaration declaringClass,
-        ConstructorSymbol symbol,
+        IStructDeclaration declaringStruct,
+        InitializerSymbol symbol,
         TextSpan nameSpan,
         ISelfParameter selfParameter,
         IFixedList<IConstructorOrInitializerParameter> parameters,
@@ -28,13 +28,13 @@ internal sealed class ConstructorDeclaration : InvocableDeclaration, IConstructo
         Symbol = symbol;
         SelfParameter = selfParameter;
         Body = body;
-        DeclaringType = declaringClass;
+        DeclaringType = declaringStruct;
     }
 
     public override string ToString()
     {
         var name = Symbol.Name is null ? $" {Symbol.Name}" : "";
         var parameters = string.Join(", ", Parameters.Prepend<IParameter>(SelfParameter));
-        return $"{Symbol.ContainingSymbol}::new{name}({parameters}) {Body}";
+        return $"{Symbol.ContainingSymbol}::init{name}({parameters}) {Body}";
     }
 }

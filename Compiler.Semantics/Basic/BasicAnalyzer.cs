@@ -94,6 +94,9 @@ public class BasicAnalyzer
             case IConstructorDeclarationSyntax syn:
                 Resolve(syn);
                 break;
+            case IInitializerDeclarationSyntax syn:
+                Resolve(syn);
+                break;
             case IFunctionDeclarationSyntax syn:
                 Resolve(syn);
                 break;
@@ -219,12 +222,23 @@ public class BasicAnalyzer
     private void Resolve(IConstructorDeclarationSyntax constructor)
     {
         if (constructor.SelfParameter.IsLentBinding)
-            diagnostics.Add(OtherSemanticError.LentConstructorSelf(constructor.File, constructor.SelfParameter));
+            diagnostics.Add(OtherSemanticError.LentConstructorOrInitializerSelf(constructor.File, constructor.SelfParameter));
 
         // Constructors are like associated functions, so they don't need their parameters or
         // return type checked for variance safety.
 
         ResolveBody(constructor);
+    }
+
+    private void Resolve(IInitializerDeclarationSyntax initializer)
+    {
+        if (initializer.SelfParameter.IsLentBinding)
+            diagnostics.Add(OtherSemanticError.LentConstructorOrInitializerSelf(initializer.File, initializer.SelfParameter));
+
+        // Initializers are like associated functions, so they don't need their parameters or
+        // return type checked for variance safety.
+
+        ResolveBody(initializer);
     }
 
     private void Resolve(IFunctionDeclarationSyntax func)
@@ -277,6 +291,14 @@ public class BasicAnalyzer
                 var resolver = new BasicBodyAnalyzer(constructor, symbolTreeBuilder, symbolTrees,
                     stringSymbol, rangeSymbol, diagnostics, @return);
                 resolver.ResolveTypes(constructor.Body);
+                break;
+            }
+            case IInitializerDeclarationSyntax initializer:
+            {
+                Return @return = new Return(initializer.SelfParameter.DataType.Result);
+                var resolver = new BasicBodyAnalyzer(initializer, symbolTreeBuilder, symbolTrees,
+                    stringSymbol, rangeSymbol, diagnostics, @return);
+                resolver.ResolveTypes(initializer.Body);
                 break;
             }
         }

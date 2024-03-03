@@ -133,6 +133,7 @@ internal class ASTBuilder
         {
             IAssociatedFunctionDeclarationSyntax syn => BuildAssociatedFunction(declaringStruct, syn),
             IConcreteMethodDeclarationSyntax syn => BuildConcreteMethod(declaringStruct, syn),
+            IInitializerDeclarationSyntax syn => BuildInitializer(declaringStruct, syn),
             IFieldDeclarationSyntax syn => BuildField(declaringStruct, syn),
             _ => throw ExhaustiveMatch.Failed(member)
         };
@@ -197,6 +198,19 @@ internal class ASTBuilder
         return new ConstructorDeclaration(syn.File, syn.Span, declaringClass, symbol, nameSpan, selfParameter, parameters, body);
     }
 
+    private static IInitializerDeclaration BuildInitializer(
+        IStructDeclaration declaringStruct,
+        IInitializerDeclarationSyntax syn)
+    {
+        var symbol = syn.Symbol.Result;
+        var nameSpan = syn.NameSpan;
+        var selfParameter = BuildParameter(syn.SelfParameter);
+        var parameters = syn.Parameters.Select(BuildParameter).ToFixedList();
+        var body = BuildBlockBody(syn.Body);
+        return new InitializerDeclaration(syn.File, syn.Span, declaringStruct, symbol, nameSpan, selfParameter,
+            parameters, body);
+    }
+
     private static IFieldDeclaration BuildField(
         IClassOrStructDeclaration declaringType,
         IFieldDeclarationSyntax syn)
@@ -225,7 +239,7 @@ internal class ASTBuilder
         return new Attribute(syn.Span, referencedSymbol);
     }
 
-    private static IConstructorParameter BuildParameter(IConstructorParameterSyntax parameter)
+    private static IConstructorOrInitializerParameter BuildParameter(IConstructorOrInitializerParameterSyntax parameter)
     {
         return parameter switch
         {

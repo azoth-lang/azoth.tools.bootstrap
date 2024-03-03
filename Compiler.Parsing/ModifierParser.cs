@@ -15,7 +15,11 @@ internal class ModifierParser : RecursiveDescentParser
 
     public IMoveKeywordToken? ParseMoveModifier() => Tokens.AcceptToken<IMoveKeywordToken>();
 
-    public IAbstractKeywordToken? ParseAbstractModifier() => Tokens.AcceptToken<IAbstractKeywordToken>();
+    public IAbstractKeywordToken? ParseAbstractModifier()
+        => Tokens.AcceptToken<IAbstractKeywordToken>();
+
+    public IStructKindKeywordToken? ParseStructKindModifier()
+        => Tokens.AcceptToken<IStructKindKeywordToken>();
 
     public void ParseEndOfModifiers()
     {

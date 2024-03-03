@@ -117,7 +117,7 @@ public partial interface IEntityDeclarationSyntax : IDeclarationSyntax
     typeof(IMethodDeclarationSyntax))]
 public partial interface IInvocableDeclarationSyntax : IEntityDeclarationSyntax
 {
-    IFixedList<IConstructorParameterSyntax> Parameters { get; }
+    IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
     new IPromise<InvocableSymbol> Symbol { get; }
 }
 
@@ -125,6 +125,7 @@ public partial interface IInvocableDeclarationSyntax : IEntityDeclarationSyntax
     typeof(IFunctionDeclarationSyntax),
     typeof(IConcreteMethodDeclarationSyntax),
     typeof(IConstructorDeclarationSyntax),
+    typeof(IInitializerDeclarationSyntax),
     typeof(IAssociatedFunctionDeclarationSyntax))]
 public partial interface IConcreteInvocableDeclarationSyntax : IInvocableDeclarationSyntax
 {
@@ -237,6 +238,7 @@ public partial interface ITraitMemberDeclarationSyntax : IMemberDeclarationSynta
 
 [Closed(
     typeof(IConcreteMethodDeclarationSyntax),
+    typeof(IInitializerDeclarationSyntax),
     typeof(IFieldDeclarationSyntax),
     typeof(IAssociatedFunctionDeclarationSyntax))]
 public partial interface IStructMemberDeclarationSyntax : IMemberDeclarationSyntax
@@ -273,6 +275,15 @@ public partial interface IConstructorDeclarationSyntax : IClassMemberDeclaration
     new AcyclicPromise<ConstructorSymbol> Symbol { get; }
 }
 
+public partial interface IInitializerDeclarationSyntax : IStructMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
+{
+    new IStructDeclarationSyntax DeclaringType { get; }
+    new SimpleName? Name { get; }
+    IInitializerSelfParameterSyntax SelfParameter { get; }
+    new IBlockBodySyntax Body { get; }
+    new AcyclicPromise<InitializerSymbol> Symbol { get; }
+}
+
 public partial interface IFieldDeclarationSyntax : IClassMemberDeclarationSyntax, IStructMemberDeclarationSyntax, IBindingSyntax
 {
     new IClassOrStructDeclarationSyntax DeclaringType { get; }
@@ -304,7 +315,7 @@ public partial interface IGenericParameterSyntax : ISyntax
 }
 
 [Closed(
-    typeof(IConstructorParameterSyntax),
+    typeof(IConstructorOrInitializerParameterSyntax),
     typeof(INamedParameterSyntax),
     typeof(ISelfParameterSyntax),
     typeof(IFieldParameterSyntax))]
@@ -318,11 +329,11 @@ public partial interface IParameterSyntax : ISyntax
 [Closed(
     typeof(INamedParameterSyntax),
     typeof(IFieldParameterSyntax))]
-public partial interface IConstructorParameterSyntax : IParameterSyntax
+public partial interface IConstructorOrInitializerParameterSyntax : IParameterSyntax
 {
 }
 
-public partial interface INamedParameterSyntax : IParameterSyntax, IConstructorParameterSyntax, ILocalBindingSyntax
+public partial interface INamedParameterSyntax : IParameterSyntax, IConstructorOrInitializerParameterSyntax, ILocalBindingSyntax
 {
     bool IsLentBinding { get; }
     new SimpleName Name { get; }
@@ -335,6 +346,7 @@ public partial interface INamedParameterSyntax : IParameterSyntax, IConstructorP
 
 [Closed(
     typeof(IConstructorSelfParameterSyntax),
+    typeof(IInitializerSelfParameterSyntax),
     typeof(IMethodSelfParameterSyntax))]
 public partial interface ISelfParameterSyntax : IParameterSyntax
 {
@@ -343,6 +355,12 @@ public partial interface ISelfParameterSyntax : IParameterSyntax
 }
 
 public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
+{
+    ICapabilitySyntax Capability { get; }
+    new IPromise<DataType> DataType { get; }
+}
+
+public partial interface IInitializerSelfParameterSyntax : ISelfParameterSyntax
 {
     ICapabilitySyntax Capability { get; }
     new IPromise<DataType> DataType { get; }
@@ -366,7 +384,7 @@ public partial interface ICapabilitySetSyntax : ICapabilityConstraintSyntax
     new CapabilitySet Constraint { get; }
 }
 
-public partial interface IFieldParameterSyntax : IParameterSyntax, IConstructorParameterSyntax
+public partial interface IFieldParameterSyntax : IParameterSyntax, IConstructorOrInitializerParameterSyntax
 {
     new SimpleName Name { get; }
     Promise<FieldSymbol?> ReferencedSymbol { get; }

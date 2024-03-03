@@ -12,6 +12,7 @@ internal class ConstructorSelfParameterSyntax : ParameterSyntax, IConstructorSel
     public ICapabilitySyntax Capability { get; }
     public Promise<SelfParameterSymbol> Symbol { get; } = new Promise<SelfParameterSymbol>();
     public override IPromise<DataType> DataType { get; }
+
     public ConstructorSelfParameterSyntax(TextSpan span, bool isLentBinding, ICapabilitySyntax capability)
         : base(span, null)
     {

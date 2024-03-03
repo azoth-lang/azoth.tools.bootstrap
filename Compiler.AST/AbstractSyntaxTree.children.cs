@@ -59,6 +59,12 @@ public static class IAbstractSyntaxExtensions
                     yield return child;
                 yield return n.Body;
                 yield break;
+            case IInitializerDeclaration n:
+                yield return n.SelfParameter;
+                foreach (var child in n.Parameters)
+                    yield return child;
+                yield return n.Body;
+                yield break;
             case IFieldDeclaration n:
                 yield break;
             case IAssociatedFunctionDeclaration n:

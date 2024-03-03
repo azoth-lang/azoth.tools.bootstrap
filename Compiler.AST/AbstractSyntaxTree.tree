@@ -27,7 +27,7 @@ LocalBinding: Binding = Symbol:'NamedBindingSymbol';
 Declaration = File:'CodeFile' Symbol:'Symbol' NameSpan:'TextSpan';
 /// A declaration that could contain executable code (i.e. invocable declaration or field declaration)
 ExecutableDeclaration: Declaration;
-InvocableDeclaration: Declaration = Symbol:'InvocableSymbol' Parameters:ConstructorParameter*;
+InvocableDeclaration: Declaration = Symbol:'InvocableSymbol' Parameters:ConstructorOrInitializerParameter*;
 ConcreteInvocableDeclaration: InvocableDeclaration, ExecutableDeclaration = Body;
 ConcreteFunctionInvocableDeclaration: ConcreteInvocableDeclaration = Symbol:'FunctionSymbol' Parameters:NamedParameter* Body;
 
@@ -49,7 +49,8 @@ TraitMemberDeclaration: MemberDeclaration;
 MethodDeclaration: ClassMemberDeclaration, TraitMemberDeclaration = Symbol:'MethodSymbol' SelfParameter Parameters:NamedParameter*;
 AbstractMethodDeclaration: MethodDeclaration = SelfParameter Parameters:NamedParameter*;
 ConcreteMethodDeclaration: MethodDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration = Symbol:'MethodSymbol' SelfParameter Parameters:NamedParameter* Body;
-ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclaration' Symbol:'ConstructorSymbol' SelfParameter Parameters:ConstructorParameter* Body;
+ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclaration' Symbol:'ConstructorSymbol' SelfParameter Parameters:ConstructorOrInitializerParameter* Body;
+InitializerDeclaration: StructMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IStructDeclaration' Symbol:'InitializerSymbol' SelfParameter Parameters:ConstructorOrInitializerParameter* Body;
 FieldDeclaration: ClassMemberDeclaration, StructMemberDeclaration, ExecutableDeclaration, Binding = DeclaringType:'IClassOrStructDeclaration' Symbol:'FieldSymbol';
 AssociatedFunctionDeclaration: ClassMemberDeclaration, StructMemberDeclaration, TraitMemberDeclaration, ConcreteFunctionInvocableDeclaration = Symbol:'FunctionSymbol' Parameters:NamedParameter* Body;
 
@@ -59,12 +60,12 @@ Attribute = ReferencedSymbol:'TypeSymbol';
 // ---------- Parameters --------------
 Parameter = Unused:'bool';
 /// A parameter that can be declared in a constructor
-ConstructorParameter: Parameter;
+ConstructorOrInitializerParameter: Parameter;
 /// A parameter that creates a binding, i.e. a named or self parameter
 BindingParameter: Parameter, Binding;
-NamedParameter: Parameter, ConstructorParameter, BindingParameter, LocalBinding = Symbol:'VariableSymbol' DefaultValue:Expression?;
+NamedParameter: Parameter, ConstructorOrInitializerParameter, BindingParameter, LocalBinding = Symbol:'VariableSymbol' DefaultValue:Expression?;
 SelfParameter: Parameter, BindingParameter = Symbol:'SelfParameterSymbol';
-FieldParameter: Parameter, ConstructorParameter = ReferencedSymbol:'FieldSymbol' DefaultValue:Expression?;
+FieldParameter: Parameter, ConstructorOrInitializerParameter = ReferencedSymbol:'FieldSymbol' DefaultValue:Expression?;
 
 // ---------- Function Parts
 Body: BodyOrBlock = Statements:BodyStatement*;

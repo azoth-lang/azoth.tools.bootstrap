@@ -35,7 +35,7 @@ internal abstract class InvocableNonMemberEntityDeclarationSyntax : InvocableDec
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
         SimpleName name,
-        IEnumerable<IConstructorParameterSyntax> parameters,
+        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
         IPromise<InvocableSymbol> symbol)
         : base(span, file, accessModifier, nameSpan, name, parameters, symbol)
     {

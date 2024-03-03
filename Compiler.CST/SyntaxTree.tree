@@ -33,7 +33,7 @@ LocalBinding: Binding = Symbol:'IPromise<NamedBindingSymbol>';
 // ---------- Declarations
 Declaration: 'ISyntax', 'IHasContainingLexicalScope' = File:'CodeFile' Name:'TypeName'? NameSpan:'TextSpan' Symbol:'IPromise<Symbol>';
 EntityDeclaration: Declaration = AccessModifier:'IAccessModifierToken'?;
-InvocableDeclaration: EntityDeclaration = Parameters:ConstructorParameter* Symbol:'IPromise<InvocableSymbol>';
+InvocableDeclaration: EntityDeclaration = Parameters:ConstructorOrInitializerParameter* Symbol:'IPromise<InvocableSymbol>';
 ConcreteInvocableDeclaration: InvocableDeclaration = Body;
 
 // ---------- Non-Member Declarations
@@ -59,7 +59,8 @@ StructMemberDeclaration: MemberDeclaration;
 MethodDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration = Name:'SimpleName' SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Symbol:'AcyclicPromise<MethodSymbol>';
 AbstractMethodDeclaration: MethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return?;
 ConcreteMethodDeclaration: MethodDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
-ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclarationSyntax' Name:'SimpleName'? SelfParameter:ConstructorSelfParameter Parameters:ConstructorParameter* Body:BlockBody Symbol:'AcyclicPromise<ConstructorSymbol>';
+ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclarationSyntax' Name:'SimpleName'? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:'AcyclicPromise<ConstructorSymbol>';
+InitializerDeclaration: StructMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IStructDeclarationSyntax' Name:'SimpleName'? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:'AcyclicPromise<InitializerSymbol>';
 FieldDeclaration: ClassMemberDeclaration, StructMemberDeclaration, Binding = DeclaringType:'IClassOrStructDeclarationSyntax' Name:'SimpleName' Type Symbol:'AcyclicPromise<FieldSymbol>' Initializer:Expression?;
 AssociatedFunctionDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration = Name:'SimpleName' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
@@ -72,14 +73,15 @@ GenericParameter = Constraint:CapabilityConstraint Name:'SimpleName' ParameterVa
 // ---------- Parameters and Return--------------
 Parameter = Name:'SimpleName'? DataType:'IPromise<Pseudotype>' Unused:'bool';
 /// A non-self parameter that can be declared in a constructor
-ConstructorParameter: Parameter;
-NamedParameter: Parameter, ConstructorParameter, LocalBinding = IsMutableBinding:'bool' IsLentBinding:'bool' Name:'SimpleName' DeclarationNumber:'Promise<int?>' Type DataType:'IPromise<DataType>' Symbol:'Promise<VariableSymbol>' DefaultValue:Expression?;
+ConstructorOrInitializerParameter: Parameter;
+NamedParameter: Parameter, ConstructorOrInitializerParameter, LocalBinding = IsMutableBinding:'bool' IsLentBinding:'bool' Name:'SimpleName' DeclarationNumber:'Promise<int?>' Type DataType:'IPromise<DataType>' Symbol:'Promise<VariableSymbol>' DefaultValue:Expression?;
 SelfParameter: Parameter = IsLentBinding:'bool' Symbol:'Promise<SelfParameterSymbol>';
 ConstructorSelfParameter: SelfParameter = IsLentBinding:'bool' Capability DataType:'IPromise<DataType>' Symbol:'Promise<SelfParameterSymbol>';
+InitializerSelfParameter: SelfParameter = IsLentBinding:'bool' Capability DataType:'IPromise<DataType>' Symbol:'Promise<SelfParameterSymbol>';
 MethodSelfParameter: SelfParameter = IsLentBinding:'bool' Capability:CapabilityConstraint Symbol:'Promise<SelfParameterSymbol>';
 CapabilityConstraint = Constraint:'ICapabilityConstraint';
 CapabilitySet: CapabilityConstraint = Constraint:'CapabilitySet';
-FieldParameter: Parameter, ConstructorParameter = Name:'SimpleName' ReferencedSymbol:'Promise<FieldSymbol?>' DefaultValue:Expression?;
+FieldParameter: Parameter, ConstructorOrInitializerParameter = Name:'SimpleName' ReferencedSymbol:'Promise<FieldSymbol?>' DefaultValue:Expression?;
 Return = Type; // Return type of a function or method
 
 // ---------- Function Parts

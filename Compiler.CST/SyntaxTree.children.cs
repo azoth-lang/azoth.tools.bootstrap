@@ -85,6 +85,12 @@ public static class ISyntaxExtensions
                     yield return child;
                 yield return n.Body;
                 yield break;
+            case IInitializerDeclarationSyntax n:
+                yield return n.SelfParameter;
+                foreach (var child in n.Parameters)
+                    yield return child;
+                yield return n.Body;
+                yield break;
             case IFieldDeclarationSyntax n:
                 yield return n.Type;
                 if (n.Initializer is not null)
@@ -109,6 +115,9 @@ public static class ISyntaxExtensions
                     yield return n.DefaultValue;
                 yield break;
             case IConstructorSelfParameterSyntax n:
+                yield return n.Capability;
+                yield break;
+            case IInitializerSelfParameterSyntax n:
                 yield return n.Capability;
                 yield break;
             case IMethodSelfParameterSyntax n:

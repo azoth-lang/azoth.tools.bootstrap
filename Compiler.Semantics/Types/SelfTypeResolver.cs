@@ -66,4 +66,36 @@ public class SelfTypeResolver
 
         return objectType.With(capability, typeArguments);
     }
+
+    public ValueType EvaluateInitializerSelfParameterType(
+        StructType structType,
+        ICapabilitySyntax syntax,
+        IFixedList<DataType> typeArguments)
+    {
+        Capability capability;
+        switch (syntax.Declared)
+        {
+            case DeclaredCapability.Read:
+                capability = Capability.InitReadOnly;
+                break;
+            case DeclaredCapability.Mutable:
+                capability = Capability.InitMutable;
+                break;
+            case DeclaredCapability.Isolated:
+            case DeclaredCapability.TemporarilyIsolated:
+                diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, syntax));
+                capability = Capability.InitMutable;
+                break;
+            case DeclaredCapability.Constant:
+            case DeclaredCapability.TemporarilyConstant:
+            case DeclaredCapability.Identity:
+                diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, syntax));
+                capability = Capability.InitReadOnly;
+                break;
+            default:
+                throw ExhaustiveMatch.Failed(syntax.Declared);
+        }
+
+        return structType.With(capability, typeArguments);
+    }
 }

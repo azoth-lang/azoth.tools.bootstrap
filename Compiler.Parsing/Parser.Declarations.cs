@@ -44,6 +44,8 @@ public partial class Parser
                 return ParseNamespaceDeclaration(modifiers);
             case IClassKeywordToken _:
                 return ParseClass(modifiers);
+            case IStructKeywordToken _:
+                return ParseStruct(modifiers);
             case ITraitKeywordToken _:
                 return ParseTrait(modifiers);
             case IFunctionKeywordToken _:
@@ -261,6 +263,59 @@ public partial class Parser
     }
     #endregion
 
+    #region Parse Struct Declarations
+    private IStructDeclarationSyntax ParseStruct(ModifierParser modifiers)
+    {
+        var accessModifier = modifiers.ParseAccessModifier();
+        var constModifier = modifiers.ParseConstModifier();
+        var structKindModifier = modifiers.ParseStructKindModifier();
+        modifiers.ParseEndOfModifiers();
+        var structKeywordSpan = Tokens.Consume<IStructKeywordToken>();
+        var identifier = Tokens.RequiredToken<IIdentifierToken>();
+        var name = identifier.Value;
+        var generic = AcceptGenericParameters();
+        var genericParameters = generic?.Parameters ?? FixedList.Empty<IGenericParameterSyntax>();
+        var superTypes = ParseSupertypes();
+        var headerSpan = TextSpan.Covering(structKeywordSpan, identifier.Span, generic?.Span,
+            TextSpan.Covering(superTypes.Select(st => st.Span)));
+        var bodyParser = BodyParser();
+        return new StructDeclarationSyntax(ContainingNamespace, headerSpan, File, accessModifier,
+            constModifier, structKindModifier, identifier.Span, name, genericParameters, superTypes,
+            bodyParser.ParseStructBody);
+    }
+
+    private (IFixedList<IStructMemberDeclarationSyntax> Members, TextSpan Span) ParseStructBody(
+        IStructDeclarationSyntax declaringType)
+    {
+        var openBrace = Tokens.Expect<IOpenBraceToken>();
+        var members = ParseStructMemberDeclarations(declaringType);
+        var closeBrace = Tokens.Expect<ICloseBraceToken>();
+        var span = TextSpan.Covering(openBrace, closeBrace);
+        return (members, span);
+    }
+
+    private IFixedList<IStructMemberDeclarationSyntax> ParseStructMemberDeclarations(IStructDeclarationSyntax declaringType)
+        => ParseMany<IStructMemberDeclarationSyntax, ICloseBraceToken>(() => ParseStructMemberDeclaration(declaringType));
+
+    internal IStructMemberDeclarationSyntax ParseStructMemberDeclaration(IStructDeclarationSyntax structDeclaration)
+    {
+        var modifiers = ParseModifiers();
+
+        switch (Tokens.Current)
+        {
+            case IFunctionKeywordToken _:
+                return ParseStructMemberFunction(structDeclaration, modifiers);
+            case ILetKeywordToken _:
+                return ParseField(structDeclaration, false, modifiers);
+            case IVarKeywordToken _:
+                return ParseField(structDeclaration, true, modifiers);
+            default:
+                Tokens.UnexpectedToken();
+                throw new ParseFailedException();
+        }
+    }
+    #endregion
+
     #region Parse Trait Declarations
     private ITraitDeclarationSyntax ParseTrait(ModifierParser modifiers)
     {
@@ -372,7 +427,7 @@ public partial class Parser
 
     #region Parse Member Declarations
     internal FieldDeclarationSyntax ParseField(
-        IClassDeclarationSyntax declaringClass,
+        IClassOrStructDeclarationSyntax declaringType,
         bool mutableBinding,
         ModifierParser modifiers)
     {
@@ -390,7 +445,7 @@ public partial class Parser
 
         var semicolon = Tokens.Expect<ISemicolonToken>();
         var span = TextSpan.Covering(binding, semicolon);
-        return new FieldDeclarationSyntax(declaringClass, span, File, accessModifer, mutableBinding,
+        return new FieldDeclarationSyntax(declaringType, span, File, accessModifer, mutableBinding,
             identifier.Span, name, type, initializer);
     }
 
@@ -477,7 +532,8 @@ public partial class Parser
         var parameters = bodyParser.ParseParameters(bodyParser.ParseConstructorParameter);
 
         var selfParameter = parameters.OfType<IConstructorSelfParameterSyntax>().FirstOrDefault();
-        var constructorParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>()).Cast<IConstructorParameterSyntax>()
+        var constructorParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>())
+                                              .Cast<IConstructorOrInitializerParameterSyntax>()
                                         .ToFixedList();
 
         if (selfParameter is null)
@@ -499,6 +555,68 @@ public partial class Parser
         var span = TextSpan.Covering(newKeywordSpan, body.Span);
         return new ConstructorDeclarationSyntax(declaringType, span, File, accessModifer,
             TextSpan.Covering(newKeywordSpan, identifier?.Span), name, selfParameter, constructorParameters, body);
+    }
+
+    internal IStructMemberDeclarationSyntax ParseStructMemberFunction(
+        IStructDeclarationSyntax declaringType,
+        ModifierParser modifiers)
+    {
+        var accessModifer = modifiers.ParseAccessModifier();
+        modifiers.ParseEndOfModifiers();
+        var fn = Tokens.Consume<IFunctionKeywordToken>();
+        var identifier = Tokens.RequiredToken<IIdentifierToken>();
+        SimpleName name = identifier.Value;
+        var bodyParser = BodyParser();
+        var parameters = bodyParser.ParseParameters(bodyParser.ParseMethodParameter);
+        var @return = ParseReturn();
+
+        var selfParameter = parameters.OfType<IMethodSelfParameterSyntax>().FirstOrDefault();
+        var namedParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>())
+                                        .Cast<INamedParameterSyntax>().ToFixedList();
+        IBodySyntax body;
+        TextSpan span;
+
+        // if no self parameter, it is an associated function
+        if (selfParameter is null)
+        {
+            if (Tokens.Current is IOpenBraceToken or IRightDoubleArrowToken)
+            {
+                body = bodyParser.ParseBody();
+                span = TextSpan.Covering(fn, body.Span);
+            }
+            else
+            {
+                body = new BlockBodySyntax(Tokens.Current.Span.AtStart(), FixedList.Empty<IBodyStatementSyntax>());
+                var semicolon = bodyParser.Tokens.Expect<ISemicolonToken>();
+                span = TextSpan.Covering(fn, semicolon);
+                Add(ParseError.AssociatedFunctionMissingBody(File, span, name));
+            }
+
+            return new AssociatedFunctionDeclarationSyntax(declaringType, span, File, accessModifer, identifier.Span, name, namedParameters, @return, body);
+        }
+
+        if (parameters[0] is not ISelfParameterSyntax)
+            Add(ParseError.SelfParameterMustBeFirst(File, selfParameter.Span));
+
+        foreach (var extraSelfParameter in parameters.OfType<ISelfParameterSyntax>().Skip(1))
+            Add(ParseError.ExtraSelfParameter(File, extraSelfParameter.Span));
+
+        // It is a method that may or may not have a body
+        if (Tokens.Current is IOpenBraceToken or IRightDoubleArrowToken)
+        {
+            body = bodyParser.ParseBody();
+            span = TextSpan.Covering(fn, body.Span);
+        }
+        else
+        {
+            body = new BlockBodySyntax(Tokens.Current.Span.AtStart(), FixedList.Empty<IBodyStatementSyntax>());
+            var semicolon = bodyParser.Tokens.Expect<ISemicolonToken>();
+            span = TextSpan.Covering(fn, semicolon);
+            Add(ParseError.StructMethodMissingBody(File, span, name));
+        }
+
+        return new ConcreteMethodDeclarationSyntax(declaringType, span, File, accessModifer,
+            identifier.Span, name, selfParameter, namedParameters, @return, body);
     }
     #endregion
 }
