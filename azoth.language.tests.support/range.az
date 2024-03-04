@@ -11,8 +11,7 @@ namespace azoth
 
         published init(self, .start, .end)
         {
-            if .end < .start
-                => ABORT("");
+            if .end < .start => ABORT("");
         }
 
         published fn iterate(const self) -> mut Range_Iterator

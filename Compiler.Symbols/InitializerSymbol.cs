@@ -55,7 +55,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
 
     public override string ToILString()
     {
-        var name = InitializerName is null ? $".{InitializerName}" : "";
+        var name = InitializerName is not null ? $".{InitializerName}" : "";
         var selfParameterType = new Parameter(false, SelfParameterType);
         return $"{ContextTypeSymbol}::init{name}({string.Join(", ", Parameters.Prepend(selfParameterType).Select(d => d.ToILString()))})";
     }

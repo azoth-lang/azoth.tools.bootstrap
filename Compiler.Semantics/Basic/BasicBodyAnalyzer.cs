@@ -613,7 +613,7 @@ public class BasicBodyAnalyzer
             }
             case ISimpleNameExpressionSyntax exp:
             {
-                // Errors reported by InferNameSymbol
+                // Errors reported by InferSymbol
                 var symbol = InferSymbol(exp);
                 DataType type;
                 ExpressionSemantics referenceSemantics;
@@ -1659,13 +1659,12 @@ public class BasicBodyAnalyzer
         // First look for local variables
         var variableSymbols = LookupSymbols<VariableSymbol>(nameExpression);
 
-        if (!bindingOnly && variableSymbols.Count == 0)
-        {
-            var symbols = LookupSymbols(nameExpression);
-            return InferSymbol(nameExpression, symbols);
-        }
+        if (bindingOnly || variableSymbols.Count != 0)
+            return InferSymbol(nameExpression, variableSymbols);
 
-        return InferSymbol(nameExpression, variableSymbols);
+        var symbols = LookupSymbols(nameExpression);
+        return InferSymbol(nameExpression, symbols);
+
     }
 
     private SelfParameterSymbol? InferSelfParameterSymbol(ISelfExpressionSyntax selfExpression)
