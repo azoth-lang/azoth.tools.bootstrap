@@ -1,18 +1,21 @@
-published /*sealed*/ const class /*struct*/ range
-    // where T <: Steppable
+namespace azoth
 {
-    /// The inclusive start of the range.
-    published let start: int;
-
-    /// The exclusive end of the range.
-    published let end: int;
-
-    published new(self, .start, .end)
+    published const copy struct range
+        // where T <: Steppable
     {
-        if .end < .start
-            { .end = .start; }
-    }
+        /// The inclusive start of the range.
+        published let start: int;
 
-    published fn iterate(const self) -> mut Range_Iterator
-        => return new Range_Iterator(self);
+        /// The exclusive end of the range.
+        published let end: int;
+
+        published init(self, .start, .end)
+        {
+            if .end < .start
+                => ABORT("");
+        }
+
+        published fn iterate(const self) -> mut Range_Iterator
+            => return new Range_Iterator(self);
+    }
 }

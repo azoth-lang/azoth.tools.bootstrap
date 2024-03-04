@@ -38,13 +38,14 @@ public class InterpreterProcess
     private readonly Package package;
     private readonly Task executionTask;
     private readonly FixedDictionary<FunctionSymbol, IConcreteFunctionInvocableDeclaration> functions;
+    private readonly FixedDictionary<MethodSymbol, IMethodDeclaration> structMethods;
     private readonly FixedDictionary<ConstructorSymbol, IConstructorDeclaration?> constructors;
     private readonly FixedDictionary<InitializerSymbol, IInitializerDeclaration?> initializers;
     private readonly FixedDictionary<UserTypeSymbol, IClassOrStructDeclaration> classesOrStructs;
     private readonly IClassDeclaration stringClass;
     private readonly IConstructorDeclaration stringConstructor;
-    private readonly IClassDeclaration? rangeClass;
-    private readonly ConstructorSymbol? rangeConstructor;
+    private readonly IStructDeclaration? rangeStruct;
+    private readonly InitializerSymbol? rangeInitializer;
     private byte? exitCode;
     private readonly MemoryStream standardOutput = new();
     private readonly TextWriter standardOutputWriter;
@@ -59,12 +60,17 @@ public class InterpreterProcess
                     .OfType<IConcreteFunctionInvocableDeclaration>()
                     .ToFixedDictionary(f => f.Symbol);
 
+        structMethods = allDeclarations
+                        .OfType<IMethodDeclaration>()
+                        .Where(m => m.Symbol.ContextTypeSymbol is UserTypeSymbol { DeclaresType: StructType })
+                        .ToFixedDictionary(m => m.Symbol);
+
         classesOrStructs = allDeclarations.OfType<IClassOrStructDeclaration>()
                                  .ToFixedDictionary(c => c.Symbol);
         stringClass = classesOrStructs.Values.OfType<IClassDeclaration>().Single(c => c.Symbol.Name == "String");
         stringConstructor = stringClass.Members.OfType<IConstructorDeclaration>().Single(c => c.Parameters.Count == 3);
-        rangeClass = classesOrStructs.Values.OfType<IClassDeclaration>().SingleOrDefault(c => c.Symbol.Name == "range");
-        rangeConstructor = rangeClass?.Members.OfType<IConstructorDeclaration>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
+        rangeStruct = classesOrStructs.Values.OfType<IStructDeclaration>().SingleOrDefault(c => c.Symbol.Name == "range");
+        rangeInitializer = rangeStruct?.Members.OfType<IInitializerDeclaration>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
         var defaultConstructorSymbols = allDeclarations
                                         .OfType<IClassDeclaration>()
                                         .Select(c => c.DefaultConstructorSymbol).WhereNotNull();
@@ -341,7 +347,7 @@ public class InterpreterProcess
     /// <summary>
     /// Call the implicit default initializer for a type that has no constructors.
     /// </summary>
-    private ValueTask<AzothValue> CallDefaultInitializerAsync(IStructDeclaration @struct, AzothValue self)
+    private static ValueTask<AzothValue> CallDefaultInitializerAsync(IStructDeclaration @struct, AzothValue self)
     {
         // Initialize fields to default values
         var fields = @struct.Members.OfType<IFieldDeclaration>();
@@ -351,6 +357,44 @@ public class InterpreterProcess
         return ValueTask.FromResult(self);
     }
 
+    private async ValueTask<AzothValue> CallMethodAsync(
+        MethodSymbol methodSymbol,
+        CapabilityType selfType,
+        AzothValue self,
+        IEnumerable<AzothValue> arguments)
+    {
+        return selfType switch
+        {
+            ReferenceType _ => await CallClassMethodAsync(methodSymbol, self, arguments),
+            ValueType valueType => await CallStructMethod(methodSymbol, valueType, self, arguments),
+            _ => throw ExhaustiveMatch.Failed(selfType)
+        };
+    }
+
+    private async ValueTask<AzothValue> CallClassMethodAsync(
+        MethodSymbol methodSymbol,
+        AzothValue self,
+        IEnumerable<AzothValue> arguments)
+    {
+        var methodSignature = methodSignatures[methodSymbol];
+        var vtable = self.ObjectValue.VTable;
+        var method = vtable[methodSignature];
+        return await CallMethodAsync(method, self, arguments).ConfigureAwait(false);
+    }
+
+    private async ValueTask<AzothValue> CallStructMethod(
+        MethodSymbol methodSymbol,
+        ValueType selfType,
+        AzothValue self,
+        IEnumerable<AzothValue> arguments)
+    {
+        return methodSymbol.Name.Text switch
+        {
+            "remainder" => Remainder(self, arguments.Single(), selfType),
+            "to_display_string" => await ToDisplayStringAsync(self, selfType),
+            _ => await CallMethodAsync(structMethods[methodSymbol], self, arguments),
+        };
+    }
 
     private async ValueTask<AzothValue> CallMethodAsync(
         IMethodDeclaration method,
@@ -605,7 +649,7 @@ public class InterpreterProcess
                         if (!exp.Operator.RangeInclusiveOfStart()) left = left.Increment(DataType.Int);
                         var right = await ExecuteAsync(exp.RightOperand, variables).ConfigureAwait(false);
                         if (exp.Operator.RangeInclusiveOfEnd()) right = right.Increment(DataType.Int);
-                        return await ConstructClass(rangeClass!, rangeConstructor!, new[] { left, right });
+                        return await InitializeStruct(rangeStruct!, rangeInitializer!, new[] { left, right });
                     }
                     case BinaryOperator.QuestionQuestion:
                         throw new NotImplementedException($"Operator `{exp.Operator}`");
@@ -628,7 +672,7 @@ public class InterpreterProcess
                     return await CallIntrinsicAsync(methodSymbol, self, arguments);
                 if (methodSymbol == Primitive.IdentityHash)
                     return IdentityHash(self);
-                var methodSignature = methodSignatures[methodSymbol];
+
 
                 var selfType = exp.Context.DataType;
                 switch (selfType)
@@ -640,22 +684,10 @@ public class InterpreterProcess
                     case FunctionType _:
                     case ViewpointType _:
                     case ConstValueType _:
+                        var methodSignature = methodSignatures[methodSymbol];
                         throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
-                    case ReferenceType _:
-                        var vtable = self.ObjectValue.VTable;
-                        var method = vtable[methodSignature];
-                        return await CallMethodAsync(method, self, arguments).ConfigureAwait(false);
-                    case ValueType valueType:
-                    {
-                        if (valueType is not ValueType { DeclaredType: NumericType })
-                            throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
-                        return methodSignature.Name.Text switch
-                        {
-                            "remainder" => Remainder(self, arguments[0], valueType),
-                            "to_display_string" => await ToDisplayStringAsync(self, valueType),
-                            _ => throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}")
-                        };
-                    }
+                    case CapabilityType capabilityType:
+                        return await CallMethodAsync(methodSymbol, capabilityType, self, arguments);
                     default:
                         throw ExhaustiveMatch.Failed(selfType);
                 }
@@ -693,25 +725,24 @@ public class InterpreterProcess
                 var loopVariable = exp.Symbol;
                 // Call `iterable.iterate()` if it exists
                 AzothValue iterator;
+                CapabilityType iteratorType;
                 if (exp.IterateMethod is not null)
                 {
-                    var iterateMethodSignature = methodSignatures[exp.IterateMethod];
-                    var iterableVTable = iterable.ObjectValue.VTable;
-                    var iterateMethod = iterableVTable[iterateMethodSignature];
-                    iterator = await CallMethodAsync(iterateMethod, iterable, Enumerable.Empty<AzothValue>()).ConfigureAwait(false);
+                    var selfType = (CapabilityType)exp.InExpression.DataType;
+                    iterator = await CallMethodAsync(exp.IterateMethod, selfType, iterable, Enumerable.Empty<AzothValue>()).ConfigureAwait(false);
+                    iteratorType = (CapabilityType)exp.IterateMethod.Return.Type;
                 }
                 else
+                {
                     iterator = iterable;
-
-                var nextMethodSignature = methodSignatures[exp.NextMethod];
-                var iteratorVTable = iterator.ObjectValue.VTable;
-                var nextMethod = iteratorVTable[nextMethodSignature];
+                    iteratorType = (CapabilityType)exp.InExpression.DataType;
+                }
 
                 try
                 {
                     while (true)
                     {
-                        var value = await CallMethodAsync(nextMethod, iterator, Enumerable.Empty<AzothValue>()).ConfigureAwait(false);
+                        var value = await CallMethodAsync(exp.NextMethod, iteratorType, iterator, Enumerable.Empty<AzothValue>()).ConfigureAwait(false);
                         if (value.IsNone) break;
                         try
                         {
