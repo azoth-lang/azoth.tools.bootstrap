@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
@@ -38,9 +37,9 @@ public sealed class BareValueType<TDeclared> : BareValueType
 
     public override BareValueType<TDeclared> AccessedVia(Capability capability)
     {
-        if (DeclaredType.GenericParameters.All(p => p.ParameterVariance != ParameterVariance.Independent)) return this;
-        var newTypeArguments = DeclaredType.GenericParameters.Zip(GenericTypeArguments,
-            (p, arg) => p.ParameterVariance == ParameterVariance.Independent ? arg.AccessedVia(capability) : arg).ToFixedList();
+        if (!HasIndependentTypeArguments) return this;
+        var newTypeArguments = TypeArgumentsAccessedVia(capability);
+        if (ReferenceEquals(newTypeArguments, GenericTypeArguments)) return this;
         return new(DeclaredType, newTypeArguments);
     }
 

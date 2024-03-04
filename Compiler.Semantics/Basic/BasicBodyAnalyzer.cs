@@ -1332,7 +1332,6 @@ public class BasicBodyAnalyzer
 
                 if (exp.Context is INameExpressionSyntax { ReferencedSymbol.Result: Symbol contextSymbol })
                 {
-                    if (exp.Member.Name == "empty") Debugger.Break();
                     var functionSymbols = LookupSymbols<FunctionOrInitializerSymbol>(contextSymbol, exp.Member);
                     functionType = InferSymbol(invocation, functionSymbols, args, flow);
                 }

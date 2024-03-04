@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -73,6 +74,12 @@ public abstract class CapabilityType : NonEmptyType
     {
         Capability = capability;
     }
+
+    public override DataType ReplaceTypeParametersIn(DataType type)
+        => BareType.ReplaceTypeParametersIn(type);
+
+    public override Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype)
+        => BareType.ReplaceTypeParametersIn(pseudotype);
 
     public sealed override string ToSourceCodeString()
     {

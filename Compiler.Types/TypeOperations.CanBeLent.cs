@@ -29,9 +29,7 @@ public static partial class TypeOperations
     public static bool CanBeLent(this DataType type)
         => type switch
         {
-            // TODO combine into CapabilityType
-            ReferenceType t => t.Capability.CanBeLent() || t.BareType.ArgumentsCanBeLent(),
-            ValueType t => t.BareType.ArgumentsCanBeLent(),
+            CapabilityType t => t.Capability.CanBeLent() || t.BareType.ArgumentsCanBeLent(),
             OptionalType t => t.Referent.CanBeLent(),
             SelfViewpointType t => t.Capability.CanBeLent() && t.Referent.CanBeLent(),
             CapabilityViewpointType t => t.Capability.CanBeLent() && t.Referent.CanBeLent(),

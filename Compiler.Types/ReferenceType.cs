@@ -3,7 +3,6 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
-using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -80,11 +79,11 @@ public abstract class ReferenceType : CapabilityType
         {
             case Capability c:
                 var newCapability = Capability.AccessedVia(c);
-                var bareType = BareType.AccessedVia(c);
-                if (ReferenceEquals(bareType, BareType))
-                    return With(newCapability);
+                var newBareType = BareType.AccessedVia(c);
+                if (ReferenceEquals(newBareType, BareType))
+                    return ReferenceEquals(newCapability, Capability) ? this : With(newCapability);
 
-                return bareType.With(newCapability);
+                return newBareType.With(newCapability);
             case CapabilitySet c:
                 return new SelfViewpointType(c, this);
             default:
@@ -93,12 +92,6 @@ public abstract class ReferenceType : CapabilityType
     }
 
     public abstract ReferenceType With(Capability capability);
-
-    public override DataType ReplaceTypeParametersIn(DataType type)
-        => BareType.ReplaceTypeParametersIn(type);
-
-    public override Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype)
-        => BareType.ReplaceTypeParametersIn(pseudotype);
 
     #region Equality
     public override bool Equals(DataType? other)

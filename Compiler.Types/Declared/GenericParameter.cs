@@ -41,7 +41,8 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
 
     public TypeVariance TypeVariance => ParameterVariance.ToTypeVariance();
 
-    public bool HasIndependence => ParameterVariance is ParameterVariance.Independent or ParameterVariance.SharableIndependent;
+    public bool HasIndependence
+        => ParameterVariance is ParameterVariance.Independent or ParameterVariance.SharableIndependent;
 
     // TODO When parameters can be values not just types, add: public DataType DataType { get; }
 

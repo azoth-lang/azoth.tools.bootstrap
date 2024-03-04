@@ -4,7 +4,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
-using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
@@ -44,10 +43,11 @@ public readonly struct FlowCapabilities
 
     private static IEnumerable<(TypeArgumentIndex, FlowCapability)> FlowCapabilitiesForImmediateTypeParameters(ReferenceType type, Stack<int> parentIndex)
     {
-        var joinedTypeArguments = type.TypeArguments.Enumerate().EquiZip(type.DeclaredType.GenericParameters, (arg, param) => (arg.Index, Arg: arg.Value, Param: param));
-        var independentTypeArguments = joinedTypeArguments.Where(tuple => tuple.Param.HasIndependence);
-        var independentReferenceTypeArguments = independentTypeArguments.Select(tuple => (tuple.Index, Arg: tuple.Arg as ReferenceType))
-                                                                        .Where(tuple => tuple.Arg is not null);
+
+        var joinedTypeArguments = type.BareType.GenericParameterArguments.Enumerate();
+        var independentTypeArguments = joinedTypeArguments.Where((p, _) => p.ParameterHasIndependence);
+        var independentReferenceTypeArguments = independentTypeArguments.Select((p, i) => (i, p.Argument as ReferenceType))
+                                                                        .Where((int _, ReferenceType? arg) => arg is not null);
 
         foreach (var (i, arg) in independentReferenceTypeArguments)
         {
@@ -61,7 +61,7 @@ public readonly struct FlowCapabilities
         ReferenceType type,
         Stack<int> parentIndex)
     {
-        IEnumerable<(TypeArgumentIndex, FlowCapability)> flowCapabilities = Enumerable.Empty<(TypeArgumentIndex, FlowCapability)>();
+        var flowCapabilities = Enumerable.Empty<(TypeArgumentIndex, FlowCapability)>();
         foreach (var (arg, i) in type.TypeArguments.Enumerate().Where(tuple => tuple.Value is ReferenceType))
         {
             parentIndex.Push(i);

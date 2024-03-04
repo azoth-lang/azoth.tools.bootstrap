@@ -40,8 +40,11 @@ public static class DataTypeExtensions
     }
 
     public static bool IsAssignableFrom(this ValueType target, ValueType source)
-        //if (!target.Capability.IsAssignableFrom(source.Capability)) return false;
-        => IsAssignableFrom(target.BareType, source.BareType);
+    {
+        if (!target.Capability.IsAssignableFrom(source.Capability)) return false;
+
+        return IsAssignableFrom(target.BareType, source.BareType);
+    }
 
     public static bool IsAssignableFrom(this ReferenceType target, ReferenceType source)
     {
@@ -89,8 +92,21 @@ public static class DataTypeExtensions
     }
 
     public static bool IsAssignableFrom(this BareValueType target, BareType source)
+    {
         // Because a value type is never the supertype, we only need to check for equality.
-        => source.Equals(target);
+        if (source.Equals(target)) return true;
+
+        //if (target.AllowsVariance)
+        //{
+        //    var declaredType = target.DeclaredType;
+        //    var matchingDeclaredType = source.Supertypes.Prepend(source).Where(t => t.DeclaredType == declaredType);
+        //    foreach (var sourceType in matchingDeclaredType)
+        //        if (IsAssignableFrom(declaredType, targetAllowsWrite, target.GenericTypeArguments,
+        //                sourceType.GenericTypeArguments))
+        //            return true;
+        //}
+        return false;
+    }
 
     private static bool IsAssignableFrom(
         DeclaredReferenceType declaredType,

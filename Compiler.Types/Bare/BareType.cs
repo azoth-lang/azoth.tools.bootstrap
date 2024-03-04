@@ -9,6 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using MoreLinq.Extensions;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
@@ -42,7 +43,7 @@ public abstract class BareType : IEquatable<BareType>
     public bool AllowsVariance => DeclaredType.AllowsVariance;
     public IFixedList<DataType> GenericTypeArguments { get; }
     public IEnumerable<GenericParameterArgument> GenericParameterArguments
-        => DeclaredType.GenericParameters.Zip(GenericTypeArguments, (p, a) => new GenericParameterArgument(p, a));
+        => DeclaredType.GenericParameters.EquiZip(GenericTypeArguments, (p, a) => new GenericParameterArgument(p, a));
     public bool HasIndependentTypeArguments { get; }
 
     private readonly Lazy<FixedSet<BareReferenceType>> supertypes;
@@ -87,8 +88,8 @@ public abstract class BareType : IEquatable<BareType>
 
     private TypeReplacements GetTypeReplacements() => new(DeclaredType, GenericTypeArguments);
 
-    private FixedSet<BareReferenceType> GetSupertypes() =>
-        DeclaredType.Supertypes.Select(typeReplacements.Value.ReplaceTypeParametersIn).ToFixedSet();
+    private FixedSet<BareReferenceType> GetSupertypes()
+        => DeclaredType.Supertypes.Select(typeReplacements.Value.ReplaceTypeParametersIn).ToFixedSet();
 
     public DataType ReplaceTypeParametersIn(DataType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
@@ -97,6 +98,19 @@ public abstract class BareType : IEquatable<BareType>
         => typeReplacements.Value.ReplaceTypeParametersIn(pseudotype);
 
     public abstract BareType AccessedVia(Capability capability);
+
+    protected IFixedList<DataType> TypeArgumentsAccessedVia(Capability capability)
+    {
+        var newTypeArguments = new List<DataType>(GenericTypeArguments.Count);
+        var typesReplaced = false;
+        foreach (var arg in GenericTypeArguments)
+        {
+            var newTypeArg = arg.AccessedVia(capability);
+            typesReplaced |= !ReferenceEquals(newTypeArg, arg);
+            newTypeArguments.Add(newTypeArg);
+        }
+        return typesReplaced ? newTypeArguments.ToFixedList() : GenericTypeArguments;
+    }
 
     public abstract BareType With(IFixedList<DataType> typeArguments);
 

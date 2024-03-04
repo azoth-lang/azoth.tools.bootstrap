@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
@@ -25,21 +24,20 @@ internal sealed class TypeReplacements
         replacements = declaredType.GenericParameterTypes.Zip(typeArguments)
                                    .ToDictionary(t => t.First, t => t.Second);
         foreach (var supertype in declaredType.Supertypes)
-            if (supertype is BareReferenceType referenceType)
-                foreach (var (typeArg, i) in referenceType.GenericTypeArguments.Enumerate())
+            foreach (var (typeArg, i) in supertype.GenericTypeArguments.Enumerate())
+            {
+                var genericParameterType = supertype.DeclaredType.GenericParameterTypes[i];
+                if (typeArg is GenericParameterType genericTypeArg)
                 {
-                    var genericParameterType = referenceType.DeclaredType.GenericParameterTypes[i];
-                    if (typeArg is GenericParameterType genericTypeArg)
-                    {
-                        if (replacements.TryGetValue(genericTypeArg, out var replacement))
-                            replacements.Add(genericParameterType, replacement);
-                        else
-                            throw new InvalidOperationException(
-                                $"Could not find replacement for `{typeArg}` in type `{declaredType}` with arguments `{typeArguments}`.");
-                    }
+                    if (replacements.TryGetValue(genericTypeArg, out var replacement))
+                        replacements.Add(genericParameterType, replacement);
                     else
-                        replacements.Add(genericParameterType, ReplaceTypeParametersIn(typeArg));
+                        throw new InvalidOperationException(
+                            $"Could not find replacement for `{typeArg}` in type `{declaredType}` with arguments `{typeArguments}`.");
                 }
+                else
+                    replacements.Add(genericParameterType, ReplaceTypeParametersIn(typeArg));
+            }
     }
 
     public Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype)
@@ -64,15 +62,7 @@ internal sealed class TypeReplacements
     {
         switch (type)
         {
-            case ValueType t:
-            {
-                var replacementType = ReplaceTypeParametersIn(t.BareType);
-                if (!ReferenceEquals(t.BareType, replacementType))
-                    // TODO use proper capability
-                    return replacementType.With(Capability.Constant);
-                break;
-            }
-            case ReferenceType t:
+            case CapabilityType t:
             {
                 var replacementType = ReplaceTypeParametersIn(t.BareType);
                 if (!ReferenceEquals(t.BareType, replacementType))
