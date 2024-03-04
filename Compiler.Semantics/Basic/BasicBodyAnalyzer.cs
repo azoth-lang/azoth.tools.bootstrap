@@ -436,7 +436,8 @@ public class BasicBodyAnalyzer
     /// Infer the type of an expression and assign that type to the expression.
     /// </summary>
     [return: NotNullIfNotNull(nameof(expression))]
-    private ExpressionResult? InferType(IExpressionSyntax? expression, FlowState flow)
+    private ExpressionResult? InferType(
+        IExpressionSyntax? expression, FlowState flow, Func<Symbol, bool>? symbolFilter = null)
     {
         switch (expression)
         {
@@ -614,7 +615,7 @@ public class BasicBodyAnalyzer
             case ISimpleNameExpressionSyntax exp:
             {
                 // Errors reported by InferSymbol
-                var symbol = InferSymbol(exp);
+                var symbol = InferSymbol(exp, symbolFilter);
                 DataType type;
                 ExpressionSemantics referenceSemantics;
                 ResultVariable? resultVariable = null;
@@ -828,7 +829,7 @@ public class BasicBodyAnalyzer
             }
             case IQualifiedNameExpressionSyntax exp:
             {
-                var contextResult = InferType(exp.Context, flow);
+                var contextResult = InferType(exp.Context, flow, NonInvocableSymbols);
                 var contextType = exp.Context is ISelfExpressionSyntax self ? self.Pseudotype.Assigned() : contextResult.Type;
                 var member = exp.Member;
                 var contextSymbol = contextType is VoidType && exp.Context is INameExpressionSyntax context
@@ -1230,7 +1231,7 @@ public class BasicBodyAnalyzer
             default:
                 throw ExhaustiveMatch.Failed(expression);
             case IQualifiedNameExpressionSyntax exp:
-                var contextResult = InferType(exp.Context, flow);
+                var contextResult = InferType(exp.Context, flow, NonInvocableSymbols);
                 DataType type;
                 var member = exp.Member;
                 switch (contextResult.Type)
@@ -1302,7 +1303,7 @@ public class BasicBodyAnalyzer
         {
             case IQualifiedNameExpressionSyntax exp:
             {
-                var contextResult = InferType(exp.Context, flow);
+                var contextResult = InferType(exp.Context, flow, NonInvocableSymbols);
                 // Make sure to infer argument type *after* the context type
                 args = InferArgumentTypes(contextResult, invocation.Arguments, flow);
 
@@ -1331,6 +1332,7 @@ public class BasicBodyAnalyzer
 
                 if (exp.Context is INameExpressionSyntax { ReferencedSymbol.Result: Symbol contextSymbol })
                 {
+                    if (exp.Member.Name == "empty") Debugger.Break();
                     var functionSymbols = LookupSymbols<FunctionOrInitializerSymbol>(contextSymbol, exp.Member);
                     functionType = InferSymbol(invocation, functionSymbols, args, flow);
                 }
@@ -1634,6 +1636,10 @@ public class BasicBodyAnalyzer
         }
     }
 
+    private static bool AllSymbols<TSymbol>(Symbol symbol) where TSymbol : Symbol => true;
+
+    private static bool NonInvocableSymbols(Symbol symbol) => symbol is not InvocableSymbol;
+
     private BindingSymbol? InferBindingSymbol(IVariableNameExpressionSyntax variableNameExpressionSyntax)
     {
         return variableNameExpressionSyntax switch
@@ -1644,10 +1650,12 @@ public class BasicBodyAnalyzer
         };
     }
 
-    private BindingSymbol? InferBindingSymbol(ISimpleNameExpressionSyntax nameExpression)
-        => (BindingSymbol?)InferSymbol(nameExpression, true);
+    private BindingSymbol? InferBindingSymbol(
+        ISimpleNameExpressionSyntax nameExpression,
+        Func<Symbol, bool>? symbolFilter = null)
+        => (BindingSymbol?)InferSymbol(nameExpression, symbolFilter, true);
 
-    private Symbol? InferSymbol(ISimpleNameExpressionSyntax nameExpression, bool bindingOnly = false)
+    private Symbol? InferSymbol(ISimpleNameExpressionSyntax nameExpression, Func<Symbol, bool>? symbolFilter, bool bindingOnly = false)
     {
         if (nameExpression.Name is null)
         {
@@ -1657,14 +1665,13 @@ public class BasicBodyAnalyzer
         }
 
         // First look for local variables
-        var variableSymbols = LookupSymbols<VariableSymbol>(nameExpression);
+        var variableSymbols = LookupSymbols<VariableSymbol>(nameExpression, symbolFilter);
 
         if (bindingOnly || variableSymbols.Count != 0)
             return InferSymbol(nameExpression, variableSymbols);
 
-        var symbols = LookupSymbols(nameExpression);
+        var symbols = LookupSymbols(nameExpression, symbolFilter);
         return InferSymbol(nameExpression, symbols);
-
     }
 
     private SelfParameterSymbol? InferSelfParameterSymbol(ISelfExpressionSyntax selfExpression)
@@ -1815,14 +1822,20 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private static FixedSet<Symbol> LookupSymbols(ISimpleNameExpressionSyntax exp)
-        => exp.LookupInContainingScope().Select(p => p.Result).ToFixedSet();
+    private static FixedSet<Symbol> LookupSymbols(ISimpleNameExpressionSyntax exp, Func<Symbol, bool>? symbolFilter = null)
+    {
+        symbolFilter ??= AllSymbols<Symbol>;
+        return exp.LookupInContainingScope().Select(p => p.Result).Where(symbolFilter).ToFixedSet();
+    }
 
-    private static FixedSet<TSymbol> LookupSymbols<TSymbol>(ISimpleNameExpressionSyntax exp)
+    private static FixedSet<TSymbol> LookupSymbols<TSymbol>(
+        ISimpleNameExpressionSyntax exp,
+        Func<TSymbol, bool>? symbolFilter = null)
         where TSymbol : Symbol
     {
+        symbolFilter ??= AllSymbols<TSymbol>;
         return exp.LookupInContainingScope().Select(p => p.Downcast().As<TSymbol>())
-                             .WhereNotNull().Select(p => p.Result).ToFixedSet();
+                             .WhereNotNull().Select(p => p.Result).Where(symbolFilter).ToFixedSet();
     }
 
     /// <returns>The symbols with the given name in the context, or <see langword="null"/> if the
