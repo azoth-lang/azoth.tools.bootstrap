@@ -155,6 +155,8 @@ public static class DataTypeExtensions
                             || !toCapabilityType.Capability.IsAssignableFrom(fromCapabilityType.Capability))
                             return false;
 
+                        // Because `shareable ind` preserves the shareableness of the type, it cannot
+                        // promote a `const` to `id`.
                         if (toCapabilityType.Capability == Capability.Identity
                            && fromCapabilityType.Capability == Capability.Constant)
                             return false;
