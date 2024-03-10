@@ -11,21 +11,32 @@ internal class GenericParameterSyntax : Syntax, IGenericParameterSyntax
 {
     public ICapabilityConstraintSyntax Constraint { get; }
     public SimpleName Name { get; }
-    public ParameterVariance ParameterVariance { get; }
+    public ParameterIndependence Independence { get; }
+    public TypeVariance Variance { get; }
     public Promise<GenericParameterTypeSymbol> Symbol { get; } = new();
 
     public GenericParameterSyntax(
         TextSpan span,
         ICapabilityConstraintSyntax constraint,
         SimpleName name,
-        ParameterVariance variance)
+        ParameterIndependence independence,
+        TypeVariance variance)
         : base(span)
     {
         Constraint = constraint;
         Name = name;
-        ParameterVariance = variance;
+        Independence = independence;
+        Variance = variance;
     }
 
     public override string ToString()
-        => ParameterVariance == ParameterVariance.Invariant ? Name.ToString() : $"{ParameterVariance.ToSourceCodeString()} {Name}";
+    {
+        return (Independence, Variance) switch
+        {
+            (ParameterIndependence.None, TypeVariance.Invariant) => Name.ToString(),
+            (ParameterIndependence.None, _) => $"{Name} {Variance.ToSourceCodeString()}",
+            (_, TypeVariance.Invariant) => $"{Name} {Independence.ToSourceCodeString()}",
+            _ => $"{Name} {Independence.ToSourceCodeString()} {Variance.ToSourceCodeString()}"
+        };
+    }
 }

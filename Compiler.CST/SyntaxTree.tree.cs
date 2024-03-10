@@ -310,7 +310,8 @@ public partial interface IGenericParameterSyntax : ISyntax
 {
     ICapabilityConstraintSyntax Constraint { get; }
     SimpleName Name { get; }
-    ParameterVariance ParameterVariance { get; }
+    ParameterIndependence Independence { get; }
+    TypeVariance Variance { get; }
     Promise<GenericParameterTypeSymbol> Symbol { get; }
 }
 

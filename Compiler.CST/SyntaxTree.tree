@@ -68,7 +68,7 @@ AssociatedFunctionDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, S
 Attribute = TypeName;
 
 // ---------- Type Parameters --------------
-GenericParameter = Constraint:CapabilityConstraint Name:'SimpleName' ParameterVariance:'ParameterVariance' Symbol:'Promise<GenericParameterTypeSymbol>';
+GenericParameter = Constraint:CapabilityConstraint Name:'SimpleName' Independence:'ParameterIndependence' Variance:'TypeVariance' Symbol:'Promise<GenericParameterTypeSymbol>';
 
 // ---------- Parameters and Return--------------
 Parameter = Name:'SimpleName'? DataType:'IPromise<Pseudotype>' Unused:'bool';
