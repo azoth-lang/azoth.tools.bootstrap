@@ -229,23 +229,23 @@ public partial class Parser
         return (ParameterIndependence.SharableIndependent, span);
     }
 
-    private (TypeVariance, TextSpan) ParseVariance()
+    private (ParameterVariance, TextSpan) ParseVariance()
     {
         return Tokens.Current switch
         {
-            IInKeywordToken _ => (TypeVariance.Contravariant, Tokens.Consume<IInKeywordToken>()),
-            IOutKeywordToken _ => (TypeVariance.Covariant, Tokens.Consume<IOutKeywordToken>()),
+            IInKeywordToken _ => (ParameterVariance.Contravariant, Tokens.Consume<IInKeywordToken>()),
+            IOutKeywordToken _ => (ParameterVariance.Covariant, Tokens.Consume<IOutKeywordToken>()),
             INonwritableKeywordToken _ => ParseNonwriteableVariance(),
-            _ => (TypeVariance.Invariant, Tokens.Current.Span.AtStart())
+            _ => (ParameterVariance.Invariant, Tokens.Current.Span.AtStart())
         };
     }
 
-    private (TypeVariance, TextSpan) ParseNonwriteableVariance()
+    private (ParameterVariance, TextSpan) ParseNonwriteableVariance()
     {
         var nonwriteableKeyword = Tokens.Required<INonwritableKeywordToken>();
         var outKeyword = Tokens.Required<IOutKeywordToken>();
         var span = TextSpan.Covering(nonwriteableKeyword, outKeyword);
-        return (TypeVariance.NonwritableCovariant, span);
+        return (ParameterVariance.NonwritableCovariant, span);
     }
 
     private (IFixedList<IClassMemberDeclarationSyntax> Members, TextSpan Span) ParseClassBody(IClassDeclarationSyntax declaringType)

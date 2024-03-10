@@ -14,18 +14,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 public sealed class GenericParameter : IEquatable<GenericParameter>
 {
     public static GenericParameter Invariant(ICapabilityConstraint constraint, StandardTypeName name)
-        => new(constraint, name, ParameterIndependence.None, TypeVariance.Invariant);
+        => new(constraint, name, ParameterIndependence.None, ParameterVariance.Invariant);
 
     public static GenericParameter Independent(ICapabilityConstraint constraint, StandardTypeName name)
-        => new(constraint, name, ParameterIndependence.Independent, TypeVariance.Invariant);
+        => new(constraint, name, ParameterIndependence.Independent, ParameterVariance.Invariant);
 
     public static GenericParameter Out(ICapabilityConstraint constraint, StandardTypeName name)
-        => new(constraint, name, ParameterIndependence.None, TypeVariance.Covariant);
+        => new(constraint, name, ParameterIndependence.None, ParameterVariance.Covariant);
 
     public static GenericParameter In(ICapabilityConstraint constraint, StandardTypeName name)
-        => new(constraint, name, ParameterIndependence.None, TypeVariance.Contravariant);
+        => new(constraint, name, ParameterIndependence.None, ParameterVariance.Contravariant);
 
-    public GenericParameter(ICapabilityConstraint constraint, StandardTypeName name, ParameterIndependence independence, TypeVariance variance)
+    public GenericParameter(ICapabilityConstraint constraint, StandardTypeName name, ParameterIndependence independence, ParameterVariance variance)
     {
         Requires.That(nameof(name), name.GenericParameterCount == 0, "Cannot have generic parameters");
         Constraint = constraint;
@@ -40,7 +40,7 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
 
     public ParameterIndependence Independence { get; }
 
-    public TypeVariance Variance { get; }
+    public ParameterVariance Variance { get; }
 
     public bool HasIndependence => Independence != ParameterIndependence.None;
 

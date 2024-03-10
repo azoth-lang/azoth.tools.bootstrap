@@ -6,5 +6,5 @@ public readonly record struct GenericParameterArgument(GenericParameter Paramete
 {
     public bool ParameterHasIndependence => Parameter.HasIndependence;
     public ParameterIndependence Independence => Parameter.Independence;
-    public TypeVariance Variance => Parameter.Variance;
+    public ParameterVariance Variance => Parameter.Variance;
 }

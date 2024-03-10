@@ -9,15 +9,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public static partial class TypeOperations
 {
     public static bool IsOutputSafe(this Pseudotype type, bool nonwriteableSelf)
-        => type.IsVarianceSafe(TypeVariance.Covariant, nonwriteableSelf);
+        => type.IsVarianceSafe(ParameterVariance.Covariant, nonwriteableSelf);
 
     public static bool IsInputSafe(this Pseudotype type, bool nonwriteableSelf)
-        => type.IsVarianceSafe(TypeVariance.Contravariant, nonwriteableSelf);
+        => type.IsVarianceSafe(ParameterVariance.Contravariant, nonwriteableSelf);
 
     public static bool IsInputAndOutputSafe(this Pseudotype type, bool nonwriteableSelf)
-        => type.IsVarianceSafe(TypeVariance.Invariant, nonwriteableSelf);
+        => type.IsVarianceSafe(ParameterVariance.Invariant, nonwriteableSelf);
 
-    private static bool IsVarianceSafe(this Pseudotype type, TypeVariance context, bool nonwritableSelf)
+    private static bool IsVarianceSafe(this Pseudotype type, ParameterVariance context, bool nonwritableSelf)
     {
         return type switch
         {
@@ -37,7 +37,7 @@ public static partial class TypeOperations
     }
 
 
-    private static bool IsVarianceSafe(this FunctionType type, TypeVariance context, bool nonwritableSelf)
+    private static bool IsVarianceSafe(this FunctionType type, ParameterVariance context, bool nonwritableSelf)
     {
         // The parameters are `in` (contravariant)
         foreach (var parameter in type.Parameters)
@@ -54,7 +54,7 @@ public static partial class TypeOperations
     private static bool IsVarianceSafe(
         this BareType type,
         ICapabilityConstraint typeCapability,
-        TypeVariance context,
+        ParameterVariance context,
         bool nonwritableSelf)
     {
         var nonwritableType = !typeCapability.AnyCapabilityAllowsWrite;
@@ -63,20 +63,20 @@ public static partial class TypeOperations
             {
                 default:
                     throw ExhaustiveMatch.Failed(parameter.Variance);
-                case TypeVariance.Contravariant: // i.e. `in`
+                case ParameterVariance.Contravariant: // i.e. `in`
                     if (!argument.IsVarianceSafe(context.Inverse(), nonwritableSelf))
                         return false;
                     break;
-                case TypeVariance.Invariant:
-                    if (!argument.IsVarianceSafe(TypeVariance.Invariant, nonwritableSelf))
+                case ParameterVariance.Invariant:
+                    if (!argument.IsVarianceSafe(ParameterVariance.Invariant, nonwritableSelf))
                         return false;
                     break;
-                case TypeVariance.NonwritableCovariant: // i.e. `nonwriteable out`
-                    var newContext = nonwritableType ? TypeVariance.Invariant : context;
+                case ParameterVariance.NonwritableCovariant: // i.e. `nonwriteable out`
+                    var newContext = nonwritableType ? ParameterVariance.Invariant : context;
                     if (!argument.IsVarianceSafe(newContext, nonwritableSelf))
                         return false;
                     break;
-                case TypeVariance.Covariant: // i.e. `out`
+                case ParameterVariance.Covariant: // i.e. `out`
                     if (!argument.IsVarianceSafe(context, nonwritableSelf))
                         return false;
                     break;
