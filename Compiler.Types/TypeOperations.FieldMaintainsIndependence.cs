@@ -10,28 +10,28 @@ public static partial class TypeOperations
     /// <summary>
     /// Does this type (of a field) maintain the independence of independent type parameters?
     /// </summary>
-    public static bool MaintainsIndependence(this DataType type)
+    public static bool FieldMaintainsIndependence(this DataType type)
         // Independent types can be used directly as fields, so the top level is an independent context
-        => type.MaintainsIndependence(Independence.Allowed);
+        => type.FieldMaintainsIndependence(Independence.Allowed);
 
-    private static bool MaintainsIndependence(this DataType type, Independence context)
+    private static bool FieldMaintainsIndependence(this DataType type, Independence context)
     {
         return type switch
         {
-            GenericParameterType t => t.MaintainsIndependence(context),
-            CapabilityType t => t.BareType.MaintainsIndependence(context),
-            ViewpointType t => t.Referent.MaintainsIndependence(context),
+            GenericParameterType t => t.FieldMaintainsIndependence(context),
+            CapabilityType t => t.BareType.FieldMaintainsIndependence(context),
+            ViewpointType t => t.Referent.FieldMaintainsIndependence(context),
             EmptyType _ => true,
             UnknownType _ => true,
             ConstValueType _ => true,
             // The referent of an optional type is basically `out T` (covariant)
-            OptionalType t => t.Referent.MaintainsIndependence(context.Child(Independence.Disallowed)),
-            FunctionType t => t.MaintainsIndependence(),
+            OptionalType t => t.Referent.FieldMaintainsIndependence(context.Child(Independence.Disallowed)),
+            FunctionType t => t.FieldMaintainsIndependence(),
             _ => throw ExhaustiveMatch.Failed(type),
         };
     }
 
-    private static bool MaintainsIndependence(this GenericParameterType type, Independence context)
+    private static bool FieldMaintainsIndependence(this GenericParameterType type, Independence context)
     {
         return type.Parameter switch
         {
@@ -44,7 +44,7 @@ public static partial class TypeOperations
         };
     }
 
-    private static bool MaintainsIndependence(this BareType type, Independence context)
+    private static bool FieldMaintainsIndependence(this BareType type, Independence context)
     {
         foreach (var (parameter, argument) in type.GenericParameterArguments)
             switch (parameter.Independence)
@@ -64,15 +64,15 @@ public static partial class TypeOperations
                 //        return false;
                 //    break;
                 case ParameterIndependence.SharableIndependent: // i.e. `shareable ind`
-                    if (!argument.MaintainsIndependence(context.Child(Independence.ShareableAllowed)))
+                    if (!argument.FieldMaintainsIndependence(context.Child(Independence.ShareableAllowed)))
                         return false;
                     break;
                 case ParameterIndependence.Independent: // i.e. `ind`
-                    if (!argument.MaintainsIndependence(context.Child(Independence.Allowed)))
+                    if (!argument.FieldMaintainsIndependence(context.Child(Independence.Allowed)))
                         return false;
                     break;
                 case ParameterIndependence.None:
-                    if (!argument.MaintainsIndependence(context.Child(Independence.Blocked)))
+                    if (!argument.FieldMaintainsIndependence(context.Child(Independence.Blocked)))
                         return false;
                     break;
             }
@@ -80,15 +80,15 @@ public static partial class TypeOperations
         return true;
     }
 
-    private static bool MaintainsIndependence(this FunctionType type)
+    private static bool FieldMaintainsIndependence(this FunctionType type)
     {
         // Within function types, independent types are completely blocked
 
         foreach (var parameter in type.Parameters)
-            if (!parameter.Type.MaintainsIndependence(Independence.Blocked))
+            if (!parameter.Type.FieldMaintainsIndependence(Independence.Blocked))
                 return false;
 
-        if (!type.Return.Type.MaintainsIndependence(Independence.Blocked))
+        if (!type.Return.Type.FieldMaintainsIndependence(Independence.Blocked))
             return false;
 
         return true;

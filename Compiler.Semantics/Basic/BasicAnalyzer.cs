@@ -350,7 +350,7 @@ public class BasicAnalyzer
         }
 
         // Fields must also maintain the independence of independent type parameters
-        if (!type.MaintainsIndependence())
+        if (!type.FieldMaintainsIndependence())
             diagnostics.Add(TypeError.FieldMustMaintainIndependence(field.File, field, type));
 
         if (field.Initializer is not null)
