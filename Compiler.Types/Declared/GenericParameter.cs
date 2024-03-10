@@ -29,7 +29,8 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
     {
         Requires.That(nameof(name), name.GenericParameterCount == 0, "Cannot have generic parameters");
         Constraint = constraint;
-        ParameterVariance = parameterVariance;
+        Independence = parameterVariance.ToParameterIndependence();
+        Variance = parameterVariance.ToTypeVariance();
         Name = name;
     }
 
@@ -37,14 +38,11 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
 
     public StandardTypeName Name { get; }
 
-    public ParameterVariance ParameterVariance { get; }
+    public ParameterIndependence Independence { get; }
 
-    public TypeVariance TypeVariance => ParameterVariance.ToTypeVariance();
+    public TypeVariance Variance { get; }
 
-    public ParameterIndependence Independence => ParameterVariance.ToParameterIndependence();
-
-    public bool HasIndependence
-        => ParameterVariance is ParameterVariance.Independent or ParameterVariance.SharableIndependent;
+    public bool HasIndependence => Independence != ParameterIndependence.None;
 
     // TODO When parameters can be values not just types, add: public DataType DataType { get; }
 
@@ -53,27 +51,34 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return ParameterVariance == other.ParameterVariance && Name.Equals(other.Name);
+        return Independence == other.Independence
+               && Variance == other.Variance
+               && Name.Equals(other.Name);
     }
 
     public override bool Equals(object? obj)
         => obj is GenericParameter other && Equals(other);
 
-    public override int GetHashCode() => HashCode.Combine(ParameterVariance, Name);
+    public override int GetHashCode() => HashCode.Combine(Name, Independence, Variance);
 
-    public static bool operator ==(GenericParameter? left, GenericParameter? right) => Equals(left, right);
+    public static bool operator ==(GenericParameter? left, GenericParameter? right)
+        => Equals(left, right);
 
-    public static bool operator !=(GenericParameter? left, GenericParameter? right) => !Equals(left, right);
+    public static bool operator !=(GenericParameter? left, GenericParameter? right)
+        => !Equals(left, right);
     #endregion
 
     public override string ToString()
     {
         var builder = new StringBuilder();
         var constraint = Constraint.ToSourceCodeString();
-        if (Constraint != CapabilitySet.Aliasable && constraint.Length != 0)
+        if (Constraint != CapabilitySet.Aliasable)
             builder.Append(constraint).Append(' ');
         builder.Append(Name);
-        var variance = ParameterVariance.ToSourceCodeString();
+        var independence = Independence.ToSourceCodeString();
+        if (independence.Length != 0)
+            builder.Append(' ').Append(independence);
+        var variance = Variance.ToSourceCodeString();
         if (variance.Length != 0)
             builder.Append(' ').Append(variance);
         return builder.ToString();

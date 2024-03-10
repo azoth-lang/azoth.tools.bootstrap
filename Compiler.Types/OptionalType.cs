@@ -14,6 +14,8 @@ public sealed class OptionalType : NonEmptyType
 {
     public DataType Referent { get; }
 
+    public override bool AllowsVariance => true;
+
     public override bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
 
     public override bool IsFullyKnown => Referent.IsFullyKnown;

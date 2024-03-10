@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using ExhaustiveMatching;
 
@@ -37,9 +36,9 @@ public static partial class TypeOperations
         return type.Parameter switch
         {
             { HasIndependence: false } => true,
-            { ParameterVariance: ParameterVariance.SharableIndependent }
+            { Independence: ParameterIndependence.SharableIndependent }
                 => context >= Independence.ShareableAllowed,
-            { ParameterVariance: ParameterVariance.Independent }
+            { Independence: ParameterIndependence.Independent }
                 => context == Independence.Allowed,
             _ => throw new UnreachableException(),
         };
@@ -48,28 +47,32 @@ public static partial class TypeOperations
     private static bool MaintainsIndependence(this BareType type, Independence context)
     {
         foreach (var (parameter, argument) in type.GenericParameterArguments)
-            switch (parameter.ParameterVariance)
+            switch (parameter.Independence)
             {
                 default:
-                    throw ExhaustiveMatch.Failed(parameter.TypeVariance);
-                case ParameterVariance.Contravariant: // i.e. `in`
-                    var childIndependence = parameter.Constraint == CapabilitySet.Shareable
-                        ? Independence.ShareableAllowed
-                        : Independence.Disallowed;
-                    if (!argument.MaintainsIndependence(context.Child(childIndependence)))
-                        return false;
-                    break;
-                case ParameterVariance.Invariant:
-                case ParameterVariance.Covariant: // i.e. `out`
-                    if (!argument.MaintainsIndependence(context.Child(Independence.Disallowed)))
-                        return false;
-                    break;
-                case ParameterVariance.SharableIndependent: // i.e. `shareable ind`
+                    throw ExhaustiveMatch.Failed(parameter.Independence);
+                //case ParameterVariance.Contravariant: // i.e. `in`
+                //    var childIndependence = parameter.Constraint == CapabilitySet.Shareable
+                //        ? Independence.ShareableAllowed
+                //        : Independence.Disallowed;
+                //    if (!argument.MaintainsIndependence(context.Child(childIndependence)))
+                //        return false;
+                //    break;
+                //case ParameterVariance.Invariant:
+                //case ParameterVariance.Covariant: // i.e. `out`
+                //    if (!argument.MaintainsIndependence(context.Child(Independence.Disallowed)))
+                //        return false;
+                //    break;
+                case ParameterIndependence.SharableIndependent: // i.e. `shareable ind`
                     if (!argument.MaintainsIndependence(context.Child(Independence.ShareableAllowed)))
                         return false;
                     break;
-                case ParameterVariance.Independent: // i.e. `ind`
+                case ParameterIndependence.Independent: // i.e. `ind`
                     if (!argument.MaintainsIndependence(context.Child(Independence.Allowed)))
+                        return false;
+                    break;
+                case ParameterIndependence.None:
+                    if (!argument.MaintainsIndependence(context.Child(Independence.Blocked)))
                         return false;
                     break;
             }

@@ -56,6 +56,8 @@ public abstract class CapabilityType : NonEmptyType
 
     public IFixedList<DataType> TypeArguments => BareType.GenericTypeArguments;
 
+    public sealed override bool AllowsVariance => BareType.AllowsVariance;
+
     public sealed override bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
 
     public FixedSet<BareReferenceType> Supertypes => BareType.Supertypes;

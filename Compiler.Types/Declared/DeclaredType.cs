@@ -58,7 +58,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
         IsDeclaredConst = isDeclaredConst;
         GenericParameters = genericParametersTypes.Select(t => t.Parameter).ToFixedList();
         HasIndependentGenericParameters = GenericParameters.Any(p => p.HasIndependence);
-        AllowsVariance = GenericParameters.Any(p => p.ParameterVariance != ParameterVariance.Invariant);
+        AllowsVariance = GenericParameters.Any(p => p.Variance != TypeVariance.Invariant);
         GenericParameterTypes = genericParametersTypes;
     }
 

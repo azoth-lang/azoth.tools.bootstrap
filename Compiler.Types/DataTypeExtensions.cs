@@ -79,7 +79,7 @@ public static class DataTypeExtensions
         if (source.Equals(target) || source.Supertypes.Contains(target))
             return true;
 
-        if (target.AllowsVariance)
+        if (target.AllowsVariance || target.HasIndependentTypeArguments)
         {
             var declaredType = target.DeclaredType;
             var matchingDeclaredType = source.Supertypes.Prepend(source).Where(t => t.DeclaredType == declaredType);
@@ -114,66 +114,73 @@ public static class DataTypeExtensions
         IFixedList<DataType> target,
         IFixedList<DataType> source)
     {
+        Requires.That(nameof(target), target.Count == declaredType.GenericParameters.Count, "count must match count of declaredType generic parameters");
+        Requires.That(nameof(source), source.Count == target.Count, "count must match count of target");
         for (int i = 0; i < declaredType.GenericParameters.Count; i++)
         {
             var from = source[i];
             var to = target[i];
-            switch (declaredType.GenericParameters[i].ParameterVariance)
+            var genericParameter = declaredType.GenericParameters[i];
+            switch (genericParameter.Variance)
             {
-                case ParameterVariance.Invariant:
-                    if (from != to)
-                        return false;
-                    break;
-                case ParameterVariance.Independent:
+                default:
+                    throw ExhaustiveMatch.Failed(genericParameter.Variance);
+                case TypeVariance.Invariant:
                     if (from != to)
                     {
-                        // When target allows write, acts invariant
-                        if (targetAllowsWrite)
-                            return false;
-
-                        if (from is not CapabilityType fromCapabilityType
-                            || to is not CapabilityType toCapabilityType)
-                            return false;
-
-                        if (fromCapabilityType.BareType != toCapabilityType.BareType
-                            // TODO does this handle `iso` and `id` correctly?
-                            || !toCapabilityType.Capability.IsAssignableFrom(fromCapabilityType.Capability))
-                            return false;
-                    }
-                    break;
-                case ParameterVariance.SharableIndependent:
-                    if (from != to)
-                    {
-                        // When target allows write, acts invariant
+                        // When target allows write, acts invariant regardless of independence
                         if (targetAllowsWrite) return false;
 
-                        if (from is not CapabilityType fromCapabilityType || to is not CapabilityType toCapabilityType)
-                            return false;
+                        switch (genericParameter.Independence)
+                        {
+                            default:
+                                throw ExhaustiveMatch.Failed(genericParameter.Independence);
+                            case ParameterIndependence.Independent:
+                            {
+                                if (from is not CapabilityType fromCapabilityType
+                                    || to is not CapabilityType toCapabilityType)
+                                    return false;
 
-                        if (fromCapabilityType.BareType != toCapabilityType.BareType
-                            // TODO does this handle `iso` and `id` correctly?
-                            || !toCapabilityType.Capability.IsAssignableFrom(fromCapabilityType.Capability))
-                            return false;
+                                if (fromCapabilityType.BareType != toCapabilityType.BareType
+                                    // TODO does this handle `iso` and `id` correctly?
+                                    || !toCapabilityType.Capability.IsAssignableFrom(fromCapabilityType.Capability))
+                                    return false;
+                                break;
+                            }
+                            case ParameterIndependence.SharableIndependent:
+                            {
+                                if (from is not CapabilityType fromCapabilityType
+                                    || to is not CapabilityType toCapabilityType)
+                                    return false;
 
-                        // Because `shareable ind` preserves the shareableness of the type, it cannot
-                        // promote a `const` to `id`.
-                        if (toCapabilityType.Capability == Capability.Identity
-                           && fromCapabilityType.Capability == Capability.Constant)
-                            return false;
+                                if (fromCapabilityType.BareType != toCapabilityType.BareType
+                                    // TODO does this handle `iso` and `id` correctly?
+                                    || !toCapabilityType.Capability.IsAssignableFrom(fromCapabilityType.Capability))
+                                    return false;
 
-                        // TODO what about `temp const`?
+                                // Because `shareable ind` preserves the shareableness of the type, it cannot
+                                // promote a `const` to `id`.
+                                if (toCapabilityType.Capability == Capability.Identity
+                                    && fromCapabilityType.Capability == Capability.Constant)
+                                    return false;
+
+                                // TODO what about `temp const`?
+                                break;
+                            }
+                            case ParameterIndependence.None:
+                                // Invariant and not independent, so not assignable when not equal
+                                return false;
+                        }
                     }
                     break;
-                case ParameterVariance.Covariant:
+                case TypeVariance.Covariant:
                     if (!to.IsAssignableFrom(from))
                         return false;
                     break;
-                case ParameterVariance.Contravariant:
+                case TypeVariance.Contravariant:
                     if (!from.IsAssignableFrom(to))
                         return false;
                     break;
-                default:
-                    throw ExhaustiveMatch.Failed(declaredType.GenericParameters[i].ParameterVariance);
             }
         }
         return true;

@@ -40,10 +40,10 @@ public abstract class BareType : IEquatable<BareType>
     #endregion
 
     public abstract DeclaredType DeclaredType { get; }
-    public bool AllowsVariance => DeclaredType.AllowsVariance;
     public IFixedList<DataType> GenericTypeArguments { get; }
     public IEnumerable<GenericParameterArgument> GenericParameterArguments
         => DeclaredType.GenericParameters.EquiZip(GenericTypeArguments, (p, a) => new GenericParameterArgument(p, a));
+    public bool AllowsVariance { get; }
     public bool HasIndependentTypeArguments { get; }
 
     private readonly Lazy<FixedSet<BareReferenceType>> supertypes;
@@ -78,6 +78,8 @@ public abstract class BareType : IEquatable<BareType>
                 $"Number of type arguments must match. Given `[{genericTypeArguments.ToILString()}]` for `{declaredType}`.",
                 nameof(genericTypeArguments));
         GenericTypeArguments = genericTypeArguments;
+        AllowsVariance = declaredType.AllowsVariance
+            || GenericTypeArguments.Any(a => a.AllowsVariance);
         HasIndependentTypeArguments = declaredType.HasIndependentGenericParameters
                                       || GenericTypeArguments.Any(a => a.HasIndependentTypeArguments);
         IsFullyKnown = genericTypeArguments.All(a => a.IsFullyKnown);

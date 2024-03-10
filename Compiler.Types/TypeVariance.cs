@@ -11,6 +11,15 @@ public enum TypeVariance
 
 public static class TypeVarianceExtensions
 {
+    public static string ToSourceCodeString(this TypeVariance variance)
+        => variance switch
+        {
+            TypeVariance.Contravariant => "in",
+            TypeVariance.Invariant => "",
+            TypeVariance.Covariant => "out",
+            _ => throw ExhaustiveMatch.Failed(variance),
+        };
+
     /// <summary>
     /// Is the given variance compatible with this one?
     /// </summary>

@@ -20,7 +20,7 @@ public static partial class TypeOperations
     {
         return type switch
         {
-            GenericParameterType t => variance.CompatibleWith(t.Parameter.TypeVariance),
+            GenericParameterType t => variance.CompatibleWith(t.Parameter.Variance),
             // TODO does the viewpoint or constraint need to be checked?
             CapabilityType t => t.BareType.IsVarianceSafe(variance),
             ViewpointType t => t.Referent.IsVarianceSafe(variance),
@@ -52,10 +52,10 @@ public static partial class TypeOperations
     private static bool IsVarianceSafe(this BareType type, TypeVariance variance)
     {
         foreach (var (parameter, argument) in type.GenericParameterArguments)
-            switch (parameter.TypeVariance)
+            switch (parameter.Variance)
             {
                 default:
-                    throw ExhaustiveMatch.Failed(parameter.TypeVariance);
+                    throw ExhaustiveMatch.Failed(parameter.Variance);
                 case TypeVariance.Contravariant: // i.e. `in`
                     if (!argument.IsVarianceSafe(variance.Inverse()))
                         return false;
