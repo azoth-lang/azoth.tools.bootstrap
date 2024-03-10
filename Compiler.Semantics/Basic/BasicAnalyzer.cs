@@ -158,10 +158,12 @@ public class BasicAnalyzer
         // TODO nested classes and traits need to be checked if nested inside of generic types
         if (!declaresType.IsGeneric)
             return;
+        var nonwritableSelf = declaresType.IsDeclaredConst ? true : (bool?)null;
         foreach (var typeNameSyntax in allSuperTypes)
         {
             var type = typeNameSyntax.NamedType.Assigned();
-            if (!type.IsOutputSafe(nonwriteableSelf: declaresType.IsDeclaredConst))
+            // Base types are supposed to be bare types (so this is true unless there was a previous error)
+            if (type is CapabilityType { BareType: var bareType } && !bareType.IsSupertypeOutputSafe(nonwritableSelf))
                 diagnostics.Add(TypeError.SupertypeMustBeOutputSafe(typeDeclaration.File, typeNameSyntax));
         }
     }
@@ -178,7 +180,7 @@ public class BasicAnalyzer
                 diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(typeDeclaration.File, baseTypeNameSyntax));
 
         foreach (var typeNameSyntax in typeDeclaration.SupertypeNames)
-            if (!typeNameSyntax.NamedType.Assigned().SupertypeMaintainsIndependence(exact: true))
+            if (!typeNameSyntax.NamedType.Assigned().SupertypeMaintainsIndependence(exact: false))
                 diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(typeDeclaration.File, typeNameSyntax));
     }
 
@@ -347,7 +349,7 @@ public class BasicAnalyzer
             else
             {
                 // Immutable bindings can only be read, so they must be output safe.
-                if (!type.IsOutputSafe(nonwriteableSelf: true))
+                if (!type.IsOutputSafe(nonwritableSelf: true))
                     diagnostics.Add(TypeError.LetFieldMustBeOutputSafe(field.File, field, type));
             }
         }

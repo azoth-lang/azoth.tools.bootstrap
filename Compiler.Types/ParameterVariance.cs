@@ -22,6 +22,22 @@ public static class ParameterVarianceExtensions
             _ => throw ExhaustiveMatch.Failed(variance),
         };
 
+    /// <param name="nonwritableSelf">Whether the self parameter type is nonwriteable.
+    /// <see langword="null"/> is used for base types to indicate that it could behave either way.</param>
+    internal static Variance? ToVariance(this ParameterVariance variance, bool? nonwritableSelf)
+    {
+        if (nonwritableSelf is bool knownNonwritableSelf)
+            return ToVariance(variance, knownNonwritableSelf);
+        return variance switch
+        {
+            ParameterVariance.Contravariant => Variance.Contravariant,
+            ParameterVariance.Invariant => Variance.Invariant,
+            ParameterVariance.NonwritableCovariant => null,
+            ParameterVariance.Covariant => Variance.Covariant,
+            _ => throw ExhaustiveMatch.Failed(variance),
+        };
+    }
+
     internal static Variance ToVariance(this ParameterVariance variance, bool nonwritableSelf)
         => variance switch
         {

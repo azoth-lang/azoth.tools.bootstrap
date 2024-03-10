@@ -15,7 +15,7 @@ public static partial class TypeOperations
         => type switch
         {
             GenericParameterType t => t.SupertypeMaintainsIndependence(exact, context),
-            CapabilityType t => t.BareType.SupertypeMaintainsIndependence(exact, context),
+            CapabilityType t => t.BareType.SupertypeMaintainsIndependence(exact),
             ViewpointType t => t.Referent.SupertypeMaintainsIndependence(exact, context),
             EmptyType _ => true,
             UnknownType _ => true,
@@ -26,12 +26,24 @@ public static partial class TypeOperations
         };
 
     private static bool SupertypeMaintainsIndependence(this GenericParameterType type, bool exact, ParameterIndependence context)
-        => context == type.Parameter.Independence || (!exact && context >= type.Parameter.Independence);
+    {
+        var independence = type.Parameter.Independence;
+        return context switch
+        {
+            ParameterIndependence.None => independence == ParameterIndependence.None,
+            ParameterIndependence.SharableIndependent
+                => independence == ParameterIndependence.SharableIndependent
+                   || (!exact && independence == ParameterIndependence.Independent),
+            ParameterIndependence.Independent => independence == ParameterIndependence.Independent,
+            _ => throw ExhaustiveMatch.Failed(context),
+        };
+    }
 
-    private static bool SupertypeMaintainsIndependence(this BareType type, bool exact, ParameterIndependence context)
+    private static bool SupertypeMaintainsIndependence(this BareType type, bool exact)
     {
         // Once the supertype is a trait exact independence is not required
-        exact &= type.DeclaredType is DeclaredReferenceType { IsClass: true } or DeclaredValueType;
+        exact &= type.DeclaredType is DeclaredReferenceType { IsClass: true }
+        or DeclaredValueType;
         foreach (var (parameter, argument) in type.GenericParameterArguments)
             if (!argument.SupertypeMaintainsIndependence(exact, parameter.Independence))
                 return false;
@@ -41,8 +53,6 @@ public static partial class TypeOperations
 
     private static bool SupertypeMaintainsIndependence(this FunctionType type)
     {
-        // Within function types, independent types are completely blocked
-
         foreach (var parameter in type.Parameters)
             if (!parameter.Type.SupertypeMaintainsIndependence(false, ParameterIndependence.None))
                 return false;

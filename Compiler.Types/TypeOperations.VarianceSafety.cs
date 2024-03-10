@@ -8,8 +8,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public static partial class TypeOperations
 {
-    public static bool IsOutputSafe(this Pseudotype type, bool nonwriteableSelf)
-        => type.IsVarianceSafe(Variance.Covariant, nonwriteableSelf);
+    /// <param name="nonwritableSelf">Whether the self parameter type is nonwriteable.
+    /// <see langword="null"/> is used for base types to indicate that it could behave either way.</param>
+    public static bool IsOutputSafe(this Pseudotype type, bool nonwritableSelf)
+        => type.IsVarianceSafe(Variance.Covariant, nonwritableSelf);
+
+    /// <summary>
+    /// Check if a bare supertype is output safe.
+    /// </summary>
+    public static bool IsSupertypeOutputSafe(this BareType type, bool? nonwritableSelf)
+        => type.IsVarianceSafe(null, Variance.Covariant, nonwritableSelf);
 
     public static bool IsInputSafe(this Pseudotype type, bool nonwriteableSelf)
         => type.IsVarianceSafe(Variance.Contravariant, nonwriteableSelf);
@@ -17,7 +25,7 @@ public static partial class TypeOperations
     public static bool IsInputAndOutputSafe(this Pseudotype type, bool nonwriteableSelf)
         => type.IsVarianceSafe(Variance.Invariant, nonwriteableSelf);
 
-    private static bool IsVarianceSafe(this Pseudotype type, Variance context, bool nonwritableSelf)
+    private static bool IsVarianceSafe(this Pseudotype type, Variance context, bool? nonwritableSelf)
     {
         return type switch
         {
@@ -36,8 +44,7 @@ public static partial class TypeOperations
         };
     }
 
-
-    private static bool IsVarianceSafe(this FunctionType type, Variance context, bool nonwritableSelf)
+    private static bool IsVarianceSafe(this FunctionType type, Variance context, bool? nonwritableSelf)
     {
         // The parameters are `in` (contravariant)
         foreach (var parameter in type.Parameters)
@@ -53,11 +60,11 @@ public static partial class TypeOperations
 
     private static bool IsVarianceSafe(
         this BareType type,
-        ICapabilityConstraint typeCapability,
+        ICapabilityConstraint? typeCapability,
         Variance context,
-        bool nonwritableSelf)
+        bool? nonwritableSelf)
     {
-        var nonwritableType = !typeCapability.AnyCapabilityAllowsWrite;
+        var nonwritableType = !typeCapability?.AnyCapabilityAllowsWrite;
         foreach (var (parameter, argument) in type.GenericParameterArguments)
         {
             var variance = parameter.Variance.ToVariance(nonwritableType);
@@ -70,6 +77,11 @@ public static partial class TypeOperations
                     break;
                 case Variance.Invariant:
                     if (!argument.IsVarianceSafe(Variance.Invariant, nonwritableSelf)) return false;
+                    break;
+                case null: // i.e. `nonwriteable out` at the first level
+                    if (argument is GenericParameterType { Parameter.Variance: ParameterVariance.Covariant })
+                        return false;
+                    if (!argument.IsVarianceSafe(context, nonwritableSelf)) return false;
                     break;
                 case Variance.Covariant: // i.e. `out`
                     if (!argument.IsVarianceSafe(context, nonwritableSelf)) return false;

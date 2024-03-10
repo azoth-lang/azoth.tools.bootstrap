@@ -14,9 +14,12 @@ public static class VarianceExtensions
     /// <summary>
     /// Is the given variance compatible with this one?
     /// </summary>
-    internal static bool CompatibleWith(this Variance contextVariance, ParameterVariance parameterVariance, bool nonwritableSelf)
+    /// <param name="nonwritableSelf">Whether the self parameter type is nonwriteable.
+    /// <see langword="null"/> is used for base types to indicate that it could behave either way.</param>
+    internal static bool CompatibleWith(this Variance contextVariance, ParameterVariance parameterVariance, bool? nonwritableSelf)
     {
-        var variance = parameterVariance.ToVariance(nonwritableSelf);
+        // if NonwritableCovariant could behave either way, then the most restrictive is used
+        var variance = parameterVariance.ToVariance(nonwritableSelf) ?? Variance.Covariant;
         return contextVariance switch
         {
             Variance.Contravariant => variance <= Variance.Invariant,
