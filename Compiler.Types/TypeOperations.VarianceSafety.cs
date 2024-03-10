@@ -9,15 +9,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public static partial class TypeOperations
 {
     public static bool IsOutputSafe(this Pseudotype type, bool nonwriteableSelf)
-        => type.IsVarianceSafe(ParameterVariance.Covariant, nonwriteableSelf);
+        => type.IsVarianceSafe(Variance.Covariant, nonwriteableSelf);
 
     public static bool IsInputSafe(this Pseudotype type, bool nonwriteableSelf)
-        => type.IsVarianceSafe(ParameterVariance.Contravariant, nonwriteableSelf);
+        => type.IsVarianceSafe(Variance.Contravariant, nonwriteableSelf);
 
     public static bool IsInputAndOutputSafe(this Pseudotype type, bool nonwriteableSelf)
-        => type.IsVarianceSafe(ParameterVariance.Invariant, nonwriteableSelf);
+        => type.IsVarianceSafe(Variance.Invariant, nonwriteableSelf);
 
-    private static bool IsVarianceSafe(this Pseudotype type, ParameterVariance context, bool nonwritableSelf)
+    private static bool IsVarianceSafe(this Pseudotype type, Variance context, bool nonwritableSelf)
     {
         return type switch
         {
@@ -37,7 +37,7 @@ public static partial class TypeOperations
     }
 
 
-    private static bool IsVarianceSafe(this FunctionType type, ParameterVariance context, bool nonwritableSelf)
+    private static bool IsVarianceSafe(this FunctionType type, Variance context, bool nonwritableSelf)
     {
         // The parameters are `in` (contravariant)
         foreach (var parameter in type.Parameters)
@@ -54,33 +54,28 @@ public static partial class TypeOperations
     private static bool IsVarianceSafe(
         this BareType type,
         ICapabilityConstraint typeCapability,
-        ParameterVariance context,
+        Variance context,
         bool nonwritableSelf)
     {
         var nonwritableType = !typeCapability.AnyCapabilityAllowsWrite;
         foreach (var (parameter, argument) in type.GenericParameterArguments)
-            switch (parameter.Variance)
+        {
+            var variance = parameter.Variance.ToVariance(nonwritableType);
+            switch (variance)
             {
                 default:
-                    throw ExhaustiveMatch.Failed(parameter.Variance);
-                case ParameterVariance.Contravariant: // i.e. `in`
-                    if (!argument.IsVarianceSafe(context.Inverse(), nonwritableSelf))
-                        return false;
+                    throw ExhaustiveMatch.Failed(variance);
+                case Variance.Contravariant: // i.e. `in`
+                    if (!argument.IsVarianceSafe(context.Inverse(), nonwritableSelf)) return false;
                     break;
-                case ParameterVariance.Invariant:
-                    if (!argument.IsVarianceSafe(ParameterVariance.Invariant, nonwritableSelf))
-                        return false;
+                case Variance.Invariant:
+                    if (!argument.IsVarianceSafe(Variance.Invariant, nonwritableSelf)) return false;
                     break;
-                case ParameterVariance.NonwritableCovariant: // i.e. `nonwriteable out`
-                    var newContext = nonwritableType ? ParameterVariance.Invariant : context;
-                    if (!argument.IsVarianceSafe(newContext, nonwritableSelf))
-                        return false;
-                    break;
-                case ParameterVariance.Covariant: // i.e. `out`
-                    if (!argument.IsVarianceSafe(context, nonwritableSelf))
-                        return false;
+                case Variance.Covariant: // i.e. `out`
+                    if (!argument.IsVarianceSafe(context, nonwritableSelf)) return false;
                     break;
             }
+        }
 
         return true;
     }
