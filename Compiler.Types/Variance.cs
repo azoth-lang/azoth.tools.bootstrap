@@ -19,9 +19,9 @@ public static class VarianceExtensions
         var variance = parameterVariance.ToVariance(nonwritableSelf);
         return contextVariance switch
         {
-            Variance.Contravariant => variance is Variance.Contravariant or Variance.Invariant,
-            Variance.Invariant => variance is Variance.Invariant,
-            Variance.Covariant => variance is Variance.Covariant or Variance.Invariant,
+            Variance.Contravariant => variance <= Variance.Invariant,
+            Variance.Invariant => variance == Variance.Invariant,
+            Variance.Covariant => variance >= Variance.Invariant,
             _ => throw ExhaustiveMatch.Failed(contextVariance),
         };
     }
