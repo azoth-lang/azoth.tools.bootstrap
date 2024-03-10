@@ -19,7 +19,7 @@ public static partial class TypeOperations
     {
         return type switch
         {
-            GenericParameterType t => MaintainsIndependence(t, context),
+            GenericParameterType t => t.MaintainsIndependence(context),
             CapabilityType t => t.BareType.MaintainsIndependence(context),
             ViewpointType t => t.Referent.MaintainsIndependence(context),
             EmptyType _ => true,
@@ -32,14 +32,15 @@ public static partial class TypeOperations
         };
     }
 
-    private static bool MaintainsIndependence(GenericParameterType type, Independence context)
+    private static bool MaintainsIndependence(this GenericParameterType type, Independence context)
     {
         return type.Parameter switch
         {
             { HasIndependence: false } => true,
             { ParameterVariance: ParameterVariance.SharableIndependent }
                 => context >= Independence.ShareableAllowed,
-            { ParameterVariance: ParameterVariance.Independent } => context == Independence.Allowed,
+            { ParameterVariance: ParameterVariance.Independent }
+                => context == Independence.Allowed,
             _ => throw new UnreachableException(),
         };
     }
