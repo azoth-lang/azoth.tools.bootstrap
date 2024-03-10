@@ -225,4 +225,10 @@ public static class TypeError
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3033, $"In `{typeSyntax}` the capability of `{arg.ToSourceCodeString()}` is not compatible with the capability constraint on `{parameter}`.");
     }
+
+    public static Diagnostic SupertypeMustMaintainIndependence(CodeFile file, ITypeNameSyntax typeSyntax)
+    {
+        return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3034, $"Supertype `{typeSyntax.ToString()}` does not maintain independence.");
+    }
 }

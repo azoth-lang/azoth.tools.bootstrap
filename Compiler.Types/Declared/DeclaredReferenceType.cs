@@ -15,15 +15,22 @@ public abstract class DeclaredReferenceType : DeclaredType
 {
     public bool IsAbstract { get; }
 
+    /// <summary>
+    /// Whether this type is a `class` (as opposed to a `trait`)
+    /// </summary>
+    public bool IsClass { get; }
+
     public override TypeSemantics Semantics => TypeSemantics.Reference;
 
     private protected DeclaredReferenceType(
         bool isDeclaredConst,
         bool isAbstract,
+        bool isClass,
         IFixedList<GenericParameterType> genericParametersTypes)
         : base(isDeclaredConst, genericParametersTypes)
     {
         IsAbstract = isAbstract;
+        IsClass = isClass;
     }
 
     public abstract override BareReferenceType With(IFixedList<DataType> typeArguments);

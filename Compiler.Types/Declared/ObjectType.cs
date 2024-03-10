@@ -112,11 +112,10 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         StandardTypeName name,
         IFixedList<GenericParameterType> genericParametersTypes,
         IPromise<FixedSet<BareReferenceType>> supertypes)
-        : base(isConstType, isAbstract, genericParametersTypes)
+        : base(isConstType, isAbstract, isClass, genericParametersTypes)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
-        IsClass = isClass;
         Name = name;
         this.supertypes = supertypes;
         // Fulfill the declaring type promise so the parameters are associated to this type
@@ -128,11 +127,6 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     public override SimpleName ContainingPackage { get; }
 
     public override NamespaceName ContainingNamespace { get; }
-
-    /// <summary>
-    /// Whether this type is a `class` (as opposed to a `trait`)
-    /// </summary>
-    public bool IsClass { get; }
 
     public override StandardTypeName Name { get; }
 

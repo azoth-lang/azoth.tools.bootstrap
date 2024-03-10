@@ -104,7 +104,7 @@ public class BasicAnalyzer
                 Resolve(syn);
                 break;
             case IFieldDeclarationSyntax syn:
-                ResolveInitializer(syn);
+                Resolve(syn);
                 break;
         }
     }
@@ -139,6 +139,7 @@ public class BasicAnalyzer
 
     private void Resolve(IClassDeclarationSyntax @class)
     {
+        // Resolve base class
         if (@class.BaseTypeName is not null)
             // TODO error for duplicates
             if (@class.BaseTypeName.ReferencedSymbol.Result is not UserTypeSymbol { DeclaresType.IsClass: true })
@@ -146,6 +147,7 @@ public class BasicAnalyzer
 
         ResolveSupertypes(@class);
         CheckSupertypesAreOutputSafe(@class, @class.AllSupertypeNames.ToFixedList());
+        CheckSupertypesMaintainIndependence(@class);
     }
 
     private void CheckSupertypesAreOutputSafe(
@@ -153,7 +155,7 @@ public class BasicAnalyzer
         IFixedList<ITypeNameSyntax> allSuperTypes)
     {
         var declaresType = typeDeclaration.Symbol.Result.DeclaresType;
-        // TODO nest classes and traits need to be checked if nested inside of generic types
+        // TODO nested classes and traits need to be checked if nested inside of generic types
         if (!declaresType.IsGeneric)
             return;
         foreach (var typeNameSyntax in allSuperTypes)
@@ -164,16 +166,34 @@ public class BasicAnalyzer
         }
     }
 
+    private void CheckSupertypesMaintainIndependence(
+        ITypeDeclarationSyntax typeDeclaration)
+    {
+        var declaresType = typeDeclaration.Symbol.Result.DeclaresType;
+        if (!declaresType.HasIndependentGenericParameters)
+            return;
+
+        if (typeDeclaration is IClassDeclarationSyntax { BaseTypeName: var baseTypeNameSyntax })
+            if (baseTypeNameSyntax is not null && !baseTypeNameSyntax.NamedType.Assigned().SupertypeMaintainsIndependence(exact: true))
+                diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(typeDeclaration.File, baseTypeNameSyntax));
+
+        foreach (var typeNameSyntax in typeDeclaration.SupertypeNames)
+            if (!typeNameSyntax.NamedType.Assigned().SupertypeMaintainsIndependence(exact: true))
+                diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(typeDeclaration.File, typeNameSyntax));
+    }
+
     private void Resolve(IStructDeclarationSyntax @struct)
     {
         ResolveSupertypes(@struct);
         CheckSupertypesAreOutputSafe(@struct, @struct.SupertypeNames);
+        CheckSupertypesMaintainIndependence(@struct);
     }
 
     private void Resolve(ITraitDeclarationSyntax trait)
     {
         ResolveSupertypes(trait);
         CheckSupertypesAreOutputSafe(trait, trait.SupertypeNames);
+        CheckSupertypesMaintainIndependence(trait);
     }
 
     private void Resolve(IMethodDeclarationSyntax method)
@@ -304,7 +324,7 @@ public class BasicAnalyzer
         }
     }
 
-    private void ResolveInitializer(IFieldDeclarationSyntax field)
+    private void Resolve(IFieldDeclarationSyntax field)
     {
         var fieldSymbol = field.Symbol.Result;
         var type = fieldSymbol.Type;
