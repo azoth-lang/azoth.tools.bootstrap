@@ -34,4 +34,15 @@ public static class ParameterVarianceExtensions
             ParameterVariance.Covariant => TypeVariance.Covariant,
             _ => throw ExhaustiveMatch.Failed(variance),
         };
+
+    internal static ParameterIndependence ToParameterIndependence(this ParameterVariance variance)
+        => variance switch
+        {
+            ParameterVariance.Contravariant => ParameterIndependence.None,
+            ParameterVariance.Invariant => ParameterIndependence.None,
+            ParameterVariance.SharableIndependent => ParameterIndependence.SharableIndependent,
+            ParameterVariance.Independent => ParameterIndependence.Independent,
+            ParameterVariance.Covariant => ParameterIndependence.None,
+            _ => throw ExhaustiveMatch.Failed(variance),
+        };
 }
