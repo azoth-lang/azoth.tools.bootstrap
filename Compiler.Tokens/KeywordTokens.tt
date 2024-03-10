@@ -108,6 +108,7 @@
         "Aliasable",
         "Sendable",
         "Any",
+        "Nonwritable",
     }.AsReadOnly();
 #>
 using System;

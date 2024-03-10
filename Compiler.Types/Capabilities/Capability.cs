@@ -81,6 +81,7 @@ public sealed class Capability : ICapabilityConstraint
     /// Whether this kind of reference permits mutating the referenced object through this reference.
     /// </summary>
     public bool AllowsWrite { get; }
+    bool ICapabilityConstraint.AnyCapabilityAllowsWrite => AllowsWrite;
     /// <summary>
     /// Whether this kind of reference permits other writable aliases to the object to exist.
     /// </summary>

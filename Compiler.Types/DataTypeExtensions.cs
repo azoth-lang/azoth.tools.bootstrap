@@ -173,6 +173,11 @@ public static class DataTypeExtensions
                         }
                     }
                     break;
+                case TypeVariance.NonwritableCovariant:
+                    if (!targetAllowsWrite)
+                        goto case TypeVariance.Covariant;
+
+                    goto case TypeVariance.Invariant;
                 case TypeVariance.Covariant:
                     if (!to.IsAssignableFrom(from))
                         return false;

@@ -161,7 +161,7 @@ public class BasicAnalyzer
         foreach (var typeNameSyntax in allSuperTypes)
         {
             var type = typeNameSyntax.NamedType.Assigned();
-            if (!type.IsOutputSafe())
+            if (!type.IsOutputSafe(nonwriteableSelf: declaresType.IsDeclaredConst))
                 diagnostics.Add(TypeError.SupertypeMustBeOutputSafe(typeDeclaration.File, typeNameSyntax));
         }
     }
@@ -225,17 +225,19 @@ public class BasicAnalyzer
         if (methodSymbol.ContainingSymbol is not UserTypeSymbol { DeclaresType.IsGeneric: true })
             return;
 
+        var nonwritableSelf = !method.SelfParameter.Capability.Constraint.AnyCapabilityAllowsWrite;
+
         // The `self` parameter does not get checked for variance safety. It will always operate on
         // the original type so it is safe.
         foreach (var parameter in method.Parameters)
         {
             var type = parameter.DataType.Result;
-            if (!type.IsInputSafe())
+            if (!type.IsInputSafe(nonwritableSelf))
                 diagnostics.Add(TypeError.ParameterMustBeInputSafe(method.File, parameter, type));
         }
 
         var returnType = methodSymbol.Return.Type;
-        if (!returnType.IsOutputSafe())
+        if (!returnType.IsOutputSafe(nonwritableSelf))
             diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(method.File, method.Return!.Type, returnType));
     }
 
@@ -337,14 +339,15 @@ public class BasicAnalyzer
             if (fieldSymbol.IsMutableBinding)
             {
                 // Mutable bindings can be both read and written to, so they must be both input and output
-                // safe (i.e. invariant).
-                if (!type.IsInputAndOutputSafe())
+                // safe (i.e. invariant). Self is nonwritable for the output case which is where
+                // self writable matters.
+                if (!type.IsInputAndOutputSafe(nonwriteableSelf: true))
                     diagnostics.Add(TypeError.VarFieldMustBeInputAndOutputSafe(field.File, field, type));
             }
             else
             {
                 // Immutable bindings can only be read, so they must be output safe.
-                if (!type.IsOutputSafe())
+                if (!type.IsOutputSafe(nonwriteableSelf: true))
                     diagnostics.Add(TypeError.LetFieldMustBeOutputSafe(field.File, field, type));
             }
         }

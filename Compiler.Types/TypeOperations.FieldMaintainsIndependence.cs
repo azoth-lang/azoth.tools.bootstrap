@@ -65,6 +65,8 @@ public static partial class TypeOperations
                         : Independence.Disallowed,
                 TypeVariance.Invariant
                     => Independence.Disallowed,
+                TypeVariance.NonwritableCovariant
+                    => Independence.Disallowed,
                 TypeVariance.Covariant // i.e. `out`
                     => Independence.Disallowed, // TODO if field is `let`, then Independence.BothAllowed
                 _ => throw ExhaustiveMatch.Failed(parameter.Variance),

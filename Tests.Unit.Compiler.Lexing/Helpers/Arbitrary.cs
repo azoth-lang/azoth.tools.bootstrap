@@ -343,6 +343,7 @@ public static class Arbitrary
         { "aliasable", typeof(IAliasableKeywordToken) },
         { "sendable", typeof(ISendableKeywordToken) },
         { "any", typeof(IAnyKeywordToken) },
+        { "nonwritable",typeof(INonwritableKeywordToken) },
     }.ToFixedDictionary();
 
     private readonly record struct AppendedToken(IEnumerable<PsuedoToken> Items, PsuedoToken? LastToken)
