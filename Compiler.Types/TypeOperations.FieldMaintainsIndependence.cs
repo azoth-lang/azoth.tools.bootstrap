@@ -1,5 +1,6 @@
-using System.Diagnostics;
+using System;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using ExhaustiveMatching;
 
@@ -12,7 +13,7 @@ public static partial class TypeOperations
     /// </summary>
     public static bool FieldMaintainsIndependence(this DataType type)
         // Independent types can be used directly as fields, so the top level is an independent context
-        => type.FieldMaintainsIndependence(Independence.Allowed);
+        => type.FieldMaintainsIndependence(Independence.BothAllowed);
 
     private static bool FieldMaintainsIndependence(this DataType type, Independence context)
     {
@@ -33,49 +34,45 @@ public static partial class TypeOperations
 
     private static bool FieldMaintainsIndependence(this GenericParameterType type, Independence context)
     {
-        return type.Parameter switch
+        return type.Parameter.Independence switch
         {
-            { HasIndependence: false } => true,
-            { Independence: ParameterIndependence.SharableIndependent }
-                => context >= Independence.ShareableAllowed,
-            { Independence: ParameterIndependence.Independent }
-                => context == Independence.Allowed,
-            _ => throw new UnreachableException(),
+            ParameterIndependence.None => true,
+            ParameterIndependence.SharableIndependent
+                => context >= Independence.BothAllowed,
+            ParameterIndependence.Independent
+                => context == Independence.BothAllowed,
+            _ => throw ExhaustiveMatch.Failed(type.Parameter.Independence),
         };
     }
 
     private static bool FieldMaintainsIndependence(this BareType type, Independence context)
     {
         foreach (var (parameter, argument) in type.GenericParameterArguments)
-            switch (parameter.Independence)
+        {
+            var parameterIndependenceAllows = parameter.Independence switch
             {
-                default:
-                    throw ExhaustiveMatch.Failed(parameter.Independence);
-                //case ParameterVariance.Contravariant: // i.e. `in`
-                //    var childIndependence = parameter.Constraint == CapabilitySet.Shareable
-                //        ? Independence.ShareableAllowed
-                //        : Independence.Disallowed;
-                //    if (!argument.MaintainsIndependence(context.Child(childIndependence)))
-                //        return false;
-                //    break;
-                //case ParameterVariance.Invariant:
-                //case ParameterVariance.Covariant: // i.e. `out`
-                //    if (!argument.MaintainsIndependence(context.Child(Independence.Disallowed)))
-                //        return false;
-                //    break;
-                case ParameterIndependence.SharableIndependent: // i.e. `shareable ind`
-                    if (!argument.FieldMaintainsIndependence(context.Child(Independence.ShareableAllowed)))
-                        return false;
-                    break;
-                case ParameterIndependence.Independent: // i.e. `ind`
-                    if (!argument.FieldMaintainsIndependence(context.Child(Independence.Allowed)))
-                        return false;
-                    break;
-                case ParameterIndependence.None:
-                    if (!argument.FieldMaintainsIndependence(context.Child(Independence.Blocked)))
-                        return false;
-                    break;
-            }
+                ParameterIndependence.SharableIndependent => Independence.OnlyShareableAllowed,
+                ParameterIndependence.Independent => Independence.BothAllowed,
+                ParameterIndependence.None => Independence.Disallowed,
+                _ => throw ExhaustiveMatch.Failed(parameter.Independence),
+            };
+            var parameterVarianceAllows = parameter.Variance switch
+            {
+                // TODO does this need to flip the behavior of nested type arguments?
+                TypeVariance.Contravariant // i.e. `in`
+                    => parameter.Constraint == CapabilitySet.Shareable
+                        ? Independence.OnlyShareableAllowed
+                        : Independence.Disallowed,
+                TypeVariance.Invariant
+                    => Independence.Disallowed,
+                TypeVariance.Covariant // i.e. `out`
+                    => Independence.Disallowed, // TODO if field is `let`, then Independence.BothAllowed
+                _ => throw ExhaustiveMatch.Failed(parameter.Variance),
+            };
+            var parameterAllows = (Independence)Math.Max((int)parameterIndependenceAllows, (int)parameterVarianceAllows);
+            if (!argument.FieldMaintainsIndependence(context.Child(parameterAllows)))
+                return false;
+        }
 
         return true;
     }
@@ -101,8 +98,8 @@ public static partial class TypeOperations
         /// </summary>
         Blocked = 1,
         Disallowed,
-        ShareableAllowed,
-        Allowed,
+        BothAllowed,
+        OnlyShareableAllowed,
     }
 
     private static Independence Child(this Independence context, Independence independence)
