@@ -14,23 +14,23 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 public sealed class GenericParameter : IEquatable<GenericParameter>
 {
     public static GenericParameter Invariant(ICapabilityConstraint constraint, StandardTypeName name)
-        => new(constraint, name, ParameterVariance.Invariant);
+        => new(constraint, name, ParameterIndependence.None, TypeVariance.Invariant);
 
     public static GenericParameter Independent(ICapabilityConstraint constraint, StandardTypeName name)
-        => new(constraint, name, ParameterVariance.Independent);
+        => new(constraint, name, ParameterIndependence.Independent, TypeVariance.Invariant);
 
     public static GenericParameter Out(ICapabilityConstraint constraint, StandardTypeName name)
-        => new(constraint, name, ParameterVariance.Covariant);
+        => new(constraint, name, ParameterIndependence.None, TypeVariance.Covariant);
 
     public static GenericParameter In(ICapabilityConstraint constraint, StandardTypeName name)
-        => new(constraint, name, ParameterVariance.Contravariant);
+        => new(constraint, name, ParameterIndependence.None, TypeVariance.Contravariant);
 
-    public GenericParameter(ICapabilityConstraint constraint, StandardTypeName name, ParameterVariance parameterVariance)
+    public GenericParameter(ICapabilityConstraint constraint, StandardTypeName name, ParameterIndependence independence, TypeVariance variance)
     {
         Requires.That(nameof(name), name.GenericParameterCount == 0, "Cannot have generic parameters");
         Constraint = constraint;
-        Independence = parameterVariance.ToParameterIndependence();
-        Variance = parameterVariance.ToTypeVariance();
+        Independence = independence;
+        Variance = variance;
         Name = name;
     }
 

@@ -24,7 +24,7 @@ public static class ParameterVarianceExtensions
             _ => throw ExhaustiveMatch.Failed(variance),
         };
 
-    internal static TypeVariance ToTypeVariance(this ParameterVariance variance)
+    public static TypeVariance ToTypeVariance(this ParameterVariance variance)
         => variance switch
         {
             ParameterVariance.Contravariant => TypeVariance.Contravariant,
@@ -35,7 +35,7 @@ public static class ParameterVarianceExtensions
             _ => throw ExhaustiveMatch.Failed(variance),
         };
 
-    internal static ParameterIndependence ToParameterIndependence(this ParameterVariance variance)
+    public static ParameterIndependence ToParameterIndependence(this ParameterVariance variance)
         => variance switch
         {
             ParameterVariance.Contravariant => ParameterIndependence.None,
