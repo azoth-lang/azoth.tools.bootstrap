@@ -89,20 +89,20 @@ public readonly struct FlowCapabilities
     public FlowCapabilities With(Capability capability) => new(Outer.With(capability), TypeParameters);
     public FlowCapabilities WithRestrictions(CapabilityRestrictions restrictions)
         => new(Outer.WithRestrictions(restrictions), TypeParameters);
-    public FlowCapabilities Restrict(ReferenceType referenceType)
+    public FlowCapabilities Restrict(CapabilityType capabilityType)
     {
-        var newOuter = Outer.With(referenceType.Capability);
+        var newOuter = Outer.With(capabilityType.Capability);
         if (TypeParameters.IsEmpty)
             return new(newOuter, TypeParameters);
 
-        return new(newOuter, RestrictTypeParameters(referenceType).ToFixedDictionary());
+        return new(newOuter, RestrictTypeParameters(capabilityType).ToFixedDictionary());
     }
 
-    private IEnumerable<(TypeArgumentIndex, FlowCapability)> RestrictTypeParameters(ReferenceType referenceType)
+    private IEnumerable<(TypeArgumentIndex, FlowCapability)> RestrictTypeParameters(CapabilityType capabilityType)
     {
         foreach (var (index, capability) in TypeParameters)
         {
-            var argument = referenceType.ArgumentAt(index);
+            var argument = capabilityType.ArgumentAt(index);
             yield return (index, capability.With(argument.Capability));
         }
     }

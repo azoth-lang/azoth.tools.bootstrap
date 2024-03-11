@@ -1389,6 +1389,7 @@ public class BasicBodyAnalyzer
             CheckTypeCompatibility(selfParamUpperBound.Type, selfResult.Syntax);
             CheckTypes(arguments, method.ParameterTypes, flow);
             arguments = arguments with { Self = selfResult };
+            // TODO does flow typing need to be applied?
             invocation.DataType = method.ReturnType.Type.ReplaceSelfWith(selfResult.Type);
             AssignInvocationSemantics(invocation, invocation.DataType);
         }
@@ -1400,10 +1401,6 @@ public class BasicBodyAnalyzer
 
         var resultVariable = CombineResults(method, arguments, flow);
         flow.Restrict(resultVariable, invocation.DataType.Assigned());
-
-        //invocation.DataType = resultVariable is null
-        //    ? method?.ReturnType.Type.ReplaceSelfWith(selfResult?.Type!) ?? DataType.Unknown
-        //    : flow.Type(resultVariable);
 
         // There are no types for functions
         invocation.Expression.DataType = DataType.Void;

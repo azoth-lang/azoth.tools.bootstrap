@@ -166,14 +166,17 @@ public sealed class FlowState
         // Other types don't have capabilities and don't need to be tracked
     }
 
+    /// <summary>
+    /// Restrict the capabilities of the variable to those of the type.
+    /// </summary>
     public void Restrict(ResultVariable? variable, DataType type)
     {
         if (variable is null
             || !capabilities.TryGetValue(variable, out var flowCapabilities)
-            || type is not ReferenceType referenceType)
+            || type is not CapabilityType capabilityType)
             return;
 
-        capabilities[variable] = flowCapabilities.Restrict(referenceType);
+        capabilities[variable] = flowCapabilities.Restrict(capabilityType);
     }
 
     public ResultVariable? Alias(BindingSymbol symbol)
