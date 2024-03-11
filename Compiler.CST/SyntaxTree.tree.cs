@@ -21,8 +21,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(IElseClauseSyntax),
     typeof(IBindingSyntax),
     typeof(IDeclarationSyntax),
-    typeof(IAttributeSyntax),
     typeof(IGenericParameterSyntax),
+    typeof(ISupertypeNameSyntax),
+    typeof(IAttributeSyntax),
     typeof(IParameterSyntax),
     typeof(ICapabilityConstraintSyntax),
     typeof(IReturnSyntax),
@@ -171,7 +172,7 @@ public partial interface ITypeDeclarationSyntax : INonMemberEntityDeclarationSyn
     new StandardTypeName Name { get; }
     IFixedList<IGenericParameterSyntax> GenericParameters { get; }
     new AcyclicPromise<UserTypeSymbol> Symbol { get; }
-    IFixedList<ITypeNameSyntax> SupertypeNames { get; }
+    IFixedList<ISupertypeNameSyntax> SupertypeNames { get; }
     IFixedList<IMemberDeclarationSyntax> Members { get; }
 }
 
@@ -186,7 +187,7 @@ public partial interface IClassDeclarationSyntax : IClassOrStructDeclarationSynt
 {
     IAbstractKeywordToken? AbstractModifier { get; }
     bool IsAbstract { get; }
-    ITypeNameSyntax? BaseTypeName { get; }
+    ISupertypeNameSyntax? BaseTypeName { get; }
     ConstructorSymbol? DefaultConstructorSymbol { get; }
     new IFixedList<IClassMemberDeclarationSyntax> Members { get; }
 }
@@ -209,6 +210,22 @@ public partial interface IFunctionDeclarationSyntax : INonMemberEntityDeclaratio
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
     new AcyclicPromise<FunctionSymbol> Symbol { get; }
+}
+
+public partial interface IGenericParameterSyntax : ISyntax
+{
+    ICapabilityConstraintSyntax Constraint { get; }
+    SimpleName Name { get; }
+    ParameterIndependence Independence { get; }
+    ParameterVariance Variance { get; }
+    Promise<GenericParameterTypeSymbol> Symbol { get; }
+}
+
+public partial interface ISupertypeNameSyntax : ISyntax, IHasContainingLexicalScope
+{
+    TypeName Name { get; }
+    IFixedList<ITypeSyntax> TypeArguments { get; }
+    Promise<UserTypeSymbol?> ReferencedSymbol { get; }
 }
 
 [Closed(
@@ -304,15 +321,6 @@ public partial interface IAssociatedFunctionDeclarationSyntax : IClassMemberDecl
 public partial interface IAttributeSyntax : ISyntax
 {
     ITypeNameSyntax TypeName { get; }
-}
-
-public partial interface IGenericParameterSyntax : ISyntax
-{
-    ICapabilityConstraintSyntax Constraint { get; }
-    SimpleName Name { get; }
-    ParameterIndependence Independence { get; }
-    ParameterVariance Variance { get; }
-    Promise<GenericParameterTypeSymbol> Symbol { get; }
 }
 
 [Closed(

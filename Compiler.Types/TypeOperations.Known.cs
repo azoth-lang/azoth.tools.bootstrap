@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -43,5 +44,19 @@ public static partial class TypeOperations
 
     [DebuggerHidden]
     public static DataType Known(this IPromise<DataType> promise)
+        => promise.Result.Known();
+
+    [DebuggerHidden]
+    public static BareType Known(this BareType? type)
+    {
+        if (!type.Assigned().IsFullyKnown)
+            throw new InvalidOperationException($"Bare type {type.ToILString()} not fully known.");
+
+        return type;
+    }
+
+
+    [DebuggerHidden]
+    public static BareType Known(this IPromise<BareType?> promise)
         => promise.Result.Known();
 }

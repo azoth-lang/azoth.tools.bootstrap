@@ -21,7 +21,7 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
     public new StandardTypeName Name { get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { get; }
     public new AcyclicPromise<UserTypeSymbol> Symbol { get; }
-    public IFixedList<ITypeNameSyntax> SupertypeNames { get; }
+    public IFixedList<ISupertypeNameSyntax> SupertypeNames { get; }
     public abstract IFixedList<TMember> Members { get; }
     IFixedList<IMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => members.Value;
     private readonly Lazy<IFixedList<IMemberDeclarationSyntax>> members;
@@ -36,7 +36,7 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
         TextSpan nameSpan,
         StandardTypeName name,
         IFixedList<IGenericParameterSyntax> genericParameters,
-        IFixedList<ITypeNameSyntax> supertypeNames)
+        IFixedList<ISupertypeNameSyntax> supertypeNames)
         : base(containingNamespaceName, headerSpan, file, name, nameSpan, new AcyclicPromise<UserTypeSymbol>())
     {
         AccessModifier = accessModifier;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -205,9 +206,35 @@ public class TypeResolver
     /// <summary>
     /// Evaluate a type that does not have any reference capability.
     /// </summary>
-    /// <remarks>This is used for new expressions and base types.</remarks>
+    /// <remarks>This is used for new expressions.</remarks>
     public BareType? EvaluateConstructableBareType(ITypeNameSyntax typeSyntax)
         => EvaluateBareType(typeSyntax, isAttribute: false);
+
+    public BareReferenceType? Evaluate(ISupertypeNameSyntax typeSyntax)
+    {
+        if (typeSyntax.Name == "Test")
+            Debugger.Break();
+
+        var symbols = typeSyntax.LookupInContainingScope().Select(EnsureBuilt).ToFixedList();
+        var typeArguments = Evaluate(typeSyntax.TypeArguments, mustBeConstructable: false);
+        switch (symbols.Count)
+        {
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindName(file, typeSyntax.Span));
+                typeSyntax.ReferencedSymbol.Fulfill(null);
+                return typeSyntax.NamedType.Fulfill(null);
+            case 1:
+                var symbol = symbols.Single();
+                typeSyntax.ReferencedSymbol.Fulfill(symbol);
+                var declaredObjectType = symbol.DeclaresType;
+                var type = CheckTypeArgumentsAreConstructable(declaredObjectType.With(typeArguments), typeSyntax) as BareReferenceType;
+                return typeSyntax.NamedType.Fulfill(type);
+            default:
+                diagnostics.Add(NameBindingError.AmbiguousName(file, typeSyntax.Span));
+                typeSyntax.ReferencedSymbol.Fulfill(null);
+                return typeSyntax.NamedType.Fulfill(null);
+        }
+    }
 
     public BareType? EvaluateAttribute(ITypeNameSyntax typeSyntax)
         => EvaluateBareType(typeSyntax, isAttribute: true);
@@ -309,7 +336,8 @@ public class TypeResolver
         }
     }
 
-    private TypeSymbol EnsureBuilt(IPromise<TypeSymbol> promise)
+    private TSymbol EnsureBuilt<TSymbol>(IPromise<TSymbol> promise)
+        where TSymbol : TypeSymbol
     {
         if (promise.IsFulfilled) return promise.Result;
         if (typeSymbolBuilder is null)
@@ -317,7 +345,7 @@ public class TypeResolver
         return typeSymbolBuilder.Build(promise);
     }
 
-    private BareType? CheckTypeArgumentsAreConstructable(BareType type, ITypeSyntax typeSyntax)
+    private BareType? CheckTypeArgumentsAreConstructable(BareType type, ISyntax typeSyntax)
     {
         var constructable = true;
         foreach (var (param, arg) in type.GenericParameterArguments)
@@ -326,7 +354,7 @@ public class TypeResolver
         return constructable ? type : null;
     }
 
-    private bool CheckTypeArgumentIsConstructable(GenericParameter param, DataType arg, ITypeSyntax typeSyntax)
+    private bool CheckTypeArgumentIsConstructable(GenericParameter param, DataType arg, ISyntax typeSyntax)
     {
         switch (arg)
         {

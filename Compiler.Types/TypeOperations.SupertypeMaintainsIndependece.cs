@@ -7,10 +7,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public static partial class TypeOperations
 {
-    /// <param name="exact">Whether the independence must match exactly. For base classes it must.</param>
-    public static bool SupertypeMaintainsIndependence(this DataType type, bool exact)
-        => SupertypeMaintainsIndependence(type, exact, ParameterIndependence.None);
-
     private static bool SupertypeMaintainsIndependence(this DataType type, bool exact, ParameterIndependence context)
         => type switch
         {
@@ -39,7 +35,8 @@ public static partial class TypeOperations
         };
     }
 
-    private static bool SupertypeMaintainsIndependence(this BareType type, bool exact)
+    /// <param name="exact">Whether the independence must match exactly. For base classes it must.</param>
+    public static bool SupertypeMaintainsIndependence(this BareType type, bool exact)
     {
         // Once the supertype is a trait exact independence is not required
         exact &= type.DeclaredType is DeclaredReferenceType { IsClass: true }

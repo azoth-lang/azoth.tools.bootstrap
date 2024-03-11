@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 
@@ -53,6 +52,10 @@ public class TypeKnownValidator : SyntaxWalker
             case ITypeSyntax type:
                 WalkChildren(type);
                 type.NamedType.Known();
+                return;
+            case ISupertypeNameSyntax syn:
+                WalkChildren(syn);
+                syn.NamedType.Known();
                 return;
             case IVariableDeclarationStatementSyntax variableDeclaration:
                 WalkChildren(variableDeclaration);

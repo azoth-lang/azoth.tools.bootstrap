@@ -8,5 +8,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 /// </summary>
 public interface ITypeSymbolBuilder
 {
-    TypeSymbol Build(IPromise<TypeSymbol> promise);
+    TSymbol Build<TSymbol>(IPromise<TSymbol> promise)
+        where TSymbol : TypeSymbol;
 }

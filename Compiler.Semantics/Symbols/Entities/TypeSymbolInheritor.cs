@@ -52,7 +52,7 @@ internal class TypeSymbolInheritor
         processed[typeDeclaration] = true;
     }
 
-    private void AddInheritedSymbols(UserTypeSymbol typeSymbol, ITypeNameSyntax supertypeName)
+    private void AddInheritedSymbols(UserTypeSymbol typeSymbol, ISupertypeNameSyntax supertypeName)
     {
         var supertypeSymbol = supertypeName.ReferencedSymbol.Result;
         if (supertypeSymbol is null)

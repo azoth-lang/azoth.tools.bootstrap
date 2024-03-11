@@ -172,7 +172,7 @@ public static class TypeError
             3024, $"Reference capabilities cannot be applied to empty types `{typeSyntax.ToString()}`.");
     }
 
-    public static Diagnostic SupertypeMustBeOutputSafe(CodeFile file, ITypeNameSyntax typeSyntax)
+    public static Diagnostic SupertypeMustBeOutputSafe(CodeFile file, ISupertypeNameSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3025, $"Supertype `{typeSyntax.ToString()}` is not output safe.");
@@ -220,13 +220,13 @@ public static class TypeError
             3032, $"Empty type `{typeSyntax}` cannot be used here.");
     }
 
-    public static Diagnostic CapabilityNotCompatibleWithConstraint(CodeFile file, ITypeSyntax typeSyntax, GenericParameter parameter, DataType arg)
+    public static Diagnostic CapabilityNotCompatibleWithConstraint(CodeFile file, ISyntax typeSyntax, GenericParameter parameter, DataType arg)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3033, $"In `{typeSyntax}` the capability of `{arg.ToSourceCodeString()}` is not compatible with the capability constraint on `{parameter}`.");
     }
 
-    public static Diagnostic SupertypeMustMaintainIndependence(CodeFile file, ITypeNameSyntax typeSyntax)
+    public static Diagnostic SupertypeMustMaintainIndependence(CodeFile file, ISupertypeNameSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3034, $"Supertype `{typeSyntax.ToString()}` does not maintain independence.");

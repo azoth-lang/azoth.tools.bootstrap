@@ -334,10 +334,10 @@ public class EntitySymbolBuilder
         var resolver = new TypeResolver(syn.File, diagnostics, selfType: null, typeDeclarations);
         if (syn is IClassDeclarationSyntax { BaseTypeName: not null and var baseTypeName })
         {
-            var superType = resolver.EvaluateConstructableBareType(baseTypeName);
-            if (superType is BareReferenceType bareType)
+            var superType = resolver.Evaluate(baseTypeName);
+            if (superType is not null)
             {
-                yield return bareType;
+                yield return superType;
                 foreach (var inheritedType in superType.Supertypes)
                     yield return inheritedType;
             }
@@ -345,11 +345,11 @@ public class EntitySymbolBuilder
 
         foreach (var supertype in syn.SupertypeNames)
         {
-            var superType = resolver.EvaluateConstructableBareType(supertype);
-            if (superType is BareReferenceType bareType)
+            var superType = resolver.Evaluate(supertype);
+            if (superType is not null)
             {
-                yield return bareType;
-                foreach (var inheritedType in bareType.Supertypes)
+                yield return superType;
+                foreach (var inheritedType in superType.Supertypes)
                     yield return inheritedType;
             }
         }
@@ -518,7 +518,8 @@ public class EntitySymbolBuilder
             this.typeDeclarations = typeDeclarations.ToFixedDictionary(t => (IPromise<TypeSymbol>)t.Symbol);
         }
 
-        public TypeSymbol Build(IPromise<TypeSymbol> promise)
+        public TSymbol Build<TSymbol>(IPromise<TSymbol> promise)
+            where TSymbol : TypeSymbol
         {
             if (promise.IsFulfilled) return promise.Result;
             var typeDeclaration = typeDeclarations[promise];

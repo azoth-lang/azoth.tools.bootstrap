@@ -14,7 +14,7 @@ internal class ClassDeclarationSyntax : TypeDeclarationSyntax<IClassMemberDeclar
 {
     public IAbstractKeywordToken? AbstractModifier { get; }
     public bool IsAbstract { get; }
-    public ITypeNameSyntax? BaseTypeName { get; }
+    public ISupertypeNameSyntax? BaseTypeName { get; }
     public override IFixedList<IClassMemberDeclarationSyntax> Members { get; }
     public ConstructorSymbol? DefaultConstructorSymbol { get; private set; }
 
@@ -29,8 +29,8 @@ internal class ClassDeclarationSyntax : TypeDeclarationSyntax<IClassMemberDeclar
         TextSpan nameSpan,
         string name,
         IFixedList<IGenericParameterSyntax> genericParameters,
-        ITypeNameSyntax? baseTypeName,
-        IFixedList<ITypeNameSyntax> supertypesNames,
+        ISupertypeNameSyntax? baseTypeName,
+        IFixedList<ISupertypeNameSyntax> supertypesNames,
         Func<IClassDeclarationSyntax, (IFixedList<IClassMemberDeclarationSyntax>, TextSpan)> parseMembers)
         : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, moveModifier,
             nameSpan, StandardTypeName.Create(name, genericParameters.Count), genericParameters, supertypesNames)

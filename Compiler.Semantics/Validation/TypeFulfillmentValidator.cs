@@ -21,8 +21,7 @@ public class TypeFulfillmentValidator : SyntaxWalker
     {
         switch (syntax)
         {
-            case IClassDeclarationSyntax syn:
-                Walk(syn.BaseTypeName);
+            case IClassDeclarationSyntax _:
                 // Don't recur into body, we will see those as separate members
                 return;
             case ITypeSyntax type:

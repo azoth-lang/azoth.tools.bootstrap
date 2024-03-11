@@ -64,6 +64,13 @@ public static class ISyntaxExtensions
                     yield return n.Return;
                 yield return n.Body;
                 yield break;
+            case IGenericParameterSyntax n:
+                yield return n.Constraint;
+                yield break;
+            case ISupertypeNameSyntax n:
+                foreach (var child in n.TypeArguments)
+                    yield return child;
+                yield break;
             case IAbstractMethodDeclarationSyntax n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
@@ -105,9 +112,6 @@ public static class ISyntaxExtensions
                 yield break;
             case IAttributeSyntax n:
                 yield return n.TypeName;
-                yield break;
-            case IGenericParameterSyntax n:
-                yield return n.Constraint;
                 yield break;
             case INamedParameterSyntax n:
                 yield return n.Type;

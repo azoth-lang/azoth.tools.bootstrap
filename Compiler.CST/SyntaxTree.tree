@@ -43,12 +43,16 @@ NamespaceDeclaration: NonMemberDeclaration = IsGlobalQualified:'bool' DeclaredNa
 
 // ---------- Non-Member Entity Declarations
 NonMemberEntityDeclaration: EntityDeclaration, NonMemberDeclaration = Name:'TypeName';
-TypeDeclaration: NonMemberEntityDeclaration = ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'StandardTypeName' GenericParameters:GenericParameter* Symbol:'AcyclicPromise<UserTypeSymbol>' SupertypeNames:TypeName* Members:MemberDeclaration*;
+TypeDeclaration: NonMemberEntityDeclaration = ConstModifier:'IConstKeywordToken'? IsConst:'bool' MoveModifier:'IMoveKeywordToken'? IsMove:'bool' Name:'StandardTypeName' GenericParameters:GenericParameter* Symbol:'AcyclicPromise<UserTypeSymbol>' SupertypeNames:SupertypeName* Members:MemberDeclaration*;
 ClassOrStructDeclaration: TypeDeclaration;
-ClassDeclaration: ClassOrStructDeclaration = AbstractModifier:'IAbstractKeywordToken'? IsAbstract:'bool' GenericParameters:GenericParameter* BaseTypeName:TypeName? SupertypeNames:TypeName* DefaultConstructorSymbol:'ConstructorSymbol'? Members:ClassMemberDeclaration*;
-StructDeclaration: ClassOrStructDeclaration = GenericParameters:GenericParameter* SupertypeNames:TypeName* DefaultInitializerSymbol:'InitializerSymbol'? Members:StructMemberDeclaration*;
-TraitDeclaration: TypeDeclaration = GenericParameters:GenericParameter* SupertypeNames:TypeName* Members:TraitMemberDeclaration*;
+ClassDeclaration: ClassOrStructDeclaration = AbstractModifier:'IAbstractKeywordToken'? IsAbstract:'bool' GenericParameters:GenericParameter* BaseTypeName:SupertypeName? SupertypeNames:SupertypeName* DefaultConstructorSymbol:'ConstructorSymbol'? Members:ClassMemberDeclaration*;
+StructDeclaration: ClassOrStructDeclaration = GenericParameters:GenericParameter* SupertypeNames:SupertypeName* DefaultInitializerSymbol:'InitializerSymbol'? Members:StructMemberDeclaration*;
+TraitDeclaration: TypeDeclaration = GenericParameters:GenericParameter* SupertypeNames:SupertypeName* Members:TraitMemberDeclaration*;
 FunctionDeclaration: NonMemberEntityDeclaration, ConcreteInvocableDeclaration = Attributes:Attribute* Name:'SimpleName' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
+
+// ---------- Non-Member Entity Declaration Parts
+GenericParameter = Constraint:CapabilityConstraint Name:'SimpleName' Independence:'ParameterIndependence' Variance:'ParameterVariance' Symbol:'Promise<GenericParameterTypeSymbol>';
+SupertypeName: 'ISyntax', 'IHasContainingLexicalScope' = Name:'TypeName' TypeArguments:Type* ReferencedSymbol:'Promise<UserTypeSymbol?>';
 
 // ---------- Member Declarations
 // Note: by declaring the DeclaringType property type with quotes, it avoids the system assuming it must represent a child syntax node
@@ -67,10 +71,7 @@ AssociatedFunctionDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, S
 // ---------- Attributes
 Attribute = TypeName;
 
-// ---------- Type Parameters --------------
-GenericParameter = Constraint:CapabilityConstraint Name:'SimpleName' Independence:'ParameterIndependence' Variance:'ParameterVariance' Symbol:'Promise<GenericParameterTypeSymbol>';
-
-// ---------- Parameters and Return--------------
+// ---------- Parameters and Return
 Parameter = Name:'SimpleName'? DataType:'IPromise<Pseudotype>' Unused:'bool';
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter: Parameter;
