@@ -14,6 +14,8 @@ public abstract class ValueType : CapabilityType
     private protected ValueType(Capability capability)
         : base(capability) { }
 
+    public abstract override ValueType With(Capability capability);
+
     #region Equality
     public override bool Equals(DataType? other)
     {
@@ -39,5 +41,11 @@ public sealed class ValueType<TDeclared> : ValueType
         if (typeof(TDeclared).IsAbstract)
             throw new ArgumentException($"The type parameter must be a concrete {nameof(DeclaredValueType)}.", nameof(TDeclared));
         BareType = bareType;
+    }
+
+    public override ValueType<TDeclared> With(Capability capability)
+    {
+        if (capability == Capability) return this;
+        return new(capability, BareType);
     }
 }

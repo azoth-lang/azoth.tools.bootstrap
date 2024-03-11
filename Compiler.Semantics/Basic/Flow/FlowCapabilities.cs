@@ -19,13 +19,14 @@ public readonly struct FlowCapabilities
     public FlowCapability Outer { get; }
     public FixedDictionary<TypeArgumentIndex, FlowCapability> TypeParameters { get; }
 
-    public FlowCapabilities(ReferenceType type)
+    public FlowCapabilities(CapabilityType type)
     {
         Outer = type.Capability;
         TypeParameters = FlowCapabilitiesForTypeParameters(type);
     }
 
-    private static FixedDictionary<TypeArgumentIndex, FlowCapability> FlowCapabilitiesForTypeParameters(ReferenceType type)
+    private static FixedDictionary<TypeArgumentIndex, FlowCapability> FlowCapabilitiesForTypeParameters(
+        CapabilityType type)
     {
         if (!type.HasIndependentTypeArguments)
             return FixedDictionary<TypeArgumentIndex, FlowCapability>.Empty;
@@ -35,13 +36,14 @@ public readonly struct FlowCapabilities
     }
 
     private static IEnumerable<(TypeArgumentIndex, FlowCapability)> FlowCapabilitiesForTypeParameters(
-        ReferenceType type,
+        CapabilityType type,
         Stack<int> parentIndex)
         => FlowCapabilitiesForImmediateTypeParameters(type, parentIndex)
             .Concat(FlowCapabilitiesForChildTypeParameters(type, parentIndex));
 
 
-    private static IEnumerable<(TypeArgumentIndex, FlowCapability)> FlowCapabilitiesForImmediateTypeParameters(ReferenceType type, Stack<int> parentIndex)
+    private static IEnumerable<(TypeArgumentIndex, FlowCapability)> FlowCapabilitiesForImmediateTypeParameters(
+        CapabilityType type, Stack<int> parentIndex)
     {
 
         var joinedTypeArguments = type.BareType.GenericParameterArguments.Enumerate();
@@ -58,7 +60,7 @@ public readonly struct FlowCapabilities
     }
 
     private static IEnumerable<(TypeArgumentIndex, FlowCapability)> FlowCapabilitiesForChildTypeParameters(
-        ReferenceType type,
+        CapabilityType type,
         Stack<int> parentIndex)
     {
         var flowCapabilities = Enumerable.Empty<(TypeArgumentIndex, FlowCapability)>();

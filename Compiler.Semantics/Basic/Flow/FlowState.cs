@@ -221,7 +221,7 @@ public sealed class FlowState
             return symbol.Type.ToUpperBound();
 
         var current = capabilities[(BindingVariable)symbol].Outer.Current;
-        return ((ReferenceType)symbol.Type.ToUpperBound()).With(transform(current));
+        return ((CapabilityType)symbol.Type.ToUpperBound()).With(transform(current));
     }
 
     /// <summary>
@@ -372,7 +372,7 @@ public sealed class FlowState
 
     private void TrackCapabilities(BindingSymbol symbol)
     {
-        if (symbol.SharingIsTracked() && symbol.Type.ToUpperBound() is ReferenceType type)
+        if (symbol.SharingIsTracked() && symbol.Type.ToUpperBound() is CapabilityType type)
             capabilities.Add((BindingVariable)symbol, new FlowCapabilities(type));
 
         // Other types don't have capabilities and don't need to be tracked

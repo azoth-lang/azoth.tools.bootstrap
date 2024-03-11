@@ -22,7 +22,7 @@ internal static class BindingSymbolExtensions
         // ObjectTypeConstraints need tracked because they act like read only references
         if (pseudotype is CapabilityTypeConstraint) return true;
         // If it isn't a reference type, then no need to track it (all current value types are `const`)
-        if (pseudotype is not ReferenceType { Capability: var capability })
+        if (pseudotype is not CapabilityType { Capability: var capability })
             return false;
 
         // Constant and Identity capabilities never need tracked

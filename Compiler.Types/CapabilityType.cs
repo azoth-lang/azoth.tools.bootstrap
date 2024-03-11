@@ -83,6 +83,8 @@ public abstract class CapabilityType : NonEmptyType
     public override Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype)
         => BareType.ReplaceTypeParametersIn(pseudotype);
 
+    public abstract CapabilityType With(Capability capability);
+
     public sealed override string ToSourceCodeString()
     {
         if (Capability != Capability.Read)

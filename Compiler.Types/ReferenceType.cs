@@ -91,7 +91,7 @@ public abstract class ReferenceType : CapabilityType
         }
     }
 
-    public abstract ReferenceType With(Capability capability);
+    public abstract override ReferenceType With(Capability capability);
 
     #region Equality
     public override bool Equals(DataType? other)
