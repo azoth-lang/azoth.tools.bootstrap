@@ -107,6 +107,19 @@ public sealed class FlowState
         return result;
     }
 
+    public ResultVariable? AccessMember(ResultVariable? variable, DataType type)
+    {
+        // If accessing from non-tracked type, then it's not tracked
+        if (variable is null) return null;
+
+        if (type.SharingIsTracked())
+            return variable;
+
+        // Sharing not tracked, no longer need result variable to track sharing
+        Drop(variable);
+        return null;
+    }
+
     public void Drop(BindingSymbol symbol) => LiftRemovedRestrictions(SharingDrop(symbol));
 
     public void Drop(ResultVariable? variable)

@@ -26,7 +26,7 @@ public abstract class SimpleType : DeclaredValueType
     public abstract ValueType Type { get; }
 
     private protected SimpleType(SpecialTypeName name)
-        : base(true, FixedList.Empty<GenericParameterType>())
+        : base(isConstType: true, FixedList.Empty<GenericParameterType>())
     {
         Name = name;
     }

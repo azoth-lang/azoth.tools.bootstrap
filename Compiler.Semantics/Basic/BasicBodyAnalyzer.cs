@@ -853,8 +853,7 @@ public class BasicBodyAnalyzer
                     // resolve generic type fields
                     type = nonEmptyContext.ReplaceTypeParametersIn(type);
 
-                // TODO adjust associated flow capabilities
-                var resultVariable = contextResult.Variable;
+                var resultVariable = flow.AccessMember(contextResult.Variable, type);
                 var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 member.Semantics = semantics;
                 member.DataType = type;
