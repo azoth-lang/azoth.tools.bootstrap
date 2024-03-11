@@ -18,7 +18,7 @@ public sealed class CapabilityTypeConstraint : Pseudotype
     }
 
     public override DataType ToUpperBound()
-        => BareType.With(Capabilities.Capability.Read);
+        => BareType.With(Capability.UpperBound);
 
     public override string ToILString() => $"{Capability} {BareType.ToILString()}";
 

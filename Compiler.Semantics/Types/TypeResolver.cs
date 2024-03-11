@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -212,9 +211,6 @@ public class TypeResolver
 
     public BareReferenceType? Evaluate(ISupertypeNameSyntax typeSyntax)
     {
-        if (typeSyntax.Name == "Test")
-            Debugger.Break();
-
         var symbols = typeSyntax.LookupInContainingScope().Select(EnsureBuilt).ToFixedList();
         var typeArguments = Evaluate(typeSyntax.TypeArguments, mustBeConstructable: false);
         switch (symbols.Count)

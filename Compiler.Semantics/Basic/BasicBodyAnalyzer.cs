@@ -1183,6 +1183,8 @@ public class BasicBodyAnalyzer
         var resultType = returnType?.Type;
         if (results.Self is not null)
             resultType = resultType?.ReplaceSelfWith(results.Self.Type);
+        // TODO if the return type doesn't have sharing tracked, this returns null. It might be necessary
+        // to combine results even in that case and then drop the result from the flow.
         var returnResult = flow.CreateReturnResultVariable(resultType);
 
         if (results.Self is not null)

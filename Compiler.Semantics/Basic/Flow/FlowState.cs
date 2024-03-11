@@ -104,6 +104,8 @@ public sealed class FlowState
             return null;
         var result = resultVariableFactory.Create();
         SharingDeclare(result, false);
+        if (type.ToUpperBound() is CapabilityType capabilityType)
+            TrackCapabilities(result, new FlowCapabilities(capabilityType));
         return result;
     }
 

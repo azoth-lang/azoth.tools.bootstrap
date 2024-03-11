@@ -11,6 +11,9 @@ public abstract class Pseudotype
     /// </summary>
     public abstract bool IsFullyKnown { get; }
 
+    /// <summary>
+    /// Create a type with the upper bound of the capability constraint.
+    /// </summary>
     public abstract DataType ToUpperBound();
 
     public sealed override string ToString()

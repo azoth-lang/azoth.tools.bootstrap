@@ -46,11 +46,21 @@ public sealed class CapabilitySet : ICapabilityConstraint
 
     public bool AnyCapabilityAllowsWrite { get; }
 
+    public Capability UpperBound { get; }
+
     private CapabilitySet(string name, params Capability[] allowedCapabilities)
     {
         this.name = name;
         AllowedCapabilities = allowedCapabilities.ToFrozenSet();
         AnyCapabilityAllowsWrite = AllowedCapabilities.Any(capability => capability.AllowsWrite);
+        // This does assume there will be a unique upper bound
+        var upperBound = AllowedCapabilities.First();
+        foreach (var allowedCapability in AllowedCapabilities)
+        {
+            if (!upperBound.IsAssignableFrom(allowedCapability))
+                upperBound = allowedCapability;
+        }
+        UpperBound = upperBound;
     }
 
     private readonly string name;
@@ -69,4 +79,6 @@ public sealed class CapabilitySet : ICapabilityConstraint
     public string ToILString() => name;
 
     public string ToSourceCodeString() => name;
+
+
 }
