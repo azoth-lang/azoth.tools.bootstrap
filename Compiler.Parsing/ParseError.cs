@@ -163,9 +163,27 @@ internal static class ParseError
             2024, "Getter is missing a return type.");
     }
 
-    public static Diagnostic GetterMethodHasParameters(CodeFile file, TextSpan span)
+    public static Diagnostic GetterHasParameters(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2025, "Getter has parameters.");
+    }
+
+    public static Diagnostic SetterHasReturn(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2026, "Setter has return.");
+    }
+
+    public static Diagnostic SetterMissingParameter(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2027, "Setter is missing a parameter.");
+    }
+
+    public static Diagnostic SetterHasExtraParameters(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2028, "Setter has extra parameters. A setter should have only one named parameter.");
     }
 }

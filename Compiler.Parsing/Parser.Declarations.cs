@@ -282,6 +282,8 @@ public partial class Parser
                 return ParseClassMemberFunction(classDeclaration, modifiers);
             case IGetKeywordToken _:
                 return ParseGetterMethod(classDeclaration, modifiers);
+            case ISetKeywordToken _:
+                return ParseSetterMethod(classDeclaration, modifiers);
             case INewKeywordToken _:
                 return ParseConstructor(classDeclaration, modifiers);
             case ILetKeywordToken _:
@@ -339,6 +341,8 @@ public partial class Parser
                 return ParseStructMemberFunction(structDeclaration, modifiers);
             case IGetKeywordToken _:
                 return ParseGetterMethod(structDeclaration, modifiers);
+            case ISetKeywordToken _:
+                return ParseSetterMethod(structDeclaration, modifiers);
             case IInitKeywordToken _:
                 return ParseInitializer(structDeclaration, modifiers);
             case ILetKeywordToken _:
@@ -395,6 +399,8 @@ public partial class Parser
                 return ParseTraitMemberFunction(traitDeclaration, modifiers);
             case IGetKeywordToken _:
                 return ParseGetterMethod(traitDeclaration, modifiers);
+            case ISetKeywordToken _:
+                return ParseSetterMethod(traitDeclaration, modifiers);
             default:
                 Tokens.UnexpectedToken();
                 throw new ParseFailedException();
@@ -588,7 +594,7 @@ public partial class Parser
             Add(ParseError.SelfParameterMustBeFirst(File, selfParameter.Span));
 
         if (namedParameters.Any())
-            Add(ParseError.GetterMethodHasParameters(File, TextSpan.Covering(namedParameters.Select(p => p.Span))!.Value));
+            Add(ParseError.GetterHasParameters(File, TextSpan.Covering(namedParameters.Select(p => p.Span))!.Value));
 
         if (@return is null)
         {
@@ -599,6 +605,47 @@ public partial class Parser
         var span = TextSpan.Covering(get, body.Span);
         return new GetterMethodDeclarationSyntax(declaringType, span, File, accessModifer,
             identifier.Span, name, selfParameter, @return, body);
+    }
+
+    internal ISetterMethodDeclarationSyntax ParseSetterMethod(
+        ITypeDeclarationSyntax declaringType,
+        ModifierParser modifiers)
+    {
+        var accessModifer = modifiers.ParseAccessModifier();
+        modifiers.ParseEndOfModifiers();
+        var set = Tokens.Consume<ISetKeywordToken>();
+        var identifier = Tokens.RequiredToken<IIdentifierToken>();
+        SimpleName name = identifier.Value;
+        var bodyParser = BodyParser();
+        // Self parameter is expected to be after the current token which is expected to be `(`
+        var expectedSelfParameterLocation = Tokens.Current.Span.AtEnd();
+        var parameters = bodyParser.ParseParameters(bodyParser.ParseMethodParameter);
+        var @return = ParseReturn();
+        var body = bodyParser.ParseBody();
+
+        var selfParameter = parameters.OfType<IMethodSelfParameterSyntax>().FirstOrDefault();
+        var namedParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>()).Cast<INamedParameterSyntax>()
+                                        .ToFixedList();
+        if (selfParameter is null)
+        {
+            Add(ParseError.MissingSelfParameter(File, expectedSelfParameterLocation));
+            // For simplicity of downstream code, make up a fake self parameter
+            var selfReferenceCapability = new CapabilitySyntax(expectedSelfParameterLocation,
+                Enumerable.Empty<ICapabilityToken>(), DeclaredCapability.Mutable);
+            selfParameter = new MethodSelfParameterSyntax(expectedSelfParameterLocation, false, selfReferenceCapability);
+        }
+        else if (parameters[0] is not ISelfParameterSyntax)
+            Add(ParseError.SelfParameterMustBeFirst(File, selfParameter.Span));
+
+        if (!namedParameters.Any())
+            Add(ParseError.SetterMissingParameter(File, selfParameter.Span.AtEnd()));
+        if (namedParameters.Count > 1)
+            Add(ParseError.SetterHasExtraParameters(File, TextSpan.Covering(namedParameters.Skip(1).Select(p => p.Span))!.Value));
+        if (@return is not null)
+            Add(ParseError.SetterHasReturn(File, @return.Span));
+        var span = TextSpan.Covering(set, body.Span);
+        return new SetterMethodDeclarationSyntax(declaringType, span, File, accessModifer,
+            identifier.Span, name, selfParameter, namedParameters.FirstOrDefault(), body);
     }
 
     internal IConstructorDeclarationSyntax ParseConstructor(

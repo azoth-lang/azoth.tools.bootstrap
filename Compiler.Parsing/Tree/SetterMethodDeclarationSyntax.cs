@@ -19,9 +19,11 @@ internal sealed class SetterMethodDeclarationSyntax : ConcreteMethodDeclarationS
         TextSpan nameSpan,
         SimpleName name,
         IMethodSelfParameterSyntax selfParameter,
-        IFixedList<INamedParameterSyntax> parameters,
+        INamedParameterSyntax? parameter,
         IBodySyntax body)
-        : base(declaringType, span, file, accessModifier, nameSpan, name, selfParameter, parameters, body) { }
+        : base(declaringType, span, file, accessModifier, nameSpan, name, selfParameter,
+            parameter is not null ? FixedList.Create(parameter) : FixedList.Empty<INamedParameterSyntax>(), body)
+    { }
 
     public override string ToString()
         => $"set {Name}({string.Join(", ", Parameters.Prepend<IParameterSyntax>(SelfParameter))}) {Body}";
