@@ -280,6 +280,8 @@ public partial class Parser
         {
             case IFunctionKeywordToken _:
                 return ParseClassMemberFunction(classDeclaration, modifiers);
+            case IGetKeywordToken _:
+                return ParseGetterMethod(classDeclaration, modifiers);
             case INewKeywordToken _:
                 return ParseConstructor(classDeclaration, modifiers);
             case ILetKeywordToken _:
@@ -335,6 +337,8 @@ public partial class Parser
         {
             case IFunctionKeywordToken _:
                 return ParseStructMemberFunction(structDeclaration, modifiers);
+            case IGetKeywordToken _:
+                return ParseGetterMethod(structDeclaration, modifiers);
             case IInitKeywordToken _:
                 return ParseInitializer(structDeclaration, modifiers);
             case ILetKeywordToken _:
@@ -389,6 +393,8 @@ public partial class Parser
         {
             case IFunctionKeywordToken _:
                 return ParseTraitMemberFunction(traitDeclaration, modifiers);
+            case IGetKeywordToken _:
+                return ParseGetterMethod(traitDeclaration, modifiers);
             default:
                 Tokens.UnexpectedToken();
                 throw new ParseFailedException();
@@ -547,6 +553,52 @@ public partial class Parser
             return new AbstractMethodDeclarationSyntax(declaringType, span, File, accessModifer,
                 identifier.Span, name, selfParameter, namedParameters, @return);
         }
+    }
+
+    internal IGetterMethodDeclarationSyntax ParseGetterMethod(
+        ITypeDeclarationSyntax declaringType,
+        ModifierParser modifiers)
+    {
+        var accessModifer = modifiers.ParseAccessModifier();
+        modifiers.ParseEndOfModifiers();
+        var get = Tokens.Consume<IGetKeywordToken>();
+        var identifier = Tokens.RequiredToken<IIdentifierToken>();
+        SimpleName name = identifier.Value;
+        var bodyParser = BodyParser();
+        // Self parameter is expected to be after the current token which is expected to be `(`
+        var expectedSelfParameterLocation = Tokens.Current.Span.AtEnd();
+        var parameters = bodyParser.ParseParameters(bodyParser.ParseMethodParameter);
+        var expectedReturnLocation = Tokens.Current.Span.AtStart();
+        var @return = ParseReturn();
+        var body = bodyParser.ParseBody();
+
+        var selfParameter = parameters.OfType<IMethodSelfParameterSyntax>().FirstOrDefault();
+        var namedParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>()).Cast<INamedParameterSyntax>()
+                                        .ToFixedList();
+
+        if (selfParameter is null)
+        {
+            Add(ParseError.MissingSelfParameter(File, expectedSelfParameterLocation));
+            // For simplicity of downstream code, make up a fake self parameter
+            var selfReferenceCapability = new CapabilitySyntax(expectedSelfParameterLocation,
+                Enumerable.Empty<ICapabilityToken>(), DeclaredCapability.Mutable);
+            selfParameter = new MethodSelfParameterSyntax(expectedSelfParameterLocation, false, selfReferenceCapability);
+        }
+        else if (parameters[0] is not ISelfParameterSyntax)
+            Add(ParseError.SelfParameterMustBeFirst(File, selfParameter.Span));
+
+        if (namedParameters.Any())
+            Add(ParseError.GetterMethodHasParameters(File, TextSpan.Covering(namedParameters.Select(p => p.Span))!.Value));
+
+        if (@return is null)
+        {
+            Add(ParseError.MissingReturn(File, expectedSelfParameterLocation));
+            @return = new ReturnSyntax(expectedReturnLocation, new SimpleTypeNameSyntax(expectedReturnLocation, SpecialTypeName.Void));
+        }
+
+        var span = TextSpan.Covering(get, body.Span);
+        return new GetterMethodDeclarationSyntax(declaringType, span, File, accessModifer,
+            identifier.Span, name, selfParameter, @return, body);
     }
 
     internal IConstructorDeclarationSyntax ParseConstructor(

@@ -16,127 +16,127 @@ internal static class ParseError
     public static Diagnostic NotImplemented(CodeFile file, TextSpan span, string feature)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            2000, $"{feature} are not yet implemented");
+            2000, $"{feature} are not yet implemented.");
     }
 
     public static Diagnostic IncompleteDeclaration(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2001, "Incomplete declaration");
+            2001, "Incomplete declaration.");
     }
 
     public static Diagnostic UnexpectedToken(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2002, $"Unexpected token `{file.Code[span]}`");
+            2002, $"Unexpected token `{file.Code[span]}`.");
     }
 
     public static Diagnostic MissingToken(CodeFile file, Type expected, IToken found)
     {
         return new(file, found.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2003, $"Expected `{expected.GetFriendlyName()}` found `{found.Text(file.Code)}`");
+            2003, $"Expected `{expected.GetFriendlyName()}` found `{found.Text(file.Code)}`.");
     }
 
     public static Diagnostic DeclarationNotAllowedInExternal(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2004, "Only function declarations are allowed in external blocks");
+            2004, "Only function declarations are allowed in external blocks.");
     }
 
     public static Diagnostic UnexpectedEndOfExpression(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2005, "Unexpected end of expression");
+            2005, "Unexpected end of expression.");
     }
 
     public static Diagnostic CantMoveOutOfExpression(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2006, "Can't move out of expression. Can only move out of variable or self");
+            2006, "Can't move out of expression. Can only move out of variable or self.");
     }
 
     public static Diagnostic ResultStatementInBody(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2007, "Result statements can't appear directly in function or method bodies. Must be in block expression");
+            2007, "Result statements can't appear directly in function or method bodies. Must be in block expression.");
     }
 
     public static Diagnostic ExtraSelfParameter(CodeFile file, in TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2008, "There can be only one self parameter to a method");
+            2008, "There can be only one self parameter to a method.");
     }
 
     public static Diagnostic SelfParameterMustBeFirst(CodeFile file, in TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2009, "Self parameter must be the first parameter");
+            2009, "Self parameter must be the first parameter.");
     }
 
     public static Diagnostic CantAssignIntoExpression(CodeFile file, in TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2010, "Expression can not appear on the left hand side of an assignment");
+            2010, "Expression can not appear on the left hand side of an assignment.");
     }
 
     public static Diagnostic MissingType(CodeFile file, in TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2011, "Variable type and capability missing");
+            2011, "Variable type and capability are missing.");
     }
 
     public static Diagnostic CantFreezeExpression(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2012, "Can't freeze expression. Can only freeze a variable or self");
+            2012, "Can't freeze expression. Can only freeze a variable or self.");
     }
 
     public static Diagnostic AbstractAssociatedFunction(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2013, "An associated function cannot be abstract");
+            2013, "An associated function cannot be abstract.");
     }
 
     public static Diagnostic ConcreteMethodDeclaredAbstract(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2014, "A concrete method cannot be abstract");
+            2014, "A concrete method cannot be abstract.");
     }
 
     public static Diagnostic AbstractMethodMissingAbstractModifier(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2015, "An abstract method must be declared `abstract`");
+            2015, "An abstract method must be declared `abstract`.");
     }
 
     public static Diagnostic AssociatedFunctionMissingBody(CodeFile file, TextSpan span, SimpleName name)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2016, $"Associated function `{name}` is missing a method body");
+            2016, $"Associated function `{name}` is missing a method body.");
     }
 
     public static Diagnostic MissingSelfParameter(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2017, "Constructor is missing a self parameter");
+            2017, "Constructor is missing a self parameter.");
     }
 
     public static Diagnostic LentVarNotAllowed(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2018, "Parameter binding cannot be both `lent` and `var`");
+            2018, "Parameter binding cannot be both `lent` and `var`.");
     }
 
     public static Diagnostic LentFieldParameter(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2019, "Field parameter cannot be `lent`");
+            2019, "Field parameter cannot be `lent`.");
     }
 
     public static Diagnostic UnexpectedEndOfPattern(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2020, "Unexpected end of pattern");
+            2020, "Unexpected end of pattern.");
     }
 
     public static Diagnostic InvalidTempCapability(CodeFile file, TextSpan span)
@@ -154,6 +154,18 @@ internal static class ParseError
     public static Diagnostic StructMethodMissingBody(CodeFile file, TextSpan span, SimpleName name)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2023, $"Method `{name}` is missing a method body");
+            2023, $"Method `{name}` is missing a method body.");
+    }
+
+    public static Diagnostic MissingReturn(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2024, "Getter is missing a return type.");
+    }
+
+    public static Diagnostic GetterMethodHasParameters(CodeFile file, TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
+            2025, "Getter has parameters.");
     }
 }
