@@ -32,14 +32,6 @@ public class VoidTypeTests
     }
 
     [Fact]
-    public void Void_has_void_semantics()
-    {
-        var type = VoidType.Instance;
-
-        Assert.Equal(TypeSemantics.Void, type.Semantics);
-    }
-
-    [Fact]
     public void Has_special_name_never()
     {
         var type = VoidType.Instance;

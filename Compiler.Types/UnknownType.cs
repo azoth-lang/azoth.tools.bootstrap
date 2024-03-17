@@ -17,12 +17,6 @@ public sealed class UnknownType : DataType
 
     public override bool IsFullyKnown => false;
 
-    /// <summary>
-    /// Like `never` values of type unknown can be assigned to any value.
-    /// It acts like a bottom type in this respect.
-    /// </summary>
-    public override TypeSemantics Semantics => TypeSemantics.Never;
-
     /// <remarks><see cref="ToSourceCodeString"/> is used to format error messages. As such, it
     /// is necessary to provide some output for the unknown type in case it appears in an error
     /// message.</remarks>

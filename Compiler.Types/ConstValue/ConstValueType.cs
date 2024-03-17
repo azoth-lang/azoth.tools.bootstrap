@@ -18,8 +18,6 @@ public abstract class ConstValueType : NonEmptyType
 
     public override bool IsFullyKnown => true;
 
-    public override TypeSemantics Semantics => TypeSemantics.CopyValue;
-
     private protected ConstValueType(SpecialTypeName name)
     {
         Name = name;

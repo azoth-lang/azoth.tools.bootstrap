@@ -16,6 +16,4 @@ public sealed class VoidType : EmptyType
         : base(SpecialTypeName.Void)
     { }
     #endregion
-
-    public override TypeSemantics Semantics => TypeSemantics.Void;
 }

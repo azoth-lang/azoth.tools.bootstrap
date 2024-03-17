@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Xunit;
 
@@ -21,14 +20,6 @@ public class SizedIntegerTypeTests
         var type = FixedSizeIntegerType.Byte;
 
         Assert.False(type.IsSigned);
-    }
-
-    [Fact]
-    public void Int32_has_copy_semantics()
-    {
-        var type = FixedSizeIntegerType.Int32;
-
-        Assert.Equal(TypeSemantics.CopyValue, type.Semantics);
     }
 
     [Fact]

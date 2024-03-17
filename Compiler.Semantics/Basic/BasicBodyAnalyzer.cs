@@ -855,15 +855,7 @@ public class BasicBodyAnalyzer
                     diagnostics.Add(TypeError.CannotImplicitlyConvert(file,
                         exp.RightOperand, right.Type, left.Type));
                 var resultVariable = flow.Combine(left.Variable, right.Variable, exp);
-                if (left.Type.Semantics == TypeSemantics.MoveValue)
-                {
-                    exp.DataType = DataType.Void;
-                    flow.Drop(resultVariable);
-                }
-                else
-                {
-                    exp.DataType = left.Type;
-                }
+                exp.DataType = left.Type;
                 return new ExpressionResult(exp, resultVariable);
             }
             case ISelfExpressionSyntax exp:
@@ -950,7 +942,7 @@ public class BasicBodyAnalyzer
                 type = referenceType.IsTemporarilyIsolatedReference ? type : referenceType.With(Capability.Isolated);
                 flow.Move(symbol);
                 break;
-            case ValueType { Semantics: TypeSemantics.MoveValue } valueType:
+            case ValueType valueType:
                 type = valueType;
                 break;
             case UnknownType:
@@ -1844,24 +1836,6 @@ public class BasicBodyAnalyzer
                     case FieldSymbol fieldSymbol:
                     {
                         type = fieldSymbol.Type;
-                        switch (type.Semantics)
-                        {
-                            default:
-                                throw ExhaustiveMatch.Failed(type.Semantics);
-                            case TypeSemantics.CopyValue:
-                                //exp.Semantics = ExpressionSemantics.CopyValue;
-                                break;
-                            case TypeSemantics.Never:
-                                //exp.Semantics = ExpressionSemantics.Never;
-                                break;
-                            case TypeSemantics.Reference:
-                                // Needs to be assigned based on share/borrow expression
-                                break;
-                            case TypeSemantics.MoveValue:
-                                throw new InvalidOperationException("Can't move out of field");
-                            case TypeSemantics.Void:
-                                throw new InvalidOperationException("Can't assign semantics to void field");
-                        }
 
                         if (fieldSymbol.IsMutableBinding
                             && contextType is ReferenceType { Capability: var contextCapability }

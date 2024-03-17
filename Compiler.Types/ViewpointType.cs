@@ -12,7 +12,5 @@ public abstract class ViewpointType : NonEmptyType
 
     public override bool IsFullyKnown => Referent.IsFullyKnown;
 
-    public override TypeSemantics Semantics => Referent.Semantics;
-
     private protected ViewpointType() { }
 }

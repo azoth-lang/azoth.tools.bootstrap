@@ -15,14 +15,12 @@ public sealed class FunctionType : NonEmptyType
         Parameters = parameters;
         Return = @return;
         IsFullyKnown = parameters.All(p => p.IsFullyKnown) && @return.IsFullyKnown;
-        Semantics = TypeSemantics.Reference;
     }
 
     public IFixedList<Parameter> Parameters { get; }
     public Return Return { get; }
 
     public override bool IsFullyKnown { get; }
-    public override TypeSemantics Semantics { get; }
 
     #region Equality
     public override bool Equals(DataType? other)

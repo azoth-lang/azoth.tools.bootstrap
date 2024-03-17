@@ -49,7 +49,6 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public IFixedList<GenericParameterType> GenericParameterTypes { get; }
     public bool IsGeneric => GenericParameters.Any();
     public abstract FixedSet<BareReferenceType> Supertypes { get; }
-    public abstract TypeSemantics Semantics { get; }
 
     private protected DeclaredType(
         bool isDeclaredConst,

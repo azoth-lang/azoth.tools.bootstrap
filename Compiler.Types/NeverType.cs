@@ -20,6 +20,4 @@ public sealed class NeverType : EmptyType
         : base(SpecialTypeName.Never)
     { }
     #endregion
-
-    public override TypeSemantics Semantics => TypeSemantics.Never;
 }

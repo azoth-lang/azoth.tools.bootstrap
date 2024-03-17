@@ -70,8 +70,6 @@ public abstract class CapabilityType : NonEmptyType
     /// </summary>
     public bool IsDeclaredConst => DeclaredType.IsDeclaredConst;
 
-    public sealed override TypeSemantics Semantics => BareType.Semantics;
-
     private protected CapabilityType(Capability capability)
     {
         Capability = capability;

@@ -22,9 +22,6 @@ public sealed class GenericParameterType : NonEmptyType
 
     public override bool IsFullyKnown => true;
 
-    // TODO the type semantics isn't actually known because it is generic
-    public override TypeSemantics Semantics => TypeSemantics.CopyValue;
-
     public GenericParameterType(Promise<IDeclaredUserType> declaringTypePromise, GenericParameter parameter)
     {
         DeclaringTypePromise = declaringTypePromise;

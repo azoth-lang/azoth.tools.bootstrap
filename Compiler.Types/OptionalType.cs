@@ -20,10 +20,6 @@ public sealed class OptionalType : NonEmptyType
 
     public override bool IsFullyKnown => Referent.IsFullyKnown;
 
-    public override TypeSemantics Semantics =>
-        Referent.Semantics == TypeSemantics.Never
-            ? TypeSemantics.CopyValue : Referent.Semantics;
-
     private bool ReferentRequiresParens => Referent is FunctionType or ViewpointType;
 
     public OptionalType(DataType referent)

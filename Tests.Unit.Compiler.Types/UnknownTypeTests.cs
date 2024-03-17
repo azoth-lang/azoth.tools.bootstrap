@@ -22,17 +22,6 @@ public class UnknownTypeTests
         Assert.False(type.IsTypeOfConstValue);
     }
 
-    /// <summary>
-    /// It has never semantics because it is assignable to anything
-    /// </summary>
-    [Fact]
-    public void Unknown_has_never_semantics()
-    {
-        var type = UnknownType.Instance;
-
-        Assert.Equal(TypeSemantics.Never, type.Semantics);
-    }
-
     [Fact]
     public void Equal_to_itself()
     {

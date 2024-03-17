@@ -1,5 +1,4 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Xunit;
 
@@ -8,14 +7,6 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
 [Trait("Category", "Types")]
 public class BoolTypeTests
 {
-    [Fact]
-    public void Has_copy_semantics()
-    {
-        var type = BoolType.Instance;
-
-        Assert.Equal(TypeSemantics.CopyValue, type.Semantics);
-    }
-
     [Fact]
     public void Has_special_name_bool()
     {

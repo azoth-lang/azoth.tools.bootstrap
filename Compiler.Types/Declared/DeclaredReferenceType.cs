@@ -20,8 +20,6 @@ public abstract class DeclaredReferenceType : DeclaredType
     /// </summary>
     public bool IsClass { get; }
 
-    public override TypeSemantics Semantics => TypeSemantics.Reference;
-
     private protected DeclaredReferenceType(
         bool isDeclaredConst,
         bool isAbstract,

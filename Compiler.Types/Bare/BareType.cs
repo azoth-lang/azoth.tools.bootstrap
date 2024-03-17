@@ -57,8 +57,6 @@ public abstract class BareType : IEquatable<BareType>
     /// </summary>
     public bool IsDeclaredConstType => DeclaredType.IsDeclaredConst;
 
-    public TypeSemantics Semantics => DeclaredType.Semantics;
-
     private readonly Lazy<TypeReplacements> typeReplacements;
 
     public static BareReferenceType<ObjectType> Create(

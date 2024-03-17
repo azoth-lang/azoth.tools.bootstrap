@@ -31,14 +31,6 @@ public class IntegerConstValueTypeTests
         Assert.False(type.IsEmpty);
     }
 
-    [Fact]
-    public void Has_copy_semantics()
-    {
-        var type = new IntegerConstValueType(1);
-
-        Assert.Equal(TypeSemantics.CopyValue, type.Semantics);
-    }
-
     [Theory]
     [InlineData(-23)]
     [InlineData(-1)]

@@ -73,11 +73,6 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     /// </summary>
     public virtual bool AllowsWriteAliases => false;
 
-    /// <summary>
-    /// The semantics of values of this type.
-    /// </summary>
-    public abstract TypeSemantics Semantics { get; }
-
     public virtual bool AllowsVariance => false;
 
     public virtual bool HasIndependentTypeArguments => false;

@@ -19,8 +19,6 @@ public abstract class SimpleType : DeclaredValueType
 
     public override FixedSet<BareReferenceType> Supertypes => FixedSet<BareReferenceType>.Empty;
 
-    public override TypeSemantics Semantics => TypeSemantics.CopyValue;
-
     public abstract BareValueType BareType { get; }
 
     public abstract ValueType Type { get; }

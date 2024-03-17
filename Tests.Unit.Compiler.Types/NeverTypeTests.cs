@@ -32,14 +32,6 @@ public class NeverTypeTests
     }
 
     [Fact]
-    public void Never_has_never_semantics()
-    {
-        var type = NeverType.Instance;
-
-        Assert.Equal(TypeSemantics.Never, type.Semantics);
-    }
-
-    [Fact]
     public void Has_special_name_never()
     {
         var type = NeverType.Instance;
