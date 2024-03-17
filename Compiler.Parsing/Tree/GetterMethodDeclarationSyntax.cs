@@ -1,6 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -8,6 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal sealed class GetterMethodDeclarationSyntax : ConcreteMethodDeclarationSyntax, IGetterMethodDeclarationSyntax
 {
+    public override MethodKind Kind => MethodKind.Getter;
     public override IReturnSyntax Return { get; }
 
     public GetterMethodDeclarationSyntax(

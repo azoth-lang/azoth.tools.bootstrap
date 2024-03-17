@@ -355,7 +355,7 @@ internal class ASTBuilder
             IBlockExpressionSyntax syn => BuildBlockExpression(syn),
             IBoolLiteralExpressionSyntax syn => BuildBoolLiteralExpression(syn),
             IBreakExpressionSyntax syn => BuildBreakExpression(syn),
-            IQualifiedNameExpressionSyntax syn => BuildFieldAccessExpression(syn),
+            IQualifiedNameExpressionSyntax syn => BuildGetterAccessExpression(syn),
             IForeachExpressionSyntax syn => BuildForeachExpression(syn),
             IIfExpressionSyntax syn => BuildIfExpression(syn),
             IIntegerLiteralExpressionSyntax syn => BuildIntegerLiteralExpression(syn),
@@ -413,14 +413,32 @@ internal class ASTBuilder
         // why this method even exists
         => expressions.Select(BuildExpression).ToFixedList()!;
 
-    private static IAssignmentExpression BuildAssignmentExpression(IAssignmentExpressionSyntax syn)
+    private static IExpression BuildAssignmentExpression(IAssignmentExpressionSyntax syn)
     {
-        var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
-        var leftOperand = BuildAssignableExpression(syn.LeftOperand);
-        var @operator = syn.Operator;
-        var rightOperand = BuildExpression(syn.RightOperand);
-        return new AssignmentExpression(syn.Span, type, semantics, leftOperand, @operator, rightOperand);
+        var leftOperandSymbol = syn.LeftOperand.ReferencedSymbol.Result.Assigned();
+        switch (leftOperandSymbol)
+        {
+            case BindingSymbol _:
+            {
+                var type = syn.DataType.Assigned();
+                var semantics = syn.Semantics.Assigned();
+                var leftOperand = BuildAssignableExpression(syn.LeftOperand);
+                var @operator = syn.Operator;
+                var rightOperand = BuildExpression(syn.RightOperand);
+                return new AssignmentExpression(syn.Span, type, semantics, leftOperand, @operator, rightOperand);
+            }
+            case MethodSymbol methodSymbol:
+            {
+                var type = syn.DataType.Assigned();
+                var semantics = syn.Semantics.Assigned();
+                var leftOperand = BuildExpression(syn.LeftOperand);
+                var rightOperand = BuildExpression(syn.RightOperand);
+                return new MethodInvocationExpression(syn.Span, type, semantics, leftOperand,
+                    methodSymbol, FixedList.Create(rightOperand));
+            }
+            default:
+                throw new NotSupportedException();
+        }
     }
 
     private static IAssignableExpression BuildAssignableExpression(IAssignableExpressionSyntax expression)
@@ -467,14 +485,34 @@ internal class ASTBuilder
         return new BreakExpression(syn.Span, type, semantics, value);
     }
 
+    private static IExpression BuildGetterAccessExpression(IQualifiedNameExpressionSyntax syn)
+    {
+        var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
+        switch (referencedSymbol)
+        {
+            case FieldSymbol fieldSymbol:
+                return BuildFieldAccessExpression(syn);
+            case MethodSymbol methodSymbol:
+            {
+                var type = syn.DataType.Assigned();
+                var semantics = syn.Semantics.Assigned();
+                var context = BuildExpression(syn.Context);
+                return new MethodInvocationExpression(syn.Span, type, semantics, context, methodSymbol,
+                    FixedList.Empty<IExpression>());
+            }
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
     private static IFieldAccessExpression BuildFieldAccessExpression(IQualifiedNameExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
         var semantics = syn.Semantics.Assigned();
         var context = BuildExpression(syn.Context);
         var accessOperator = syn.AccessOperator;
-        var referencedSymbol = (FieldSymbol)syn.ReferencedSymbol.Result.Assigned();
-        return new FieldAccessExpression(syn.Span, type, semantics, context, accessOperator, referencedSymbol);
+        var fieldSymbol = (FieldSymbol)syn.ReferencedSymbol.Result.Assigned();
+        return new FieldAccessExpression(syn.Span, type, semantics, context, accessOperator, fieldSymbol);
     }
 
     private static IForeachExpression BuildForeachExpression(IForeachExpressionSyntax syn)

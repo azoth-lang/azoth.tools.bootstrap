@@ -267,6 +267,7 @@ public partial interface IStructMemberDeclarationSyntax : IMemberDeclarationSynt
     typeof(IConcreteMethodDeclarationSyntax))]
 public partial interface IMethodDeclarationSyntax : IClassMemberDeclarationSyntax, ITraitMemberDeclarationSyntax, IInvocableDeclarationSyntax
 {
+    MethodKind Kind { get; }
     new SimpleName Name { get; }
     IMethodSelfParameterSyntax SelfParameter { get; }
     new IFixedList<INamedParameterSyntax> Parameters { get; }
@@ -625,6 +626,7 @@ public partial interface IExpressionSyntax : ISyntax
     typeof(INameExpressionSyntax))]
 public partial interface IAssignableExpressionSyntax : IExpressionSyntax
 {
+    Promise<Symbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IBlockExpressionSyntax : IExpressionSyntax, IBlockOrResultSyntax, IBodyOrBlockSyntax
@@ -768,7 +770,6 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax, IHasCo
     typeof(IQualifiedNameExpressionSyntax))]
 public partial interface INameExpressionSyntax : IAssignableExpressionSyntax
 {
-    Promise<Symbol?> ReferencedSymbol { get; }
 }
 
 [Closed(

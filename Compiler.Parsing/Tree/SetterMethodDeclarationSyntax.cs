@@ -2,6 +2,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -9,6 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal sealed class SetterMethodDeclarationSyntax : ConcreteMethodDeclarationSyntax, ISetterMethodDeclarationSyntax
 {
+    public override MethodKind Kind => MethodKind.Setter;
     public override IReturnSyntax? Return => null;
 
     public SetterMethodDeclarationSyntax(

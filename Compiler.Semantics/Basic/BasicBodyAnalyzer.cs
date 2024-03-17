@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -1930,6 +1931,7 @@ public class BasicBodyAnalyzer
         ISimpleNameExpressionSyntax exp,
         IFixedList<Symbol> matchingSymbols)
     {
+        // TODO resolve getters overloaded on self type
         switch (matchingSymbols.Count)
         {
             case 0:
@@ -1968,6 +1970,14 @@ public class BasicBodyAnalyzer
                         diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(file, exp, contextType));
                         type = DataType.Unknown;
                     }
+                }
+                else if (memberSymbol is MethodSymbol { Kind: MethodKind.Getter } methodSymbol)
+                {
+                    type = methodSymbol.Return.Type;
+                    var selfType = methodSymbol.SelfParameterType.Type;
+                    if (!selfType.IsAssignableFrom(contextType))
+                        // TODO error message not correct, should not ToUpperBound()
+                        diagnostics.Add(TypeError.CannotImplicitlyConvert(file, exp, contextType.ToUpperBound(), selfType.ToUpperBound()));
                 }
 
                 exp.ReferencedSymbol.Fulfill(memberSymbol);

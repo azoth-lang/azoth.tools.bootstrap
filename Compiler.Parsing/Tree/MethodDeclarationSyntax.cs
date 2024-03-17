@@ -12,6 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IMethodDeclarationSyntax
 {
     public ITypeDeclarationSyntax DeclaringType { get; }
+    public abstract MethodKind Kind { get; }
     public new SimpleName Name { get; }
     public IMethodSelfParameterSyntax SelfParameter { get; }
     public new IFixedList<INamedParameterSyntax> Parameters { get; }

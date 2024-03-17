@@ -97,11 +97,12 @@ public class EntitySymbolBuilder
         method.Symbol.BeginFulfilling();
         var declaringTypeSymbol = method.DeclaringType.Symbol.Result;
         var file = method.File;
+        var kind = method.Kind;
         var selfParameterType = ResolveMethodSelfParameterType(file, method.SelfParameter, method.DeclaringType);
         var resolver = new TypeResolver(file, diagnostics, selfParameterType.Type);
         var parameterTypes = ResolveParameterTypes(resolver, method.Parameters, method.DeclaringType);
         var returnType = ResolveReturnType(resolver, method.Return);
-        var symbol = new MethodSymbol(declaringTypeSymbol, method.Name, selfParameterType, parameterTypes, returnType);
+        var symbol = new MethodSymbol(declaringTypeSymbol, kind, method.Name, selfParameterType, parameterTypes, returnType);
         method.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);
         BuildSelfParameterSymbol(symbol, method.SelfParameter, selfParameterType.Type);

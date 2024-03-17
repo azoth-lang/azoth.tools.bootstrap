@@ -60,7 +60,7 @@ MemberDeclaration: EntityDeclaration = DeclaringType:'ITypeDeclarationSyntax';
 ClassMemberDeclaration: MemberDeclaration;
 TraitMemberDeclaration: MemberDeclaration;
 StructMemberDeclaration: MemberDeclaration;
-MethodDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration = Name:'SimpleName' SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Symbol:'AcyclicPromise<MethodSymbol>';
+MethodDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration = Kind:'MethodKind' Name:'SimpleName' SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Symbol:'AcyclicPromise<MethodSymbol>';
 AbstractMethodDeclaration: MethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return?;
 ConcreteMethodDeclaration: MethodDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
 StandardMethodDeclaration: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
@@ -125,7 +125,7 @@ OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
 Expression = ImplicitConversion:'Conversion' ConvertedDataType:'DataType'? ConvertedSemantics:'ExpressionSemantics'?;
-AssignableExpression: Expression;
+AssignableExpression: Expression = ReferencedSymbol:'Promise<Symbol?>';
 BlockExpression: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
 NewObjectExpression: Expression = Type:TypeName ConstructorName:'SimpleName'? ConstructorNameSpan:'TextSpan'? Arguments:Expression* ReferencedSymbol:'Promise<ConstructorSymbol?>';
 UnsafeExpression: Expression = Expression;
