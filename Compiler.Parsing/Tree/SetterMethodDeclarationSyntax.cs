@@ -1,3 +1,4 @@
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -6,11 +7,11 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal abstract class ConcreteMethodDeclarationSyntax : MethodDeclarationSyntax, IConcreteMethodDeclarationSyntax
+internal sealed class SetterMethodDeclarationSyntax : ConcreteMethodDeclarationSyntax, ISetterMethodDeclarationSyntax
 {
-    public virtual IBodySyntax Body { get; }
+    public override IReturnSyntax? Return => null;
 
-    protected ConcreteMethodDeclarationSyntax(
+    public SetterMethodDeclarationSyntax(
         ITypeDeclarationSyntax declaringType,
         TextSpan span,
         CodeFile file,
@@ -20,9 +21,8 @@ internal abstract class ConcreteMethodDeclarationSyntax : MethodDeclarationSynta
         IMethodSelfParameterSyntax selfParameter,
         IFixedList<INamedParameterSyntax> parameters,
         IBodySyntax body)
-        : base(declaringType, span, file, accessModifier, nameSpan, name, selfParameter,
-            parameters)
-    {
-        Body = body;
-    }
+        : base(declaringType, span, file, accessModifier, nameSpan, name, selfParameter, parameters, body) { }
+
+    public override string ToString()
+        => $"set {Name}({string.Join(", ", Parameters.Prepend<IParameterSyntax>(SelfParameter))}) {Body}";
 }

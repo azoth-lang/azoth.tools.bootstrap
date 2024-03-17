@@ -19,6 +19,7 @@ public sealed class FieldSymbol : NamedBindingSymbol
         ContainingSymbol = containingSymbol;
     }
 
+    #region Equality
     public override bool Equals(Symbol? other)
     {
         if (other is null) return false;
@@ -32,6 +33,7 @@ public sealed class FieldSymbol : NamedBindingSymbol
 
     public override int GetHashCode()
         => HashCode.Combine(ContainingSymbol, Name, IsMutableBinding, Type);
+    #endregion
 
     public override string ToILString()
     {

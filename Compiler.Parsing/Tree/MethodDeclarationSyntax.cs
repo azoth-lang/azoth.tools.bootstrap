@@ -16,7 +16,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
     public IMethodSelfParameterSyntax SelfParameter { get; }
     public new IFixedList<INamedParameterSyntax> Parameters { get; }
     public override IFixedList<IParameterSyntax> AllParameters { get; }
-    public IReturnSyntax? Return { get; }
+    public abstract IReturnSyntax? Return { get; }
     public new AcyclicPromise<MethodSymbol> Symbol { get; }
 
     protected MethodDeclarationSyntax(
@@ -27,8 +27,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
         TextSpan nameSpan,
         SimpleName name,
         IMethodSelfParameterSyntax selfParameter,
-        IFixedList<INamedParameterSyntax> parameters,
-        IReturnSyntax? @return)
+        IFixedList<INamedParameterSyntax> parameters)
         : base(span, file, accessModifier, nameSpan, name,
             parameters, new AcyclicPromise<MethodSymbol>())
     {
@@ -37,7 +36,6 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
         SelfParameter = selfParameter;
         Parameters = parameters;
         AllParameters = parameters.Prepend<IParameterSyntax>(selfParameter).ToFixedList();
-        Return = @return;
         Symbol = (AcyclicPromise<MethodSymbol>)base.Symbol;
     }
 }

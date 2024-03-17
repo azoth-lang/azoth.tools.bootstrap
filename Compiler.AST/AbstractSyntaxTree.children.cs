@@ -47,7 +47,19 @@ public static class IAbstractSyntaxExtensions
                 foreach (var child in n.Parameters)
                     yield return child;
                 yield break;
-            case IConcreteMethodDeclaration n:
+            case IStandardMethodDeclaration n:
+                yield return n.SelfParameter;
+                foreach (var child in n.Parameters)
+                    yield return child;
+                yield return n.Body;
+                yield break;
+            case IGetterMethodDeclaration n:
+                yield return n.SelfParameter;
+                foreach (var child in n.Parameters)
+                    yield return child;
+                yield return n.Body;
+                yield break;
+            case ISetterMethodDeclaration n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;

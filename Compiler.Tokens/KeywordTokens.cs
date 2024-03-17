@@ -52,6 +52,8 @@ public static partial class TokenTypes
         typeof(SelfKeywordToken),
         typeof(MutableKeywordToken),
         typeof(AbstractKeywordToken),
+        typeof(GetKeywordToken),
+        typeof(SetKeywordToken),
         typeof(NoneKeywordToken),
         typeof(MoveKeywordToken),
         typeof(FreezeKeywordToken),
@@ -218,6 +220,12 @@ public static partial class TokenFactory
     public static IAbstractKeywordToken AbstractKeyword(TextSpan span)
         => new AbstractKeywordToken(span);
 
+    public static IGetKeywordToken GetKeyword(TextSpan span)
+        => new GetKeywordToken(span);
+
+    public static ISetKeywordToken SetKeyword(TextSpan span)
+        => new SetKeywordToken(span);
+
     public static INoneKeywordToken NoneKeyword(TextSpan span)
         => new NoneKeywordToken(span);
 
@@ -360,6 +368,8 @@ public static partial class TokenFactory
     typeof(ISelfKeywordToken),
     typeof(IMutableKeywordToken),
     typeof(IAbstractKeywordToken),
+    typeof(IGetKeywordToken),
+    typeof(ISetKeywordToken),
     typeof(INoneKeywordToken),
     typeof(IMoveKeywordToken),
     typeof(IFreezeKeywordToken),
@@ -777,6 +787,24 @@ public partial interface IAbstractKeywordToken : IKeywordToken { }
 internal partial class AbstractKeywordToken : Token, IAbstractKeywordToken
 {
     public AbstractKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IGetKeywordToken : IKeywordToken { }
+internal partial class GetKeywordToken : Token, IGetKeywordToken
+{
+    public GetKeywordToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface ISetKeywordToken : IKeywordToken { }
+internal partial class SetKeywordToken : Token, ISetKeywordToken
+{
+    public SetKeywordToken(TextSpan span)
         : base(span)
     {
     }

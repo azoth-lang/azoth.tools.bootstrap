@@ -6,11 +6,11 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal abstract class ConcreteMethodDeclarationSyntax : MethodDeclarationSyntax, IConcreteMethodDeclarationSyntax
+internal sealed class GetterMethodDeclarationSyntax : ConcreteMethodDeclarationSyntax, IGetterMethodDeclarationSyntax
 {
-    public virtual IBodySyntax Body { get; }
+    public override IReturnSyntax Return { get; }
 
-    protected ConcreteMethodDeclarationSyntax(
+    public GetterMethodDeclarationSyntax(
         ITypeDeclarationSyntax declaringType,
         TextSpan span,
         CodeFile file,
@@ -18,11 +18,14 @@ internal abstract class ConcreteMethodDeclarationSyntax : MethodDeclarationSynta
         TextSpan nameSpan,
         SimpleName name,
         IMethodSelfParameterSyntax selfParameter,
-        IFixedList<INamedParameterSyntax> parameters,
+        IReturnSyntax @return,
         IBodySyntax body)
         : base(declaringType, span, file, accessModifier, nameSpan, name, selfParameter,
-            parameters)
+            FixedList.Empty<INamedParameterSyntax>(), body)
     {
-        Body = body;
+        Return = @return;
     }
+
+    public override string ToString()
+        => $"get {Name}({SelfParameter}){Return} {Body}";
 }

@@ -208,10 +208,26 @@ public partial interface IAbstractMethodDeclaration : IMethodDeclaration
 {
 }
 
+[Closed(
+    typeof(IStandardMethodDeclaration),
+    typeof(IGetterMethodDeclaration),
+    typeof(ISetterMethodDeclaration))]
 public partial interface IConcreteMethodDeclaration : IMethodDeclaration, IStructMemberDeclaration, IConcreteInvocableDeclaration
 {
     new MethodSymbol Symbol { get; }
     new IFixedList<INamedParameter> Parameters { get; }
+}
+
+public partial interface IStandardMethodDeclaration : IConcreteMethodDeclaration
+{
+}
+
+public partial interface IGetterMethodDeclaration : IConcreteMethodDeclaration
+{
+}
+
+public partial interface ISetterMethodDeclaration : IConcreteMethodDeclaration
+{
 }
 
 public partial interface IConstructorDeclaration : IClassMemberDeclaration, IConcreteInvocableDeclaration

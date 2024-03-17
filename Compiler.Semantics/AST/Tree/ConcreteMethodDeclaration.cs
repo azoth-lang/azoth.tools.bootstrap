@@ -7,7 +7,7 @@ using MoreLinq.Extensions;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
-internal class ConcreteMethodDeclaration : InvocableDeclaration, IConcreteMethodDeclaration
+internal abstract class ConcreteMethodDeclaration : InvocableDeclaration, IConcreteMethodDeclaration
 {
     public ITypeDeclaration DeclaringType { get; }
     public new MethodSymbol Symbol { get; }
@@ -15,7 +15,7 @@ internal class ConcreteMethodDeclaration : InvocableDeclaration, IConcreteMethod
     public new IFixedList<INamedParameter> Parameters { get; }
     public IBody Body { get; }
 
-    public ConcreteMethodDeclaration(
+    protected ConcreteMethodDeclaration(
         CodeFile file,
         TextSpan span,
         ITypeDeclaration declaringType,

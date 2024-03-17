@@ -278,9 +278,26 @@ public partial interface IAbstractMethodDeclarationSyntax : IMethodDeclarationSy
 {
 }
 
+[Closed(
+    typeof(IStandardMethodDeclarationSyntax),
+    typeof(IGetterMethodDeclarationSyntax),
+    typeof(ISetterMethodDeclarationSyntax))]
 public partial interface IConcreteMethodDeclarationSyntax : IMethodDeclarationSyntax, IStructMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
 {
     new IFixedList<INamedParameterSyntax> Parameters { get; }
+}
+
+public partial interface IStandardMethodDeclarationSyntax : IConcreteMethodDeclarationSyntax
+{
+}
+
+public partial interface IGetterMethodDeclarationSyntax : IConcreteMethodDeclarationSyntax
+{
+    new IReturnSyntax Return { get; }
+}
+
+public partial interface ISetterMethodDeclarationSyntax : IConcreteMethodDeclarationSyntax
+{
 }
 
 public partial interface IConstructorDeclarationSyntax : IClassMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax

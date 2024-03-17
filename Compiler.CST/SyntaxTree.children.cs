@@ -78,7 +78,22 @@ public static class ISyntaxExtensions
                 if (n.Return is not null)
                     yield return n.Return;
                 yield break;
-            case IConcreteMethodDeclarationSyntax n:
+            case IStandardMethodDeclarationSyntax n:
+                yield return n.SelfParameter;
+                foreach (var child in n.Parameters)
+                    yield return child;
+                if (n.Return is not null)
+                    yield return n.Return;
+                yield return n.Body;
+                yield break;
+            case IGetterMethodDeclarationSyntax n:
+                yield return n.SelfParameter;
+                foreach (var child in n.Parameters)
+                    yield return child;
+                yield return n.Return;
+                yield return n.Body;
+                yield break;
+            case ISetterMethodDeclarationSyntax n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;

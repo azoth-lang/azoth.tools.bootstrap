@@ -118,7 +118,7 @@ internal class ASTBuilder
         {
             IAssociatedFunctionDeclarationSyntax syn => BuildAssociatedFunction(declaringClass, syn),
             IAbstractMethodDeclarationSyntax syn => BuildAbstractMethod(declaringClass, syn),
-            IConcreteMethodDeclarationSyntax syn => BuildConcreteMethod(declaringClass, syn),
+            IConcreteMethodDeclarationSyntax syn => BuildStandardMethod(declaringClass, syn),
             IConstructorDeclarationSyntax syn => BuildConstructor(declaringClass, syn),
             IFieldDeclarationSyntax syn => BuildField(declaringClass, syn),
             _ => throw ExhaustiveMatch.Failed(member)
@@ -132,7 +132,7 @@ internal class ASTBuilder
         return member switch
         {
             IAssociatedFunctionDeclarationSyntax syn => BuildAssociatedFunction(declaringStruct, syn),
-            IConcreteMethodDeclarationSyntax syn => BuildConcreteMethod(declaringStruct, syn),
+            IConcreteMethodDeclarationSyntax syn => BuildStandardMethod(declaringStruct, syn),
             IInitializerDeclarationSyntax syn => BuildInitializer(declaringStruct, syn),
             IFieldDeclarationSyntax syn => BuildField(declaringStruct, syn),
             _ => throw ExhaustiveMatch.Failed(member)
@@ -147,7 +147,7 @@ internal class ASTBuilder
         {
             IAssociatedFunctionDeclarationSyntax syn => BuildAssociatedFunction(declaringTrait, syn),
             IAbstractMethodDeclarationSyntax syn => BuildAbstractMethod(declaringTrait, syn),
-            IConcreteMethodDeclarationSyntax syn => BuildConcreteMethod(declaringTrait, syn),
+            IConcreteMethodDeclarationSyntax syn => BuildStandardMethod(declaringTrait, syn),
             _ => throw ExhaustiveMatch.Failed(member)
         };
     }
@@ -174,7 +174,7 @@ internal class ASTBuilder
         return new AbstractMethodDeclaration(syn.File, syn.Span, declaringType, symbol, nameSpan, selfParameter, parameters);
     }
 
-    private static IConcreteMethodDeclaration BuildConcreteMethod(
+    private static IConcreteMethodDeclaration BuildStandardMethod(
         ITypeDeclaration declaringType,
         IConcreteMethodDeclarationSyntax syn)
     {
@@ -183,7 +183,7 @@ internal class ASTBuilder
         var selfParameter = BuildParameter(syn.SelfParameter);
         var parameters = syn.Parameters.Select(BuildParameter).ToFixedList();
         var body = BuildBody(syn.Body);
-        return new ConcreteMethodDeclaration(syn.File, syn.Span, declaringType, symbol, nameSpan, selfParameter, parameters, body);
+        return new StandardMethodDeclaration(syn.File, syn.Span, declaringType, symbol, nameSpan, selfParameter, parameters, body);
     }
 
     private static IConstructorDeclaration BuildConstructor(
