@@ -196,7 +196,7 @@ public static class DataTypeExtensions
         if (target.Parameters.Count != source.Parameters.Count)
             return false;
 
-        foreach (var (targetParameter, sourceParameter) in target.Parameters.Zip(source.Parameters))
+        foreach (var (targetParameter, sourceParameter) in target.Parameters.EquiZip(source.Parameters))
             if (!targetParameter.IsAssignableFrom(sourceParameter))
                 return false;
 

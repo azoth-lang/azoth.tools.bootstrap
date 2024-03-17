@@ -17,6 +17,8 @@ using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using MoreLinq;
+using MoreLinq.Extensions;
 using Return = Azoth.Tools.Bootstrap.Compiler.Types.Return;
 using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
@@ -196,7 +198,7 @@ public class InterpreterProcess
         try
         {
             var variables = new LocalVariableScope();
-            foreach (var (arg, symbol) in arguments.Zip(function.Parameters.Select(p => p.Symbol)))
+            foreach (var (arg, symbol) in arguments.EquiZip(function.Parameters.Select(p => p.Symbol)))
                 variables.Add(symbol, arg);
 
             foreach (var statement in function.Body.Statements)
@@ -241,7 +243,7 @@ public class InterpreterProcess
         {
             var variables = new LocalVariableScope();
             variables.Add(constructor.SelfParameter.Symbol, self);
-            foreach (var (arg, parameter) in arguments.Zip(constructor.Parameters))
+            foreach (var (arg, parameter) in arguments.EquiZip(constructor.Parameters))
                 switch (parameter)
                 {
                     default:
@@ -321,7 +323,7 @@ public class InterpreterProcess
         {
             var variables = new LocalVariableScope();
             variables.Add(initializer.SelfParameter.Symbol, self);
-            foreach (var (arg, parameter) in arguments.Zip(initializer.Parameters))
+            foreach (var (arg, parameter) in arguments.EquiZip(initializer.Parameters))
                 switch (parameter)
                 {
                     default:
@@ -408,7 +410,7 @@ public class InterpreterProcess
         {
             var variables = new LocalVariableScope();
             variables.Add(method.SelfParameter.Symbol, self);
-            foreach (var (arg, symbol) in arguments.Zip(method.Parameters.Select(p => p.Symbol)))
+            foreach (var (arg, symbol) in arguments.EquiZip(method.Parameters.Select(p => p.Symbol)))
                 variables.Add(symbol, arg);
 
             foreach (var statement in concreteMethod.Body.Statements)
@@ -672,7 +674,6 @@ public class InterpreterProcess
                     return await CallIntrinsicAsync(methodSymbol, self, arguments);
                 if (methodSymbol == Primitive.IdentityHash)
                     return IdentityHash(self);
-
 
                 var selfType = exp.Context.DataType;
                 switch (selfType)

@@ -41,7 +41,7 @@ internal class MethodSignature : IEquatable<MethodSignature>
     private bool ParametersCompatible(NonEmptyType selfType, MethodSignature other)
     {
         if (ParameterTypes.Count != other.ParameterTypes.Count) return false;
-        foreach (var (paramType, baseParamType) in ParameterTypes.Zip(other.ParameterTypes.Select(selfType.ReplaceTypeParametersIn)))
+        foreach (var (paramType, baseParamType) in ParameterTypes.EquiZip(other.ParameterTypes.Select(selfType.ReplaceTypeParametersIn)))
             if (!paramType.CanOverride(baseParamType))
                 return false;
 

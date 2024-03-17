@@ -21,8 +21,8 @@ internal sealed class TypeReplacements
     /// </summary>
     public TypeReplacements(DeclaredType declaredType, IFixedList<DataType> typeArguments)
     {
-        replacements = declaredType.GenericParameterTypes.Zip(typeArguments)
-                                   .ToDictionary(t => t.First, t => t.Second);
+        replacements = declaredType.GenericParameterTypes.EquiZip(typeArguments)
+                                   .ToDictionary(t => t.Item1, t => t.Item2);
         foreach (var supertype in declaredType.Supertypes)
             foreach (var (typeArg, i) in supertype.GenericTypeArguments.Enumerate())
             {

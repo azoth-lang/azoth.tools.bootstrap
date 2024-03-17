@@ -301,7 +301,7 @@ public class EntitySymbolBuilder
         IFixedList<GenericParameterType> genericParameterTypes)
     {
         var typeSymbol = typeSyntax.Symbol;
-        foreach (var (syn, genericParameter) in typeSyntax.GenericParameters.Zip(genericParameterTypes))
+        foreach (var (syn, genericParameter) in typeSyntax.GenericParameters.EquiZip(genericParameterTypes))
         {
             var genericParameterSymbol = new GenericParameterTypeSymbol(typeSymbol, genericParameter);
             syn.Symbol.Fulfill(genericParameterSymbol);
@@ -423,7 +423,7 @@ public class EntitySymbolBuilder
         IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
         IEnumerable<DataType> types)
     {
-        foreach (var (param, type) in parameters.Zip(types))
+        foreach (var (param, type) in parameters.EquiZip(types))
         {
             switch (param)
             {

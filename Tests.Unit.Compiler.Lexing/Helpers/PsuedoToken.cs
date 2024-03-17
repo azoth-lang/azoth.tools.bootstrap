@@ -5,6 +5,7 @@ using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
+using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Lexing.Helpers;
 
@@ -49,7 +50,7 @@ public class PsuedoToken
                 && token.Value is IReadOnlyList<Diagnostic> otherDiagnostics)
             {
                 // TODO this zip looks wrong, shouldn't it be comparing something rather than always returning false?
-                return diagnostics.Zip(otherDiagnostics, (d1, d2) => false).All(i => i);
+                return diagnostics.EquiZip(otherDiagnostics, (d1, d2) => false).All(i => i);
             }
             return EqualityComparer<object>.Default.Equals(Value, token.Value);
         }

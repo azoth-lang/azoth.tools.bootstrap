@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
@@ -112,4 +113,7 @@ public static class EnumerableExtensions
 
     public static IEnumerable<TResult> Select<T1, T2, TResult>(this IEnumerable<(T1, T2)> source, Func<T1, T2, TResult> selector)
         => source.Select(tuple => selector(tuple.Item1, tuple.Item2));
+
+    public static IEnumerable<(T1, T2)> EquiZip<T1, T2>(this IEnumerable<T1> first, IEnumerable<T2> second)
+        => first.EquiZip(second, (f, s) => (f, s));
 }

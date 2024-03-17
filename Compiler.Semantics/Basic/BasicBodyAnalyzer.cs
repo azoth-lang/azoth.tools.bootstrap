@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -1109,7 +1108,7 @@ public class BasicBodyAnalyzer
 
     private void CheckTypes(ArgumentResults arguments, IEnumerable<Parameter> expectedTypes, FlowState flow)
     {
-        foreach (var (arg, parameter) in arguments.Arguments.Zip(expectedTypes))
+        foreach (var (arg, parameter) in arguments.Arguments.EquiZip(expectedTypes))
         {
             AddImplicitConversionIfNeeded(arg, parameter, flow);
             CheckTypeCompatibility(parameter.Type, arg.Syntax);
@@ -1119,7 +1118,7 @@ public class BasicBodyAnalyzer
 
     private static bool TypesAreCompatible(ArgumentResults arguments, IEnumerable<Parameter> expectedTypes, FlowState flow)
     {
-        foreach (var (arg, parameter) in arguments.Arguments.Zip(expectedTypes))
+        foreach (var (arg, parameter) in arguments.Arguments.EquiZip(expectedTypes))
             if (!TypesAreCompatible(arg, parameter, flow))
                 return false;
 
@@ -1249,8 +1248,9 @@ public class BasicBodyAnalyzer
                         var contextSymbol = LookupSymbolForType(contextResult.Type)
                             ?? throw new NotImplementedException(
                                 $"Missing context symbol for type {contextResult.Type.ToILString()}.");
-                        var memberSymbols = symbolTrees.Children(contextSymbol).OfType<FieldSymbol>()
-                                                       .Where(s => s.Name == member.Name).ToFixedList<Symbol>();
+                        var memberSymbols = symbolTrees.Children(contextSymbol)
+                                                       .Where(s => s is FieldSymbol or MethodSymbol { Kind: MethodKind.Setter })
+                                                       .Where(s => s.Name == member.Name).ToFixedList();
                         type = InferReferencedSymbol(contextResult.Type, member, memberSymbols) ?? DataType.Unknown;
                         break;
                 }
@@ -1941,43 +1941,60 @@ public class BasicBodyAnalyzer
             case 1:
                 var memberSymbol = matchingSymbols.Single();
                 DataType type = DataType.Void;
-                if (memberSymbol is FieldSymbol fieldSymbol)
+                switch (memberSymbol)
                 {
-                    type = fieldSymbol.Type;
-                    switch (type.Semantics)
+                    case FieldSymbol fieldSymbol:
                     {
-                        default:
-                            throw ExhaustiveMatch.Failed(type.Semantics);
-                        case TypeSemantics.CopyValue:
-                            //exp.Semantics = ExpressionSemantics.CopyValue;
-                            break;
-                        case TypeSemantics.Never:
-                            //exp.Semantics = ExpressionSemantics.Never;
-                            break;
-                        case TypeSemantics.Reference:
-                            // Needs to be assigned based on share/borrow expression
-                            break;
-                        case TypeSemantics.MoveValue:
-                            throw new InvalidOperationException("Can't move out of field");
-                        case TypeSemantics.Void:
-                            throw new InvalidOperationException("Can't assign semantics to void field");
-                    }
+                        type = fieldSymbol.Type;
+                        switch (type.Semantics)
+                        {
+                            default:
+                                throw ExhaustiveMatch.Failed(type.Semantics);
+                            case TypeSemantics.CopyValue:
+                                //exp.Semantics = ExpressionSemantics.CopyValue;
+                                break;
+                            case TypeSemantics.Never:
+                                //exp.Semantics = ExpressionSemantics.Never;
+                                break;
+                            case TypeSemantics.Reference:
+                                // Needs to be assigned based on share/borrow expression
+                                break;
+                            case TypeSemantics.MoveValue:
+                                throw new InvalidOperationException("Can't move out of field");
+                            case TypeSemantics.Void:
+                                throw new InvalidOperationException("Can't assign semantics to void field");
+                        }
 
-                    if (fieldSymbol.IsMutableBinding
-                        && contextType is ReferenceType { Capability: var contextCapability }
-                        && contextCapability == Capability.Identity)
-                    {
-                        diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(file, exp, contextType));
-                        type = DataType.Unknown;
+                        if (fieldSymbol.IsMutableBinding
+                            && contextType is ReferenceType { Capability: var contextCapability }
+                            && contextCapability == Capability.Identity)
+                        {
+                            diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(file, exp, contextType));
+                            type = DataType.Unknown;
+                        }
+
+                        break;
                     }
-                }
-                else if (memberSymbol is MethodSymbol { Kind: MethodKind.Getter } methodSymbol)
-                {
-                    type = methodSymbol.Return.Type;
-                    var selfType = methodSymbol.SelfParameterType.Type;
-                    if (!selfType.IsAssignableFrom(contextType))
-                        // TODO error message not correct, should not ToUpperBound()
-                        diagnostics.Add(TypeError.CannotImplicitlyConvert(file, exp, contextType.ToUpperBound(), selfType.ToUpperBound()));
+                    case MethodSymbol { Kind: MethodKind.Getter } getterSymbol:
+                    {
+                        type = getterSymbol.Return.Type;
+                        var selfType = getterSymbol.SelfParameterType.Type;
+                        if (!selfType.IsAssignableFrom(contextType))
+                            // TODO error message not correct, should not ToUpperBound()
+                            diagnostics.Add(TypeError.CannotImplicitlyConvert(file, exp, contextType.ToUpperBound(), selfType.ToUpperBound()));
+                        break;
+                    }
+                    case MethodSymbol { Kind: MethodKind.Setter } setterSymbol:
+                    {
+                        // TODO this indicates that setters should be their own symbol?
+                        type = setterSymbol.Parameters.Single().Type;
+                        var selfType = setterSymbol.SelfParameterType.Type;
+                        if (!selfType.IsAssignableFrom(contextType))
+                            // TODO error message not correct, should not ToUpperBound()
+                            diagnostics.Add(TypeError.CannotImplicitlyConvert(file, exp, contextType.ToUpperBound(),
+                                selfType.ToUpperBound()));
+                        break;
+                    }
                 }
 
                 exp.ReferencedSymbol.Fulfill(memberSymbol);
