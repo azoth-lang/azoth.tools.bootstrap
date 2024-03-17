@@ -9,12 +9,8 @@ internal class ReturnExpression : Expression, IReturnExpression
 {
     public IExpression? Value { get; }
 
-    public ReturnExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        IExpression? value)
-        : base(span, dataType, semantics)
+    public ReturnExpression(TextSpan span, DataType dataType, IExpression? value)
+        : base(span, dataType)
     {
         Value = value;
     }

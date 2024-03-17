@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
@@ -15,8 +14,8 @@ public sealed class IdentityConversion : Conversion
     private IdentityConversion() { }
     #endregion
 
-    public override (DataType, ExpressionSemantics) Apply(DataType type, ExpressionSemantics semantics)
-        => (type, semantics);
+    public override DataType Apply(DataType type)
+        => type;
 
     public override bool IsChainedTo(Conversion conversion) => false;
 }

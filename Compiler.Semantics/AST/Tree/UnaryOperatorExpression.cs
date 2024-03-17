@@ -15,11 +15,10 @@ internal class UnaryOperatorExpression : Expression, IUnaryOperatorExpression
     public UnaryOperatorExpression(
         TextSpan span,
         DataType dataType,
-        ExpressionSemantics semantics,
         UnaryOperatorFixity fixity,
         UnaryOperator @operator,
         IExpression operand)
-        : base(span, dataType, semantics)
+        : base(span, dataType)
     {
         Fixity = fixity;
         Operator = @operator;

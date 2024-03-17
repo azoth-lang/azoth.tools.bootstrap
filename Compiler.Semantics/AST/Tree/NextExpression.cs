@@ -7,8 +7,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal class NextExpression : Expression, INextExpression
 {
-    public NextExpression(TextSpan span, DataType dataType, ExpressionSemantics semantics)
-        : base(span, dataType, semantics) { }
+    public NextExpression(TextSpan span, DataType dataType)
+        : base(span, dataType) { }
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 

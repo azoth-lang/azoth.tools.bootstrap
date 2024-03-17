@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class NextExpressionSyntax : ExpressionSyntax, INextExpressionSyntax
 {
     public NextExpressionSyntax(TextSpan span)
-        : base(span, ExpressionSemantics.Never)
+        : base(span)
     {
     }
 

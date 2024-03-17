@@ -6,8 +6,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal class NoneLiteralExpression : LiteralExpression, INoneLiteralExpression
 {
-    public NoneLiteralExpression(TextSpan span, DataType dataType, ExpressionSemantics semantics)
-        : base(span, dataType, semantics) { }
+    public NoneLiteralExpression(TextSpan span, DataType dataType)
+        : base(span, dataType) { }
 
     public override string ToString() => "none";
 }

@@ -15,10 +15,9 @@ internal sealed class InitializerInvocationExpression : Expression, IInitializer
     public InitializerInvocationExpression(
         TextSpan span,
         DataType dataType,
-        ExpressionSemantics semantics,
         InitializerSymbol referencedSymbol,
         IFixedList<IExpression> arguments)
-        : base(span, dataType, semantics)
+        : base(span, dataType)
     {
         ReferencedSymbol = referencedSymbol;
         Arguments = arguments;

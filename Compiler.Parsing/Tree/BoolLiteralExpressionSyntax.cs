@@ -11,7 +11,7 @@ internal class BoolLiteralExpressionSyntax : LiteralExpressionSyntax, IBoolLiter
     public bool Value { [DebuggerStepThrough] get; }
 
     public BoolLiteralExpressionSyntax(TextSpan span, bool value)
-        : base(span, ExpressionSemantics.CopyValue)
+        : base(span)
     {
         Value = value;
     }

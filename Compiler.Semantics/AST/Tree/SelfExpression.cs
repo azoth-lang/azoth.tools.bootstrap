@@ -11,13 +11,8 @@ internal class SelfExpression : Expression, ISelfExpression
     public SelfParameterSymbol ReferencedSymbol { get; }
     public bool IsImplicit { get; }
 
-    public SelfExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        SelfParameterSymbol referencedSymbol,
-        bool isImplicit)
-        : base(span, dataType, semantics)
+    public SelfExpression(TextSpan span, DataType dataType, SelfParameterSymbol referencedSymbol, bool isImplicit)
+        : base(span, dataType)
     {
         ReferencedSymbol = referencedSymbol;
         IsImplicit = isImplicit;

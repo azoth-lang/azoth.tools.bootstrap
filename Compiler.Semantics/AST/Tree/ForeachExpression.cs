@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
-internal class ForeachExpression : Expression, IForeachExpression
+internal sealed class ForeachExpression : Expression, IForeachExpression
 {
     public VariableSymbol Symbol { get; }
     BindingSymbol IBinding.Symbol => Symbol;
@@ -21,13 +21,12 @@ internal class ForeachExpression : Expression, IForeachExpression
     public ForeachExpression(
         TextSpan span,
         DataType dataType,
-        ExpressionSemantics semantics,
         VariableSymbol symbol,
         IExpression inExpression,
         MethodSymbol? iterateMethod,
         MethodSymbol nextMethod,
         IBlockExpression block)
-        : base(span, dataType, semantics)
+        : base(span, dataType)
     {
         Symbol = symbol;
         InExpression = inExpression;

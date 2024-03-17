@@ -12,12 +12,8 @@ internal class MoveExpression : Expression, IMoveExpression
     public IExpression Referent { get; }
 
     public MoveExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        BindingSymbol referencedSymbol,
-        IExpression referent)
-        : base(span, dataType, semantics)
+        TextSpan span, DataType dataType, BindingSymbol referencedSymbol, IExpression referent)
+        : base(span, dataType)
     {
         ReferencedSymbol = referencedSymbol;
         Referent = referent;

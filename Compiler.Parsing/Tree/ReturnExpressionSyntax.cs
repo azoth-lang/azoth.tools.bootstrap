@@ -14,7 +14,7 @@ internal class ReturnExpressionSyntax : ExpressionSyntax, IReturnExpressionSynta
     public ReturnExpressionSyntax(
         TextSpan span,
         IExpressionSyntax? value)
-        : base(span, ExpressionSemantics.Never)
+        : base(span)
     {
         Value = value;
         base.DataType = Types.DataType.Never;

@@ -1,5 +1,4 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
@@ -15,14 +14,14 @@ public class MoveConversion : ChainedConversion
         Kind = kind;
     }
 
-    public override (DataType, ExpressionSemantics) Apply(DataType type, ExpressionSemantics semantics)
+    public override DataType Apply(DataType type)
     {
-        (type, _) = PriorConversion.Apply(type, semantics);
+        type = PriorConversion.Apply(type);
         if (type is not ReferenceType { AllowsRecoverIsolation: true } referenceType)
             throw new InvalidOperationException($"Cannot move type '{type.ToILString()}'");
         var capability = Kind == ConversionKind.Temporary
             ? Capability.TemporarilyIsolated
             : Capability.Isolated;
-        return (referenceType.With(capability), ExpressionSemantics.IsolatedReference);
+        return referenceType.With(capability);
     }
 }

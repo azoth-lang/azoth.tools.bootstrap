@@ -11,12 +11,8 @@ internal abstract class ExplicitConversionExpression : Expression, IExplicitConv
     public bool IsOptional { get; }
 
     protected ExplicitConversionExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        IExpression expression,
-        bool isOptional)
-        : base(span, dataType, semantics)
+        TextSpan span, DataType dataType, IExpression expression, bool isOptional)
+        : base(span, dataType)
     {
         Expression = expression;
         IsOptional = isOptional;

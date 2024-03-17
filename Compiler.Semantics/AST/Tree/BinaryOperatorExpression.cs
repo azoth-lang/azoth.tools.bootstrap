@@ -14,11 +14,10 @@ internal class BinaryOperatorExpression : Expression, IBinaryOperatorExpression
     public BinaryOperatorExpression(
         TextSpan span,
         DataType dataType,
-        ExpressionSemantics semantics,
         IExpression leftOperand,
         BinaryOperator @operator,
         IExpression rightOperand)
-        : base(span, dataType, semantics)
+        : base(span, dataType)
     {
         LeftOperand = leftOperand;
         Operator = @operator;

@@ -11,7 +11,7 @@ internal class IdExpressionSyntax : ExpressionSyntax, IIdExpressionSyntax
     public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
 
     public IdExpressionSyntax(TextSpan span, IExpressionSyntax referent)
-        : base(span, ExpressionSemantics.IdReference)
+        : base(span)
     {
         Referent = referent;
     }

@@ -469,10 +469,7 @@ public class BasicBodyAnalyzer
 
                 exp.ReferencedSymbol.Fulfill(null);
 
-                const ExpressionSemantics semantics = ExpressionSemantics.IsolatedReference;
-                exp.Referent.Semantics = semantics;
                 exp.Referent.DataType = DataType.Unknown;
-                exp.Semantics = semantics;
                 exp.DataType = DataType.Unknown;
                 return new ExpressionResult(exp);
             }
@@ -484,10 +481,7 @@ public class BasicBodyAnalyzer
 
                 exp.ReferencedSymbol.Fulfill(null);
 
-                const ExpressionSemantics semantics = ExpressionSemantics.IsolatedReference;
-                exp.Referent.Semantics = semantics;
                 exp.Referent.DataType = DataType.Unknown;
-                exp.Semantics = semantics;
                 exp.DataType = DataType.Unknown;
                 return new ExpressionResult(exp);
             }
@@ -542,7 +536,6 @@ public class BasicBodyAnalyzer
                 // Note that the operator could be overloaded
                 if (!leftResult.Type.IsFullyKnown || !rightResult.Type.IsFullyKnown)
                 {
-                    exp.Semantics = ExpressionSemantics.Never;
                     exp.DataType = DataType.Unknown;
                     return new ExpressionResult(exp, resultVariable);
                 }
@@ -607,7 +600,6 @@ public class BasicBodyAnalyzer
                     diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandsOfType(file,
                         exp.Span, @operator, leftResult.Type, rightResult.Type));
 
-                exp.Semantics = ExpressionSemantics.CopyValue;
                 exp.DataType = type;
                 return new ExpressionResult(exp, resultVariable);
             }
@@ -616,27 +608,21 @@ public class BasicBodyAnalyzer
                 // Errors reported by InferSymbol
                 var symbol = InferSymbol(exp, symbolFilter);
                 DataType type;
-                ExpressionSemantics referenceSemantics;
                 ResultVariable? resultVariable = null;
                 switch (symbol)
                 {
                     case VariableSymbol variableSymbol:
                         resultVariable = flow.Alias(variableSymbol);
                         type = flow.AliasType(variableSymbol);
-                        // TODO is this right?
-                        referenceSemantics = ExpressionSemantics.MutableReference;
                         break;
                     case FunctionSymbol functionSymbol:
                         type = functionSymbol.Type;
-                        referenceSemantics = ExpressionSemantics.ReadOnlyReference;
                         break;
                     default:
                         // It must be a type or namespace name and as such isn't a proper expression
                         type = DataType.Void;
-                        referenceSemantics = ExpressionSemantics.Void;
                         break;
                 }
-                exp.Semantics = type.Semantics.ToExpressionSemantics(referenceSemantics);
                 exp.DataType = type;
                 return new ExpressionResult(exp, resultVariable);
             }
@@ -760,7 +746,6 @@ public class BasicBodyAnalyzer
 
                 flow.Drop(symbol);
                 // TODO assign correct type to the expression
-                exp.Semantics = ExpressionSemantics.Void;
                 exp.DataType = DataType.Void;
                 return new ExpressionResult(exp, blockResult.Variable);
             }
@@ -769,7 +754,6 @@ public class BasicBodyAnalyzer
                 CheckIndependentExpressionType(exp.Condition, DataType.Bool, flow);
                 var result = InferBlockType(exp.Block, flow);
                 // TODO assign correct type to the expression
-                exp.Semantics = ExpressionSemantics.Void;
                 exp.DataType = DataType.Void;
                 return new ExpressionResult(exp, result.Variable);
             }
@@ -777,7 +761,6 @@ public class BasicBodyAnalyzer
             {
                 var result = InferBlockType(exp.Block, flow);
                 // TODO assign correct type to the expression
-                exp.Semantics = ExpressionSemantics.Void;
                 exp.DataType = DataType.Void;
                 return new ExpressionResult(exp, result.Variable);
             }
@@ -787,7 +770,6 @@ public class BasicBodyAnalyzer
             {
                 var result = InferType(exp.Expression, flow);
                 exp.DataType = result.Type;
-                exp.Semantics = exp.Expression.Semantics.Assigned();
                 return new ExpressionResult(exp, result.Variable);
             }
             case IIfExpressionSyntax exp:
@@ -819,8 +801,6 @@ public class BasicBodyAnalyzer
                 else
                     // TODO unify the two types
                     expType = thenResult.Type;
-                // TODO correct reference semantics?
-                exp.Semantics = expType.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 exp.DataType = expType;
                 flow.Merge(elseFlow);
                 var resultVariable = flow.Combine(thenResult.Variable, elseResult?.Variable, exp);
@@ -838,7 +818,6 @@ public class BasicBodyAnalyzer
                 {
                     member.ReferencedSymbol.Fulfill(null);
                     member.DataType = DataType.Unknown;
-                    exp.Semantics ??= ExpressionSemantics.CopyValue;
                     exp.DataType = DataType.Unknown;
                     return new ExpressionResult(exp, contextResult.Variable);
                 }
@@ -853,10 +832,7 @@ public class BasicBodyAnalyzer
                     type = nonEmptyContext.ReplaceTypeParametersIn(type);
 
                 var resultVariable = flow.AccessMember(contextResult.Variable, type);
-                var semantics = type.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
-                member.Semantics = semantics;
                 member.DataType = type;
-                exp.Semantics = semantics;
                 exp.DataType = type;
                 return new ExpressionResult(exp, resultVariable);
             }
@@ -881,13 +857,11 @@ public class BasicBodyAnalyzer
                 var resultVariable = flow.Combine(left.Variable, right.Variable, exp);
                 if (left.Type.Semantics == TypeSemantics.MoveValue)
                 {
-                    exp.Semantics = ExpressionSemantics.Void;
                     exp.DataType = DataType.Void;
                     flow.Drop(resultVariable);
                 }
                 else
                 {
-                    exp.Semantics = left.Type.Semantics.ToExpressionSemantics(ExpressionSemantics.MutableReference);
                     exp.DataType = left.Type;
                 }
                 return new ExpressionResult(exp, resultVariable);
@@ -898,9 +872,6 @@ public class BasicBodyAnalyzer
                 var selfSymbol = InferSelfParameterSymbol(exp);
                 var variableResult = selfSymbol is not null ? flow.Alias(selfSymbol) : null;
                 var type = flow.AliasType(selfSymbol);
-                // TODO is this correct?
-                var referenceSemantics = ExpressionSemantics.MutableReference;
-                exp.Semantics = type.Semantics.ToExpressionSemantics(referenceSemantics);
                 exp.DataType = type;
                 // Works for `readable` but won't work for any future capability constraints
                 exp.Pseudotype = selfSymbol?.Type is CapabilityTypeConstraint ? selfSymbol.Type : type;
@@ -919,7 +890,6 @@ public class BasicBodyAnalyzer
                     diagnostics.Add(TypeError.CannotExplicitlyConvert(file, exp.Referent, result.Type, convertToType));
                 if (exp.Operator == ConversionOperator.Optional)
                     convertToType = convertToType.ToOptional();
-                exp.Semantics = exp.Referent.ConvertedSemantics!;
                 exp.DataType = convertToType;
                 flow.Restrict(result.Variable, convertToType);
                 return new ExpressionResult(exp, result.Variable);
@@ -929,14 +899,12 @@ public class BasicBodyAnalyzer
                 var referent = InferType(exp.Referent, flow);
                 ResolveTypes(exp.Pattern, referent.Type, referent.Variable, flow);
                 flow.Drop(referent.Variable);
-                exp.Semantics = ExpressionSemantics.CopyValue;
                 exp.DataType = DataType.Bool;
                 return new ExpressionResult(exp);
             }
             case IAsyncBlockExpressionSyntax exp:
             {
                 var result = InferBlockType(exp.Block, flow);
-                exp.Semantics = exp.Block.Semantics.Assigned();
                 exp.DataType = result.Type;
                 return result;
             }
@@ -944,7 +912,6 @@ public class BasicBodyAnalyzer
             {
                 // TODO these act like function calls holding results longer
                 var result = InferType(exp.Expression, flow);
-                exp.Semantics = ExpressionSemantics.CopyValue;
                 exp.DataType = Intrinsic.PromiseOf(result.Type);
                 return new ExpressionResult(exp, result.Variable);
             }
@@ -955,13 +922,11 @@ public class BasicBodyAnalyzer
                     || !declaredType.Equals(Intrinsic.PromiseType))
                 {
                     diagnostics.Add(TypeError.CannotAwaitType(file, exp.Span, result.Type));
-                    exp.Semantics = ExpressionSemantics.CopyValue;
                     exp.DataType = DataType.Unknown;
                     return new ExpressionResult(exp, result.Variable);
                 }
 
                 var resultType = promiseType.TypeArguments[0];
-                exp.Semantics = ExpressionSemantics.CopyValue;
                 exp.DataType = resultType;
                 // TODO what is the effect on the flow typing
                 return new ExpressionResult(exp, result.Variable);
@@ -998,12 +963,9 @@ public class BasicBodyAnalyzer
 
         exp.ReferencedSymbol.Fulfill(symbol);
 
-        const ExpressionSemantics semantics = ExpressionSemantics.IsolatedReference;
-        exp.Referent.Semantics = semantics;
         exp.Referent.DataType = type;
         if (exp.Referent is ISelfExpressionSyntax selfExpression)
             selfExpression.Pseudotype = type;
-        exp.Semantics = semantics;
         exp.DataType = type;
         return new ExpressionResult(exp);
     }
@@ -1036,12 +998,9 @@ public class BasicBodyAnalyzer
 
         exp.ReferencedSymbol.Fulfill(symbol);
 
-        const ExpressionSemantics semantics = ExpressionSemantics.ConstReference;
-        exp.Referent.Semantics = semantics;
         exp.Referent.DataType = type;
         if (exp.Referent is ISelfExpressionSyntax selfExpression)
             selfExpression.Pseudotype = type;
-        exp.Semantics = semantics;
         exp.DataType = type;
         return new ExpressionResult(exp);
     }
@@ -1133,7 +1092,7 @@ public class BasicBodyAnalyzer
             priorConversion, flow, out _, enact: false);
         if (conversion is not null)
         {
-            (argType, _) = conversion.Apply(argType, arg.Syntax.Semantics.Assigned());
+            argType = conversion.Apply(argType);
             priorConversion = conversion;
         }
 
@@ -1144,7 +1103,7 @@ public class BasicBodyAnalyzer
 
             if (conversion is not null)
             {
-                (argType, _) = conversion.Apply(argType, arg.Syntax.Semantics.Assigned());
+                argType = conversion.Apply(argType);
                 priorConversion = conversion;
             }
 
@@ -1152,7 +1111,7 @@ public class BasicBodyAnalyzer
                 flow, enact: false, priorConversion);
 
             if (conversion is not null)
-                (argType, _) = conversion.Apply(argType, arg.Syntax.Semantics.Assigned());
+                argType = conversion.Apply(argType);
         }
         return parameter.Type.IsAssignableFrom(argType);
     }
@@ -1262,12 +1221,9 @@ public class BasicBodyAnalyzer
 
                 type = type.AccessedVia(contextResult.Type);
                 member.DataType = type;
-                var semantics = member.Semantics ??= ExpressionSemantics.CreateReference;
-                exp.Semantics = semantics;
                 exp.DataType = type;
                 return new(exp, contextResult.Variable);
             case ISimpleNameExpressionSyntax exp:
-                exp.Semantics = ExpressionSemantics.CreateReference;
                 var symbol = InferBindingSymbol(exp);
                 switch (symbol)
                 {
@@ -1321,7 +1277,6 @@ public class BasicBodyAnalyzer
 
                         // No type for function names
                         exp.Member.DataType = DataType.Void;
-                        exp.Member.Semantics = ExpressionSemantics.Void;
                         break;
                     }
                     var methodSymbols = LookupSymbols<MethodSymbol>(typeSymbol, exp.Member);
@@ -1339,7 +1294,6 @@ public class BasicBodyAnalyzer
 
                 // No type for function names
                 exp.Member.DataType = DataType.Void;
-                exp.Member.Semantics = ExpressionSemantics.Void;
                 break;
             }
             case ISimpleNameExpressionSyntax exp:
@@ -1394,12 +1348,10 @@ public class BasicBodyAnalyzer
             arguments = arguments with { Self = selfResult };
             // TODO does flow typing need to be applied?
             invocation.DataType = method.ReturnType.Type.ReplaceSelfWith(selfResult.Type);
-            AssignInvocationSemantics(invocation, invocation.DataType);
         }
         else
         {
             invocation.DataType = DataType.Unknown;
-            invocation.Semantics = ExpressionSemantics.Never;
         }
 
         var resultVariable = CombineResults(method, arguments, flow);
@@ -1407,13 +1359,11 @@ public class BasicBodyAnalyzer
 
         // There are no types for functions
         invocation.Expression.DataType = DataType.Void;
-        invocation.Expression.Semantics = ExpressionSemantics.Void;
 
         // Apply the referenced symbol to the underlying name
         if (invocation.Expression is IQualifiedNameExpressionSyntax nameExpression)
         {
             nameExpression.Member.DataType = DataType.Void;
-            nameExpression.Member.Semantics = ExpressionSemantics.Void;
         }
 
         return new(invocation, resultVariable);
@@ -1531,12 +1481,10 @@ public class BasicBodyAnalyzer
             CheckTypes(arguments, functionType.Parameters, flow);
             var returnType = functionType.Return.Type;
             invocation.DataType = returnType;
-            AssignInvocationSemantics(invocation, returnType);
         }
         else
         {
             invocation.DataType = DataType.Unknown;
-            invocation.Semantics = ExpressionSemantics.Never;
         }
 
         var resultVariable = CombineResults(functionType, arguments, flow);
@@ -1546,57 +1494,9 @@ public class BasicBodyAnalyzer
         if (invocation.Expression.DataType is null)
         {
             invocation.Expression.DataType = DataType.Void;
-            invocation.Expression.Semantics = ExpressionSemantics.Void;
         }
 
         return new(invocation, resultVariable);
-    }
-
-    private static void AssignInvocationSemantics(
-        IInvocationExpressionSyntax invocationExpression,
-        DataType returnType)
-    {
-        switch (returnType.Semantics)
-        {
-            default:
-                throw ExhaustiveMatch.Failed(returnType.Semantics);
-            case TypeSemantics.Void:
-                invocationExpression.Semantics = ExpressionSemantics.Void;
-                break;
-            case TypeSemantics.MoveValue:
-                invocationExpression.Semantics = ExpressionSemantics.MoveValue;
-                break;
-            case TypeSemantics.CopyValue:
-                invocationExpression.Semantics = ExpressionSemantics.CopyValue;
-                break;
-            case TypeSemantics.Never:
-                invocationExpression.Semantics = ExpressionSemantics.Never;
-                break;
-            case TypeSemantics.Reference:
-                while (returnType is OptionalType optionalType)
-                    returnType = optionalType.Referent;
-                switch (returnType)
-                {
-                    case ReferenceType referenceType:
-                        if (referenceType.Capability == Capability.Isolated)
-                            invocationExpression.Semantics = ExpressionSemantics.IsolatedReference;
-                        else if (referenceType.AllowsWrite)
-                            invocationExpression.Semantics = ExpressionSemantics.MutableReference;
-                        else
-                            invocationExpression.Semantics = ExpressionSemantics.ReadOnlyReference;
-                        break;
-                    case SelfViewpointType { Referent: ReferenceType }:
-                        // TODO this isn't really correct
-                        invocationExpression.Semantics = ExpressionSemantics.ReadOnlyReference;
-                        break;
-                    case FunctionType _:
-                        invocationExpression.Semantics = ExpressionSemantics.ReadOnlyReference;
-                        break;
-                    default:
-                        throw new NotImplementedException("Unknown reference type");
-                }
-                break;
-        }
     }
 
     private ExpressionResult InferBlockType(
@@ -1623,8 +1523,6 @@ public class BasicBodyAnalyzer
 
                 // If there was no result expression, then the block type is void
                 var blockType = blockResult?.Type ?? DataType.Void;
-                // TODO what are the correct expression semantics for references?
-                block.Semantics = blockType.Semantics.ToExpressionSemantics(ExpressionSemantics.ReadOnlyReference);
                 block.DataType = blockType;
                 return new(block, blockResult?.Variable);
             case IResultStatementSyntax result:
@@ -1903,7 +1801,7 @@ public class BasicBodyAnalyzer
         {
             var conversion = CreateImplicitConversion(declaredType, iteratedType, null, inExpression.ImplicitConversion, flow,
                 out _, enact: false);
-            iteratedType = conversion is null ? iteratedType : conversion.Apply(iteratedType, ExpressionSemantics.IdReference).Item1;
+            iteratedType = conversion is null ? iteratedType : conversion.Apply(iteratedType);
             if (!declaredType.IsAssignableFrom(iteratedType))
                 // TODO this error needs to be specific to iterators (e.g. not "Cannot convert expression `0..<count` of type `int` to type `size`")
                 diagnostics.Add(TypeError.CannotImplicitlyConvert(file, inExpression, iteratedType, declaredType));

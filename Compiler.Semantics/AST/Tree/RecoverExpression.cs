@@ -8,12 +8,8 @@ internal abstract class RecoverExpression : Expression, IRecoverExpression
 {
     public IExpression Value { get; }
 
-    protected RecoverExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        IExpression value)
-        : base(span, dataType, semantics)
+    protected RecoverExpression(TextSpan span, DataType dataType, IExpression value)
+        : base(span, dataType)
     {
         Value = value;
     }

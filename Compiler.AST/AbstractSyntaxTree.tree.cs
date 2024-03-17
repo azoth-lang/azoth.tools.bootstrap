@@ -398,7 +398,6 @@ public partial interface IOptionalPattern : IPattern
 public partial interface IExpression : IAbstractSyntax
 {
     DataType DataType { get; }
-    ExpressionSemantics Semantics { get; }
 }
 
 [Closed(
@@ -598,6 +597,7 @@ public partial interface IFunctionReferenceInvocationExpression : IInvocationExp
 public partial interface IVariableNameExpression : IAssignableExpression, INameExpression
 {
     NamedBindingSymbol ReferencedSymbol { get; }
+    bool IsMove { get; }
     Promise<bool> VariableIsLiveAfter { get; }
 }
 

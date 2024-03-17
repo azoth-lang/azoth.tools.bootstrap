@@ -10,12 +10,8 @@ internal class FunctionNameExpression : Expression, IFunctionNameExpression
 {
     public FunctionSymbol ReferencedSymbol { get; }
 
-    public FunctionNameExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        FunctionSymbol referencedSymbol)
-        : base(span, dataType, semantics)
+    public FunctionNameExpression(TextSpan span, DataType dataType, FunctionSymbol referencedSymbol)
+        : base(span, dataType)
     {
         ReferencedSymbol = referencedSymbol;
     }

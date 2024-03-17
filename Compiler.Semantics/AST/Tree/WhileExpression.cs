@@ -10,13 +10,8 @@ internal class WhileExpression : Expression, IWhileExpression
     public IExpression Condition { get; }
     public IBlockExpression Block { get; }
 
-    public WhileExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        IExpression condition,
-        IBlockExpression block)
-        : base(span, dataType, semantics)
+    public WhileExpression(TextSpan span, DataType dataType, IExpression condition, IBlockExpression block)
+        : base(span, dataType)
     {
         Condition = condition;
         Block = block;

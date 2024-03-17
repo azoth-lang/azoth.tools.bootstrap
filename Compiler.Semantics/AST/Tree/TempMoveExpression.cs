@@ -9,12 +9,8 @@ internal class TempMoveExpression : Expression, ITempMoveExpression
 {
     public IExpression Referent { get; }
 
-    public TempMoveExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        IExpression referent)
-        : base(span, dataType, semantics)
+    public TempMoveExpression(TextSpan span, DataType dataType, IExpression referent)
+        : base(span, dataType)
     {
         Referent = referent;
     }

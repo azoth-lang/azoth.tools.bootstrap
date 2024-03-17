@@ -320,7 +320,7 @@ internal class ASTBuilder
     private static IBody BuildExpressionBody(IExpressionBodySyntax syn)
     {
         var exp = BuildExpression(syn.ResultStatement.Expression);
-        var returnExp = new ReturnExpression(syn.ResultStatement.Span, exp.DataType, exp.Semantics, exp);
+        var returnExp = new ReturnExpression(syn.ResultStatement.Span, exp.DataType, exp);
         var returnStmt = new ExpressionStatement(syn.ResultStatement.Span, returnExp);
         return new Body(syn.Span, returnStmt.Yield().ToFixedList<IBodyStatement>());
     }
@@ -376,7 +376,7 @@ internal class ASTBuilder
     }
 
     [return: NotNullIfNotNull(nameof(expressionSyntax))]
-    private static IExpression? BuildExpression(IExpressionSyntax? expressionSyntax)
+    private static IExpression? BuildExpression(IExpressionSyntax? expressionSyntax, bool isMove = false)
     {
         if (expressionSyntax is null) return null;
         IExpression expression = expressionSyntax switch
@@ -394,7 +394,7 @@ internal class ASTBuilder
             IStringLiteralExpressionSyntax syn => BuildStringLiteralExpression(syn),
             ILoopExpressionSyntax syn => BuildLoopExpression(syn),
             IMoveExpressionSyntax syn => BuildMoveExpression(syn),
-            ISimpleNameExpressionSyntax syn => BuildNameExpression(syn),
+            ISimpleNameExpressionSyntax syn => BuildNameExpression(syn, isMove),
             INewObjectExpressionSyntax syn => BuildNewObjectExpression(syn),
             IInvocationExpressionSyntax syn => BuildInvocationExpression(syn),
             INextExpressionSyntax syn => BuildNextExpression(syn),
@@ -442,7 +442,7 @@ internal class ASTBuilder
     private static IFixedList<IExpression> BuildExpressions(IFixedList<IExpressionSyntax> expressions)
         // The compiler isn't able to correctly figure out the nullability here. That is actually
         // why this method even exists
-        => expressions.Select(BuildExpression).ToFixedList()!;
+        => expressions.Select(syn => BuildExpression(syn)).ToFixedList()!;
 
     private static IExpression BuildAssignmentExpression(IAssignmentExpressionSyntax syn)
     {
@@ -452,20 +452,18 @@ internal class ASTBuilder
             case BindingSymbol _:
             {
                 var type = syn.DataType.Assigned();
-                var semantics = syn.Semantics.Assigned();
                 var leftOperand = BuildAssignableExpression(syn.LeftOperand);
                 var @operator = syn.Operator;
                 var rightOperand = BuildExpression(syn.RightOperand);
-                return new AssignmentExpression(syn.Span, type, semantics, leftOperand, @operator, rightOperand);
+                return new AssignmentExpression(syn.Span, type, leftOperand, @operator, rightOperand);
             }
             case MethodSymbol methodSymbol:
             {
                 var type = syn.DataType.Assigned();
-                var semantics = syn.Semantics.Assigned();
                 var contextSyntax = ((IQualifiedNameExpressionSyntax)syn.LeftOperand).Context;
                 var context = BuildExpression(contextSyntax);
                 var rightOperand = BuildExpression(syn.RightOperand);
-                return new MethodInvocationExpression(syn.Span, type, semantics, context,
+                return new MethodInvocationExpression(syn.Span, type, context,
                     methodSymbol, FixedList.Create(rightOperand));
             }
             default:
@@ -478,7 +476,7 @@ internal class ASTBuilder
         return expression switch
         {
             IQualifiedNameExpressionSyntax syn => BuildFieldAccessExpression(syn),
-            ISimpleNameExpressionSyntax syn => BuildVariableNameExpression(syn),
+            ISimpleNameExpressionSyntax syn => BuildVariableNameExpression(syn, false),
             _ => throw ExhaustiveMatch.Failed(expression),
         };
     }
@@ -486,35 +484,31 @@ internal class ASTBuilder
     private static IBinaryOperatorExpression BuildBinaryOperatorExpression(IBinaryOperatorExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var leftOperand = BuildExpression(syn.LeftOperand);
         var @operator = syn.Operator;
         var rightOperand = BuildExpression(syn.RightOperand);
-        return new BinaryOperatorExpression(syn.Span, type, semantics, leftOperand, @operator, rightOperand);
+        return new BinaryOperatorExpression(syn.Span, type, leftOperand, @operator, rightOperand);
     }
 
     private static IBlockExpression BuildBlockExpression(IBlockExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var statements = syn.Statements.Select(BuildStatement).ToFixedList();
-        return new BlockExpression(syn.Span, type, semantics, statements);
+        return new BlockExpression(syn.Span, type, statements);
     }
 
     private static IBoolLiteralExpression BuildBoolLiteralExpression(IBoolLiteralExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var value = syn.Value;
-        return new BoolLiteralExpression(syn.Span, type, semantics, value);
+        return new BoolLiteralExpression(syn.Span, type, value);
     }
 
     private static IBreakExpression BuildBreakExpression(IBreakExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var value = BuildExpression(syn.Value);
-        return new BreakExpression(syn.Span, type, semantics, value);
+        return new BreakExpression(syn.Span, type, value);
     }
 
     private static IExpression BuildGetterAccessExpression(IQualifiedNameExpressionSyntax syn)
@@ -522,14 +516,13 @@ internal class ASTBuilder
         var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
         switch (referencedSymbol)
         {
-            case FieldSymbol fieldSymbol:
+            case FieldSymbol _:
                 return BuildFieldAccessExpression(syn);
             case MethodSymbol methodSymbol:
             {
                 var type = syn.DataType.Assigned();
-                var semantics = syn.Semantics.Assigned();
                 var context = BuildExpression(syn.Context);
-                return new MethodInvocationExpression(syn.Span, type, semantics, context, methodSymbol,
+                return new MethodInvocationExpression(syn.Span, type, context, methodSymbol,
                     FixedList.Empty<IExpression>());
             }
             default:
@@ -540,29 +533,26 @@ internal class ASTBuilder
     private static IFieldAccessExpression BuildFieldAccessExpression(IQualifiedNameExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var context = BuildExpression(syn.Context);
         var accessOperator = syn.AccessOperator;
         var fieldSymbol = (FieldSymbol)syn.ReferencedSymbol.Result.Assigned();
-        return new FieldAccessExpression(syn.Span, type, semantics, context, accessOperator, fieldSymbol);
+        return new FieldAccessExpression(syn.Span, type, context, accessOperator, fieldSymbol);
     }
 
     private static IForeachExpression BuildForeachExpression(IForeachExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var symbol = syn.Symbol.Result;
         var inExpression = BuildExpression(syn.InExpression);
         var iterateMethod = syn.IterateMethod.Result;
         var nextMethod = syn.NextMethod.Result;
         var block = BuildBlockExpression(syn.Block);
-        return new ForeachExpression(syn.Span, type, semantics, symbol, inExpression, iterateMethod, nextMethod, block);
+        return new ForeachExpression(syn.Span, type, symbol, inExpression, iterateMethod, nextMethod, block);
     }
 
     private static IInvocationExpression BuildInvocationExpression(IInvocationExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var referencedSymbol = syn.ReferencedSymbol.Result;
         var arguments = BuildExpressions(syn.Arguments);
         switch (referencedSymbol)
@@ -571,15 +561,15 @@ internal class ASTBuilder
                 throw ExhaustiveMatch.Failed(referencedSymbol);
             case null:
                 var referent = BuildExpression(syn.Expression);
-                return new FunctionReferenceInvocationExpression(syn.Span, type, semantics, referent, arguments);
+                return new FunctionReferenceInvocationExpression(syn.Span, type, referent, arguments);
             case FunctionSymbol function:
-                return new FunctionInvocationExpression(syn.Span, type, semantics, function, arguments);
+                return new FunctionInvocationExpression(syn.Span, type, function, arguments);
             case MethodSymbol method:
                 var qualifiedName = (IQualifiedNameExpressionSyntax)syn.Expression;
                 var context = BuildExpression(qualifiedName.Context);
-                return new MethodInvocationExpression(syn.Span, type, semantics, context, method, arguments);
+                return new MethodInvocationExpression(syn.Span, type, context, method, arguments);
             case InitializerSymbol initializer:
-                return new InitializerInvocationExpression(syn.Span, type, semantics, initializer, arguments);
+                return new InitializerInvocationExpression(syn.Span, type, initializer, arguments);
             case BindingSymbol _:
                 throw new InvalidOperationException("Invocation expression cannot invoke a binding symbol.");
             case TypeSymbol _:
@@ -594,11 +584,10 @@ internal class ASTBuilder
     private static IIfExpression BuildIfExpression(IIfExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var condition = BuildExpression(syn.Condition);
         var thenBlock = BuildBlockOrResult(syn.ThenBlock);
         var elseClause = BuildElseClause(syn.ElseClause);
-        return new IfExpression(syn.Span, type, semantics, condition, thenBlock, elseClause);
+        return new IfExpression(syn.Span, type, condition, thenBlock, elseClause);
     }
 
     [return: NotNullIfNotNull(nameof(elseClause))]
@@ -617,42 +606,39 @@ internal class ASTBuilder
         IExpression expression,
         Conversion conversion)
     {
-        var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
-        return new ImplicitLiftedConversion(expression.Span, convertToType, semantics, expression, (OptionalType)convertToType);
+        var convertToType = conversion.Apply(expression.DataType);
+        return new ImplicitLiftedConversion(expression.Span, convertToType, expression, (OptionalType)convertToType);
     }
 
     private static IImplicitSimpleTypeConversionExpression BuildImplicitSimpleTypeConversionExpression(
         IExpression expression,
         SimpleTypeConversion conversion)
-    {
-        var (_, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
-        return new ImplicitSimpleTypeConversionExpression(expression.Span, semantics, expression, conversion.To);
-    }
+        => new ImplicitSimpleTypeConversionExpression(expression.Span, expression, conversion.To);
 
     private static IImplicitOptionalConversionExpression BuildImplicitOptionalConversionExpression(
         IExpression expression,
         Conversion conversion)
     {
-        var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
-        return new ImplicitOptionalConversionExpression(expression.Span, convertToType, semantics, expression, (OptionalType)convertToType);
+        var convertToType = conversion.Apply(expression.DataType);
+        return new ImplicitOptionalConversionExpression(expression.Span, convertToType, expression, (OptionalType)convertToType);
     }
 
     private static IExpression BuildMoveConversionExpression(
         IExpression expression,
         MoveConversion conversion)
     {
-        var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
+        var convertToType = conversion.Apply(expression.DataType);
         switch (conversion.Kind)
         {
             case ConversionKind.Recover:
-                return new RecoverIsolationExpression(expression.Span, (ReferenceType)convertToType, semantics, expression);
+                return new RecoverIsolationExpression(expression.Span, (ReferenceType)convertToType, expression);
             case ConversionKind.Implicit:
                 var variableNameExpression = (IVariableNameExpression)expression;
                 var referencedSymbol = variableNameExpression.ReferencedSymbol;
-                return new MoveExpression(expression.Span, (ReferenceType)convertToType, semantics, referencedSymbol,
+                return new MoveExpression(expression.Span, (ReferenceType)convertToType, referencedSymbol,
                     variableNameExpression);
             case ConversionKind.Temporary:
-                return new TempMoveExpression(expression.Span, (ReferenceType)convertToType, semantics, expression);
+                return new TempMoveExpression(expression.Span, (ReferenceType)convertToType, expression);
             default:
                 throw ExhaustiveMatch.Failed(conversion.Kind);
         }
@@ -662,18 +648,18 @@ internal class ASTBuilder
         IExpression expression,
         FreezeConversion conversion)
     {
-        var (convertToType, semantics) = conversion.Apply(expression.DataType, expression.Semantics);
+        var convertToType = conversion.Apply(expression.DataType);
         switch (conversion.Kind)
         {
             case ConversionKind.Recover:
-                return new RecoverConstExpression(expression.Span, (ReferenceType)convertToType, semantics, expression);
+                return new RecoverConstExpression(expression.Span, (ReferenceType)convertToType, expression);
             case ConversionKind.Implicit:
                 var variableNameExpression = (IVariableNameExpression)expression;
                 var referencedSymbol = ((IVariableNameExpression)expression).ReferencedSymbol;
-                return new FreezeExpression(expression.Span, (ReferenceType)convertToType, semantics, referencedSymbol,
+                return new FreezeExpression(expression.Span, (ReferenceType)convertToType, referencedSymbol,
                     variableNameExpression);
             case ConversionKind.Temporary:
-                return new TempFreezeExpression(expression.Span, (ReferenceType)convertToType, semantics, expression);
+                return new TempFreezeExpression(expression.Span, (ReferenceType)convertToType, expression);
             default:
                 throw ExhaustiveMatch.Failed(conversion.Kind);
         }
@@ -682,150 +668,134 @@ internal class ASTBuilder
     private static IIntegerLiteralExpression BuildIntegerLiteralExpression(IIntegerLiteralExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var value = syn.Value;
-        return new IntegerLiteralExpression(syn.Span, type, semantics, value);
+        return new IntegerLiteralExpression(syn.Span, type, value);
     }
 
     private static INoneLiteralExpression BuildNoneLiteralExpression(INoneLiteralExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
-        return new NoneLiteralExpression(syn.Span, type, semantics);
+        return new NoneLiteralExpression(syn.Span, type);
     }
 
     private static IStringLiteralExpression BuildStringLiteralExpression(IStringLiteralExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var value = syn.Value;
-        return new StringLiteralExpression(syn.Span, type, semantics, value);
+        return new StringLiteralExpression(syn.Span, type, value);
     }
 
     private static ILoopExpression BuildLoopExpression(ILoopExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var block = BuildBlockExpression(syn.Block);
-        return new LoopExpression(syn.Span, type, semantics, block);
+        return new LoopExpression(syn.Span, type, block);
     }
 
     private static IMoveExpression BuildMoveExpression(IMoveExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
-        var referent = BuildExpression(syn.Referent);
-        return new MoveExpression(syn.Span, type, semantics, referencedSymbol, referent);
+        var referent = BuildExpression(syn.Referent, true);
+        return new MoveExpression(syn.Span, type, referencedSymbol, referent);
     }
 
-    private static INameExpression BuildNameExpression(ISimpleNameExpressionSyntax syn)
+    private static INameExpression BuildNameExpression(ISimpleNameExpressionSyntax syn, bool isMove)
     {
         return syn.ReferencedSymbol.Result.Assigned() switch
         {
-            NamedBindingSymbol symbol => BuildVariableNameExpression(syn, symbol),
+            VariableSymbol symbol => BuildVariableNameExpression(syn, symbol, isMove),
             FunctionSymbol symbol => BuildFunctionNameExpression(syn, symbol),
             TypeSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a type."),
             InvocableSymbol _ => throw new InvalidOperationException("Cannot build a name expression for an invocable."),
             NamespaceOrPackageSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a namespace or package."),
+            FieldSymbol _ => throw new UnreachableCodeException("Field would be a different expression."),
             SelfParameterSymbol _ => throw new UnreachableCodeException("Self parameter would be a different expression."),
             _ => throw ExhaustiveMatch.Failed(syn),
         };
     }
 
-    private static IVariableNameExpression BuildVariableNameExpression(ISimpleNameExpressionSyntax syn)
-        => BuildVariableNameExpression(syn, (NamedBindingSymbol)syn.ReferencedSymbol.Result.Assigned());
+    private static IVariableNameExpression BuildVariableNameExpression(ISimpleNameExpressionSyntax syn, bool isMove)
+        => BuildVariableNameExpression(syn, (VariableSymbol)syn.ReferencedSymbol.Result.Assigned(), isMove);
 
-    private static IVariableNameExpression BuildVariableNameExpression(ISimpleNameExpressionSyntax syn, NamedBindingSymbol referencedSymbol)
+    private static IVariableNameExpression BuildVariableNameExpression(ISimpleNameExpressionSyntax syn, VariableSymbol referencedSymbol, bool isMove)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
-        return new VariableNameExpression(syn.Span, type, semantics, referencedSymbol);
+        return new VariableNameExpression(syn.Span, type, referencedSymbol, isMove);
     }
 
-    private static IFunctionNameExpression BuildFunctionNameExpression(ISimpleNameExpressionSyntax syn, FunctionSymbol referenceSymbol)
+    private static IFunctionNameExpression BuildFunctionNameExpression(ISimpleNameExpressionSyntax syn, FunctionSymbol referencedSymbol)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
-        var referencedSymbol = (FunctionSymbol)syn.ReferencedSymbol.Result.Assigned();
-        return new FunctionNameExpression(syn.Span, type, semantics, referencedSymbol);
+        return new FunctionNameExpression(syn.Span, type, referencedSymbol);
     }
 
     private static INewObjectExpression BuildNewObjectExpression(INewObjectExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
         var arguments = BuildExpressions(syn.Arguments);
-        return new NewObjectExpression(syn.Span, type, semantics, referencedSymbol, arguments);
+        return new NewObjectExpression(syn.Span, type, referencedSymbol, arguments);
     }
 
     private static INextExpression BuildNextExpression(INextExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
-        return new NextExpression(syn.Span, type, semantics);
+        return new NextExpression(syn.Span, type);
     }
 
     private static IReturnExpression BuildReturnExpression(IReturnExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var value = BuildExpression(syn.Value);
-        return new ReturnExpression(syn.Span, type, semantics, value);
+        return new ReturnExpression(syn.Span, type, value);
     }
 
     private static ISelfExpression BuildSelfExpression(ISelfExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
         var isImplicit = syn.IsImplicit;
-        return new SelfExpression(syn.Span, type, semantics, referencedSymbol, isImplicit);
+        return new SelfExpression(syn.Span, type, referencedSymbol, isImplicit);
     }
 
     private static IUnaryOperatorExpression BuildUnaryOperatorExpression(IUnaryOperatorExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var fixity = syn.Fixity;
         var @operator = syn.Operator;
         var operand = BuildExpression(syn.Operand);
-        return new UnaryOperatorExpression(syn.Span, type, semantics, fixity, @operator, operand);
+        return new UnaryOperatorExpression(syn.Span, type, fixity, @operator, operand);
     }
 
     private static IUnsafeExpression BuildUnsafeExpression(IUnsafeExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var expression = BuildExpression(syn.Expression);
-        return new UnsafeExpression(syn.Span, type, semantics, expression);
+        return new UnsafeExpression(syn.Span, type, expression);
     }
 
     private static IWhileExpression BuildWhileExpression(IWhileExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var condition = BuildExpression(syn.Condition);
         var block = BuildBlockExpression(syn.Block);
-        return new WhileExpression(syn.Span, type, semantics, condition, block);
+        return new WhileExpression(syn.Span, type, condition, block);
     }
 
     private static IExpression BuildIdExpression(IIdExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var referent = BuildExpression(syn.Referent);
-        return new IdExpression(syn.Span, type, semantics, referent);
+        return new IdExpression(syn.Span, type, referent);
     }
 
     private static IFreezeExpression BuildFreezeExpression(IFreezeExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
         var referent = BuildExpression(syn.Referent);
-        return new FreezeExpression(syn.Span, type, semantics, referencedSymbol, referent);
+        return new FreezeExpression(syn.Span, type, referencedSymbol, referent);
     }
 
     private static IExpression BuildConversionExpression(IConversionExpressionSyntax syn)
@@ -833,15 +803,14 @@ internal class ASTBuilder
         var referent = BuildExpression(syn.Referent);
 
         // TODO support non-numeric conversions
-        var semantics = syn.ConvertedSemantics!.Value;
         var convertToType = (ValueType)syn.ConvertToType.NamedType.Assigned();
         var convertToSimpleType = (SimpleType)convertToType.DeclaredType;
 
         if (syn.Operator == ConversionOperator.Safe)
-            return new ImplicitSimpleTypeConversionExpression(syn.Span, semantics, referent, convertToSimpleType);
+            return new ImplicitSimpleTypeConversionExpression(syn.Span, referent, convertToSimpleType);
 
         var isOptional = syn.Operator == ConversionOperator.Optional;
-        return new ExplicitSimpleTypeConversion(syn.Span, semantics, referent, isOptional, convertToSimpleType);
+        return new ExplicitSimpleTypeConversion(syn.Span, referent, isOptional, convertToSimpleType);
     }
 
     private static IExpression BuildPatternMatchExpression(IPatternMatchExpressionSyntax syn)
@@ -885,24 +854,21 @@ internal class ASTBuilder
     private static IAsyncBlockExpression BuildAsyncBlockExpression(IAsyncBlockExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var block = BuildBlockExpression(syn.Block);
-        return new AsyncBlockExpression(syn.Span, type, semantics, block);
+        return new AsyncBlockExpression(syn.Span, type, block);
     }
 
     private static IAsyncStartExpression BuildAsyncStartExpression(IAsyncStartExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var expression = BuildExpression(syn.Expression);
-        return new AsyncStartExpression(syn.Span, type, semantics, syn.Scheduled, expression);
+        return new AsyncStartExpression(syn.Span, type, syn.Scheduled, expression);
     }
 
     private static IAwaitExpression BuildAwaitExpression(IAwaitExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
-        var semantics = syn.Semantics.Assigned();
         var expression = BuildExpression(syn.Expression);
-        return new AwaitExpression(syn.Span, type, semantics, expression);
+        return new AwaitExpression(syn.Span, type, expression);
     }
 }

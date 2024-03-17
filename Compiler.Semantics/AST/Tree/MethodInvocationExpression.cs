@@ -16,11 +16,10 @@ internal class MethodInvocationExpression : Expression, IMethodInvocationExpress
     public MethodInvocationExpression(
         TextSpan span,
         DataType dataType,
-        ExpressionSemantics semantics,
         IExpression context,
         MethodSymbol referencedSymbol,
         IFixedList<IExpression> arguments)
-        : base(span, dataType, semantics)
+        : base(span, dataType)
     {
         Context = context;
         ReferencedSymbol = referencedSymbol;

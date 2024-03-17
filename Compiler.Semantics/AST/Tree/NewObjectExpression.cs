@@ -15,10 +15,9 @@ internal class NewObjectExpression : Expression, INewObjectExpression
     public NewObjectExpression(
         TextSpan span,
         DataType dataType,
-        ExpressionSemantics semantics,
         ConstructorSymbol referencedSymbol,
         IFixedList<IExpression> arguments)
-        : base(span, dataType, semantics)
+        : base(span, dataType)
     {
         ReferencedSymbol = referencedSymbol;
         Arguments = arguments;

@@ -5,16 +5,12 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
-internal class AsyncBlockExpression : Expression, IAsyncBlockExpression
+internal sealed class AsyncBlockExpression : Expression, IAsyncBlockExpression
 {
     public IBlockExpression Block { get; }
 
-    public AsyncBlockExpression(
-        TextSpan span,
-        DataType type,
-        ExpressionSemantics semantics,
-        IBlockExpression block)
-        : base(span, type, semantics)
+    public AsyncBlockExpression(TextSpan span, DataType type, IBlockExpression block)
+        : base(span, type)
     {
         Block = block;
     }

@@ -9,12 +9,8 @@ internal class ImplicitSimpleTypeConversionExpression : ImplicitConversionExpres
 {
     public SimpleType ConvertToType { get; }
 
-    public ImplicitSimpleTypeConversionExpression(
-        TextSpan span,
-        ExpressionSemantics semantics,
-        IExpression expression,
-        SimpleType convertToType)
-        : base(span, convertToType.Type, semantics, expression)
+    public ImplicitSimpleTypeConversionExpression(TextSpan span, IExpression expression, SimpleType convertToType)
+        : base(span, convertToType.Type, expression)
     {
         ConvertToType = convertToType;
     }

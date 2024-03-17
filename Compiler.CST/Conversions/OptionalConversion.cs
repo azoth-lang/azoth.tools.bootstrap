@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
@@ -12,9 +11,9 @@ public sealed class OptionalConversion : ChainedConversion
     {
     }
 
-    public override (DataType, ExpressionSemantics) Apply(DataType type, ExpressionSemantics semantics)
+    public override DataType Apply(DataType type)
     {
-        (type, semantics) = PriorConversion.Apply(type, semantics);
-        return (new OptionalType(type), semantics);
+        type = PriorConversion.Apply(type);
+        return new OptionalType(type);
     }
 }

@@ -91,7 +91,6 @@ public class SemanticAnalyzer
         new SymbolValidator(packageSyntax.TestingSymbolTree).Validate(packageSyntax.TestingEntityDeclarations);
         new TypeFulfillmentValidator().Validate(packageSyntax.AllEntityDeclarations);
         new TypeKnownValidator().Validate(packageSyntax.AllEntityDeclarations);
-        new ExpressionSemanticsValidator().Validate(packageSyntax.AllEntityDeclarations);
 #endif
 
         var packageBuilder = new ASTBuilder().BuildPackage(packageSyntax);

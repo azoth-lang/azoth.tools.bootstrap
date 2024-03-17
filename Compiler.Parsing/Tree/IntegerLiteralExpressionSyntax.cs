@@ -12,7 +12,7 @@ internal class IntegerLiteralExpressionSyntax : LiteralExpressionSyntax, IIntege
     public BigInteger Value { get; }
 
     public IntegerLiteralExpressionSyntax(TextSpan span, BigInteger value)
-        : base(span, ExpressionSemantics.CopyValue)
+        : base(span)
     {
         Value = value;
     }

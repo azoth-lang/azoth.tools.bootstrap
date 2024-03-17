@@ -4,7 +4,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
-using ExhaustiveMatching;
 using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Moves;
@@ -67,28 +66,12 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags>
         if (symbol.Type is not ValueType)
             return possiblyMoved;
 
-        var valueSemantics = nameExpression.Semantics;
         // TODO this isn't correct, but for now fields don't have proper move, borrow handling
-        //?? nameExpression.Type.Assigned().OldValueSemantics;
-        switch (valueSemantics)
-        {
-            case ExpressionSemantics.MoveValue:
-            case ExpressionSemantics.IsolatedReference:
-                return possiblyMoved.Set(symbol, true);
-            case ExpressionSemantics.CopyValue:
-            case ExpressionSemantics.MutableReference:
-            case ExpressionSemantics.ReadOnlyReference:
-            case ExpressionSemantics.ConstReference:
-            case ExpressionSemantics.IdReference:
-            case ExpressionSemantics.Void:
-            case ExpressionSemantics.Never:
-            case ExpressionSemantics.CreateReference:
-                // If it were move or copy, that would have been set to the ExpressionSemantics
-                // Not moving value
-                return possiblyMoved;
-            default:
-                throw ExhaustiveMatch.Failed(valueSemantics);
-        }
+
+        if (nameExpression.IsMove)
+            return possiblyMoved.Set(symbol, true);
+
+        return possiblyMoved;
     }
 
     public BindingFlags VariableDeclaration(

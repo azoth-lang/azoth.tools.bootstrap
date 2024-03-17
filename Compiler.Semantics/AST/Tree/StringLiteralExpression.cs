@@ -10,12 +10,8 @@ internal class StringLiteralExpression : LiteralExpression, IStringLiteralExpres
 {
     public string Value { get; }
 
-    public StringLiteralExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        string value)
-        : base(span, dataType, semantics)
+    public StringLiteralExpression(TextSpan span, DataType dataType, string value)
+        : base(span, dataType)
     {
         Value = value;
     }

@@ -10,7 +10,7 @@ internal class AsyncStartExpressionSyntax : ExpressionSyntax, IAsyncStartExpress
     public IExpressionSyntax Expression { get; }
 
     public AsyncStartExpressionSyntax(TextSpan span, bool scheduled, IExpressionSyntax expression)
-        : base(span, null)
+        : base(span)
     {
         Scheduled = scheduled;
         Expression = expression;

@@ -15,10 +15,9 @@ internal class FunctionInvocationExpression : Expression, IFunctionInvocationExp
     public FunctionInvocationExpression(
         TextSpan span,
         DataType dataType,
-        ExpressionSemantics semantics,
         FunctionSymbol referencedSymbol,
         IFixedList<IExpression> arguments)
-        : base(span, dataType, semantics)
+        : base(span, dataType)
     {
         ReferencedSymbol = referencedSymbol;
         Arguments = arguments;

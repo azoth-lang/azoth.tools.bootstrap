@@ -11,7 +11,7 @@ internal class PatternMatchExpression : Expression, IPatternMatchExpression
     public IPattern Pattern { get; }
 
     public PatternMatchExpression(IExpression referent, IPattern pattern)
-        : base(TextSpan.Covering(referent.Span, pattern.Span), DataType.Bool, ExpressionSemantics.CopyValue)
+        : base(TextSpan.Covering(referent.Span, pattern.Span), DataType.Bool)
     {
         Referent = referent;
         Pattern = pattern;

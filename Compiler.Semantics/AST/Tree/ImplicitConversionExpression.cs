@@ -9,12 +9,8 @@ internal abstract class ImplicitConversionExpression : Expression, IImplicitConv
 {
     public IExpression Expression { get; }
 
-    protected ImplicitConversionExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        IExpression expression)
-        : base(span, dataType, semantics)
+    protected ImplicitConversionExpression(TextSpan span, DataType dataType, IExpression expression)
+        : base(span, dataType)
     {
         Expression = expression;
     }

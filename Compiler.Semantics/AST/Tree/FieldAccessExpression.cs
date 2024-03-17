@@ -2,7 +2,6 @@ using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
@@ -16,11 +15,10 @@ internal class FieldAccessExpression : Expression, IFieldAccessExpression
     public FieldAccessExpression(
         TextSpan span,
         DataType dataType,
-        ExpressionSemantics semantics,
         IExpression context,
         AccessOperator accessOperator,
         FieldSymbol referencedSymbol)
-        : base(span, dataType, semantics)
+        : base(span, dataType)
     {
         Context = context;
         AccessOperator = accessOperator;

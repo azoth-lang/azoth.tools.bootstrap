@@ -14,10 +14,9 @@ internal class FunctionReferenceInvocationExpression : Expression, IFunctionRefe
     public FunctionReferenceInvocationExpression(
         TextSpan span,
         DataType dataType,
-        ExpressionSemantics semantics,
         IExpression referent,
         IFixedList<IExpression> arguments)
-        : base(span, dataType, semantics)
+        : base(span, dataType)
     {
         Referent = referent;
         Arguments = arguments;

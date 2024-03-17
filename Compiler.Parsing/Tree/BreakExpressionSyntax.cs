@@ -13,7 +13,7 @@ internal class BreakExpressionSyntax : ExpressionSyntax, IBreakExpressionSyntax
     public BreakExpressionSyntax(
         TextSpan span,
         IExpressionSyntax? value)
-        : base(span, ExpressionSemantics.Void)
+        : base(span)
     {
         Value = value;
     }

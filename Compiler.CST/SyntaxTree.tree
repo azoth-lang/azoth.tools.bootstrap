@@ -124,7 +124,7 @@ BindingPattern: OptionalOrBindingPattern, LocalBinding = Name:'SimpleName' Decla
 OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
-Expression = ImplicitConversion:'Conversion' ConvertedDataType:'DataType'? ConvertedSemantics:'ExpressionSemantics'?;
+Expression = ImplicitConversion:'Conversion' ConvertedDataType:'DataType'?;
 AssignableExpression: Expression = ReferencedSymbol:'Promise<Symbol?>';
 BlockExpression: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
 NewObjectExpression: Expression = Type:TypeName ConstructorName:'SimpleName'? ConstructorNameSpan:'TextSpan'? Arguments:Expression* ReferencedSymbol:'Promise<ConstructorSymbol?>';

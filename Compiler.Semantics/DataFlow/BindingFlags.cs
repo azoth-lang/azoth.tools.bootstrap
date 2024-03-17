@@ -52,7 +52,8 @@ public class BindingFlags
     /// Returns the state for the variable or null if the symbol isn't a
     /// variable.
     /// </summary>
-    public bool? this[BindingSymbol symbol] => symbolMap.TryGetValue(symbol, out var i) ? flags[i] : null;
+    public bool? this[BindingSymbol symbol]
+        => symbolMap.TryGetValue(symbol, out var i) ? flags[i] : null;
 
     public BindingFlags Set(BindingSymbol symbol, bool value)
     {

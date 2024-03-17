@@ -9,8 +9,8 @@ internal class IdExpression : Expression, IIdExpression
 {
     public IExpression Referent { get; }
 
-    public IdExpression(TextSpan span, DataType dataType, ExpressionSemantics semantics, IExpression referent)
-        : base(span, dataType, semantics)
+    public IdExpression(TextSpan span, DataType dataType, IExpression referent)
+        : base(span, dataType)
     {
         Referent = referent;
     }

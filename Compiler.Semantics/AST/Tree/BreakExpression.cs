@@ -9,12 +9,8 @@ internal class BreakExpression : Expression, IBreakExpression
 {
     public IExpression? Value { get; }
 
-    public BreakExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        IExpression? value)
-        : base(span, dataType, semantics)
+    public BreakExpression(TextSpan span, DataType dataType, IExpression? value)
+        : base(span, dataType)
     {
         Value = value;
     }

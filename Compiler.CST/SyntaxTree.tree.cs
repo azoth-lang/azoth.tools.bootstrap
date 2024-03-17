@@ -619,7 +619,6 @@ public partial interface IExpressionSyntax : ISyntax
 {
     Conversion ImplicitConversion { get; }
     DataType? ConvertedDataType { get; }
-    ExpressionSemantics? ConvertedSemantics { get; }
 }
 
 [Closed(

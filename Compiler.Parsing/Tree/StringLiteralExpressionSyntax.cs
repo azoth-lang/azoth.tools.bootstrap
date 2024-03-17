@@ -12,7 +12,7 @@ internal class StringLiteralExpressionSyntax : LiteralExpressionSyntax, IStringL
     public string Value { [DebuggerStepThrough] get; }
 
     public StringLiteralExpressionSyntax(TextSpan span, string value)
-        : base(span, ExpressionSemantics.ReadOnlyReference)
+        : base(span)
     {
         Value = value;
     }

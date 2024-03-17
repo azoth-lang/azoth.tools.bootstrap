@@ -12,12 +12,8 @@ internal class FreezeExpression : Expression, IFreezeExpression
     public IExpression Referent { get; }
 
     public FreezeExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        BindingSymbol referencedSymbol,
-        IExpression referent)
-        : base(span, dataType, semantics)
+        TextSpan span, DataType dataType, BindingSymbol referencedSymbol, IExpression referent)
+        : base(span, dataType)
     {
         ReferencedSymbol = referencedSymbol;
         Referent = referent;

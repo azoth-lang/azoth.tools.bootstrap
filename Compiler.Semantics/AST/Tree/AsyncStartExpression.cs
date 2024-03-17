@@ -10,13 +10,8 @@ internal class AsyncStartExpression : Expression, IAsyncStartExpression
     public bool Scheduled { get; }
     public IExpression Expression { get; }
 
-    public AsyncStartExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        bool scheduled,
-        IExpression expression)
-        : base(span, dataType, semantics)
+    public AsyncStartExpression(TextSpan span, DataType dataType, bool scheduled, IExpression expression)
+        : base(span, dataType)
     {
         Scheduled = scheduled;
         Expression = expression;

@@ -87,7 +87,7 @@ BindingContextPattern: Pattern = Pattern Type:'DataType';
 OptionalPattern: Pattern = Pattern;
 
 // ---------- Expressions
-Expression = DataType:'DataType' Semantics:'ExpressionSemantics';
+Expression = DataType:'DataType';
 NameExpression: Expression;
 AssignableExpression: Expression;
 BlockExpression: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
@@ -135,7 +135,7 @@ MethodInvocationExpression: InvocationExpression = Context:Expression Referenced
 FunctionReferenceInvocationExpression: InvocationExpression = Referent:Expression Arguments:Expression*;
 
 // ---------- Variable Expressions
-VariableNameExpression: AssignableExpression, NameExpression = ReferencedSymbol:'NamedBindingSymbol' VariableIsLiveAfter:'Promise<bool>';
+VariableNameExpression: AssignableExpression, NameExpression = ReferencedSymbol:'NamedBindingSymbol' IsMove:'bool' VariableIsLiveAfter:'Promise<bool>';
 SelfExpression: Expression = ReferencedSymbol:'SelfParameterSymbol' IsImplicit:'bool';
 FieldAccessExpression: AssignableExpression = Context:Expression AccessOperator:'AccessOperator' ReferencedSymbol:'FieldSymbol';
 

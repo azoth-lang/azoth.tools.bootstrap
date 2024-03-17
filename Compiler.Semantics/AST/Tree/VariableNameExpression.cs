@@ -7,19 +7,17 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
-internal class VariableNameExpression : Expression, IVariableNameExpression
+internal sealed class VariableNameExpression : Expression, IVariableNameExpression
 {
     public NamedBindingSymbol ReferencedSymbol { get; }
+    public bool IsMove { get; }
     public Promise<bool> VariableIsLiveAfter { get; } = new Promise<bool>();
 
-    public VariableNameExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        NamedBindingSymbol referencedSymbol)
-        : base(span, dataType, semantics)
+    public VariableNameExpression(TextSpan span, DataType dataType, NamedBindingSymbol referencedSymbol, bool isMove)
+        : base(span, dataType)
     {
         ReferencedSymbol = referencedSymbol;
+        IsMove = isMove;
     }
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;

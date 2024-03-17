@@ -9,12 +9,8 @@ internal class UnsafeExpression : Expression, IUnsafeExpression
 {
     public IExpression Expression { get; }
 
-    public UnsafeExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        IExpression expression)
-        : base(span, dataType, semantics)
+    public UnsafeExpression(TextSpan span, DataType dataType, IExpression expression)
+        : base(span, dataType)
     {
         Expression = expression;
     }

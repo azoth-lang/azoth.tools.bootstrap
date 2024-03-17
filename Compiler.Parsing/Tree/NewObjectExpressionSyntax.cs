@@ -29,7 +29,7 @@ internal class NewObjectExpressionSyntax : ExpressionSyntax, INewObjectExpressio
         SimpleName? constructorName,
         TextSpan? constructorNameSpan,
         IFixedList<IExpressionSyntax> arguments)
-        : base(span, ExpressionSemantics.IsolatedReference)
+        : base(span)
     {
         Type = typeSyntax;
         Arguments = arguments;

@@ -35,24 +35,7 @@ internal abstract class ExpressionSyntax : Syntax, IExpressionSyntax
 
     private Conversion? cachedOnConversion = null;
     private DataType? cachedConvertedDataType = null;
-    private ExpressionSemantics? cachedConvertedExpressionSemantics = null;
-    public DataType? ConvertedDataType
-    {
-        get
-        {
-            var (convertedType, _) = ApplyConversion();
-            return convertedType;
-        }
-    }
-
-    public ExpressionSemantics? ConvertedSemantics
-    {
-        get
-        {
-            var (_, convertedSemantics) = ApplyConversion();
-            return convertedSemantics;
-        }
-    }
+    public DataType? ConvertedDataType => ApplyConversion();
 
     public virtual Conversion ImplicitConversion
     {
@@ -61,24 +44,10 @@ internal abstract class ExpressionSyntax : Syntax, IExpressionSyntax
         private set;
     } = IdentityConversion.Instance;
 
-    private ExpressionSemantics? semantics;
-    [DisallowNull]
-    public ExpressionSemantics? Semantics
-    {
-        [DebuggerStepThrough]
-        get => semantics;
-        set
-        {
-            if (semantics is not null)
-                throw new InvalidOperationException("Can't set semantics repeatedly");
-            semantics = value ?? throw new ArgumentNullException(nameof(value));
-        }
-    }
 
-    protected ExpressionSyntax(TextSpan span, ExpressionSemantics? semantics = null)
+    protected ExpressionSyntax(TextSpan span)
         : base(span)
     {
-        this.semantics = semantics;
     }
 
     public void Poison() => Poisoned = true;
@@ -95,17 +64,16 @@ internal abstract class ExpressionSyntax : Syntax, IExpressionSyntax
     public string ToGroupedString(OperatorPrecedence surroundingPrecedence)
         => surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();
 
-    private (DataType?, ExpressionSemantics?) ApplyConversion()
+    private DataType? ApplyConversion()
     {
-        if (DataType is null || Semantics is null) return (DataType, Semantics);
+        if (DataType is null) return DataType;
 
         if (cachedOnConversion != ImplicitConversion)
         {
-            (cachedConvertedDataType, cachedConvertedExpressionSemantics) =
-                ImplicitConversion.Apply(DataType, Semantics.Value);
+            cachedConvertedDataType = ImplicitConversion.Apply(DataType);
             cachedOnConversion = ImplicitConversion;
         }
 
-        return (cachedConvertedDataType, cachedConvertedExpressionSemantics);
+        return cachedConvertedDataType;
     }
 }

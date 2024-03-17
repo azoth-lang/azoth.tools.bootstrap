@@ -9,8 +9,8 @@ internal class AwaitExpression : Expression, IAwaitExpression
 {
     public IExpression Expression { get; }
 
-    public AwaitExpression(TextSpan span, DataType dataType, ExpressionSemantics semantics, IExpression expression)
-        : base(span, dataType, semantics)
+    public AwaitExpression(TextSpan span, DataType dataType, IExpression expression)
+        : base(span, dataType)
     {
         Expression = expression;
     }

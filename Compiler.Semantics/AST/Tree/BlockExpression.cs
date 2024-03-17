@@ -11,12 +11,8 @@ internal class BlockExpression : Expression, IBlockExpression
 {
     public IFixedList<IStatement> Statements { get; }
 
-    public BlockExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        IFixedList<IStatement> statements)
-        : base(span, dataType, semantics)
+    public BlockExpression(TextSpan span, DataType dataType, IFixedList<IStatement> statements)
+        : base(span, dataType)
     {
         Statements = statements;
     }

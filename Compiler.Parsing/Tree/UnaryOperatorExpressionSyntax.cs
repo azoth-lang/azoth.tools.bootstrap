@@ -18,7 +18,7 @@ internal class UnaryOperatorExpressionSyntax : ExpressionSyntax, IUnaryOperatorE
         UnaryOperatorFixity fixity,
         UnaryOperator @operator,
         IExpressionSyntax operand)
-        : base(span, ExpressionSemantics.CopyValue)
+        : base(span)
     {
         Fixity = fixity;
         Operator = @operator;

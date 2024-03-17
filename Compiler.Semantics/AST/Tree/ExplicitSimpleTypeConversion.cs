@@ -11,11 +11,10 @@ internal class ExplicitSimpleTypeConversion : ExplicitConversionExpression, IExp
 
     public ExplicitSimpleTypeConversion(
         TextSpan span,
-        ExpressionSemantics semantics,
         IExpression expression,
         bool isOptional,
         SimpleType convertToType)
-        : base(span, convertToType.Type, semantics, expression, isOptional)
+        : base(span, convertToType.Type, expression, isOptional)
     {
         ConvertToType = convertToType;
     }

@@ -12,10 +12,9 @@ internal class ImplicitLiftedConversion : ImplicitConversionExpression, IImplici
     public ImplicitLiftedConversion(
         TextSpan span,
         DataType dataType,
-        ExpressionSemantics semantics,
         IExpression expression,
         OptionalType convertToType)
-        : base(span, dataType, semantics, expression)
+        : base(span, dataType, expression)
     {
         ConvertToType = convertToType;
     }

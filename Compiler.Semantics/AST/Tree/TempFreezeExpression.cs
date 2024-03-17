@@ -9,12 +9,8 @@ internal class TempFreezeExpression : Expression, ITempFreezeExpression
 {
     public IExpression Referent { get; }
 
-    public TempFreezeExpression(
-        TextSpan span,
-        DataType dataType,
-        ExpressionSemantics semantics,
-        IExpression referent)
-        : base(span, dataType, semantics)
+    public TempFreezeExpression(TextSpan span, DataType dataType, IExpression referent)
+        : base(span, dataType)
     {
         Referent = referent;
     }

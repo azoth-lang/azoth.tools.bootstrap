@@ -7,8 +7,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal abstract class LiteralExpression : Expression, ILiteralExpression
 {
-    protected LiteralExpression(TextSpan span, DataType dataType, ExpressionSemantics semantics)
-        : base(span, dataType, semantics) { }
+    protected LiteralExpression(TextSpan span, DataType dataType)
+        : base(span, dataType) { }
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 }

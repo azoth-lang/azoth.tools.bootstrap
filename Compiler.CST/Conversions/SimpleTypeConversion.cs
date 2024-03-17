@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
@@ -18,10 +17,10 @@ public sealed class SimpleTypeConversion : ChainedConversion
         To = to;
     }
 
-    public override (DataType, ExpressionSemantics) Apply(DataType type, ExpressionSemantics semantics)
+    public override DataType Apply(DataType type)
     {
-        (type, semantics) = PriorConversion.Apply(type, semantics);
-        // TODO check that the incoming type and semantics can work with numeric conversion
-        return (To.Type, ExpressionSemantics.CopyValue);
+        type = PriorConversion.Apply(type);
+        // TODO check that the incoming type can work with numeric conversion
+        return To.Type;
     }
 }
