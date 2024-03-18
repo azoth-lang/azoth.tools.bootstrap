@@ -29,8 +29,7 @@ public class LivenessAnalysis : IBackwardDataFlowAnalysis<BindingFlags<IVariable
         {
             case IVariableNameExpression identifier:
                 var symbol = identifier.ReferencedSymbol;
-                var isLifeAfter = liveVariables[symbol]
-                                  ?? throw new Exception($"No liveness data for variable {symbol}");
+                var isLifeAfter = liveVariables[symbol];
                 identifier.VariableIsLiveAfter.Fulfill(isLifeAfter);
                 return liveVariables.Set(symbol, false);
             case IFieldAccessExpression _:
@@ -77,9 +76,7 @@ public class LivenessAnalysis : IBackwardDataFlowAnalysis<BindingFlags<IVariable
         Promise<bool> promise,
         BindingFlags<IVariableSymbol> liveVariables)
     {
-        var isLiveAfter = liveVariables[symbol]
-                          ?? throw new Exception($"No liveness data for variable {symbol}");
-
+        var isLiveAfter = liveVariables[symbol];
         promise.Fulfill(isLiveAfter);
     }
 }

@@ -94,7 +94,7 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<BindingFlags<I
             case IVariableNameExpression identifier:
             {
                 var symbol = identifier.ReferencedSymbol;
-                if (!symbol.IsMutableBinding && definitelyUnassigned[symbol] == false)
+                if (!symbol.IsMutableBinding && !definitelyUnassigned[symbol])
                     diagnostics.Add(OtherSemanticError.MayAlreadyBeAssigned(file, identifier.Span,
                         symbol.Name));
                 return definitelyUnassigned.Set(symbol, false);
@@ -103,7 +103,7 @@ public class BindingMutabilityAnalysis : IForwardDataFlowAnalysis<BindingFlags<I
                 if (fieldAccess.Context is ISelfExpression)
                 {
                     var symbol = fieldAccess.ReferencedSymbol;
-                    if (!symbol.IsMutableBinding && definitelyUnassigned[symbol] == false)
+                    if (!symbol.IsMutableBinding && !definitelyUnassigned[symbol])
                         diagnostics.Add(OtherSemanticError.MayAlreadyBeAssigned(file, fieldAccess.Span, symbol.Name));
                     definitelyUnassigned = definitelyUnassigned.Set(symbol, false);
                 }

@@ -23,11 +23,10 @@ public class BindingFlags<TSymbol>
     }
 
     /// <summary>
-    /// Returns the state for the variable or null if the symbol isn't a
-    /// variable.
+    /// Returns the state for the symbol.
     /// </summary>
-    public bool? this[TSymbol symbol]
-        => symbolMap.TryGetValue(symbol, out var i) ? flags[i] : null;
+    public bool this[TSymbol symbol]
+        => flags[symbolMap[symbol]];
 
     public BindingFlags<TSymbol> Set(TSymbol symbol, bool value)
     {
