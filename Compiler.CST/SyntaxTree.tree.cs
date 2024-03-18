@@ -766,7 +766,7 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax, IHasCo
 
 [Closed(
     typeof(ISimpleNameExpressionSyntax),
-    typeof(IQualifiedNameExpressionSyntax))]
+    typeof(IMemberAccessExpressionSyntax))]
 public partial interface INameExpressionSyntax : IAssignableExpressionSyntax
 {
 }
@@ -791,7 +791,7 @@ public partial interface ISelfExpressionSyntax : IVariableNameExpressionSyntax
     new Promise<SelfParameterSymbol?> ReferencedSymbol { get; }
 }
 
-public partial interface IQualifiedNameExpressionSyntax : INameExpressionSyntax
+public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax
 {
     IExpressionSyntax Context { get; }
     AccessOperator AccessOperator { get; }

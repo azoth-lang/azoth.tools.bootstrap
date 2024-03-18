@@ -806,7 +806,7 @@ public class BasicBodyAnalyzer
                 var resultVariable = flow.Combine(thenResult.Variable, elseResult?.Variable, exp);
                 return new ExpressionResult(exp, resultVariable);
             }
-            case IQualifiedNameExpressionSyntax exp:
+            case IMemberAccessExpressionSyntax exp:
             {
                 var contextResult = InferType(exp.Context, flow, NonInvocableSymbols);
                 var contextType = exp.Context is ISelfExpressionSyntax self ? self.Pseudotype.Assigned() : contextResult.Type;
@@ -1181,7 +1181,7 @@ public class BasicBodyAnalyzer
         {
             default:
                 throw ExhaustiveMatch.Failed(expression);
-            case IQualifiedNameExpressionSyntax exp:
+            case IMemberAccessExpressionSyntax exp:
                 var contextResult = InferType(exp.Context, flow, NonInvocableSymbols);
                 DataType type;
                 var member = exp.Member;
@@ -1250,7 +1250,7 @@ public class BasicBodyAnalyzer
         FunctionType? functionType = null;
         switch (invocation.Expression)
         {
-            case IQualifiedNameExpressionSyntax exp:
+            case IMemberAccessExpressionSyntax exp:
             {
                 var contextResult = InferType(exp.Context, flow, NonInvocableSymbols);
                 // Make sure to infer argument type *after* the context type
@@ -1353,10 +1353,8 @@ public class BasicBodyAnalyzer
         invocation.Expression.DataType = DataType.Void;
 
         // Apply the referenced symbol to the underlying name
-        if (invocation.Expression is IQualifiedNameExpressionSyntax nameExpression)
-        {
-            nameExpression.Member.DataType = DataType.Void;
-        }
+        if (invocation.Expression is IMemberAccessExpressionSyntax memberAccessExpression)
+            memberAccessExpression.Member.DataType = DataType.Void;
 
         return new(invocation, resultVariable);
     }

@@ -386,7 +386,7 @@ internal class ASTBuilder
             IBlockExpressionSyntax syn => BuildBlockExpression(syn),
             IBoolLiteralExpressionSyntax syn => BuildBoolLiteralExpression(syn),
             IBreakExpressionSyntax syn => BuildBreakExpression(syn),
-            IQualifiedNameExpressionSyntax syn => BuildGetterAccessExpression(syn),
+            IMemberAccessExpressionSyntax syn => BuildGetterAccessExpression(syn),
             IForeachExpressionSyntax syn => BuildForeachExpression(syn),
             IIfExpressionSyntax syn => BuildIfExpression(syn),
             IIntegerLiteralExpressionSyntax syn => BuildIntegerLiteralExpression(syn),
@@ -460,7 +460,7 @@ internal class ASTBuilder
             case MethodSymbol methodSymbol:
             {
                 var type = syn.DataType.Assigned();
-                var contextSyntax = ((IQualifiedNameExpressionSyntax)syn.LeftOperand).Context;
+                var contextSyntax = ((IMemberAccessExpressionSyntax)syn.LeftOperand).Context;
                 var context = BuildExpression(contextSyntax);
                 var rightOperand = BuildExpression(syn.RightOperand);
                 return new MethodInvocationExpression(syn.Span, type, context,
@@ -475,7 +475,7 @@ internal class ASTBuilder
     {
         return expression switch
         {
-            IQualifiedNameExpressionSyntax syn => BuildFieldAccessExpression(syn),
+            IMemberAccessExpressionSyntax syn => BuildFieldAccessExpression(syn),
             ISimpleNameExpressionSyntax syn => BuildVariableNameExpression(syn, false),
             _ => throw ExhaustiveMatch.Failed(expression),
         };
@@ -511,7 +511,7 @@ internal class ASTBuilder
         return new BreakExpression(syn.Span, type, value);
     }
 
-    private static IExpression BuildGetterAccessExpression(IQualifiedNameExpressionSyntax syn)
+    private static IExpression BuildGetterAccessExpression(IMemberAccessExpressionSyntax syn)
     {
         var referencedSymbol = syn.ReferencedSymbol.Result.Assigned();
         switch (referencedSymbol)
@@ -530,7 +530,7 @@ internal class ASTBuilder
         }
     }
 
-    private static IFieldAccessExpression BuildFieldAccessExpression(IQualifiedNameExpressionSyntax syn)
+    private static IFieldAccessExpression BuildFieldAccessExpression(IMemberAccessExpressionSyntax syn)
     {
         var type = syn.DataType.Assigned();
         var context = BuildExpression(syn.Context);
@@ -565,7 +565,7 @@ internal class ASTBuilder
             case FunctionSymbol function:
                 return new FunctionInvocationExpression(syn.Span, type, function, arguments);
             case MethodSymbol method:
-                var qualifiedName = (IQualifiedNameExpressionSyntax)syn.Expression;
+                var qualifiedName = (IMemberAccessExpressionSyntax)syn.Expression;
                 var context = BuildExpression(qualifiedName.Context);
                 return new MethodInvocationExpression(syn.Span, type, context, method, arguments);
             case InitializerSymbol initializer:

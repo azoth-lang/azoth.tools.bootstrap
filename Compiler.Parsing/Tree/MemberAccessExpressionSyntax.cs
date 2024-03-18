@@ -7,14 +7,14 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class QualifiedNameExpressionSyntax : ExpressionSyntax, IQualifiedNameExpressionSyntax
+internal class MemberAccessExpressionSyntax : ExpressionSyntax, IMemberAccessExpressionSyntax
 {
     public IExpressionSyntax Context { [DebuggerStepThrough] get; }
     public AccessOperator AccessOperator { [DebuggerStepThrough] get; }
     public ISimpleNameExpressionSyntax Member { [DebuggerStepThrough] get; }
     public Promise<Symbol?> ReferencedSymbol => Member.ReferencedSymbol;
 
-    public QualifiedNameExpressionSyntax(
+    public MemberAccessExpressionSyntax(
         TextSpan span,
         IExpressionSyntax context,
         AccessOperator accessOperator,

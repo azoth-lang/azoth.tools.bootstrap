@@ -297,7 +297,7 @@ public static class ISyntaxExtensions
                 yield break;
             case ISelfExpressionSyntax n:
                 yield break;
-            case IQualifiedNameExpressionSyntax n:
+            case IMemberAccessExpressionSyntax n:
                 yield return n.Context;
                 yield return n.Member;
                 yield break;

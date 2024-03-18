@@ -159,7 +159,7 @@ public partial class Parser
                         var accessOperator = BuildAccessOperator(Tokens.ConsumeToken<IAccessOperatorToken>());
                         var nameSyntax = ParseName();
                         var memberAccessSpan = TextSpan.Covering(expression.Span, nameSyntax.Span);
-                        expression = new QualifiedNameExpressionSyntax(memberAccessSpan, expression, accessOperator, nameSyntax);
+                        expression = new MemberAccessExpressionSyntax(memberAccessSpan, expression, accessOperator, nameSyntax);
                         continue;
                     }
                     break;

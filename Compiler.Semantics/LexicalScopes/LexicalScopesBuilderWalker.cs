@@ -132,7 +132,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         {
             default:
                 throw ExhaustiveMatch.Failed(syntax);
-            case IQualifiedNameExpressionSyntax exp:
+            case IMemberAccessExpressionSyntax exp:
                 return Walk(exp.Context, containingScope);
             case IAssignmentExpressionSyntax exp:
                 _ = Walk(exp.LeftOperand, containingScope);
