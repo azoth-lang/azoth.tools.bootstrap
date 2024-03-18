@@ -10,14 +10,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class BindingPatternSyntax : Syntax, IBindingPatternSyntax
 {
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
-    public SimpleName Name { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
     public Promise<int?> DeclarationNumber { [DebuggerStepThrough] get; } = new Promise<int?>();
 
     public Promise<NamedVariableSymbol> Symbol { [DebuggerStepThrough] get; } = new Promise<NamedVariableSymbol>();
     IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol { [DebuggerStepThrough] get => Symbol; }
     IPromise<BindingSymbol> IBindingSyntax.Symbol { [DebuggerStepThrough] get => Symbol; }
 
-    public BindingPatternSyntax(TextSpan span, bool isMutableBinding, SimpleName name)
+    public BindingPatternSyntax(TextSpan span, bool isMutableBinding, IdentifierName name)
         : base(span)
     {
         IsMutableBinding = isMutableBinding;

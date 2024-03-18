@@ -18,7 +18,7 @@ internal sealed class GetterMethodDeclarationSyntax : ConcreteMethodDeclarationS
         CodeFile file,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
-        SimpleName name,
+        IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IReturnSyntax @return,
         IBodySyntax body)

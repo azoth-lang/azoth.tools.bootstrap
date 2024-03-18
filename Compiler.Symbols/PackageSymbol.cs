@@ -15,7 +15,7 @@ public class PackageSymbol : NamespaceOrPackageSymbol
     public override Symbol? ContainingSymbol => null;
     public override TypeSymbol? ContextTypeSymbol => null;
 
-    public PackageSymbol(SimpleName name)
+    public PackageSymbol(IdentifierName name)
         : base(null!, null, name) { }
 
     public override bool Equals(Symbol? other)

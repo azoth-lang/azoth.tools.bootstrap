@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
 
 public class DeclarationNumberAssigner : SyntaxWalker
 {
-    private readonly Dictionary<SimpleName, Promise<int?>> lastDeclaration = new();
+    private readonly Dictionary<IdentifierName, Promise<int?>> lastDeclaration = new();
     private DeclarationNumberAssigner() { }
 
     public static void AssignIn(IEnumerable<IEntityDeclarationSyntax> entities)
@@ -48,7 +48,7 @@ public class DeclarationNumberAssigner : SyntaxWalker
         WalkChildren(syntax);
     }
 
-    private void ProcessDeclaration(SimpleName name, Promise<int?> declarationNumber)
+    private void ProcessDeclaration(IdentifierName name, Promise<int?> declarationNumber)
     {
         if (lastDeclaration.TryGetValue(name, out var previousDeclarationNumber))
         {

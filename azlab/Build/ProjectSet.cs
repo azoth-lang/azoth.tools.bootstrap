@@ -180,7 +180,7 @@ internal class ProjectSet : IEnumerable<Project>
         var testSourcePaths = Directory.EnumerateFiles(sourceDir, "*.azt", SearchOption.AllDirectories);
         // Wait for the references, unfortunately, this requires an ugly loop.
         var referenceTasks = project.References.ToDictionary(r => r.Name, r => projectBuilds[r.Project]);
-        var references = new Dictionary<SimpleName, Package>();
+        var references = new Dictionary<IdentifierName, Package>();
         foreach (var referenceTask in referenceTasks)
         {
             var package = await referenceTask.Value.ConfigureAwait(false);

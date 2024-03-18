@@ -57,7 +57,7 @@ public abstract partial class TypeName : IEquatable<TypeName>
 
     public abstract override string ToString();
 
-    public static implicit operator TypeName(string text) => new SimpleName(text);
+    public static implicit operator TypeName(string text) => new IdentifierName(text);
 
     protected string QuotedText { get; }
 

@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
     typeof(NumericType))]
 public abstract class SimpleType : DeclaredValueType
 {
-    public override SimpleName? ContainingPackage => null;
+    public override IdentifierName? ContainingPackage => null;
     public override NamespaceName ContainingNamespace => NamespaceName.Global;
 
     public override SpecialTypeName Name { get; }

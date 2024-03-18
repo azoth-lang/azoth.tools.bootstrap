@@ -27,13 +27,13 @@ public static class OtherSemanticError
             6003, $"Variable binding can't shadow. Shadowed binding used at {useSpan}");
     }
 
-    public static Diagnostic MayAlreadyBeAssigned(CodeFile file, TextSpan span, SimpleName name)
+    public static Diagnostic MayAlreadyBeAssigned(CodeFile file, TextSpan span, IdentifierName name)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6004, $"Variable or field `{name}` declared with `let` may already be assigned");
     }
 
-    public static Diagnostic VariableMayNotHaveBeenAssigned(CodeFile file, TextSpan span, SimpleName name)
+    public static Diagnostic VariableMayNotHaveBeenAssigned(CodeFile file, TextSpan span, IdentifierName name)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6005, $"Variable `{name}` may not have been assigned before use");
@@ -63,13 +63,13 @@ public static class OtherSemanticError
             6010, "Statement after result statement is unreachable");
     }
 
-    public static Diagnostic AbstractMethodNotInAbstractClass(CodeFile file, TextSpan span, SimpleName name)
+    public static Diagnostic AbstractMethodNotInAbstractClass(CodeFile file, TextSpan span, IdentifierName name)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             6011, $"Abstract method `{name}` declared in a concrete class");
     }
 
-    public static Diagnostic CannotAssignImmutableField(CodeFile file, TextSpan span, SimpleName name)
+    public static Diagnostic CannotAssignImmutableField(CodeFile file, TextSpan span, IdentifierName name)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             6012, $"Field `{name}` declared with `let` cannot be assigned");

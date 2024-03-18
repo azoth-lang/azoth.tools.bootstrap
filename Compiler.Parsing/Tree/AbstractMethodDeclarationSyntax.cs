@@ -19,7 +19,7 @@ internal sealed class AbstractMethodDeclarationSyntax : MethodDeclarationSyntax,
         CodeFile file,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
-        SimpleName name,
+        IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IFixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return)

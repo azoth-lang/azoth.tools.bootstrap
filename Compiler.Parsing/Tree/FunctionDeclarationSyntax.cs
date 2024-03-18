@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal sealed class FunctionDeclarationSyntax : InvocableNonMemberEntityDeclarationSyntax, IFunctionDeclarationSyntax
 {
     public IFixedList<IAttributeSyntax> Attributes { get; }
-    public new SimpleName Name { get; }
+    public new IdentifierName Name { get; }
     TypeName INonMemberEntityDeclarationSyntax.Name => Name;
     public new IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public override IFixedList<IParameterSyntax> AllParameters => Parameters;
@@ -27,7 +27,7 @@ internal sealed class FunctionDeclarationSyntax : InvocableNonMemberEntityDeclar
         IFixedList<IAttributeSyntax> attributes,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
-        SimpleName name,
+        IdentifierName name,
         IFixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
         IBodySyntax body)

@@ -19,7 +19,7 @@ public abstract class ReferenceType : CapabilityType
     /// </summary>
     public static ReferenceType<ObjectType> CreateClass(
         Capability capability,
-        SimpleName containingPackage,
+        IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConst,
@@ -33,7 +33,7 @@ public abstract class ReferenceType : CapabilityType
     /// </summary>
     public static ReferenceType<ObjectType> Create(
         Capability capability,
-        SimpleName containingPackage,
+        IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isConst,
         string name)

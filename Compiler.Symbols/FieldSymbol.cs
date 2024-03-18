@@ -11,7 +11,7 @@ public sealed class FieldSymbol : NamedBindingSymbol, IFieldSymbol
 
     public FieldSymbol(
         UserTypeSymbol containingSymbol,
-        SimpleName name,
+        IdentifierName name,
         bool isMutableBinding,
         DataType dataType)
         : base(containingSymbol, isMutableBinding, false, name, dataType)

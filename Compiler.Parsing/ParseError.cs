@@ -109,7 +109,7 @@ internal static class ParseError
             2015, "An abstract method must be declared `abstract`.");
     }
 
-    public static Diagnostic AssociatedFunctionMissingBody(CodeFile file, TextSpan span, SimpleName name)
+    public static Diagnostic AssociatedFunctionMissingBody(CodeFile file, TextSpan span, IdentifierName name)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2016, $"Associated function `{name}` is missing a method body.");
@@ -151,7 +151,7 @@ internal static class ParseError
             2022, "Explicit `read` capability should not be used here. Omit capability for implicit read.");
     }
 
-    public static Diagnostic StructMethodMissingBody(CodeFile file, TextSpan span, SimpleName name)
+    public static Diagnostic StructMethodMissingBody(CodeFile file, TextSpan span, IdentifierName name)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
             2023, $"Method `{name}` is missing a method body.");

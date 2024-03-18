@@ -19,7 +19,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     private static readonly Promise<FixedSet<BareReferenceType>> AnyTypePromise = new(AnyType);
 
     public static ObjectType CreateClass(
-        SimpleName containingPackage,
+        IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConst,
@@ -28,7 +28,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
             FixedList.Empty<GenericParameterType>(), AnyTypePromise);
 
     public static ObjectType CreateTrait(
-        SimpleName containingPackage,
+        IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isConst,
         string name)
@@ -36,7 +36,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
             FixedList.Empty<GenericParameterType>(), AnyTypePromise);
 
     public static ObjectType CreateClass(
-        SimpleName containingPackage,
+        IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConst,
@@ -47,7 +47,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
             StandardTypeName.Create(name, genericParameterTypes.Count), genericParameterTypes, superTypes);
 
     public static ObjectType CreateClass(
-        SimpleName containingPackage,
+        IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConst,
@@ -61,7 +61,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     }
 
     public static ObjectType CreateTrait(
-        SimpleName containingPackage,
+        IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isConst,
         StandardTypeName name,
@@ -75,7 +75,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     }
 
     public static ObjectType CreateClass(
-        SimpleName containingPackage,
+        IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConst,
@@ -90,7 +90,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     }
 
     public static ObjectType CreateTrait(
-        SimpleName containingPackage,
+        IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isConst,
         string name,
@@ -104,7 +104,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     }
 
     private ObjectType(
-        SimpleName containingPackage,
+        IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConstType,
@@ -124,7 +124,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         declaringTypePromise?.Fulfill(this);
     }
 
-    public override SimpleName ContainingPackage { get; }
+    public override IdentifierName ContainingPackage { get; }
 
     public override NamespaceName ContainingNamespace { get; }
 

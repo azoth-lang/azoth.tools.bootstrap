@@ -14,10 +14,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 [Closed(typeof(FunctionSymbol), typeof(InitializerSymbol))]
 public abstract class FunctionOrInitializerSymbol : InvocableSymbol
 {
-    public override SimpleName Name { get; }
+    public override IdentifierName Name { get; }
 
     protected FunctionOrInitializerSymbol(
-        SimpleName name,
+        IdentifierName name,
         IFixedList<Parameter> parameters,
         Return @return)
         : base(parameters, @return)

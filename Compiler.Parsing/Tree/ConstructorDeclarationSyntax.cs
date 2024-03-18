@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal sealed class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConstructorDeclarationSyntax
 {
     public IClassDeclarationSyntax DeclaringType { get; }
-    public new SimpleName? Name { get; }
+    public new IdentifierName? Name { get; }
     ITypeDeclarationSyntax IMemberDeclarationSyntax.DeclaringType => DeclaringType;
     public IConstructorSelfParameterSyntax SelfParameter { get; }
     public new IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
@@ -27,7 +27,7 @@ internal sealed class ConstructorDeclarationSyntax : InvocableDeclarationSyntax,
         CodeFile file,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
-        SimpleName? name,
+        IdentifierName? name,
         IConstructorSelfParameterSyntax selfParameter,
         IFixedList<IConstructorOrInitializerParameterSyntax> parameters,
         IBlockBodySyntax body)

@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 [Closed(typeof(ObjectType), typeof(StructType))]
 public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
 {
-    SimpleName ContainingPackage { get; }
+    IdentifierName ContainingPackage { get; }
     NamespaceName ContainingNamespace { get; }
     bool IsDeclaredConst { get; }
     bool IsClass { get; }

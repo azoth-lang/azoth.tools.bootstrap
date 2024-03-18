@@ -12,12 +12,12 @@ public sealed class MethodSymbol : InvocableSymbol
     public override TypeSymbol ContainingSymbol { get; }
     public override TypeSymbol ContextTypeSymbol => ContainingSymbol;
     public MethodKind Kind { get; }
-    public override SimpleName Name { get; }
+    public override IdentifierName Name { get; }
     public SelfParameter SelfParameterType { get; }
 
     public MethodSymbol(
         TypeSymbol containingSymbol,
-        SimpleName name,
+        IdentifierName name,
         SelfParameter selfParameterType,
         IFixedList<Parameter> parameters,
         Return @return)
@@ -27,7 +27,7 @@ public sealed class MethodSymbol : InvocableSymbol
     public MethodSymbol(
         TypeSymbol containingSymbol,
         MethodKind kind,
-        SimpleName name,
+        IdentifierName name,
         SelfParameter selfParameterType,
         IFixedList<Parameter> parameters,
         Return @return)

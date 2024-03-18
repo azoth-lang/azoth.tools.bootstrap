@@ -6,24 +6,27 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Names;
 
+/// <summary>
+/// A possibly qualified name of a namespace.
+/// </summary>
 public sealed class NamespaceName : IEquatable<NamespaceName>
 {
-    public static readonly NamespaceName Global = new(FixedList.Empty<SimpleName>());
+    public static readonly NamespaceName Global = new(FixedList.Empty<IdentifierName>());
 
-    public IFixedList<SimpleName> Segments { [DebuggerStepThrough] get; }
+    public IFixedList<IdentifierName> Segments { [DebuggerStepThrough] get; }
 
-    public NamespaceName(IFixedList<SimpleName> segments)
+    public NamespaceName(IFixedList<IdentifierName> segments)
     {
         Segments = segments;
     }
 
-    public NamespaceName(IEnumerable<SimpleName> segments)
+    public NamespaceName(IEnumerable<IdentifierName> segments)
         : this(segments.ToFixedList()) { }
 
     public NamespaceName(params string[] segments)
-        : this(segments.Select(s => new SimpleName(s)).ToFixedList()) { }
+        : this(segments.Select(s => new IdentifierName(s)).ToFixedList()) { }
 
-    public NamespaceName(SimpleName segment)
+    public NamespaceName(IdentifierName segment)
     {
         Segments = segment.Yield().ToFixedList();
     }
@@ -64,7 +67,7 @@ public sealed class NamespaceName : IEquatable<NamespaceName>
         => !Equals(left, right);
     #endregion
 
-    public static implicit operator NamespaceName(SimpleName name) => new(name);
+    public static implicit operator NamespaceName(IdentifierName name) => new(name);
 
     public static implicit operator NamespaceName(string text) => new(text);
 

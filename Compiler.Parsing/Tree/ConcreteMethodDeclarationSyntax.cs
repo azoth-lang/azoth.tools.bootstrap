@@ -16,7 +16,7 @@ internal abstract class ConcreteMethodDeclarationSyntax : MethodDeclarationSynta
         CodeFile file,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
-        SimpleName name,
+        IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IFixedList<INamedParameterSyntax> parameters,
         IBodySyntax body)

@@ -57,7 +57,7 @@ public partial class ConformanceTests
             SaveLivenessAnalysis = true,
             SaveReachabilityGraphs = true,
         };
-        var references = new Dictionary<SimpleName, Package>();
+        var references = new Dictionary<IdentifierName, Package>();
 
         // Reference Standard Library
         var supportPackage = CompileSupportPackage(compiler);
@@ -117,7 +117,7 @@ public partial class ConformanceTests
             var rootNamespace = FixedList.Empty<string>();
             var codeFiles = sourcePaths.Select(p => LoadCode(p, sourceDir, rootNamespace)).ToList();
             var package = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles,
-                Enumerable.Empty<CodeFile>(), FixedDictionary<SimpleName, Package>.Empty);
+                Enumerable.Empty<CodeFile>(), FixedDictionary<IdentifierName, Package>.Empty);
             if (package.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
                 ReportSupportCompilationErrors(package.Diagnostics);
             return package;

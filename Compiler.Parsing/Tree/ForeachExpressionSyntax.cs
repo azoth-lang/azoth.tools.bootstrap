@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class ForeachExpressionSyntax : ExpressionSyntax, IForeachExpressionSyntax
 {
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
-    public SimpleName VariableName { [DebuggerStepThrough] get; }
+    public IdentifierName VariableName { [DebuggerStepThrough] get; }
     public Promise<int?> DeclarationNumber { [DebuggerStepThrough] get; } = new Promise<int?>();
     public Promise<NamedVariableSymbol> Symbol { [DebuggerStepThrough] get; } = new Promise<NamedVariableSymbol>();
     IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
@@ -27,7 +27,7 @@ internal class ForeachExpressionSyntax : ExpressionSyntax, IForeachExpressionSyn
     public ForeachExpressionSyntax(
         TextSpan span,
         bool isMutableBinding,
-        SimpleName variableName,
+        IdentifierName variableName,
         ITypeSyntax? typeSyntax,
         IExpressionSyntax inExpression,
         IBlockExpressionSyntax block)

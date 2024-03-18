@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 [Closed(typeof(INamedVariableSymbol), typeof(IFieldSymbol))]
 public interface INamedBindingSymbol : IBindingSymbol
 {
-    public new SimpleName Name { get; }
+    public new IdentifierName Name { get; }
 
     public new DataType Type { get; }
 }

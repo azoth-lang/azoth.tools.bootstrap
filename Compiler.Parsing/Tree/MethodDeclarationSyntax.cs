@@ -13,7 +13,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
 {
     public ITypeDeclarationSyntax DeclaringType { get; }
     public abstract MethodKind Kind { get; }
-    public new SimpleName Name { get; }
+    public new IdentifierName Name { get; }
     public IMethodSelfParameterSyntax SelfParameter { get; }
     public new IFixedList<INamedParameterSyntax> Parameters { get; }
     public override IFixedList<IParameterSyntax> AllParameters { get; }
@@ -26,7 +26,7 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
         CodeFile file,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
-        SimpleName name,
+        IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IFixedList<INamedParameterSyntax> parameters)
         : base(span, file, accessModifier, nameSpan, name,

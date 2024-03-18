@@ -11,6 +11,6 @@ public interface IBindingSymbol
     public Symbol ContainingSymbol { get; }
     public bool IsMutableBinding { get; }
     public bool IsLentBinding { get; }
-    public SimpleName? Name { get; }
+    public IdentifierName? Name { get; }
     public Pseudotype Type { get; }
 }

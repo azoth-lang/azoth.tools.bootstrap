@@ -127,7 +127,7 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var fn = Tokens.Consume<IFunctionKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
-        SimpleName name = identifier.Value;
+        IdentifierName name = identifier.Value;
         var bodyParser = BodyParser();
         var parameters = bodyParser.ParseParameters(bodyParser.ParseFunctionParameter);
         var @return = ParseReturn();
@@ -415,7 +415,7 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var fn = Tokens.Consume<IFunctionKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
-        SimpleName name = identifier.Value;
+        IdentifierName name = identifier.Value;
         var bodyParser = BodyParser();
         var parameters = bodyParser.ParseParameters(bodyParser.ParseMethodParameter);
         var @return = ParseReturn();
@@ -480,7 +480,7 @@ public partial class Parser
         // We should only be called when there is a binding keyword
         var binding = Tokens.Consume<IBindingToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
-        SimpleName name = identifier.Value;
+        IdentifierName name = identifier.Value;
         Tokens.Expect<IColonToken>();
         var type = ParseType();
         IExpressionSyntax? initializer = null;
@@ -502,7 +502,7 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var fn = Tokens.Consume<IFunctionKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
-        SimpleName name = identifier.Value;
+        IdentifierName name = identifier.Value;
         var bodyParser = BodyParser();
         var parameters = bodyParser.ParseParameters(bodyParser.ParseMethodParameter);
         var @return = ParseReturn();
@@ -569,7 +569,7 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var get = Tokens.Consume<IGetKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
-        SimpleName name = identifier.Value;
+        IdentifierName name = identifier.Value;
         var bodyParser = BodyParser();
         // Self parameter is expected to be after the current token which is expected to be `(`
         var expectedSelfParameterLocation = Tokens.Current.Span.AtEnd();
@@ -615,7 +615,7 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var set = Tokens.Consume<ISetKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
-        SimpleName name = identifier.Value;
+        IdentifierName name = identifier.Value;
         var bodyParser = BodyParser();
         // Self parameter is expected to be after the current token which is expected to be `(`
         var expectedSelfParameterLocation = Tokens.Current.Span.AtEnd();
@@ -656,7 +656,7 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var newKeywordSpan = Tokens.Consume<INewKeywordToken>();
         var identifier = Tokens.AcceptToken<IIdentifierToken>();
-        var name = identifier is null ? null : (SimpleName)identifier.Value;
+        var name = identifier is null ? null : (IdentifierName)identifier.Value;
         var bodyParser = BodyParser();
         // Self parameter is expected to be after the current token which is expected to be `(`
         var expectedSelfParameterLocation = Tokens.Current.Span.AtEnd();
@@ -696,7 +696,7 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var initKeywordSpan = Tokens.Consume<IInitKeywordToken>();
         var identifier = Tokens.AcceptToken<IIdentifierToken>();
-        var name = identifier is null ? null : (SimpleName)identifier.Value;
+        var name = identifier is null ? null : (IdentifierName)identifier.Value;
         var bodyParser = BodyParser();
         // Self parameter is expected to be after the current token which is expected to be `(`
         var expectedSelfParameterLocation = Tokens.Current.Span.AtEnd();
@@ -736,7 +736,7 @@ public partial class Parser
         modifiers.ParseEndOfModifiers();
         var fn = Tokens.Consume<IFunctionKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
-        SimpleName name = identifier.Value;
+        IdentifierName name = identifier.Value;
         var bodyParser = BodyParser();
         var parameters = bodyParser.ParseParameters(bodyParser.ParseMethodParameter);
         var @return = ParseReturn();

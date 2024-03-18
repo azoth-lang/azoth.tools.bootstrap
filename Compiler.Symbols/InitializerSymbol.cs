@@ -15,13 +15,13 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
 {
     public override UserTypeSymbol ContextTypeSymbol { get; }
     public override Symbol ContainingSymbol { get; }
-    public SimpleName? InitializerName { get; }
+    public IdentifierName? InitializerName { get; }
     public ValueType SelfParameterType { get; }
     public ValueType ReturnType { get; }
 
     public InitializerSymbol(
         UserTypeSymbol containingTypeSymbol,
-        SimpleName? initializerName,
+        IdentifierName? initializerName,
         ValueType selfParameterType,
         IFixedList<Parameter> parameterTypes)
         : base(initializerName ?? containingTypeSymbol.Name.Text, parameterTypes,

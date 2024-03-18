@@ -9,12 +9,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class FieldParameterSyntax : ParameterSyntax, IFieldParameterSyntax
 {
-    public new SimpleName Name { get; }
+    public new IdentifierName Name { get; }
     public Promise<FieldSymbol?> ReferencedSymbol { get; } = new Promise<FieldSymbol?>();
     public override IPromise<DataType> DataType { get; }
     public IExpressionSyntax? DefaultValue { get; }
 
-    public FieldParameterSyntax(TextSpan span, SimpleName name, IExpressionSyntax? defaultValue)
+    public FieldParameterSyntax(TextSpan span, IdentifierName name, IExpressionSyntax? defaultValue)
         : base(span, name)
     {
         Name = name;

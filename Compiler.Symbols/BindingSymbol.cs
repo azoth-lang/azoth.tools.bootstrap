@@ -14,14 +14,14 @@ public abstract class BindingSymbol : Symbol, IBindingSymbol
     public override Symbol ContainingSymbol { get; }
     public bool IsMutableBinding { get; }
     public bool IsLentBinding { get; }
-    public override SimpleName? Name { get; }
+    public override IdentifierName? Name { get; }
     public abstract Pseudotype Type { get; }
 
     protected BindingSymbol(
         Symbol containingSymbol,
         bool isMutableBinding,
         bool isLentBinding,
-        SimpleName? name)
+        IdentifierName? name)
     {
         Package = containingSymbol.Package ?? throw new ArgumentNullException(nameof(containingSymbol));
         ContainingSymbol = containingSymbol;

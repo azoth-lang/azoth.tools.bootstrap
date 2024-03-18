@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class AssociatedFunctionDeclarationSyntax : InvocableDeclarationSyntax, IAssociatedFunctionDeclarationSyntax
 {
     public ITypeDeclarationSyntax DeclaringType { get; }
-    public new SimpleName Name { get; }
+    public new IdentifierName Name { get; }
     public new IFixedList<INamedParameterSyntax> Parameters { get; }
     public override IFixedList<IParameterSyntax> AllParameters => Parameters;
     public IReturnSyntax? Return { get; }
@@ -24,7 +24,7 @@ internal class AssociatedFunctionDeclarationSyntax : InvocableDeclarationSyntax,
         CodeFile file,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
-        SimpleName name,
+        IdentifierName name,
         IFixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
         IBodySyntax body)

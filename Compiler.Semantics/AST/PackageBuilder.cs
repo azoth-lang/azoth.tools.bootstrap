@@ -16,7 +16,7 @@ internal class PackageBuilder
     public FixedSymbolTree SymbolTree { get; }
     public FixedSymbolTree TestingSymbolTree { get; }
     public Diagnostics Diagnostics { get; }
-    public FixedDictionary<SimpleName, Package> References { get; }
+    public FixedDictionary<IdentifierName, Package> References { get; }
     public IFunctionDeclaration? EntryPoint { get; set; }
 
     public PackageBuilder(
@@ -25,7 +25,7 @@ internal class PackageBuilder
         FixedSymbolTree symbolTree,
         FixedSymbolTree testingSymbolTree,
         Diagnostics diagnostics,
-        FixedDictionary<SimpleName, Package> references)
+        FixedDictionary<IdentifierName, Package> references)
     {
         Declarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();
         TestingDeclarations = GetAllDeclarations(nonMemberTestingDeclarations).ToFixedSet();

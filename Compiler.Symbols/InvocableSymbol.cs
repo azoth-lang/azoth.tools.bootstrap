@@ -14,7 +14,7 @@ public abstract class InvocableSymbol : Symbol
 {
     public override PackageSymbol? Package => ContainingSymbol.Package;
     public abstract override Symbol ContainingSymbol { get; }
-    public abstract override SimpleName? Name { get; }
+    public abstract override IdentifierName? Name { get; }
     public IFixedList<Parameter> Parameters { get; }
     public int Arity => Parameters.Count;
     public Return Return { get; }

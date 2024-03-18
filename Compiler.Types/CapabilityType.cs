@@ -48,7 +48,7 @@ public abstract class CapabilityType : NonEmptyType
 
     public virtual DeclaredType DeclaredType => BareType.DeclaredType;
 
-    public SimpleName? ContainingPackage => DeclaredType.ContainingPackage;
+    public IdentifierName? ContainingPackage => DeclaredType.ContainingPackage;
 
     public NamespaceName ContainingNamespace => DeclaredType.ContainingNamespace;
 

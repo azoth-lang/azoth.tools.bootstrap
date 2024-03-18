@@ -10,9 +10,9 @@ public abstract class NamespaceOrPackageSymbol : Symbol
 {
     public override PackageSymbol Package { get; }
     public NamespaceName NamespaceName { get; }
-    public override SimpleName Name { get; }
+    public override IdentifierName Name { get; }
 
-    protected NamespaceOrPackageSymbol(PackageSymbol package, NamespaceOrPackageSymbol? containingSymbol, SimpleName name)
+    protected NamespaceOrPackageSymbol(PackageSymbol package, NamespaceOrPackageSymbol? containingSymbol, IdentifierName name)
     {
         Package = package;
         NamespaceName = containingSymbol is null

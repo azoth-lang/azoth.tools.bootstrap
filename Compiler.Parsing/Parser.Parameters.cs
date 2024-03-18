@@ -62,7 +62,7 @@ public partial class Parser
                 IExpressionSyntax? defaultValue = null;
                 if (equals is not null) defaultValue = ParseExpression();
                 var span = TextSpan.Covering(dot, identifier.Span, defaultValue?.Span);
-                SimpleName name = identifier.Value;
+                IdentifierName name = identifier.Value;
                 return new FieldParameterSyntax(span, name, defaultValue);
             }
             default:
@@ -89,7 +89,7 @@ public partial class Parser
                 IExpressionSyntax? defaultValue = null;
                 if (equals is not null) defaultValue = ParseExpression();
                 var span = TextSpan.Covering(dot, identifier.Span, defaultValue?.Span);
-                SimpleName name = identifier.Value;
+                IdentifierName name = identifier.Value;
                 return new FieldParameterSyntax(span, name, defaultValue);
             }
             default:

@@ -48,10 +48,10 @@ ClassOrStructDeclaration: TypeDeclaration;
 ClassDeclaration: ClassOrStructDeclaration = AbstractModifier:'IAbstractKeywordToken'? IsAbstract:'bool' GenericParameters:GenericParameter* BaseTypeName:SupertypeName? SupertypeNames:SupertypeName* DefaultConstructorSymbol:'ConstructorSymbol'? Members:ClassMemberDeclaration*;
 StructDeclaration: ClassOrStructDeclaration = GenericParameters:GenericParameter* SupertypeNames:SupertypeName* DefaultInitializerSymbol:'InitializerSymbol'? Members:StructMemberDeclaration*;
 TraitDeclaration: TypeDeclaration = GenericParameters:GenericParameter* SupertypeNames:SupertypeName* Members:TraitMemberDeclaration*;
-FunctionDeclaration: NonMemberEntityDeclaration, ConcreteInvocableDeclaration = Attributes:Attribute* Name:'SimpleName' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
+FunctionDeclaration: NonMemberEntityDeclaration, ConcreteInvocableDeclaration = Attributes:Attribute* Name:'IdentifierName' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
 // ---------- Non-Member Entity Declaration Parts
-GenericParameter = Constraint:CapabilityConstraint Name:'SimpleName' Independence:'ParameterIndependence' Variance:'ParameterVariance' Symbol:'Promise<GenericParameterTypeSymbol>';
+GenericParameter = Constraint:CapabilityConstraint Name:'IdentifierName' Independence:'ParameterIndependence' Variance:'ParameterVariance' Symbol:'Promise<GenericParameterTypeSymbol>';
 SupertypeName: 'ISyntax', 'IHasContainingLexicalScope' = Name:'TypeName' TypeArguments:Type* ReferencedSymbol:'Promise<UserTypeSymbol?>';
 
 // ---------- Member Declarations
@@ -60,32 +60,32 @@ MemberDeclaration: EntityDeclaration = DeclaringType:'ITypeDeclarationSyntax';
 ClassMemberDeclaration: MemberDeclaration;
 TraitMemberDeclaration: MemberDeclaration;
 StructMemberDeclaration: MemberDeclaration;
-MethodDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration = Kind:'MethodKind' Name:'SimpleName' SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Symbol:'AcyclicPromise<MethodSymbol>';
+MethodDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration = Kind:'MethodKind' Name:'IdentifierName' SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Symbol:'AcyclicPromise<MethodSymbol>';
 AbstractMethodDeclaration: MethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return?;
 ConcreteMethodDeclaration: MethodDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
 StandardMethodDeclaration: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
 GetterMethodDeclaration: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return Body;
 SetterMethodDeclaration: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
-ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclarationSyntax' Name:'SimpleName'? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:'AcyclicPromise<ConstructorSymbol>';
-InitializerDeclaration: StructMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IStructDeclarationSyntax' Name:'SimpleName'? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:'AcyclicPromise<InitializerSymbol>';
-FieldDeclaration: ClassMemberDeclaration, StructMemberDeclaration, Binding = DeclaringType:'IClassOrStructDeclarationSyntax' Name:'SimpleName' Type Symbol:'AcyclicPromise<FieldSymbol>' Initializer:Expression?;
-AssociatedFunctionDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration = Name:'SimpleName' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
+ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclarationSyntax' Name:'IdentifierName'? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:'AcyclicPromise<ConstructorSymbol>';
+InitializerDeclaration: StructMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IStructDeclarationSyntax' Name:'IdentifierName'? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:'AcyclicPromise<InitializerSymbol>';
+FieldDeclaration: ClassMemberDeclaration, StructMemberDeclaration, Binding = DeclaringType:'IClassOrStructDeclarationSyntax' Name:'IdentifierName' Type Symbol:'AcyclicPromise<FieldSymbol>' Initializer:Expression?;
+AssociatedFunctionDeclaration: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration = Name:'IdentifierName' Parameters:NamedParameter* Return? Body Symbol:'AcyclicPromise<FunctionSymbol>';
 
 // ---------- Attributes
 Attribute = TypeName;
 
 // ---------- Parameters and Return
-Parameter = Name:'SimpleName'? DataType:'IPromise<Pseudotype>' Unused:'bool';
+Parameter = Name:'IdentifierName'? DataType:'IPromise<Pseudotype>' Unused:'bool';
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter: Parameter;
-NamedParameter: Parameter, ConstructorOrInitializerParameter, LocalBinding = IsMutableBinding:'bool' IsLentBinding:'bool' Name:'SimpleName' DeclarationNumber:'Promise<int?>' Type DataType:'IPromise<DataType>' Symbol:'Promise<NamedVariableSymbol>' DefaultValue:Expression?;
+NamedParameter: Parameter, ConstructorOrInitializerParameter, LocalBinding = IsMutableBinding:'bool' IsLentBinding:'bool' Name:'IdentifierName' DeclarationNumber:'Promise<int?>' Type DataType:'IPromise<DataType>' Symbol:'Promise<NamedVariableSymbol>' DefaultValue:Expression?;
 SelfParameter: Parameter = IsLentBinding:'bool' Symbol:'Promise<SelfParameterSymbol>';
 ConstructorSelfParameter: SelfParameter = IsLentBinding:'bool' Capability DataType:'IPromise<DataType>' Symbol:'Promise<SelfParameterSymbol>';
 InitializerSelfParameter: SelfParameter = IsLentBinding:'bool' Capability DataType:'IPromise<DataType>' Symbol:'Promise<SelfParameterSymbol>';
 MethodSelfParameter: SelfParameter = IsLentBinding:'bool' Capability:CapabilityConstraint Symbol:'Promise<SelfParameterSymbol>';
 CapabilityConstraint = Constraint:'ICapabilityConstraint';
 CapabilitySet: CapabilityConstraint = Constraint:'CapabilitySet';
-FieldParameter: Parameter, ConstructorOrInitializerParameter = Name:'SimpleName' ReferencedSymbol:'Promise<FieldSymbol?>' DefaultValue:Expression?;
+FieldParameter: Parameter, ConstructorOrInitializerParameter = Name:'IdentifierName' ReferencedSymbol:'Promise<FieldSymbol?>' DefaultValue:Expression?;
 Return = Type; // Return type of a function or method
 
 // ---------- Function Parts
@@ -114,21 +114,21 @@ SelfViewpointType: ViewpointType = ReferencedSymbol:'Promise<SelfParameterSymbol
 Statement;
 ResultStatement: Statement, BlockOrResult = Expression;
 BodyStatement: Statement;
-VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Name:'SimpleName' DeclarationNumber:'Promise<int?>' Capability? Type? Symbol:'Promise<NamedVariableSymbol>' Initializer:Expression?;
+VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Name:'IdentifierName' DeclarationNumber:'Promise<int?>' Capability? Type? Symbol:'Promise<NamedVariableSymbol>' Initializer:Expression?;
 ExpressionStatement: BodyStatement = Expression;
 
 // ---------- Patterns
 Pattern;
 BindingContextPattern: Pattern = IsMutableBinding:'bool' Pattern Type?;
 OptionalOrBindingPattern: Pattern;
-BindingPattern: OptionalOrBindingPattern, LocalBinding = Name:'SimpleName' DeclarationNumber:'Promise<int?>' Symbol:'Promise<NamedVariableSymbol>';
+BindingPattern: OptionalOrBindingPattern, LocalBinding = Name:'IdentifierName' DeclarationNumber:'Promise<int?>' Symbol:'Promise<NamedVariableSymbol>';
 OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
 Expression = ImplicitConversion:'Conversion' ConvertedDataType:'DataType'?;
 AssignableExpression: Expression = ReferencedSymbol:'Promise<Symbol?>';
 BlockExpression: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
-NewObjectExpression: Expression = Type:TypeName ConstructorName:'SimpleName'? ConstructorNameSpan:'TextSpan'? Arguments:Expression* ReferencedSymbol:'Promise<ConstructorSymbol?>';
+NewObjectExpression: Expression = Type:TypeName ConstructorName:'IdentifierName'? ConstructorNameSpan:'TextSpan'? Arguments:Expression* ReferencedSymbol:'Promise<ConstructorSymbol?>';
 UnsafeExpression: Expression = Expression;
 
 // ---------- Literal Expressions
@@ -150,7 +150,7 @@ PatternMatchExpression: Expression = Referent:Expression Pattern;
 IfExpression: Expression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
 LoopExpression: Expression = Block:BlockExpression;
 WhileExpression: Expression = Condition:Expression Block:BlockExpression;
-ForeachExpression: Expression, LocalBinding = VariableName:'SimpleName' DeclarationNumber:'Promise<int?>' InExpression:Expression IterateMethod:'Promise<MethodSymbol?>' NextMethod:'Promise<MethodSymbol>' Type? Symbol:'Promise<NamedVariableSymbol>' Block:BlockExpression;
+ForeachExpression: Expression, LocalBinding = VariableName:'IdentifierName' DeclarationNumber:'Promise<int?>' InExpression:Expression IterateMethod:'Promise<MethodSymbol?>' NextMethod:'Promise<MethodSymbol>' Type? Symbol:'Promise<NamedVariableSymbol>' Block:BlockExpression;
 BreakExpression: Expression = Value:Expression?;
 NextExpression: Expression;
 ReturnExpression: Expression = Value:Expression?;
@@ -161,7 +161,7 @@ InvocationExpression: Expression, 'IHasContainingLexicalScope' = Expression Argu
 // ---------- Variable Expressions
 NameExpression: AssignableExpression = ReferencedSymbol:'Promise<Symbol?>';
 VariableNameExpression: Expression = ReferencedSymbol:'IPromise<Symbol?>';
-SimpleNameExpression: NameExpression, VariableNameExpression, 'IHasContainingLexicalScope' = Name:'SimpleName'? ReferencedSymbol:'Promise<Symbol?>';
+SimpleNameExpression: NameExpression, VariableNameExpression, 'IHasContainingLexicalScope' = Name:'IdentifierName'? ReferencedSymbol:'Promise<Symbol?>';
 SelfExpression: VariableNameExpression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfParameterSymbol?>';
 MemberAccessExpression: NameExpression = Context:Expression AccessOperator:'AccessOperator' Member:SimpleNameExpression;
 

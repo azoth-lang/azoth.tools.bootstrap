@@ -38,15 +38,15 @@ public class PackageSyntax<TReference>
     /// All the entity declarations including both regular code and testing code.
     /// </summary>
     public FixedSet<IEntityDeclarationSyntax> AllEntityDeclarations { get; }
-    public FixedDictionary<SimpleName, TReference> References { get; }
+    public FixedDictionary<IdentifierName, TReference> References { get; }
     public IEnumerable<TReference> ReferencedPackages => References.Values;
     public Diagnostics Diagnostics { get; }
 
     public PackageSyntax(
-        SimpleName name,
+        IdentifierName name,
         FixedSet<ICompilationUnitSyntax> compilationUnits,
         FixedSet<ICompilationUnitSyntax> testingCompilationUnits,
-        FixedDictionary<SimpleName, TReference> references)
+        FixedDictionary<IdentifierName, TReference> references)
     {
         Symbol = new PackageSymbol(name);
         var symbolTree = new SymbolTreeBuilder(Symbol);

@@ -6,12 +6,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 /// Name for a type that is not a special name.
 /// </summary>
 [Closed(
-    typeof(SimpleName),
+    typeof(IdentifierName),
     typeof(GenericTypeName))]
 public abstract class StandardTypeName : TypeName
 {
     public static StandardTypeName Create(string text, int genericParameterCount)
-        => genericParameterCount == 0 ? new SimpleName(text) : new GenericTypeName(text, genericParameterCount);
+        => genericParameterCount == 0 ? new IdentifierName(text) : new GenericTypeName(text, genericParameterCount);
 
     protected StandardTypeName(string text, int genericParameterCount)
         : base(text, genericParameterCount) { }
@@ -20,5 +20,5 @@ public abstract class StandardTypeName : TypeName
 
     public override string ToBareString() => QuotedText;
 
-    public static implicit operator StandardTypeName(string text) => new SimpleName(text);
+    public static implicit operator StandardTypeName(string text) => new IdentifierName(text);
 }

@@ -19,7 +19,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 public sealed class StructType : DeclaredValueType, IDeclaredUserType
 {
     public static StructType Create(
-        SimpleName containingPackage,
+        IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isConst,
         StandardTypeName name,
@@ -33,7 +33,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     }
 
     private StructType(
-        SimpleName containingPackage,
+        IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isConstType,
         StandardTypeName name,
@@ -51,7 +51,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         declaringTypePromise?.Fulfill(this);
     }
 
-    public override SimpleName ContainingPackage { get; }
+    public override IdentifierName ContainingPackage { get; }
 
     public override NamespaceName ContainingNamespace { get; }
 

@@ -32,7 +32,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public static readonly AnyType Any = AnyType.Instance;
     #endregion
 
-    public abstract SimpleName? ContainingPackage { get; }
+    public abstract IdentifierName? ContainingPackage { get; }
     public abstract NamespaceName ContainingNamespace { get; }
 
     /// <summary>

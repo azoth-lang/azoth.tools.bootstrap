@@ -12,12 +12,12 @@ public sealed class FunctionSymbol : FunctionOrInitializerSymbol
 {
     public override Symbol ContainingSymbol { get; }
     public override TypeSymbol? ContextTypeSymbol => null;
-    public override SimpleName Name { get; }
+    public override IdentifierName Name { get; }
     public FunctionType Type { get; }
 
     public FunctionSymbol(
         Symbol containingSymbol,
-        SimpleName name,
+        IdentifierName name,
         FunctionType type)
         : base(name, type.Parameters, type.Return)
     {

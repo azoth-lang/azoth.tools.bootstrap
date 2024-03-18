@@ -1208,7 +1208,7 @@ public class BasicBodyAnalyzer
 
                 // Check for assigning into fields (self is handled by binding mutability analysis)
                 if (exp.Context is not ISelfExpressionSyntax
-                    && member.ReferencedSymbol.Result is BindingSymbol { IsMutableBinding: false, Name: SimpleName name })
+                    && member.ReferencedSymbol.Result is BindingSymbol { IsMutableBinding: false, Name: IdentifierName name })
                     diagnostics.Add(OtherSemanticError.CannotAssignImmutableField(file, exp.Span, name));
 
                 type = type.AccessedVia(contextResult.Type);

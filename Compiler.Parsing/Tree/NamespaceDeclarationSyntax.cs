@@ -16,7 +16,7 @@ internal class NamespaceDeclarationSyntax : NonMemberDeclarationSyntax, INamespa
     /// </summary>
     public bool IsGlobalQualified { get; }
     public NamespaceName DeclaredNames { get; }
-    public new SimpleName Name { get; }
+    public new IdentifierName Name { get; }
     public NamespaceName FullName { get; }
     public new Promise<NamespaceOrPackageSymbol> Symbol { get; }
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }

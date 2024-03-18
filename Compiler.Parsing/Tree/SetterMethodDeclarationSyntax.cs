@@ -19,7 +19,7 @@ internal sealed class SetterMethodDeclarationSyntax : ConcreteMethodDeclarationS
         CodeFile file,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
-        SimpleName name,
+        IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         INamedParameterSyntax? parameter,
         IBodySyntax body)

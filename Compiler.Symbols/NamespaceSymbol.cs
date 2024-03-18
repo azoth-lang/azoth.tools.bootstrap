@@ -13,7 +13,7 @@ public sealed class NamespaceSymbol : NamespaceOrPackageSymbol
     public override NamespaceOrPackageSymbol ContainingSymbol { get; }
     public override TypeSymbol? ContextTypeSymbol => null;
 
-    public NamespaceSymbol(NamespaceOrPackageSymbol containingSymbol, SimpleName name)
+    public NamespaceSymbol(NamespaceOrPackageSymbol containingSymbol, IdentifierName name)
         : base(containingSymbol.Package, containingSymbol, name)
     {
         ContainingSymbol = containingSymbol;
