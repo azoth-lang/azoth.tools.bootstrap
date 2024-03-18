@@ -654,6 +654,7 @@ public partial interface ITypedExpressionSyntax : IExpressionSyntax
     typeof(IWhileExpressionSyntax),
     typeof(IForeachExpressionSyntax),
     typeof(IInvocationExpressionSyntax),
+    typeof(ISelfExpressionSyntax),
     typeof(IMoveExpressionSyntax),
     typeof(IFreezeExpressionSyntax),
     typeof(IAsyncBlockExpressionSyntax),
@@ -886,7 +887,7 @@ public partial interface IGenericNameExpressionSyntax : IInvocableNameExpression
     new Promise<DataType?> DataType { get; }
 }
 
-public partial interface ISelfExpressionSyntax : IVariableNameExpressionSyntax
+public partial interface ISelfExpressionSyntax : IVariableNameExpressionSyntax, IDataTypedExpressionSyntax
 {
     bool IsImplicit { get; }
     new Promise<SelfParameterSymbol?> ReferencedSymbol { get; }

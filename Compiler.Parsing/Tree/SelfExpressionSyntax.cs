@@ -14,6 +14,7 @@ internal sealed class SelfExpressionSyntax : NameExpressionSyntax, ISelfExpressi
     public override Promise<SelfParameterSymbol?> ReferencedSymbol { get; } = new Promise<SelfParameterSymbol?>();
     IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
     public override Promise<DataType> DataType { get; } = new();
+    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
     public Promise<Pseudotype> Pseudotype { get; } = new();
 
     public SelfExpressionSyntax(TextSpan span, bool isImplicit)

@@ -173,7 +173,7 @@ SimpleNameExpression: NameExpression = DataType:'Promise<DataType?>';
 IdentifierNameExpression: InvocableNameExpression, SimpleNameExpression, StandardNameExpression, VariableNameExpression, AssignableExpression = Name:'IdentifierName'? DataType:'Promise<DataType?>' ReferencedSymbol:'Promise<Symbol?>';
 SpecialTypeNameExpression: SimpleNameExpression = Name:'SpecialTypeName' DataType:'Promise<DataType?>' ReferencedSymbol:'Promise<TypeSymbol?>';
 GenericNameExpression: InvocableNameExpression, StandardNameExpression = Name:'GenericName' TypeArguments:Type* DataType:'Promise<DataType?>';
-SelfExpression: VariableNameExpression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfParameterSymbol?>' DataType:'Promise<DataType>' Pseudotype:'Promise<Pseudotype>';
+SelfExpression: VariableNameExpression, DataTypedExpression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfParameterSymbol?>' DataType:'Promise<DataType>' Pseudotype:'Promise<Pseudotype>';
 MemberAccessExpression: InvocableNameExpression, AssignableExpression = Context:Expression AccessOperator:'AccessOperator' Member:StandardNameExpression DataType:'Promise<DataType?>' ReferencedSymbol:'Promise<Symbol?>';
 
 // ---------- Capability Expressions
