@@ -12,7 +12,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class ParameterizedTypeSyntax : TypeSyntax, IParameterizedTypeSyntax
+internal class GenericTypeNameSyntax : TypeSyntax, IGenericTypeNameSyntax
 {
     private LexicalScope? containingLexicalScope;
     public LexicalScope ContainingLexicalScope
@@ -33,7 +33,7 @@ internal class ParameterizedTypeSyntax : TypeSyntax, IParameterizedTypeSyntax
     public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
     public IFixedList<ITypeSyntax> TypeArguments { get; }
 
-    public ParameterizedTypeSyntax(TextSpan span, string name, IFixedList<ITypeSyntax> typeArguments)
+    public GenericTypeNameSyntax(TextSpan span, string name, IFixedList<ITypeSyntax> typeArguments)
         : base(span)
     {
         TypeArguments = typeArguments;

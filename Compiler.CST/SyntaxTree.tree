@@ -96,8 +96,9 @@ ExpressionBody: Body = ResultStatement Statements:Statement*;
 // ---------- Types
 Type;
 TypeName: Type, 'IHasContainingLexicalScope' = Name:'TypeName' ReferencedSymbol:'Promise<TypeSymbol?>';
-SimpleTypeName: TypeName = ReferencedSymbol:'Promise<TypeSymbol?>';
-ParameterizedType: TypeName = TypeArguments:Type* ReferencedSymbol:'Promise<TypeSymbol?>';
+StandardTypeName: TypeName;
+SimpleTypeName: StandardTypeName;
+GenericTypeName: StandardTypeName = TypeArguments:Type*;
 // TODO QualifiedTypeName
 OptionalType: Type = Referent:Type;
 CapabilityType: Type = Capability Referent:Type;

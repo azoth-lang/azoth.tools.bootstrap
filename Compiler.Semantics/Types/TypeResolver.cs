@@ -60,7 +60,7 @@ public class TypeResolver
                 throw ExhaustiveMatch.Failed(typeSyntax);
             case ISimpleTypeNameSyntax syn:
                 return ResolveType(syn, isAttribute: false, FixedList.Empty<DataType>(), CreateType);
-            case IParameterizedTypeSyntax syn:
+            case IGenericTypeNameSyntax syn:
                 var typeArguments = Evaluate(syn.TypeArguments, mustBeConstructable);
                 return ResolveType(syn, isAttribute: false, typeArguments, CreateType);
             case ICapabilityTypeSyntax referenceCapability:
@@ -135,7 +135,7 @@ public class TypeResolver
             case ISimpleTypeNameSyntax syn:
                 _ = Evaluate(capability, syn, isAttribute, mustBeConstructable);
                 return syn.NamedType!;
-            case IParameterizedTypeSyntax syn:
+            case IGenericTypeNameSyntax syn:
                 _ = Evaluate(capability, syn, isAttribute, mustBeConstructable);
                 return syn.NamedType!;
             case ICapabilityTypeSyntax _:
@@ -155,7 +155,7 @@ public class TypeResolver
         return typeSyntax switch
         {
             ISimpleTypeNameSyntax syn => ResolveType(syn, isAttribute, FixedList.Empty<DataType>(), CreateType),
-            IParameterizedTypeSyntax syn
+            IGenericTypeNameSyntax syn
                 => ResolveType(syn, isAttribute, Evaluate(syn.TypeArguments, mustBeConstructable), CreateType),
             _ => throw ExhaustiveMatch.Failed(typeSyntax)
         };
@@ -242,7 +242,7 @@ public class TypeResolver
         return typeSyntax switch
         {
             ISimpleTypeNameSyntax syn => ResolveType(syn, isAttribute, FixedList.Empty<DataType>(), CreateType),
-            IParameterizedTypeSyntax syn
+            IGenericTypeNameSyntax syn
                 => ResolveType(syn, isAttribute, Evaluate(syn.TypeArguments, mustBeConstructable: true), CreateType),
             _ => throw ExhaustiveMatch.Failed(typeSyntax)
         };

@@ -451,19 +451,25 @@ public partial interface ITypeSyntax : ISyntax
 }
 
 [Closed(
-    typeof(ISimpleTypeNameSyntax),
-    typeof(IParameterizedTypeSyntax))]
+    typeof(IStandardTypeNameSyntax))]
 public partial interface ITypeNameSyntax : ITypeSyntax, IHasContainingLexicalScope
 {
     TypeName Name { get; }
     Promise<TypeSymbol?> ReferencedSymbol { get; }
 }
 
-public partial interface ISimpleTypeNameSyntax : ITypeNameSyntax
+[Closed(
+    typeof(ISimpleTypeNameSyntax),
+    typeof(IGenericTypeNameSyntax))]
+public partial interface IStandardTypeNameSyntax : ITypeNameSyntax
 {
 }
 
-public partial interface IParameterizedTypeSyntax : ITypeNameSyntax
+public partial interface ISimpleTypeNameSyntax : IStandardTypeNameSyntax
+{
+}
+
+public partial interface IGenericTypeNameSyntax : IStandardTypeNameSyntax
 {
     IFixedList<ITypeSyntax> TypeArguments { get; }
 }

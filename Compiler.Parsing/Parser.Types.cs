@@ -130,7 +130,7 @@ public partial class Parser
         var name = identifier.Value;
         var optionalGenerics = AcceptGenericTypeArguments();
         if (optionalGenerics is { } generics)
-            return new ParameterizedTypeSyntax(TextSpan.Covering(identifier.Span, generics.Span),
+            return new GenericTypeNameSyntax(TextSpan.Covering(identifier.Span, generics.Span),
                 name, generics.Arguments);
 
         return new SimpleTypeNameSyntax(identifier.Span, name);
