@@ -63,6 +63,8 @@ public class TypeResolver
             case IGenericTypeNameSyntax syn:
                 var typeArguments = Evaluate(syn.TypeArguments, mustBeConstructable);
                 return ResolveType(syn, isAttribute: false, typeArguments, CreateType);
+            case IQualifiedTypeNameSyntax syn:
+                throw new NotImplementedException("IQualifiedTypeNameSyntax");
             case ICapabilityTypeSyntax referenceCapability:
             {
                 var capability = referenceCapability.Capability.Declared.ToCapability();
@@ -138,6 +140,8 @@ public class TypeResolver
             case IGenericTypeNameSyntax syn:
                 _ = Evaluate(capability, syn, isAttribute, mustBeConstructable);
                 return syn.NamedType!;
+            case IQualifiedTypeNameSyntax syn:
+                throw new NotImplementedException("IQualifiedTypeNameSyntax");
             case ICapabilityTypeSyntax _:
             case IOptionalTypeSyntax _:
             case IFunctionTypeSyntax _:
@@ -157,6 +161,7 @@ public class TypeResolver
             ISimpleTypeNameSyntax syn => ResolveType(syn, isAttribute, FixedList.Empty<DataType>(), CreateType),
             IGenericTypeNameSyntax syn
                 => ResolveType(syn, isAttribute, Evaluate(syn.TypeArguments, mustBeConstructable), CreateType),
+            IQualifiedTypeNameSyntax syn => throw new NotImplementedException("IQualifiedTypeNameSyntax"),
             _ => throw ExhaustiveMatch.Failed(typeSyntax)
         };
 
@@ -244,6 +249,7 @@ public class TypeResolver
             ISimpleTypeNameSyntax syn => ResolveType(syn, isAttribute, FixedList.Empty<DataType>(), CreateType),
             IGenericTypeNameSyntax syn
                 => ResolveType(syn, isAttribute, Evaluate(syn.TypeArguments, mustBeConstructable: true), CreateType),
+            IQualifiedTypeNameSyntax syn => throw new NotImplementedException("IQualifiedTypeNameSyntax"),
             _ => throw ExhaustiveMatch.Failed(typeSyntax)
         };
 

@@ -99,7 +99,7 @@ TypeName: Type, 'IHasContainingLexicalScope' = Name:'TypeName' ReferencedSymbol:
 StandardTypeName: TypeName;
 SimpleTypeName: StandardTypeName;
 GenericTypeName: StandardTypeName = TypeArguments:Type*;
-// TODO QualifiedTypeName
+QualifiedTypeName: TypeName = Context:TypeName QualifiedName:StandardTypeName;
 OptionalType: Type = Referent:Type;
 CapabilityType: Type = Capability Referent:Type;
 Capability: CapabilityConstraint = Tokens:'ICapabilityToken'* Declared:'DeclaredCapability' Capability:'Capability';

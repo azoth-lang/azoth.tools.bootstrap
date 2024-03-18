@@ -166,6 +166,10 @@ public static class ISyntaxExtensions
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;
+            case IQualifiedTypeNameSyntax n:
+                yield return n.Context;
+                yield return n.QualifiedName;
+                yield break;
             case IOptionalTypeSyntax n:
                 yield return n.Referent;
                 yield break;
