@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 [Closed(
     typeof(VariableSymbol),
     typeof(FieldSymbol))]
-public abstract class NamedBindingSymbol : BindingSymbol
+public abstract class NamedBindingSymbol : BindingSymbol, INamedBindingSymbol
 {
     public override SimpleName Name { get; }
 

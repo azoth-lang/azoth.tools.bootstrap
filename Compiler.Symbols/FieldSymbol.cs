@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-public sealed class FieldSymbol : NamedBindingSymbol
+public sealed class FieldSymbol : NamedBindingSymbol, IFieldSymbol
 {
     public override UserTypeSymbol ContainingSymbol { get; }
     public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;

@@ -9,11 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal sealed class VariableNameExpression : Expression, IVariableNameExpression
 {
-    public NamedBindingSymbol ReferencedSymbol { get; }
+    public VariableSymbol ReferencedSymbol { get; }
     public bool IsMove { get; }
     public Promise<bool> VariableIsLiveAfter { get; } = new Promise<bool>();
 
-    public VariableNameExpression(TextSpan span, DataType dataType, NamedBindingSymbol referencedSymbol, bool isMove)
+    public VariableNameExpression(TextSpan span, DataType dataType, VariableSymbol referencedSymbol, bool isMove)
         : base(span, dataType)
     {
         ReferencedSymbol = referencedSymbol;

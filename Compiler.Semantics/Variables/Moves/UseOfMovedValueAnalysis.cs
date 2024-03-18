@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
@@ -16,7 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Moves;
 /// its value moved. Variables not yet declared or assigned vacuously haven't
 /// been moved from.
 /// </summary>
-public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags>
+public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags<IVariableSymbol>>
 {
     private readonly IExecutableDeclaration declaration;
     private readonly ISymbolTree symbolTree;
@@ -34,13 +35,13 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags>
         this.diagnostics = diagnostics;
     }
 
-    public BindingFlags StartState()
+    public BindingFlags<IVariableSymbol> StartState()
         // All variables start without possibly having their values moved out of them
         => BindingFlags.ForVariables(declaration, symbolTree, false);
 
-    public BindingFlags Assignment(
+    public BindingFlags<IVariableSymbol> Assignment(
         IAssignmentExpression assignmentExpression,
-        BindingFlags possiblyMoved)
+        BindingFlags<IVariableSymbol> possiblyMoved)
     {
         switch (assignmentExpression.LeftOperand)
         {
@@ -55,9 +56,9 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags>
         }
     }
 
-    public BindingFlags IdentifierName(
+    public BindingFlags<IVariableSymbol> IdentifierName(
         IVariableNameExpression nameExpression,
-        BindingFlags possiblyMoved)
+        BindingFlags<IVariableSymbol> possiblyMoved)
     {
         var symbol = nameExpression.ReferencedSymbol;
         if (possiblyMoved[symbol] == true)
@@ -74,21 +75,21 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags>
         return possiblyMoved;
     }
 
-    public BindingFlags VariableDeclaration(
+    public BindingFlags<IVariableSymbol> VariableDeclaration(
         IVariableDeclarationStatement variableDeclaration,
-        BindingFlags possiblyMoved)
+        BindingFlags<IVariableSymbol> possiblyMoved)
         // No affect on state since it should already be false
         => possiblyMoved;
 
-    public BindingFlags VariableDeclaration(
+    public BindingFlags<IVariableSymbol> VariableDeclaration(
         IForeachExpression foreachExpression,
-        BindingFlags possiblyMoved)
+        BindingFlags<IVariableSymbol> possiblyMoved)
         // No affect on state since it should already be false
         => possiblyMoved;
 
-    public BindingFlags VariableDeclaration(
+    public BindingFlags<IVariableSymbol> VariableDeclaration(
         IBindingPattern bindingPattern,
-        BindingFlags possiblyMoved)
+        BindingFlags<IVariableSymbol> possiblyMoved)
         // No affect on state since it should already be false
         => possiblyMoved;
 }

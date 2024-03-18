@@ -135,7 +135,7 @@ MethodInvocationExpression: InvocationExpression = Context:Expression Referenced
 FunctionReferenceInvocationExpression: InvocationExpression = Referent:Expression Arguments:Expression*;
 
 // ---------- Variable Expressions
-VariableNameExpression: AssignableExpression, NameExpression = ReferencedSymbol:'NamedBindingSymbol' IsMove:'bool' VariableIsLiveAfter:'Promise<bool>';
+VariableNameExpression: AssignableExpression, NameExpression = ReferencedSymbol:'VariableSymbol' IsMove:'bool' VariableIsLiveAfter:'Promise<bool>';
 SelfExpression: Expression = ReferencedSymbol:'SelfParameterSymbol' IsImplicit:'bool';
 FieldAccessExpression: AssignableExpression = Context:Expression AccessOperator:'AccessOperator' ReferencedSymbol:'FieldSymbol';
 

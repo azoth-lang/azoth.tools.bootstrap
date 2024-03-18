@@ -6,9 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Shadowing;
 public abstract class BindingScope
 {
     public bool Lookup(SimpleName name, [NotNullWhen(true)] out VariableBinding? binding)
-    {
-        return LookupWithoutNumber(name, out binding);
-    }
+        => LookupWithoutNumber(name, out binding);
 
     protected abstract bool LookupWithoutNumber(SimpleName name, [NotNullWhen(true)] out VariableBinding? binding);
 

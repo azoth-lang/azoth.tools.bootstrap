@@ -596,7 +596,7 @@ public partial interface IFunctionReferenceInvocationExpression : IInvocationExp
 
 public partial interface IVariableNameExpression : IAssignableExpression, INameExpression
 {
-    NamedBindingSymbol ReferencedSymbol { get; }
+    VariableSymbol ReferencedSymbol { get; }
     bool IsMove { get; }
     Promise<bool> VariableIsLiveAfter { get; }
 }

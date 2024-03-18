@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-public sealed class SelfParameterSymbol : BindingSymbol
+public sealed class SelfParameterSymbol : BindingSymbol, ISelfParameterSymbol
 {
     public override InvocableSymbol ContainingSymbol { get; }
     public override TypeSymbol? ContextTypeSymbol => null;

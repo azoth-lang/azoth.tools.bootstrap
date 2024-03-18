@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 [Closed(
     typeof(NamedBindingSymbol),
     typeof(SelfParameterSymbol))]
-public abstract class BindingSymbol : Symbol
+public abstract class BindingSymbol : Symbol, IBindingSymbol
 {
     public override PackageSymbol Package { get; }
     public override Symbol ContainingSymbol { get; }

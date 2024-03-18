@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// <summary>
 /// A symbol for a variable or parameter. Both of which are bindings using `let` or `var`.
 /// </summary>
-public sealed class VariableSymbol : NamedBindingSymbol
+public sealed class VariableSymbol : NamedBindingSymbol, INamedVariableSymbol
 {
     public static VariableSymbol CreateLocal(
         InvocableSymbol containingSymbol,
