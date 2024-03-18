@@ -1531,7 +1531,7 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private static bool AllSymbols<TSymbol>(Symbol symbol) where TSymbol : Symbol => true;
+    private static bool AllSymbols(Symbol symbol) => true;
 
     private static bool NonInvocableSymbols(Symbol symbol) => symbol is not InvocableSymbol;
 
@@ -1726,7 +1726,7 @@ public class BasicBodyAnalyzer
 
     private static FixedSet<Symbol> LookupSymbols(IStandardNameExpressionSyntax exp, Func<Symbol, bool>? symbolFilter = null)
     {
-        symbolFilter ??= AllSymbols<Symbol>;
+        symbolFilter ??= AllSymbols;
         return exp.LookupInContainingScope().Select(p => p.Result).Where(symbolFilter).ToFixedSet();
     }
 
@@ -1735,7 +1735,7 @@ public class BasicBodyAnalyzer
         Func<TSymbol, bool>? symbolFilter = null)
         where TSymbol : Symbol
     {
-        symbolFilter ??= AllSymbols<TSymbol>;
+        symbolFilter ??= AllSymbols;
         return exp.LookupInContainingScope().Select(p => p.Downcast().As<TSymbol>())
                              .WhereNotNull().Select(p => p.Result).Where(symbolFilter).ToFixedSet();
     }
@@ -2030,6 +2030,8 @@ public class BasicBodyAnalyzer
         return null;
     }
 
+    #region LookupSymbolForType
+    // TODO move these methods somewhere else, and possibly make them more efficient
     private TypeSymbol? LookupSymbolForType(Pseudotype pseudotype)
     {
         return pseudotype switch
@@ -2103,7 +2105,7 @@ public class BasicBodyAnalyzer
     {
         var contextSymbols = symbolTrees.Packages.SafeCast<Symbol>();
         foreach (var name in type.ContainingNamespace.Segments)
-            contextSymbols = contextSymbols.SelectMany(c => symbolTrees.Children(c))
+            contextSymbols = contextSymbols.SelectMany(symbolTrees.Children)
                                            .Where(s => s.Name == name);
 
         return contextSymbols.SelectMany(symbolTrees.Children).OfType<TypeSymbol>()
@@ -2116,4 +2118,5 @@ public class BasicBodyAnalyzer
         return symbolTrees.Children(declaringTypeSymbol).OfType<TypeSymbol>()
                    .Single(s => s.Name == genericParameterType.Name);
     }
+    #endregion
 }
