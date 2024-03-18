@@ -7,11 +7,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 /// </summary>
 [Closed(
     typeof(IdentifierName),
-    typeof(GenericTypeName))]
+    typeof(GenericName))]
 public abstract class StandardTypeName : TypeName
 {
     public static StandardTypeName Create(string text, int genericParameterCount)
-        => genericParameterCount == 0 ? new IdentifierName(text) : new GenericTypeName(text, genericParameterCount);
+        => genericParameterCount == 0 ? new IdentifierName(text) : new GenericName(text, genericParameterCount);
 
     protected StandardTypeName(string text, int genericParameterCount)
         : base(text, genericParameterCount) { }
