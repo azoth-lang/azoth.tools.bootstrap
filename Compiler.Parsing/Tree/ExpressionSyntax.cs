@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -11,27 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal abstract class ExpressionSyntax : Syntax, IExpressionSyntax
 {
-    /// <summary>
-    /// If an expression has been poisoned, then it is errored in some way
-    /// and we won't report errors against it in the future. We may also
-    /// skip it for some processing.
-    /// </summary>
-    public bool Poisoned { [DebuggerStepThrough] get; private set; }
-
-    private DataType? dataType;
-    [DisallowNull]
-    public DataType? DataType
-    {
-        [DebuggerStepThrough]
-        get => dataType;
-        set
-        {
-            if (dataType is not null)
-                throw new InvalidOperationException("Can't set type repeatedly");
-            dataType = value ?? throw new ArgumentNullException(nameof(DataType),
-                "Can't set type to null");
-        }
-    }
+    public abstract IPromise<DataType?> DataType { get; }
 
     private Conversion? cachedOnConversion = null;
     private DataType? cachedConvertedDataType = null;
@@ -50,8 +30,6 @@ internal abstract class ExpressionSyntax : Syntax, IExpressionSyntax
     {
     }
 
-    public void Poison() => Poisoned = true;
-
     protected abstract OperatorPrecedence ExpressionPrecedence { get; }
 
     public void AddConversion(ChainedConversion conversion)
@@ -66,11 +44,11 @@ internal abstract class ExpressionSyntax : Syntax, IExpressionSyntax
 
     private DataType? ApplyConversion()
     {
-        if (DataType is null) return DataType;
+        if (!DataType.IsFulfilled || DataType.Result is null) return null;
 
         if (cachedOnConversion != ImplicitConversion)
         {
-            cachedConvertedDataType = ImplicitConversion.Apply(DataType);
+            cachedConvertedDataType = ImplicitConversion.Apply(DataType.Assigned());
             cachedOnConversion = ImplicitConversion;
         }
 

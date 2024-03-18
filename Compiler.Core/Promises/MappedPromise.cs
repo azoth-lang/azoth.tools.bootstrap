@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 /// <summary>
 /// A promise derived from another promise by transforming the value.
 /// </summary>
-internal class MappedPromise<T, S> : IPromise<S>
+internal sealed class MappedPromise<T, S> : IPromise<S>
 {
     private readonly IPromise<T> promise;
     private readonly Func<T, S> selector;
@@ -20,5 +20,6 @@ internal class MappedPromise<T, S> : IPromise<S>
 
     public S Result => selector(promise.Result);
 
-    public override string ToString() => IsFulfilled ? Result?.ToString() ?? "⧼null⧽" : "⧼pending⧽";
+    public override string ToString()
+        => IsFulfilled ? Result?.ToString() ?? Promise.NullString : Promise.PendingString;
 }

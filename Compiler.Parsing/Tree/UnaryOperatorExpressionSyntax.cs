@@ -2,12 +2,11 @@ using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class UnaryOperatorExpressionSyntax : ExpressionSyntax, IUnaryOperatorExpressionSyntax
+internal class UnaryOperatorExpressionSyntax : DataTypedExpressionSyntax, IUnaryOperatorExpressionSyntax
 {
     public UnaryOperatorFixity Fixity { [DebuggerStepThrough] get; }
     public UnaryOperator Operator { [DebuggerStepThrough] get; }

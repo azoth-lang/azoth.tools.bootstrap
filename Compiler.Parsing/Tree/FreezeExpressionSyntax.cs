@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class FreezeExpressionSyntax : ExpressionSyntax, IFreezeExpressionSyntax
+internal class FreezeExpressionSyntax : DataTypedExpressionSyntax, IFreezeExpressionSyntax
 {
     public IVariableNameExpressionSyntax Referent { [DebuggerStepThrough] get; }
 

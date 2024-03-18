@@ -9,13 +9,14 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 /// <summary>
 /// A name of a variable or namespace
 /// </summary>
-internal class IdentifierNameExpressionSyntax : ExpressionSyntax, IIdentifierNameExpressionSyntax
+internal class IdentifierNameExpressionSyntax : NameExpressionSyntax, IIdentifierNameExpressionSyntax
 {
     private LexicalScope? containingLexicalScope;
     public LexicalScope ContainingLexicalScope
@@ -35,7 +36,10 @@ internal class IdentifierNameExpressionSyntax : ExpressionSyntax, IIdentifierNam
     // A null name means this syntax was generated as an assumed missing name and the name is unknown
     public IdentifierName? Name { get; }
     StandardName? IStandardNameExpressionSyntax.Name => Name;
-    public Promise<Symbol?> ReferencedSymbol { get; } = new Promise<Symbol?>();
+    public override Promise<DataType?> DataType { get; } = new();
+    Promise<DataType> IDataTypedExpressionSyntax.DataType => DataType!;
+    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType!;
+    public override Promise<Symbol?> ReferencedSymbol { get; } = new Promise<Symbol?>();
     IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
     IPromise<Symbol?> IAssignableExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
 
@@ -44,6 +48,8 @@ internal class IdentifierNameExpressionSyntax : ExpressionSyntax, IIdentifierNam
     {
         Name = name;
     }
+
+    public void FulfillDataType(DataType type) => DataType.Fulfill(type);
 
     public IEnumerable<IPromise<Symbol>> LookupInContainingScope()
     {

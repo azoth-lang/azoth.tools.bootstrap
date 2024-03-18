@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 /// values so that they can be forced to be acyclic.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public class AcyclicPromise<T> : IPromise<T>
+public sealed class AcyclicPromise<T> : IPromise<T>
 {
     private PromiseState state;
     public bool IsFulfilled => state == PromiseState.Fulfilled;
@@ -80,9 +80,9 @@ public class AcyclicPromise<T> : IPromise<T>
     {
         return state switch
         {
-            PromiseState.Pending => "⧼pending⧽",
-            PromiseState.InProgress => "⧼in progress⧽",
-            PromiseState.Fulfilled => value?.ToString() ?? "⧼null⧽",
+            PromiseState.Pending => Promise.PendingString,
+            PromiseState.InProgress => AcyclicPromise.InProgressString,
+            PromiseState.Fulfilled => value?.ToString() ?? Promise.NullString,
             _ => throw ExhaustiveMatch.Failed(state)
         };
     }
@@ -91,4 +91,5 @@ public class AcyclicPromise<T> : IPromise<T>
 public static class AcyclicPromise
 {
     public static AcyclicPromise<T> ForValue<T>(T value) => new(value);
+    public const string InProgressString = "⧼in progress⧽";
 }

@@ -10,7 +10,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class InvocationExpressionSyntax : ExpressionSyntax, IInvocationExpressionSyntax
+internal class InvocationExpressionSyntax : DataTypedExpressionSyntax, IInvocationExpressionSyntax
 {
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
     public IFixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }

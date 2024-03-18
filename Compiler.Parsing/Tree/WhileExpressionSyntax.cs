@@ -2,11 +2,10 @@ using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class WhileExpressionSyntax : ExpressionSyntax, IWhileExpressionSyntax
+internal class WhileExpressionSyntax : DataTypedExpressionSyntax, IWhileExpressionSyntax
 {
     public IExpressionSyntax Condition { [DebuggerStepThrough] get; }
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
@@ -23,8 +22,5 @@ internal class WhileExpressionSyntax : ExpressionSyntax, IWhileExpressionSyntax
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
 
-    public override string ToString()
-    {
-        return $"while {Condition} {Block}";
-    }
+    public override string ToString() => $"while {Condition} {Block}";
 }

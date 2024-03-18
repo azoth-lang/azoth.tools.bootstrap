@@ -4,15 +4,19 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class MemberAccessExpressionSyntax : ExpressionSyntax, IMemberAccessExpressionSyntax
+internal class MemberAccessExpressionSyntax : NameExpressionSyntax, IMemberAccessExpressionSyntax
 {
     public IExpressionSyntax Context { [DebuggerStepThrough] get; }
     public AccessOperator AccessOperator { [DebuggerStepThrough] get; }
     public IStandardNameExpressionSyntax Member { [DebuggerStepThrough] get; }
-    public Promise<Symbol?> ReferencedSymbol => Member.ReferencedSymbol;
+    public override Promise<DataType?> DataType { get; } = new();
+    Promise<DataType> IDataTypedExpressionSyntax.DataType => DataType!;
+    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType!;
+    public override Promise<Symbol?> ReferencedSymbol => Member.ReferencedSymbol;
     IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => Member.ReferencedSymbol;
     IPromise<Symbol?> IAssignableExpressionSyntax.ReferencedSymbol => Member.ReferencedSymbol;
 

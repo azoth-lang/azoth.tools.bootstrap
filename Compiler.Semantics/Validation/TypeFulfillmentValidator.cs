@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -24,20 +26,46 @@ public class TypeFulfillmentValidator : SyntaxWalker
             case IClassDeclarationSyntax _:
                 // Don't recur into body, we will see those as separate members
                 return;
-            case ITypeSyntax type:
-                WalkChildren(type);
-                type.NamedType.Assigned();
+            case ITypeSyntax syn:
+                WalkChildren(syn);
+                CheckAssigned(syn, syn.NamedType);
                 return;
-            case IForeachExpressionSyntax foreachExpression:
-                WalkChildren(foreachExpression);
-                foreachExpression.ConvertedDataType.Assigned();
+            case IForeachExpressionSyntax syn:
+                WalkChildren(syn);
+                CheckAssigned(syn, syn.ConvertedDataType);
                 return;
-            case IExpressionSyntax expression:
-                WalkChildren(expression);
-                expression.ConvertedDataType.Assigned();
+            case ISelfExpressionSyntax syn:
+                CheckAssigned(syn, syn.DataType);
+                syn.Pseudotype.Assigned();
+                return;
+            case INameExpressionSyntax exp:
+                WalkChildren(exp);
+                CheckFulfilled(exp, exp.DataType);
+                return;
+            case ITypedExpressionSyntax exp:
+                WalkChildren(exp);
+                CheckAssigned(exp, exp.ConvertedDataType);
                 return;
         }
 
         WalkChildren(syntax);
+    }
+
+    private static void CheckFulfilled(ISyntax syntax, IPromise<DataType?> type)
+    {
+        if (!type.IsFulfilled)
+            throw new Exception($"Syntax doesn't have a fulfilled type '{syntax}'");
+    }
+
+    private static void CheckAssigned(ISyntax syntax, DataType? type)
+    {
+        if (type is null)
+            throw new Exception($"Syntax has no type '{syntax}'");
+    }
+
+    private static void CheckAssigned(ISyntax syntax, IPromise<DataType?> type)
+    {
+        CheckFulfilled(syntax, type);
+        CheckAssigned(syntax, type.Result);
     }
 }

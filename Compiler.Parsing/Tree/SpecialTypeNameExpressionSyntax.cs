@@ -8,15 +8,17 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 /// <summary>
 /// A name of a variable or namespace
 /// </summary>
-internal class SpecialTypeNameExpressionSyntax : ExpressionSyntax, ISpecialTypeNameExpressionSyntax
+internal  sealed class SpecialTypeNameExpressionSyntax : NameExpressionSyntax, ISpecialTypeNameExpressionSyntax
 {
     private LexicalScope? containingLexicalScope;
+
     public LexicalScope ContainingLexicalScope
     {
         [DebuggerStepThrough]
@@ -33,7 +35,8 @@ internal class SpecialTypeNameExpressionSyntax : ExpressionSyntax, ISpecialTypeN
     }
     // A null name means this syntax was generated as an assumed missing name and the name is unknown
     public SpecialTypeName Name { get; }
-    public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
+    public override Promise<DataType?> DataType => Promise.Null<DataType>();
+    public override Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
     IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
 
     public SpecialTypeNameExpressionSyntax(TextSpan span, SpecialTypeName name)
@@ -49,6 +52,7 @@ internal class SpecialTypeNameExpressionSyntax : ExpressionSyntax, ISpecialTypeN
 
         return containingLexicalScope.Lookup(Name);
     }
+
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
     public override string ToString() => Name.ToString();

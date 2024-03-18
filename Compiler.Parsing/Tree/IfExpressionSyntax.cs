@@ -2,11 +2,10 @@ using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class IfExpressionSyntax : ExpressionSyntax, IIfExpressionSyntax
+internal class IfExpressionSyntax : DataTypedExpressionSyntax, IIfExpressionSyntax
 {
     public IExpressionSyntax Condition { [DebuggerStepThrough] get; }
     public IBlockOrResultSyntax ThenBlock { [DebuggerStepThrough] get; }

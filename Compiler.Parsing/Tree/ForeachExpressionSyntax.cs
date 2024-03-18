@@ -8,7 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class ForeachExpressionSyntax : ExpressionSyntax, IForeachExpressionSyntax
+internal class ForeachExpressionSyntax : DataTypedExpressionSyntax, IForeachExpressionSyntax
 {
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public IdentifierName VariableName { [DebuggerStepThrough] get; }

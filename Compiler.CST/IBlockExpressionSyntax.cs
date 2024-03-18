@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
@@ -8,5 +8,5 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 /// </summary>
 public partial interface IBlockExpressionSyntax
 {
-    [DisallowNull] new DataType? DataType { get; set; }
+    new Promise<DataType> DataType { get; }
 }

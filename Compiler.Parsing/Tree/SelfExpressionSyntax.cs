@@ -1,39 +1,28 @@
-using System;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class SelfExpressionSyntax : ExpressionSyntax, ISelfExpressionSyntax
+internal sealed class SelfExpressionSyntax : NameExpressionSyntax, ISelfExpressionSyntax
 {
     public bool IsImplicit { get; }
-    public Promise<SelfParameterSymbol?> ReferencedSymbol { get; } = new Promise<SelfParameterSymbol?>();
+    public override Promise<SelfParameterSymbol?> ReferencedSymbol { get; } = new Promise<SelfParameterSymbol?>();
     IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
-
-    private Pseudotype? pseudotype;
-    [DisallowNull]
-    public Pseudotype? Pseudotype
-    {
-        [DebuggerStepThrough]
-        get => pseudotype;
-        set
-        {
-            if (pseudotype is not null) throw new InvalidOperationException("Can't set pseudotype repeatedly");
-            pseudotype = value ?? throw new ArgumentNullException(nameof(Pseudotype), "Can't set Pseudotype to null");
-        }
-    }
+    public override Promise<DataType> DataType { get; } = new();
+    public Promise<Pseudotype> Pseudotype { get; } = new();
 
     public SelfExpressionSyntax(TextSpan span, bool isImplicit)
         : base(span)
     {
         IsImplicit = isImplicit;
     }
+
+    public void FulfillDataType(DataType type) => DataType.Fulfill(type);
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 

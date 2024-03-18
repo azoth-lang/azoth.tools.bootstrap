@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class AsyncBlockExpressionSyntax : ExpressionSyntax, IAsyncBlockExpressionSyntax
+internal class AsyncBlockExpressionSyntax : DataTypedExpressionSyntax, IAsyncBlockExpressionSyntax
 {
     public IBlockExpressionSyntax Block { get; }
 

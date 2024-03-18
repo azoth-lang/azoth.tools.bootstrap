@@ -2,13 +2,11 @@ using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class ReturnExpressionSyntax : ExpressionSyntax, IReturnExpressionSyntax
+internal class ReturnExpressionSyntax : NeverTypedExpression, IReturnExpressionSyntax
 {
-    public new NeverType DataType => (NeverType)base.DataType!;
     public IExpressionSyntax? Value { [DebuggerStepThrough] get; }
 
     public ReturnExpressionSyntax(
@@ -17,7 +15,6 @@ internal class ReturnExpressionSyntax : ExpressionSyntax, IReturnExpressionSynta
         : base(span)
     {
         Value = value;
-        base.DataType = Types.DataType.Never;
     }
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;

@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class PatternMatchExpressionSyntax : ExpressionSyntax, IPatternMatchExpressionSyntax
+internal class PatternMatchExpressionSyntax : DataTypedExpressionSyntax, IPatternMatchExpressionSyntax
 {
     public IExpressionSyntax Referent { get; }
     public IPatternSyntax Pattern { get; }

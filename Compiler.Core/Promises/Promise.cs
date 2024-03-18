@@ -8,8 +8,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 /// A simple promise of a future value. The value can be set only once.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public class Promise<T> : IPromise<T>
+public sealed class Promise<T> : IPromise<T>
 {
+    internal static Promise<T> Default { get; } = new();
+
     public bool IsFulfilled { get; private set; }
     private T value = default!;
 
@@ -44,10 +46,18 @@ public class Promise<T> : IPromise<T>
     }
 
     // Useful for debugging
-    public override string ToString() => IsFulfilled ? value?.ToString() ?? "⧼null⧽" : "⧼pending⧽";
+    public override string ToString()
+        => IsFulfilled ? value?.ToString() ?? Promise.NullString : Promise.PendingString;
 }
 
 public static class Promise
 {
     public static Promise<T> ForValue<T>(T value) => new(value);
+
+    public static Promise<T?> Null<T>()
+        where T : class
+        => Promise<T?>.Default;
+
+    public const string PendingString = "⧼pending⧽";
+    public const string NullString = "⧼null⧽";
 }

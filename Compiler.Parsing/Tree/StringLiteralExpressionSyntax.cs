@@ -1,15 +1,17 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class StringLiteralExpressionSyntax : LiteralExpressionSyntax, IStringLiteralExpressionSyntax
+internal sealed class StringLiteralExpressionSyntax : LiteralExpressionSyntax, IStringLiteralExpressionSyntax
 {
     public string Value { [DebuggerStepThrough] get; }
+    public override Promise<DataType> DataType { get; } = new();
 
     public StringLiteralExpressionSyntax(TextSpan span, string value)
         : base(span)
@@ -19,8 +21,5 @@ internal class StringLiteralExpressionSyntax : LiteralExpressionSyntax, IStringL
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
-    public override string ToString()
-    {
-        return $"\"{Value.Escape()}\"";
-    }
+    public override string ToString() => $"\"{Value.Escape()}\"";
 }

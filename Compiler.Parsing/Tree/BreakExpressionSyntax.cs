@@ -2,11 +2,10 @@ using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class BreakExpressionSyntax : ExpressionSyntax, IBreakExpressionSyntax
+internal class BreakExpressionSyntax : NeverTypedExpression, IBreakExpressionSyntax
 {
     public IExpressionSyntax? Value { [DebuggerStepThrough] get; }
 

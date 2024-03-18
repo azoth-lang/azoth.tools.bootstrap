@@ -7,7 +7,6 @@ using Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
 using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -213,10 +212,8 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
             {
                 var conditionScopes = Walk(exp.Condition, containingScope);
                 Walk(exp.ThenBlock, conditionScopes.True);
-                if (exp.ElseClause is null && exp.ThenBlock.DataType == DataType.Never)
-                    return ConditionalLexicalScopes.Unconditional(conditionScopes.False);
-
-                Walk(exp.ElseClause, conditionScopes.False);
+                if (exp.ElseClause is not null)
+                    Walk(exp.ElseClause, conditionScopes.False);
                 break;
             }
             case IAsyncBlockExpressionSyntax exp:

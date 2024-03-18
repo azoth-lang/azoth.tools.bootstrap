@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class BinaryOperatorExpressionSyntax : ExpressionSyntax, IBinaryOperatorExpressionSyntax
+internal class BinaryOperatorExpressionSyntax : DataTypedExpressionSyntax, IBinaryOperatorExpressionSyntax
 {
     public IExpressionSyntax LeftOperand { [DebuggerStepThrough] get; }
     public BinaryOperator Operator { [DebuggerStepThrough] get; }

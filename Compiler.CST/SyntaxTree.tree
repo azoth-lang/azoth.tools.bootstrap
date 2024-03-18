@@ -14,6 +14,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Tokens;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
@@ -127,56 +128,59 @@ BindingPattern: OptionalOrBindingPattern, LocalBinding = Name:'IdentifierName' D
 OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
-Expression = ImplicitConversion:'Conversion' ConvertedDataType:'DataType'?;
-AssignableExpression: Expression = ReferencedSymbol:'IPromise<Symbol?>';
-BlockExpression: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
-NewObjectExpression: Expression = Type:TypeName ConstructorName:'IdentifierName'? ConstructorNameSpan:'TextSpan'? Arguments:Expression* ReferencedSymbol:'Promise<ConstructorSymbol?>';
-UnsafeExpression: Expression = Expression;
+Expression = DataType:'IPromise<DataType?>' ImplicitConversion:'Conversion' ConvertedDataType:'DataType'?;
+TypedExpression: Expression = DataType:'IPromise<DataType>';
+DataTypedExpression: TypedExpression = DataType:'Promise<DataType>';
+AssignableExpression: DataTypedExpression = ReferencedSymbol:'IPromise<Symbol?>';
+BlockExpression: DataTypedExpression, BlockOrResult, BodyOrBlock = Statements:Statement*;
+NewObjectExpression: DataTypedExpression = Type:TypeName ConstructorName:'IdentifierName'? ConstructorNameSpan:'TextSpan'? Arguments:Expression* ReferencedSymbol:'Promise<ConstructorSymbol?>';
+UnsafeExpression: DataTypedExpression = Expression;
 
 // ---------- Literal Expressions
-LiteralExpression: Expression;
-BoolLiteralExpression: LiteralExpression = Value:'bool';
-IntegerLiteralExpression: LiteralExpression = Value:'BigInteger';
-NoneLiteralExpression: LiteralExpression;
-StringLiteralExpression: LiteralExpression = Value:'string';
+LiteralExpression: TypedExpression;
+BoolLiteralExpression: LiteralExpression = Value:'bool' DataType:'Promise<BoolConstValueType>';
+IntegerLiteralExpression: LiteralExpression = Value:'BigInteger' DataType:'Promise<IntegerConstValueType>';
+NoneLiteralExpression: LiteralExpression = DataType:'Promise<OptionalType>';
+StringLiteralExpression: LiteralExpression = Value:'string' DataType:'Promise<DataType>';
 
 // ---------- Operator Expressions
-AssignmentExpression: Expression = LeftOperand:AssignableExpression Operator:'AssignmentOperator' RightOperand:Expression;
-BinaryOperatorExpression: Expression = LeftOperand:Expression Operator:'BinaryOperator' RightOperand:Expression;
-UnaryOperatorExpression: Expression = Fixity:'UnaryOperatorFixity' Operator:'UnaryOperator' Operand:Expression;
-IdExpression: Expression = Referent:Expression;
-ConversionExpression: Expression = Referent:Expression Operator:'ConversionOperator' ConvertToType:Type;
-PatternMatchExpression: Expression = Referent:Expression Pattern;
+AssignmentExpression: DataTypedExpression = LeftOperand:AssignableExpression Operator:'AssignmentOperator' RightOperand:Expression;
+BinaryOperatorExpression: DataTypedExpression = LeftOperand:Expression Operator:'BinaryOperator' RightOperand:Expression;
+UnaryOperatorExpression: DataTypedExpression = Fixity:'UnaryOperatorFixity' Operator:'UnaryOperator' Operand:Expression;
+IdExpression: DataTypedExpression = Referent:Expression;
+ConversionExpression: DataTypedExpression = Referent:Expression Operator:'ConversionOperator' ConvertToType:Type;
+PatternMatchExpression: DataTypedExpression = Referent:Expression Pattern;
 
 // ---------- Control Flow Expressions
-IfExpression: Expression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
-LoopExpression: Expression = Block:BlockExpression;
-WhileExpression: Expression = Condition:Expression Block:BlockExpression;
-ForeachExpression: Expression, LocalBinding = VariableName:'IdentifierName' DeclarationNumber:'Promise<int?>' InExpression:Expression IterateMethod:'Promise<MethodSymbol?>' NextMethod:'Promise<MethodSymbol>' Type? Symbol:'Promise<NamedVariableSymbol>' Block:BlockExpression;
-BreakExpression: Expression = Value:Expression?;
-NextExpression: Expression;
-ReturnExpression: Expression = Value:Expression?;
+IfExpression: DataTypedExpression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
+LoopExpression: DataTypedExpression = Block:BlockExpression;
+WhileExpression: DataTypedExpression = Condition:Expression Block:BlockExpression;
+ForeachExpression: DataTypedExpression, LocalBinding = VariableName:'IdentifierName' DeclarationNumber:'Promise<int?>' InExpression:Expression IterateMethod:'Promise<MethodSymbol?>' NextMethod:'Promise<MethodSymbol>' Type? Symbol:'Promise<NamedVariableSymbol>' Block:BlockExpression;
+NeverTypedExpression: TypedExpression = DataType:'Promise<NeverType>';
+BreakExpression: NeverTypedExpression = Value:Expression?;
+NextExpression: NeverTypedExpression;
+ReturnExpression: NeverTypedExpression = Value:Expression?;
 
 // ---------- Invocation Expressions
-InvocationExpression: Expression, 'IHasContainingLexicalScope' = Expression Arguments:Expression* ReferencedSymbol:'Promise<Symbol?>';
+InvocationExpression: DataTypedExpression, 'IHasContainingLexicalScope' = Expression Arguments:Expression* ReferencedSymbol:'Promise<Symbol?>';
 
 // ---------- Variable Expressions
 NameExpression: Expression = ReferencedSymbol:'IPromise<Symbol?>';
-InvocableNameExpression: NameExpression = ReferencedSymbol:'Promise<Symbol?>';
+InvocableNameExpression: NameExpression = ReferencedSymbol:'Promise<Symbol?>' DataType:'Promise<DataType?>';
 VariableNameExpression: NameExpression;
-StandardNameExpression: NameExpression, 'IHasContainingLexicalScope' = Name:'StandardName'? ReferencedSymbol:'Promise<Symbol?>';
-SimpleNameExpression: NameExpression;
-IdentifierNameExpression: InvocableNameExpression, SimpleNameExpression, StandardNameExpression, VariableNameExpression, AssignableExpression = Name:'IdentifierName'? ReferencedSymbol:'Promise<Symbol?>';
-SpecialTypeNameExpression: SimpleNameExpression = Name:'SpecialTypeName' ReferencedSymbol:'Promise<TypeSymbol?>';
-GenericNameExpression: InvocableNameExpression, StandardNameExpression = Name:'GenericName' TypeArguments:Type*;
-SelfExpression: VariableNameExpression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfParameterSymbol?>';
-MemberAccessExpression: InvocableNameExpression, AssignableExpression = Context:Expression AccessOperator:'AccessOperator' Member:StandardNameExpression ReferencedSymbol:'Promise<Symbol?>';
+StandardNameExpression: NameExpression, 'IHasContainingLexicalScope' = Name:'StandardName'? DataType:'Promise<DataType?>' ReferencedSymbol:'Promise<Symbol?>';
+SimpleNameExpression: NameExpression = DataType:'Promise<DataType?>';
+IdentifierNameExpression: InvocableNameExpression, SimpleNameExpression, StandardNameExpression, VariableNameExpression, AssignableExpression = Name:'IdentifierName'? DataType:'Promise<DataType?>' ReferencedSymbol:'Promise<Symbol?>';
+SpecialTypeNameExpression: SimpleNameExpression = Name:'SpecialTypeName' DataType:'Promise<DataType?>' ReferencedSymbol:'Promise<TypeSymbol?>';
+GenericNameExpression: InvocableNameExpression, StandardNameExpression = Name:'GenericName' TypeArguments:Type* DataType:'Promise<DataType?>';
+SelfExpression: VariableNameExpression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfParameterSymbol?>' DataType:'Promise<DataType>' Pseudotype:'Promise<Pseudotype>';
+MemberAccessExpression: InvocableNameExpression, AssignableExpression = Context:Expression AccessOperator:'AccessOperator' Member:StandardNameExpression DataType:'Promise<DataType?>' ReferencedSymbol:'Promise<Symbol?>';
 
 // ---------- Capability Expressions
-MoveExpression: Expression = Referent:VariableNameExpression ReferencedSymbol:'Promise<BindingSymbol?>';
-FreezeExpression: Expression = Referent:VariableNameExpression ReferencedSymbol:'Promise<BindingSymbol?>';
+MoveExpression: DataTypedExpression = Referent:VariableNameExpression ReferencedSymbol:'Promise<BindingSymbol?>';
+FreezeExpression: DataTypedExpression = Referent:VariableNameExpression ReferencedSymbol:'Promise<BindingSymbol?>';
 
 // ---------- Async Expressions
-AsyncBlockExpression: Expression = Block:BlockExpression;
-AsyncStartExpression: Expression = Scheduled:'bool' Expression;
-AwaitExpression: Expression = Expression;
+AsyncBlockExpression: DataTypedExpression = Block:BlockExpression;
+AsyncStartExpression: DataTypedExpression = Scheduled:'bool' Expression;
+AwaitExpression: DataTypedExpression = Expression;

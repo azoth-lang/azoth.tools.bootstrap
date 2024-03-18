@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal abstract class LiteralExpressionSyntax : ExpressionSyntax, ILiteralExpressionSyntax
+internal abstract class LiteralExpressionSyntax : TypedExpressionSyntax, ILiteralExpressionSyntax
 {
     protected LiteralExpressionSyntax(TextSpan span)
         : base(span)

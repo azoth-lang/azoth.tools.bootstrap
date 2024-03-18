@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class NextExpressionSyntax : ExpressionSyntax, INextExpressionSyntax
+internal class NextExpressionSyntax : NeverTypedExpression, INextExpressionSyntax
 {
     public NextExpressionSyntax(TextSpan span)
         : base(span)

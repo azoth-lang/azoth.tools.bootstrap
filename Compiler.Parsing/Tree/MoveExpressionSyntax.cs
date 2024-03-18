@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
@@ -8,8 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-[SuppressMessage("Performance", "CA1812:Class Never Instantiated")]
-internal class MoveExpressionSyntax : ExpressionSyntax, IMoveExpressionSyntax
+internal class MoveExpressionSyntax : DataTypedExpressionSyntax, IMoveExpressionSyntax
 {
     public IVariableNameExpressionSyntax Referent { [DebuggerStepThrough] get; }
 
