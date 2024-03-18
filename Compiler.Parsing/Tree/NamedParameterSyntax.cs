@@ -13,7 +13,7 @@ internal class NamedParameterSyntax : ParameterSyntax, INamedParameterSyntax
     public bool IsLentBinding { get; }
     public new SimpleName Name { get; }
     public Promise<int?> DeclarationNumber { get; } = new Promise<int?>();
-    public Promise<VariableSymbol> Symbol { get; } = new Promise<VariableSymbol>();
+    public Promise<NamedVariableSymbol> Symbol { get; } = new Promise<NamedVariableSymbol>();
     IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
     IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
     public ITypeSyntax Type { get; }

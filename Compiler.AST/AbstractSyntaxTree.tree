@@ -66,7 +66,7 @@ Parameter = Unused:'bool';
 ConstructorOrInitializerParameter: Parameter;
 /// A parameter that creates a binding, i.e. a named or self parameter
 BindingParameter: Parameter, Binding;
-NamedParameter: Parameter, ConstructorOrInitializerParameter, BindingParameter, LocalBinding = Symbol:'VariableSymbol' DefaultValue:Expression?;
+NamedParameter: Parameter, ConstructorOrInitializerParameter, BindingParameter, LocalBinding = Symbol:'NamedVariableSymbol' DefaultValue:Expression?;
 SelfParameter: Parameter, BindingParameter = Symbol:'SelfParameterSymbol';
 FieldParameter: Parameter, ConstructorOrInitializerParameter = ReferencedSymbol:'FieldSymbol' DefaultValue:Expression?;
 
@@ -77,12 +77,12 @@ Body: BodyOrBlock = Statements:BodyStatement*;
 Statement;
 ResultStatement: Statement, BlockOrResult = Expression;
 BodyStatement: Statement;
-VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Symbol:'VariableSymbol' Initializer:Expression? VariableIsLiveAfter:'Promise<bool>';
+VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Symbol:'NamedVariableSymbol' Initializer:Expression? VariableIsLiveAfter:'Promise<bool>';
 ExpressionStatement: BodyStatement = Expression;
 
 // ---------- Patterns
 Pattern;
-BindingPattern: Pattern, LocalBinding = Symbol:'VariableSymbol' VariableIsLiveAfter:'Promise<bool>';
+BindingPattern: Pattern, LocalBinding = Symbol:'NamedVariableSymbol' VariableIsLiveAfter:'Promise<bool>';
 BindingContextPattern: Pattern = Pattern Type:'DataType';
 OptionalPattern: Pattern = Pattern;
 
@@ -111,7 +111,7 @@ PatternMatchExpression: Expression = Referent:Expression Pattern;
 IfExpression: Expression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
 LoopExpression: Expression = Block:BlockExpression;
 WhileExpression: Expression = Condition:Expression Block:BlockExpression;
-ForeachExpression: Expression, LocalBinding = Symbol:'VariableSymbol' InExpression:Expression IterateMethod:'MethodSymbol?' NextMethod:'MethodSymbol' Block:BlockExpression VariableIsLiveAfterAssignment:'Promise<bool>';
+ForeachExpression: Expression, LocalBinding = Symbol:'NamedVariableSymbol' InExpression:Expression IterateMethod:'MethodSymbol?' NextMethod:'MethodSymbol' Block:BlockExpression VariableIsLiveAfterAssignment:'Promise<bool>';
 BreakExpression: Expression = Value:Expression?;
 NextExpression: Expression;
 ReturnExpression: Expression = Value:Expression?;
@@ -135,7 +135,7 @@ MethodInvocationExpression: InvocationExpression = Context:Expression Referenced
 FunctionReferenceInvocationExpression: InvocationExpression = Referent:Expression Arguments:Expression*;
 
 // ---------- Variable Expressions
-VariableNameExpression: AssignableExpression, NameExpression = ReferencedSymbol:'VariableSymbol' IsMove:'bool' VariableIsLiveAfter:'Promise<bool>';
+VariableNameExpression: AssignableExpression, NameExpression = ReferencedSymbol:'NamedVariableSymbol' IsMove:'bool' VariableIsLiveAfter:'Promise<bool>';
 SelfExpression: Expression = ReferencedSymbol:'SelfParameterSymbol' IsImplicit:'bool';
 FieldAccessExpression: AssignableExpression = Context:Expression AccessOperator:'AccessOperator' ReferencedSymbol:'FieldSymbol';
 

@@ -78,7 +78,7 @@ Attribute = TypeName;
 Parameter = Name:'SimpleName'? DataType:'IPromise<Pseudotype>' Unused:'bool';
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter: Parameter;
-NamedParameter: Parameter, ConstructorOrInitializerParameter, LocalBinding = IsMutableBinding:'bool' IsLentBinding:'bool' Name:'SimpleName' DeclarationNumber:'Promise<int?>' Type DataType:'IPromise<DataType>' Symbol:'Promise<VariableSymbol>' DefaultValue:Expression?;
+NamedParameter: Parameter, ConstructorOrInitializerParameter, LocalBinding = IsMutableBinding:'bool' IsLentBinding:'bool' Name:'SimpleName' DeclarationNumber:'Promise<int?>' Type DataType:'IPromise<DataType>' Symbol:'Promise<NamedVariableSymbol>' DefaultValue:Expression?;
 SelfParameter: Parameter = IsLentBinding:'bool' Symbol:'Promise<SelfParameterSymbol>';
 ConstructorSelfParameter: SelfParameter = IsLentBinding:'bool' Capability DataType:'IPromise<DataType>' Symbol:'Promise<SelfParameterSymbol>';
 InitializerSelfParameter: SelfParameter = IsLentBinding:'bool' Capability DataType:'IPromise<DataType>' Symbol:'Promise<SelfParameterSymbol>';
@@ -113,14 +113,14 @@ SelfViewpointType: ViewpointType = ReferencedSymbol:'Promise<SelfParameterSymbol
 Statement;
 ResultStatement: Statement, BlockOrResult = Expression;
 BodyStatement: Statement;
-VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Name:'SimpleName' DeclarationNumber:'Promise<int?>' Capability? Type? Symbol:'Promise<VariableSymbol>' Initializer:Expression?;
+VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Name:'SimpleName' DeclarationNumber:'Promise<int?>' Capability? Type? Symbol:'Promise<NamedVariableSymbol>' Initializer:Expression?;
 ExpressionStatement: BodyStatement = Expression;
 
 // ---------- Patterns
 Pattern;
 BindingContextPattern: Pattern = IsMutableBinding:'bool' Pattern Type?;
 OptionalOrBindingPattern: Pattern;
-BindingPattern: OptionalOrBindingPattern, LocalBinding = Name:'SimpleName' DeclarationNumber:'Promise<int?>' Symbol:'Promise<VariableSymbol>';
+BindingPattern: OptionalOrBindingPattern, LocalBinding = Name:'SimpleName' DeclarationNumber:'Promise<int?>' Symbol:'Promise<NamedVariableSymbol>';
 OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
@@ -149,7 +149,7 @@ PatternMatchExpression: Expression = Referent:Expression Pattern;
 IfExpression: Expression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
 LoopExpression: Expression = Block:BlockExpression;
 WhileExpression: Expression = Condition:Expression Block:BlockExpression;
-ForeachExpression: Expression, LocalBinding = VariableName:'SimpleName' DeclarationNumber:'Promise<int?>' InExpression:Expression IterateMethod:'Promise<MethodSymbol?>' NextMethod:'Promise<MethodSymbol>' Type? Symbol:'Promise<VariableSymbol>' Block:BlockExpression;
+ForeachExpression: Expression, LocalBinding = VariableName:'SimpleName' DeclarationNumber:'Promise<int?>' InExpression:Expression IterateMethod:'Promise<MethodSymbol?>' NextMethod:'Promise<MethodSymbol>' Type? Symbol:'Promise<NamedVariableSymbol>' Block:BlockExpression;
 BreakExpression: Expression = Value:Expression?;
 NextExpression: Expression;
 ReturnExpression: Expression = Value:Expression?;

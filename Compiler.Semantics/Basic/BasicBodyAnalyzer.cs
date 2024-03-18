@@ -246,7 +246,7 @@ public class BasicBodyAnalyzer
                 diagnostics.Add(TypeError.CannotImplicitlyConvert(file, initializerResult.Syntax, initializerResult.Type, variableType));
         }
 
-        var symbol = VariableSymbol.CreateLocal(containingSymbol, variableDeclaration.IsMutableBinding, variableDeclaration.Name, variableDeclaration.DeclarationNumber.Result, variableType);
+        var symbol = NamedVariableSymbol.CreateLocal(containingSymbol, variableDeclaration.IsMutableBinding, variableDeclaration.Name, variableDeclaration.DeclarationNumber.Result, variableType);
         variableDeclaration.Symbol.Fulfill(symbol);
         symbolTreeBuilder.Add(symbol);
         // Declare the symbol and combine it with the initializer result
@@ -611,7 +611,7 @@ public class BasicBodyAnalyzer
                 ResultVariable? resultVariable = null;
                 switch (symbol)
                 {
-                    case VariableSymbol variableSymbol:
+                    case NamedVariableSymbol variableSymbol:
                         resultVariable = flow.Alias(variableSymbol);
                         type = flow.AliasType(variableSymbol);
                         break;
@@ -735,7 +735,7 @@ public class BasicBodyAnalyzer
                 var declaredType = typeResolver.Evaluate(exp.Type);
                 // TODO deal with result variable here
                 var (expressionResult, variableType) = CheckForeachInType(declaredType, exp, flow);
-                var symbol = VariableSymbol.CreateLocal(containingSymbol, exp.IsMutableBinding, exp.VariableName, exp.DeclarationNumber.Result, variableType);
+                var symbol = NamedVariableSymbol.CreateLocal(containingSymbol, exp.IsMutableBinding, exp.VariableName, exp.DeclarationNumber.Result, variableType);
                 exp.Symbol.Fulfill(symbol);
                 symbolTreeBuilder.Add(symbol);
                 // Declare the variable symbol and combine it with the `in` expression
@@ -1017,7 +1017,7 @@ public class BasicBodyAnalyzer
             case IBindingPatternSyntax pat:
             {
                 if (isMutableBinding is null) throw new UnreachableCodeException("Binding pattern outside of binding context");
-                var symbol = VariableSymbol.CreateLocal(containingSymbol, isMutableBinding.Value, pat.Name,
+                var symbol = NamedVariableSymbol.CreateLocal(containingSymbol, isMutableBinding.Value, pat.Name,
                     pat.DeclarationNumber.Result, valueType);
                 pat.Symbol.Fulfill(symbol);
                 symbolTreeBuilder.Add(symbol);
@@ -1222,7 +1222,7 @@ public class BasicBodyAnalyzer
                     case null:
                         exp.DataType = DataType.Unknown;
                         return new(exp);
-                    case VariableSymbol variableSymbol:
+                    case NamedVariableSymbol variableSymbol:
                     {
                         exp.DataType = flow.Type(variableSymbol);
                         var resultVariable = flow.Alias(variableSymbol);
@@ -1292,7 +1292,7 @@ public class BasicBodyAnalyzer
             {
                 args = InferArgumentTypes(invocation.Arguments, flow);
 
-                var variableSymbols = LookupSymbols<VariableSymbol>(exp);
+                var variableSymbols = LookupSymbols<NamedVariableSymbol>(exp);
                 if (variableSymbols.Any(s => s.Type is FunctionType))
                 {
                     var variableSymbol = InferSymbol(exp, variableSymbols);
@@ -1412,7 +1412,7 @@ public class BasicBodyAnalyzer
 
         if (!toType.BareType.IsAssignableFrom(toType.AllowsWrite, fromType.BareType)) return null;
 
-        if (selfArgSyntax is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
+        if (selfArgSyntax is not INameExpressionSyntax { ReferencedSymbol.Result: NamedVariableSymbol { IsLocal: true } symbol }
             || !flow.IsIsolatedExceptFor(symbol, selfArgVariable))
             return null;
 
@@ -1452,7 +1452,7 @@ public class BasicBodyAnalyzer
 
         if (!toType.BareType.IsAssignableFrom(toType.AllowsWrite, fromType.BareType)) return null;
 
-        if (selfArgSyntax is not INameExpressionSyntax { ReferencedSymbol.Result: VariableSymbol { IsLocal: true } symbol }
+        if (selfArgSyntax is not INameExpressionSyntax { ReferencedSymbol.Result: NamedVariableSymbol { IsLocal: true } symbol }
             || !flow.CanFreezeExceptFor(symbol, selfArgVariable))
             return null;
 
@@ -1552,7 +1552,7 @@ public class BasicBodyAnalyzer
         }
 
         // First look for local variables
-        var variableSymbols = LookupSymbols<VariableSymbol>(nameExpression, symbolFilter);
+        var variableSymbols = LookupSymbols<NamedVariableSymbol>(nameExpression, symbolFilter);
 
         if (bindingOnly || variableSymbols.Count != 0)
             return InferSymbol(nameExpression, variableSymbols);

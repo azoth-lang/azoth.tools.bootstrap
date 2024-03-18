@@ -3,7 +3,7 @@ using Xunit;
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Symbols;
 
 [Trait("Category", "Symbols")]
-public class VariableSymbolTests : SymbolTestFixture
+public class NamedVariableSymbolTests : SymbolTestFixture
 {
     [Fact]
     public void Has_properties_constructed_with()

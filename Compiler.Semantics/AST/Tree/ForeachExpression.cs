@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal sealed class ForeachExpression : Expression, IForeachExpression
 {
-    public VariableSymbol Symbol { get; }
+    public NamedVariableSymbol Symbol { get; }
     BindingSymbol IBinding.Symbol => Symbol;
     NamedBindingSymbol ILocalBinding.Symbol => Symbol;
     public IExpression InExpression { get; }
@@ -21,7 +21,7 @@ internal sealed class ForeachExpression : Expression, IForeachExpression
     public ForeachExpression(
         TextSpan span,
         DataType dataType,
-        VariableSymbol symbol,
+        NamedVariableSymbol symbol,
         IExpression inExpression,
         MethodSymbol? iterateMethod,
         MethodSymbol nextMethod,

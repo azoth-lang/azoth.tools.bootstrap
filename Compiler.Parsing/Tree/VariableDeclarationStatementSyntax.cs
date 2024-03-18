@@ -12,7 +12,7 @@ internal class VariableDeclarationStatementSyntax : StatementSyntax, IVariableDe
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public SimpleName Name { [DebuggerStepThrough] get; }
     public Promise<int?> DeclarationNumber { [DebuggerStepThrough] get; } = new Promise<int?>();
-    public Promise<VariableSymbol> Symbol { [DebuggerStepThrough] get; } = new Promise<VariableSymbol>();
+    public Promise<NamedVariableSymbol> Symbol { [DebuggerStepThrough] get; } = new Promise<NamedVariableSymbol>();
     IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
     IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
     public TextSpan NameSpan { [DebuggerStepThrough] get; }

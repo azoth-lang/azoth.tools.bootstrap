@@ -129,7 +129,7 @@ public abstract class SymbolTestFixture
             dataType ?? DataType().DeclaredType);
     }
 
-    protected VariableSymbol Parameter(
+    protected NamedVariableSymbol Parameter(
         string? name = null,
         InvocableSymbol? containing = null,
         int? declaration = null,
@@ -137,7 +137,7 @@ public abstract class SymbolTestFixture
         bool? lent = null,
         DataType? type = null)
     {
-        return VariableSymbol.CreateParameter(
+        return NamedVariableSymbol.CreateParameter(
             containing ?? Func(),
             Name(name) ?? DefaultName("variable"),
             declaration ?? ++unique,
@@ -146,14 +146,14 @@ public abstract class SymbolTestFixture
             type ?? DataType());
     }
 
-    protected VariableSymbol LocalVariable(
+    protected NamedVariableSymbol LocalVariable(
         string? name = null,
         InvocableSymbol? containing = null,
         int? declaration = null,
         bool? mut = null,
         DataType? type = null)
     {
-        return VariableSymbol.CreateLocal(
+        return NamedVariableSymbol.CreateLocal(
             containing ?? Func(),
             mut ?? true,
             Name(name) ?? DefaultName("variable"),
@@ -161,15 +161,15 @@ public abstract class SymbolTestFixture
             type ?? DataType());
     }
 
-    protected static VariableSymbol LocalVariable(
-        VariableSymbol mother,
+    protected static NamedVariableSymbol LocalVariable(
+        NamedVariableSymbol mother,
         string? name = null,
         InvocableSymbol? containing = null,
         int? declaration = null,
         bool? mut = null,
         DataType? type = null)
     {
-        return VariableSymbol.CreateLocal(
+        return NamedVariableSymbol.CreateLocal(
             containing ?? mother.ContainingSymbol,
             mut ?? mother.IsMutableBinding,
             Name(name) ?? mother.Name,

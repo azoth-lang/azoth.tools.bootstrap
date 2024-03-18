@@ -704,7 +704,7 @@ internal class ASTBuilder
     {
         return syn.ReferencedSymbol.Result.Assigned() switch
         {
-            VariableSymbol symbol => BuildVariableNameExpression(syn, symbol, isMove),
+            NamedVariableSymbol symbol => BuildVariableNameExpression(syn, symbol, isMove),
             FunctionSymbol symbol => BuildFunctionNameExpression(syn, symbol),
             TypeSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a type."),
             InvocableSymbol _ => throw new InvalidOperationException("Cannot build a name expression for an invocable."),
@@ -716,9 +716,9 @@ internal class ASTBuilder
     }
 
     private static IVariableNameExpression BuildVariableNameExpression(ISimpleNameExpressionSyntax syn, bool isMove)
-        => BuildVariableNameExpression(syn, (VariableSymbol)syn.ReferencedSymbol.Result.Assigned(), isMove);
+        => BuildVariableNameExpression(syn, (NamedVariableSymbol)syn.ReferencedSymbol.Result.Assigned(), isMove);
 
-    private static IVariableNameExpression BuildVariableNameExpression(ISimpleNameExpressionSyntax syn, VariableSymbol referencedSymbol, bool isMove)
+    private static IVariableNameExpression BuildVariableNameExpression(ISimpleNameExpressionSyntax syn, NamedVariableSymbol referencedSymbol, bool isMove)
     {
         var type = syn.DataType.Assigned();
         return new VariableNameExpression(syn.Span, type, referencedSymbol, isMove);

@@ -438,7 +438,7 @@ public class EntitySymbolBuilder
                         isLent = false;
                     }
 
-                    var symbol = VariableSymbol.CreateParameter(containingSymbol, namedParam.Name,
+                    var symbol = NamedVariableSymbol.CreateParameter(containingSymbol, namedParam.Name,
                         namedParam.DeclarationNumber.Result, namedParam.IsMutableBinding, isLent, type);
                     namedParam.Symbol.Fulfill(symbol);
                     symbolTree.Add(symbol);

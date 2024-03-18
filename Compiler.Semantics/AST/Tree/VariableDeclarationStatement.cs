@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 internal class VariableDeclarationStatement : Statement, IVariableDeclarationStatement
 {
     public TextSpan NameSpan { get; }
-    public VariableSymbol Symbol { get; }
+    public NamedVariableSymbol Symbol { get; }
     BindingSymbol IBinding.Symbol => Symbol;
     NamedBindingSymbol ILocalBinding.Symbol => Symbol;
     public IExpression? Initializer { get; }
@@ -17,7 +17,7 @@ internal class VariableDeclarationStatement : Statement, IVariableDeclarationSta
     public VariableDeclarationStatement(
         TextSpan span,
         TextSpan nameSpan,
-        VariableSymbol symbol,
+        NamedVariableSymbol symbol,
         IExpression? initializer)
         : base(span)
     {

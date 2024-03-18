@@ -287,7 +287,7 @@ public partial interface IBindingParameter : IParameter, IBinding
 
 public partial interface INamedParameter : IParameter, IConstructorOrInitializerParameter, IBindingParameter, ILocalBinding
 {
-    new VariableSymbol Symbol { get; }
+    new NamedVariableSymbol Symbol { get; }
     IExpression? DefaultValue { get; }
 }
 
@@ -329,7 +329,7 @@ public partial interface IBodyStatement : IStatement
 public partial interface IVariableDeclarationStatement : IBodyStatement, ILocalBinding
 {
     TextSpan NameSpan { get; }
-    new VariableSymbol Symbol { get; }
+    new NamedVariableSymbol Symbol { get; }
     IExpression? Initializer { get; }
     Promise<bool> VariableIsLiveAfter { get; }
 }
@@ -349,7 +349,7 @@ public partial interface IPattern : IAbstractSyntax
 
 public partial interface IBindingPattern : IPattern, ILocalBinding
 {
-    new VariableSymbol Symbol { get; }
+    new NamedVariableSymbol Symbol { get; }
     Promise<bool> VariableIsLiveAfter { get; }
 }
 
@@ -504,7 +504,7 @@ public partial interface IWhileExpression : IExpression
 
 public partial interface IForeachExpression : IExpression, ILocalBinding
 {
-    new VariableSymbol Symbol { get; }
+    new NamedVariableSymbol Symbol { get; }
     IExpression InExpression { get; }
     MethodSymbol? IterateMethod { get; }
     MethodSymbol NextMethod { get; }
@@ -596,7 +596,7 @@ public partial interface IFunctionReferenceInvocationExpression : IInvocationExp
 
 public partial interface IVariableNameExpression : IAssignableExpression, INameExpression
 {
-    VariableSymbol ReferencedSymbol { get; }
+    NamedVariableSymbol ReferencedSymbol { get; }
     bool IsMove { get; }
     Promise<bool> VariableIsLiveAfter { get; }
 }

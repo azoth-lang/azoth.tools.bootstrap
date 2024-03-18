@@ -6,14 +6,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST.Tree;
 
 internal class NamedParameter : Parameter, INamedParameter
 {
-    public VariableSymbol Symbol { get; }
+    public NamedVariableSymbol Symbol { get; }
     BindingSymbol IBinding.Symbol => Symbol;
     NamedBindingSymbol ILocalBinding.Symbol => Symbol;
     public IExpression? DefaultValue { get; }
 
     public NamedParameter(
         TextSpan span,
-        VariableSymbol symbol,
+        NamedVariableSymbol symbol,
         bool unused,
         IExpression? defaultValue)
         : base(span, unused)

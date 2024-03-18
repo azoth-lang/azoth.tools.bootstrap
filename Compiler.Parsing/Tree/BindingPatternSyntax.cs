@@ -13,7 +13,7 @@ internal class BindingPatternSyntax : Syntax, IBindingPatternSyntax
     public SimpleName Name { [DebuggerStepThrough] get; }
     public Promise<int?> DeclarationNumber { [DebuggerStepThrough] get; } = new Promise<int?>();
 
-    public Promise<VariableSymbol> Symbol { [DebuggerStepThrough] get; } = new Promise<VariableSymbol>();
+    public Promise<NamedVariableSymbol> Symbol { [DebuggerStepThrough] get; } = new Promise<NamedVariableSymbol>();
     IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol { [DebuggerStepThrough] get => Symbol; }
     IPromise<BindingSymbol> IBindingSyntax.Symbol { [DebuggerStepThrough] get => Symbol; }
 

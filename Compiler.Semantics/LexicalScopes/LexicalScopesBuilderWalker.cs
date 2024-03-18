@@ -345,7 +345,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
     private static LexicalScope BuildVariableScope(
         LexicalScope containingScope,
         SimpleName name,
-        IPromise<VariableSymbol> symbol)
+        IPromise<NamedVariableSymbol> symbol)
     {
         var symbols = new Dictionary<TypeName, FixedSet<IPromise<Symbol>>>()
         {

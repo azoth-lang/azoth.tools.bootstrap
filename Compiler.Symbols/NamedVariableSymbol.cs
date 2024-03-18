@@ -7,9 +7,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// <summary>
 /// A symbol for a variable or parameter. Both of which are bindings using `let` or `var`.
 /// </summary>
-public sealed class VariableSymbol : NamedBindingSymbol, INamedVariableSymbol
+public sealed class NamedVariableSymbol : NamedBindingSymbol, INamedVariableSymbol
 {
-    public static VariableSymbol CreateLocal(
+    public static NamedVariableSymbol CreateLocal(
         InvocableSymbol containingSymbol,
         bool isMutableBinding,
         SimpleName name,
@@ -17,7 +17,7 @@ public sealed class VariableSymbol : NamedBindingSymbol, INamedVariableSymbol
         DataType dataType)
         => new(containingSymbol, isMutableBinding, false, name, declarationNumber, dataType, false);
 
-    public static VariableSymbol CreateParameter(
+    public static NamedVariableSymbol CreateParameter(
         InvocableSymbol containingSymbol,
         SimpleName name,
         int? declarationNumber,
@@ -32,7 +32,7 @@ public sealed class VariableSymbol : NamedBindingSymbol, INamedVariableSymbol
     public bool IsParameter { get; }
     public bool IsLocal => !IsParameter;
 
-    private VariableSymbol(
+    private NamedVariableSymbol(
         InvocableSymbol containingSymbol,
         bool isMutableBinding,
         bool isLentBinding,
@@ -51,7 +51,7 @@ public sealed class VariableSymbol : NamedBindingSymbol, INamedVariableSymbol
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is VariableSymbol otherVariable
+        return other is NamedVariableSymbol otherVariable
                && ContainingSymbol == otherVariable.ContainingSymbol
                && Name == otherVariable.Name
                && DeclarationNumber == otherVariable.DeclarationNumber

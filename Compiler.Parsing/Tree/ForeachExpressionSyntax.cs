@@ -13,7 +13,7 @@ internal class ForeachExpressionSyntax : ExpressionSyntax, IForeachExpressionSyn
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public SimpleName VariableName { [DebuggerStepThrough] get; }
     public Promise<int?> DeclarationNumber { [DebuggerStepThrough] get; } = new Promise<int?>();
-    public Promise<VariableSymbol> Symbol { [DebuggerStepThrough] get; } = new Promise<VariableSymbol>();
+    public Promise<NamedVariableSymbol> Symbol { [DebuggerStepThrough] get; } = new Promise<NamedVariableSymbol>();
     IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
     IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
 

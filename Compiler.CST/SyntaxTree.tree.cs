@@ -367,7 +367,7 @@ public partial interface INamedParameterSyntax : IParameterSyntax, IConstructorO
     Promise<int?> DeclarationNumber { get; }
     ITypeSyntax Type { get; }
     new IPromise<DataType> DataType { get; }
-    new Promise<VariableSymbol> Symbol { get; }
+    new Promise<NamedVariableSymbol> Symbol { get; }
     IExpressionSyntax? DefaultValue { get; }
 }
 
@@ -547,7 +547,7 @@ public partial interface IVariableDeclarationStatementSyntax : IBodyStatementSyn
     Promise<int?> DeclarationNumber { get; }
     ICapabilitySyntax? Capability { get; }
     ITypeSyntax? Type { get; }
-    new Promise<VariableSymbol> Symbol { get; }
+    new Promise<NamedVariableSymbol> Symbol { get; }
     IExpressionSyntax? Initializer { get; }
 }
 
@@ -581,7 +581,7 @@ public partial interface IBindingPatternSyntax : IOptionalOrBindingPatternSyntax
 {
     SimpleName Name { get; }
     Promise<int?> DeclarationNumber { get; }
-    new Promise<VariableSymbol> Symbol { get; }
+    new Promise<NamedVariableSymbol> Symbol { get; }
 }
 
 public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSyntax
@@ -739,7 +739,7 @@ public partial interface IForeachExpressionSyntax : IExpressionSyntax, ILocalBin
     Promise<MethodSymbol?> IterateMethod { get; }
     Promise<MethodSymbol> NextMethod { get; }
     ITypeSyntax? Type { get; }
-    new Promise<VariableSymbol> Symbol { get; }
+    new Promise<NamedVariableSymbol> Symbol { get; }
     IBlockExpressionSyntax Block { get; }
 }
 
