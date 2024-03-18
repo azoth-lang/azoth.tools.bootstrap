@@ -14,7 +14,7 @@ internal class SelfExpressionSyntax : ExpressionSyntax, ISelfExpressionSyntax
 {
     public bool IsImplicit { get; }
     public Promise<SelfParameterSymbol?> ReferencedSymbol { get; } = new Promise<SelfParameterSymbol?>();
-    IPromise<Symbol?> IVariableNameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
+    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
 
     private Pseudotype? pseudotype;
     [DisallowNull]

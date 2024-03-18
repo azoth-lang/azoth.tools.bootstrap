@@ -157,7 +157,7 @@ public partial class Parser
                     {
                         // Member Access
                         var accessOperator = BuildAccessOperator(Tokens.ConsumeToken<IAccessOperatorToken>());
-                        var nameSyntax = ParseName();
+                        var nameSyntax = ParseIdentifierName();
                         var memberAccessSpan = TextSpan.Covering(expression.Span, nameSyntax.Span);
                         expression = new MemberAccessExpressionSyntax(memberAccessSpan, expression, accessOperator, nameSyntax);
                         continue;
@@ -179,7 +179,7 @@ public partial class Parser
                     // These terminating tokens should be safe to return the atom even if it is a missing identifier
                     return expression;
                 default:
-                    if (expression is ISimpleNameExpressionSyntax { Name: null })
+                    if (expression is IIdentifierNameExpressionSyntax { Name: null })
                     {
                         // Weren't able to parse an atom nor find an operator. There is a risk of
                         // not making progress. Mark the next token as unexpected.
@@ -323,7 +323,7 @@ public partial class Parser
                 return new NoneLiteralExpressionSyntax(literal);
             }
             case IIdentifierToken _:
-                return ParseName();
+                return ParseIdentifierName();
             case IForeachKeywordToken _:
                 return ParseForeach();
             case IWhileKeywordToken _:
@@ -428,7 +428,7 @@ public partial class Parser
     private ISimpleNameExpressionSyntax ParseMissingIdentifier()
     {
         var identifierSpan = Tokens.Expect<IIdentifierToken>();
-        return new SimpleNameExpressionSyntax(identifierSpan, null);
+        return new IdentifierNameExpressionSyntax(identifierSpan, null);
     }
 
     private IUnsafeExpressionSyntax ParseUnsafeExpression()

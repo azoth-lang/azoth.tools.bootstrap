@@ -395,6 +395,7 @@ internal class ASTBuilder
             ILoopExpressionSyntax syn => BuildLoopExpression(syn),
             IMoveExpressionSyntax syn => BuildMoveExpression(syn),
             ISimpleNameExpressionSyntax syn => BuildNameExpression(syn, isMove),
+            IGenericNameExpressionSyntax syn => throw new NotImplementedException(),
             INewObjectExpressionSyntax syn => BuildNewObjectExpression(syn),
             IInvocationExpressionSyntax syn => BuildInvocationExpression(syn),
             INextExpressionSyntax syn => BuildNextExpression(syn),
@@ -476,7 +477,7 @@ internal class ASTBuilder
         return expression switch
         {
             IMemberAccessExpressionSyntax syn => BuildFieldAccessExpression(syn),
-            ISimpleNameExpressionSyntax syn => BuildVariableNameExpression(syn, false),
+            IIdentifierNameExpressionSyntax syn => BuildVariableNameExpression(syn, false),
             _ => throw ExhaustiveMatch.Failed(expression),
         };
     }

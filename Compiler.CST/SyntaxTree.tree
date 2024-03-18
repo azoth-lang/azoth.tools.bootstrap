@@ -128,7 +128,7 @@ OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
 Expression = ImplicitConversion:'Conversion' ConvertedDataType:'DataType'?;
-AssignableExpression: Expression = ReferencedSymbol:'Promise<Symbol?>';
+AssignableExpression: Expression = ReferencedSymbol:'IPromise<Symbol?>';
 BlockExpression: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
 NewObjectExpression: Expression = Type:TypeName ConstructorName:'IdentifierName'? ConstructorNameSpan:'TextSpan'? Arguments:Expression* ReferencedSymbol:'Promise<ConstructorSymbol?>';
 UnsafeExpression: Expression = Expression;
@@ -161,11 +161,16 @@ ReturnExpression: Expression = Value:Expression?;
 InvocationExpression: Expression, 'IHasContainingLexicalScope' = Expression Arguments:Expression* ReferencedSymbol:'Promise<Symbol?>';
 
 // ---------- Variable Expressions
-NameExpression: AssignableExpression = ReferencedSymbol:'Promise<Symbol?>';
-VariableNameExpression: Expression = ReferencedSymbol:'IPromise<Symbol?>';
-SimpleNameExpression: NameExpression, VariableNameExpression, 'IHasContainingLexicalScope' = Name:'IdentifierName'? ReferencedSymbol:'Promise<Symbol?>';
+NameExpression: Expression = ReferencedSymbol:'IPromise<Symbol?>';
+InvocableNameExpression: NameExpression = ReferencedSymbol:'Promise<Symbol?>';
+VariableNameExpression: NameExpression;
+StandardNameExpression: NameExpression, 'IHasContainingLexicalScope' = Name:'StandardName'? ReferencedSymbol:'Promise<Symbol?>';
+SimpleNameExpression: NameExpression;
+IdentifierNameExpression: InvocableNameExpression, SimpleNameExpression, StandardNameExpression, VariableNameExpression, AssignableExpression = Name:'IdentifierName'? ReferencedSymbol:'Promise<Symbol?>';
+SpecialTypeNameExpression: SimpleNameExpression = Name:'SpecialTypeName' ReferencedSymbol:'Promise<TypeSymbol?>';
+GenericNameExpression: InvocableNameExpression, StandardNameExpression = Name:'GenericName' TypeArguments:Type*;
 SelfExpression: VariableNameExpression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfParameterSymbol?>';
-MemberAccessExpression: NameExpression = Context:Expression AccessOperator:'AccessOperator' Member:SimpleNameExpression;
+MemberAccessExpression: InvocableNameExpression, AssignableExpression = Context:Expression AccessOperator:'AccessOperator' Member:StandardNameExpression ReferencedSymbol:'Promise<Symbol?>';
 
 // ---------- Capability Expressions
 MoveExpression: Expression = Referent:VariableNameExpression ReferencedSymbol:'Promise<BindingSymbol?>';

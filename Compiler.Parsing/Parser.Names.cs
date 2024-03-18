@@ -6,10 +6,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
 public partial class Parser
 {
-    private ISimpleNameExpressionSyntax ParseName()
+    private IIdentifierNameExpressionSyntax ParseIdentifierName()
     {
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
-        return new SimpleNameExpressionSyntax(identifier.Span, name);
+        return new IdentifierNameExpressionSyntax(identifier.Span, name);
     }
 }

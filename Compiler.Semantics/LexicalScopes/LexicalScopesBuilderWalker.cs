@@ -60,49 +60,49 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
                 break;
             case ITypeDeclarationSyntax syn:
                 foreach (var genericParameter in syn.GenericParameters)
-                    Walk(genericParameter, containingScope);
+                    WalkNonNull(genericParameter, containingScope);
                 containingScope = BuildTypeParameterScope(syn, containingScope);
                 if (syn is IClassDeclarationSyntax classSyntax)
                     Walk(classSyntax.BaseTypeName, containingScope);
                 foreach (var supertypeName in syn.SupertypeNames)
-                    Walk(supertypeName, containingScope);
+                    WalkNonNull(supertypeName, containingScope);
                 containingScope = BuildTypeBodyScope(syn, containingScope);
                 foreach (var member in syn.Members)
-                    Walk(member, containingScope);
+                    WalkNonNull(member, containingScope);
                 return;
             case IFunctionDeclarationSyntax function:
                 foreach (var attribute in function.Attributes)
-                    Walk(attribute, containingScope);
+                    WalkNonNull(attribute, containingScope);
                 foreach (var parameter in function.Parameters)
-                    Walk(parameter, containingScope);
+                    WalkNonNull(parameter, containingScope);
                 Walk(function.Return, containingScope);
                 containingScope = BuildBodyScope(function.Parameters, containingScope);
-                Walk(function.Body, containingScope);
+                WalkNonNull(function.Body, containingScope);
                 return;
             case IAssociatedFunctionDeclarationSyntax function:
                 foreach (var parameter in function.Parameters)
                     Walk(parameter, containingScope);
                 Walk(function.Return, containingScope);
                 containingScope = BuildBodyScope(function.Parameters, containingScope);
-                Walk(function.Body, containingScope);
+                WalkNonNull(function.Body, containingScope);
                 return;
             case IConcreteMethodDeclarationSyntax concreteMethod:
-                Walk(concreteMethod.SelfParameter, containingScope);
+                WalkNonNull(concreteMethod.SelfParameter, containingScope);
                 foreach (var parameter in concreteMethod.Parameters)
                     Walk(parameter, containingScope);
                 Walk(concreteMethod.Return, containingScope);
                 containingScope = BuildBodyScope(concreteMethod.Parameters, containingScope);
-                Walk(concreteMethod.Body, containingScope);
+                WalkNonNull(concreteMethod.Body, containingScope);
                 return;
             case IConstructorDeclarationSyntax constructor:
                 Walk(constructor.SelfParameter, containingScope);
                 foreach (var parameter in constructor.Parameters)
                     Walk(parameter, containingScope);
                 containingScope = BuildBodyScope(constructor.Parameters, containingScope);
-                Walk(constructor.Body, containingScope);
+                WalkNonNull(constructor.Body, containingScope);
                 return;
             case IBodyOrBlockSyntax bodyOrBlock:
-                Walk(bodyOrBlock, containingScope);
+                WalkNonNull(bodyOrBlock, containingScope);
                 return;
             case IExpressionSyntax _:
                 throw new UnreachableCodeException($"{nameof(IExpressionSyntax)} should be unreachable `{syntax}`");
@@ -111,7 +111,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         WalkChildren(syntax, containingScope);
     }
 
-    private void Walk(IBodyOrBlockSyntax bodyOrBlock, LexicalScope containingScope)
+    private void WalkNonNull(IBodyOrBlockSyntax bodyOrBlock, LexicalScope containingScope)
     {
         foreach (var statement in bodyOrBlock.Statements)
         {
@@ -151,7 +151,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
                 }
                 break;
             case IBlockExpressionSyntax block:
-                Walk((IBodyOrBlockSyntax)block, containingScope);
+                WalkNonNull(block, containingScope);
                 break;
             case IBreakExpressionSyntax exp:
                 _ = Walk(exp.Value, containingScope);
@@ -167,7 +167,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
                 Walk(exp.Type, containingScope);
                 var bodyScope = Walk(exp.InExpression, containingScope).True;
                 bodyScope = BuildVariableScope(bodyScope, exp.VariableName, exp.Symbol);
-                Walk((IBodyOrBlockSyntax)exp.Block, bodyScope);
+                WalkNonNull(exp.Block, bodyScope);
                 break;
             }
             case IFreezeExpressionSyntax exp:
@@ -180,12 +180,12 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
                     containingScope = Walk(argument, containingScope).True;
                 break;
             case ILoopExpressionSyntax exp:
-                Walk((IBodyOrBlockSyntax)exp.Block, containingScope);
+                WalkNonNull(exp.Block, containingScope);
                 break;
             case IMoveExpressionSyntax exp:
                 return Walk(exp.Referent, containingScope);
             case INewObjectExpressionSyntax exp:
-                Walk(exp.Type, containingScope);
+                WalkNonNull(exp.Type, containingScope);
                 foreach (var argument in exp.Arguments)
                     containingScope = Walk(argument, containingScope).True;
                 break;
@@ -206,7 +206,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
             case IWhileExpressionSyntax exp:
             {
                 var bodyScope = Walk(exp.Condition, containingScope).True;
-                Walk((IBodyOrBlockSyntax)exp.Block, bodyScope);
+                WalkNonNull(exp.Block, bodyScope);
                 break;
             }
             case IIfExpressionSyntax exp:
@@ -222,7 +222,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
             case IAsyncBlockExpressionSyntax exp:
             {
                 // TODO once `async let` is supported, create a lexical scope for the variable
-                Walk((IBodyOrBlockSyntax)exp.Block, containingScope);
+                WalkNonNull(exp.Block, containingScope);
                 break;
             }
             case IAsyncStartExpressionSyntax exp:
@@ -230,6 +230,10 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
                 break;
             case IAwaitExpressionSyntax exp:
                 return Walk(exp.Expression, containingScope);
+            case IGenericNameExpressionSyntax exp:
+                foreach (var typeArgument in exp.TypeArguments)
+                    WalkNonNull(typeArgument, containingScope);
+                break;
             case ILiteralExpressionSyntax _:
             case ISelfExpressionSyntax _:
             case ISimpleNameExpressionSyntax _:
@@ -278,7 +282,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         return containingScope;
     }
 
-    private LexicalScope BuildNamespaceScope(NamespaceName nsName, LexicalScope containingScope)
+    private NestedScope BuildNamespaceScope(NamespaceName nsName, LexicalScope containingScope)
     {
         var ns = namespaces[nsName];
         return NestedScope.Create(containingScope, ns.SymbolsInPackage, ns.NestedSymbolsInPackage);
@@ -312,7 +316,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         return NestedScope.Create(containingScope, symbolsInScope);
     }
 
-    private static LexicalScope BuildTypeParameterScope(
+    private static NestedScope BuildTypeParameterScope(
         ITypeDeclarationSyntax typeSyntax,
         LexicalScope containingScope)
     {
@@ -322,7 +326,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         return NestedScope.Create(containingScope, symbols);
     }
 
-    private static LexicalScope BuildTypeBodyScope(ITypeDeclarationSyntax typeSyntax, LexicalScope containingScope)
+    private static NestedScope BuildTypeBodyScope(ITypeDeclarationSyntax typeSyntax, LexicalScope containingScope)
     {
         // Only "static" names are in scope. Other names must use `self.`
         var symbols = typeSyntax.Members.OfType<IAssociatedFunctionDeclarationSyntax>()
@@ -332,7 +336,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         return NestedScope.Create(containingScope, symbols.ToFixedDictionary());
     }
 
-    private static LexicalScope BuildBodyScope(
+    private static NestedScope BuildBodyScope(
         IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
         LexicalScope containingScope)
     {
@@ -342,7 +346,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         return NestedScope.Create(containingScope, symbols);
     }
 
-    private static LexicalScope BuildVariableScope(
+    private static NestedScope BuildVariableScope(
         LexicalScope containingScope,
         IdentifierName name,
         IPromise<NamedVariableSymbol> symbol)

@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 /// <summary>
 /// A name of a variable or namespace
 /// </summary>
-internal class SimpleNameExpressionSyntax : ExpressionSyntax, ISimpleNameExpressionSyntax
+internal class IdentifierNameExpressionSyntax : ExpressionSyntax, IIdentifierNameExpressionSyntax
 {
     private LexicalScope? containingLexicalScope;
     public LexicalScope ContainingLexicalScope
@@ -34,10 +34,12 @@ internal class SimpleNameExpressionSyntax : ExpressionSyntax, ISimpleNameExpress
     }
     // A null name means this syntax was generated as an assumed missing name and the name is unknown
     public IdentifierName? Name { get; }
+    StandardName? IStandardNameExpressionSyntax.Name => Name;
     public Promise<Symbol?> ReferencedSymbol { get; } = new Promise<Symbol?>();
-    IPromise<Symbol?> IVariableNameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
+    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
+    IPromise<Symbol?> IAssignableExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
 
-    public SimpleNameExpressionSyntax(TextSpan span, IdentifierName? name)
+    public IdentifierNameExpressionSyntax(TextSpan span, IdentifierName? name)
         : base(span)
     {
         Name = name;

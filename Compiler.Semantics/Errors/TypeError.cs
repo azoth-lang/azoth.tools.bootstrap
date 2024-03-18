@@ -160,7 +160,7 @@ public static class TypeError
             3022, $"Self viewpoint not available `{typeSyntax.ToString()}`.");
     }
 
-    public static Diagnostic CannotAccessMutableBindingFieldOfIdentityReference(CodeFile file, ISimpleNameExpressionSyntax exp, Pseudotype contextType)
+    public static Diagnostic CannotAccessMutableBindingFieldOfIdentityReference(CodeFile file, IStandardNameExpressionSyntax exp, Pseudotype contextType)
     {
         return new(file, exp.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3023, $"Cannot access `var` field `{exp.ToString()}` from type `{contextType.ToSourceCodeString()}`.");

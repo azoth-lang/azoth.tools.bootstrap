@@ -5,9 +5,9 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
 /// <summary>
-/// An expression that is a single unqualified name.
+/// An expression that is an unqualified name (either generic or non-generic).
 /// </summary>
-public partial interface ISimpleNameExpressionSyntax
+public partial interface IStandardNameExpressionSyntax
 {
     IEnumerable<IPromise<Symbol>> LookupInContainingScope();
 }

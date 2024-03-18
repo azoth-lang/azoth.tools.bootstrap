@@ -603,7 +603,7 @@ public class BasicBodyAnalyzer
                 exp.DataType = type;
                 return new ExpressionResult(exp, resultVariable);
             }
-            case ISimpleNameExpressionSyntax exp:
+            case IIdentifierNameExpressionSyntax exp:
             {
                 // Errors reported by InferSymbol
                 var symbol = InferSymbol(exp, symbolFilter);
@@ -626,6 +626,16 @@ public class BasicBodyAnalyzer
                 exp.DataType = type;
                 return new ExpressionResult(exp, resultVariable);
             }
+            case ISpecialTypeNameExpressionSyntax exp:
+            {
+                InferSymbol(exp);
+                // It is a type name and as such isn't a proper expression
+                var type = DataType.Void;
+                exp.DataType = type;
+                return new ExpressionResult(exp, null);
+            }
+            case IGenericNameExpressionSyntax exp:
+                throw new NotImplementedException("Generic name expressions are not implemented.");
             case IUnaryOperatorExpressionSyntax exp:
             {
                 var @operator = exp.Operator;
@@ -1215,7 +1225,7 @@ public class BasicBodyAnalyzer
                 member.DataType = type;
                 exp.DataType = type;
                 return new(exp, contextResult.Variable);
-            case ISimpleNameExpressionSyntax exp:
+            case IIdentifierNameExpressionSyntax exp:
                 var symbol = InferBindingSymbol(exp);
                 switch (symbol)
                 {
@@ -1288,7 +1298,7 @@ public class BasicBodyAnalyzer
                 exp.Member.DataType = DataType.Void;
                 break;
             }
-            case ISimpleNameExpressionSyntax exp:
+            case IIdentifierNameExpressionSyntax exp:
             {
                 args = InferArgumentTypes(invocation.Arguments, flow);
 
@@ -1529,18 +1539,18 @@ public class BasicBodyAnalyzer
     {
         return variableNameExpressionSyntax switch
         {
-            ISimpleNameExpressionSyntax nameExpression => InferBindingSymbol(nameExpression),
+            IIdentifierNameExpressionSyntax nameExpression => InferBindingSymbol(nameExpression),
             ISelfExpressionSyntax selfExpression => InferSelfParameterSymbol(selfExpression),
             _ => throw ExhaustiveMatch.Failed(variableNameExpressionSyntax)
         };
     }
 
     private BindingSymbol? InferBindingSymbol(
-        ISimpleNameExpressionSyntax nameExpression,
+        IIdentifierNameExpressionSyntax nameExpression,
         Func<Symbol, bool>? symbolFilter = null)
         => (BindingSymbol?)InferSymbol(nameExpression, symbolFilter, true);
 
-    private Symbol? InferSymbol(ISimpleNameExpressionSyntax nameExpression, Func<Symbol, bool>? symbolFilter, bool bindingOnly = false)
+    private Symbol? InferSymbol(IIdentifierNameExpressionSyntax nameExpression, Func<Symbol, bool>? symbolFilter, bool bindingOnly = false)
     {
         if (nameExpression.Name is null)
         {
@@ -1557,6 +1567,13 @@ public class BasicBodyAnalyzer
 
         var symbols = LookupSymbols(nameExpression, symbolFilter);
         return InferSymbol(nameExpression, symbols);
+    }
+
+    private void InferSymbol(
+        ISpecialTypeNameExpressionSyntax nameExpression)
+    {
+        var symbol = symbolTrees.PrimitiveSymbolTree.LookupSymbol(nameExpression.Name);
+        nameExpression.ReferencedSymbol.Fulfill(symbol);
     }
 
     private SelfParameterSymbol? InferSelfParameterSymbol(ISelfExpressionSyntax selfExpression)
@@ -1607,7 +1624,7 @@ public class BasicBodyAnalyzer
         }
 
         // Apply the referenced symbol to the underlying name
-        if (invocation.Expression is INameExpressionSyntax nameExpression)
+        if (invocation.Expression is IInvocableNameExpressionSyntax nameExpression)
             nameExpression.ReferencedSymbol.Fulfill(invocation.ReferencedSymbol.Result);
 
         return functionType;
@@ -1646,7 +1663,7 @@ public class BasicBodyAnalyzer
             invocation.ReferencedSymbol.Fulfill(null);
 
         // Apply the referenced symbol to the underlying name
-        if (invocation.Expression is INameExpressionSyntax nameExpression)
+        if (invocation.Expression is IInvocableNameExpressionSyntax nameExpression)
             nameExpression.ReferencedSymbol.Fulfill(invocation.ReferencedSymbol.Result);
 
         return method;
@@ -1685,7 +1702,7 @@ public class BasicBodyAnalyzer
     }
 
     private TSymbol? InferSymbol<TNameSymbol, TSymbol>(
-        IVariableNameExpressionSyntax<TNameSymbol> exp,
+        INameExpressionSyntax<TNameSymbol> exp,
         FixedSet<TSymbol> symbols)
         where TNameSymbol : Symbol
         where TSymbol : TNameSymbol
@@ -1707,14 +1724,14 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private static FixedSet<Symbol> LookupSymbols(ISimpleNameExpressionSyntax exp, Func<Symbol, bool>? symbolFilter = null)
+    private static FixedSet<Symbol> LookupSymbols(IStandardNameExpressionSyntax exp, Func<Symbol, bool>? symbolFilter = null)
     {
         symbolFilter ??= AllSymbols<Symbol>;
         return exp.LookupInContainingScope().Select(p => p.Result).Where(symbolFilter).ToFixedSet();
     }
 
     private static FixedSet<TSymbol> LookupSymbols<TSymbol>(
-        ISimpleNameExpressionSyntax exp,
+        IStandardNameExpressionSyntax exp,
         Func<TSymbol, bool>? symbolFilter = null)
         where TSymbol : Symbol
     {
@@ -1726,7 +1743,7 @@ public class BasicBodyAnalyzer
     /// <returns>The symbols with the given name in the context, or <see langword="null"/> if the
     /// context is unknown.</returns>
     [return: NotNullIfNotNull(nameof(contextSymbol))]
-    private FixedSet<TSymbol>? LookupSymbols<TSymbol>(Symbol? contextSymbol, ISimpleNameExpressionSyntax exp)
+    private FixedSet<TSymbol>? LookupSymbols<TSymbol>(Symbol? contextSymbol, IStandardNameExpressionSyntax exp)
         where TSymbol : Symbol
     {
         if (contextSymbol is null) return null;
@@ -1816,7 +1833,7 @@ public class BasicBodyAnalyzer
 
     private DataType? InferReferencedSymbol(
         Pseudotype contextType,
-        ISimpleNameExpressionSyntax exp,
+        IStandardNameExpressionSyntax exp,
         IFixedList<Symbol> matchingSymbols)
     {
         // TODO resolve getters overloaded on self type
@@ -2076,13 +2093,11 @@ public class BasicBodyAnalyzer
         };
     }
 
-    private TypeSymbol LookupSymbolForType(SimpleType type)
-        => symbolTrees.PrimitiveSymbolTree.GlobalSymbols.OfType<PrimitiveTypeSymbol>()
-                      .Single(s => s.DeclaresType == type);
+    private PrimitiveTypeSymbol LookupSymbolForType(SimpleType type)
+        => symbolTrees.PrimitiveSymbolTree.LookupSymbolForType(type);
 
     private PrimitiveTypeSymbol LookupSymbolForType(AnyType type)
-        => symbolTrees.PrimitiveSymbolTree.GlobalSymbols.OfType<PrimitiveTypeSymbol>()
-                      .Single(s => s.DeclaresType == type);
+        => symbolTrees.PrimitiveSymbolTree.LookupSymbolForType(type);
 
     private TypeSymbol LookupSymbolForType(IDeclaredUserType type)
     {

@@ -11,14 +11,16 @@ internal class MemberAccessExpressionSyntax : ExpressionSyntax, IMemberAccessExp
 {
     public IExpressionSyntax Context { [DebuggerStepThrough] get; }
     public AccessOperator AccessOperator { [DebuggerStepThrough] get; }
-    public ISimpleNameExpressionSyntax Member { [DebuggerStepThrough] get; }
+    public IStandardNameExpressionSyntax Member { [DebuggerStepThrough] get; }
     public Promise<Symbol?> ReferencedSymbol => Member.ReferencedSymbol;
+    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => Member.ReferencedSymbol;
+    IPromise<Symbol?> IAssignableExpressionSyntax.ReferencedSymbol => Member.ReferencedSymbol;
 
     public MemberAccessExpressionSyntax(
         TextSpan span,
         IExpressionSyntax context,
         AccessOperator accessOperator,
-        ISimpleNameExpressionSyntax member)
+        IStandardNameExpressionSyntax member)
         : base(span)
     {
         Context = context;

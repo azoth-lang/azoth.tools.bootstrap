@@ -638,7 +638,7 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
     typeof(INextExpressionSyntax),
     typeof(IReturnExpressionSyntax),
     typeof(IInvocationExpressionSyntax),
-    typeof(IVariableNameExpressionSyntax),
+    typeof(INameExpressionSyntax),
     typeof(IMoveExpressionSyntax),
     typeof(IFreezeExpressionSyntax),
     typeof(IAsyncBlockExpressionSyntax),
@@ -651,10 +651,11 @@ public partial interface IExpressionSyntax : ISyntax
 }
 
 [Closed(
-    typeof(INameExpressionSyntax))]
+    typeof(IIdentifierNameExpressionSyntax),
+    typeof(IMemberAccessExpressionSyntax))]
 public partial interface IAssignableExpressionSyntax : IExpressionSyntax
 {
-    Promise<Symbol?> ReferencedSymbol { get; }
+    IPromise<Symbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IBlockExpressionSyntax : IExpressionSyntax, IBlockOrResultSyntax, IBodyOrBlockSyntax
@@ -794,24 +795,63 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax, IHasCo
 }
 
 [Closed(
-    typeof(ISimpleNameExpressionSyntax),
-    typeof(IMemberAccessExpressionSyntax))]
-public partial interface INameExpressionSyntax : IAssignableExpressionSyntax
-{
-}
-
-[Closed(
-    typeof(ISimpleNameExpressionSyntax),
-    typeof(ISelfExpressionSyntax))]
-public partial interface IVariableNameExpressionSyntax : IExpressionSyntax
+    typeof(IInvocableNameExpressionSyntax),
+    typeof(IVariableNameExpressionSyntax),
+    typeof(IStandardNameExpressionSyntax),
+    typeof(ISimpleNameExpressionSyntax))]
+public partial interface INameExpressionSyntax : IExpressionSyntax
 {
     IPromise<Symbol?> ReferencedSymbol { get; }
 }
 
-public partial interface ISimpleNameExpressionSyntax : INameExpressionSyntax, IVariableNameExpressionSyntax, IHasContainingLexicalScope
+[Closed(
+    typeof(IIdentifierNameExpressionSyntax),
+    typeof(IGenericNameExpressionSyntax),
+    typeof(IMemberAccessExpressionSyntax))]
+public partial interface IInvocableNameExpressionSyntax : INameExpressionSyntax
 {
-    IdentifierName? Name { get; }
     new Promise<Symbol?> ReferencedSymbol { get; }
+}
+
+[Closed(
+    typeof(IIdentifierNameExpressionSyntax),
+    typeof(ISelfExpressionSyntax))]
+public partial interface IVariableNameExpressionSyntax : INameExpressionSyntax
+{
+}
+
+[Closed(
+    typeof(IIdentifierNameExpressionSyntax),
+    typeof(IGenericNameExpressionSyntax))]
+public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax, IHasContainingLexicalScope
+{
+    StandardName? Name { get; }
+    new Promise<Symbol?> ReferencedSymbol { get; }
+}
+
+[Closed(
+    typeof(IIdentifierNameExpressionSyntax),
+    typeof(ISpecialTypeNameExpressionSyntax))]
+public partial interface ISimpleNameExpressionSyntax : INameExpressionSyntax
+{
+}
+
+public partial interface IIdentifierNameExpressionSyntax : IInvocableNameExpressionSyntax, ISimpleNameExpressionSyntax, IStandardNameExpressionSyntax, IVariableNameExpressionSyntax, IAssignableExpressionSyntax
+{
+    new IdentifierName? Name { get; }
+    new Promise<Symbol?> ReferencedSymbol { get; }
+}
+
+public partial interface ISpecialTypeNameExpressionSyntax : ISimpleNameExpressionSyntax
+{
+    SpecialTypeName Name { get; }
+    new Promise<TypeSymbol?> ReferencedSymbol { get; }
+}
+
+public partial interface IGenericNameExpressionSyntax : IInvocableNameExpressionSyntax, IStandardNameExpressionSyntax
+{
+    new GenericName Name { get; }
+    IFixedList<ITypeSyntax> TypeArguments { get; }
 }
 
 public partial interface ISelfExpressionSyntax : IVariableNameExpressionSyntax
@@ -820,11 +860,12 @@ public partial interface ISelfExpressionSyntax : IVariableNameExpressionSyntax
     new Promise<SelfParameterSymbol?> ReferencedSymbol { get; }
 }
 
-public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax
+public partial interface IMemberAccessExpressionSyntax : IInvocableNameExpressionSyntax, IAssignableExpressionSyntax
 {
     IExpressionSyntax Context { get; }
     AccessOperator AccessOperator { get; }
-    ISimpleNameExpressionSyntax Member { get; }
+    IStandardNameExpressionSyntax Member { get; }
+    new Promise<Symbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IMoveExpressionSyntax : IExpressionSyntax
