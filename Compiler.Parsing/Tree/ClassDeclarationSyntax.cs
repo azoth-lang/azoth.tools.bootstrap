@@ -33,7 +33,7 @@ internal class ClassDeclarationSyntax : TypeDeclarationSyntax<IClassMemberDeclar
         IFixedList<ISupertypeNameSyntax> supertypesNames,
         Func<IClassDeclarationSyntax, (IFixedList<IClassMemberDeclarationSyntax>, TextSpan)> parseMembers)
         : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, moveModifier,
-            nameSpan, StandardTypeName.Create(name, genericParameters.Count), genericParameters, supertypesNames)
+            nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypesNames)
     {
         AbstractModifier = abstractModifier;
         IsAbstract = AbstractModifier is not null;

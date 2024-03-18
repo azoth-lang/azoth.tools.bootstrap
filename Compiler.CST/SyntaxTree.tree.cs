@@ -169,7 +169,7 @@ public partial interface ITypeDeclarationSyntax : INonMemberEntityDeclarationSyn
     bool IsConst { get; }
     IMoveKeywordToken? MoveModifier { get; }
     bool IsMove { get; }
-    new StandardTypeName Name { get; }
+    new StandardName Name { get; }
     IFixedList<IGenericParameterSyntax> GenericParameters { get; }
     new AcyclicPromise<UserTypeSymbol> Symbol { get; }
     IFixedList<ISupertypeNameSyntax> SupertypeNames { get; }

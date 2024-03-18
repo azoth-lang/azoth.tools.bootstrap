@@ -13,19 +13,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 /// That is why this class exists to ease refactoring later.</remarks>
 public sealed class GenericParameter : IEquatable<GenericParameter>
 {
-    public static GenericParameter Invariant(ICapabilityConstraint constraint, StandardTypeName name)
+    public static GenericParameter Invariant(ICapabilityConstraint constraint, StandardName name)
         => new(constraint, name, ParameterIndependence.None, ParameterVariance.Invariant);
 
-    public static GenericParameter Independent(ICapabilityConstraint constraint, StandardTypeName name)
+    public static GenericParameter Independent(ICapabilityConstraint constraint, StandardName name)
         => new(constraint, name, ParameterIndependence.Independent, ParameterVariance.Invariant);
 
-    public static GenericParameter Out(ICapabilityConstraint constraint, StandardTypeName name)
+    public static GenericParameter Out(ICapabilityConstraint constraint, StandardName name)
         => new(constraint, name, ParameterIndependence.None, ParameterVariance.Covariant);
 
-    public static GenericParameter In(ICapabilityConstraint constraint, StandardTypeName name)
+    public static GenericParameter In(ICapabilityConstraint constraint, StandardName name)
         => new(constraint, name, ParameterIndependence.None, ParameterVariance.Contravariant);
 
-    public GenericParameter(ICapabilityConstraint constraint, StandardTypeName name, ParameterIndependence independence, ParameterVariance variance)
+    public GenericParameter(ICapabilityConstraint constraint, StandardName name, ParameterIndependence independence, ParameterVariance variance)
     {
         Requires.That(nameof(name), name.GenericParameterCount == 0, "Cannot have generic parameters");
         Constraint = constraint;
@@ -36,7 +36,7 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
 
     public ICapabilityConstraint Constraint { get; }
 
-    public StandardTypeName Name { get; }
+    public StandardName Name { get; }
 
     public ParameterIndependence Independence { get; }
 

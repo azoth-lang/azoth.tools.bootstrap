@@ -18,7 +18,7 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
     public bool IsConst { get; }
     public IMoveKeywordToken? MoveModifier { get; }
     public bool IsMove { get; }
-    public new StandardTypeName Name { get; }
+    public new StandardName Name { get; }
     public IFixedList<IGenericParameterSyntax> GenericParameters { get; }
     public new AcyclicPromise<UserTypeSymbol> Symbol { get; }
     public IFixedList<ISupertypeNameSyntax> SupertypeNames { get; }
@@ -34,7 +34,7 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
         IConstKeywordToken? constModifier,
         IMoveKeywordToken? moveModifier,
         TextSpan nameSpan,
-        StandardTypeName name,
+        StandardName name,
         IFixedList<IGenericParameterSyntax> genericParameters,
         IFixedList<ISupertypeNameSyntax> supertypeNames)
         : base(containingNamespaceName, headerSpan, file, name, nameSpan, new AcyclicPromise<UserTypeSymbol>())

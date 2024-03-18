@@ -44,14 +44,14 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         IFixedList<GenericParameterType> genericParameterTypes,
         IPromise<FixedSet<BareReferenceType>> superTypes)
         => new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true,
-            StandardTypeName.Create(name, genericParameterTypes.Count), genericParameterTypes, superTypes);
+            StandardName.Create(name, genericParameterTypes.Count), genericParameterTypes, superTypes);
 
     public static ObjectType CreateClass(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
         bool isConst,
-        StandardTypeName name,
+        StandardName name,
         IFixedList<GenericParameterType> genericParametersTypes,
         IPromise<FixedSet<BareReferenceType>> superTypes)
     {
@@ -64,7 +64,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isConst,
-        StandardTypeName name,
+        StandardName name,
         IFixedList<GenericParameterType> genericParametersTypes,
         IPromise<FixedSet<BareReferenceType>> superTypes)
     {
@@ -86,7 +86,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         var genericParametersTypes = genericParameters
             .Select(p => new GenericParameterType(declaringTypePromise, p)).ToFixedList();
         return new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true,
-            StandardTypeName.Create(name, genericParameters.Length), genericParametersTypes, AnyTypePromise);
+            StandardName.Create(name, genericParameters.Length), genericParametersTypes, AnyTypePromise);
     }
 
     public static ObjectType CreateTrait(
@@ -100,7 +100,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         var genericParametersTypes = genericParameters
             .Select(p => new GenericParameterType(declaringTypePromise, p)).ToFixedList();
         return new(containingPackage, containingNamespace, isAbstract: true, isConst, isClass: false,
-            StandardTypeName.Create(name, genericParameters.Length), genericParametersTypes, AnyTypePromise);
+            StandardName.Create(name, genericParameters.Length), genericParametersTypes, AnyTypePromise);
     }
 
     private ObjectType(
@@ -109,7 +109,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isAbstract,
         bool isConstType,
         bool isClass,
-        StandardTypeName name,
+        StandardName name,
         IFixedList<GenericParameterType> genericParametersTypes,
         IPromise<FixedSet<BareReferenceType>> supertypes)
         : base(isConstType, isAbstract, isClass, genericParametersTypes)
@@ -128,7 +128,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
 
     public override NamespaceName ContainingNamespace { get; }
 
-    public override StandardTypeName Name { get; }
+    public override StandardName Name { get; }
 
     private readonly IPromise<FixedSet<BareReferenceType>> supertypes;
     public override FixedSet<BareReferenceType> Supertypes => supertypes.Result;

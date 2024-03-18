@@ -37,7 +37,7 @@ internal class GenericTypeNameSyntax : TypeSyntax, IGenericTypeNameSyntax
         : base(span)
     {
         TypeArguments = typeArguments;
-        Name = StandardTypeName.Create(name, typeArguments.Count);
+        Name = StandardName.Create(name, typeArguments.Count);
     }
 
     public IEnumerable<IPromise<TypeSymbol>> LookupInContainingScope(bool withAttributeSuffix)

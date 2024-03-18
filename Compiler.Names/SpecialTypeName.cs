@@ -50,7 +50,7 @@ public sealed class SpecialTypeName : TypeName
     public override int GetHashCode() => HashCode.Combine(typeof(SpecialTypeName), Text);
     #endregion
 
-    public override StandardTypeName? WithAttributeSuffix() => null;
+    public override StandardName? WithAttributeSuffix() => null;
 
     public override string ToBareString() => Text;
 

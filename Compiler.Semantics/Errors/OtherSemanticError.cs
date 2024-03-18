@@ -87,13 +87,13 @@ public static class OtherSemanticError
             6014, $"Declaration of type `{type.ContainingNamespaceName}.{type.Name}` is part of a circular definition");
     }
 
-    public static Diagnostic BaseTypeMustBeClass(CodeFile file, StandardTypeName className, ISupertypeNameSyntax baseTypeName)
+    public static Diagnostic BaseTypeMustBeClass(CodeFile file, StandardName className, ISupertypeNameSyntax baseTypeName)
     {
         return new(file, baseTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6015, $"Class `{className}` cannot have base type `{baseTypeName}` because it is not a class");
     }
 
-    public static Diagnostic SupertypeMustBeClassOrTrait(CodeFile file, StandardTypeName typeName, ISupertypeNameSyntax superTypeName)
+    public static Diagnostic SupertypeMustBeClassOrTrait(CodeFile file, StandardName typeName, ISupertypeNameSyntax superTypeName)
     {
         return new(file, superTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6016, $"Type `{typeName}` cannot have super type `{superTypeName}` because it is not a trait or class");

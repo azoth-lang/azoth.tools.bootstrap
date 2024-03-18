@@ -38,7 +38,7 @@ internal class SupertypeNameSyntax : Syntax, ISupertypeNameSyntax
     public SupertypeNameSyntax(TextSpan span, string name, IFixedList<ITypeSyntax> typeArguments)
         : base(span)
     {
-        Name = StandardTypeName.Create(name, typeArguments.Count);
+        Name = StandardName.Create(name, typeArguments.Count);
         TypeArguments = typeArguments;
     }
 

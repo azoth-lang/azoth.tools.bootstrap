@@ -28,7 +28,7 @@ internal class StructDeclarationSyntax : TypeDeclarationSyntax<IStructMemberDecl
         IFixedList<ISupertypeNameSyntax> supertypesNames,
         Func<IStructDeclarationSyntax, (IFixedList<IStructMemberDeclarationSyntax>, TextSpan)> parseMembers)
         : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, structKind as IMoveKeywordToken,
-            nameSpan, StandardTypeName.Create(name, genericParameters.Count), genericParameters, supertypesNames)
+            nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypesNames)
     {
         var (members, bodySpan) = parseMembers(this);
         Members = members;

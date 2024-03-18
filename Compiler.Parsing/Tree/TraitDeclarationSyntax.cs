@@ -25,7 +25,7 @@ internal class TraitDeclarationSyntax : TypeDeclarationSyntax<ITraitMemberDeclar
         IFixedList<ISupertypeNameSyntax> supertypes,
         Func<ITraitDeclarationSyntax, (IFixedList<ITraitMemberDeclarationSyntax>, TextSpan)> parseMembers)
         : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, moveModifier,
-            nameSpan, StandardTypeName.Create(name, genericParameters.Count), genericParameters, supertypes)
+            nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypes)
     {
         var (members, bodySpan) = parseMembers(this);
         Members = members;

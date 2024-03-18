@@ -19,7 +19,7 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
     NamespaceName ContainingNamespace { get; }
     bool IsDeclaredConst { get; }
     bool IsClass { get; }
-    StandardTypeName Name { get; }
+    StandardName Name { get; }
     IFixedList<GenericParameter> GenericParameters { get; }
     bool HasIndependentGenericParameters { get; }
     bool AllowsVariance { get; }

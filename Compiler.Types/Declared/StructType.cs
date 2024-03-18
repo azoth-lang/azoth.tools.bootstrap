@@ -22,7 +22,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isConst,
-        StandardTypeName name,
+        StandardName name,
         IFixedList<GenericParameterType> genericParametersTypes,
         IPromise<FixedSet<BareReferenceType>> superTypes)
     {
@@ -36,7 +36,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isConstType,
-        StandardTypeName name,
+        StandardName name,
         IFixedList<GenericParameterType> genericParametersTypes,
         IPromise<FixedSet<BareReferenceType>> supertypes)
         : base(isConstType, genericParametersTypes)
@@ -57,7 +57,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
 
     bool IDeclaredUserType.IsClass => false;
 
-    public override StandardTypeName Name { get; }
+    public override StandardName Name { get; }
 
     private readonly IPromise<FixedSet<BareReferenceType>> supertypes;
     public override FixedSet<BareReferenceType> Supertypes => supertypes.Result;

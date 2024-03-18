@@ -8,17 +8,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 [Closed(
     typeof(IdentifierName),
     typeof(GenericName))]
-public abstract class StandardTypeName : TypeName
+public abstract class StandardName : TypeName
 {
-    public static StandardTypeName Create(string text, int genericParameterCount)
+    public static StandardName Create(string text, int genericParameterCount)
         => genericParameterCount == 0 ? new IdentifierName(text) : new GenericName(text, genericParameterCount);
 
-    protected StandardTypeName(string text, int genericParameterCount)
+    protected StandardName(string text, int genericParameterCount)
         : base(text, genericParameterCount) { }
 
-    public abstract override StandardTypeName WithAttributeSuffix();
+    public abstract override StandardName WithAttributeSuffix();
 
     public override string ToBareString() => QuotedText;
 
-    public static implicit operator StandardTypeName(string text) => new IdentifierName(text);
+    public static implicit operator StandardName(string text) => new IdentifierName(text);
 }
