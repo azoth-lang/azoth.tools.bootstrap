@@ -599,7 +599,7 @@ public partial class Parser
         if (@return is null)
         {
             Add(ParseError.MissingReturn(File, expectedSelfParameterLocation));
-            @return = new ReturnSyntax(expectedReturnLocation, new SimpleTypeNameSyntax(expectedReturnLocation, SpecialTypeName.Void));
+            @return = new ReturnSyntax(expectedReturnLocation, new SpecialTypeNameSyntax(expectedReturnLocation, SpecialTypeName.Void));
         }
 
         var span = TextSpan.Covering(get, body.Span);

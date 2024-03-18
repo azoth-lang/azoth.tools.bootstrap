@@ -96,9 +96,11 @@ ExpressionBody: Body = ResultStatement Statements:Statement*;
 // ---------- Types
 Type;
 TypeName: Type, 'IHasContainingLexicalScope' = Name:'TypeName' ReferencedSymbol:'Promise<TypeSymbol?>';
-StandardTypeName: TypeName;
-SimpleTypeName: StandardTypeName;
-GenericTypeName: StandardTypeName = TypeArguments:Type*;
+StandardTypeName: TypeName = Name:'StandardName';
+SimpleTypeName: TypeName;
+IdentifierTypeName: StandardTypeName, SimpleTypeName = Name:'IdentifierName';
+SpecialTypeName: SimpleTypeName = Name:'SpecialTypeName';
+GenericTypeName: StandardTypeName =  Name:'GenericName' TypeArguments:Type*;
 QualifiedTypeName: TypeName = Context:TypeName QualifiedName:StandardTypeName;
 OptionalType: Type = Referent:Type;
 CapabilityType: Type = Capability Referent:Type;

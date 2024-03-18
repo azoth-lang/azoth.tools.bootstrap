@@ -160,7 +160,9 @@ public static class ISyntaxExtensions
                 foreach (var child in n.Statements)
                     yield return child;
                 yield break;
-            case ISimpleTypeNameSyntax n:
+            case IIdentifierTypeNameSyntax n:
+                yield break;
+            case ISpecialTypeNameSyntax n:
                 yield break;
             case IGenericTypeNameSyntax n:
                 foreach (var child in n.TypeArguments)

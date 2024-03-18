@@ -3,7 +3,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Names;
 
 /// <summary>
-/// Name for a type that is not a special name.
+/// Name that is not a special name. (Could be generic or non-generic.)
 /// </summary>
 [Closed(
     typeof(IdentifierName),

@@ -12,15 +12,17 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal sealed class GenericTypeNameSyntax : TypeSyntax, IGenericTypeNameSyntax
+/// <summary>
+/// The unqualified name of a type.
+/// </summary>
+internal sealed class SpecialTypeNameSyntax : TypeSyntax, ISpecialTypeNameSyntax
 {
     private LexicalScope? containingLexicalScope;
     public LexicalScope ContainingLexicalScope
     {
         [DebuggerStepThrough]
-        get =>
-            containingLexicalScope
-            ?? throw new InvalidOperationException($"{nameof(ContainingLexicalScope)} not yet assigned");
+        get => containingLexicalScope
+               ?? throw new InvalidOperationException($"{nameof(ContainingLexicalScope)} not yet assigned");
         [DebuggerStepThrough]
         set
         {
@@ -29,29 +31,24 @@ internal sealed class GenericTypeNameSyntax : TypeSyntax, IGenericTypeNameSyntax
             containingLexicalScope = value;
         }
     }
-    public GenericName Name { get; }
-    StandardName IStandardTypeNameSyntax.Name => Name;
+    public SpecialTypeName Name { get; }
     TypeName ITypeNameSyntax.Name => Name;
     public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
-    public IFixedList<ITypeSyntax> TypeArguments { get; }
 
-    public GenericTypeNameSyntax(TextSpan span, string name, IFixedList<ITypeSyntax> typeArguments)
+    public SpecialTypeNameSyntax(TextSpan span, SpecialTypeName name)
         : base(span)
     {
-        TypeArguments = typeArguments;
-        Name = new GenericName(name, typeArguments.Count);
+        Name = name;
     }
 
     public IEnumerable<IPromise<TypeSymbol>> LookupInContainingScope(bool withAttributeSuffix)
     {
+        if (withAttributeSuffix) throw new NotSupportedException("Cannot use special type name as attribute");
         if (containingLexicalScope is null)
             throw new InvalidOperationException($"Can't lookup type name without {nameof(ContainingLexicalScope)}");
 
-        var name = withAttributeSuffix ? Name.WithAttributeSuffix() : Name;
-
-        return containingLexicalScope.Lookup(name).Select(p => p.Downcast().As<UserTypeSymbol>())
-                                     .WhereNotNull();
+        return containingLexicalScope.Lookup(Name).Select(p => p.Downcast().As<TypeSymbol>()).WhereNotNull();
     }
 
-    public override string ToString() => $"{Name.ToBareString()}[{string.Join(", ", TypeArguments)}]";
+    public override string ToString() => Name.ToString();
 }

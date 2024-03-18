@@ -133,7 +133,7 @@ public partial class Parser
             return new GenericTypeNameSyntax(TextSpan.Covering(identifier.Span, generics.Span),
                 name, generics.Arguments);
 
-        return new SimpleTypeNameSyntax(identifier.Span, name);
+        return new IdentifierTypeNameSyntax(identifier.Span, name);
     }
 
     private IFixedList<ITypeNameSyntax> ParseTypeNames()
@@ -178,7 +178,7 @@ public partial class Parser
             _ => throw ExhaustiveMatch.Failed(keyword)
         };
 
-        return new SimpleTypeNameSyntax(keyword.Span, name);
+        return new SpecialTypeNameSyntax(keyword.Span, name);
     }
 
     private IFunctionTypeSyntax ParseFunctionType()

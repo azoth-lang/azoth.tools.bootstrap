@@ -13,9 +13,9 @@ using Azoth.Tools.Bootstrap.Framework;
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 /// <summary>
-/// The unqualified name of a type.
+/// The unqualified name of a non-special type.
 /// </summary>
-internal sealed class SimpleTypeNameSyntax : TypeSyntax, ISimpleTypeNameSyntax
+internal sealed class IdentifierTypeNameSyntax : TypeSyntax, IIdentifierTypeNameSyntax
 {
     private LexicalScope? containingLexicalScope;
     public LexicalScope ContainingLexicalScope
@@ -31,16 +31,12 @@ internal sealed class SimpleTypeNameSyntax : TypeSyntax, ISimpleTypeNameSyntax
             containingLexicalScope = value;
         }
     }
-    public TypeName Name { get; }
+    public IdentifierName Name { get; }
+    StandardName IStandardTypeNameSyntax.Name => Name;
+    TypeName ITypeNameSyntax.Name => Name;
     public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
 
-    public SimpleTypeNameSyntax(TextSpan span, string name)
-        : base(span)
-    {
-        Name = name;
-    }
-
-    public SimpleTypeNameSyntax(TextSpan span, SpecialTypeName name)
+    public IdentifierTypeNameSyntax(TextSpan span, string name)
         : base(span)
     {
         Name = name;

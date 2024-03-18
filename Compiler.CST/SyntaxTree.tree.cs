@@ -452,6 +452,7 @@ public partial interface ITypeSyntax : ISyntax
 
 [Closed(
     typeof(IStandardTypeNameSyntax),
+    typeof(ISimpleTypeNameSyntax),
     typeof(IQualifiedTypeNameSyntax))]
 public partial interface ITypeNameSyntax : ITypeSyntax, IHasContainingLexicalScope
 {
@@ -460,18 +461,33 @@ public partial interface ITypeNameSyntax : ITypeSyntax, IHasContainingLexicalSco
 }
 
 [Closed(
-    typeof(ISimpleTypeNameSyntax),
+    typeof(IIdentifierTypeNameSyntax),
     typeof(IGenericTypeNameSyntax))]
 public partial interface IStandardTypeNameSyntax : ITypeNameSyntax
 {
+    new StandardName Name { get; }
 }
 
-public partial interface ISimpleTypeNameSyntax : IStandardTypeNameSyntax
+[Closed(
+    typeof(IIdentifierTypeNameSyntax),
+    typeof(ISpecialTypeNameSyntax))]
+public partial interface ISimpleTypeNameSyntax : ITypeNameSyntax
 {
+}
+
+public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax, ISimpleTypeNameSyntax
+{
+    new IdentifierName Name { get; }
+}
+
+public partial interface ISpecialTypeNameSyntax : ISimpleTypeNameSyntax
+{
+    new SpecialTypeName Name { get; }
 }
 
 public partial interface IGenericTypeNameSyntax : IStandardTypeNameSyntax
 {
+    new GenericName Name { get; }
     IFixedList<ITypeSyntax> TypeArguments { get; }
 }
 
