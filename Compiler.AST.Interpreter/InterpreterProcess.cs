@@ -1126,7 +1126,7 @@ public class InterpreterProcess
     }
 
     private static AzothValue IdentityHash(AzothValue value)
-        => AzothValue.U64((ulong)value.ObjectValue.GetHashCode());
+        => AzothValue.NUInt((nuint)value.ObjectValue.GetHashCode());
 
     private static AzothValue Remainder(
         AzothValue dividend,

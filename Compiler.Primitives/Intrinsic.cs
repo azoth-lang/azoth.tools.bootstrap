@@ -73,20 +73,20 @@ public static class Intrinsic
 
         _ = BuildPromiseSymbol(azothNamespace, tree);
 
-        var rawBoundedListType = BuildSpecializedCollectionSymbols(azothNamespace, tree);
-        var readBytesType = rawBoundedListType.WithRead(FixedList.Create<DataType>(DataType.Void, DataType.Byte));
+        var rawHybridBoundedListType = BuildSpecializedCollectionSymbols(azothNamespace, tree);
+        var readBytesType = rawHybridBoundedListType.WithRead(FixedList.Create<DataType>(DataType.Void, DataType.Byte));
 
-        // fn print_raw_utf8_bytes(bytes: Raw_Bounded_List[byte], start: size, byte_count: size)
+        // fn print_raw_utf8_bytes(bytes: Raw_Hybrid_Bounded_List[byte], start: size, byte_count: size)
         var print = Function(intrinsicsNamespace, "print_raw_utf8_bytes",
             Params(readBytesType, DataType.Size, DataType.Size));
         tree.Add(print);
 
-        // fn read_raw_utf8_bytes_line(bytes: mut Raw_Bounded_List[byte], start: size) -> size
+        // fn read_raw_utf8_bytes_line(bytes: mut Raw_Hybrid_Bounded_List[byte], start: size) -> size
         var readLine = Function(intrinsicsNamespace, "read_raw_utf8_bytes_line",
             Params(DataType.Size, DataType.Size), Return.Size);
         tree.Add(readLine);
 
-        // fn ABORT_RAW_UTF8_BYTES(bytes: Raw_Bounded_List[byte], start: size, byte_count: size) -> never
+        // fn ABORT_RAW_UTF8_BYTES(bytes: Raw_Hybrid_Bounded_List[byte], start: size, byte_count: size) -> never
         var abort = Function(intrinsicsNamespace, "ABORT_RAW_UTF8_BYTES",
             Params(readBytesType, DataType.Size, DataType.Size), Return.Never);
         tree.Add(abort);

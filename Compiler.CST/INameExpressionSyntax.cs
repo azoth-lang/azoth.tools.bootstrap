@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
-public interface INameExpressionSyntax<TSymbol>
+public interface INameExpressionSyntax<out TSymbol>
 {
     TextSpan Span { get; }
     IPromise<TSymbol?> ReferencedSymbol { get; }

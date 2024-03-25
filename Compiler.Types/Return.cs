@@ -17,6 +17,7 @@ public readonly record struct Return(DataType Type)
     public static readonly Return Never = new(DataType.Never);
     public static readonly Return Int = new(DataType.Int);
     public static readonly Return UInt64 = new(DataType.UInt64);
+    public static readonly Return NUInt = new(DataType.NUInt);
 
     public bool IsFullyKnown => Type.IsFullyKnown;
 
