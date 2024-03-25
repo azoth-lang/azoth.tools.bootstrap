@@ -74,6 +74,7 @@ public partial interface IElseClauseSyntax : ISyntax
     typeof(IBlockExpressionSyntax))]
 public partial interface IBlockOrResultSyntax : IElseClauseSyntax
 {
+    IPromise<DataType?> DataType { get; }
 }
 
 [Closed(
@@ -676,6 +677,7 @@ public partial interface IAssignableExpressionSyntax : ITypedExpressionSyntax
 
 public partial interface IBlockExpressionSyntax : IDataTypedExpressionSyntax, IBlockOrResultSyntax, IBodyOrBlockSyntax
 {
+    new Promise<DataType> DataType { get; }
 }
 
 public partial interface INewObjectExpressionSyntax : IDataTypedExpressionSyntax

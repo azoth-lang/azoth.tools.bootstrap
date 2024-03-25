@@ -26,7 +26,7 @@ UsingDirective = Name:'NamespaceName';
 // ---------- Special Parts
 BodyOrBlock = Statements:Statement*;
 ElseClause;
-BlockOrResult: ElseClause;
+BlockOrResult: ElseClause = DataType:'IPromise<DataType?>';
 
 // ---------- Bindings
 Binding = IsMutableBinding:'bool' Symbol:'IPromise<BindingSymbol>';
@@ -133,7 +133,7 @@ Expression = DataType:'IPromise<DataType?>' ImplicitConversion:'Conversion' Conv
 TypedExpression: Expression = DataType:'IPromise<DataType>';
 DataTypedExpression: TypedExpression = DataType:'Promise<DataType>';
 AssignableExpression: TypedExpression = ReferencedSymbol:'IPromise<Symbol?>';
-BlockExpression: DataTypedExpression, BlockOrResult, BodyOrBlock = Statements:Statement*;
+BlockExpression: DataTypedExpression, BlockOrResult, BodyOrBlock = Statements:Statement* DataType:'Promise<DataType>';
 NewObjectExpression: DataTypedExpression = Type:TypeName ConstructorName:'IdentifierName'? ConstructorNameSpan:'TextSpan'? Arguments:Expression* ReferencedSymbol:'Promise<ConstructorSymbol?>';
 UnsafeExpression: DataTypedExpression = Expression;
 

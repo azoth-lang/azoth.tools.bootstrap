@@ -31,7 +31,7 @@ public partial class TreeCodeTemplate
     /// 1. there is no definition of the property in the parent
     /// 2. the single parent definition has a different type
     /// 3. the property is defined in multiple parents, in that case it is
-    ///    ambitious unless it is redefined in the current interface.
+    ///    ambiguous unless it is redefined in the current interface.
     /// </summary>
     private bool NeedsDeclared(GrammarRule rule, GrammarProperty property)
     {

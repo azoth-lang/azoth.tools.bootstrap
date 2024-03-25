@@ -8,5 +8,4 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 /// </summary>
 public partial interface IBlockExpressionSyntax
 {
-    new Promise<DataType> DataType { get; }
 }
