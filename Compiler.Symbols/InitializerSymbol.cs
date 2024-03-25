@@ -9,30 +9,30 @@ using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-/// <remarks>Named initializers show up as invocable symbols inside of their containing type.
-/// Unnamed initializers show up as invocable symbols alongside their contain type.</remarks>
+/// <remarks>Named initializers show up as invocable symbols inside of their containing type.</remarks>
 public sealed class InitializerSymbol : FunctionOrInitializerSymbol
 {
     public override UserTypeSymbol ContextTypeSymbol { get; }
-    public override Symbol ContainingSymbol { get; }
-    public IdentifierName? InitializerName { get; }
+    public override UserTypeSymbol ContainingSymbol { get; }
+    public override IdentifierName? Name { get; }
     public ValueType SelfParameterType { get; }
     public ValueType ReturnType { get; }
+    public FunctionType InitializerGroupType { get; }
 
     public InitializerSymbol(
         UserTypeSymbol containingTypeSymbol,
         IdentifierName? initializerName,
         ValueType selfParameterType,
         IFixedList<Parameter> parameterTypes)
-        : base(initializerName ?? containingTypeSymbol.Name.Text, parameterTypes,
+        : base(parameterTypes,
             new Return(((StructType)containingTypeSymbol.DeclaresType).ToInitializerReturn(selfParameterType, parameterTypes)))
     {
-        bool isNamed = initializerName is not null;
         ContextTypeSymbol = containingTypeSymbol;
-        ContainingSymbol = isNamed ? containingTypeSymbol : containingTypeSymbol.ContainingSymbol;
-        InitializerName = initializerName;
+        ContainingSymbol = containingTypeSymbol;
+        Name = initializerName;
         SelfParameterType = selfParameterType;
-        ReturnType = (ValueType)base.Return.Type;
+        ReturnType = (ValueType)Return.Type;
+        InitializerGroupType = new FunctionType(parameterTypes, Return);
     }
 
     public static InitializerSymbol CreateDefault(UserTypeSymbol containingTypeSymbol)
@@ -46,16 +46,16 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
         if (ReferenceEquals(this, other)) return true;
         return other is InitializerSymbol otherInitializer
             && ContextTypeSymbol == otherInitializer.ContextTypeSymbol
-            && InitializerName == otherInitializer.InitializerName
+            && Name == otherInitializer.Name
             && Parameters.SequenceEqual(otherInitializer.Parameters);
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContextTypeSymbol, InitializerName, Parameters);
+        => HashCode.Combine(ContextTypeSymbol, Name, Parameters);
 
     public override string ToILString()
     {
-        var name = InitializerName is not null ? $".{InitializerName}" : "";
+        var name = Name is not null ? $".{Name}" : "";
         var selfParameterType = new Parameter(false, SelfParameterType);
         return $"{ContextTypeSymbol}::init{name}({string.Join(", ", Parameters.Prepend(selfParameterType).Select(d => d.ToILString()))})";
     }

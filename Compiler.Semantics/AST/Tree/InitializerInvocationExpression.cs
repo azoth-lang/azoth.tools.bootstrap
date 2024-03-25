@@ -27,7 +27,7 @@ internal sealed class InitializerInvocationExpression : Expression, IInitializer
 
     public override string ToString()
     {
-        var name = ReferencedSymbol.InitializerName is null ? $".{ReferencedSymbol.InitializerName}" : "";
+        var name = ReferencedSymbol.Name is null ? $".{ReferencedSymbol.Name}" : "";
         return $"{ReferencedSymbol.ContextTypeSymbol}::init{name}({string.Join(", ", Arguments)})";
     }
 }

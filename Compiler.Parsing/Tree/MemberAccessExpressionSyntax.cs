@@ -3,37 +3,45 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class MemberAccessExpressionSyntax : NameExpressionSyntax, IMemberAccessExpressionSyntax
+internal sealed class MemberAccessExpressionSyntax : NameExpressionSyntax, IMemberAccessExpressionSyntax
 {
     public IExpressionSyntax Context { [DebuggerStepThrough] get; }
     public AccessOperator AccessOperator { [DebuggerStepThrough] get; }
-    public IStandardNameExpressionSyntax Member { [DebuggerStepThrough] get; }
-    public override Promise<DataType?> DataType { get; } = new();
-    Promise<DataType> IDataTypedExpressionSyntax.DataType => DataType!;
+    public StandardName MemberName { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
+    public TextSpan MemberNameSpan { get; }
+    public override Promise<IMemberAccessSyntaxSemantics> Semantics { [DebuggerStepThrough] get; } = new();
+    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
+    public override IPromise<DataType?> DataType { [DebuggerStepThrough] get; }
     IPromise<DataType> ITypedExpressionSyntax.DataType => DataType!;
-    public override Promise<Symbol?> ReferencedSymbol => Member.ReferencedSymbol;
-    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => Member.ReferencedSymbol;
-    IPromise<Symbol?> IAssignableExpressionSyntax.ReferencedSymbol => Member.ReferencedSymbol;
+    public override IPromise<Symbol?> ReferencedSymbol { [DebuggerStepThrough] get; }
 
     public MemberAccessExpressionSyntax(
         TextSpan span,
         IExpressionSyntax context,
         AccessOperator accessOperator,
-        IStandardNameExpressionSyntax member)
+        IIdentifierNameExpressionSyntax member)
         : base(span)
     {
         Context = context;
         AccessOperator = accessOperator;
-        Member = member;
+        MemberName = member.Name!;
+        TypeArguments = FixedList.Empty<ITypeSyntax>();
+        DataType = Semantics.Select(s => s.Type).Flatten();
+        ReferencedSymbol = Semantics.Select(s => s.Symbol).Flatten();
+        MemberNameSpan = member.Span;
     }
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
     public override string ToString()
-        => $"{Context.ToGroupedString(ExpressionPrecedence)}{AccessOperator.ToSymbolString()}{Member}";
+        => $"{Context.ToGroupedString(ExpressionPrecedence)}{AccessOperator.ToSymbolString()}{MemberName}";
 }

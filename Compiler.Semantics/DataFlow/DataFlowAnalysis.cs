@@ -31,7 +31,7 @@ public static class DataFlowAnalysis
 {
     public static void Check<TState>(
         IForwardDataFlowAnalyzer<TState> strategy,
-        FixedSet<IExecutableDeclaration> declarations,
+        IFixedSet<IExecutableDeclaration> declarations,
         ISymbolTree symbolTree,
         Diagnostics diagnostics)
         where TState : class
@@ -43,7 +43,7 @@ public static class DataFlowAnalysis
 
     public static void Check<TState>(
         IBackwardDataFlowAnalyzer<TState> strategy,
-        FixedSet<IExecutableDeclaration> declarations,
+        IFixedSet<IExecutableDeclaration> declarations,
         ISymbolTree symbolTree,
         Diagnostics diagnostics)
         where TState : class

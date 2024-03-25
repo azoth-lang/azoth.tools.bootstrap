@@ -14,6 +14,7 @@ public sealed class MethodSymbol : InvocableSymbol
     public MethodKind Kind { get; }
     public override IdentifierName Name { get; }
     public SelfParameter SelfParameterType { get; }
+    public FunctionType MethodGroupType { get; }
 
     public MethodSymbol(
         TypeSymbol containingSymbol,
@@ -37,6 +38,7 @@ public sealed class MethodSymbol : InvocableSymbol
         Name = name;
         SelfParameterType = selfParameterType;
         Kind = kind;
+        MethodGroupType = new FunctionType(parameters, @return);
     }
 
     public override bool Equals(Symbol? other)

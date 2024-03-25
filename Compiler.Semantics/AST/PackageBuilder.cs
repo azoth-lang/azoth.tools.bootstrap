@@ -9,10 +9,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST;
 
 internal class PackageBuilder
 {
-    public FixedSet<IDeclaration> Declarations { get; }
-    public FixedSet<IDeclaration> TestingDeclarations { get; }
-    public FixedSet<INonMemberDeclaration> NonMemberDeclarations { get; }
-    public FixedSet<INonMemberDeclaration> NonMemberTestingDeclarations { get; }
+    public IFixedSet<IDeclaration> Declarations { get; }
+    public IFixedSet<IDeclaration> TestingDeclarations { get; }
+    public IFixedSet<INonMemberDeclaration> NonMemberDeclarations { get; }
+    public IFixedSet<INonMemberDeclaration> NonMemberTestingDeclarations { get; }
     public FixedSymbolTree SymbolTree { get; }
     public FixedSymbolTree TestingSymbolTree { get; }
     public Diagnostics Diagnostics { get; }
@@ -20,8 +20,8 @@ internal class PackageBuilder
     public IFunctionDeclaration? EntryPoint { get; set; }
 
     public PackageBuilder(
-        FixedSet<INonMemberDeclaration> nonMemberDeclarations,
-        FixedSet<INonMemberDeclaration> nonMemberTestingDeclarations,
+        IFixedSet<INonMemberDeclaration> nonMemberDeclarations,
+        IFixedSet<INonMemberDeclaration> nonMemberTestingDeclarations,
         FixedSymbolTree symbolTree,
         FixedSymbolTree testingSymbolTree,
         Diagnostics diagnostics,

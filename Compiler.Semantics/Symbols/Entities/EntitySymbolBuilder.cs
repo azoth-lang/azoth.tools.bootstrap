@@ -43,7 +43,7 @@ public class EntitySymbolBuilder
         builder.Build(package.TestingEntityDeclarations);
     }
 
-    private void Build(FixedSet<IEntityDeclarationSyntax> entities)
+    private void Build(IFixedSet<IEntityDeclarationSyntax> entities)
     {
         // Process all types first because they may be referenced by functions etc.
         var typeDeclarations = new TypeSymbolBuilder(this, entities.OfType<ITypeDeclarationSyntax>());
@@ -210,7 +210,7 @@ public class EntitySymbolBuilder
         var typeParameters = BuildGenericParameterTypes(@class);
         var genericParameterSymbols = BuildGenericParameterSymbols(@class, typeParameters).ToFixedList();
 
-        var superTypes = new AcyclicPromise<FixedSet<BareReferenceType>>();
+        var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
         var classType = ObjectType.CreateClass(packageName, @class.ContainingNamespaceName,
             @class.IsAbstract, @class.IsConst, @class.Name, typeParameters, superTypes);
 
@@ -239,7 +239,7 @@ public class EntitySymbolBuilder
         var typeParameters = BuildGenericParameterTypes(@struct);
         var genericParameterSymbols = BuildGenericParameterSymbols(@struct, typeParameters).ToFixedList();
 
-        var superTypes = new AcyclicPromise<FixedSet<BareReferenceType>>();
+        var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
         var structType = StructType.Create(packageName, @struct.ContainingNamespaceName,
             @struct.IsConst, @struct.Name, typeParameters, superTypes);
 
@@ -268,7 +268,7 @@ public class EntitySymbolBuilder
         var typeParameters = BuildGenericParameterTypes(trait);
         var genericParameterSymbols = BuildGenericParameterSymbols(trait, typeParameters).ToFixedList();
 
-        var superTypes = new AcyclicPromise<FixedSet<BareReferenceType>>();
+        var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
         var traitType = ObjectType.CreateTrait(packageName, trait.ContainingNamespaceName,
             trait.IsConst, trait.Name, typeParameters, superTypes);
 
@@ -311,7 +311,7 @@ public class EntitySymbolBuilder
 
     private void BuildSupertypes(
         ITypeDeclarationSyntax syn,
-        AcyclicPromise<FixedSet<BareReferenceType>> supertypes,
+        AcyclicPromise<IFixedSet<BareReferenceType>> supertypes,
         TypeSymbolBuilder typeDeclarations)
     {
         if (!supertypes.TryBeginFulfilling(AddCircularDefinitionError)) return;

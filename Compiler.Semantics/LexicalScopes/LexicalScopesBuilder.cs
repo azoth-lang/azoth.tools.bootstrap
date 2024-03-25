@@ -34,7 +34,7 @@ public class LexicalScopesBuilder
     }
 
     private static void BuildFor(
-        FixedSet<ICompilationUnitSyntax> compilationUnits,
+        IFixedSet<ICompilationUnitSyntax> compilationUnits,
         PackagesScope packagesScope,
         IFixedList<NonMemberSymbol> declarationSymbols)
     {
@@ -61,11 +61,6 @@ public class LexicalScopesBuilder
                                     .OfType<INonMemberEntityDeclarationSyntax>()
                                     .Select(NonMemberSymbol.For);
 
-        var packageUnnamedInitializerSymbols = packageEntityDeclarations
-                                               .OfType<IInitializerDeclarationSyntax>()
-                                               .Where(initializer => initializer.Name is null)
-                                               .Select(NonMemberSymbol.For);
-
         // TODO it might be better to go to the declarations and get their symbols (once that is implemented)
         var referencedSymbols = referencedSymbolTrees
                                        .SelectMany(t => t.Symbols)
@@ -75,7 +70,6 @@ public class LexicalScopesBuilder
         return primitiveEntitySymbols
                .Concat(packageNamespaces)
                .Concat(packageNonMemberEntitySymbols)
-               .Concat(packageUnnamedInitializerSymbols)
                .Concat(referencedSymbols)
                .ToFixedList();
     }
@@ -121,7 +115,7 @@ public class LexicalScopesBuilder
         return allPackagesGlobalScope;
     }
 
-    private static FixedDictionary<TypeName, FixedSet<IPromise<Symbol>>> ToDictionary(
+    private static FixedDictionary<TypeName, IFixedSet<IPromise<Symbol>>> ToDictionary(
         IEnumerable<NonMemberSymbol> symbols)
     {
         return symbols.GroupBy(s => s.Name, s => s.Symbol)

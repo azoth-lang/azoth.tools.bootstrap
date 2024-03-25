@@ -17,4 +17,14 @@ public static class PromiseExtensions
     /// </summary>
     public static IPromise<S> Select<T, S>(this IPromise<T> promise, Func<T, S> selector)
         => new MappedPromise<T, S>(promise, selector);
+
+    /// <summary>
+    /// Flatten nested promises.
+    /// </summary>
+    public static IPromise<T> Flatten<T>(this IPromise<IPromise<T>> promise)
+    {
+        if (promise.IsFulfilled)
+            return promise.Result;
+        return new FlattenedPromise<T>(promise);
+    }
 }

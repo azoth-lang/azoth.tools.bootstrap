@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 
@@ -28,44 +29,62 @@ public class TypeFulfillmentValidator : SyntaxWalker
                 return;
             case ITypeSyntax syn:
                 WalkChildren(syn);
-                CheckAssigned(syn, syn.NamedType);
+                ValidateAssigned(syn, syn.NamedType);
                 return;
             case IForeachExpressionSyntax syn:
                 WalkChildren(syn);
-                CheckAssigned(syn, syn.ConvertedDataType);
+                ValidateAssigned(syn, syn.ConvertedDataType);
                 return;
             case ISelfExpressionSyntax syn:
-                CheckAssigned(syn, syn.DataType);
-                syn.Pseudotype.Assigned();
+                ValidateAssigned(syn, syn.DataType);
+                ValidateAssigned(syn, syn.Pseudotype);
                 return;
             case INameExpressionSyntax exp:
                 WalkChildren(exp);
-                CheckFulfilled(exp, exp.DataType);
+                ValidateFulfilled(exp, exp.DataType);
                 return;
             case ITypedExpressionSyntax exp:
                 WalkChildren(exp);
-                CheckAssigned(exp, exp.ConvertedDataType);
+                ValidateAssigned(exp, exp.ConvertedDataType);
                 return;
         }
 
         WalkChildren(syntax);
     }
 
-    private static void CheckFulfilled(ISyntax syntax, IPromise<DataType?> type)
+    private static void ValidateFulfilled(ISyntax syntax, IPromise<DataType?> type)
     {
         if (!type.IsFulfilled)
             throw new Exception($"Syntax doesn't have a fulfilled type '{syntax}'");
     }
 
-    private static void CheckAssigned(ISyntax syntax, DataType? type)
+    private static void ValidateAssigned(ISyntax syntax, DataType? type)
     {
         if (type is null)
             throw new Exception($"Syntax has no type '{syntax}'");
     }
 
-    private static void CheckAssigned(ISyntax syntax, IPromise<DataType?> type)
+    private static void ValidateAssigned(ISyntax syntax, IPromise<DataType?> type)
     {
-        CheckFulfilled(syntax, type);
-        CheckAssigned(syntax, type.Result);
+        ValidateFulfilled(syntax, type);
+        ValidateAssigned(syntax, type.Result);
+    }
+
+    private static void ValidateFulfilled(ISyntax syntax, IPromise<Pseudotype?> type)
+    {
+        if (!type.IsFulfilled)
+            throw new Exception($"Syntax doesn't have a fulfilled pseudotype '{syntax}'");
+    }
+
+    private static void ValidateAssigned(ISyntax syntax, Pseudotype? type)
+    {
+        if (type is null)
+            throw new Exception($"Syntax has no pseudotype '{syntax}'");
+    }
+
+    private static void ValidateAssigned(ISyntax syntax, IPromise<Pseudotype?> type)
+    {
+        ValidateFulfilled(syntax, type);
+        ValidateAssigned(syntax, type.Result);
     }
 }

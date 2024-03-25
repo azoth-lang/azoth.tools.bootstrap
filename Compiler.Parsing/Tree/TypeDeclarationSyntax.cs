@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
@@ -13,16 +14,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyntax, ITypeDeclarationSyntax
     where TMember : IMemberDeclarationSyntax
 {
-    public IAccessModifierToken? AccessModifier { get; }
-    public IConstKeywordToken? ConstModifier { get; }
-    public bool IsConst { get; }
-    public IMoveKeywordToken? MoveModifier { get; }
-    public bool IsMove { get; }
-    public new StandardName Name { get; }
-    public IFixedList<IGenericParameterSyntax> GenericParameters { get; }
-    public new AcyclicPromise<UserTypeSymbol> Symbol { get; }
-    public IFixedList<ISupertypeNameSyntax> SupertypeNames { get; }
-    public abstract IFixedList<TMember> Members { get; }
+    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
+    public bool IsConst { [DebuggerStepThrough] get; }
+    public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
+    public bool IsMove { [DebuggerStepThrough] get; }
+    public new StandardName Name { [DebuggerStepThrough] get; }
+    public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
+    public new AcyclicPromise<UserTypeSymbol> Symbol { [DebuggerStepThrough] get; }
+    public IFixedList<ISupertypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
+    public abstract IFixedList<TMember> Members { [DebuggerStepThrough] get; }
     IFixedList<IMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => members.Value;
     private readonly Lazy<IFixedList<IMemberDeclarationSyntax>> members;
 

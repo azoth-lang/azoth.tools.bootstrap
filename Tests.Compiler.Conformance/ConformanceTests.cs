@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -125,7 +126,7 @@ public partial class ConformanceTests
         catch (FatalCompilationErrorException ex)
         {
             ReportSupportCompilationErrors(ex.Diagnostics);
-            throw new UnreachableCodeException();
+            throw new UnreachableException();
         }
     }
 

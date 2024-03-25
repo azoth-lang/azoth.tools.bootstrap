@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -15,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 /// <summary>
 /// A name of a variable or namespace
 /// </summary>
-internal  sealed class SpecialTypeNameExpressionSyntax : NameExpressionSyntax, ISpecialTypeNameExpressionSyntax
+internal sealed class SpecialTypeNameExpressionSyntax : NameExpressionSyntax, ISpecialTypeNameExpressionSyntax
 {
     private LexicalScope? containingLexicalScope;
 
@@ -35,6 +36,7 @@ internal  sealed class SpecialTypeNameExpressionSyntax : NameExpressionSyntax, I
     }
     // A null name means this syntax was generated as an assumed missing name and the name is unknown
     public SpecialTypeName Name { get; }
+    public override Promise<SpecialTypeNameExpressionSyntaxSemantics> Semantics { [DebuggerStepThrough] get; } = new();
     public override Promise<DataType?> DataType => Promise.Null<DataType>();
     public override Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
     IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;

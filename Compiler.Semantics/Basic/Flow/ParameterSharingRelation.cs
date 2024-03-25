@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -14,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 public sealed class ParameterSharingRelation
 {
     public IFixedList<BindingSymbol> Symbols { get; }
-    public FixedSet<SharingSetSnapshot> SharingSets { get; }
+    public IFixedSet<SharingSetSnapshot> SharingSets { get; }
 
     public ParameterSharingRelation(IEnumerable<BindingSymbol> parameterSymbols)
     {
@@ -26,7 +27,7 @@ public sealed class ParameterSharingRelation
         => string.Join(", ", SharingSets.Select(s => $"{{{string.Join(", ", s)}}}"));
 
     #region Static Sharing Sets Builder Methods
-    private static FixedSet<SharingSetSnapshot> BuildSharingSets(IFixedList<BindingSymbol> parameterSymbols)
+    private static IFixedSet<SharingSetSnapshot> BuildSharingSets(IFixedList<BindingSymbol> parameterSymbols)
     {
         var sharingSets = new HashSet<SharingSet>();
         uint lentParameterNumber = 0;
@@ -50,7 +51,7 @@ public sealed class ParameterSharingRelation
                 nonLentParametersSet ??= DeclareVariable(sharingSets, ExternalReference.NonLentParameters, false);
 
                 if (!nonLentParametersSet.UnionWith(setForParameter))
-                    throw new UnreachableCodeException("Union failed.");
+                    throw new UnreachableException("Union failed.");
 
                 sharingSets.Remove(setForParameter);
             }

@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class Promise<T> : IPromise<T>
 {
-    internal static Promise<T> Default { get; } = new();
+    internal static Promise<T> Default { get; } = new(default(T)!);
 
     public bool IsFulfilled { get; private set; }
     private T value = default!;

@@ -157,6 +157,7 @@ public partial class Parser
                     {
                         // Member Access
                         var accessOperator = BuildAccessOperator(Tokens.ConsumeToken<IAccessOperatorToken>());
+                        // TODO support generic names
                         var nameSyntax = ParseIdentifierName();
                         var memberAccessSpan = TextSpan.Covering(expression.Span, nameSyntax.Span);
                         expression = new MemberAccessExpressionSyntax(memberAccessSpan, expression, accessOperator, nameSyntax);

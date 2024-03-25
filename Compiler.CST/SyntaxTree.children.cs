@@ -311,7 +311,8 @@ public static class ISyntaxExtensions
                 yield break;
             case IMemberAccessExpressionSyntax n:
                 yield return n.Context;
-                yield return n.Member;
+                foreach (var child in n.TypeArguments)
+                    yield return child;
                 yield break;
             case IMoveExpressionSyntax n:
                 yield return n.Referent;

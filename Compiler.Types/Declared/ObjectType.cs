@@ -14,9 +14,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
 {
-    private static readonly FixedSet<BareReferenceType> AnyType
+    private static readonly IFixedSet<BareReferenceType> AnyType
         = Declared.AnyType.Instance.BareType.Yield().ToFixedSet<BareReferenceType>();
-    private static readonly Promise<FixedSet<BareReferenceType>> AnyTypePromise = new(AnyType);
+    private static readonly Promise<IFixedSet<BareReferenceType>> AnyTypePromise = new(AnyType);
 
     public static ObjectType CreateClass(
         IdentifierName containingPackage,
@@ -42,7 +42,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isConst,
         string name,
         IFixedList<GenericParameterType> genericParameterTypes,
-        IPromise<FixedSet<BareReferenceType>> superTypes)
+        IPromise<IFixedSet<BareReferenceType>> superTypes)
         => new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true,
             StandardName.Create(name, genericParameterTypes.Count), genericParameterTypes, superTypes);
 
@@ -53,7 +53,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isConst,
         StandardName name,
         IFixedList<GenericParameterType> genericParametersTypes,
-        IPromise<FixedSet<BareReferenceType>> superTypes)
+        IPromise<IFixedSet<BareReferenceType>> superTypes)
     {
         Requires.That(nameof(genericParametersTypes), name.GenericParameterCount == genericParametersTypes.Count, "Count must match name count");
         return new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true, name,
@@ -66,7 +66,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isConst,
         StandardName name,
         IFixedList<GenericParameterType> genericParametersTypes,
-        IPromise<FixedSet<BareReferenceType>> superTypes)
+        IPromise<IFixedSet<BareReferenceType>> superTypes)
     {
         Requires.That(nameof(genericParametersTypes), name.GenericParameterCount == genericParametersTypes.Count,
             "Count must match name count");
@@ -111,7 +111,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isClass,
         StandardName name,
         IFixedList<GenericParameterType> genericParametersTypes,
-        IPromise<FixedSet<BareReferenceType>> supertypes)
+        IPromise<IFixedSet<BareReferenceType>> supertypes)
         : base(isConstType, isAbstract, isClass, genericParametersTypes)
     {
         ContainingPackage = containingPackage;
@@ -130,8 +130,8 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
 
     public override StandardName Name { get; }
 
-    private readonly IPromise<FixedSet<BareReferenceType>> supertypes;
-    public override FixedSet<BareReferenceType> Supertypes => supertypes.Result;
+    private readonly IPromise<IFixedSet<BareReferenceType>> supertypes;
+    public override IFixedSet<BareReferenceType> Supertypes => supertypes.Result;
 
     /// <summary>
     /// Make a version of this type for use as the default constructor parameter.

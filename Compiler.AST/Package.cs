@@ -8,24 +8,24 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST;
 
 public class Package : IHasSymbolTree
 {
-    public FixedSet<IDeclaration> Declarations { get; }
-    public FixedSet<IDeclaration> TestingDeclarations { get; }
-    public FixedSet<INonMemberDeclaration> NonMemberDeclarations { get; }
-    public FixedSet<INonMemberDeclaration> TestingNonMemberDeclarations { get; }
+    public IFixedSet<IDeclaration> Declarations { get; }
+    public IFixedSet<IDeclaration> TestingDeclarations { get; }
+    public IFixedSet<INonMemberDeclaration> NonMemberDeclarations { get; }
+    public IFixedSet<INonMemberDeclaration> TestingNonMemberDeclarations { get; }
     public PackageSymbol Symbol { get; }
     public FixedSymbolTree SymbolTree { get; }
     public FixedSymbolTree TestingSymbolTree { get; }
     public IFixedList<Diagnostic> Diagnostics { get; }
-    public FixedSet<Package> References { get; }
+    public IFixedSet<Package> References { get; }
     public IFunctionDeclaration? EntryPoint { get; }
 
     public Package(
-        FixedSet<INonMemberDeclaration> nonMemberDeclarations,
-        FixedSet<INonMemberDeclaration> testingNonMemberDeclarations,
+        IFixedSet<INonMemberDeclaration> nonMemberDeclarations,
+        IFixedSet<INonMemberDeclaration> testingNonMemberDeclarations,
         FixedSymbolTree symbolTree,
         FixedSymbolTree testingSymbolTree,
         IFixedList<Diagnostic> diagnostics,
-        FixedSet<Package> references,
+        IFixedSet<Package> references,
         IFunctionDeclaration? entryPoint)
     {
         Declarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();

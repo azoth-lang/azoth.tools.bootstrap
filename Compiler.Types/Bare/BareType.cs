@@ -46,8 +46,8 @@ public abstract class BareType : IEquatable<BareType>
     public bool AllowsVariance { get; }
     public bool HasIndependentTypeArguments { get; }
 
-    private readonly Lazy<FixedSet<BareReferenceType>> supertypes;
-    public FixedSet<BareReferenceType> Supertypes => supertypes.Value;
+    private readonly Lazy<IFixedSet<BareReferenceType>> supertypes;
+    public IFixedSet<BareReferenceType> Supertypes => supertypes.Value;
 
     public bool IsFullyKnown { [DebuggerStepThrough] get; }
 
@@ -88,7 +88,7 @@ public abstract class BareType : IEquatable<BareType>
 
     private TypeReplacements GetTypeReplacements() => new(DeclaredType, GenericTypeArguments);
 
-    private FixedSet<BareReferenceType> GetSupertypes()
+    private IFixedSet<BareReferenceType> GetSupertypes()
         => DeclaredType.Supertypes.Select(typeReplacements.Value.ReplaceTypeParametersIn).ToFixedSet();
 
     public DataType ReplaceTypeParametersIn(DataType type)

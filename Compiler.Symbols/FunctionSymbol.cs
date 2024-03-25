@@ -19,7 +19,7 @@ public sealed class FunctionSymbol : FunctionOrInitializerSymbol
         Symbol containingSymbol,
         IdentifierName name,
         FunctionType type)
-        : base(name, type.Parameters, type.Return)
+        : base(type.Parameters, type.Return)
     {
         ContainingSymbol = containingSymbol;
         Name = name;

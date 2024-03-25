@@ -20,7 +20,7 @@ public sealed class AnyType : DeclaredReferenceType
     public override IdentifierName? ContainingPackage => null;
     public override NamespaceName ContainingNamespace => NamespaceName.Global;
     public override SpecialTypeName Name => SpecialTypeName.Any;
-    public override FixedSet<BareReferenceType> Supertypes => FixedSet<BareReferenceType>.Empty;
+    public override IFixedSet<BareReferenceType> Supertypes => FixedSet.Empty<BareReferenceType>();
 
     public BareReferenceType<AnyType> BareType { get; }
 

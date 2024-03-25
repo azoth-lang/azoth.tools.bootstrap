@@ -29,7 +29,7 @@ public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
     private static void BuildNamespaceSymbols(
         PackageSyntax<Package> package,
         ISymbolTreeBuilder treeBuilder,
-        FixedSet<ICompilationUnitSyntax> compilationUnits)
+        IFixedSet<ICompilationUnitSyntax> compilationUnits)
     {
         var builder = new NamespaceSymbolBuilder(treeBuilder, package.Symbol);
         foreach (var compilationUnit in compilationUnits)

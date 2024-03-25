@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -7,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
+using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
@@ -314,32 +316,56 @@ public class BasicBodyAnalyzer
     /// <summary>
     /// Create an implicit conversion if needed and allowed.
     /// </summary>
-    private static ExpressionResult AddImplicitConversionIfNeeded(
+    private ExpressionResult AddImplicitConversionIfNeeded(
         ExpressionResult expression,
         Parameter expectedType,
         FlowState flow)
-    {
-        var syntax = expression.Syntax;
-        var conversion = CreateImplicitConversion(expectedType.Type,
-            expression.Type, expression.Variable, syntax.ImplicitConversion, flow,
-            out var newResult);
-        if (conversion is not null) syntax.AddConversion(conversion);
-        return expression with { Variable = newResult };
-    }
+        => AddImplicitConversionIfNeeded(expression, expectedType.Type, flow);
 
     /// <summary>
     /// Create an implicit conversion if needed and allowed.
     /// </summary>
-    private static ExpressionResult AddImplicitConversionIfNeeded(
+    private ExpressionResult AddImplicitConversionIfNeeded(
         ExpressionResult expression,
         DataType expectedType,
         FlowState flow)
     {
+        ResolveFunctionAndMethodGroups(expression, expectedType);
         var syntax = expression.Syntax;
         var conversion = CreateImplicitConversion(expectedType,
             expression.Type, expression.Variable, syntax.ImplicitConversion, flow, out var newResult);
         if (conversion is not null) syntax.AddConversion(conversion);
         return expression with { Variable = newResult };
+    }
+
+    private void ResolveFunctionAndMethodGroups(ExpressionResult expression, DataType expectedType)
+    {
+        if (expression.Syntax is not INameExpressionSyntax nameExpression
+            || expectedType is not FunctionType functionType)
+            return;
+
+        switch (nameExpression.Semantics.Result)
+        {
+            case FunctionGroupNameSyntax sem:
+                // TODO this is because of a separate hack to assign the type of a function group when only one function matches
+                if (sem.Symbol.IsFulfilled) return;
+                var functionSymbols = sem.Symbols.Where(s => functionType.IsAssignableFrom(s.Type)).ToFixedSet();
+                switch (functionSymbols.Count)
+                {
+                    case 0:
+                        diagnostics.Add(TypeError.NoFunctionInGroupMatchesExpectedType(file, nameExpression, functionType));
+                        sem.Symbol.Fulfill(null);
+                        break;
+                    case 1:
+                        sem.Symbol.Fulfill(functionSymbols.Single());
+                        break;
+                    default: // i.e. > 1
+                        diagnostics.Add(TypeError.AmbiguousFunctionGroup(file, nameExpression, functionType));
+                        sem.Symbol.Fulfill(null);
+                        break;
+                }
+                break;
+        }
     }
 
     private static ChainedConversion? CreateImplicitConversion(
@@ -463,25 +489,49 @@ public class BasicBodyAnalyzer
             }
             case IMoveExpressionSyntax exp:
             {
-                BindingSymbol? bindingSymbol = InferBindingSymbol(exp.Referent);
-                if (bindingSymbol is not null)
-                    return InferMoveExpressionType(exp, bindingSymbol, flow);
+                var semantics = InferSemantics(exp.Referent);
+                switch (semantics)
+                {
+                    default:
+                        throw ExhaustiveMatch.Failed(semantics);
+                    case SelfExpressionSyntax sem:
+                        return InferMoveExpressionType(exp, sem, flow);
+                    case NamedVariableNameSyntax sem:
+                        return InferMoveExpressionType(exp, sem, flow);
+                    case FunctionGroupNameSyntax _:
+                    case NamespaceNameSyntax _:
+                    case TypeNameSyntax _:
+                        // TODO add error
+                        throw new NotImplementedException();
+                    case UnknownNameSyntax _:
+                        // Error should already be reported
+                        break;
+                }
 
-                exp.ReferencedSymbol.Fulfill(null);
-
-                exp.Referent.FulfillDataType(DataType.Unknown);
                 exp.DataType.Fulfill(DataType.Unknown);
                 return new ExpressionResult(exp);
             }
             case IFreezeExpressionSyntax exp:
             {
-                BindingSymbol? bindingSymbol = InferBindingSymbol(exp.Referent);
-                if (bindingSymbol is not null)
-                    return InferFreezeExpressionType(exp, bindingSymbol, flow);
+                var semantics = InferSemantics(exp.Referent);
+                switch (semantics)
+                {
+                    default:
+                        throw ExhaustiveMatch.Failed(semantics);
+                    case SelfExpressionSyntax sem:
+                        return InferFreezeExpressionType(exp, sem, flow);
+                    case NamedVariableNameSyntax sem:
+                        return InferFreezeExpressionType(exp, sem, flow);
+                    case FunctionGroupNameSyntax _:
+                    case NamespaceNameSyntax _:
+                    case TypeNameSyntax _:
+                        // TODO add error
+                        throw new NotImplementedException();
+                    case UnknownNameSyntax _:
+                        // Error should already be reported
+                        break;
+                }
 
-                exp.ReferencedSymbol.Fulfill(null);
-
-                exp.Referent.FulfillDataType(DataType.Unknown);
                 exp.DataType.Fulfill(DataType.Unknown);
                 return new ExpressionResult(exp);
             }
@@ -605,26 +655,27 @@ public class BasicBodyAnalyzer
             }
             case IIdentifierNameExpressionSyntax exp:
             {
-                // Errors reported by InferSymbol
-                var symbol = InferSymbol(exp, symbolFilter);
-                DataType type;
-                ResultVariable? resultVariable = null;
-                switch (symbol)
+                var semantics = InferSemantics(exp);
+                switch (semantics)
                 {
-                    case NamedVariableSymbol variableSymbol:
-                        resultVariable = flow.Alias(variableSymbol);
-                        type = flow.AliasType(variableSymbol);
-                        break;
-                    case FunctionSymbol functionSymbol:
-                        type = functionSymbol.Type;
-                        break;
                     default:
-                        // It must be a type or namespace name and as such isn't a proper expression
-                        type = DataType.Void;
-                        break;
+                        throw ExhaustiveMatch.Failed(semantics);
+                    case NamedVariableNameSyntax sem:
+                        var resultVariable = flow.Alias(sem.Symbol);
+                        var type = flow.AliasType(sem.Symbol);
+                        sem.Type.Fulfill(type);
+                        return new ExpressionResult(exp, resultVariable);
+                    case FunctionGroupNameSyntax sem:
+                        // TODO this is a hack. We should not be inferring the type of a function group
+                        var functionSymbol = sem.Symbols.TrySingle();
+                        if (functionSymbol is not null)
+                            sem.Symbol.Fulfill(functionSymbol);
+                        return new ExpressionResult(exp);
+                    case TypeNameSyntax _:
+                    case NamespaceNameSyntax _:
+                    case UnknownNameSyntax _:
+                        return new ExpressionResult(exp);
                 }
-                exp.DataType.Fulfill(type);
-                return new ExpressionResult(exp, resultVariable);
             }
             case ISpecialTypeNameExpressionSyntax exp:
             {
@@ -819,32 +870,48 @@ public class BasicBodyAnalyzer
             case IMemberAccessExpressionSyntax exp:
             {
                 var contextResult = InferType(exp.Context, flow, NonInvocableSymbols);
-                var contextType = exp.Context is ISelfExpressionSyntax self ? self.Pseudotype.Assigned() : contextResult.Type;
-                var member = exp.Member;
-                var contextSymbol = contextType is VoidType && exp.Context is INameExpressionSyntax context
-                    ? context.ReferencedSymbol.Result
-                    : LookupSymbolForType(contextType);
-                if (contextSymbol is null)
+                var semantics = InferSemantics(exp, contextResult);
+                switch (semantics)
                 {
-                    member.ReferencedSymbol.Fulfill(null);
-                    member.DataType.Fulfill(DataType.Unknown);
-                    exp.DataType.Fulfill(DataType.Unknown);
-                    return new ExpressionResult(exp, contextResult.Variable);
+                    default:
+                        throw ExhaustiveMatch.Failed(semantics);
+                    case FieldNameExpressionSyntax sem:
+                        FieldSymbol fieldSymbol = sem.Symbol;
+                        var contextType = exp.Context is ISelfExpressionSyntax self
+                            ? self.Pseudotype.Assigned()
+                            : contextResult.Type;
+                        // Access must be applied first so it can account for independent generic parameters.
+                        var type = fieldSymbol.Type.AccessedVia(contextType);
+                        // Then type parameters can be replaced now that they have the correct access
+                        if (contextType is NonEmptyType nonEmptyContext)
+                            // resolve generic type fields
+                            type = nonEmptyContext.ReplaceTypeParametersIn(type);
+                        var resultVariable = flow.AccessMember(contextResult.Variable, type);
+                        if (fieldSymbol.IsMutableBinding
+                            && contextType is ReferenceType { Capability: var contextCapability }
+                            && contextCapability == Capability.Identity)
+                        {
+                            diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(file, exp, contextType));
+                            type = DataType.Unknown;
+                        }
+                        sem.Type.Fulfill(type);
+                        return new ExpressionResult(exp, resultVariable);
+                    case GetterNameSyntax sem:
+                        var methodSymbol = Contextualize(contextResult.Type, sem.Symbol.Result.Yield()).Single();
+                        var args = new ArgumentResults(contextResult, FixedList.Empty<ExpressionResult>());
+                        return InferMethodInvocationType(exp, sem.Type, methodSymbol, args, flow);
+                    case NamespaceNameSyntax _:
+                        return new ExpressionResult(exp);
+                    case MethodGroupNameSyntax _:
+                    case TypeNameSyntax _:
+                    case FunctionGroupNameSyntax _:
+                    case SetterGroupNameSyntax _:
+                    case InitializerGroupNameSyntax _:
+                        throw new NotImplementedException();
+                    case UnknownNameSyntax _:
+                        // Error should already be reported
+                        return new ExpressionResult(exp);
                 }
-                var memberSymbols = symbolTrees.Children(contextSymbol)
-                                               .Where(s => s.Name == member.Name).ToFixedList();
-                var type = InferReferencedSymbol(contextType, member, memberSymbols) ?? DataType.Unknown;
-                // Access must be applied first so it can account for independent generic parameters.
-                type = type.AccessedVia(contextType);
-                // Then type parameters can be replaced now that they have the correct access
-                if (contextType is NonEmptyType nonEmptyContext)
-                    // resolve generic type fields
-                    type = nonEmptyContext.ReplaceTypeParametersIn(type);
-
-                var resultVariable = flow.AccessMember(contextResult.Variable, type);
-                member.DataType.Fulfill(type);
-                exp.DataType.Fulfill(type);
-                return new ExpressionResult(exp, resultVariable);
             }
             case IBreakExpressionSyntax exp:
             {
@@ -868,14 +935,24 @@ public class BasicBodyAnalyzer
             }
             case ISelfExpressionSyntax exp:
             {
-                // InferSelfSymbol reports diagnostics and returns null if there is a problem
-                var selfSymbol = InferSelfParameterSymbol(exp);
-                var variableResult = selfSymbol is not null ? flow.Alias(selfSymbol) : null;
-                var type = flow.AliasType(selfSymbol);
-                exp.DataType.Fulfill(type);
-                // Works for `readable` but won't work for any future capability constraints
-                exp.Pseudotype.Fulfill(selfSymbol?.Type is CapabilityTypeConstraint ? selfSymbol.Type : type);
-                return new ExpressionResult(exp, variableResult);
+                var semantics = InferSemantics(exp);
+                switch (semantics)
+                {
+                    default:
+                        throw ExhaustiveMatch.Failed(semantics);
+                    case SelfExpressionSyntax sem:
+                        var variableResult = flow.Alias(sem.Symbol);
+                        var type = flow.AliasType(sem.Symbol);
+                        sem.Type.Fulfill(type);
+                        var psuedoType = sem.Symbol.Type;
+                        if (psuedoType is not CapabilityTypeConstraint)
+                            psuedoType = type;
+                        sem.Pseudotype.Fulfill(psuedoType);
+                        return new ExpressionResult(exp, variableResult);
+                    case UnknownNameSyntax _:
+                        // Error should already be reported
+                        return new ExpressionResult(exp);
+                }
             }
             case INoneLiteralExpressionSyntax exp:
                 return new ExpressionResult(exp);
@@ -935,9 +1012,10 @@ public class BasicBodyAnalyzer
 
     private ExpressionResult InferMoveExpressionType(
         IMoveExpressionSyntax exp,
-        BindingSymbol symbol,
+        VariableNameSyntax semantics,
         FlowState flow)
     {
+        var symbol = semantics.Symbol;
         var type = flow.Type(symbol);
         switch (type)
         {
@@ -962,8 +1040,8 @@ public class BasicBodyAnalyzer
 
         exp.ReferencedSymbol.Fulfill(symbol);
 
-        exp.Referent.FulfillDataType(type);
-        if (exp.Referent is ISelfExpressionSyntax selfExpression)
+        semantics.Type.Fulfill(type);
+        if (semantics is SelfExpressionSyntax selfExpression)
             selfExpression.Pseudotype.Fulfill(type);
         exp.DataType.Fulfill(type);
         return new ExpressionResult(exp);
@@ -971,9 +1049,10 @@ public class BasicBodyAnalyzer
 
     private ExpressionResult InferFreezeExpressionType(
         IFreezeExpressionSyntax exp,
-        BindingSymbol symbol,
+        VariableNameSyntax semantics,
         FlowState flow)
     {
+        var symbol = semantics.Symbol;
         var type = flow.Type(symbol);
         switch (type)
         {
@@ -997,8 +1076,8 @@ public class BasicBodyAnalyzer
 
         exp.ReferencedSymbol.Fulfill(symbol);
 
-        exp.Referent.FulfillDataType(type);
-        if (exp.Referent is ISelfExpressionSyntax selfExpression)
+        semantics.Type.Fulfill(type);
+        if (semantics is SelfExpressionSyntax selfExpression)
             selfExpression.Pseudotype.Fulfill(type);
         exp.DataType.Fulfill(type);
         return new ExpressionResult(exp);
@@ -1023,7 +1102,7 @@ public class BasicBodyAnalyzer
             }
             case IBindingPatternSyntax pat:
             {
-                if (isMutableBinding is null) throw new UnreachableCodeException("Binding pattern outside of binding context");
+                if (isMutableBinding is null) throw new UnreachableException("Binding pattern outside of binding context");
                 var symbol = NamedVariableSymbol.CreateLocal(containingSymbol, isMutableBinding.Value, pat.Name,
                     pat.DeclarationNumber.Result, valueType);
                 pat.Symbol.Fulfill(symbol);
@@ -1189,55 +1268,67 @@ public class BasicBodyAnalyzer
             default:
                 throw ExhaustiveMatch.Failed(expression);
             case IMemberAccessExpressionSyntax exp:
+            {
                 var contextResult = InferType(exp.Context, flow, NonInvocableSymbols);
-                DataType type;
-                var member = exp.Member;
-                switch (contextResult.Type)
+                var semantics = InferSemantics(exp, contextResult);
+                switch (semantics)
                 {
-                    case ReferenceType { AllowsWrite: false, AllowsInit: false } contextReferenceType
-                        when contextReferenceType.Capability != Capability.Identity: // Another error will be reported
-                        diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(file, expression.Span, contextReferenceType));
-                        goto default;
-                    case UnknownType:
-                        member.ReferencedSymbol.Fulfill(null);
-                        type = DataType.Unknown;
-                        break;
                     default:
-                        var contextSymbol = LookupSymbolForType(contextResult.Type)
-                            ?? throw new NotImplementedException(
-                                $"Missing context symbol for type {contextResult.Type.ToILString()}.");
-                        var memberSymbols = symbolTrees.Children(contextSymbol)
-                                                       .Where(s => s is FieldSymbol or MethodSymbol { Kind: MethodKind.Setter })
-                                                       .Where(s => s.Name == member.Name).ToFixedList();
-                        type = InferReferencedSymbol(contextResult.Type, member, memberSymbols) ?? DataType.Unknown;
-                        break;
-                }
-
-                // Check for assigning into fields (self is handled by binding mutability analysis)
-                if (exp.Context is not ISelfExpressionSyntax
-                    && member.ReferencedSymbol.Result is BindingSymbol { IsMutableBinding: false, Name: IdentifierName name })
-                    diagnostics.Add(OtherSemanticError.CannotAssignImmutableField(file, exp.Span, name));
-
-                type = type.AccessedVia(contextResult.Type);
-                member.DataType.Fulfill(type);
-                exp.DataType.Fulfill(type);
-                return new(exp, contextResult.Variable);
-            case IIdentifierNameExpressionSyntax exp:
-                var symbol = InferBindingSymbol(exp);
-                switch (symbol)
-                {
-                    case null:
-                        exp.DataType.Fulfill(DataType.Unknown);
+                        throw ExhaustiveMatch.Failed(semantics);
+                    case FieldNameExpressionSyntax sem:
+                        var contextType = contextResult.Type;
+                        if (contextType is CapabilityType { AllowsWrite: false, AllowsInit: false } capabilityType)
+                            diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(file, expression.Span, capabilityType));
+                        // Check for assigning into `let` fields (self is handled by binding mutability analysis)
+                        if (exp.Context is not ISelfExpressionSyntax
+                            && sem.Symbol is { IsMutableBinding: false, Name: IdentifierName name })
+                            diagnostics.Add(OtherSemanticError.CannotAssignImmutableField(file, exp.Span, name));
+                        var type = sem.Symbol.Type.AccessedVia(contextType);
+                        if (contextType is NonEmptyType nonEmptyContext)
+                            type = nonEmptyContext.ReplaceTypeParametersIn(type);
+                        var resultVariable = flow.AccessMember(contextResult.Variable, type);
+                        sem.Type.Fulfill(type);
+                        return new(exp, resultVariable);
+                    case SetterGroupNameSyntax sem:
+                        // TODO this incorrectly assume there will only be one setter
+                        var setterSymbol = sem.Symbols.Single();
+                        sem.Symbol.Fulfill(setterSymbol);
+                        // TODO this doesn't correctly check argument types
+                        var parameterType = setterSymbol.Parameters.Single().Type;
+                        sem.Type.Fulfill(parameterType);
+                        return new(exp, contextResult.Variable);
+                    case UnknownNameSyntax _:
                         return new(exp);
-                    case NamedVariableSymbol variableSymbol:
-                    {
-                        exp.DataType.Fulfill(flow.Type(variableSymbol));
+                    case MethodGroupNameSyntax _:
+                    case NamespaceNameSyntax _:
+                    case TypeNameSyntax _:
+                    case FunctionGroupNameSyntax _:
+                    case GetterNameSyntax _:
+                    case InitializerGroupNameSyntax _:
+                        throw new NotImplementedException();
+                }
+            }
+            case IIdentifierNameExpressionSyntax exp:
+            {
+                var semantics = InferSemantics(exp);
+                switch (semantics)
+                {
+                    default:
+                        throw ExhaustiveMatch.Failed(semantics);
+                    case NamedVariableNameSyntax sem:
+                        var variableSymbol = sem.Symbol;
+                        sem.Type.Fulfill(flow.Type(variableSymbol));
+                        // TODO this doesn't seem correct, we don't have to alias the old value
                         var resultVariable = flow.Alias(variableSymbol);
                         return new(exp, resultVariable);
-                    }
-                    default:
+                    case FunctionGroupNameSyntax _:
+                    case TypeNameSyntax _:
+                    case NamespaceNameSyntax _:
                         throw new NotImplementedException("Raise error about assigning into a non-variable");
+                    case UnknownNameSyntax _:
+                        return new(exp);
                 }
+            }
         }
     }
 
@@ -1260,74 +1351,104 @@ public class BasicBodyAnalyzer
             case IMemberAccessExpressionSyntax exp:
             {
                 var contextResult = InferType(exp.Context, flow, NonInvocableSymbols);
-                // Make sure to infer argument type *after* the context type
-                args = InferArgumentTypes(contextResult, invocation.Arguments, flow);
+                var semantics = InferSemantics(exp, contextResult);
 
-                if (contextResult.Type is not VoidType)
+                switch (semantics)
                 {
-                    var typeSymbol = LookupSymbolForType(args.Self.Assigned().Type);
-                    var fieldSymbols = LookupSymbols<FieldSymbol>(typeSymbol, exp.Member);
-                    if (fieldSymbols?.Any(s => s.Type is FunctionType) ?? false)
+                    default:
+                        throw ExhaustiveMatch.Failed(semantics);
+                    case MethodGroupNameSyntax sem:
                     {
-                        var fieldSymbol = InferSymbol(exp.Member, fieldSymbols);
-                        invocation.ReferencedSymbol.Fulfill(null);
-                        if (fieldSymbol is not null)
+                        // Make sure to infer argument type *after* the context type
+                        args = InferArgumentTypes(contextResult, invocation.Arguments, flow);
+                        var method = InferSymbol(invocation, sem.Symbols, args, flow);
+                        sem.Symbol.Fulfill(method?.Symbol);
+                        return InferMethodInvocationType(invocation, invocation.DataType, method, args, flow);
+                    }
+                    case FunctionGroupNameSyntax sem:
+                        // Make sure to infer argument type *after* the context type
+                        args = InferArgumentTypes(null, invocation.Arguments, flow);
+                        functionType = InferSymbol(invocation, sem.Symbol, sem.Symbols, args, flow);
+                        break;
+                    case InitializerGroupNameSyntax sem:
+                        // Make sure to infer argument type *after the context type
+                        args = InferArgumentTypes(null, invocation.Arguments, flow);
+                        functionType = InferSymbol(invocation, sem.Symbol, sem.Symbols, args, flow);
+                        break;
+                    case FieldNameExpressionSyntax sem:
+                        // Make sure to infer argument type *after* the context type
+                        args = InferArgumentTypes(null, invocation.Arguments, flow);
+                        if (sem.Symbol.Type is FunctionType fType)
                         {
-                            functionType = (FunctionType)fieldSymbol.Type;
-                            exp.Member.DataType.Fulfill(functionType);
-                            exp.DataType.Fulfill(functionType);
+                            invocation.ReferencedSymbol.Fulfill(sem.Symbol);
+                            sem.Type.Fulfill(fType);
+                            functionType = fType;
                         }
                         else
                         {
                             // Matches field, but not a function type. This is an error. Just mark
                             // the types as unknown.
-                            exp.Member.DataType.Fulfill(DataType.Unknown);
-                            exp.DataType.Fulfill(DataType.Unknown);
+                            invocation.ReferencedSymbol.Fulfill(null);
+                            sem.Type.Fulfill(DataType.Unknown);
                         }
                         break;
-                    }
-                    var methodSymbols = LookupSymbols<MethodSymbol>(typeSymbol, exp.Member);
-
-                    var method = InferSymbol(invocation, methodSymbols, args, flow);
-
-                    return InferMethodInvocationType(invocation, method, args, flow);
+                    case UnknownNameSyntax _:
+                        // Make sure to infer argument type *after* the context type
+                        args = InferArgumentTypes(null, invocation.Arguments, flow);
+                        invocation.ReferencedSymbol.Fulfill(null);
+                        break;
+                    case NamespaceNameSyntax _:
+                    case TypeNameSyntax _:
+                    case GetterNameSyntax _:
+                    case SetterGroupNameSyntax _:
+                        throw new NotImplementedException(semantics.GetType().Name);
                 }
-
-                if (exp.Context is INameExpressionSyntax { ReferencedSymbol.Result: Symbol contextSymbol })
-                {
-                    var functionSymbols = LookupSymbols<FunctionOrInitializerSymbol>(contextSymbol, exp.Member);
-                    functionType = InferSymbol(invocation, functionSymbols, args, flow);
-                }
-
-                // No type for function names
-                exp.Member.DataType.Fulfill(DataType.Void);
                 break;
             }
             case IIdentifierNameExpressionSyntax exp:
             {
+                var semantics = InferSemantics(exp);
                 args = InferArgumentTypes(invocation.Arguments, flow);
 
-                var variableSymbols = LookupSymbols<NamedVariableSymbol>(exp);
-                if (variableSymbols.Any(s => s.Type is FunctionType))
+                switch (semantics)
                 {
-                    var variableSymbol = InferSymbol(exp, variableSymbols);
-                    invocation.ReferencedSymbol.Fulfill(null);
-                    if (variableSymbol is not null)
-                    {
-                        functionType = (FunctionType)variableSymbol.Type;
-                        exp.DataType.Fulfill(functionType);
-                    }
-                    else
-                    {
-                        // Matches variable, but not a function type. This is an error. Just mark
-                        // the type as unknown.
-                        exp.DataType.Fulfill(DataType.Unknown);
-                    }
-                    break;
+                    default:
+                        throw ExhaustiveMatch.Failed(semantics);
+                    case NamedVariableNameSyntax sem:
+                        var variableSymbol = sem.Symbol;
+                        var variableType = flow.Type(variableSymbol);
+                        if (variableType is FunctionType variableFunctionType)
+                        {
+                            functionType = variableFunctionType;
+                            invocation.ReferencedSymbol.Fulfill(null);
+                            sem.Type.Fulfill(functionType);
+                        }
+                        else
+                        {
+                            // Matches variable, but not a function type. This is an error. Just mark
+                            // the type as unknown.
+                            sem.Type.Fulfill(DataType.Unknown);
+                            invocation.ReferencedSymbol.Fulfill(null);
+                        }
+                        break;
+                    case FunctionGroupNameSyntax sem:
+                        functionType = InferSymbol(invocation, sem.Symbol, sem.Symbols, args, flow);
+                        break;
+                    case TypeNameSyntax sem:
+                        var initializerSymbols = symbolTrees.Children(sem.Symbol)
+                                                            .OfType<InitializerSymbol>()
+                                                            .Where(s => s.Name is null)
+                                                            .ToFixedSet();
+                        var initializerSymbol = new Promise<InitializerSymbol?>();
+                        functionType = InferSymbol(invocation, initializerSymbol, initializerSymbols, args, flow);
+                        break;
+                    case NamespaceNameSyntax _:
+                        // No type for function
+                        break;
+                    case UnknownNameSyntax sem:
+                        invocation.ReferencedSymbol.Fulfill(null);
+                        break;
                 }
-
-                var functionOrInitializerSymbols = LookupSymbols<FunctionOrInitializerSymbol>(exp);
-                functionType = InferSymbol(invocation, functionOrInitializerSymbols, args, flow);
                 break;
             }
             default:
@@ -1346,7 +1467,8 @@ public class BasicBodyAnalyzer
     }
 
     private ExpressionResult InferMethodInvocationType(
-        IInvocationExpressionSyntax invocation,
+        IExpressionSyntax invocation,
+        Promise<DataType> returnType,
         Contextualized<MethodSymbol>? method,
         ArgumentResults arguments,
         FlowState flow)
@@ -1363,24 +1485,15 @@ public class BasicBodyAnalyzer
             CheckTypes(arguments, method.ParameterTypes, flow);
             arguments = arguments with { Self = selfResult };
             // TODO does flow typing need to be applied?
-            invocation.DataType.Fulfill(method.ReturnType.Type.ReplaceSelfWith(selfResult.Type));
+            returnType.Fulfill(method.ReturnType.Type.ReplaceSelfWith(selfResult.Type));
         }
         else
         {
-            invocation.DataType.Fulfill(DataType.Unknown);
+            returnType.Fulfill(DataType.Unknown);
         }
 
         var resultVariable = CombineResults(method, arguments, flow);
-        flow.Restrict(resultVariable, invocation.DataType.Assigned());
-
-        // There are no types for methods
-        if (invocation.Expression is IInvocableNameExpressionSyntax invocableName)
-            invocableName.DataType.Fulfill(null);
-
-        // Apply the referenced symbol to the underlying name
-        if (invocation.Expression is IMemberAccessExpressionSyntax memberAccessExpression)
-            memberAccessExpression.Member.DataType.Fulfill(DataType.Void);
-
+        flow.Restrict(resultVariable, returnType.Assigned());
         return new(invocation, resultVariable);
     }
 
@@ -1495,6 +1608,7 @@ public class BasicBodyAnalyzer
         {
             CheckTypes(arguments, functionType.Parameters, flow);
             var returnType = functionType.Return.Type;
+            // TODO doesn't this type need to be modified by flow typing?
             invocation.DataType.Fulfill(returnType);
         }
         else
@@ -1504,10 +1618,6 @@ public class BasicBodyAnalyzer
 
         var resultVariable = CombineResults(functionType, arguments, flow);
         flow.Restrict(resultVariable, invocation.DataType.Assigned());
-
-        // There are no types for functions
-        if (invocation.Expression is IInvocableNameExpressionSyntax { DataType.IsFulfilled: false } invocableName)
-            invocableName.DataType.Fulfill(null);
 
         return new(invocation, resultVariable);
     }
@@ -1548,38 +1658,242 @@ public class BasicBodyAnalyzer
 
     private static bool NonInvocableSymbols(Symbol symbol) => symbol is not InvocableSymbol;
 
-    private BindingSymbol? InferBindingSymbol(IVariableNameExpressionSyntax variableNameExpressionSyntax)
-    {
-        return variableNameExpressionSyntax switch
+    private IVariableNameExpressionSyntaxSemantics InferSemantics(IVariableNameExpressionSyntax expression)
+        => expression switch
         {
-            IIdentifierNameExpressionSyntax nameExpression => InferBindingSymbol(nameExpression),
-            ISelfExpressionSyntax selfExpression => InferSelfParameterSymbol(selfExpression),
-            _ => throw ExhaustiveMatch.Failed(variableNameExpressionSyntax)
+            IIdentifierNameExpressionSyntax exp => InferSemantics(exp),
+            ISelfExpressionSyntax exp => InferSemantics(exp),
+            _ => throw ExhaustiveMatch.Failed(expression)
         };
-    }
 
-    private BindingSymbol? InferBindingSymbol(
-        IIdentifierNameExpressionSyntax nameExpression,
-        Func<Symbol, bool>? symbolFilter = null)
-        => (BindingSymbol?)InferSymbol(nameExpression, symbolFilter, true);
-
-    private Symbol? InferSymbol(IIdentifierNameExpressionSyntax nameExpression, Func<Symbol, bool>? symbolFilter, bool bindingOnly = false)
+    private IIdentifierNameExpressionSyntaxSemantics InferSemantics(IIdentifierNameExpressionSyntax expression)
     {
-        if (nameExpression.Name is null)
-        {
-            // Name unknown, no error
-            nameExpression.ReferencedSymbol.Fulfill(null);
-            return null;
-        }
+        if (expression.Name is null)
+            return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
 
         // First look for local variables
-        var variableSymbols = LookupSymbols<NamedVariableSymbol>(nameExpression, symbolFilter);
+        var variableSymbols = LookupSymbols<NamedVariableSymbol>(expression);
+        if (variableSymbols.Count != 0)
+        {
+            var variableSymbol = InferSymbol(expression, variableSymbols);
+            if (variableSymbol is not null)
+                return expression.Semantics.Fulfill(new NamedVariableNameSyntax(variableSymbol));
 
-        if (bindingOnly || variableSymbols.Count != 0)
-            return InferSymbol(nameExpression, variableSymbols);
+            return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+        }
 
-        var symbols = LookupSymbols(nameExpression, symbolFilter);
-        return InferSymbol(nameExpression, symbols);
+        var symbols = LookupSymbols(expression);
+        if (symbols.Count == 0)
+        {
+            diagnostics.Add(NameBindingError.CouldNotBindName(file, expression.Span));
+            return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+        }
+        if (symbols.All(s => s is FunctionSymbol))
+        {
+            var functionSymbols = symbols.Cast<FunctionSymbol>().ToFixedSet();
+            return expression.Semantics.Fulfill(new FunctionGroupNameSyntax(functionSymbols));
+        }
+        if (symbols.All(s => s is NamespaceSymbol))
+        {
+            var namespaceSymbols = symbols.Cast<NamespaceSymbol>().ToFixedSet();
+            return expression.Semantics.Fulfill(new NamespaceNameSyntax(namespaceSymbols));
+        }
+
+        var symbol = InferSymbol(expression, symbols);
+        switch (symbol)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(symbol);
+            case TypeSymbol sym:
+                return expression.Semantics.Fulfill(new TypeNameSyntax(sym));
+            case NamespaceSymbol _:
+            case FunctionSymbol _:
+            case SelfParameterSymbol _:
+            case ConstructorSymbol _:
+            case FieldSymbol _:
+            case MethodSymbol _:
+            case PackageSymbol _:
+            case NamedVariableSymbol _:
+            case InitializerSymbol _:
+                throw new UnreachableException();
+        }
+    }
+
+    private ISelfExpressionSyntaxSemantics InferSemantics(ISelfExpressionSyntax expression)
+    {
+        SelfParameterSymbol? selfSymbol;
+        switch (containingSymbol)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(containingSymbol);
+            case MethodSymbol _:
+            case ConstructorSymbol _:
+            case InitializerSymbol _:
+                var symbols = LookupSymbols<SelfParameterSymbol>(containingSymbol);
+                selfSymbol = BindName(expression, symbols);
+                break;
+            case FunctionSymbol _:
+                diagnostics.Add(expression.IsImplicit
+                    ? OtherSemanticError.ImplicitSelfOutsideMethod(file, expression.Span)
+                    : OtherSemanticError.SelfOutsideMethod(file, expression.Span));
+                selfSymbol = null;
+                break;
+        }
+
+        return selfSymbol is null ? expression.Semantics.Fulfill(UnknownNameSyntax.Instance)
+            : expression.Semantics.Fulfill(new SelfExpressionSyntax(selfSymbol));
+    }
+
+    private IMemberAccessSyntaxSemantics InferSemantics(IMemberAccessExpressionSyntax expression, ExpressionResult contextResult)
+    {
+        var memberName = expression.MemberName;
+        if (expression.Context is INameExpressionSyntax exp)
+        {
+            switch (exp.Semantics.Result)
+            {
+                default:
+                    throw ExhaustiveMatch.Failed(exp.Semantics.Result);
+                case FunctionGroupNameSyntax _:
+                case MethodGroupNameSyntax _:
+                    diagnostics.Add(TypeError.NotImplemented(file, expression.Span, "No member accessible from function or method."));
+                    return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+                case TypeNameSyntax sem:
+                    var typeMemberSymbols = symbolTrees.Children(sem.Symbol)
+                                                               .Where(s => s.Name == memberName)
+                                                               .ToFixedSet();
+                    if (typeMemberSymbols.Count == 0)
+                    {
+                        diagnostics.Add(NameBindingError.CouldNotBindMember(file, expression.MemberNameSpan));
+                        return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+                    }
+                    if (typeMemberSymbols.All(s => s is FunctionSymbol))
+                    {
+                        var functionSymbols = typeMemberSymbols.Cast<FunctionSymbol>().ToFixedSet();
+                        return expression.Semantics.Fulfill(new FunctionGroupNameSyntax(functionSymbols));
+                    }
+                    if (typeMemberSymbols.All(s => s is InitializerSymbol))
+                    {
+                        var initializerSymbols = typeMemberSymbols.Cast<InitializerSymbol>().ToFixedSet();
+                        return expression.Semantics.Fulfill(new InitializerGroupNameSyntax(initializerSymbols));
+                    }
+
+                    diagnostics.Add(NameBindingError.AmbiguousName(file, expression.MemberNameSpan));
+                    return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+                case NamespaceNameSyntax sem:
+                    var namespaceMemberSymbols = sem.Symbols.SelectMany(symbolTrees.Children)
+                                                    .Where(s => s.Name == memberName).ToFixedSet();
+                    if (namespaceMemberSymbols.Count == 0)
+                    {
+                        diagnostics.Add(NameBindingError.CouldNotBindMember(file, expression.MemberNameSpan));
+                        return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+                    }
+                    // TODO do the functions need to be in the same package?
+                    if (namespaceMemberSymbols.All(s => s is FunctionSymbol))
+                    {
+                        var functionSymbols = namespaceMemberSymbols.Cast<FunctionSymbol>().ToFixedSet();
+                        return expression.Semantics.Fulfill(new FunctionGroupNameSyntax(functionSymbols));
+                    }
+                    if (namespaceMemberSymbols.All(s => s is NamespaceSymbol))
+                    {
+                        var namespaceSymbols = namespaceMemberSymbols.Cast<NamespaceSymbol>().ToFixedSet();
+                        return expression.Semantics.Fulfill(new NamespaceNameSyntax(namespaceSymbols));
+                    }
+                    if (namespaceMemberSymbols.Count > 1)
+                    {
+                        diagnostics.Add(NameBindingError.AmbiguousName(file, expression.MemberNameSpan));
+                        return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+                    }
+
+                    var namespaceMemberSymbol = namespaceMemberSymbols.Single();
+                    switch (namespaceMemberSymbol)
+                    {
+                        default:
+                            throw ExhaustiveMatch.Failed(namespaceMemberSymbol);
+                        case UserTypeSymbol userTypeSymbol:
+                            return expression.Semantics.Fulfill(new TypeNameSyntax(userTypeSymbol));
+                        case FieldSymbol _:
+                        case GenericParameterTypeSymbol _:
+                        case MethodSymbol _:
+                        case InitializerSymbol _:
+                        case SelfParameterSymbol _:
+                        case NamedVariableSymbol _:
+                        case EmptyTypeSymbol _:
+                        case PrimitiveTypeSymbol _:
+                        case NamespaceOrPackageSymbol _: // NamespaceSymbol covered above
+                        case FunctionSymbol _: // Covered above
+                        case ConstructorSymbol _:
+                            throw new UnreachableException();
+                    }
+                case UnknownNameSyntax _:
+                    return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+                case InitializerGroupNameSyntax _:
+                case SetterGroupNameSyntax _:
+                    throw new NotImplementedException();
+                case FieldNameExpressionSyntax _:
+                case NamedVariableNameSyntax _:
+                case SelfExpressionSyntax _:
+                case GetterNameSyntax _:
+                    // Context should be treated as a typical expression
+                    break;
+            }
+        }
+
+        // Context can be treated as an expression
+
+        var contextType = contextResult.Type;
+        var contextTypeSymbol = LookupSymbolForType(contextType);
+        if (contextTypeSymbol is null)
+            return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+
+
+        var memberSymbols = symbolTrees.Children(contextTypeSymbol).Where(s => s.Name == memberName).ToFixedSet();
+        if (memberSymbols.Count == 0)
+        {
+            diagnostics.Add(NameBindingError.CouldNotBindMember(file, expression.MemberNameSpan));
+            return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+        }
+
+        if (memberSymbols.All(s => s is MethodSymbol { Kind: MethodKind.Standard }))
+        {
+            var methodSymbols = memberSymbols.Cast<MethodSymbol>().ToFixedSet();
+            return expression.Semantics.Fulfill(new MethodGroupNameSyntax(methodSymbols));
+        }
+
+        if (memberSymbols.All(s => s is MethodSymbol { Kind: MethodKind.Setter }))
+        {
+            var setterSymbols = memberSymbols.Cast<MethodSymbol>().ToFixedSet();
+            return expression.Semantics.Fulfill(new SetterGroupNameSyntax(setterSymbols));
+        }
+
+        if (memberSymbols.Count > 1)
+        {
+            diagnostics.Add(NameBindingError.AmbiguousName(file, expression.MemberNameSpan));
+            return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+        }
+
+        var memberSymbol = memberSymbols.Single();
+        switch (memberSymbol)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(memberSymbol);
+            case FieldSymbol sym:
+                return expression.Semantics.Fulfill(new FieldNameExpressionSyntax(sym));
+            case MethodSymbol sym:
+                if (sym.Kind == MethodKind.Getter)
+                    return expression.Semantics.Fulfill(new GetterNameSyntax(sym));
+                throw new UnreachableException();
+            case UserTypeSymbol _:
+            case GenericParameterTypeSymbol _:
+            case InitializerSymbol _:
+            case SelfParameterSymbol _:
+            case NamedVariableSymbol _:
+            case EmptyTypeSymbol _:
+            case PrimitiveTypeSymbol _:
+            case NamespaceOrPackageSymbol _:
+            case FunctionSymbol _:
+            case ConstructorSymbol _:
+                throw new UnreachableException();
+        }
     }
 
     private void InferSymbol(
@@ -1589,63 +1903,39 @@ public class BasicBodyAnalyzer
         nameExpression.ReferencedSymbol.Fulfill(symbol);
     }
 
-    private SelfParameterSymbol? InferSelfParameterSymbol(ISelfExpressionSyntax selfExpression)
-    {
-        switch (containingSymbol)
-        {
-            default:
-                throw ExhaustiveMatch.Failed(containingSymbol);
-            case MethodSymbol _:
-            case ConstructorSymbol _:
-            case InitializerSymbol _:
-                var symbols = LookupSymbols<SelfParameterSymbol>(containingSymbol);
-                return InferSymbol(selfExpression, symbols);
-            case FunctionSymbol _:
-                diagnostics.Add(selfExpression.IsImplicit
-                    ? OtherSemanticError.ImplicitSelfOutsideMethod(file, selfExpression.Span)
-                    : OtherSemanticError.SelfOutsideMethod(file, selfExpression.Span));
-                selfExpression.ReferencedSymbol.Fulfill(null);
-                return null;
-        }
-    }
-
-    private FunctionType? InferSymbol(
+    private FunctionType? InferSymbol<TSymbol>(
         IInvocationExpressionSyntax invocation,
-        FixedSet<FunctionOrInitializerSymbol> functionOrInitializerSymbols,
+        Promise<TSymbol?> promise,
+        IFixedSet<TSymbol> matchingSymbols,
         ArgumentResults arguments,
         FlowState flow)
+        where TSymbol : FunctionOrInitializerSymbol
     {
-        var validOverloads = SelectOverload(null, functionOrInitializerSymbols, arguments, flow);
-        FunctionType? functionType;
+        var validOverloads = SelectOverload(null, matchingSymbols, arguments, flow);
         switch (validOverloads.Count)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindFunction(file, invocation));
+                promise.Fulfill(null);
                 invocation.ReferencedSymbol.Fulfill(null);
-                functionType = null;
-                break;
+                return null;
             case 1:
-                var functionOrInitializer = validOverloads.Single();
-                invocation.ReferencedSymbol.Fulfill(functionOrInitializer.Symbol);
-                functionType = new FunctionType(functionOrInitializer.ParameterTypes, functionOrInitializer.ReturnType);
-                break;
+                var overload = validOverloads.Single();
+                promise.Fulfill(overload.Symbol);
+                invocation.ReferencedSymbol.Fulfill(overload.Symbol);
+                var functionType = new FunctionType(overload.ParameterTypes, overload.ReturnType);
+                return functionType;
             default:
                 diagnostics.Add(NameBindingError.AmbiguousFunctionCall(file, invocation));
+                promise.Fulfill(null);
                 invocation.ReferencedSymbol.Fulfill(null);
-                functionType = null;
-                break;
+                return null;
         }
-
-        // Apply the referenced symbol to the underlying name
-        if (invocation.Expression is IInvocableNameExpressionSyntax nameExpression)
-            nameExpression.ReferencedSymbol.Fulfill(invocation.ReferencedSymbol.Result);
-
-        return functionType;
     }
 
     private Contextualized<MethodSymbol>? InferSymbol(
         IInvocationExpressionSyntax invocation,
-        FixedSet<MethodSymbol>? methodSymbols,
+        IFixedSet<MethodSymbol> methodSymbols,
         ArgumentResults arguments,
         FlowState flow)
     {
@@ -1653,38 +1943,29 @@ public class BasicBodyAnalyzer
         var selfArgumentType = selfResult.Type;
 
         Contextualized<MethodSymbol>? method = null;
-        if (methodSymbols is not null)
+        var validOverloads = SelectOverload(selfArgumentType, methodSymbols, arguments, flow);
+        switch (validOverloads.Count)
         {
-            var validOverloads = SelectOverload(selfArgumentType, methodSymbols, arguments, flow);
-            switch (validOverloads.Count)
-            {
-                case 0:
-                    diagnostics.Add(NameBindingError.CouldNotBindMethod(file, invocation));
-                    invocation.ReferencedSymbol.Fulfill(null);
-                    break;
-                case 1:
-                    method = validOverloads.Single();
-                    invocation.ReferencedSymbol.Fulfill(method.Symbol);
-                    break;
-                default:
-                    diagnostics.Add(NameBindingError.AmbiguousMethodCall(file, invocation));
-                    invocation.ReferencedSymbol.Fulfill(null);
-                    break;
-            }
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindMethod(file, invocation));
+                invocation.ReferencedSymbol.Fulfill(null);
+                break;
+            case 1:
+                method = validOverloads.Single();
+                invocation.ReferencedSymbol.Fulfill(method.Symbol);
+                break;
+            default:
+                diagnostics.Add(NameBindingError.AmbiguousMethodCall(file, invocation));
+                invocation.ReferencedSymbol.Fulfill(null);
+                break;
         }
-        else
-            invocation.ReferencedSymbol.Fulfill(null);
-
-        // Apply the referenced symbol to the underlying name
-        if (invocation.Expression is IInvocableNameExpressionSyntax nameExpression)
-            nameExpression.ReferencedSymbol.Fulfill(invocation.ReferencedSymbol.Result);
 
         return method;
     }
 
     private Contextualized<ConstructorSymbol>? InferSymbol(
         INewObjectExpressionSyntax invocation,
-        FixedSet<ConstructorSymbol>? constructorSymbols,
+        IFixedSet<ConstructorSymbol>? constructorSymbols,
         ArgumentResults arguments,
         FlowState flow)
     {
@@ -1714,9 +1995,9 @@ public class BasicBodyAnalyzer
         return constructor;
     }
 
-    private TSymbol? InferSymbol<TNameSymbol, TSymbol>(
+    private TSymbol? BindName<TNameSymbol, TSymbol>(
         INameExpressionSyntax<TNameSymbol> exp,
-        FixedSet<TSymbol> symbols)
+        IFixedSet<TSymbol> symbols)
         where TNameSymbol : Symbol
         where TSymbol : TNameSymbol
     {
@@ -1724,26 +2005,41 @@ public class BasicBodyAnalyzer
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindName(file, exp.Span));
-                exp.ReferencedSymbol.Fulfill(null);
                 return null;
             case 1:
-                var symbol = symbols.Single();
-                exp.ReferencedSymbol.Fulfill(symbol);
-                return symbol;
+                return symbols.Single();
             default:
                 diagnostics.Add(NameBindingError.AmbiguousName(file, exp.Span));
-                exp.ReferencedSymbol.Fulfill(null);
                 return null;
         }
     }
 
-    private static FixedSet<Symbol> LookupSymbols(IStandardNameExpressionSyntax exp, Func<Symbol, bool>? symbolFilter = null)
+    private TSymbol? InferSymbol<TNameSymbol, TSymbol>(
+        INameExpressionSyntax<TNameSymbol> exp,
+        IFixedSet<TSymbol> symbols)
+        where TNameSymbol : Symbol
+        where TSymbol : TNameSymbol
+    {
+        switch (symbols.Count)
+        {
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindName(file, exp.Span));
+                return null;
+            case 1:
+                return symbols.Single();
+            default:
+                diagnostics.Add(NameBindingError.AmbiguousName(file, exp.Span));
+                return null;
+        }
+    }
+
+    private static IFixedSet<Symbol> LookupSymbols(IStandardNameExpressionSyntax exp, Func<Symbol, bool>? symbolFilter = null)
     {
         symbolFilter ??= AllSymbols;
         return exp.LookupInContainingScope().Select(p => p.Result).Where(symbolFilter).ToFixedSet();
     }
 
-    private static FixedSet<TSymbol> LookupSymbols<TSymbol>(
+    private static IFixedSet<TSymbol> LookupSymbols<TSymbol>(
         IStandardNameExpressionSyntax exp,
         Func<TSymbol, bool>? symbolFilter = null)
         where TSymbol : Symbol
@@ -1753,18 +2049,7 @@ public class BasicBodyAnalyzer
                              .WhereNotNull().Select(p => p.Result).Where(symbolFilter).ToFixedSet();
     }
 
-    /// <returns>The symbols with the given name in the context, or <see langword="null"/> if the
-    /// context is unknown.</returns>
-    [return: NotNullIfNotNull(nameof(contextSymbol))]
-    private FixedSet<TSymbol>? LookupSymbols<TSymbol>(Symbol? contextSymbol, IStandardNameExpressionSyntax exp)
-        where TSymbol : Symbol
-    {
-        if (contextSymbol is null) return null;
-        var name = exp.Name;
-        return symbolTrees.Children(contextSymbol).OfType<TSymbol>().Where(s => s.Name == name).ToFixedSet();
-    }
-
-    private FixedSet<TSymbol> LookupSymbols<TSymbol>(Symbol contextSymbol)
+    private IFixedSet<TSymbol> LookupSymbols<TSymbol>(Symbol contextSymbol)
         where TSymbol : Symbol
         => symbolTrees.Children(contextSymbol).OfType<TSymbol>().ToFixedSet();
 
@@ -1815,7 +2100,7 @@ public class BasicBodyAnalyzer
         // iteratorType is NonEmptyType because it has a `next()` method
         DataType iteratedType = nextMethod.Return.Type is OptionalType optionalType
             ? ((NonEmptyType)iteratorType).ReplaceTypeParametersIn(optionalType.Referent)
-            : throw new UnreachableCodeException();
+            : throw new UnreachableException();
 
         if (declaredType is not null)
         {
@@ -1844,69 +2129,7 @@ public class BasicBodyAnalyzer
             diagnostics.Add(TypeError.CannotImplicitlyConvert(file, arg, fromType, type));
     }
 
-    private DataType? InferReferencedSymbol(
-        Pseudotype contextType,
-        IStandardNameExpressionSyntax exp,
-        IFixedList<Symbol> matchingSymbols)
-    {
-        // TODO resolve getters overloaded on self type
-        switch (matchingSymbols.Count)
-        {
-            case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindMember(file, exp.Span));
-                exp.ReferencedSymbol.Fulfill(null);
-                return null;
-            case 1:
-                var memberSymbol = matchingSymbols.Single();
-                DataType type = DataType.Void;
-                switch (memberSymbol)
-                {
-                    case FieldSymbol fieldSymbol:
-                    {
-                        type = fieldSymbol.Type;
-
-                        if (fieldSymbol.IsMutableBinding
-                            && contextType is ReferenceType { Capability: var contextCapability }
-                            && contextCapability == Capability.Identity)
-                        {
-                            diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(file, exp, contextType));
-                            type = DataType.Unknown;
-                        }
-
-                        break;
-                    }
-                    case MethodSymbol { Kind: MethodKind.Getter } getterSymbol:
-                    {
-                        type = getterSymbol.Return.Type;
-                        var selfType = getterSymbol.SelfParameterType.Type;
-                        if (!selfType.IsAssignableFrom(contextType))
-                            // TODO error message not correct, should not ToUpperBound()
-                            diagnostics.Add(TypeError.CannotImplicitlyConvert(file, exp, contextType.ToUpperBound(), selfType.ToUpperBound()));
-                        break;
-                    }
-                    case MethodSymbol { Kind: MethodKind.Setter } setterSymbol:
-                    {
-                        // TODO this indicates that setters should be their own symbol?
-                        type = setterSymbol.Parameters.Single().Type;
-                        var selfType = setterSymbol.SelfParameterType.Type;
-                        if (!selfType.IsAssignableFrom(contextType))
-                            // TODO error message not correct, should not ToUpperBound()
-                            diagnostics.Add(TypeError.CannotImplicitlyConvert(file, exp, contextType.ToUpperBound(),
-                                selfType.ToUpperBound()));
-                        break;
-                    }
-                }
-
-                exp.ReferencedSymbol.Fulfill(memberSymbol);
-                return type;
-            default:
-                diagnostics.Add(NameBindingError.AmbiguousName(file, exp.Span));
-                exp.ReferencedSymbol.Fulfill(null);
-                return null;
-        }
-    }
-
-    private static DataType InferNumericOperatorType(
+    private DataType InferNumericOperatorType(
         ExpressionResult leftOperand,
         ExpressionResult rightOperand,
         FlowState flow)
@@ -1921,7 +2144,7 @@ public class BasicBodyAnalyzer
         return commonType;
     }
 
-    private static DataType InferComparisonOperatorType(
+    private DataType InferComparisonOperatorType(
         ExpressionResult leftOperand,
         ExpressionResult rightOperand,
         FlowState flow)
@@ -1981,9 +2204,9 @@ public class BasicBodyAnalyzer
         };
     }
 
-    private static FixedSet<Contextualized<TSymbol>> SelectOverload<TSymbol>(
+    private static IFixedSet<Contextualized<TSymbol>> SelectOverload<TSymbol>(
         DataType? contextType,
-        FixedSet<TSymbol> symbols,
+        IFixedSet<TSymbol> symbols,
         ArgumentResults arguments,
         FlowState flow)
         where TSymbol : InvocableSymbol
@@ -1995,7 +2218,7 @@ public class BasicBodyAnalyzer
 
     private static IEnumerable<Contextualized<TSymbol>> CompatibleOverloads<TSymbol>(
         DataType? contextType,
-        FixedSet<TSymbol> symbols,
+        IFixedSet<TSymbol> symbols,
         ArgumentResults arguments,
         FlowState flow)
         where TSymbol : InvocableSymbol
@@ -2045,16 +2268,6 @@ public class BasicBodyAnalyzer
 
     #region LookupSymbolForType
     // TODO move these methods somewhere else, and possibly make them more efficient
-    private TypeSymbol? LookupSymbolForType(Pseudotype pseudotype)
-    {
-        return pseudotype switch
-        {
-            DataType t => LookupSymbolForType(t),
-            CapabilityTypeConstraint t => LookupSymbolForType(t.BareType.DeclaredType),
-            _ => throw ExhaustiveMatch.Failed(pseudotype)
-        };
-    }
-
     private TypeSymbol? LookupSymbolForType(DataType dataType)
     {
         return dataType switch

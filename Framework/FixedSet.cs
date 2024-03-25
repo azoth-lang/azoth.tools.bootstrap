@@ -6,68 +6,74 @@ using System.Linq;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
-// These attributes make it so FixedSet<T> is displayed nicely in the debugger similar to Set<T>
-[DebuggerDisplay("Count = {" + nameof(Count) + "}")]
-[DebuggerTypeProxy(typeof(CollectionDebugView<>))]
-public sealed class FixedSet<T> : IReadOnlySet<T>, IEquatable<FixedSet<T>>
+public interface IFixedSet<out T> : IReadOnlyCollection<T>
 {
-    public static readonly FixedSet<T> Empty = new FixedSet<T>(Enumerable.Empty<T>());
-
-    private readonly IReadOnlySet<T> items;
-
-    [DebuggerStepThrough]
-    public FixedSet(IEnumerable<T> items)
-    {
-        this.items = items.ToHashSet();
-    }
-
-    [DebuggerStepThrough]
-    public FixedSet(IEnumerable<T> items, IEqualityComparer<T> equalityComparer)
-    {
-        this.items = items.ToHashSet(equalityComparer);
-    }
-
-    [DebuggerStepThrough]
-    public IEnumerator<T> GetEnumerator() => items.GetEnumerator();
-
-    [DebuggerStepThrough]
-    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)items).GetEnumerator();
-
-    public int Count => items.Count;
-
-    #region Equality
-    public override bool Equals(object? obj) => Equals(obj as FixedSet<T>);
-
-    public bool Equals(FixedSet<T>? other)
-        => other is not null && Count == other.Count && items.SetEquals(other.items);
-
-    public override int GetHashCode()
-    {
-        HashCode hash = new HashCode();
-        hash.Add(Count);
-        // Order the hash codes so there is a consistent hash order
-        foreach (var item in items.OrderBy(i => i?.GetHashCode()))
-            hash.Add(item);
-        return hash.ToHashCode();
-    }
-    #endregion
-
-    public bool Contains(T item) => items.Contains(item);
-
-    public bool IsProperSubsetOf(IEnumerable<T> other) => items.IsProperSubsetOf(other);
-
-    public bool IsProperSupersetOf(IEnumerable<T> other) => items.IsProperSupersetOf(other);
-
-    public bool IsSubsetOf(IEnumerable<T> other) => items.IsSubsetOf(other);
-
-    public bool IsSupersetOf(IEnumerable<T> other) => items.IsSupersetOf(other);
-
-    public bool Overlaps(IEnumerable<T> other) => items.Overlaps(other);
-
-    public bool SetEquals(IEnumerable<T> other) => items.SetEquals(other);
 }
 
 public static class FixedSet
 {
-    public static FixedSet<T> Create<T>(params T[] items) => new(items);
+    public static IFixedSet<T> Empty<T>() => Of<T>.Empty;
+
+    public static IFixedSet<T> Create<T>(IEnumerable<T> items) => new Of<T>(items);
+
+    public static IFixedSet<T> Create<T>(params T[] items) => new Of<T>(items);
+
+    // These attributes make it so FixedSet.Of<T> is displayed nicely in the debugger similar to Set<T>
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
+    [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
+    private sealed class Of<T> : IFixedSet<T>
+    {
+        public static readonly Of<T> Empty = new Of<T>(Enumerable.Empty<T>());
+
+        private readonly IReadOnlySet<T> items;
+
+        [DebuggerStepThrough]
+        public Of(IEnumerable<T> items)
+        {
+            this.items = items.ToHashSet();
+        }
+
+        [DebuggerStepThrough]
+        public Of(IEnumerable<T> items, IEqualityComparer<T> equalityComparer)
+        {
+            this.items = items.ToHashSet(equalityComparer);
+        }
+
+        [DebuggerStepThrough]
+        public IEnumerator<T> GetEnumerator() => items.GetEnumerator();
+
+        [DebuggerStepThrough]
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)items).GetEnumerator();
+
+        public int Count => items.Count;
+
+        #region Equality
+        public override bool Equals(object? obj) => throw new NotSupportedException();
+
+        public override int GetHashCode()
+        {
+            var comparer = StrictEqualityComparer<T>.Instance;
+            HashCode hash = new HashCode();
+            hash.Add(Count);
+            // Order the hash codes so there is a consistent hash order
+            foreach (var itemHash in items.Select(i => comparer.GetHashCode(i!)).OrderBy(h => h))
+                hash.Add(itemHash);
+            return hash.ToHashCode();
+        }
+        #endregion
+
+        public bool Contains(T item) => items.Contains(item);
+
+        public bool IsProperSubsetOf(IEnumerable<T> other) => items.IsProperSubsetOf(other);
+
+        public bool IsProperSupersetOf(IEnumerable<T> other) => items.IsProperSupersetOf(other);
+
+        public bool IsSubsetOf(IEnumerable<T> other) => items.IsSubsetOf(other);
+
+        public bool IsSupersetOf(IEnumerable<T> other) => items.IsSupersetOf(other);
+
+        public bool Overlaps(IEnumerable<T> other) => items.Overlaps(other);
+
+        public bool SetEquals(IEnumerable<T> other) => items.SetEquals(other);
+    }
 }

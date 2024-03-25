@@ -67,7 +67,7 @@ public class BasicAnalyzer
         analyzer.Resolve(package.TestingEntityDeclarations);
     }
 
-    private void Resolve(FixedSet<IEntityDeclarationSyntax> entities)
+    private void Resolve(IFixedSet<IEntityDeclarationSyntax> entities)
     {
         foreach (var entity in entities)
             Resolve(entity);

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
@@ -104,7 +105,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
                 WalkNonNull(bodyOrBlock, containingScope);
                 return;
             case IExpressionSyntax _:
-                throw new UnreachableCodeException($"{nameof(IExpressionSyntax)} should be unreachable `{syntax}`");
+                throw new UnreachableException($"{nameof(IExpressionSyntax)} should be unreachable `{syntax}`");
         }
 
         WalkChildren(syntax, containingScope);
@@ -348,7 +349,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         IdentifierName name,
         IPromise<NamedVariableSymbol> symbol)
     {
-        var symbols = new Dictionary<TypeName, FixedSet<IPromise<Symbol>>>()
+        var symbols = new Dictionary<TypeName, IFixedSet<IPromise<Symbol>>>()
         {
             { name, symbol.Yield().ToFixedSet<IPromise<Symbol>>() }
         }.ToFixedDictionary();

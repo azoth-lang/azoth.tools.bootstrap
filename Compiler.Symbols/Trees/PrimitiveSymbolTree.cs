@@ -14,14 +14,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 public sealed class PrimitiveSymbolTree : ISymbolTree
 {
     PackageSymbol? ISymbolTree.Package => null;
-    public FixedSet<Symbol> GlobalSymbols { get; }
-    private readonly FixedDictionary<Symbol, FixedSet<Symbol>> symbolChildren;
+    public IFixedSet<Symbol> GlobalSymbols { get; }
+    private readonly FixedDictionary<Symbol, IFixedSet<Symbol>> symbolChildren;
     public IEnumerable<Symbol> Symbols => symbolChildren.Keys;
     private readonly FixedDictionary<DeclaredType, PrimitiveTypeSymbol> primitiveSymbolTypeLookup;
     private readonly FixedDictionary<SpecialTypeName, PrimitiveTypeSymbol> primitiveSymbolNameLookup;
     private readonly PrimitiveTypeSymbol anyTypeSymbol;
 
-    public PrimitiveSymbolTree(FixedDictionary<Symbol, FixedSet<Symbol>> symbolChildren)
+    public PrimitiveSymbolTree(FixedDictionary<Symbol, IFixedSet<Symbol>> symbolChildren)
     {
         this.symbolChildren = symbolChildren;
         GlobalSymbols = symbolChildren.Keys.Where(s => s.ContainingSymbol is null).ToFixedSet();
@@ -39,7 +39,7 @@ public sealed class PrimitiveSymbolTree : ISymbolTree
             throw new ArgumentException("Symbol must be primitive", nameof(symbol));
 
         return symbolChildren.TryGetValue(symbol, out var children)
-            ? children : FixedSet<Symbol>.Empty;
+            ? children : FixedSet.Empty<Symbol>();
     }
 
     public PrimitiveTypeSymbol LookupSymbolForType(SimpleType type) => primitiveSymbolTypeLookup[type];

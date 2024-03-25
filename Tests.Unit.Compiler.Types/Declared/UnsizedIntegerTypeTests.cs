@@ -1,7 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Xunit;
 
-namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.Declared;
 
 [Trait("Category", "Types")]
 public class UnsizedIntegerTypeTests

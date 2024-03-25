@@ -60,7 +60,7 @@ public abstract class CapabilityType : NonEmptyType
 
     public sealed override bool HasIndependentTypeArguments => BareType.HasIndependentTypeArguments;
 
-    public FixedSet<BareReferenceType> Supertypes => BareType.Supertypes;
+    public IFixedSet<BareReferenceType> Supertypes => BareType.Supertypes;
 
     public sealed override bool IsFullyKnown => BareType.IsFullyKnown;
 

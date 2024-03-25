@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
+using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
@@ -631,15 +632,16 @@ public partial interface IExpressionSyntax : ISyntax
 
 [Closed(
     typeof(IDataTypedExpressionSyntax),
+    typeof(IAssignableExpressionSyntax),
     typeof(ILiteralExpressionSyntax),
-    typeof(INeverTypedExpressionSyntax))]
+    typeof(INeverTypedExpressionSyntax),
+    typeof(ISelfExpressionSyntax))]
 public partial interface ITypedExpressionSyntax : IExpressionSyntax
 {
     new IPromise<DataType> DataType { get; }
 }
 
 [Closed(
-    typeof(IAssignableExpressionSyntax),
     typeof(IBlockExpressionSyntax),
     typeof(INewObjectExpressionSyntax),
     typeof(IUnsafeExpressionSyntax),
@@ -654,7 +656,6 @@ public partial interface ITypedExpressionSyntax : IExpressionSyntax
     typeof(IWhileExpressionSyntax),
     typeof(IForeachExpressionSyntax),
     typeof(IInvocationExpressionSyntax),
-    typeof(ISelfExpressionSyntax),
     typeof(IMoveExpressionSyntax),
     typeof(IFreezeExpressionSyntax),
     typeof(IAsyncBlockExpressionSyntax),
@@ -668,7 +669,7 @@ public partial interface IDataTypedExpressionSyntax : ITypedExpressionSyntax
 [Closed(
     typeof(IIdentifierNameExpressionSyntax),
     typeof(IMemberAccessExpressionSyntax))]
-public partial interface IAssignableExpressionSyntax : IDataTypedExpressionSyntax
+public partial interface IAssignableExpressionSyntax : ITypedExpressionSyntax
 {
     IPromise<Symbol?> ReferencedSymbol { get; }
 }
@@ -829,6 +830,7 @@ public partial interface IInvocationExpressionSyntax : IDataTypedExpressionSynta
     typeof(ISimpleNameExpressionSyntax))]
 public partial interface INameExpressionSyntax : IExpressionSyntax
 {
+    IPromise<ISyntaxSemantics> Semantics { get; }
     IPromise<Symbol?> ReferencedSymbol { get; }
 }
 
@@ -838,8 +840,6 @@ public partial interface INameExpressionSyntax : IExpressionSyntax
     typeof(IMemberAccessExpressionSyntax))]
 public partial interface IInvocableNameExpressionSyntax : INameExpressionSyntax
 {
-    new Promise<Symbol?> ReferencedSymbol { get; }
-    new Promise<DataType?> DataType { get; }
 }
 
 [Closed(
@@ -847,6 +847,7 @@ public partial interface IInvocableNameExpressionSyntax : INameExpressionSyntax
     typeof(ISelfExpressionSyntax))]
 public partial interface IVariableNameExpressionSyntax : INameExpressionSyntax
 {
+    new IPromise<IVariableNameExpressionSyntaxSemantics> Semantics { get; }
 }
 
 [Closed(
@@ -855,8 +856,6 @@ public partial interface IVariableNameExpressionSyntax : INameExpressionSyntax
 public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax, IHasContainingLexicalScope
 {
     StandardName? Name { get; }
-    new Promise<DataType?> DataType { get; }
-    new Promise<Symbol?> ReferencedSymbol { get; }
 }
 
 [Closed(
@@ -864,19 +863,19 @@ public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax, 
     typeof(ISpecialTypeNameExpressionSyntax))]
 public partial interface ISimpleNameExpressionSyntax : INameExpressionSyntax
 {
-    new Promise<DataType?> DataType { get; }
 }
 
 public partial interface IIdentifierNameExpressionSyntax : IInvocableNameExpressionSyntax, ISimpleNameExpressionSyntax, IStandardNameExpressionSyntax, IVariableNameExpressionSyntax, IAssignableExpressionSyntax
 {
     new IdentifierName? Name { get; }
-    new Promise<DataType?> DataType { get; }
-    new Promise<Symbol?> ReferencedSymbol { get; }
+    new Promise<IIdentifierNameExpressionSyntaxSemantics> Semantics { get; }
 }
 
 public partial interface ISpecialTypeNameExpressionSyntax : ISimpleNameExpressionSyntax
 {
     SpecialTypeName Name { get; }
+    new Promise<SpecialTypeNameExpressionSyntaxSemantics> Semantics { get; }
+    new Promise<DataType?> DataType { get; }
     new Promise<TypeSymbol?> ReferencedSymbol { get; }
 }
 
@@ -887,21 +886,23 @@ public partial interface IGenericNameExpressionSyntax : IInvocableNameExpression
     new Promise<DataType?> DataType { get; }
 }
 
-public partial interface ISelfExpressionSyntax : IVariableNameExpressionSyntax, IDataTypedExpressionSyntax
+public partial interface ISelfExpressionSyntax : IVariableNameExpressionSyntax, ITypedExpressionSyntax
 {
     bool IsImplicit { get; }
-    new Promise<SelfParameterSymbol?> ReferencedSymbol { get; }
-    new Promise<DataType> DataType { get; }
-    Promise<Pseudotype> Pseudotype { get; }
+    new Promise<ISelfExpressionSyntaxSemantics> Semantics { get; }
+    new IPromise<SelfParameterSymbol?> ReferencedSymbol { get; }
+    IPromise<Pseudotype> Pseudotype { get; }
 }
 
 public partial interface IMemberAccessExpressionSyntax : IInvocableNameExpressionSyntax, IAssignableExpressionSyntax
 {
     IExpressionSyntax Context { get; }
     AccessOperator AccessOperator { get; }
-    IStandardNameExpressionSyntax Member { get; }
-    new Promise<DataType?> DataType { get; }
-    new Promise<Symbol?> ReferencedSymbol { get; }
+    StandardName MemberName { get; }
+    IFixedList<ITypeSyntax> TypeArguments { get; }
+    TextSpan MemberNameSpan { get; }
+    new Promise<IMemberAccessSyntaxSemantics> Semantics { get; }
+    new IPromise<Symbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IMoveExpressionSyntax : IDataTypedExpressionSyntax

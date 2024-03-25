@@ -35,8 +35,8 @@ public static class EnumerableExtensions
         => values as IFixedList<T> ?? FixedList.Create(values);
 
     [DebuggerStepThrough]
-    public static FixedSet<T> ToFixedSet<T>(this IEnumerable<T> values)
-        => values as FixedSet<T> ?? new(values);
+    public static IFixedSet<T> ToFixedSet<T>(this IEnumerable<T> values)
+        => values as IFixedSet<T> ?? FixedSet.Create(values);
 
     [DebuggerStepThrough]
     public static IEnumerable<TResult> CrossJoin<TFirst, TSecond, TResult>(
@@ -116,4 +116,13 @@ public static class EnumerableExtensions
 
     public static IEnumerable<(T1, T2)> EquiZip<T1, T2>(this IEnumerable<T1> first, IEnumerable<T2> second)
         => first.EquiZip(second, (f, s) => (f, s));
+
+    public static T? TrySingle<T>(this IEnumerable<T> source)
+    {
+        using var enumerator = source.GetEnumerator();
+        if (!enumerator.MoveNext()) return default;
+        var value = enumerator.Current;
+        if (!enumerator.MoveNext()) return value;
+        return default;
+    }
 }

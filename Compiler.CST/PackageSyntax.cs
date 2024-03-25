@@ -30,22 +30,22 @@ public class PackageSyntax<TReference>
     public SymbolForest TestingSymbolTrees { get; }
 
     [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-    public FixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
-    public FixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
-    public FixedSet<IEntityDeclarationSyntax> EntityDeclarations { get; }
-    public FixedSet<IEntityDeclarationSyntax> TestingEntityDeclarations { get; }
+    public IFixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
+    public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
+    public IFixedSet<IEntityDeclarationSyntax> EntityDeclarations { get; }
+    public IFixedSet<IEntityDeclarationSyntax> TestingEntityDeclarations { get; }
     /// <summary>
     /// All the entity declarations including both regular code and testing code.
     /// </summary>
-    public FixedSet<IEntityDeclarationSyntax> AllEntityDeclarations { get; }
+    public IFixedSet<IEntityDeclarationSyntax> AllEntityDeclarations { get; }
     public FixedDictionary<IdentifierName, TReference> References { get; }
     public IEnumerable<TReference> ReferencedPackages => References.Values;
     public Diagnostics Diagnostics { get; }
 
     public PackageSyntax(
         IdentifierName name,
-        FixedSet<ICompilationUnitSyntax> compilationUnits,
-        FixedSet<ICompilationUnitSyntax> testingCompilationUnits,
+        IFixedSet<ICompilationUnitSyntax> compilationUnits,
+        IFixedSet<ICompilationUnitSyntax> testingCompilationUnits,
         FixedDictionary<IdentifierName, TReference> references)
     {
         Symbol = new PackageSymbol(name);
@@ -70,7 +70,7 @@ public class PackageSyntax<TReference>
     /// so it wouldn't give a full list of the namespaces.
     /// </remarks>
     private static IEnumerable<IEntityDeclarationSyntax> GetEntityDeclarations(
-        FixedSet<ICompilationUnitSyntax> compilationUnits)
+        IFixedSet<ICompilationUnitSyntax> compilationUnits)
     {
         var declarations = new Queue<IDeclarationSyntax>();
         declarations.EnqueueRange(compilationUnits.SelectMany(cu => cu.Declarations));

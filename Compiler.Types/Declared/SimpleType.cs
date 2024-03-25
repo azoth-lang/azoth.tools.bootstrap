@@ -17,7 +17,7 @@ public abstract class SimpleType : DeclaredValueType
 
     public override SpecialTypeName Name { get; }
 
-    public override FixedSet<BareReferenceType> Supertypes => FixedSet<BareReferenceType>.Empty;
+    public override IFixedSet<BareReferenceType> Supertypes => FixedSet.Empty<BareReferenceType>();
 
     public abstract BareValueType BareType { get; }
 

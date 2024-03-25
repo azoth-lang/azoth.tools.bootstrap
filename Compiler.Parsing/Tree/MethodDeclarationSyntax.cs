@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
@@ -11,14 +12,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IMethodDeclarationSyntax
 {
-    public ITypeDeclarationSyntax DeclaringType { get; }
-    public abstract MethodKind Kind { get; }
-    public new IdentifierName Name { get; }
-    public IMethodSelfParameterSyntax SelfParameter { get; }
-    public new IFixedList<INamedParameterSyntax> Parameters { get; }
-    public override IFixedList<IParameterSyntax> AllParameters { get; }
-    public abstract IReturnSyntax? Return { get; }
-    public new AcyclicPromise<MethodSymbol> Symbol { get; }
+    public ITypeDeclarationSyntax DeclaringType { [DebuggerStepThrough] get; }
+    public abstract MethodKind Kind { [DebuggerStepThrough] get; }
+    public new IdentifierName Name { [DebuggerStepThrough] get; }
+    public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
+    public new IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public override IFixedList<IParameterSyntax> AllParameters { [DebuggerStepThrough] get; }
+    public abstract IReturnSyntax? Return { [DebuggerStepThrough] get; }
+    public new AcyclicPromise<MethodSymbol> Symbol { [DebuggerStepThrough] get; }
 
     protected MethodDeclarationSyntax(
         ITypeDeclarationSyntax declaringType,

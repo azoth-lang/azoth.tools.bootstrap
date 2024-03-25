@@ -25,7 +25,7 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
     bool AllowsVariance { get; }
     IFixedList<GenericParameterType> GenericParameterTypes { get; }
     bool IsGeneric { get; }
-    FixedSet<BareReferenceType> Supertypes { get; }
+    IFixedSet<BareReferenceType> Supertypes { get; }
 
     BareType With(IFixedList<DataType> typeArguments);
     CapabilityType With(Capability capability, IFixedList<DataType> typeArguments);

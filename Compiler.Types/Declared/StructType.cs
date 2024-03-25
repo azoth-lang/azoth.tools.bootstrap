@@ -24,7 +24,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         bool isConst,
         StandardName name,
         IFixedList<GenericParameterType> genericParametersTypes,
-        IPromise<FixedSet<BareReferenceType>> superTypes)
+        IPromise<IFixedSet<BareReferenceType>> superTypes)
     {
         Requires.That(nameof(genericParametersTypes), name.GenericParameterCount == genericParametersTypes.Count,
             "Count must match name count");
@@ -38,7 +38,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         bool isConstType,
         StandardName name,
         IFixedList<GenericParameterType> genericParametersTypes,
-        IPromise<FixedSet<BareReferenceType>> supertypes)
+        IPromise<IFixedSet<BareReferenceType>> supertypes)
         : base(isConstType, genericParametersTypes)
     {
         ContainingPackage = containingPackage;
@@ -59,8 +59,8 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
 
     public override StandardName Name { get; }
 
-    private readonly IPromise<FixedSet<BareReferenceType>> supertypes;
-    public override FixedSet<BareReferenceType> Supertypes => supertypes.Result;
+    private readonly IPromise<IFixedSet<BareReferenceType>> supertypes;
+    public override IFixedSet<BareReferenceType> Supertypes => supertypes.Result;
 
     /// <summary>
     /// Make a version of this type for use as the default initializer parameter.

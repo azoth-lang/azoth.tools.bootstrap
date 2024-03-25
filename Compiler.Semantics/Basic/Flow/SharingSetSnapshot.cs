@@ -6,9 +6,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 public class SharingSetSnapshot
 {
     public bool IsLent { get; }
-    public FixedSet<ISharingVariable> Variables { get; }
+    public IFixedSet<ISharingVariable> Variables { get; }
 
-    public SharingSetSnapshot(bool isLent, FixedSet<ISharingVariable> variables)
+    public SharingSetSnapshot(bool isLent, IFixedSet<ISharingVariable> variables)
     {
         IsLent = isLent;
         Variables = variables;

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using SymbolDictionary = Azoth.Tools.Bootstrap.Framework.FixedDictionary<Azoth.Tools.Bootstrap.Compiler.Names.TypeName, Azoth.Tools.Bootstrap.Framework.FixedSet<Azoth.Tools.Bootstrap.Compiler.Core.Promises.IPromise<Azoth.Tools.Bootstrap.Compiler.Symbols.Symbol>>>;
+using SymbolDictionary = Azoth.Tools.Bootstrap.Framework.FixedDictionary<Azoth.Tools.Bootstrap.Compiler.Names.TypeName, Azoth.Tools.Bootstrap.Framework.IFixedSet<Azoth.Tools.Bootstrap.Compiler.Core.Promises.IPromise<Azoth.Tools.Bootstrap.Compiler.Symbols.Symbol>>>;
 
 namespace Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 

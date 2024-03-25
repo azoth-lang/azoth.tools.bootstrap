@@ -6,17 +6,19 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 /// <summary>
 /// A name of a variable or namespace
 /// </summary>
-internal class IdentifierNameExpressionSyntax : NameExpressionSyntax, IIdentifierNameExpressionSyntax
+internal sealed class IdentifierNameExpressionSyntax : NameExpressionSyntax, IIdentifierNameExpressionSyntax
 {
     private LexicalScope? containingLexicalScope;
     public LexicalScope ContainingLexicalScope
@@ -36,10 +38,11 @@ internal class IdentifierNameExpressionSyntax : NameExpressionSyntax, IIdentifie
     // A null name means this syntax was generated as an assumed missing name and the name is unknown
     public IdentifierName? Name { get; }
     StandardName? IStandardNameExpressionSyntax.Name => Name;
-    public override Promise<DataType?> DataType { get; } = new();
-    Promise<DataType> IDataTypedExpressionSyntax.DataType => DataType!;
+    public override Promise<IIdentifierNameExpressionSyntaxSemantics> Semantics { get; } = new();
+    IPromise<IVariableNameExpressionSyntaxSemantics> IVariableNameExpressionSyntax.Semantics => Semantics;
+    public override IPromise<DataType?> DataType { get; }
     IPromise<DataType> ITypedExpressionSyntax.DataType => DataType!;
-    public override Promise<Symbol?> ReferencedSymbol { get; } = new Promise<Symbol?>();
+    public override IPromise<Symbol?> ReferencedSymbol { get; }
     IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
     IPromise<Symbol?> IAssignableExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
 
@@ -47,9 +50,9 @@ internal class IdentifierNameExpressionSyntax : NameExpressionSyntax, IIdentifie
         : base(span)
     {
         Name = name;
+        DataType = Semantics.Select(s => s.Type).Flatten();
+        ReferencedSymbol = Semantics.Select(s => s.Symbol).Flatten();
     }
-
-    public void FulfillDataType(DataType type) => DataType.Fulfill(type);
 
     public IEnumerable<IPromise<Symbol>> LookupInContainingScope()
     {

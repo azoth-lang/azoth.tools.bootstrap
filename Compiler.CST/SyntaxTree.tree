@@ -9,6 +9,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 ◊using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
+◊using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Tokens;
@@ -131,7 +132,7 @@ OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 Expression = DataType:'IPromise<DataType?>' ImplicitConversion:'Conversion' ConvertedDataType:'DataType'?;
 TypedExpression: Expression = DataType:'IPromise<DataType>';
 DataTypedExpression: TypedExpression = DataType:'Promise<DataType>';
-AssignableExpression: DataTypedExpression = ReferencedSymbol:'IPromise<Symbol?>';
+AssignableExpression: TypedExpression = ReferencedSymbol:'IPromise<Symbol?>';
 BlockExpression: DataTypedExpression, BlockOrResult, BodyOrBlock = Statements:Statement*;
 NewObjectExpression: DataTypedExpression = Type:TypeName ConstructorName:'IdentifierName'? ConstructorNameSpan:'TextSpan'? Arguments:Expression* ReferencedSymbol:'Promise<ConstructorSymbol?>';
 UnsafeExpression: DataTypedExpression = Expression;
@@ -164,17 +165,17 @@ ReturnExpression: NeverTypedExpression = Value:Expression?;
 // ---------- Invocation Expressions
 InvocationExpression: DataTypedExpression, 'IHasContainingLexicalScope' = Expression Arguments:Expression* ReferencedSymbol:'Promise<Symbol?>';
 
-// ---------- Variable Expressions
-NameExpression: Expression = ReferencedSymbol:'IPromise<Symbol?>';
-InvocableNameExpression: NameExpression = ReferencedSymbol:'Promise<Symbol?>' DataType:'Promise<DataType?>';
-VariableNameExpression: NameExpression;
-StandardNameExpression: NameExpression, 'IHasContainingLexicalScope' = Name:'StandardName'? DataType:'Promise<DataType?>' ReferencedSymbol:'Promise<Symbol?>';
-SimpleNameExpression: NameExpression = DataType:'Promise<DataType?>';
-IdentifierNameExpression: InvocableNameExpression, SimpleNameExpression, StandardNameExpression, VariableNameExpression, AssignableExpression = Name:'IdentifierName'? DataType:'Promise<DataType?>' ReferencedSymbol:'Promise<Symbol?>';
-SpecialTypeNameExpression: SimpleNameExpression = Name:'SpecialTypeName' DataType:'Promise<DataType?>' ReferencedSymbol:'Promise<TypeSymbol?>';
+// ---------- Name Expressions
+NameExpression: Expression = Semantics:'IPromise<ISyntaxSemantics>' ReferencedSymbol:'IPromise<Symbol?>';
+InvocableNameExpression: NameExpression;
+VariableNameExpression: NameExpression = Semantics:'IPromise<IVariableNameExpressionSyntaxSemantics>';
+StandardNameExpression: NameExpression, 'IHasContainingLexicalScope' = Name:'StandardName'? ReferencedSymbol:'IPromise<Symbol?>';
+SimpleNameExpression: NameExpression;
+IdentifierNameExpression: InvocableNameExpression, SimpleNameExpression, StandardNameExpression, VariableNameExpression, AssignableExpression = Name:'IdentifierName'? Semantics:'Promise<IIdentifierNameExpressionSyntaxSemantics>';
+SpecialTypeNameExpression: SimpleNameExpression = Name:'SpecialTypeName' Semantics:'Promise<SpecialTypeNameExpressionSyntaxSemantics>' DataType:'Promise<DataType?>' ReferencedSymbol:'Promise<TypeSymbol?>';
 GenericNameExpression: InvocableNameExpression, StandardNameExpression = Name:'GenericName' TypeArguments:Type* DataType:'Promise<DataType?>';
-SelfExpression: VariableNameExpression, DataTypedExpression = IsImplicit:'bool' ReferencedSymbol:'Promise<SelfParameterSymbol?>' DataType:'Promise<DataType>' Pseudotype:'Promise<Pseudotype>';
-MemberAccessExpression: InvocableNameExpression, AssignableExpression = Context:Expression AccessOperator:'AccessOperator' Member:StandardNameExpression DataType:'Promise<DataType?>' ReferencedSymbol:'Promise<Symbol?>';
+SelfExpression: VariableNameExpression, TypedExpression = IsImplicit:'bool' Semantics:'Promise<ISelfExpressionSyntaxSemantics>' ReferencedSymbol:'IPromise<SelfParameterSymbol?>' Pseudotype:'IPromise<Pseudotype>';
+MemberAccessExpression: InvocableNameExpression, AssignableExpression = Context:Expression AccessOperator:'AccessOperator' MemberName:'StandardName' TypeArguments:Type* MemberNameSpan:'TextSpan' Semantics:'Promise<IMemberAccessSyntaxSemantics>' ReferencedSymbol:'IPromise<Symbol?>';
 
 // ---------- Capability Expressions
 MoveExpression: DataTypedExpression = Referent:VariableNameExpression ReferencedSymbol:'Promise<BindingSymbol?>';

@@ -63,7 +63,7 @@ public class AzothCompiler
 
         return analyzer.Check(packageSyntax);
 
-        async Task<FixedSet<ICompilationUnitSyntax>> ParseFilesAsync(IEnumerable<ICodeFileSource> codeFileSources)
+        async Task<IFixedSet<ICompilationUnitSyntax>> ParseFilesAsync(IEnumerable<ICodeFileSource> codeFileSources)
         {
             var parseBlock = new TransformBlock<ICodeFileSource, ICompilationUnitSyntax>(async fileSource =>
             {
@@ -113,7 +113,7 @@ public class AzothCompiler
 
         return analyzer.Check(packageSyntax);
 
-        FixedSet<ICompilationUnitSyntax> ParseFiles(IEnumerable<CodeFile> codeFiles)
+        IFixedSet<ICompilationUnitSyntax> ParseFiles(IEnumerable<CodeFile> codeFiles)
         {
             return codeFiles
                    .Select(file =>

@@ -113,7 +113,7 @@ public static class OtherSemanticError
 
     public static Diagnostic ForeachNoNextMethod(CodeFile file, IExpressionSyntax inExpression, DataType type)
     {
-        return new(file, inExpression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 6018,
-            $"`foreach` cannot operate on value of type `{type.ToILString()}` because its iterator does not have a `next()` method.");
+        return new(file, inExpression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            6018, $"`foreach` cannot operate on value of type `{type.ToILString()}` because its iterator does not have a `next()` method.");
     }
 }

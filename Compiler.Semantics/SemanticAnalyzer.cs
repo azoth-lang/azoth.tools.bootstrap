@@ -89,6 +89,7 @@ public class SemanticAnalyzer
         // analysis up to this point and avoids confusing error messages from later stages.
         new SymbolValidator(packageSyntax.SymbolTree).Validate(packageSyntax.EntityDeclarations);
         new SymbolValidator(packageSyntax.TestingSymbolTree).Validate(packageSyntax.TestingEntityDeclarations);
+        new SemanticsFulfillmentValidator().Validate(packageSyntax.AllEntityDeclarations);
         new TypeFulfillmentValidator().Validate(packageSyntax.AllEntityDeclarations);
         new TypeKnownValidator().Validate(packageSyntax.AllEntityDeclarations);
 #endif
@@ -101,7 +102,7 @@ public class SemanticAnalyzer
         return packageBuilder;
     }
 
-    private static void CheckDataFlow(FixedSet<IDeclaration> declarations, FixedSymbolTree symbolTree, Diagnostics diagnostics)
+    private static void CheckDataFlow(IFixedSet<IDeclaration> declarations, FixedSymbolTree symbolTree, Diagnostics diagnostics)
     {
         // From this point forward, analysis focuses on executable declarations (i.e. invocables and field initializers)
         var executableDeclarations = declarations.OfType<IExecutableDeclaration>().ToFixedSet();

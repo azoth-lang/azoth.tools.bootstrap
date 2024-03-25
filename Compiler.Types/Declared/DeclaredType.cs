@@ -48,7 +48,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public bool AllowsVariance { get; }
     public IFixedList<GenericParameterType> GenericParameterTypes { get; }
     public bool IsGeneric => GenericParameters.Any();
-    public abstract FixedSet<BareReferenceType> Supertypes { get; }
+    public abstract IFixedSet<BareReferenceType> Supertypes { get; }
 
     private protected DeclaredType(
         bool isDeclaredConst,

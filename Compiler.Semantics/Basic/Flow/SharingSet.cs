@@ -21,7 +21,7 @@ public class SharingSet : IReadOnlySharingSet
     public bool IsIsolated => variables.Count == 1;
     public bool IsAlive => variables.Any(v => v.KeepsSetAlive);
 
-    public SharingSet(bool isLent, IReadOnlySet<ISharingVariable> variables)
+    public SharingSet(bool isLent, IFixedSet<ISharingVariable> variables)
     {
         IsLent = isLent;
         this.variables = variables.ToHashSet();

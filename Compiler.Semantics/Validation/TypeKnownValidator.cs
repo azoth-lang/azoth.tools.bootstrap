@@ -83,7 +83,8 @@ public class TypeKnownValidator : SyntaxWalker<bool>
                 return;
             case IMemberAccessExpressionSyntax syn:
                 WalkNonNull(syn.Context, false);
-                WalkNonNull(syn.Member, expressionTypeMustBeKnown);
+                foreach (var arg in syn.TypeArguments)
+                    WalkNonNull(arg, true);
                 if (expressionTypeMustBeKnown)
                     syn.ConvertedDataType.Known();
                 return;

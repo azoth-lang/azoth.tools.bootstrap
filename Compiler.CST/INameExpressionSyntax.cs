@@ -7,13 +7,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 public interface INameExpressionSyntax<TSymbol>
 {
     TextSpan Span { get; }
-    Promise<TSymbol?> ReferencedSymbol { get; }
+    IPromise<TSymbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax<Symbol>
 {
     new TextSpan Span { get; }
-    //new Promise<Symbol?> ReferencedSymbol { get; }
+    new IPromise<Symbol?> ReferencedSymbol { get; }
 }
 
 public partial interface ISelfExpressionSyntax : INameExpressionSyntax<SelfParameterSymbol>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
@@ -26,7 +27,7 @@ internal class ASTBuilder
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
     public PackageBuilder BuildPackage(PackageSyntax<Package> packageSyntax)
     {
-        var declarations = BuildNonMemberDeclarations(packageSyntax.EntityDeclarations, FixedSet<INonMemberDeclaration>.Empty);
+        var declarations = BuildNonMemberDeclarations(packageSyntax.EntityDeclarations, FixedSet.Empty<INonMemberDeclaration>());
         var testingDeclarations = BuildNonMemberDeclarations(packageSyntax.TestingEntityDeclarations, declarations);
 
         var symbolTree = packageSyntax.SymbolTree.Build();
@@ -35,9 +36,9 @@ internal class ASTBuilder
             packageSyntax.Diagnostics, packageSyntax.References);
     }
 
-    private static FixedSet<INonMemberDeclaration> BuildNonMemberDeclarations(
-        FixedSet<IEntityDeclarationSyntax> entityDeclarations,
-        FixedSet<INonMemberDeclaration> existingDeclarations)
+    private static IFixedSet<INonMemberDeclaration> BuildNonMemberDeclarations(
+        IFixedSet<IEntityDeclarationSyntax> entityDeclarations,
+        IFixedSet<INonMemberDeclaration> existingDeclarations)
     {
         var declarationDictionary = existingDeclarations.ToDictionary(d => d.Symbol, d => new Lazy<INonMemberDeclaration>(d));
         foreach (var declaration in entityDeclarations.OfType<INonMemberEntityDeclarationSyntax>())
@@ -572,7 +573,8 @@ internal class ASTBuilder
             case InitializerSymbol initializer:
                 return new InitializerInvocationExpression(syn.Span, type, initializer, arguments);
             case BindingSymbol _:
-                throw new InvalidOperationException("Invocation expression cannot invoke a binding symbol.");
+                var field = BuildExpression(syn.Expression);
+                return new FunctionReferenceInvocationExpression(syn.Span, type, field, arguments);
             case TypeSymbol _:
                 throw new InvalidOperationException("Invocation expression cannot invoke a type.");
             case ConstructorSymbol _:
@@ -710,8 +712,8 @@ internal class ASTBuilder
             TypeSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a type."),
             InvocableSymbol _ => throw new InvalidOperationException("Cannot build a name expression for an invocable."),
             NamespaceOrPackageSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a namespace or package."),
-            FieldSymbol _ => throw new UnreachableCodeException("Field would be a different expression."),
-            SelfParameterSymbol _ => throw new UnreachableCodeException("Self parameter would be a different expression."),
+            FieldSymbol _ => throw new UnreachableException("Field would be a different expression."),
+            SelfParameterSymbol _ => throw new UnreachableException("Self parameter would be a different expression."),
             _ => throw ExhaustiveMatch.Failed(syn),
         };
     }

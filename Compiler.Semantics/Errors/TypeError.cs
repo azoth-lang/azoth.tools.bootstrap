@@ -81,10 +81,10 @@ public static class TypeError
             3009, "Functions that never return can't contain return statements");
     }
 
-    public static Diagnostic CannotAssignFieldOfReadOnly(CodeFile file, in TextSpan span, ReferenceType referenceType)
+    public static Diagnostic CannotAssignFieldOfReadOnly(CodeFile file, in TextSpan span, CapabilityType contextType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3010, $"Cannot assign into a field through a read only reference of type `{referenceType.ToSourceCodeString()}`");
+            3010, $"Cannot assign into a field through a read only `{contextType.ToSourceCodeString()}`");
     }
 
     public static Diagnostic CannotIdNonReferenceType(CodeFile file, in TextSpan span, DataType type)
@@ -160,10 +160,10 @@ public static class TypeError
             3022, $"Self viewpoint not available `{typeSyntax.ToString()}`.");
     }
 
-    public static Diagnostic CannotAccessMutableBindingFieldOfIdentityReference(CodeFile file, IStandardNameExpressionSyntax exp, Pseudotype contextType)
+    public static Diagnostic CannotAccessMutableBindingFieldOfIdentityReference(CodeFile file, IMemberAccessExpressionSyntax exp, Pseudotype contextType)
     {
         return new(file, exp.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3023, $"Cannot access `var` field `{exp.ToString()}` from type `{contextType.ToSourceCodeString()}`.");
+            3023, $"Cannot access `var` field `{exp.MemberName}` from type `{contextType.ToSourceCodeString()}`.");
     }
 
     public static Diagnostic CapabilityAppliedToEmptyType(CodeFile file, ITypeNameSyntax typeSyntax)
@@ -230,5 +230,17 @@ public static class TypeError
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3034, $"Supertype `{typeSyntax.ToString()}` does not maintain independence.");
+    }
+
+    public static Diagnostic NoFunctionInGroupMatchesExpectedType(CodeFile file, INameExpressionSyntax nameSyntax, FunctionType functionType)
+    {
+        return new(file, nameSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3035, $"No function in group `{nameSyntax.ToString()}` matches the expected type `{functionType.ToSourceCodeString()}`.");
+    }
+
+    public static Diagnostic AmbiguousFunctionGroup(CodeFile file, INameExpressionSyntax nameSyntax, FunctionType functionType)
+    {
+        return new(file, nameSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3036, $"Function group `{nameSyntax.ToString()}` has multiple functions that match the expected type `{functionType.ToSourceCodeString()}`.");
     }
 }

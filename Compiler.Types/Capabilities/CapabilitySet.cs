@@ -79,6 +79,4 @@ public sealed class CapabilitySet : ICapabilityConstraint
     public string ToILString() => name;
 
     public string ToSourceCodeString() => name;
-
-
 }
