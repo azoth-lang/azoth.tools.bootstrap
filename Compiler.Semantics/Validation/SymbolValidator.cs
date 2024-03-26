@@ -73,6 +73,10 @@ public class SymbolValidator : SyntaxWalker
             case ITypeNameSyntax syn:
                 ValidateReferencedSymbol(syn, syn.ReferencedSymbol);
                 break;
+            // TODO this is complex because the symbol hasn't been made yet when the viewpoint type is resolved
+            //case ISelfViewpointTypeSyntax syn:
+            //    ValidateReferencedSymbol(syn, syn.ReferencedSymbol);
+            //    break;
             case IMoveExpressionSyntax syn:
                 ValidateReferencedSymbol(syn, syn.ReferencedSymbol);
                 break;
@@ -84,6 +88,9 @@ public class SymbolValidator : SyntaxWalker
                 break;
             case IMemberAccessExpressionSyntax syn:
                 ValidateReferencedSymbol(syn, syn.ReferencedSymbol, optional: true);
+                break;
+            case INameExpressionSyntax syn:
+                ValidateReferencedSymbol(syn, syn.ReferencedSymbol);
                 break;
         }
 

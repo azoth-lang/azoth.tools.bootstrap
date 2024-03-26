@@ -16,6 +16,8 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
+// ReSharper disable PartialTypeWithSinglePart
+
 [Closed(
     typeof(ICompilationUnitSyntax),
     typeof(IUsingDirectiveSyntax),
@@ -346,9 +348,7 @@ public partial interface IAttributeSyntax : ISyntax
 
 [Closed(
     typeof(IConstructorOrInitializerParameterSyntax),
-    typeof(INamedParameterSyntax),
-    typeof(ISelfParameterSyntax),
-    typeof(IFieldParameterSyntax))]
+    typeof(ISelfParameterSyntax))]
 public partial interface IParameterSyntax : ISyntax
 {
     IdentifierName? Name { get; }
@@ -363,7 +363,7 @@ public partial interface IConstructorOrInitializerParameterSyntax : IParameterSy
 {
 }
 
-public partial interface INamedParameterSyntax : IParameterSyntax, IConstructorOrInitializerParameterSyntax, ILocalBindingSyntax
+public partial interface INamedParameterSyntax : IConstructorOrInitializerParameterSyntax, ILocalBindingSyntax
 {
     bool IsLentBinding { get; }
     new IdentifierName Name { get; }
@@ -414,7 +414,7 @@ public partial interface ICapabilitySetSyntax : ICapabilityConstraintSyntax
     new CapabilitySet Constraint { get; }
 }
 
-public partial interface IFieldParameterSyntax : IParameterSyntax, IConstructorOrInitializerParameterSyntax
+public partial interface IFieldParameterSyntax : IConstructorOrInitializerParameterSyntax
 {
     new IdentifierName Name { get; }
     Promise<FieldSymbol?> ReferencedSymbol { get; }

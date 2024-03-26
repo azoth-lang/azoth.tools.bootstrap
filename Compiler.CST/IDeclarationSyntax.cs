@@ -10,5 +10,6 @@ public partial interface IDeclarationSyntax
     /// * "new foo"
     /// * "delete"
     /// </summary>
+    // TODO when partial properties are supported, add this to put doc comment on the property
     //TextSpan NameSpan { get; }
 }

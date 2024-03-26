@@ -80,14 +80,14 @@ Attribute = TypeName;
 Parameter = Name:'IdentifierName'? DataType:'IPromise<Pseudotype>' Unused:'bool';
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter: Parameter;
-NamedParameter: Parameter, ConstructorOrInitializerParameter, LocalBinding = IsMutableBinding:'bool' IsLentBinding:'bool' Name:'IdentifierName' DeclarationNumber:'Promise<int?>' Type DataType:'IPromise<DataType>' Symbol:'Promise<NamedVariableSymbol>' DefaultValue:Expression?;
+NamedParameter: ConstructorOrInitializerParameter, LocalBinding = IsMutableBinding:'bool' IsLentBinding:'bool' Name:'IdentifierName' DeclarationNumber:'Promise<int?>' Type DataType:'IPromise<DataType>' Symbol:'Promise<NamedVariableSymbol>' DefaultValue:Expression?;
 SelfParameter: Parameter = IsLentBinding:'bool' Symbol:'Promise<SelfParameterSymbol>';
 ConstructorSelfParameter: SelfParameter = IsLentBinding:'bool' Capability DataType:'IPromise<DataType>' Symbol:'Promise<SelfParameterSymbol>';
 InitializerSelfParameter: SelfParameter = IsLentBinding:'bool' Capability DataType:'IPromise<DataType>' Symbol:'Promise<SelfParameterSymbol>';
 MethodSelfParameter: SelfParameter = IsLentBinding:'bool' Capability:CapabilityConstraint Symbol:'Promise<SelfParameterSymbol>';
 CapabilityConstraint = Constraint:'ICapabilityConstraint';
 CapabilitySet: CapabilityConstraint = Constraint:'CapabilitySet';
-FieldParameter: Parameter, ConstructorOrInitializerParameter = Name:'IdentifierName' ReferencedSymbol:'Promise<FieldSymbol?>' DefaultValue:Expression?;
+FieldParameter: ConstructorOrInitializerParameter = Name:'IdentifierName' ReferencedSymbol:'Promise<FieldSymbol?>' DefaultValue:Expression?;
 Return = Type; // Return type of a function or method
 
 // ---------- Function Parts

@@ -29,8 +29,7 @@
     <None Update="TreeCodeTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TreeCodeTemplate.cs</LastGenOutput>
-      <CustomToolNamespace>
-      </CustomToolNamespace>
+      <CustomToolNamespace>Azoth.Tools.Bootstrap.Compiler.CodeGen</CustomToolNamespace>
     </None>
     <None Update="ChildrenCodeTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>

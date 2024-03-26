@@ -9,6 +9,8 @@ using <#=usingNamespace #>;
 
 namespace <#=grammar.Namespace #>;
 
+// ReSharper disable PartialTypeWithSinglePart
+
 <#  foreach(var rule in grammar.Rules) {#>
 <#=ClosedType(rule) #>public partial interface <#= TypeName(rule.Nonterminal) #><#= BaseTypes(rule) #>
 {

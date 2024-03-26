@@ -10,6 +10,8 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST;
 
+// ReSharper disable PartialTypeWithSinglePart
+
 [Closed(
     typeof(IBodyOrBlock),
     typeof(IElseClause),
