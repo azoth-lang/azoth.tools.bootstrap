@@ -34,7 +34,7 @@ public static class Primitive
         var tree = SymbolTreeBuilder.CreateForPrimitives();
 
         // TODO: This is a hack to "have" a string type from here. Replace by extending primitive types with string related methods.
-        var stringType = ReferenceType.CreateClass(Capability.Constant, "", NamespaceName.Global, false, false, "String");
+        var stringType = ReferenceType.CreateClass(Capability.Constant, "fake", NamespaceName.Global, false, false, "String");
 
         // Simple Types
         BuildBoolSymbol(tree);

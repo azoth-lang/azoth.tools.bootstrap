@@ -86,9 +86,17 @@ public partial class Parser
     {
         modifiers.ParseEndOfModifiers();
         var ns = Tokens.Consume<INamespaceKeywordToken>();
-        var globalQualifier = Tokens.AcceptToken<IColonColonDotToken>();
-        var (name, nameSpan) = ParseNamespaceName();
-        nameSpan = TextSpan.Covering(nameSpan, globalQualifier?.Span);
+        IPunctuationToken? globalQualifier = Tokens.AcceptToken<IColonColonToken>();
+        NamespaceName name = NamespaceName.Global;
+        TextSpan nameSpan;
+        if (globalQualifier is null)
+        {
+            globalQualifier = Tokens.AcceptToken<IColonColonDotToken>();
+            (name, nameSpan) = ParseNamespaceName();
+            nameSpan = TextSpan.Covering(globalQualifier?.Span, nameSpan);
+        }
+        else
+            nameSpan = globalQualifier.Span;
         Tokens.Expect<IOpenBraceToken>();
         var bodyParser = NamespaceBodyParser(name);
         var usingDirectives = bodyParser.ParseUsingDirectives();

@@ -20,6 +20,7 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
     public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
     public bool IsMove { [DebuggerStepThrough] get; }
     public new StandardName Name { [DebuggerStepThrough] get; }
+    TypeName INonMemberEntityDeclarationSyntax.Name => Name;
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
     public new AcyclicPromise<UserTypeSymbol> Symbol { [DebuggerStepThrough] get; }
     public IFixedList<ISupertypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }

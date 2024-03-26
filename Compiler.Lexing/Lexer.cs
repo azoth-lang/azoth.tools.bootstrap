@@ -95,9 +95,13 @@ public class Lexer
                         yield return TokenFactory.Dot(SymbolSpan());
                     break;
                 case ':':
-                    if (NextChar() is ':' && CharAt(2) is '.')
-                        // it is `::.`
-                        yield return TokenFactory.ColonColonDot(SymbolSpan(3));
+                    if (NextChar() is ':')
+                    {
+                        if (CharAt(2) is '.')
+                            yield return TokenFactory.ColonColonDot(SymbolSpan(3));
+                        else
+                            yield return TokenFactory.ColonColon(SymbolSpan(2));
+                    }
                     else
                         // it is `:`
                         yield return TokenFactory.Colon(SymbolSpan());

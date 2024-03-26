@@ -1,3 +1,4 @@
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -16,7 +17,6 @@ internal class NamespaceDeclarationSyntax : NonMemberDeclarationSyntax, INamespa
     /// </summary>
     public bool IsGlobalQualified { get; }
     public NamespaceName DeclaredNames { get; }
-    public new IdentifierName Name { get; }
     public NamespaceName FullName { get; }
     public new Promise<NamespaceOrPackageSymbol> Symbol { get; }
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
@@ -31,11 +31,10 @@ internal class NamespaceDeclarationSyntax : NonMemberDeclarationSyntax, INamespa
         TextSpan nameSpan,
         IFixedList<IUsingDirectiveSyntax> usingDirectives,
         IFixedList<INonMemberDeclarationSyntax> declarations)
-        : base(containingNamespaceName, span, file, declaredNames.Segments[^1], nameSpan, new Promise<NamespaceOrPackageSymbol>())
+        : base(containingNamespaceName, span, file, declaredNames.Segments.LastOrDefault(), nameSpan, new Promise<NamespaceOrPackageSymbol>())
     {
         DeclaredNames = declaredNames;
         FullName = containingNamespaceName.Qualify(declaredNames);
-        Name = declaredNames.Segments[^1];
         UsingDirectives = usingDirectives;
         Declarations = declarations;
         IsGlobalQualified = isGlobalQualified;

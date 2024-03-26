@@ -64,7 +64,7 @@ public static class Arbitrary
             case "*":
                 return t2.Text is "=" or "==" or "=/=" or "=>" or "*=";
             case "<":
-                return t2.Text is "=" or "==" or "=/=" or "=>" or ":" or "::." or ".." or "..<";
+                return t2.Text is "=" or "==" or "=/=" or "=>" or ":" or "::" or "::." or ".." or "..<";
             case "-":
                 return t2.Text is "=" or "==" or "=/=" or "=>" or ">" or ">=";
             case "/":
@@ -80,8 +80,9 @@ public static class Arbitrary
             case "#":
                 return t2.Text is "#" or "##" or "(" or "[" or "{";
             case ":":
-                // TODO actually ':',':' is fine. It is really the three token sequence ':',':','.' that is the problem
-                return t2.Text == ":";
+                return t2.Text is ":" or "::" or "::.";
+            case "::":
+                return t2.Text is "." or ".." or "..<";
             case "as"
                 when t2.Text is "?" or "?." or "??":
                 return true;
@@ -202,6 +203,7 @@ public static class Arbitrary
         { ";", typeof(ISemicolonToken) },
         { ",", typeof(ICommaToken) },
         { ".", typeof(IDotToken) },
+        { "::", typeof(IColonColonToken) },
         { "::.", typeof(IColonColonDotToken) },
         { "..", typeof(IDotDotToken) },
         { "<..", typeof(ILessThanDotDotToken) },

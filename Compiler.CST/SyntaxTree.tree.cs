@@ -144,7 +144,6 @@ public partial interface IConcreteInvocableDeclarationSyntax : IInvocableDeclara
 public partial interface INonMemberDeclarationSyntax : IDeclarationSyntax
 {
     NamespaceName ContainingNamespaceName { get; }
-    new TypeName Name { get; }
 }
 
 public partial interface INamespaceDeclarationSyntax : INonMemberDeclarationSyntax

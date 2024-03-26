@@ -402,6 +402,7 @@ public partial class Parser
                 return ParseMissingIdentifier();
             case ICloseBraceToken _:
             case IColonToken _:
+            case IColonColonToken _:
             case IColonColonDotToken _:
             case ILessThanColonToken _:
             case ICommaToken _:

@@ -8,6 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// IL doesn't even directly represent namespaces, for symbols, a namespace
 /// is the container of all the names in it. There is one symbol per namespace.
 /// </summary>
+/// <remarks>There is no separate symbol for the global namespace. The package symbol is used
+/// directly when referring to the global namespace.</remarks>
 public sealed class NamespaceSymbol : NamespaceOrPackageSymbol
 {
     public override NamespaceOrPackageSymbol ContainingSymbol { get; }

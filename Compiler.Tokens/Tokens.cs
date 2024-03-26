@@ -44,6 +44,9 @@ public static partial class TokenFactory
     public static IDotToken Dot(TextSpan span)
         => new DotToken(span);
 
+    public static IColonColonToken ColonColon(TextSpan span)
+        => new ColonColonToken(span);
+
     public static IColonColonDotToken ColonColonDot(TextSpan span)
         => new ColonColonDotToken(span);
 
@@ -138,6 +141,7 @@ public static partial class TokenFactory
     typeof(IRightArrowToken),
     typeof(IHashToken),
     typeof(IDotToken),
+    typeof(IColonColonToken),
     typeof(IColonColonDotToken),
     typeof(IDotDotToken),
     typeof(ILessThanDotDotToken),
@@ -279,6 +283,15 @@ public partial interface IDotToken : IEssentialToken { }
 internal partial class DotToken : Token, IDotToken
 {
     public DotToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IColonColonToken : IEssentialToken { }
+internal partial class ColonColonToken : Token, IColonColonToken
+{
+    public ColonColonToken(TextSpan span)
         : base(span)
     {
     }

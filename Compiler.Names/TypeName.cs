@@ -22,6 +22,7 @@ public abstract partial class TypeName : IEquatable<TypeName>
 
     protected TypeName(string text, int genericParameterCount)
     {
+        Requires.That(nameof(text), !string.IsNullOrEmpty(text), "cannot be null or empty");
         Text = text;
         if (TokenTypes.Keywords.Contains(Text)
             || TokenTypes.ReservedWords.Contains(Text))
