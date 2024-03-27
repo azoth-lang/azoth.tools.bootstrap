@@ -73,7 +73,7 @@ internal static class Parsing
                 currentStatement.AppendSeparator(' ');
                 currentStatement.Append(isEndOfStatement ? line.TrimStatementTerminator() : line);
             }
-            if (isConfig || isEndOfStatement)
+            if ((isConfig || isEndOfStatement) && currentStatement.Length > 0)
             {
                 yield return currentStatement.ToString().Trim();
                 currentStatement.Clear();

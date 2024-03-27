@@ -419,12 +419,12 @@ public class TreeParserTests
 
     private static GrammarType OptionalType(GrammarSymbol symbol)
     {
-        return new GrammarType(symbol, false, true, false);
+        return new GrammarType(symbol, false, false, true);
     }
 
     private static GrammarType ListType(GrammarSymbol symbol)
     {
-        return new GrammarType(symbol, false, false, true);
+        return new GrammarType(symbol, false, true, false);
     }
 
     private static GrammarType RefType(GrammarSymbol symbol)

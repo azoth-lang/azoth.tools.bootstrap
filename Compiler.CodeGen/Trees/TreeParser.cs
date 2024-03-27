@@ -63,10 +63,13 @@ internal static class TreeParser
 
             var isRef = trimmedProperty.StartsWith('&');
             trimmedProperty = isRef ? trimmedProperty[1..] : trimmedProperty;
-            var isList = trimmedProperty.EndsWith('*');
-            trimmedProperty = isList ? trimmedProperty[..^1] : trimmedProperty;
+
             var isOptional = trimmedProperty.EndsWith('?');
             trimmedProperty = isOptional ? trimmedProperty[..^1] : trimmedProperty;
+
+            var isList = trimmedProperty.EndsWith('*');
+            trimmedProperty = isList ? trimmedProperty[..^1] : trimmedProperty;
+
             var parts = trimmedProperty.Split(':').Select(p => p.Trim()).ToArray();
 
             switch (parts.Length)
@@ -74,7 +77,7 @@ internal static class TreeParser
                 case 1:
                 {
                     var name = parts[0];
-                    var grammarType = new GrammarType(Parsing.ParseSymbol(name), isRef, isOptional, isList);
+                    var grammarType = new GrammarType(Parsing.ParseSymbol(name), isRef, isList, isOptional);
                     yield return new GrammarProperty(name, grammarType);
                 }
                 break;
@@ -82,7 +85,7 @@ internal static class TreeParser
                 {
                     var name = parts[0];
                     var type = parts[1];
-                    var grammarType = new GrammarType(Parsing.ParseSymbol(type), isRef, isOptional, isList);
+                    var grammarType = new GrammarType(Parsing.ParseSymbol(type), isRef, isList, isOptional);
                     yield return new GrammarProperty(name, grammarType);
                 }
                 break;
