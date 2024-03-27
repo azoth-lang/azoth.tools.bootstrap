@@ -8,8 +8,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen;
 
 public static class Program
 {
-    public const string DirectiveMarker = "◊";
-
     public static int Main(string[] args)
     {
         using var app = new CommandLineApplication()

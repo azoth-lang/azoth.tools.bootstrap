@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees.Config;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -12,40 +12,16 @@ internal static class TreeParser
 {
     public static Grammar ReadGrammarConfig(string grammar)
     {
-        var lines = new List<string>();
-        using (var reader = new StringReader(grammar))
-        {
-            string? line;
-            while ((line = reader.ReadLine()) is not null)
-                lines.Add(line);
-        }
+        var lines = Parsing.ParseLines(grammar).ToFixedList();
 
-        var ns = GetConfig(lines, "namespace");
-        var baseType = ParseSymbol(GetConfig(lines, "base"));
-        var prefix = GetConfig(lines, "prefix") ?? "";
-        var suffix = GetConfig(lines, "suffix") ?? "";
-        var listType = GetConfig(lines, "list") ?? "List";
-        var usingNamespaces = GetUsingNamespaces(lines);
+        var ns = Parsing.GetConfig(lines, "namespace");
+        var baseType = ParseSymbol(Parsing.GetConfig(lines, "base"));
+        var prefix = Parsing.GetConfig(lines, "prefix") ?? "";
+        var suffix = Parsing.GetConfig(lines, "suffix") ?? "";
+        var listType = Parsing.GetConfig(lines, "list") ?? "List";
+        var usingNamespaces = Parsing.GetUsingNamespaces(lines);
         var rules = GetRules(lines).Select(r => DefaultBaseType(r, baseType));
         return new Grammar(ns, baseType, prefix, suffix, listType, usingNamespaces, rules);
-    }
-
-    private static string? GetConfig(IEnumerable<string> lines, string config)
-    {
-        var start = Program.DirectiveMarker + config;
-        var line = lines.SingleOrDefault(l => l.StartsWith(start, StringComparison.InvariantCulture));
-        line = line?.Substring(start.Length);
-        line = line?.TrimEnd(';'); // TODO error if no semicolon
-        line = line?.Trim();
-        return line;
-    }
-
-    private static IEnumerable<string> GetUsingNamespaces(IEnumerable<string> lines)
-    {
-        const string start = Program.DirectiveMarker + "using";
-        lines = lines.Where(l => l.StartsWith(start, StringComparison.InvariantCulture));
-        // TODO error if no semicolon
-        return lines.Select(l => l.Substring(start.Length).TrimEnd(';').Trim());
     }
 
     private static GrammarRule DefaultBaseType(GrammarRule rule, GrammarSymbol? baseType)
@@ -56,14 +32,10 @@ internal static class TreeParser
         return new GrammarRule(rule.Nonterminal, baseType.YieldValue(), rule.Properties);
     }
 
-    private static IEnumerable<GrammarRule> GetRules(List<string> lines)
+    private static IEnumerable<GrammarRule> GetRules(IEnumerable<string> lines)
     {
-        var ruleLines = lines.Select(l => l.Trim())
-                             .Where(l => !l.StartsWith(Program.DirectiveMarker, StringComparison.InvariantCulture)
-                                         && !l.StartsWith("//", StringComparison.InvariantCulture)
-                                         && !string.IsNullOrWhiteSpace(l))
-                             .Select(RemoveComment)
-                             .Select(l => l.TrimEnd(';')) // TODO error if no semicolon
+        var ruleLines = lines.Where(l => !l.StartsWith(Parsing.DirectiveMarker, StringComparison.InvariantCulture))
+                             .Select(l => l.TrimSemicolon())
                              .ToList()!;
         foreach (var ruleLine in ruleLines)
         {
@@ -79,13 +51,6 @@ internal static class TreeParser
 
             yield return new GrammarRule(nonterminal, parents, properties);
         }
-    }
-
-    private static string RemoveComment(string line)
-    {
-        var commentIndex = line.IndexOf("//", StringComparison.InvariantCulture);
-        // Must trim end because caller assumes line has been trimmed
-        return commentIndex == -1 ? line : line[..commentIndex].TrimEnd();
     }
 
     private static IEnumerable<GrammarProperty> ParseDefinition(string? definition)
@@ -152,7 +117,8 @@ internal static class TreeParser
     private static GrammarSymbol? ParseSymbol(string? symbol)
     {
         if (symbol is null) return null;
-        if (symbol.StartsWith('\'') && symbol.EndsWith('\'')) return new GrammarSymbol(symbol[1..^1], true);
+        if (symbol.StartsWith('\'') && symbol.EndsWith('\''))
+            return new GrammarSymbol(symbol[1..^1], true);
         return new GrammarSymbol(symbol);
     }
 }
