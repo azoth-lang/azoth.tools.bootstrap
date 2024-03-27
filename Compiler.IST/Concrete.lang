@@ -1,0 +1,9 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.IST;
+◊name Concrete
+◊list IFixedList;
+
+Package = Symbol:`PackageSymbol` CompilationUnits:CompilationUnit*;
+CompilationUnit = File:`CodeFile` ImplicitNamespaceName:`NamespaceName`;
+
+
+Syntax;

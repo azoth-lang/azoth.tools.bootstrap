@@ -1,6 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Config;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 
 public static class CodeBuilder
 {

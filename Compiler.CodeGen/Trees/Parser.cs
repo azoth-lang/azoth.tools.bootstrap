@@ -6,7 +6,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Config;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 
 internal static class Parser
 {

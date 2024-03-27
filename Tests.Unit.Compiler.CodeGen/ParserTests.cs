@@ -1,6 +1,6 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Config;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 using Azoth.Tools.Bootstrap.Framework;
 using Xunit;
 

@@ -85,7 +85,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.AST.Interpreter", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Unit.Compiler.AST.Interpreter", "Tests.Unit.Compiler.AST.Interpreter\Tests.Unit.Compiler.AST.Interpreter.csproj", "{F52BC75F-BEB7-402C-8450-F49CEEA5C32A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler.IST", "Compiler.IST\Compiler.IST.csproj", "{90B33FC6-4AD4-41E3-9A30-B5726A5DEBE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.IST", "Compiler.IST\Compiler.IST.csproj", "{90B33FC6-4AD4-41E3-9A30-B5726A5DEBE9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4D709360-03ED-4A76-8EBB-18B89462A9DB} = {4D709360-03ED-4A76-8EBB-18B89462A9DB}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

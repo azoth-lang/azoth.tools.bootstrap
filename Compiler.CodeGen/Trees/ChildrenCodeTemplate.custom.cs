@@ -1,7 +1,7 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Config;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 
 public partial class ChildrenCodeTemplate
 {

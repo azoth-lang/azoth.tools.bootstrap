@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
@@ -16,6 +16,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ExhaustiveMatching.Analyzer" Version="0.5.0" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,26 +27,27 @@
     <ProjectReference Include="..\Framework\Framework.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="TreeCodeTemplate.tt">
+    <None Update="Trees\TreeCodeTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TreeCodeTemplate.cs</LastGenOutput>
-      <CustomToolNamespace>Azoth.Tools.Bootstrap.Compiler.CodeGen</CustomToolNamespace>
+      <CustomToolNamespace>Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees</CustomToolNamespace>
     </None>
-    <None Update="ChildrenCodeTemplate.tt">
+    <None Update="Trees\ChildrenCodeTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>ChildrenCodeTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees</CustomToolNamespace>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="TreeCodeTemplate.cs">
+    <Compile Update="Trees\TreeCodeTemplate.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>TreeCodeTemplate.tt</DependentUpon>
+      <DependentUpon>Trees\TreeCodeTemplate.tt</DependentUpon>
     </Compile>
-    <Compile Update="ChildrenCodeTemplate.cs">
+    <Compile Update="Trees\ChildrenCodeTemplate.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ChildrenCodeTemplate.tt</DependentUpon>
