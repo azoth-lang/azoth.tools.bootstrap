@@ -1,8 +1,8 @@
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Config;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees.Config;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 
-public static class CodeBuilder
+public static class TreeCodeBuilder
 {
     public static string GenerateTree(Grammar grammar)
     {

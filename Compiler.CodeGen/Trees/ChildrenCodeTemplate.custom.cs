@@ -1,5 +1,5 @@
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Config;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees.Config;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 

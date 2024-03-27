@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Config;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees.Config;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;

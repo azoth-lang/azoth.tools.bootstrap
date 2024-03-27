@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Config;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees.Config;
 
 public class GrammarRule
 {

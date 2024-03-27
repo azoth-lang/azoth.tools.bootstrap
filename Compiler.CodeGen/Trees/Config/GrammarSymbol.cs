@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Config;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees.Config;
 
 [DebuggerDisplay("{" + nameof(ToString) + ",nq}")]
 public sealed class GrammarSymbol : IEquatable<GrammarSymbol>

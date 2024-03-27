@@ -54,14 +54,14 @@ public static class Program
 
             var inputFile = File.ReadAllText(inputPath)
                             ?? throw new InvalidOperationException("null from reading input file");
-            var grammar = Parser.ReadGrammarConfig(inputFile);
+            var grammar = TreeParser.ReadGrammarConfig(inputFile);
 
             grammar.Validate();
 
-            var treeCode = CodeBuilder.GenerateTree(grammar);
+            var treeCode = TreeCodeBuilder.GenerateTree(grammar);
             WriteIfChanged(treeOutputPath, treeCode);
 
-            var walkerCode = CodeBuilder.GenerateChildren(grammar);
+            var walkerCode = TreeCodeBuilder.GenerateChildren(grammar);
             WriteIfChanged(childrenOutputPath, walkerCode);
             return 0;
         }

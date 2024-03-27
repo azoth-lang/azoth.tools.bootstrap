@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Config;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees.Config;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 
-internal static class Parser
+internal static class TreeParser
 {
     public static Grammar ReadGrammarConfig(string grammar)
     {

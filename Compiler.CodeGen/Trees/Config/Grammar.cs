@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Config;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees.Config;
 
 public class Grammar
 {

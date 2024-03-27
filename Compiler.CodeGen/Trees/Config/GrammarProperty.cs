@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Config;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees.Config;
 
 public sealed class GrammarProperty
 {
