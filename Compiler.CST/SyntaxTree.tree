@@ -1,6 +1,6 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.CST;
 ◊walkers_namespace Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
-◊base 'ISyntax';
+◊root 'ISyntax';
 ◊prefix I;
 ◊suffix Syntax;
 ◊list IFixedList;

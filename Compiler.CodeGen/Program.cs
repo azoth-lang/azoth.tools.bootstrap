@@ -52,9 +52,9 @@ public static class Program
 
             var inputFile = File.ReadAllText(inputPath)
                             ?? throw new InvalidOperationException("null from reading input file");
-            var grammar = TreeParser.ReadGrammarConfig(inputFile);
+            var grammar = TreeParser.ParseGrammar(inputFile);
 
-            grammar.Validate();
+            grammar.ValidateTreeOrdering();
 
             var treeCode = TreeCodeBuilder.GenerateTree(grammar);
             WriteIfChanged(treeOutputPath, treeCode);

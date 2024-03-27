@@ -5,10 +5,10 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
 
-public class Grammar
+public sealed class Grammar
 {
     public string? Namespace { get; }
-    public GrammarSymbol? BaseType { get; }
+    public GrammarSymbol? RootType { get; }
     public string Prefix { get; }
     public string Suffix { get; }
     public string ListType { get; }
@@ -17,7 +17,7 @@ public class Grammar
 
     public Grammar(
         string? @namespace,
-        GrammarSymbol? baseType,
+        GrammarSymbol? rootType,
         string prefix,
         string suffix,
         string listType,
@@ -25,7 +25,7 @@ public class Grammar
         IEnumerable<GrammarRule> rules)
     {
         Namespace = @namespace;
-        BaseType = baseType;
+        RootType = rootType;
         Prefix = prefix;
         Suffix = suffix;
         ListType = listType;
@@ -33,7 +33,7 @@ public class Grammar
         Rules = rules.ToFixedList();
     }
 
-    public void Validate()
+    public void ValidateTreeOrdering()
     {
         foreach (var rule in Rules.Where(IsLeaf))
         {

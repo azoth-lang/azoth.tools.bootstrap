@@ -53,7 +53,4 @@
       <DependentUpon>ChildrenCodeTemplate.tt</DependentUpon>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Langs\" />
-  </ItemGroup>
 </Project>

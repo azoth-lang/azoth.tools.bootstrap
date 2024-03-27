@@ -1,5 +1,5 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.AST;
-◊base 'IAbstractSyntax';
+◊root 'IAbstractSyntax';
 ◊prefix I;
 ◊list IFixedList;
 ◊using System.Numerics;
