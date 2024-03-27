@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 using McMaster.Extensions.CommandLineUtils;
 
@@ -81,9 +82,7 @@ public static class Program
 
             var inputFile = File.ReadAllText(inputPath)
                             ?? throw new InvalidOperationException("null from reading input file");
-            //var grammar = Parser.ReadGrammarConfig(inputFile);
-
-            //grammar.Validate();
+            var grammar = LanguageParser.ParseGrammar(inputFile);
 
             //var langCode = CodeBuilder.GenerateLang(grammar);
             //WriteIfChanged(langOutputPath, langCode);

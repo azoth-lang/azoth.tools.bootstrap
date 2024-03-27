@@ -3,9 +3,9 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Langs;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
 
-internal static class LangParser
+internal static class LanguageParser
 {
     public static Grammar ParseGrammar(string grammar)
     {
