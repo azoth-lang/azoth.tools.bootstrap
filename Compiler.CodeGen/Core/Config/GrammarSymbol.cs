@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees.Config;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
 
 [DebuggerDisplay("{" + nameof(ToString) + ",nq}")]
 public sealed record GrammarSymbol(string Text, bool IsQuoted = false)
