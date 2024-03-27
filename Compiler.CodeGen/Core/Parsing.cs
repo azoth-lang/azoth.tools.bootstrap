@@ -30,9 +30,9 @@ internal static class Parsing
         return line;
     }
 
-    private static string ConfigStart(string config) => DirectiveMarker + config;
+    private static string ConfigStart(string config) => DirectiveMarker + config + " ";
 
-    public static IEnumerable<string> GetUsingNamespaces(IEnumerable<string> lines)
+    public static IEnumerable<string> ParseUsingNamespaces(IEnumerable<string> lines)
     {
         const string start = DirectiveMarker + "using";
         lines = lines.Where(l => l.StartsWith(start, StringComparison.InvariantCulture));
@@ -57,7 +57,8 @@ internal static class Parsing
     public static GrammarSymbol? ParseSymbol(string? symbol)
     {
         if (symbol is null) return null;
-        if (symbol.StartsWith('\'') && symbol.EndsWith('\''))
+        if ((symbol.StartsWith('\'') && symbol.EndsWith('\'')
+            || (symbol.StartsWith('`') && symbol.EndsWith('`'))))
             return new GrammarSymbol(symbol[1..^1], true);
         return new GrammarSymbol(symbol);
     }
@@ -67,8 +68,8 @@ internal static class Parsing
         var currentStatement = new StringBuilder();
         foreach (var line in lines)
         {
-            var isConfig = line.StartsWith(Parsing.DirectiveMarker, StringComparison.InvariantCulture);
-            var isEndOfStatement = line.EndsWith(Parsing.StatementTerminator);
+            var isConfig = line.StartsWith(DirectiveMarker, StringComparison.InvariantCulture);
+            var isEndOfStatement = line.EndsWith(StatementTerminator);
             if (!isConfig)
             {
                 currentStatement.AppendSeparator(' ');
@@ -99,7 +100,7 @@ internal static class Parsing
         var declaration = equalSplit[0];
         var (nonterminal, parents) = ParseDeclaration(declaration);
         var definition = equalSplit.Length == 2 ? equalSplit[1].Trim() : null;
-        var properties = Enumerable.ToList<GrammarProperty>(ParseProperties(definition));
+        var properties = ParseProperties(definition).ToList();
         if (properties.Select(p => p.Name).Distinct().Count() != properties.Count)
             throw new FormatException($"Rule for {nonterminal} contains duplicate property definitions");
 
@@ -131,7 +132,7 @@ internal static class Parsing
                 case 1:
                 {
                     var name = parts[0];
-                    var grammarType = new GrammarType(Parsing.ParseSymbol(name), isRef, isList, isOptional);
+                    var grammarType = new GrammarType(ParseSymbol(name), isRef, isList, isOptional);
                     yield return new GrammarProperty(name, grammarType);
                 }
                 break;
@@ -139,7 +140,7 @@ internal static class Parsing
                 {
                     var name = parts[0];
                     var type = parts[1];
-                    var grammarType = new GrammarType(Parsing.ParseSymbol(type), isRef, isList, isOptional);
+                    var grammarType = new GrammarType(ParseSymbol(type), isRef, isList, isOptional);
                     yield return new GrammarProperty(name, grammarType);
                 }
                 break;
@@ -153,7 +154,7 @@ internal static class Parsing
     {
         var declarationSplit = declaration.SplitOrEmpty(':');
         if (declarationSplit.Count > 2) throw new FormatException($"Too many colons in declaration: '{declaration}'");
-        var nonterminal = Parsing.ParseSymbol(declarationSplit[0].Trim());
+        var nonterminal = ParseSymbol(declarationSplit[0].Trim());
         var parents = declarationSplit.Count == 2 ? declarationSplit[1] : null;
         var parentSymbols = ParseParents(parents);
         return (nonterminal, parentSymbols);
@@ -166,6 +167,6 @@ internal static class Parsing
         return parents
                .Split(',')
                .Select(p => p.Trim())
-               .Select(p => Parsing.ParseSymbol(p));
+               .Select(p => ParseSymbol(p));
     }
 }

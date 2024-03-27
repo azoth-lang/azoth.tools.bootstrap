@@ -1,13 +1,10 @@
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
-
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
 
-public static class LanguageCodeBuilder
+internal static class LanguageCodeBuilder
 {
-    public static string GenerateLanguage(Grammar grammar)
+    public static string GenerateLanguage(Language language)
     {
-        var template = new TreeCodeTemplate(grammar);
+        var template = new LanguageCodeTemplate(language);
         return template.TransformText();
     }
 }

@@ -82,12 +82,11 @@ public static class Program
 
             var inputFile = File.ReadAllText(inputPath)
                             ?? throw new InvalidOperationException("null from reading input file");
-            var grammar = LanguageParser.ParseGrammar(inputFile);
+            var language = LanguageParser.ParseLanguage(inputFile);
 
-            //var langCode = CodeBuilder.GenerateLang(grammar);
-            //WriteIfChanged(langOutputPath, langCode);
-            throw new NotImplementedException("Lang generation not implemented");
-            //return 0;
+            var languageCode = LanguageCodeBuilder.GenerateLanguage(language);
+            WriteIfChanged(langOutputPath, languageCode);
+            return 0;
         }
         catch (Exception ex)
         {

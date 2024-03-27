@@ -4,8 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>Azoth.Tools.Bootstrap.Compier.IST</AssemblyName>
-    <RootNamespace>Azoth.Tools.Bootstrap.Compier.IST</RootNamespace>
+    <AssemblyName>Azoth.Tools.Bootstrap.Compiler.IST</AssemblyName>
+    <RootNamespace>Azoth.Tools.Bootstrap.Compiler.IST</RootNamespace>
     <DisableFastUpToDateCheck>True</DisableFastUpToDateCheck>
   </PropertyGroup>
 
@@ -29,6 +29,16 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Compiler.Symbols\Compiler.Symbols.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Concrete.lang.cs">
+      <DependentUpon>Concrete.lang</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>
