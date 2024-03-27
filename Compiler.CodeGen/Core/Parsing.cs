@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
 internal static class Parsing
 {
     public const string DirectiveMarker = "◊";
+    public const char StatementTerminator = ';';
 
     public static IEnumerable<string> ParseLines(string input)
     {
@@ -20,7 +24,7 @@ internal static class Parsing
         var start = ConfigStart(config);
         var line = lines.SingleOrDefault(l => l.StartsWith(start, StringComparison.InvariantCulture));
         line = line?[start.Length..];
-        line = line?.TrimSemicolon();
+        line = line?.TrimStatementTerminator();
         line = line?.Trim();
         return line;
     }
@@ -31,15 +35,14 @@ internal static class Parsing
     {
         const string start = DirectiveMarker + "using";
         lines = lines.Where(l => l.StartsWith(start, StringComparison.InvariantCulture));
-        // TODO error if no semicolon
-        return lines.Select(l => l[start.Length..].TrimSemicolon().Trim());
+        return lines.Select(l => l[start.Length..].TrimStatementTerminator().Trim());
     }
 
-    public static string TrimSemicolon(this string line)
+    public static string TrimStatementTerminator(this string line)
     {
-        if (!line.EndsWith(';'))
+        if (!line.EndsWith(StatementTerminator))
             throw new FormatException($"Line does not end with a semicolon: '{line}'");
-        return line.TrimEnd(';');
+        return line.TrimEnd(StatementTerminator);
     }
 
     public static string TrimComment(this string line)
@@ -47,5 +50,37 @@ internal static class Parsing
         var commentIndex = line.IndexOf("//", StringComparison.InvariantCulture);
         // Must trim end because we often assume no trailing whitespace
         return commentIndex == -1 ? line : line[..commentIndex].TrimEnd();
+    }
+
+    [return: NotNullIfNotNull(nameof(symbol))]
+    public static GrammarSymbol? ParseSymbol(string? symbol)
+    {
+        if (symbol is null) return null;
+        if (symbol.StartsWith('\'') && symbol.EndsWith('\''))
+            return new GrammarSymbol(symbol[1..^1], true);
+        return new GrammarSymbol(symbol);
+    }
+
+    public static IEnumerable<string> ParseToStatements(IEnumerable<string> lines)
+    {
+        var currentStatement = new StringBuilder();
+        foreach (var line in lines)
+        {
+            var isConfig = line.StartsWith(Parsing.DirectiveMarker, StringComparison.InvariantCulture);
+            var isEndOfStatement = line.EndsWith(Parsing.StatementTerminator);
+            if (!isConfig)
+            {
+                currentStatement.AppendSeparator(' ');
+                currentStatement.Append(isEndOfStatement ? line.TrimStatementTerminator() : line);
+            }
+            if (isConfig || isEndOfStatement)
+            {
+                yield return currentStatement.ToString().Trim();
+                currentStatement.Clear();
+            }
+        }
+
+        if (currentStatement.Length > 0)
+            yield return currentStatement.ToString().Trim();
     }
 }

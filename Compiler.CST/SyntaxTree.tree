@@ -20,7 +20,8 @@
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 'ISyntax' = Span:'TextSpan';
-CompilationUnit = File:'CodeFile' ImplicitNamespaceName:'NamespaceName' UsingDirectives:UsingDirective* Declarations:NonMemberDeclaration* Diagnostics:'Diagnostic'*;
+CompilationUnit = File:'CodeFile' ImplicitNamespaceName:'NamespaceName' Diagnostics:'Diagnostic'*
+    UsingDirectives:UsingDirective* Declarations:NonMemberDeclaration*;
 UsingDirective = Name:'NamespaceName';
 
 // ---------- Special Parts

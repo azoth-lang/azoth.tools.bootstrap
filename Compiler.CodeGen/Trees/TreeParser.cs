@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
@@ -15,16 +14,16 @@ internal static class TreeParser
         var lines = Parsing.ParseLines(grammar).ToFixedList();
 
         var ns = Parsing.GetConfig(lines, "namespace");
-        var baseType = ParseSymbol(Parsing.GetConfig(lines, "base"));
+        var baseType = Parsing.ParseSymbol(Parsing.GetConfig(lines, "base"));
         var prefix = Parsing.GetConfig(lines, "prefix") ?? "";
         var suffix = Parsing.GetConfig(lines, "suffix") ?? "";
         var listType = Parsing.GetConfig(lines, "list") ?? "List";
         var usingNamespaces = Parsing.GetUsingNamespaces(lines);
-        var rules = GetRules(lines).Select(r => DefaultBaseType(r, baseType));
+        var rules = ParseRules(lines).Select(r => WithDefaultBaseType(r, baseType));
         return new Grammar(ns, baseType, prefix, suffix, listType, usingNamespaces, rules);
     }
 
-    private static GrammarRule DefaultBaseType(GrammarRule rule, GrammarSymbol? baseType)
+    private static GrammarRule WithDefaultBaseType(GrammarRule rule, GrammarSymbol? baseType)
     {
         if (baseType is null
             || rule.Parents.Any()
@@ -32,25 +31,25 @@ internal static class TreeParser
         return new GrammarRule(rule.Nonterminal, baseType.YieldValue(), rule.Properties);
     }
 
-    private static IEnumerable<GrammarRule> GetRules(IEnumerable<string> lines)
+    private static IEnumerable<GrammarRule> ParseRules(IEnumerable<string> lines)
     {
-        var ruleLines = lines.Where(l => !l.StartsWith(Parsing.DirectiveMarker, StringComparison.InvariantCulture))
-                             .Select(l => l.TrimSemicolon())
-                             .ToList()!;
-        foreach (var ruleLine in ruleLines)
-        {
-            var equalSplit = ruleLine.Split('=');
-            if (equalSplit.Length > 2)
-                throw new FormatException($"Too many equal signs on line: '{ruleLine}'");
-            var declaration = equalSplit[0];
-            var (nonterminal, parents) = ParseDeclaration(declaration);
-            var definition = equalSplit.Length == 2 ? equalSplit[1].Trim() : null;
-            var properties = ParseDefinition(definition).ToList();
-            if (properties.Select(p => p.Name).Distinct().Count() != properties.Count)
-                throw new FormatException($"Rule for {nonterminal} contains duplicate property definitions");
+        var statements = Parsing.ParseToStatements(lines).ToFixedList();
+        foreach (var statement in statements)
+            yield return ParseRule(statement);
+    }
 
-            yield return new GrammarRule(nonterminal, parents, properties);
-        }
+    private static GrammarRule ParseRule(string statement)
+    {
+        var equalSplit = statement.Split('=');
+        if (equalSplit.Length > 2) throw new FormatException($"Too many equal signs on line: '{statement}'");
+        var declaration = equalSplit[0];
+        var (nonterminal, parents) = ParseDeclaration(declaration);
+        var definition = equalSplit.Length == 2 ? equalSplit[1].Trim() : null;
+        var properties = ParseDefinition(definition).ToList();
+        if (properties.Select(p => p.Name).Distinct().Count() != properties.Count)
+            throw new FormatException($"Rule for {nonterminal} contains duplicate property definitions");
+
+        return new GrammarRule(nonterminal, parents, properties);
     }
 
     private static IEnumerable<GrammarProperty> ParseDefinition(string? definition)
@@ -75,7 +74,7 @@ internal static class TreeParser
                 case 1:
                 {
                     var name = parts[0];
-                    var grammarType = new GrammarType(ParseSymbol(name), isRef, isOptional, isList);
+                    var grammarType = new GrammarType(Parsing.ParseSymbol(name), isRef, isOptional, isList);
                     yield return new GrammarProperty(name, grammarType);
                 }
                 break;
@@ -83,7 +82,7 @@ internal static class TreeParser
                 {
                     var name = parts[0];
                     var type = parts[1];
-                    var grammarType = new GrammarType(ParseSymbol(type), isRef, isOptional, isList);
+                    var grammarType = new GrammarType(Parsing.ParseSymbol(type), isRef, isOptional, isList);
                     yield return new GrammarProperty(name, grammarType);
                 }
                 break;
@@ -97,7 +96,7 @@ internal static class TreeParser
     {
         var declarationSplit = declaration.SplitOrEmpty(':');
         if (declarationSplit.Count > 2) throw new FormatException($"Too many colons in declaration: '{declaration}'");
-        var nonterminal = ParseSymbol(declarationSplit[0].Trim());
+        var nonterminal = Parsing.ParseSymbol(declarationSplit[0].Trim());
         var parents = declarationSplit.Count == 2 ? declarationSplit[1] : null;
         var parentSymbols = ParseParents(parents);
         return (nonterminal, parentSymbols);
@@ -110,15 +109,6 @@ internal static class TreeParser
         return parents
                .Split(',')
                .Select(p => p.Trim())
-               .Select(p => ParseSymbol(p));
-    }
-
-    [return: NotNullIfNotNull("symbol")]
-    private static GrammarSymbol? ParseSymbol(string? symbol)
-    {
-        if (symbol is null) return null;
-        if (symbol.StartsWith('\'') && symbol.EndsWith('\''))
-            return new GrammarSymbol(symbol[1..^1], true);
-        return new GrammarSymbol(symbol);
+               .Select(p => Parsing.ParseSymbol(p));
     }
 }
