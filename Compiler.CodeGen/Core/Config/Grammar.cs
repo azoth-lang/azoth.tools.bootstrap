@@ -130,7 +130,7 @@ public sealed class Grammar
         => !childRules[rule].Any();
 
     public bool IsNonterminal(GrammarProperty property)
-        => Rules.Any(r => r.Nonterminal == property.Type.Symbol);
+        => rulesLookup.ContainsKey(property.Type.Symbol);
 
     public string TypeName(GrammarSymbol symbol)
         => symbol.IsQuoted ? symbol.Text : $"{Prefix}{symbol.Text}{Suffix}";

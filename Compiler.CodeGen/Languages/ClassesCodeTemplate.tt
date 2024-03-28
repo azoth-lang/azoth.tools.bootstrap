@@ -25,7 +25,9 @@ namespace <#=grammar.Namespace #>.Classes
 <#          } #>
 <#      } #>
 
-        public <#=Emit.ClassName(language, rule.Nonterminal) #>(<#=Emit.PropertyParameters(language, rule) #>)
+        public object? ImplementationRestricted => null;
+
+        public <#=Emit.ClassName(language, rule.Nonterminal) #>(<#=Emit.PropertyClassParameters(language, rule) #>)
         {
 <#      foreach(var property in rule.Properties.Where(p => ShouldEmit.Property(grammar, rule, p))) { #>
             <#=property.Name #> = <#=property.Name.ToCamelCase() #>;

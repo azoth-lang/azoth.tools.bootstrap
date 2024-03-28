@@ -29,10 +29,14 @@ internal static class Emit
         return builder.ToString();
     }
 
-    public static string BaseTypes(Grammar grammar, GrammarRule rule)
+    public static string BaseTypes(Grammar grammar, GrammarRule rule, string? root = null)
     {
+        bool anyParents = rule.Parents.Any();
+        if (!anyParents && root is null) return "";
+
         var parents = rule.Parents.Select(grammar.TypeName);
-        if (!rule.Parents.Any()) return "";
+        if (root is not null && !anyParents)
+            parents = parents.Append(root);
 
         return " : " + string.Join(", ", parents);
     }
@@ -68,6 +72,26 @@ internal static class Emit
     public static string ClassName(Language language, GrammarSymbol symbol)
         => symbol.IsQuoted ? symbol.Text : $"{symbol.Text}{language.Grammar.Suffix}_{language.Name}";
 
-    public static string PropertyParameters(Language language, GrammarRule rule)
+    public static string PropertyParameters(Grammar grammar, GrammarRule rule)
+        => string.Join(", ", grammar.AllProperties(rule).Select(p => $"{Type(grammar, p.Type)} {p.Name.ToCamelCase()}"));
+
+    public static string PropertyClassParameters(Language language, GrammarRule rule)
         => string.Join(", ", language.Grammar.AllProperties(rule).Select(p => $"{ClassType(language, p.Type)} {p.Name.ToCamelCase()}"));
+
+    public static string PropertyArguments(Language language, GrammarRule rule)
+    {
+        return string.Join(", ", language.Grammar.AllProperties(rule).Select(ToArgument));
+        string ToArgument(GrammarProperty p)
+        {
+            var cast = language.Grammar.IsNonterminal(p) ? $"({SmartClassType(language, p.Type)})" : "";
+            return $"{cast}{p.Name.ToCamelCase()}";
+        }
+    }
+
+    private static string SmartClassType(Language language, GrammarType type)
+    {
+        var correctLanguage = language.RuleDefinedIn[type.Symbol];
+        var name = ClassName(correctLanguage, type.Symbol);
+        return TypeDecorations(language.Grammar, type, name);
+    }
 }

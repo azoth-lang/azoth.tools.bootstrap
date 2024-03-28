@@ -4,7 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
-<#  foreach(var usingNamespace in grammar.OrderedUsingNamespaces("ExhaustiveMatching")) { #>
+<#  foreach(var usingNamespace in grammar.OrderedUsingNamespaces("ExhaustiveMatching", grammar.Namespace + ".Classes")) { #>
 using <#=usingNamespace #>;
 <#  } #>
 
@@ -15,10 +15,15 @@ namespace <#=grammar.Namespace #>;
 public sealed class <#=language.Name #>
 {
 <#  foreach(var rule in grammar.Rules) {#>
-<#=Emit.ClosedAttribute(grammar, rule, indent: "    ") #>    public interface <#= grammar.TypeName(rule.Nonterminal) #><#= Emit.BaseTypes(grammar, rule) #>
+<#=Emit.ClosedAttribute(grammar, rule, indent: "    ") #>    public interface <#= grammar.TypeName(rule.Nonterminal) #><#= Emit.BaseTypes(grammar, rule, "IImplementationRestricted") #>
     {
 <#      foreach(var property in rule.Properties.Where(p => ShouldEmit.Property(grammar, rule, p))) { #>
         <#=Emit.PropertyIsNew(grammar, rule, property) #><#=Emit.Type(grammar, property.Type) #> <#=property.Name #> { get; }
+<#      } #>
+<#      if (grammar.IsLeaf(rule)) { var classLanguage = language.RuleDefinedIn[rule.Nonterminal]; #>
+
+        public static <#= grammar.TypeName(rule.Nonterminal) #> Create(<#=Emit.PropertyParameters(grammar, rule) #>)
+           => new <#=Emit.ClassName(classLanguage, rule.Nonterminal) #>(<#=Emit.PropertyArguments(language, rule) #>);
 <#      } #>
     }
 

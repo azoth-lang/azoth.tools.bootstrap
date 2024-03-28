@@ -17,6 +17,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST.Classes
         public BigInteger Value { get; }
         public DataType Type { get; }
 
+        public object? ImplementationRestricted => null;
+
         public IntLiteral_Typed(BigInteger value, DataType type)
         {
             Value = value;

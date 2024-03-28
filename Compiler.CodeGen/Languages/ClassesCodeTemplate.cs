@@ -154,168 +154,168 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             
             #line default
             #line hidden
-            this.Write("\r\n        public ");
+            this.Write("\r\n        public object? ImplementationRestricted => null;\r\n\r\n        public ");
             
-            #line 28 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 30 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(language, rule.Nonterminal)));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 28 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.PropertyParameters(language, rule)));
+            #line 30 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.PropertyClassParameters(language, rule)));
             
             #line default
             #line hidden
             this.Write(")\r\n        {\r\n");
             
-            #line 30 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
       foreach(var property in rule.Properties.Where(p => ShouldEmit.Property(grammar, rule, p))) { 
             
             #line default
             #line hidden
             this.Write("            ");
             
-            #line 31 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 33 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
             
             #line default
             #line hidden
             this.Write(" = ");
             
-            #line 31 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 33 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.Name.ToCamelCase()));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 34 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
             this.Write("        }\r\n    }\r\n\r\n");
             
-            #line 36 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 38 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
   } 
             
             #line default
             #line hidden
             this.Write("}\r\n\r\n");
             
-            #line 39 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 41 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
    foreach(var (otherLanguage, rules) in OtherLanguagesDefiningRules()) {
             
             #line default
             #line hidden
             this.Write("namespace ");
             
-            #line 40 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 42 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(otherLanguage.Grammar.Namespace));
             
             #line default
             #line hidden
             this.Write(".Classes\r\n{\r\n    using static ");
             
-            #line 42 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 44 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(grammar.Namespace));
             
             #line default
             #line hidden
             this.Write(".");
             
-            #line 42 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 44 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(language.Name));
             
             #line default
             #line hidden
             this.Write(";\r\n\r\n");
             
-            #line 44 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 46 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
       foreach(var rule in rules.Where(r => grammar.IsLeaf(r))) {
             
             #line default
             #line hidden
             this.Write("    internal sealed partial class ");
             
-            #line 45 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 47 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(otherLanguage, rule.Nonterminal)));
             
             #line default
             #line hidden
             this.Write(" : ");
             
-            #line 45 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 47 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Nonterminal)));
             
             #line default
             #line hidden
             this.Write("\r\n    {\r\n");
             
-            #line 47 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 49 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
       foreach(var property in grammar.AllProperties(rule)) { 
             
             #line default
             #line hidden
             
-            #line 48 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 50 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
           if (grammar.IsNonterminal(property)) { 
             
             #line default
             #line hidden
             this.Write("        ");
             
-            #line 49 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 51 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(grammar, property.Type)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 49 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 51 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Nonterminal)));
             
             #line default
             #line hidden
             this.Write(".");
             
-            #line 49 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 51 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
             
             #line default
             #line hidden
             this.Write(" => ");
             
-            #line 49 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 51 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 50 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+            #line 52 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
           } 
             
             #line default
             #line hidden
-            
-            #line 51 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
-      } 
-            
-            #line default
-            #line hidden
-            this.Write("    }\r\n");
             
             #line 53 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
-            this.Write("}\r\n");
+            this.Write("    }\r\n");
             
             #line 55 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
+      } 
+            
+            #line default
+            #line hidden
+            this.Write("}\r\n");
+            
+            #line 57 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
   } 
             
             #line default
