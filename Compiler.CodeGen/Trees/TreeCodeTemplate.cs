@@ -14,12 +14,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
     using System.Collections.Generic;
     using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
     using System;
-    
+
     /// <summary>
     /// Class to produce the template output
     /// </summary>
-    
-    #line 1 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+
+#line 1 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "17.0.0.0")]
     public partial class TreeCodeTemplate : TreeCodeTemplateBase
     {
@@ -29,106 +29,109 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
         /// </summary>
         public virtual string TransformText()
         {
-            
-            #line 7 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-  foreach(var usingNamespace in grammar.OrderedUsingNamespaces("ExhaustiveMatching")) { 
-            
-            #line default
-            #line hidden
-            this.Write("using ");
-            
-            #line 8 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(usingNamespace));
-            
-            #line default
-            #line hidden
-            this.Write(";\r\n");
-            
-            #line 9 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-  } 
-            
-            #line default
-            #line hidden
+
+#line 7 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            foreach (var usingNamespace in grammar.OrderedUsingNamespaces("ExhaustiveMatching"))
+            {
+
+#line default
+#line hidden
+                this.Write("using ");
+
+#line 8 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+                this.Write(this.ToStringHelper.ToStringWithCulture(usingNamespace));
+
+#line default
+#line hidden
+                this.Write(";\r\n");
+
+#line 9 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            }
+
+#line default
+#line hidden
             this.Write("\r\nnamespace ");
-            
-            #line 11 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+
+#line 11 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(grammar.Namespace));
-            
-            #line default
-            #line hidden
+
+#line default
+#line hidden
             this.Write(";\r\n\r\n// ReSharper disable PartialTypeWithSinglePart\r\n\r\n");
-            
-            #line 15 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-  foreach(var rule in grammar.Rules) {
-            
-            #line default
-            #line hidden
-            
-            #line 16 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClosedAttribute(grammar, rule)));
-            
-            #line default
-            #line hidden
-            this.Write("public partial interface ");
-            
-            #line 16 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Nonterminal)));
-            
-            #line default
-            #line hidden
-            
-            #line 16 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseTypes(grammar, rule)));
-            
-            #line default
-            #line hidden
-            this.Write("\r\n{\r\n");
-            
-            #line 18 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      foreach(var property in rule.Properties.Where(p => ShouldEmit.Property(grammar, rule, p))) { 
-            
-            #line default
-            #line hidden
-            this.Write("    ");
-            
-            #line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.PropertyIsNew(grammar, rule, property)));
-            
-            #line default
-            #line hidden
-            
-            #line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(grammar, property.Type)));
-            
-            #line default
-            #line hidden
-            this.Write(" ");
-            
-            #line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
-            
-            #line default
-            #line hidden
-            this.Write(" { get; }\r\n");
-            
-            #line 20 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      } 
-            
-            #line default
-            #line hidden
-            this.Write("}\r\n\r\n");
-            
-            #line 23 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-  } 
-            
-            #line default
-            #line hidden
+
+#line 15 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            foreach (var rule in grammar.Rules)
+            {
+
+#line default
+#line hidden
+
+#line 16 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+                this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClosedAttribute(grammar, rule)));
+
+#line default
+#line hidden
+                this.Write("public partial interface ");
+
+#line 16 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+                this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Defines)));
+
+#line default
+#line hidden
+
+#line 16 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+                this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseTypes(grammar, rule)));
+
+#line default
+#line hidden
+                this.Write("\r\n{\r\n");
+
+#line 18 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+                foreach (var property in rule.Properties.Where(p => ShouldEmit.Property(grammar, rule, p)))
+                {
+
+#line default
+#line hidden
+                    this.Write("    ");
+
+#line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+                    this.Write(this.ToStringHelper.ToStringWithCulture(Emit.PropertyIsNew(grammar, rule, property)));
+
+#line default
+#line hidden
+
+#line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+                    this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(grammar, property.Type)));
+
+#line default
+#line hidden
+                    this.Write(" ");
+
+#line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+                    this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
+
+#line default
+#line hidden
+                    this.Write(" { get; }\r\n");
+
+#line 20 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+                }
+
+#line default
+#line hidden
+                this.Write("}\r\n\r\n");
+
+#line 23 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            }
+
+#line default
+#line hidden
             return this.GenerationEnvironment.ToString();
         }
     }
-    
-    #line default
-    #line hidden
+
+#line default
+#line hidden
     #region Base class
     /// <summary>
     /// Base class for this transformation
@@ -228,7 +231,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             }
             // If we're starting off, or if the previous text ended with a newline,
             // we have to append the current indent first.
-            if (((this.GenerationEnvironment.Length == 0) 
+            if (((this.GenerationEnvironment.Length == 0)
                         || this.endsWithNewline))
             {
                 this.GenerationEnvironment.Append(this.currentIndentField);
@@ -346,7 +349,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
         /// </summary>
         public class ToStringInstanceHelper
         {
-            private System.IFormatProvider formatProviderField  = global::System.Globalization.CultureInfo.InvariantCulture;
+            private System.IFormatProvider formatProviderField = global::System.Globalization.CultureInfo.InvariantCulture;
             /// <summary>
             /// Gets or sets format provider to be used by ToStringWithCulture method.
             /// </summary>
@@ -354,13 +357,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             {
                 get
                 {
-                    return this.formatProviderField ;
+                    return this.formatProviderField;
                 }
                 set
                 {
                     if ((value != null))
                     {
-                        this.formatProviderField  = value;
+                        this.formatProviderField = value;
                     }
                 }
             }

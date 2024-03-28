@@ -47,7 +47,7 @@ internal static class LanguageParser
 
     public static IEnumerable<GrammarRule> ParseRuleExtensions(Language extends, IEnumerable<string> lines)
     {
-        var extendingRules = extends.Grammar.Rules.ToDictionary(r => r.Nonterminal);
+        var extendingRules = extends.Grammar.Rules.ToDictionary(r => r.Defines);
         var statements = Parsing.ParseToStatements(lines).ToFixedList();
         foreach (var statement in statements)
         {
@@ -83,7 +83,7 @@ internal static class LanguageParser
         var (declaration, definition) = Parsing.SplitDeclarationAndDefinition(statement);
         var (extendingRule, parents) = ParseModifiedDeclaration(declaration, extendingRules);
         var properties = ParseModifiedProperties(definition, extendingRule).ToList();
-        return new GrammarRule(extendingRule.Nonterminal, parents, properties);
+        return new GrammarRule(extendingRule.Defines, parents, properties);
     }
 
     private static (GrammarRule extendingRule, IEnumerable<GrammarSymbol> parentSymbols) ParseModifiedDeclaration(

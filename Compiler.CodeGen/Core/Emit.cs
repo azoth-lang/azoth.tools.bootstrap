@@ -23,7 +23,7 @@ internal static class Emit
             else
                 builder.AppendLine(",");
             builder.Append(indent);
-            builder.Append($"    typeof({grammar.TypeName(child.Nonterminal)})");
+            builder.Append($"    typeof({grammar.TypeName(child.Defines)})");
         }
 
         builder.AppendLine(")]");
@@ -79,8 +79,8 @@ internal static class Emit
     public static string ModifiedPropertyParameters(Language language, GrammarRule rule)
     {
         var grammar = language.Grammar;
-        var correctLanguage = language.Extends?.RuleDefinedIn[rule.Nonterminal]!;
-        string typeName = grammar.TypeName(rule.Nonterminal);
+        var correctLanguage = language.Extends?.RuleDefinedIn[rule.Defines]!;
+        string typeName = grammar.TypeName(rule.Defines);
         var oldProperties = correctLanguage.Grammar.AllProperties(rule).Select(p => p.Name).ToFixedSet();
         return $"{correctLanguage.Name}.{typeName} {typeName.ToCamelCase()}, " + string.Join(", ",
             grammar.AllProperties(rule).Where(p => !oldProperties.Contains(p.Name))
@@ -102,8 +102,8 @@ internal static class Emit
 
     public static string ModifiedPropertyArguments(Language language, GrammarRule rule)
     {
-        string oldNode = language.Grammar.TypeName(rule.Nonterminal).ToCamelCase();
-        var correctLanguage = language.Extends?.RuleDefinedIn[rule.Nonterminal]!;
+        string oldNode = language.Grammar.TypeName(rule.Defines).ToCamelCase();
+        var correctLanguage = language.Extends?.RuleDefinedIn[rule.Defines]!;
         var oldProperties = correctLanguage.Grammar.AllProperties(rule).Select(p => p.Name).ToFixedSet();
 
         return string.Join(", ", language.Grammar.AllProperties(rule).Select(ToArgument));

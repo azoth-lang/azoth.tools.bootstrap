@@ -75,14 +75,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
                     "ass ");
             
             #line 21 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(language, rule.Nonterminal)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(language, rule.Defines)));
             
             #line default
             #line hidden
             this.Write(" : ");
             
             #line 21 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Nonterminal)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Defines)));
             
             #line default
             #line hidden
@@ -124,7 +124,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write(" ");
             
             #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Nonterminal)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Defines)));
             
             #line default
             #line hidden
@@ -158,7 +158,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write("\r\n        public object? ImplementationRestricted => null;\r\n\r\n        public ");
             
             #line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(language, rule.Nonterminal)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(language, rule.Defines)));
             
             #line default
             #line hidden
@@ -242,14 +242,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write("    internal sealed partial class ");
             
             #line 49 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(otherLanguage, rule.Nonterminal)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(otherLanguage, rule.Defines)));
             
             #line default
             #line hidden
             this.Write(" : ");
             
             #line 49 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Nonterminal)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Defines)));
             
             #line default
             #line hidden
@@ -276,7 +276,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write(" ");
             
             #line 53 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Nonterminal)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Defines)));
             
             #line default
             #line hidden

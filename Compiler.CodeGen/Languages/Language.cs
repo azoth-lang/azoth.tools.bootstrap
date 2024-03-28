@@ -25,11 +25,11 @@ public sealed class Language
 
     public bool IsModified(GrammarRule rule)
     {
-        if (rule.Nonterminal.Text == "IntLiteral")
+        if (rule.Defines.Text == "IntLiteral")
         {
             Debugger.Break();
         }
-        return DifferentRules.Contains(rule) && Extends?.Grammar.RuleFor(rule.Nonterminal) is not null;
+        return DifferentRules.Contains(rule) && Extends?.Grammar.RuleFor(rule.Defines) is not null;
     }
 
     private static IFixedSet<GrammarRule> ComputeDifferentRules(Grammar grammar, Language? extends)
@@ -44,7 +44,7 @@ public sealed class Language
     {
         foreach (var rule in grammar.Rules)
         {
-            var oldRule = extends.Grammar.RuleFor(rule.Nonterminal);
+            var oldRule = extends.Grammar.RuleFor(rule.Defines);
             if (oldRule is null)
             {
                 yield return rule;
@@ -61,13 +61,13 @@ public sealed class Language
     public FixedDictionary<GrammarSymbol, Language> ComputeRulesDefinedIn()
     {
         if (Extends is null)
-            return Grammar.Rules.ToFixedDictionary(r => r.Nonterminal, _ => this);
+            return Grammar.Rules.ToFixedDictionary(r => r.Defines, _ => this);
 
-        return Grammar.Rules.ToFixedDictionary(r => r.Nonterminal, ComputeRuleDefinedIn);
+        return Grammar.Rules.ToFixedDictionary(r => r.Defines, ComputeRuleDefinedIn);
     }
 
     private Language ComputeRuleDefinedIn(GrammarRule rule)
-        => DifferentRules.Contains(rule) ? this : Extends!.RuleDefinedIn[rule.Nonterminal];
+        => DifferentRules.Contains(rule) ? this : Extends!.RuleDefinedIn[rule.Defines];
 
     public void Deconstruct(out string name, out Grammar grammar, out Language? extends)
     {

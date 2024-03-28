@@ -32,10 +32,10 @@ public sealed class Grammar
         ListType = listType;
         UsingNamespaces = usingNamespaces.ToFixedList();
         Rules = rules.ToFixedList();
-        if (Rules.Select(r => r.Nonterminal).Distinct().Count() != Rules.Count)
+        if (Rules.Select(r => r.Defines).Distinct().Count() != Rules.Count)
             throw new ValidationException("Nonterminal names must be unique");
 
-        rulesLookup = Rules.ToFixedDictionary(r => r.Nonterminal);
+        rulesLookup = Rules.ToFixedDictionary(r => r.Defines);
         parentRules = Rules.ToFixedDictionary(r => r, r => ParentRules(r, rulesLookup));
         ancestorRules = Rules.ToFixedDictionary(r => r, r => AncestorRules(r, parentRules));
         childRules = Rules.ToFixedDictionary(r => r, r => ChildRules(r, parentRules));
@@ -95,7 +95,7 @@ public sealed class Grammar
             var nonTerminalPropertyNames = rule.Properties.Where(IsNonterminal).Select(p => p.Name);
             var missingProperties = baseNonTerminalPropertyNames.Except(nonTerminalPropertyNames).ToList();
             if (missingProperties.Any())
-                throw new ValidationException($"Rule for {rule.Nonterminal} is missing inherited properties: {string.Join(", ", missingProperties)}. Can't determine order to visit children.");
+                throw new ValidationException($"Rule for {rule.Defines} is missing inherited properties: {string.Join(", ", missingProperties)}. Can't determine order to visit children.");
         }
     }
 

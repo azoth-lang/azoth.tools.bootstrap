@@ -69,7 +69,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
                 this.Write("            case ");
 
 #line 24 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-                this.Write(this.ToStringHelper.ToStringWithCulture(TypeName(rule.Nonterminal)));
+                this.Write(this.ToStringHelper.ToStringWithCulture(TypeName(rule.Defines)));
 
 #line default
 #line hidden

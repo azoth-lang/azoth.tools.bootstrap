@@ -81,7 +81,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write("    public interface ");
             
             #line 20 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Nonterminal)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Defines)));
             
             #line default
             #line hidden
@@ -134,7 +134,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write("\r\n        public static ");
             
             #line 27 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Nonterminal)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Defines)));
             
             #line default
             #line hidden
@@ -148,7 +148,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write(")\r\n           => new ");
             
             #line 28 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.SmartClassName(language, rule.Nonterminal)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.SmartClassName(language, rule.Defines)));
             
             #line default
             #line hidden
@@ -169,7 +169,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write("\r\n        public static ");
             
             #line 31 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Nonterminal)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Defines)));
             
             #line default
             #line hidden
@@ -183,7 +183,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write(")\r\n           => new ");
             
             #line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.SmartClassName(language, rule.Nonterminal)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.SmartClassName(language, rule.Defines)));
             
             #line default
             #line hidden

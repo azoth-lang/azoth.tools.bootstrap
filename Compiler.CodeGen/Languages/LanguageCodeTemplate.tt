@@ -17,19 +17,19 @@ namespace <#=grammar.Namespace #>;
 public sealed class <#=language.Name #>
 {
 <#  foreach(var rule in grammar.Rules) {#>
-<#=Emit.ClosedAttribute(grammar, rule, indent: "    ") #>    public interface <#= grammar.TypeName(rule.Nonterminal) #><#= Emit.BaseTypes(grammar, rule, "IImplementationRestricted") #>
+<#=Emit.ClosedAttribute(grammar, rule, indent: "    ") #>    public interface <#= grammar.TypeName(rule.Defines) #><#= Emit.BaseTypes(grammar, rule, "IImplementationRestricted") #>
     {
 <#      foreach(var property in rule.Properties.Where(p => ShouldEmit.Property(grammar, rule, p))) { #>
         <#=Emit.PropertyIsNew(grammar, rule, property) #><#=Emit.Type(grammar, property.Type) #> <#=property.Name #> { get; }
 <#      } #>
 <#      if (grammar.IsLeaf(rule)) { #>
 
-        public static <#= grammar.TypeName(rule.Nonterminal) #> Create(<#=Emit.PropertyParameters(grammar, rule) #>)
-           => new <#=Emit.SmartClassName(language, rule.Nonterminal) #>(<#=Emit.PropertyArguments(language, rule) #>);
+        public static <#= grammar.TypeName(rule.Defines) #> Create(<#=Emit.PropertyParameters(grammar, rule) #>)
+           => new <#=Emit.SmartClassName(language, rule.Defines) #>(<#=Emit.PropertyArguments(language, rule) #>);
 <#          if (language.IsModified(rule)) { #>
 
-        public static <#= grammar.TypeName(rule.Nonterminal) #> Create(<#=Emit.ModifiedPropertyParameters(language, rule) #>)
-           => new <#=Emit.SmartClassName(language, rule.Nonterminal) #>(<#=Emit.ModifiedPropertyArguments(language, rule) #>);
+        public static <#= grammar.TypeName(rule.Defines) #> Create(<#=Emit.ModifiedPropertyParameters(language, rule) #>)
+           => new <#=Emit.SmartClassName(language, rule.Defines) #>(<#=Emit.ModifiedPropertyArguments(language, rule) #>);
 <#          } #>
 <#      } #>
     }

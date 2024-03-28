@@ -18,7 +18,7 @@ public partial class ChildrenCodeTemplate
             return symbol.Text;
 
         // If it is a nonterminal, then transform the name
-        if (grammar.Rules.Any(r => r.Nonterminal == symbol))
+        if (grammar.Rules.Any(r => r.Defines == symbol))
             return $"{grammar.Prefix}{symbol.Text}{grammar.Suffix}";
 
         return symbol.Text;

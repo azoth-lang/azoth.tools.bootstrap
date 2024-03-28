@@ -133,37 +133,37 @@ public class TreeParserTests
 
     #region Rules
     [Fact]
-    public void ParsesSimpleNonterminalRule()
+    public void ParsesSimpleTerminalRule()
     {
         const string grammar = "SubType;";
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        Assert.Equal(Symbol("SubType"), rule.Nonterminal);
+        Assert.Equal(Symbol("SubType"), rule.Defines);
         Assert.Empty(rule.Parents);
         Assert.Empty(rule.Properties);
     }
 
     [Fact]
-    public void ParsesSimpleQuotedNonterminalRule()
+    public void ParsesSimpleQuotedTerminalRule()
     {
         const string grammar = "'IMyFullTypeName';";
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        Assert.Equal(QuotedSymbol("IMyFullTypeName"), rule.Nonterminal);
+        Assert.Equal(QuotedSymbol("IMyFullTypeName"), rule.Defines);
         Assert.Empty(rule.Parents);
         Assert.Empty(rule.Properties);
     }
 
     [Fact]
-    public void ParsesSimpleNonterminalRuleWithDefaultBaseType()
+    public void ParsesSimpleTerminalRuleWithDefaultBaseType()
     {
         const string grammar = "◊base MyBase;\nSubType;";
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        Assert.Equal(Symbol("SubType"), rule.Nonterminal);
+        Assert.Equal(Symbol("SubType"), rule.Defines);
         var expectedParents = FixedList(Symbol("MyBase"));
         Assert.Equal(expectedParents, rule.Parents);
         Assert.Empty(rule.Properties);
@@ -176,7 +176,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        Assert.Equal(Symbol("MyBase"), rule.Nonterminal);
+        Assert.Equal(Symbol("MyBase"), rule.Defines);
         Assert.Empty(rule.Parents);
         Assert.Empty(rule.Properties);
     }
@@ -189,7 +189,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        Assert.Equal(Symbol("SubType"), rule.Nonterminal);
+        Assert.Equal(Symbol("SubType"), rule.Defines);
         Assert.Single(rule.Parents, Symbol("BaseType"));
         Assert.Empty(rule.Properties);
     }
@@ -202,7 +202,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        Assert.Equal(Symbol("SubType"), rule.Nonterminal);
+        Assert.Equal(Symbol("SubType"), rule.Defines);
         var expectedParents = FixedList(Symbol("BaseType1"), Symbol("BaseType2"));
         Assert.Equal(expectedParents, rule.Parents);
         Assert.Empty(rule.Properties);
@@ -216,7 +216,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        Assert.Equal(new GrammarSymbol("SubType"), rule.Nonterminal);
+        Assert.Equal(new GrammarSymbol("SubType"), rule.Defines);
         var expectedParents = FixedList(QuotedSymbol("BaseType1"), Symbol("BaseType2"));
         Assert.Equal(expectedParents, rule.Parents);
         Assert.Empty(rule.Properties);
