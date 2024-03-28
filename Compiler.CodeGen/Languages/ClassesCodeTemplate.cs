@@ -171,7 +171,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write(")\r\n        {\r\n");
             
             #line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
-      foreach(var property in rule.Properties.Where(p => ShouldEmit.Property(grammar, rule, p))) { 
+      foreach(var property in grammar.AllProperties(rule)) { 
             
             #line default
             #line hidden

@@ -22,6 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST.Classes
         public IntLiteral_Typed(BigInteger value, DataType type)
         {
             Value = value;
+            Type = type;
         }
     }
 

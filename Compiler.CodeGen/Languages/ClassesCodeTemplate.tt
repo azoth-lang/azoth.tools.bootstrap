@@ -29,7 +29,7 @@ namespace <#=grammar.Namespace #>.Classes
 
         public <#=Emit.ClassName(language, rule.Nonterminal) #>(<#=Emit.PropertyClassParameters(language, rule) #>)
         {
-<#      foreach(var property in rule.Properties.Where(p => ShouldEmit.Property(grammar, rule, p))) { #>
+<#      foreach(var property in grammar.AllProperties(rule)) { #>
             <#=property.Name #> = <#=property.Name.ToCamelCase() #>;
 <#      } #>
         }
