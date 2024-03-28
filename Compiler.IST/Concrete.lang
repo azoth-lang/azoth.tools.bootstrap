@@ -1,5 +1,5 @@
-◊namespace Azoth.Tools.Bootstrap.Compiler.IST;
 ◊name Concrete;
+◊namespace Azoth.Tools.Bootstrap.Compiler.IST;
 ◊list IFixedList;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -12,3 +12,4 @@ CompilationUnit = File:`CodeFile` ImplicitNamespaceName:`NamespaceName`;
 Syntax;
 
 Expression: Syntax;
+BoolLiteral: Expression = Value:`bool`;

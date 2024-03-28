@@ -1,4 +1,3 @@
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
 using Azoth.Tools.Bootstrap.Framework;
@@ -17,7 +16,7 @@ internal static class TreeParser
         var suffix = Parsing.GetConfig(lines, "suffix") ?? "";
         var listType = Parsing.GetConfig(lines, "list") ?? "List";
         var usingNamespaces = Parsing.ParseUsingNamespaces(lines);
-        var rules = Parsing.ParseRules(lines).Select(r => r.WithDefaultRootType(rootType));
+        var rules = Parsing.ParseRules(lines, rootType);
         return new Grammar(ns, rootType, prefix, suffix, listType, usingNamespaces, rules);
     }
 }

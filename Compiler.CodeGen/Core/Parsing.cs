@@ -88,85 +88,97 @@ internal static class Parsing
 
     public static IEnumerable<GrammarRule> ParseRules(IEnumerable<string> lines)
     {
-        var statements = Parsing.ParseToStatements(lines).ToFixedList();
+        var statements = ParseToStatements(lines).ToFixedList();
         foreach (var statement in statements)
             yield return ParseRule(statement);
     }
 
-    private static GrammarRule ParseRule(string statement)
+    public static GrammarRule ParseRule(string statement)
+    {
+        var (declaration, definition) = SplitDeclarationAndDefinition(statement);
+        var (nonterminal, parents) = ParseDeclaration(declaration);
+        var properties = ParseProperties(definition).ToFixedList();
+        return new GrammarRule(nonterminal, parents, properties);
+    }
+
+    public static (string Declaration, string? Definition) SplitDeclarationAndDefinition(string statement)
     {
         var equalSplit = statement.Split('=');
         if (equalSplit.Length > 2) throw new FormatException($"Too many equal signs on line: '{statement}'");
-        var declaration = equalSplit[0];
-        var (nonterminal, parents) = ParseDeclaration(declaration);
-        var definition = equalSplit.Length == 2 ? equalSplit[1].Trim() : null;
-        var properties = ParseProperties(definition).ToList();
-        if (properties.Select(p => p.Name).Distinct().Count() != properties.Count)
-            throw new FormatException($"Rule for {nonterminal} contains duplicate property definitions");
-
-        return new GrammarRule(nonterminal, parents, properties);
+        return (equalSplit[0].Trim(), equalSplit.Length > 1 ? equalSplit[1].Trim() : null);
     }
 
     private static IEnumerable<GrammarProperty> ParseProperties(string? definition)
     {
         if (definition is null) yield break;
 
-        var properties = definition.SplitOrEmpty(' ').Where(v => !string.IsNullOrWhiteSpace(v));
+        var properties = SplitProperties(definition);
         foreach (var property in properties)
+            yield return ParseProperty(property);
+    }
+
+    public static GrammarProperty ParseProperty(string property)
+    {
+        var isRef = property.StartsWith('&');
+        property = isRef ? property[1..] : property;
+
+        var isOptional = property.EndsWith('?');
+        property = isOptional ? property[..^1] : property;
+
+        var isList = property.EndsWith('*');
+        property = isList ? property[..^1] : property;
+
+        var parts = property.Split(':').Select(p => p.Trim()).ToArray();
+
+        switch (parts.Length)
         {
-            var trimmedProperty = property;
-
-            var isRef = trimmedProperty.StartsWith('&');
-            trimmedProperty = isRef ? trimmedProperty[1..] : trimmedProperty;
-
-            var isOptional = trimmedProperty.EndsWith('?');
-            trimmedProperty = isOptional ? trimmedProperty[..^1] : trimmedProperty;
-
-            var isList = trimmedProperty.EndsWith('*');
-            trimmedProperty = isList ? trimmedProperty[..^1] : trimmedProperty;
-
-            var parts = trimmedProperty.Split(':').Select(p => p.Trim()).ToArray();
-
-            switch (parts.Length)
+            case 1:
             {
-                case 1:
-                {
-                    var name = parts[0];
-                    var grammarType = new GrammarType(ParseSymbol(name), isRef, isList, isOptional);
-                    yield return new GrammarProperty(name, grammarType);
-                }
-                break;
-                case 2:
-                {
-                    var name = parts[0];
-                    var type = parts[1];
-                    var grammarType = new GrammarType(ParseSymbol(type), isRef, isList, isOptional);
-                    yield return new GrammarProperty(name, grammarType);
-                }
-                break;
-                default:
-                    throw new FormatException($"Too many colons in definition: '{definition}'");
+                var name = parts[0];
+                var grammarType = new GrammarType(ParseSymbol(name), isRef, isList, isOptional);
+                return new GrammarProperty(name, grammarType);
             }
+            case 2:
+            {
+                var name = parts[0];
+                var type = parts[1];
+                var grammarType = new GrammarType(ParseSymbol(type), isRef, isList, isOptional);
+                return new GrammarProperty(name, grammarType);
+            }
+            default:
+                throw new FormatException($"Too many colons in property: '{property}'");
         }
     }
 
+    public static IEnumerable<string> SplitProperties(string definition)
+        => definition.SplitOrEmpty(' ').Where(v => !string.IsNullOrWhiteSpace(v));
+
     private static (GrammarSymbol nonterminal, IEnumerable<GrammarSymbol> parents) ParseDeclaration(string declaration)
     {
-        var declarationSplit = declaration.SplitOrEmpty(':');
-        if (declarationSplit.Count > 2) throw new FormatException($"Too many colons in declaration: '{declaration}'");
-        var nonterminal = ParseSymbol(declarationSplit[0].Trim());
-        var parents = declarationSplit.Count == 2 ? declarationSplit[1] : null;
+        var (nonterminalText, parents) = SplitNonterminalAndParents(declaration);
+        var nonterminal = ParseSymbol(nonterminalText);
         var parentSymbols = ParseParents(parents);
         return (nonterminal, parentSymbols);
+    }
+
+    public static (string Nonterminal, string? Parents) SplitNonterminalAndParents(string declaration)
+    {
+        var declarationSplit = declaration.Split(':');
+        if (declarationSplit.Length > 2) throw new FormatException($"Too many colons in declaration: '{declaration}'");
+        return (declarationSplit[0].Trim(), declarationSplit.Length > 1 ? declarationSplit[1].Trim() : null);
     }
 
     private static IEnumerable<GrammarSymbol> ParseParents(string? parents)
     {
         if (parents is null) return Enumerable.Empty<GrammarSymbol>();
 
-        return parents
-               .Split(',')
-               .Select(p => p.Trim())
+        return SplitParents(parents)
                .Select(p => ParseSymbol(p));
     }
+
+    public static IEnumerable<string> SplitParents(string parents)
+        => parents.Split(',').Select(p => p.Trim());
+
+    public static IEnumerable<GrammarRule> ParseRules(IFixedList<string> lines, GrammarSymbol? rootType)
+        => ParseRules(lines).Select(r => r.WithDefaultRootType(rootType));
 }

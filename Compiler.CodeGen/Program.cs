@@ -82,7 +82,7 @@ public static class Program
 
             var inputFile = File.ReadAllText(inputPath)
                             ?? throw new InvalidOperationException("null from reading input file");
-            var language = LanguageParser.ParseLanguage(inputFile);
+            var language = LanguageParser.ParseLanguage(inputPath, inputFile);
 
             var languageCode = LanguageCodeBuilder.GenerateLanguage(language);
             WriteIfChanged(langOutputPath, languageCode);

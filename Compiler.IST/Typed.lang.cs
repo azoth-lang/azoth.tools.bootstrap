@@ -1,6 +1,8 @@
+using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -8,8 +10,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 
 // ReSharper disable InconsistentNaming
 
-public sealed class Concrete
+public sealed class Typed
 {
+    public interface Expression : Syntax
+    {
+        DataType Type { get; }
+    }
+
+    public interface IntLiteral
+    {
+        BigInteger Value { get; }
+    }
+
     public interface Package
     {
         PackageSymbol Symbol { get; }
@@ -26,17 +38,6 @@ public sealed class Concrete
         typeof(Expression))]
     public interface Syntax
     {
-    }
-
-    [Closed(
-        typeof(BoolLiteral))]
-    public interface Expression : Syntax
-    {
-    }
-
-    public interface BoolLiteral : Expression
-    {
-        bool Value { get; }
     }
 
 }

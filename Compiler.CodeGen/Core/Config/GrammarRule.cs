@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
@@ -7,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
 public sealed class GrammarRule
 {
     public GrammarSymbol Nonterminal { get; }
-    public IFixedList<GrammarSymbol> Parents { get; }
+    public IFixedSet<GrammarSymbol> Parents { get; }
     public IFixedList<GrammarProperty> Properties { get; }
 
     public GrammarRule(
@@ -16,8 +17,10 @@ public sealed class GrammarRule
         IEnumerable<GrammarProperty> properties)
     {
         Nonterminal = nonterminal;
-        Parents = parents.ToFixedList();
+        Parents = parents.ToFixedSet();
         Properties = properties.ToFixedList();
+        if (Properties.Select(p => p.Name).Distinct().Count() != Properties.Count)
+            throw new ArgumentException($"Rule for {nonterminal} contains duplicate property definitions");
     }
 
     public GrammarRule WithDefaultRootType(GrammarSymbol? baseType)

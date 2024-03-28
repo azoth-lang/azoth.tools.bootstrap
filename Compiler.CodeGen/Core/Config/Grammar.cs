@@ -31,6 +31,8 @@ public sealed class Grammar
         ListType = listType;
         UsingNamespaces = usingNamespaces.ToFixedList();
         Rules = rules.ToFixedList();
+        if (Rules.Select(r => r.Nonterminal).Distinct().Count() != Rules.Count)
+            throw new ValidationException("Nonterminal names must be unique");
     }
 
     public void ValidateTreeOrdering()

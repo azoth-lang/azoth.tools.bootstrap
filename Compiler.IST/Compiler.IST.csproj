@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Concrete.lang&quot;" />
+    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Concrete.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Typed.lang&quot;" />
   </Target>
 
   <ItemGroup>
@@ -38,6 +38,9 @@
   <ItemGroup>
     <Compile Update="Concrete.lang.cs">
       <DependentUpon>Concrete.lang</DependentUpon>
+    </Compile>
+    <Compile Update="Typed.lang.cs">
+      <DependentUpon>Typed.lang</DependentUpon>
     </Compile>
   </ItemGroup>
 
