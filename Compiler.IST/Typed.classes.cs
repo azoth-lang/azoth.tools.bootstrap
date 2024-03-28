@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 // ReSharper disable InconsistentNaming
+// ReSharper disable PartialTypeWithSinglePart
 
 // ReSharper disable once CheckNamespace
 namespace Azoth.Tools.Bootstrap.Compiler.IST.Classes

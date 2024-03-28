@@ -10,6 +10,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.IST;
 
 // ReSharper disable InconsistentNaming
+// ReSharper disable PartialTypeWithSinglePart
 
 public sealed class Typed
 {

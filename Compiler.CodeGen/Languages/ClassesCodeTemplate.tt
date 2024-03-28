@@ -9,6 +9,7 @@ using <#=usingNamespace #>;
 <#  } #>
 
 // ReSharper disable InconsistentNaming
+// ReSharper disable PartialTypeWithSinglePart
 
 // ReSharper disable once CheckNamespace
 namespace <#=grammar.Namespace #>.Classes

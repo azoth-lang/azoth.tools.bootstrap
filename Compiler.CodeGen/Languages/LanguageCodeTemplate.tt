@@ -11,6 +11,7 @@ using <#=usingNamespace #>;
 namespace <#=grammar.Namespace #>;
 
 // ReSharper disable InconsistentNaming
+// ReSharper disable PartialTypeWithSinglePart
 
 public sealed class <#=language.Name #>
 {
