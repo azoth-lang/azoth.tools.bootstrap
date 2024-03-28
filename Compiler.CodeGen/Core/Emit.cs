@@ -2,6 +2,7 @@ using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
@@ -75,6 +76,17 @@ internal static class Emit
     public static string PropertyParameters(Grammar grammar, GrammarRule rule)
         => string.Join(", ", grammar.AllProperties(rule).Select(p => $"{Type(grammar, p.Type)} {p.Name.ToCamelCase()}"));
 
+    public static string ModifiedPropertyParameters(Language language, GrammarRule rule)
+    {
+        var grammar = language.Grammar;
+        var correctLanguage = language.Extends?.RuleDefinedIn[rule.Nonterminal]!;
+        string typeName = grammar.TypeName(rule.Nonterminal);
+        var oldProperties = correctLanguage.Grammar.AllProperties(rule).Select(p => p.Name).ToFixedSet();
+        return $"{correctLanguage.Name}.{typeName} {typeName.ToCamelCase()}, " + string.Join(", ",
+            grammar.AllProperties(rule).Where(p => !oldProperties.Contains(p.Name))
+                   .Select(p => $"{Type(grammar, p.Type)} {p.Name.ToCamelCase()}"));
+    }
+
     public static string PropertyClassParameters(Language language, GrammarRule rule)
         => string.Join(", ", language.Grammar.AllProperties(rule).Select(p => $"{ClassType(language, p.Type)} {p.Name.ToCamelCase()}"));
 
@@ -85,6 +97,21 @@ internal static class Emit
         {
             var cast = language.Grammar.IsNonterminal(p) ? $"({SmartClassType(language, p.Type)})" : "";
             return $"{cast}{p.Name.ToCamelCase()}";
+        }
+    }
+
+    public static string ModifiedPropertyArguments(Language language, GrammarRule rule)
+    {
+        string oldNode = language.Grammar.TypeName(rule.Nonterminal).ToCamelCase();
+        var correctLanguage = language.Extends?.RuleDefinedIn[rule.Nonterminal]!;
+        var oldProperties = correctLanguage.Grammar.AllProperties(rule).Select(p => p.Name).ToFixedSet();
+
+        return string.Join(", ", language.Grammar.AllProperties(rule).Select(ToArgument));
+
+        string ToArgument(GrammarProperty p)
+        {
+            var cast = language.Grammar.IsNonterminal(p) ? $"({SmartClassType(language, p.Type)})" : "";
+            return oldProperties.Contains(p.Name) ? $"{cast}{oldNode}.{p.Name}" : $"{cast}{p.Name.ToCamelCase()}";
         }
     }
 

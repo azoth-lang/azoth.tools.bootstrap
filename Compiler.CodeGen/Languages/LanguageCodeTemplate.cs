@@ -162,13 +162,54 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write(");\r\n");
             
             #line 29 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
+          if (language.IsModified(rule)) { 
+            
+            #line default
+            #line hidden
+            this.Write("\r\n        public static ");
+            
+            #line 31 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Nonterminal)));
+            
+            #line default
+            #line hidden
+            this.Write(" Create(");
+            
+            #line 31 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ModifiedPropertyParameters(language, rule)));
+            
+            #line default
+            #line hidden
+            this.Write(")\r\n           => new ");
+            
+            #line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.SmartClassName(language, rule.Nonterminal)));
+            
+            #line default
+            #line hidden
+            this.Write("(");
+            
+            #line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ModifiedPropertyArguments(language, rule)));
+            
+            #line default
+            #line hidden
+            this.Write(");\r\n");
+            
+            #line 33 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
+          } 
+            
+            #line default
+            #line hidden
+            
+            #line 34 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
             this.Write("    }\r\n\r\n");
             
-            #line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
+            #line 37 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
   } 
             
             #line default

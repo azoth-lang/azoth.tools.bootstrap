@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
 using Azoth.Tools.Bootstrap.Framework;
@@ -20,6 +21,15 @@ public sealed class Language
         Extends = extends;
         DifferentRules = ComputeDifferentRules(grammar, extends);
         RuleDefinedIn = ComputeRulesDefinedIn();
+    }
+
+    public bool IsModified(GrammarRule rule)
+    {
+        if (rule.Nonterminal.Text == "IntLiteral")
+        {
+            Debugger.Break();
+        }
+        return DifferentRules.Contains(rule) && Extends?.Grammar.RuleFor(rule.Nonterminal) is not null;
     }
 
     private static IFixedSet<GrammarRule> ComputeDifferentRules(Grammar grammar, Language? extends)

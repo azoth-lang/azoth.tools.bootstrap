@@ -56,5 +56,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST.Classes
         }
     }
 
+    [GeneratedCode("AzothCompilerCodeGen", null)]
+    internal sealed partial class StringLiteral_Concrete : StringLiteral
+    {
+        public string Value { get; }
+
+        public object? ImplementationRestricted => null;
+
+        public StringLiteral_Concrete(string value)
+        {
+            Value = value;
+        }
+    }
+
 }
 

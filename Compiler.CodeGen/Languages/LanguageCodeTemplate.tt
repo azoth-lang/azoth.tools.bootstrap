@@ -26,6 +26,11 @@ public sealed class <#=language.Name #>
 
         public static <#= grammar.TypeName(rule.Nonterminal) #> Create(<#=Emit.PropertyParameters(grammar, rule) #>)
            => new <#=Emit.SmartClassName(language, rule.Nonterminal) #>(<#=Emit.PropertyArguments(language, rule) #>);
+<#          if (language.IsModified(rule)) { #>
+
+        public static <#= grammar.TypeName(rule.Nonterminal) #> Create(<#=Emit.ModifiedPropertyParameters(language, rule) #>)
+           => new <#=Emit.SmartClassName(language, rule.Nonterminal) #>(<#=Emit.ModifiedPropertyArguments(language, rule) #>);
+<#          } #>
 <#      } #>
     }
 

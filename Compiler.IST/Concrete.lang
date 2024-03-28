@@ -13,3 +13,4 @@ Syntax;
 
 Expression: Syntax;
 BoolLiteral: Expression = Value:`bool`;
+StringLiteral: Expression = Value:`string`;

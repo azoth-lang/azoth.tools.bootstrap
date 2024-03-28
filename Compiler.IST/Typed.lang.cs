@@ -17,7 +17,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 public sealed class Typed
 {
     [Closed(
-        typeof(IntLiteral))]
+        typeof(IntLiteral),
+        typeof(StringLiteral))]
     public interface Expression : Syntax
     {
         DataType Type { get; }
@@ -53,6 +54,17 @@ public sealed class Typed
         typeof(Expression))]
     public interface Syntax : IImplementationRestricted
     {
+    }
+
+    public interface StringLiteral : Expression
+    {
+        string Value { get; }
+
+        public static StringLiteral Create(string value, DataType type)
+           => new StringLiteral_Typed(value, type);
+
+        public static StringLiteral Create(Concrete.StringLiteral stringLiteral, DataType type)
+           => new StringLiteral_Typed(stringLiteral.Value, type);
     }
 
 }

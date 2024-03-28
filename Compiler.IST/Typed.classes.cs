@@ -29,6 +29,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST.Classes
         }
     }
 
+    [GeneratedCode("AzothCompilerCodeGen", null)]
+    internal sealed partial class StringLiteral_Typed : StringLiteral
+    {
+        public string Value { get; }
+        public DataType Type { get; }
+
+        public object? ImplementationRestricted => null;
+
+        public StringLiteral_Typed(string value, DataType type)
+        {
+            Value = value;
+            Type = type;
+        }
+    }
+
 }
 
 namespace Azoth.Tools.Bootstrap.Compiler.IST.Classes

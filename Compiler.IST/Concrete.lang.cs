@@ -39,7 +39,8 @@ public sealed class Concrete
     }
 
     [Closed(
-        typeof(BoolLiteral))]
+        typeof(BoolLiteral),
+        typeof(StringLiteral))]
     public interface Expression : Syntax
     {
     }
@@ -50,6 +51,14 @@ public sealed class Concrete
 
         public static BoolLiteral Create(bool value)
            => new BoolLiteral_Concrete(value);
+    }
+
+    public interface StringLiteral : Expression
+    {
+        string Value { get; }
+
+        public static StringLiteral Create(string value)
+           => new StringLiteral_Concrete(value);
     }
 
 }
