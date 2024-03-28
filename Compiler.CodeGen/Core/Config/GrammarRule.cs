@@ -23,11 +23,18 @@ public sealed class GrammarRule
             throw new ArgumentException($"Rule for {nonterminal} contains duplicate property definitions");
     }
 
-    public GrammarRule WithDefaultRootType(GrammarSymbol? baseType)
+    public GrammarRule WithDefaultRootType(GrammarSymbol? rootType)
     {
-        if (baseType is null
+        if (rootType is null
             || Parents.Any()
-            || Nonterminal == baseType) return this;
-        return new GrammarRule(Nonterminal, baseType.YieldValue(), Properties);
+            || Nonterminal == rootType) return this;
+        return new GrammarRule(Nonterminal, rootType.YieldValue(), Properties);
+    }
+
+    public override string ToString()
+    {
+        var parents = Parents.Count == 0 ? "" : ": " + string.Join(", ", Parents);
+        var properties = Properties.Count == 0 ? "" : " = " + string.Join(", ", Properties);
+        return $"{Nonterminal}{parents}{properties};";
     }
 }
