@@ -127,7 +127,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             #line hidden
             
             #line 25 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-      if (grammar.IsLeaf(rule)) { 
+      if (grammar.IsTerminal(rule)) { 
             
             #line default
             #line hidden

@@ -13,12 +13,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
     using System.Text;
     using System.Collections.Generic;
     using System;
-
+    
     /// <summary>
     /// Class to produce the template output
     /// </summary>
-
-#line 1 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+    
+    #line 1 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "17.0.0.0")]
     public partial class ChildrenCodeTemplate : ChildrenCodeTemplateBase
     {
@@ -30,137 +30,130 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
         {
             this.Write("using System.CodeDom.Compiler;\r\nusing System.Collections.Generic;\r\nusing System.D" +
                     "iagnostics;\r\nusing ExhaustiveMatching;\r\n\r\nnamespace ");
-
-#line 11 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            
+            #line 11 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(grammar.Namespace));
-
-#line default
-#line hidden
+            
+            #line default
+            #line hidden
             this.Write(";\r\n\r\n[GeneratedCode(\"AzothCompilerCodeGen\", null)]\r\npublic static class ");
-
-#line 14 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            
+            #line 14 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(TypeName(grammar.RootType)));
-
-#line default
-#line hidden
+            
+            #line default
+            #line hidden
             this.Write("Extensions\r\n{\r\n    [DebuggerStepThrough]\r\n    public static IEnumerable<");
-
-#line 17 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            
+            #line 17 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(TypeName(grammar.RootType)));
-
-#line default
-#line hidden
+            
+            #line default
+            #line hidden
             this.Write("> Children(this ");
-
-#line 17 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            
+            #line 17 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(TypeName(grammar.RootType)));
-
-#line default
-#line hidden
+            
+            #line default
+            #line hidden
             this.Write(" node)\r\n    {\r\n        switch (node)\r\n        {\r\n            default:\r\n          " +
                     "      throw ExhaustiveMatch.Failed(node);\r\n");
-
-#line 23 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-            foreach (var rule in grammar.Rules.Where(grammar.IsLeaf))
-            {
-
-#line default
-#line hidden
-                this.Write("            case ");
-
-#line 24 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-                this.Write(this.ToStringHelper.ToStringWithCulture(TypeName(rule.Defines)));
-
-#line default
-#line hidden
-                this.Write(" n:\r\n");
-
-#line 25 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-                foreach (var property in rule.Properties.Where(grammar.IsNonterminal))
-                {
-
-#line default
-#line hidden
-
-#line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-                    if (property.Type.IsList)
-                    {
-
-#line default
-#line hidden
-                        this.Write("                foreach (var child in n.");
-
-#line 27 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-                        this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
-
-#line default
-#line hidden
-                        this.Write(")\r\n                    yield return child;\r\n");
-
-#line 29 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-                    }
-                    else if (property.Type.IsOptional)
-                    {
-
-#line default
-#line hidden
-                        this.Write("                if (n.");
-
-#line 30 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-                        this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
-
-#line default
-#line hidden
-                        this.Write(" is not null)\r\n                    yield return n.");
-
-#line 31 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-                        this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
-
-#line default
-#line hidden
-                        this.Write(";\r\n");
-
-#line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-                    }
-                    else
-                    {
-
-#line default
-#line hidden
-                        this.Write("                yield return n.");
-
-#line 33 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-                        this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
-
-#line default
-#line hidden
-                        this.Write(";\r\n");
-
-#line 34 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-                    }
-
-#line default
-#line hidden
-
-#line 35 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-                }
-
-#line default
-#line hidden
-                this.Write("                yield break;\r\n");
-
-#line 37 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-            }
-
-#line default
-#line hidden
+            
+            #line 23 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+  foreach(var rule in grammar.Rules.Where(grammar.IsTerminal)) { 
+            
+            #line default
+            #line hidden
+            this.Write("            case ");
+            
+            #line 24 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName(rule.Defines)));
+            
+            #line default
+            #line hidden
+            this.Write(" n:\r\n");
+            
+            #line 25 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+      foreach(var property in rule.Properties.Where(grammar.IsNonterminal)) { 
+            
+            #line default
+            #line hidden
+            
+            #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+          if (property.Type.IsList) { 
+            
+            #line default
+            #line hidden
+            this.Write("                foreach (var child in n.");
+            
+            #line 27 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
+            
+            #line default
+            #line hidden
+            this.Write(")\r\n                    yield return child;\r\n");
+            
+            #line 29 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+          } else if (property.Type.IsOptional) { 
+            
+            #line default
+            #line hidden
+            this.Write("                if (n.");
+            
+            #line 30 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
+            
+            #line default
+            #line hidden
+            this.Write(" is not null)\r\n                    yield return n.");
+            
+            #line 31 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
+            
+            #line default
+            #line hidden
+            this.Write(";\r\n");
+            
+            #line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+          } else { 
+            
+            #line default
+            #line hidden
+            this.Write("                yield return n.");
+            
+            #line 33 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
+            
+            #line default
+            #line hidden
+            this.Write(";\r\n");
+            
+            #line 34 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+          } 
+            
+            #line default
+            #line hidden
+            
+            #line 35 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+      } 
+            
+            #line default
+            #line hidden
+            this.Write("                yield break;\r\n");
+            
+            #line 37 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
+  } 
+            
+            #line default
+            #line hidden
             this.Write("        }\r\n    }\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
     }
-
-#line default
-#line hidden
+    
+    #line default
+    #line hidden
     #region Base class
     /// <summary>
     /// Base class for this transformation
@@ -260,7 +253,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             }
             // If we're starting off, or if the previous text ended with a newline,
             // we have to append the current indent first.
-            if (((this.GenerationEnvironment.Length == 0)
+            if (((this.GenerationEnvironment.Length == 0) 
                         || this.endsWithNewline))
             {
                 this.GenerationEnvironment.Append(this.currentIndentField);
@@ -378,7 +371,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
         /// </summary>
         public class ToStringInstanceHelper
         {
-            private System.IFormatProvider formatProviderField = global::System.Globalization.CultureInfo.InvariantCulture;
+            private System.IFormatProvider formatProviderField  = global::System.Globalization.CultureInfo.InvariantCulture;
             /// <summary>
             /// Gets or sets format provider to be used by ToStringWithCulture method.
             /// </summary>
@@ -386,13 +379,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             {
                 get
                 {
-                    return this.formatProviderField;
+                    return this.formatProviderField ;
                 }
                 set
                 {
                     if ((value != null))
                     {
-                        this.formatProviderField = value;
+                        this.formatProviderField  = value;
                     }
                 }
             }

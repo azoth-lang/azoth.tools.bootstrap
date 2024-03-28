@@ -11,18 +11,18 @@ using ExhaustiveMatching;
 namespace <#=grammar.Namespace #>;
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public static class <#=TypeName(grammar.BaseType)#>Extensions
+public static class <#=TypeName(grammar.RootType)#>Extensions
 {
     [DebuggerStepThrough]
-    public static IEnumerable<<#=TypeName(grammar.BaseType)#>> Children(this <#=TypeName(grammar.BaseType)#> node)
+    public static IEnumerable<<#=TypeName(grammar.RootType)#>> Children(this <#=TypeName(grammar.RootType)#> node)
     {
         switch (node)
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
-<#  foreach(var rule in grammar.Rules.Where(grammar.IsLeaf)) { #>
-            case <#=TypeName(rule.Nonterminal) #> n:
-<#      foreach(var property in rule.Properties.Where(grammar.IsNonTerminal)) { #>
+<#  foreach(var rule in grammar.Rules.Where(grammar.IsTerminal)) { #>
+            case <#=TypeName(rule.Defines) #> n:
+<#      foreach(var property in rule.Properties.Where(grammar.IsNonterminal)) { #>
 <#          if (property.Type.IsList) { #>
                 foreach (var child in n.<#=property.Name #>)
                     yield return child;

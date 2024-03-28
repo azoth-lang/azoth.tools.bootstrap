@@ -86,7 +86,7 @@ public sealed class Grammar
 
     public void ValidateTreeOrdering()
     {
-        foreach (var rule in Rules.Where(IsLeaf))
+        foreach (var rule in Rules.Where(IsTerminal))
         {
             var baseNonTerminalPropertyNames
                 = AncestorRules(rule)
@@ -126,7 +126,7 @@ public sealed class Grammar
     public bool IsNewDefinition(GrammarRule rule, GrammarProperty property)
         => InheritedProperties(rule, property.Name).Any();
 
-    public bool IsLeaf(GrammarRule rule)
+    public bool IsTerminal(GrammarRule rule)
         => !childRules[rule].Any();
 
     public bool IsNonterminal(GrammarProperty property)

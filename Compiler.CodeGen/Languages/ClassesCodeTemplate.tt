@@ -16,7 +16,7 @@ namespace <#=grammar.Namespace #>.Classes
 {
     using static <#=language.Name #>;
 
-<#  foreach(var rule in language.DifferentRules.Where(r => grammar.IsLeaf(r))) {#>
+<#  foreach(var rule in language.DifferentRules.Where(r => grammar.IsTerminal(r))) {#>
     [GeneratedCode("AzothCompilerCodeGen", null)]
     internal sealed partial class <#=Emit.ClassName(language, rule.Defines) #> : <#= grammar.TypeName(rule.Defines) #>
     {
@@ -45,7 +45,7 @@ namespace <#=otherLanguage.Grammar.Namespace #>.Classes
 {
     using static <#=grammar.Namespace #>.<#=language.Name #>;
 
-<#      foreach(var rule in rules.Where(r => grammar.IsLeaf(r))) {#>
+<#      foreach(var rule in rules.Where(r => grammar.IsTerminal(r))) {#>
     internal sealed partial class <#=Emit.ClassName(otherLanguage, rule.Defines) #> : <#= grammar.TypeName(rule.Defines) #>
     {
 <#      foreach(var property in grammar.AllProperties(rule)) { #>

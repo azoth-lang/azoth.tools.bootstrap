@@ -67,7 +67,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write(";\r\n\r\n");
             
             #line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
-  foreach(var rule in language.DifferentRules.Where(r => grammar.IsLeaf(r))) {
+  foreach(var rule in language.DifferentRules.Where(r => grammar.IsTerminal(r))) {
             
             #line default
             #line hidden
@@ -235,7 +235,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write(";\r\n\r\n");
             
             #line 48 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\ClassesCodeTemplate.tt"
-      foreach(var rule in rules.Where(r => grammar.IsLeaf(r))) {
+      foreach(var rule in rules.Where(r => grammar.IsTerminal(r))) {
             
             #line default
             #line hidden

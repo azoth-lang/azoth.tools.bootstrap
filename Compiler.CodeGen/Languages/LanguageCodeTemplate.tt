@@ -22,7 +22,7 @@ public sealed class <#=language.Name #>
 <#      foreach(var property in rule.Properties.Where(p => ShouldEmit.Property(grammar, rule, p))) { #>
         <#=Emit.PropertyIsNew(grammar, rule, property) #><#=Emit.Type(grammar, property.Type) #> <#=property.Name #> { get; }
 <#      } #>
-<#      if (grammar.IsLeaf(rule)) { #>
+<#      if (grammar.IsTerminal(rule)) { #>
 
         public static <#= grammar.TypeName(rule.Defines) #> Create(<#=Emit.PropertyParameters(grammar, rule) #>)
            => new <#=Emit.SmartClassName(language, rule.Defines) #>(<#=Emit.PropertyArguments(language, rule) #>);
