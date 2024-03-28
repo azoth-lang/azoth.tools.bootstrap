@@ -4,7 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
-<#  foreach(var usingNamespace in grammar.OrderedUsingNamespaces("ExhaustiveMatching", grammar.Namespace + ".Classes")) { #>
+<#  foreach(var usingNamespace in grammar.OrderedUsingNamespaces("ExhaustiveMatching", "System.CodeDom.Compiler", grammar.Namespace + ".Classes")) { #>
 using <#=usingNamespace #>;
 <#  } #>
 
@@ -13,6 +13,7 @@ namespace <#=grammar.Namespace #>;
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialTypeWithSinglePart
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public sealed class <#=language.Name #>
 {
 <#  foreach(var rule in grammar.Rules) {#>

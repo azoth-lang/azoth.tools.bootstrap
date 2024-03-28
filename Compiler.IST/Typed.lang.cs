@@ -1,3 +1,4 @@
+using System.CodeDom.Compiler;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.IST.Classes;
@@ -12,6 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialTypeWithSinglePart
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public sealed class Typed
 {
     [Closed(

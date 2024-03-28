@@ -1,3 +1,4 @@
+using System.CodeDom.Compiler;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -11,6 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST.Classes
 {
     using static Concrete;
 
+    [GeneratedCode("AzothCompilerCodeGen", null)]
     internal sealed partial class Package_Concrete : Package
     {
         public PackageSymbol Symbol { get; }
@@ -26,6 +28,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST.Classes
         }
     }
 
+    [GeneratedCode("AzothCompilerCodeGen", null)]
     internal sealed partial class CompilationUnit_Concrete : CompilationUnit
     {
         public CodeFile File { get; }
@@ -40,6 +43,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST.Classes
         }
     }
 
+    [GeneratedCode("AzothCompilerCodeGen", null)]
     internal sealed partial class BoolLiteral_Concrete : BoolLiteral
     {
         public bool Value { get; }

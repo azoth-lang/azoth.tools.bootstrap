@@ -1,3 +1,4 @@
+using System.CodeDom.Compiler;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.IST.Classes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -10,6 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 // ReSharper disable InconsistentNaming
 // ReSharper disable PartialTypeWithSinglePart
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public sealed class Concrete
 {
     public interface Package : IImplementationRestricted

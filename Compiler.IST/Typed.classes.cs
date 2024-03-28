@@ -1,3 +1,4 @@
+using System.CodeDom.Compiler;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -13,6 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST.Classes
 {
     using static Typed;
 
+    [GeneratedCode("AzothCompilerCodeGen", null)]
     internal sealed partial class IntLiteral_Typed : IntLiteral
     {
         public BigInteger Value { get; }

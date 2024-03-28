@@ -4,7 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
-<#  foreach(var usingNamespace in grammar.OrderedUsingNamespaces()) { #>
+<#  foreach(var usingNamespace in grammar.OrderedUsingNamespaces("System.CodeDom.Compiler")) { #>
 using <#=usingNamespace #>;
 <#  } #>
 
@@ -17,6 +17,7 @@ namespace <#=grammar.Namespace #>.Classes
     using static <#=language.Name #>;
 
 <#  foreach(var rule in language.DifferentRules.Where(r => grammar.IsLeaf(r))) {#>
+    [GeneratedCode("AzothCompilerCodeGen", null)]
     internal sealed partial class <#=Emit.ClassName(language, rule.Nonterminal) #> : <#= grammar.TypeName(rule.Nonterminal) #>
     {
 <#      foreach(var property in grammar.AllProperties(rule)) { #>
