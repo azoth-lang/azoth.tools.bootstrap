@@ -20,10 +20,10 @@ public sealed class <#=language.Name #>
 <#      foreach(var property in rule.Properties.Where(p => ShouldEmit.Property(grammar, rule, p))) { #>
         <#=Emit.PropertyIsNew(grammar, rule, property) #><#=Emit.Type(grammar, property.Type) #> <#=property.Name #> { get; }
 <#      } #>
-<#      if (grammar.IsLeaf(rule)) { var classLanguage = language.RuleDefinedIn[rule.Nonterminal]; #>
+<#      if (grammar.IsLeaf(rule)) { #>
 
         public static <#= grammar.TypeName(rule.Nonterminal) #> Create(<#=Emit.PropertyParameters(grammar, rule) #>)
-           => new <#=Emit.ClassName(classLanguage, rule.Nonterminal) #>(<#=Emit.PropertyArguments(language, rule) #>);
+           => new <#=Emit.SmartClassName(language, rule.Nonterminal) #>(<#=Emit.PropertyArguments(language, rule) #>);
 <#      } #>
     }
 

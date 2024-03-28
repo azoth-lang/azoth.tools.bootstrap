@@ -125,7 +125,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             #line hidden
             
             #line 23 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-      if (grammar.IsLeaf(rule)) { var classLanguage = language.RuleDefinedIn[rule.Nonterminal]; 
+      if (grammar.IsLeaf(rule)) { 
             
             #line default
             #line hidden
@@ -146,7 +146,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write(")\r\n           => new ");
             
             #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(classLanguage, rule.Nonterminal)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.SmartClassName(language, rule.Nonterminal)));
             
             #line default
             #line hidden

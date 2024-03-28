@@ -88,10 +88,15 @@ internal static class Emit
         }
     }
 
-    private static string SmartClassType(Language language, GrammarType type)
+    public static string SmartClassType(Language language, GrammarType type)
     {
-        var correctLanguage = language.RuleDefinedIn[type.Symbol];
-        var name = ClassName(correctLanguage, type.Symbol);
+        string name = SmartClassName(language, type.Symbol);
         return TypeDecorations(language.Grammar, type, name);
+    }
+
+    public static string SmartClassName(Language language, GrammarSymbol symbol)
+    {
+        var correctLanguage = language.RuleDefinedIn[symbol];
+        return ClassName(correctLanguage, symbol);
     }
 }
