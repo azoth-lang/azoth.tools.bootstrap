@@ -12,12 +12,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 
 public sealed class Typed
 {
+    [Closed(
+        typeof(IntLiteral))]
     public interface Expression : Syntax
     {
         DataType Type { get; }
     }
 
-    public interface IntLiteral
+    public interface IntLiteral : Expression
     {
         BigInteger Value { get; }
     }

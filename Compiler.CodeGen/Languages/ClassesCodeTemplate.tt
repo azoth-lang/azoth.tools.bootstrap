@@ -1,0 +1,55 @@
+<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
+<#  foreach(var usingNamespace in grammar.OrderedUsingNamespaces()) { #>
+using <#=usingNamespace #>;
+<#  } #>
+
+// ReSharper disable InconsistentNaming
+
+// ReSharper disable once CheckNamespace
+namespace <#=grammar.Namespace #>.Classes
+{
+    using static <#=language.Name #>;
+
+<#  foreach(var rule in language.DifferentRules.Where(r => grammar.IsLeaf(r))) {#>
+    internal sealed partial class <#=Emit.ClassName(language, rule.Nonterminal) #> : <#= grammar.TypeName(rule.Nonterminal) #>
+    {
+<#      foreach(var property in grammar.AllProperties(rule)) { #>
+        public <#=Emit.ClassType(language, property.Type) #> <#=property.Name #> { get; }
+<#          if (grammar.IsNonterminal(property)) { #>
+        <#=Emit.Type(grammar, property.Type) #> <#= grammar.TypeName(rule.Nonterminal) #>.<#=property.Name #> => <#=property.Name #>;
+<#          } #>
+<#      } #>
+
+        public <#=Emit.ClassName(language, rule.Nonterminal) #>(<#=Emit.PropertyParameters(language, rule) #>)
+        {
+<#      foreach(var property in rule.Properties.Where(p => ShouldEmit.Property(grammar, rule, p))) { #>
+            <#=property.Name #> = <#=property.Name.ToCamelCase() #>;
+<#      } #>
+        }
+    }
+
+<#  } #>
+}
+
+<#   foreach(var (otherLanguage, rules) in OtherLanguagesDefiningRules()) {#>
+namespace <#=otherLanguage.Grammar.Namespace #>.Classes
+{
+    using static <#=grammar.Namespace #>.<#=language.Name #>;
+
+<#      foreach(var rule in rules.Where(r => grammar.IsLeaf(r))) {#>
+    internal sealed partial class <#=Emit.ClassName(otherLanguage, rule.Nonterminal) #> : <#= grammar.TypeName(rule.Nonterminal) #>
+    {
+<#      foreach(var property in grammar.AllProperties(rule)) { #>
+<#          if (grammar.IsNonterminal(property)) { #>
+        <#=Emit.Type(grammar, property.Type) #> <#= grammar.TypeName(rule.Nonterminal) #>.<#=property.Name #> => <#=property.Name #>;
+<#          } #>
+<#      } #>
+    }
+<#      } #>
+}
+<#  } #>

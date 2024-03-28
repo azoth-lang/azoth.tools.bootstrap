@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
@@ -38,18 +39,35 @@ internal static class Emit
 
     public static string Type(Grammar grammar, GrammarType type)
     {
-        var value = grammar.TypeName(type.Symbol);
+        var name = grammar.TypeName(type.Symbol);
+        return TypeDecorations(grammar, type, name);
+    }
+
+    private static string TypeDecorations(Grammar grammar, GrammarType type, string name)
+    {
         if (type.IsRef)
         {
-            value = "ref " + value;
-            if (type.IsOptional) value = "[DisallowNull] " + value;
+            name = "ref " + name;
+            if (type.IsOptional) name = "[DisallowNull] " + name;
         }
 
-        if (type.IsList) value = $"{grammar.ListType}<{value}>";
-        if (type.IsOptional) value += "?";
-        return value;
+        if (type.IsList) name = $"{grammar.ListType}<{name}>";
+        if (type.IsOptional) name += "?";
+        return name;
+    }
+
+    public static string ClassType(Language language, GrammarType type)
+    {
+        var name = ClassName(language, type.Symbol);
+        return TypeDecorations(language.Grammar, type, name);
     }
 
     public static string PropertyIsNew(Grammar grammar, GrammarRule rule, GrammarProperty property)
         => grammar.IsNewDefinition(rule, property) ? "new " : "";
+
+    public static string ClassName(Language language, GrammarSymbol symbol)
+        => symbol.IsQuoted ? symbol.Text : $"{symbol.Text}{language.Grammar.Suffix}_{language.Name}";
+
+    public static string PropertyParameters(Language language, GrammarRule rule)
+        => string.Join(", ", language.Grammar.AllProperties(rule).Select(p => $"{ClassType(language, p.Type)} {p.Name.ToCamelCase()}"));
 }

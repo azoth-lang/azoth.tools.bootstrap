@@ -39,7 +39,7 @@ internal static class LanguageParser
             rules = Parsing.ParseRules(lines, rootType).ToFixedList();
 
         var grammar = new Grammar(ns, rootType, prefix, suffix, listType, usingNamespaces, rules);
-        return new Language(name, grammar);
+        return new Language(name, grammar, extendsLanguage);
     }
 
     private static IEnumerable<GrammarRule> ParseRuleExtensions(Language extends, IEnumerable<string> lines, GrammarSymbol? rootType)

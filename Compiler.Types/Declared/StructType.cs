@@ -129,7 +129,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
             && ContainingNamespace == objectType.ContainingNamespace
             && IsDeclaredConst == objectType.IsDeclaredConst
             && Name == objectType.Name
-            && GenericParameters.ItemsEquals(objectType.GenericParameters);
+            && GenericParameters.ItemsEqual(objectType.GenericParameters);
     }
 
     public bool Equals(IDeclaredUserType? other) => Equals(other as DeclaredType);

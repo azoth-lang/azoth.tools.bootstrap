@@ -18,6 +18,18 @@ public static class FixedSet
 
     public static IFixedSet<T> Create<T>(params T[] items) => new Of<T>(items);
 
+    public static bool ItemsEqual<T>(this IFixedSet<T> first, IFixedSet<T>? second)
+        where T : IEquatable<T>
+    {
+        if (ReferenceEquals(first, second)) return true;
+        if (first.Count != second?.Count) return false;
+
+        foreach (var item in first)
+            if (!second.Contains(item))
+                return false;
+        return true;
+    }
+
     // These attributes make it so FixedSet.Of<T> is displayed nicely in the debugger similar to Set<T>
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]

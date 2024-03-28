@@ -4,7 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
-<#  foreach(var usingNamespace in grammar.OrderedUsingNamespaces()) { #>
+<#  foreach(var usingNamespace in grammar.OrderedUsingNamespaces("ExhaustiveMatching")) { #>
 using <#=usingNamespace #>;
 <#  } #>
 

@@ -31,7 +31,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
         {
             
             #line 7 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-  foreach(var usingNamespace in grammar.OrderedUsingNamespaces()) { 
+  foreach(var usingNamespace in grammar.OrderedUsingNamespaces("ExhaustiveMatching")) { 
             
             #line default
             #line hidden

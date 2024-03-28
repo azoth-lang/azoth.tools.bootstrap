@@ -9,4 +9,4 @@
 
 *Expression = +Type:`DataType`;
 -BoolLiteral;
-+IntLiteral = Value:`BigInteger`;
++IntLiteral: Expression = Value:`BigInteger`;
