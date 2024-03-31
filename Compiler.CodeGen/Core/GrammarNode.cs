@@ -4,7 +4,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 using MoreLinq;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
 public sealed class GrammarNode
 {

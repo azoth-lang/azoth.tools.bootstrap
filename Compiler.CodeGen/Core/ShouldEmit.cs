@@ -1,6 +1,6 @@
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 

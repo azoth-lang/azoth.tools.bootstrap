@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
 public sealed record PropertyNode(string Name, TypeNode Type)
 {

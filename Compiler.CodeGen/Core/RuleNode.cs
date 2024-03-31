@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
 public sealed class RuleNode
 {

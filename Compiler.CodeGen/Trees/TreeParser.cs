@@ -1,5 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;

@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Text;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
