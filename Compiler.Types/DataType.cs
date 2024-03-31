@@ -119,7 +119,7 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
 
     public abstract override int GetHashCode();
 
-    public override bool Equals(object? obj)
+    public sealed override bool Equals(object? obj)
     {
         if (obj is null) return false;
         if (ReferenceEquals(this, obj)) return true;
@@ -130,6 +130,4 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
 
     public static bool operator !=(DataType? left, DataType? right) => !Equals(left, right);
     #endregion
-
-
 }
