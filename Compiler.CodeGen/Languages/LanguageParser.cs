@@ -14,32 +14,34 @@ internal static class LanguageParser
     {
         var lines = Parsing.ParseLines(input).ToFixedList();
 
+        var name = Parsing.GetConfig(lines, "name") ?? throw new FormatException("Language name is required");
+        var usingNamespaces = Parsing.ParseUsingNamespaces(lines).ToFixedList();
+
         var extendsLanguageName = Parsing.GetConfig(lines, "extends");
-        Language? extendsLanguage = null;
         if (extendsLanguageName is not null)
         {
             var extendedLanguagePath = Path.Combine(Path.GetDirectoryName(inputPath)!, Path.ChangeExtension(extendsLanguageName, "lang"));
             Console.WriteLine($"Extending : {extendedLanguagePath}");
             var extendedLanguageInputFile = File.ReadAllText(extendedLanguagePath)
                             ?? throw new InvalidOperationException($"null from reading file {extendedLanguagePath}");
-            extendsLanguage = ParseLanguage(extendedLanguagePath, extendedLanguageInputFile);
+            var extendsLanguage = ParseLanguage(extendedLanguagePath, extendedLanguageInputFile);
+
+            var extends = extendsLanguage.Grammar;
+            var rules = ParseRuleExtensions(extendsLanguage, lines, extends.RootType).ToFixedList();
+            var grammar = new Grammar(extends.Namespace, extends.RootType, extends.Prefix, extends.Suffix, extends.ListType, usingNamespaces, rules);
+            return new Language(name, grammar, extendsLanguage);
         }
-
-        var name = Parsing.GetConfig(lines, "name") ?? throw new FormatException("Language name is required");
-        var ns = Parsing.GetConfig(lines, "namespace") ?? extendsLanguage?.Grammar.Namespace;
-        var rootType = Parsing.ParseSymbol(Parsing.GetConfig(lines, "root")) ?? extendsLanguage?.Grammar.RootType;
-        var prefix = Parsing.GetConfig(lines, "prefix") ?? extendsLanguage?.Grammar.Prefix ?? "";
-        var suffix = Parsing.GetConfig(lines, "suffix") ?? extendsLanguage?.Grammar.Suffix ?? "";
-        var listType = Parsing.GetConfig(lines, "list") ?? extendsLanguage?.Grammar.ListType ?? "List";
-        var usingNamespaces = Parsing.ParseUsingNamespaces(lines).ToFixedList();
-        IFixedList<GrammarRule> rules;
-        if (extendsLanguage is not null)
-            rules = ParseRuleExtensions(extendsLanguage, lines, rootType).ToFixedList();
         else
-            rules = Parsing.ParseRules(lines, rootType).ToFixedList();
-
-        var grammar = new Grammar(ns, rootType, prefix, suffix, listType, usingNamespaces, rules);
-        return new Language(name, grammar, extendsLanguage);
+        {
+            var ns = Parsing.GetConfig(lines, "namespace");
+            var rootType = Parsing.ParseSymbol(Parsing.GetConfig(lines, "root"));
+            var prefix = Parsing.GetConfig(lines, "prefix") ?? "";
+            var suffix = Parsing.GetConfig(lines, "suffix") ?? "";
+            var listType = Parsing.GetConfig(lines, "list") ?? "List";
+            var rules = Parsing.ParseRules(lines, rootType).ToFixedList();
+            var grammar = new Grammar(ns, rootType, prefix, suffix, listType, usingNamespaces, rules);
+            return new Language(name, grammar, extends: null);
+        }
     }
 
     private static IEnumerable<GrammarRule> ParseRuleExtensions(Language extends, IEnumerable<string> lines, GrammarSymbol? rootType)
