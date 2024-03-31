@@ -20,20 +20,20 @@ public sealed class Typed
     {
         IPackageSyntax Syntax { get; }
         PackageSymbol Symbol { get; }
-        IFixedList<PackageReferenece> References { get; }
+        IFixedList<PackageReference> References { get; }
         IFixedList<CompilationUnit> CompilationUnits { get; }
         CompilationUnit TestingCompilationUnits { get; }
 
-        // public static Package Create(IPackageSyntax syntax, PackageSymbol symbol, IFixedList<PackageReferenece> references, IFixedList<CompilationUnit> compilationUnits, CompilationUnit testingCompilationUnits)
-        //     => new Package_Concrete(syntax, symbol, (IFixedList<PackageReferenece_Concrete>)references, (IFixedList<CompilationUnit_Concrete>)compilationUnits, (CompilationUnit_Concrete)testingCompilationUnits);
+        // public static Package Create(IPackageSyntax syntax, PackageSymbol symbol, IFixedList<PackageReference> references, IFixedList<CompilationUnit> compilationUnits, CompilationUnit testingCompilationUnits)
+        //     => new Package_Concrete(syntax, symbol, (IFixedList<PackageReference_Concrete>)references, (IFixedList<CompilationUnit_Concrete>)compilationUnits, (CompilationUnit_Concrete)testingCompilationUnits);
     }
 
-    public interface PackageReferenece : IImplementationRestricted
+    public interface PackageReference : IImplementationRestricted
     {
         IdentifierName AliasOrName { get; }
 
-        // public static PackageReferenece Create(IdentifierName aliasOrName)
-        //     => new PackageReferenece_Concrete(aliasOrName);
+        // public static PackageReference Create(IdentifierName aliasOrName)
+        //     => new PackageReference_Concrete(aliasOrName);
     }
 
     public interface CompilationUnit : IHasSyntax

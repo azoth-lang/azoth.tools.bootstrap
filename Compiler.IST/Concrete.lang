@@ -7,12 +7,12 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-Package = Syntax:`IPackageSyntax` Symbol:`PackageSymbol` References:PackageReferenece*
+Package = Syntax:`IPackageSyntax` Symbol:`PackageSymbol` References:PackageReference*
     CompilationUnits:CompilationUnit* TestingCompilationUnits:CompilationUnit;
 
 // TODO add Syntax:`PackageReferenceSyntax` IsTrusted:`bool` once other layers support it
 // TODO Package:`AST.Package`
-PackageReferenece = AliasOrName:`IdentifierName`;
+PackageReference = AliasOrName:`IdentifierName`;
 
 CompilationUnit: IHasSyntax = Syntax:`ICompilationUnitSyntax` File:`CodeFile` ImplicitNamespaceName:`NamespaceName`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
