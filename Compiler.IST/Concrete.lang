@@ -2,15 +2,43 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.IST;
 ◊list IFixedList;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
+◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-Package = Symbol:`PackageSymbol` CompilationUnits:CompilationUnit*;
-CompilationUnit = File:`CodeFile` ImplicitNamespaceName:`NamespaceName`;
+Package = Syntax:`IPackageSyntax` Symbol:`PackageSymbol` References:PackageReferenece*
+    CompilationUnits:CompilationUnit* TestingCompilationUnits:CompilationUnit;
 
-Syntax;
+// TODO add Syntax:`PackageReferenceSyntax` IsTrusted:`bool` once other layers support it
+// TODO Package:`AST.Package`
+PackageReferenece = AliasOrName:`IdentifierName`;
 
-Expression: Syntax;
-BoolLiteral: Expression = Value:`bool`;
-StringLiteral: Expression = Value:`string`;
+CompilationUnit: IHasSyntax = Syntax:`ICompilationUnitSyntax` File:`CodeFile` ImplicitNamespaceName:`NamespaceName`
+    UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
+
+UsingDirective: IHasSyntax = Syntax:`IUsingDirectiveSyntax` Name:'NamespaceName';
+
+IHasSyntax = Syntax:`ISyntax`;
+
+// ---------- Declarations
+Declaration: IHasSyntax = Syntax:`IDeclarationSyntax` Symbol:`Symbol` Name:`IdentifierName`;
+NamespaceDeclaration: Declaration = Syntax:`INamespaceDeclarationSyntax`
+    UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
+NamespaceMemberDeclaration: Declaration;
+
+// ---------- Type Declarations
+TypeDeclaration: NamespaceMemberDeclaration, TypeMemberDeclaration = Syntax:`ITypeDeclarationSyntax`;
+ClassDeclaration: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:'bool' Members:ClassMemberDeclaration*;
+StructDeclaration: TypeDeclaration = Syntax:`IStructDeclarationSyntax` Members:StructMemberDeclaration*;
+TraitDeclaration: TypeDeclaration = Syntax:`ITraitDeclarationSyntax` Members:TraitMemberDeclaration*;
+
+// ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
+TypeMemberDeclaration: Declaration = Syntax:`IDeclarationSyntax`;
+ClassMemberDeclaration: TypeMemberDeclaration;
+TraitMemberDeclaration: TypeMemberDeclaration;
+StructMemberDeclaration: TypeMemberDeclaration;
+
+// ---------- Invocable Declarations
+FunctionDeclaration: NamespaceMemberDeclaration, TypeMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`;
+

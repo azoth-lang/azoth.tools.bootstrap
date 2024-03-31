@@ -31,7 +31,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
         {
             
             #line 7 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-  foreach(var usingNamespace in grammar.OrderedUsingNamespaces("ExhaustiveMatching", "System.CodeDom.Compiler", grammar.Namespace + ".Classes")) { 
+  foreach(var usingNamespace in grammar.OrderedUsingNamespaces("ExhaustiveMatching", "System.CodeDom.Compiler")) { 
             
             #line default
             #line hidden
@@ -131,7 +131,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             
             #line default
             #line hidden
-            this.Write("\r\n        public static ");
+            this.Write("\r\n        // public static ");
             
             #line 27 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Defines)));
@@ -145,7 +145,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             
             #line default
             #line hidden
-            this.Write(")\r\n           => new ");
+            this.Write(")\r\n        //     => new ");
             
             #line 28 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.SmartClassName(language, rule.Defines)));
@@ -166,7 +166,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             
             #line default
             #line hidden
-            this.Write("\r\n        public static ");
+            this.Write("\r\n        // public static ");
             
             #line 31 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Defines)));
@@ -180,7 +180,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             
             #line default
             #line hidden
-            this.Write(")\r\n           => new ");
+            this.Write(")\r\n        //     => new ");
             
             #line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.SmartClassName(language, rule.Defines)));

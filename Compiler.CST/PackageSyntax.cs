@@ -20,7 +20,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 /// Currently, references are stored as ASTs. To avoid referencing the AST
 /// project from the CST project, a generic type is used.
 /// </remarks>
-public class PackageSyntax<TReference>
+public class PackageSyntax<TReference> : IPackageSyntax
     where TReference : IHasSymbolTree
 {
     public PackageSymbol Symbol { get; }

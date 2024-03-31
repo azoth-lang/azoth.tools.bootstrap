@@ -2,11 +2,8 @@
 ◊extends Concrete;
 ◊using System.Numerics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
+◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
 ◊using Azoth.Tools.Bootstrap.Framework;
-
-*Expression = +Type:`DataType`;
--BoolLiteral;
-+IntLiteral: Expression = Value:`BigInteger`;
