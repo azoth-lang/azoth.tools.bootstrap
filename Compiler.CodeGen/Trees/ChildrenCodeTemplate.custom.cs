@@ -5,14 +5,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 
 public partial class ChildrenCodeTemplate
 {
-    private readonly Grammar grammar;
+    private readonly GrammarNode grammar;
 
-    public ChildrenCodeTemplate(Grammar grammar)
+    public ChildrenCodeTemplate(GrammarNode grammar)
     {
         this.grammar = grammar;
     }
 
-    private string TypeName(GrammarSymbol symbol)
+    private string TypeName(Symbol symbol)
     {
         if (symbol.IsQuoted)
             return symbol.Text;

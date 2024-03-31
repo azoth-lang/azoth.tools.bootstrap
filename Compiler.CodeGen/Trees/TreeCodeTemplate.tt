@@ -13,7 +13,7 @@ namespace <#=grammar.Namespace #>;
 // ReSharper disable PartialTypeWithSinglePart
 
 <#  foreach(var rule in grammar.Rules) {#>
-<#=Emit.ClosedAttribute(grammar, rule) #>public partial interface <#= grammar.TypeName(rule.Nonterminal) #><#= Emit.BaseTypes(grammar, rule) #>
+<#=Emit.ClosedAttribute(grammar, rule) #>public partial interface <#= Emit.TypeName(grammar, rule.Defines) #><#= Emit.BaseTypes(grammar, rule) #>
 {
 <#      foreach(var property in rule.Properties.Where(p => ShouldEmit.Property(grammar, rule, p))) { #>
     <#=Emit.PropertyIsNew(grammar, rule, property) #><#=Emit.Type(grammar, property.Type) #> <#=property.Name #> { get; }

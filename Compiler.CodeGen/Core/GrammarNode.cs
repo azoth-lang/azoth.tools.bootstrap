@@ -6,24 +6,24 @@ using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Config;
 
-public sealed class Grammar
+public sealed class GrammarNode
 {
     public string? Namespace { get; }
-    public GrammarSymbol? RootType { get; }
+    public Symbol? RootType { get; }
     public string Prefix { get; }
     public string Suffix { get; }
     public string ListType { get; }
     public IFixedList<string> UsingNamespaces { get; }
-    public IFixedList<GrammarRule> Rules { get; }
+    public IFixedList<RuleNode> Rules { get; }
 
-    public Grammar(
+    public GrammarNode(
         string? @namespace,
-        GrammarSymbol? rootType,
+        Symbol? rootType,
         string prefix,
         string suffix,
         string listType,
         IEnumerable<string> usingNamespaces,
-        IEnumerable<GrammarRule> rules)
+        IEnumerable<RuleNode> rules)
     {
         Namespace = @namespace;
         RootType = rootType;
@@ -43,29 +43,29 @@ public sealed class Grammar
         allProperties = Rules.ToFixedDictionary(r => r, r => AllProperties(r, parentRules).ToFixedList());
     }
 
-    private static IFixedSet<GrammarRule> ParentRules(GrammarRule rule, IReadOnlyDictionary<GrammarSymbol, GrammarRule> rules)
+    private static IFixedSet<RuleNode> ParentRules(RuleNode rule, IReadOnlyDictionary<Symbol, RuleNode> rules)
         => rule.Parents.Choose(p => (rules.TryGetValue(p, out var rule), rule!)).ToFixedSet();
 
-    public static IFixedSet<GrammarRule> AncestorRules(
-        GrammarRule rule,
-        IReadOnlyDictionary<GrammarRule, IFixedSet<GrammarRule>> parentRules)
+    public static IFixedSet<RuleNode> AncestorRules(
+        RuleNode rule,
+        IReadOnlyDictionary<RuleNode, IFixedSet<RuleNode>> parentRules)
     {
         var parents = parentRules[rule];
         return parents.Concat(parents.SelectMany(parent => AncestorRules(parent, parentRules))).ToFixedSet();
     }
 
-    public static IFixedSet<GrammarRule> ChildRules(
-        GrammarRule rule,
-        IReadOnlyDictionary<GrammarRule, IFixedSet<GrammarRule>> parentRules)
+    public static IFixedSet<RuleNode> ChildRules(
+        RuleNode rule,
+        IReadOnlyDictionary<RuleNode, IFixedSet<RuleNode>> parentRules)
         => parentRules.Where(kvp => kvp.Value.Contains(rule)).Select(kvp => kvp.Key).ToFixedSet();
 
     /// <summary>
     /// Properties inherited from the parents of a rule. If the same property is defined on multiple
     /// parents, it will be listed multiple times.
     /// </summary>
-    private static IEnumerable<GrammarProperty> InheritedProperties(
-        GrammarRule rule,
-        IReadOnlyDictionary<GrammarRule, IFixedSet<GrammarRule>> parentRules)
+    private static IEnumerable<PropertyNode> InheritedProperties(
+        RuleNode rule,
+        IReadOnlyDictionary<RuleNode, IFixedSet<RuleNode>> parentRules)
         => parentRules[rule].SelectMany(parent => AllProperties(parent, parentRules));
 
     /// <summary>
@@ -74,9 +74,9 @@ public sealed class Grammar
     /// recursively searched for definitions. Multiple definitions are returned when multiple
     /// parents of a rule contain definitions of the property without it being defined on that rule.
     /// </summary>
-    private static IEnumerable<GrammarProperty> AllProperties(
-        GrammarRule rule,
-        IReadOnlyDictionary<GrammarRule, IFixedSet<GrammarRule>> parentRules)
+    private static IEnumerable<PropertyNode> AllProperties(
+        RuleNode rule,
+        IReadOnlyDictionary<RuleNode, IFixedSet<RuleNode>> parentRules)
     {
         var rulePropertyNames = rule.Properties.Select(p => p.Name).ToFixedSet();
         return rule.Properties
@@ -99,49 +99,49 @@ public sealed class Grammar
         }
     }
 
-    public GrammarRule? RuleFor(GrammarSymbol nonterminal)
+    public RuleNode? RuleFor(Symbol nonterminal)
         => rulesLookup.TryGetValue(nonterminal, out var rule) ? rule : null;
 
-    public IFixedSet<GrammarRule> ParentRules(GrammarRule rule)
+    public IFixedSet<RuleNode> ParentRules(RuleNode rule)
         => parentRules[rule];
 
-    public IFixedSet<GrammarRule> AncestorRules(GrammarRule rule)
+    public IFixedSet<RuleNode> AncestorRules(RuleNode rule)
         => ancestorRules[rule];
 
-    public IFixedSet<GrammarRule> ChildRules(GrammarRule rule)
+    public IFixedSet<RuleNode> ChildRules(RuleNode rule)
         => childRules[rule];
 
-    public IReadOnlyDictionary<string, IFixedList<GrammarProperty>> InheritedProperties(GrammarRule rule)
+    public IReadOnlyDictionary<string, IFixedList<PropertyNode>> InheritedProperties(RuleNode rule)
         => inheritedProperties[rule];
 
-    public IFixedList<GrammarProperty> InheritedProperties(GrammarRule rule, string property)
-        => inheritedProperties[rule].TryGetValue(property, out var properties) ? properties : FixedList.Empty<GrammarProperty>();
+    public IFixedList<PropertyNode> InheritedProperties(RuleNode rule, string property)
+        => inheritedProperties[rule].TryGetValue(property, out var properties) ? properties : FixedList.Empty<PropertyNode>();
 
-    public IFixedList<GrammarProperty> AllProperties(GrammarRule rule)
+    public IFixedList<PropertyNode> AllProperties(RuleNode rule)
         => allProperties[rule];
 
     /// <summary>
     /// Something is a new definition if it replaces some parent definition.
     /// </summary>
-    public bool IsNewDefinition(GrammarRule rule, GrammarProperty property)
+    public bool IsNewDefinition(RuleNode rule, PropertyNode property)
         => InheritedProperties(rule, property.Name).Any();
 
-    public bool IsTerminal(GrammarRule rule)
+    public bool IsTerminal(RuleNode rule)
         => !childRules[rule].Any();
 
-    public bool IsNonterminal(GrammarProperty property)
+    public bool IsNonterminal(PropertyNode property)
         => rulesLookup.ContainsKey(property.Type.Symbol);
 
-    public string TypeName(GrammarSymbol symbol)
+    public string TypeName(Symbol symbol)
         => symbol.IsQuoted ? symbol.Text : $"{Prefix}{symbol.Text}{Suffix}";
 
     public IEnumerable<string> OrderedUsingNamespaces(params string[] additionalNamespaces)
         => UsingNamespaces.Concat(additionalNamespaces).Distinct().OrderBy(v => v, NamespaceComparer.Instance);
 
-    private readonly FixedDictionary<GrammarRule, IFixedSet<GrammarRule>> parentRules;
-    private readonly FixedDictionary<GrammarRule, IFixedSet<GrammarRule>> ancestorRules;
-    private readonly FixedDictionary<GrammarRule, IFixedSet<GrammarRule>> childRules;
-    private readonly FixedDictionary<GrammarRule, FixedDictionary<string, IFixedList<GrammarProperty>>> inheritedProperties;
-    private readonly FixedDictionary<GrammarRule, IFixedList<GrammarProperty>> allProperties;
-    private readonly FixedDictionary<GrammarSymbol, GrammarRule> rulesLookup;
+    private readonly FixedDictionary<RuleNode, IFixedSet<RuleNode>> parentRules;
+    private readonly FixedDictionary<RuleNode, IFixedSet<RuleNode>> ancestorRules;
+    private readonly FixedDictionary<RuleNode, IFixedSet<RuleNode>> childRules;
+    private readonly FixedDictionary<RuleNode, FixedDictionary<string, IFixedList<PropertyNode>>> inheritedProperties;
+    private readonly FixedDictionary<RuleNode, IFixedList<PropertyNode>> allProperties;
+    private readonly FixedDictionary<Symbol, RuleNode> rulesLookup;
 }

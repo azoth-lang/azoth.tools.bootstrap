@@ -77,10 +77,10 @@ public static class Program
         try
         {
             var langOutputPath = Path.ChangeExtension(inputPath, ".lang.cs");
-            //var classesOutputPath = Path.ChangeExtension(inputPath, ".classes.cs");
+            var classesOutputPath = Path.ChangeExtension(inputPath, ".classes.cs");
             Console.WriteLine($"Input:  {inputPath}");
             Console.WriteLine($"Lang Output: {langOutputPath}");
-            //Console.WriteLine($"Classes Output: {classesOutputPath}");
+            Console.WriteLine($"Classes Output: {classesOutputPath}");
 
             var inputFile = File.ReadAllText(inputPath)
                             ?? throw new InvalidOperationException("null from reading input file");
@@ -89,8 +89,8 @@ public static class Program
             var languageCode = LanguageCodeBuilder.GenerateLanguage(language);
             WriteIfChanged(langOutputPath, languageCode);
 
-            //var classesCode = LanguageCodeBuilder.GenerateClasses(language);
-            //WriteIfChanged(classesOutputPath, classesCode);
+            var classesCode = LanguageCodeBuilder.GenerateClasses(language);
+            WriteIfChanged(classesOutputPath, classesCode);
             return 0;
         }
         catch (Exception ex)

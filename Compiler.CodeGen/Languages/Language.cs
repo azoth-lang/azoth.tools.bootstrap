@@ -9,12 +9,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
 public sealed class Language
 {
     public string Name { get; }
-    public Grammar Grammar { get; }
+    public GrammarNode Grammar { get; }
     public Language? Extends { get; }
-    public IFixedSet<GrammarRule> DifferentRules { get; }
-    public FixedDictionary<GrammarSymbol, Language> RuleDefinedIn { get; }
+    public IFixedSet<RuleNode> DifferentRules { get; }
+    public FixedDictionary<Symbol, Language> RuleDefinedIn { get; }
 
-    public Language(string name, Grammar grammar, Language? extends)
+    public Language(string name, GrammarNode grammar, Language? extends)
     {
         Name = name;
         Grammar = grammar;
@@ -23,7 +23,7 @@ public sealed class Language
         RuleDefinedIn = ComputeRulesDefinedIn();
     }
 
-    public bool IsModified(GrammarRule rule)
+    public bool IsModified(RuleNode rule)
     {
         if (rule.Defines.Text == "IntLiteral")
         {
@@ -32,7 +32,7 @@ public sealed class Language
         return DifferentRules.Contains(rule) && Extends?.Grammar.RuleFor(rule.Defines) is not null;
     }
 
-    private static IFixedSet<GrammarRule> ComputeDifferentRules(Grammar grammar, Language? extends)
+    private static IFixedSet<RuleNode> ComputeDifferentRules(GrammarNode grammar, Language? extends)
     {
         if (extends is null)
             return grammar.Rules.ToFixedSet();
@@ -40,7 +40,7 @@ public sealed class Language
         return ComputeDifferentRulesInternal(grammar, extends).ToFixedSet();
     }
 
-    private static IEnumerable<GrammarRule> ComputeDifferentRulesInternal(Grammar grammar, Language extends)
+    private static IEnumerable<RuleNode> ComputeDifferentRulesInternal(GrammarNode grammar, Language extends)
     {
         foreach (var rule in grammar.Rules)
         {
@@ -58,7 +58,7 @@ public sealed class Language
         }
     }
 
-    public FixedDictionary<GrammarSymbol, Language> ComputeRulesDefinedIn()
+    public FixedDictionary<Symbol, Language> ComputeRulesDefinedIn()
     {
         if (Extends is null)
             return Grammar.Rules.ToFixedDictionary(r => r.Defines, _ => this);
@@ -66,10 +66,10 @@ public sealed class Language
         return Grammar.Rules.ToFixedDictionary(r => r.Defines, ComputeRuleDefinedIn);
     }
 
-    private Language ComputeRuleDefinedIn(GrammarRule rule)
+    private Language ComputeRuleDefinedIn(RuleNode rule)
         => DifferentRules.Contains(rule) ? this : Extends!.RuleDefinedIn[rule.Defines];
 
-    public void Deconstruct(out string name, out Grammar grammar, out Language? extends)
+    public void Deconstruct(out string name, out GrammarNode grammar, out Language? extends)
     {
         name = Name;
         grammar = Grammar;

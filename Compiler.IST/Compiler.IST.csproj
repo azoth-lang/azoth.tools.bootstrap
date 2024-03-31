@@ -40,7 +40,13 @@
     <Compile Update="Concrete.lang.cs">
       <DependentUpon>Concrete.lang</DependentUpon>
     </Compile>
+    <Compile Update="Concrete.classes.cs">
+      <DependentUpon>Concrete.lang</DependentUpon>
+    </Compile>
     <Compile Update="Typed.lang.cs">
+      <DependentUpon>Typed.lang</DependentUpon>
+    </Compile>
+    <Compile Update="Typed.classes.cs">
       <DependentUpon>Typed.lang</DependentUpon>
     </Compile>
   </ItemGroup>

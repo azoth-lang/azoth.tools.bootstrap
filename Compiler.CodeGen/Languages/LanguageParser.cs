@@ -28,7 +28,7 @@ internal static class LanguageParser
 
             var extends = extendsLanguage.Grammar;
             var rules = ParseRuleExtensions(extendsLanguage, lines, extends.RootType).ToFixedList();
-            var grammar = new Grammar(extends.Namespace, extends.RootType, extends.Prefix, extends.Suffix, extends.ListType, usingNamespaces, rules);
+            var grammar = new GrammarNode(extends.Namespace, extends.RootType, extends.Prefix, extends.Suffix, extends.ListType, usingNamespaces, rules);
             return new Language(name, grammar, extendsLanguage);
         }
         else
@@ -39,15 +39,15 @@ internal static class LanguageParser
             var suffix = Parsing.GetConfig(lines, "suffix") ?? "";
             var listType = Parsing.GetConfig(lines, "list") ?? "List";
             var rules = Parsing.ParseRules(lines, rootType).ToFixedList();
-            var grammar = new Grammar(ns, rootType, prefix, suffix, listType, usingNamespaces, rules);
+            var grammar = new GrammarNode(ns, rootType, prefix, suffix, listType, usingNamespaces, rules);
             return new Language(name, grammar, extends: null);
         }
     }
 
-    private static IEnumerable<GrammarRule> ParseRuleExtensions(Language extends, IEnumerable<string> lines, GrammarSymbol? rootType)
-        => ParseRuleExtensions(extends, lines).Select(r => r.WithDefaultRootType(rootType));
+    private static IEnumerable<RuleNode> ParseRuleExtensions(Language extends, IEnumerable<string> lines, Symbol? defaultParent)
+        => ParseRuleExtensions(extends, lines).Select(r => r.WithDefaultParent(defaultParent));
 
-    public static IEnumerable<GrammarRule> ParseRuleExtensions(Language extends, IEnumerable<string> lines)
+    public static IEnumerable<RuleNode> ParseRuleExtensions(Language extends, IEnumerable<string> lines)
     {
         var extendingRules = extends.Grammar.Rules.ToDictionary(r => r.Defines);
         var statements = Parsing.ParseToStatements(lines).ToFixedList();
@@ -63,9 +63,9 @@ internal static class LanguageParser
             yield return rule;
     }
 
-    private static GrammarRule? ParseRuleExtension(
+    private static RuleNode? ParseRuleExtension(
         string statement,
-        Dictionary<GrammarSymbol, GrammarRule> extendingRules)
+        Dictionary<Symbol, RuleNode> extendingRules)
         => statement[0] switch
         {
             '+' => ParseRuleAddition(statement[1..]),
@@ -74,43 +74,44 @@ internal static class LanguageParser
             _ => throw new FormatException($"Invalid rule extension statement: '{statement}'")
         };
 
-    private static GrammarRule ParseRuleAddition(string statement)
+    private static RuleNode ParseRuleAddition(string statement)
         // Nothing to do but parse the new rule
         => Parsing.ParseRule(statement);
 
-    private static GrammarRule ParseRuleModification(
+    private static RuleNode ParseRuleModification(
         string statement,
-        IDictionary<GrammarSymbol, GrammarRule> extendingRules)
+        IDictionary<Symbol, RuleNode> extendingRules)
     {
         var (declaration, definition) = Parsing.SplitDeclarationAndDefinition(statement);
-        var (extendingRule, parents) = ParseModifiedDeclaration(declaration, extendingRules);
+        var (extendingRule, parent, supertypes) = ParseModifiedDeclaration(declaration, extendingRules);
         var properties = ParseModifiedProperties(definition, extendingRule).ToList();
-        return new GrammarRule(extendingRule.Defines, parents, properties);
+        return new RuleNode(extendingRule.Defines, parent, supertypes, properties);
     }
 
-    private static (GrammarRule extendingRule, IEnumerable<GrammarSymbol> parentSymbols) ParseModifiedDeclaration(
+    private static (RuleNode extendingRule, Symbol? parent, IEnumerable<Symbol> supertypeSymbols) ParseModifiedDeclaration(
         string declaration,
-        IDictionary<GrammarSymbol, GrammarRule> extendingRules)
+        IDictionary<Symbol, RuleNode> extendingRules)
     {
-        var (nonterminalText, parents) = Parsing.SplitNonterminalAndParents(declaration);
-        var nonterminal = Parsing.ParseSymbol(nonterminalText);
-        if (!extendingRules.Remove(nonterminal, out var extendingRule))
-            throw new FormatException($"Rule not found for modification: '{nonterminal}'");
-        var parentSymbols = ParseModifiedParents(parents, extendingRule);
-        return (extendingRule, parentSymbols);
+        var (defines, parent, parents) = Parsing.SplitDeclaration(declaration);
+        var definesSymbol = Parsing.ParseSymbol(defines);
+        if (!extendingRules.Remove(definesSymbol, out var extendingRule))
+            throw new FormatException($"Rule not found for modification: '{definesSymbol}'");
+        var parentSymbol = Parsing.ParseSymbol(parent) ?? extendingRule.Parent;
+        var supertypeSymbols = ParseModifiedSupertypes(parents, extendingRule);
+        return (extendingRule, parentSymbol, supertypeSymbols);
     }
 
-    private static IEnumerable<GrammarSymbol> ParseModifiedParents(string? parents, GrammarRule extendingRule)
+    private static IEnumerable<Symbol> ParseModifiedSupertypes(string? parents, RuleNode extendingRule)
     {
         if (parents is null)
-            return extendingRule.Parents;
+            return extendingRule.Supertypes;
 
         return ParseModifiedParentsInternal(parents, extendingRule);
     }
 
-    private static IEnumerable<GrammarSymbol> ParseModifiedParentsInternal(string parents, GrammarRule extendingRule)
+    private static IEnumerable<Symbol> ParseModifiedParentsInternal(string parents, RuleNode extendingRule)
     {
-        var parentsSet = extendingRule.Parents.ToHashSet();
+        var supertypesSet = extendingRule.Supertypes.ToHashSet();
 
         foreach (var parent in Parsing.SplitParents(parents))
             switch (parent[0])
@@ -118,7 +119,7 @@ internal static class LanguageParser
                 case '+':
                 {
                     var parentSymbol = Parsing.ParseSymbol(parent[1..]);
-                    if (parentsSet.Contains(parentSymbol))
+                    if (supertypesSet.Contains(parentSymbol))
                         throw new FormatException($"Parent already exists: '{parentSymbol}'");
                     yield return parentSymbol;
                     break;
@@ -126,7 +127,7 @@ internal static class LanguageParser
                 case '-':
                 {
                     var parentSymbol = Parsing.ParseSymbol(parent[1..]);
-                    if (!parentsSet.Remove(parentSymbol))
+                    if (!supertypesSet.Remove(parentSymbol))
                         throw new FormatException($"Parent not found for removal: '{parentSymbol}'");
                     break;
                 }
@@ -135,11 +136,11 @@ internal static class LanguageParser
             }
 
         // Emit any unchanged parents
-        foreach (var parent in parentsSet)
+        foreach (var parent in supertypesSet)
             yield return parent;
     }
 
-    private static IEnumerable<GrammarProperty> ParseModifiedProperties(string? definition, GrammarRule extendingRule)
+    private static IEnumerable<PropertyNode> ParseModifiedProperties(string? definition, RuleNode extendingRule)
     {
         if (definition is null)
             return extendingRule.Properties;
@@ -147,7 +148,7 @@ internal static class LanguageParser
         return ParseModifiedPropertiesInternal(definition, extendingRule);
     }
 
-    private static IEnumerable<GrammarProperty> ParseModifiedPropertiesInternal(string definition, GrammarRule extendingRule)
+    private static IEnumerable<PropertyNode> ParseModifiedPropertiesInternal(string definition, RuleNode extendingRule)
     {
         var oldProperties = extendingRule.Properties.ToDictionary(p => p.Name);
         foreach (var property in Parsing.SplitProperties(definition))
@@ -189,9 +190,9 @@ internal static class LanguageParser
             yield return property;
     }
 
-    private static GrammarRule? ParseRuleRemoval(
+    private static RuleNode? ParseRuleRemoval(
         string statement,
-        IDictionary<GrammarSymbol, GrammarRule> extendingRules)
+        IDictionary<Symbol, RuleNode> extendingRules)
     {
         var symbol = Parsing.ParseSymbol(statement);
         if (!extendingRules.Remove(symbol))

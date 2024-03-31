@@ -140,7 +140,7 @@ public class TreeParserTests
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("SubType"), rule.Defines);
-        Assert.Empty(rule.Parents);
+        Assert.Empty(rule.Supertypes);
         Assert.Empty(rule.Properties);
     }
 
@@ -152,7 +152,7 @@ public class TreeParserTests
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(QuotedSymbol("IMyFullTypeName"), rule.Defines);
-        Assert.Empty(rule.Parents);
+        Assert.Empty(rule.Supertypes);
         Assert.Empty(rule.Properties);
     }
 
@@ -165,7 +165,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("SubType"), rule.Defines);
         var expectedParents = FixedList(Symbol("MyBase"));
-        Assert.Equal(expectedParents, rule.Parents);
+        Assert.Equal(expectedParents, rule.Supertypes);
         Assert.Empty(rule.Properties);
     }
 
@@ -177,7 +177,7 @@ public class TreeParserTests
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("MyBase"), rule.Defines);
-        Assert.Empty(rule.Parents);
+        Assert.Empty(rule.Supertypes);
         Assert.Empty(rule.Properties);
     }
 
@@ -190,7 +190,7 @@ public class TreeParserTests
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("SubType"), rule.Defines);
-        Assert.Single(rule.Parents, Symbol("BaseType"));
+        Assert.Single(rule.Supertypes, Symbol("BaseType"));
         Assert.Empty(rule.Properties);
     }
 
@@ -204,7 +204,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("SubType"), rule.Defines);
         var expectedParents = FixedList(Symbol("BaseType1"), Symbol("BaseType2"));
-        Assert.Equal(expectedParents, rule.Parents);
+        Assert.Equal(expectedParents, rule.Supertypes);
         Assert.Empty(rule.Properties);
     }
 
@@ -216,9 +216,9 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        Assert.Equal(new GrammarSymbol("SubType"), rule.Defines);
+        Assert.Equal(new Symbol("SubType"), rule.Defines);
         var expectedParents = FixedList(QuotedSymbol("BaseType1"), Symbol("BaseType2"));
-        Assert.Equal(expectedParents, rule.Parents);
+        Assert.Equal(expectedParents, rule.Supertypes);
         Assert.Empty(rule.Properties);
     }
 
@@ -348,7 +348,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Rules);
         var property = Assert.Single(rule.Properties);
         Assert.Equal("MyProperty", property.Name);
-        Assert.Equal(new GrammarType(Symbol("MyType"), false, true, true), property.Type);
+        Assert.Equal(new TypeNode(Symbol("MyType"), true, true), property.Type);
     }
 
     [Fact]
@@ -402,34 +402,34 @@ public class TreeParserTests
     }
     #endregion
 
-    private static GrammarSymbol Symbol(string text)
+    private static Symbol Symbol(string text)
     {
-        return new GrammarSymbol(text);
+        return new Symbol(text);
     }
 
-    private static GrammarSymbol QuotedSymbol(string text)
+    private static Symbol QuotedSymbol(string text)
     {
-        return new GrammarSymbol(text, true);
+        return new Symbol(text, true);
     }
 
-    private static GrammarType Type(GrammarSymbol symbol)
+    private static TypeNode Type(Symbol symbol)
     {
-        return new GrammarType(symbol, false, false, false);
+        return new TypeNode(symbol, false, false);
     }
 
-    private static GrammarType OptionalType(GrammarSymbol symbol)
+    private static TypeNode OptionalType(Symbol symbol)
     {
-        return new GrammarType(symbol, false, false, true);
+        return new TypeNode(symbol, false, true);
     }
 
-    private static GrammarType ListType(GrammarSymbol symbol)
+    private static TypeNode ListType(Symbol symbol)
     {
-        return new GrammarType(symbol, false, true, false);
+        return new TypeNode(symbol, true, false);
     }
 
-    private static GrammarType RefType(GrammarSymbol symbol)
+    private static TypeNode RefType(Symbol symbol)
     {
-        return new GrammarType(symbol, true, false, false);
+        return new TypeNode(symbol, false, false);
     }
 
     private static IFixedList<T> FixedList<T>(params T[] values)

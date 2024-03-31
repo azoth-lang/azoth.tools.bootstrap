@@ -12,33 +12,30 @@ using <#=usingNamespace #>;
 // ReSharper disable PartialTypeWithSinglePart
 
 // ReSharper disable once CheckNamespace
-namespace <#=grammar.Namespace #>.Classes
-{
-    using static <#=language.Name #>;
+namespace <#=grammar.Namespace #>;
 
-<#  foreach(var rule in language.DifferentRules.Where(r => grammar.IsTerminal(r))) {#>
-    [GeneratedCode("AzothCompilerCodeGen", null)]
-    internal sealed partial class <#=Emit.ClassName(language, rule.Defines) #> : <#= grammar.TypeName(rule.Defines) #>
-    {
+<#  foreach(var rule in language.DifferentRules.Where(ShouldEmit.Class)) {#>
+[GeneratedCode("AzothCompilerCodeGen", null)]
+internal <#=Emit.ClassModifier(language, rule) #> partial class <#=Emit.ClassName(language, rule.Defines) #> : <#=Emit.ClassName(language, rule.Parent) #>, <#=Emit.QualifiedTypeName(language, rule.Defines) #>
+{
 <#      foreach(var property in grammar.AllProperties(rule)) { #>
-        public <#=Emit.ClassType(language, property.Type) #> <#=property.Name #> { get; }
+    public <#=Emit.ClassPropertyModifier(language, rule) #> <#=Emit.ClassType(language, property.Type) #> <#=property.Name #> { get; }
 <#          if (grammar.IsNonterminal(property)) { #>
-        <#=Emit.Type(grammar, property.Type) #> <#= grammar.TypeName(rule.Defines) #>.<#=property.Name #> => <#=property.Name #>;
+    <#=Emit.QualifiedType(language, property.Type) #> <#= Emit.QualifiedTypeName(language, rule.Defines) #>.<#=property.Name #> => <#=property.Name #>;
 <#          } #>
 <#      } #>
 
-        public object? ImplementationRestricted => null;
-
-        public <#=Emit.ClassName(language, rule.Defines) #>(<#=Emit.PropertyClassParameters(language, rule) #>)
-        {
-<#      foreach(var property in grammar.AllProperties(rule)) { #>
-            <#=property.Name #> = <#=property.Name.ToCamelCase() #>;
-<#      } #>
-        }
+<#      if (ShouldEmit.Constructor(language, rule)) { #>
+    public <#=Emit.ClassName(language, rule.Defines) #>(<#=Emit.PropertyClassParameters(language, rule) #>)
+    {
+<#          foreach(var property in grammar.AllProperties(rule)) { #>
+        <#=property.Name #> = <#=property.Name.ToCamelCase() #>;
+<#          } #>
     }
+<#      } #>
+ }
 
 <#  } #>
-}
 
 <#   foreach(var (otherLanguage, rules) in OtherLanguagesDefiningRules()) {#>
 namespace <#=otherLanguage.Grammar.Namespace #>.Classes
@@ -50,7 +47,7 @@ namespace <#=otherLanguage.Grammar.Namespace #>.Classes
     {
 <#      foreach(var property in grammar.AllProperties(rule)) { #>
 <#          if (grammar.IsNonterminal(property)) { #>
-        <#=Emit.Type(grammar, property.Type) #> <#= grammar.TypeName(rule.Defines) #>.<#=property.Name #> => <#=property.Name #>;
+        <#=Emit.Type(language, property.Type) #> <#= Emit.TypeName(language, rule.Defines) #>.<#=property.Name #> => <#=property.Name #>;
 <#          } #>
 <#      } #>
     }

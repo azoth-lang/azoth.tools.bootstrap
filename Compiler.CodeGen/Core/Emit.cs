@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
 internal static class Emit
 {
-    public static string ClosedAttribute(Grammar grammar, GrammarRule rule, string indent = "")
+    public static string ClosedAttribute(GrammarNode grammar, RuleNode rule, string indent = "")
     {
         var children = grammar.ChildRules(rule);
         if (!children.Any()) return "";
@@ -30,7 +30,7 @@ internal static class Emit
         return builder.ToString();
     }
 
-    public static string BaseTypes(Grammar grammar, GrammarRule rule, string? root = null)
+    public static string BaseTypes(GrammarNode grammar, RuleNode rule, string? root = null)
     {
         bool anyParents = rule.Parents.Any();
         if (!anyParents && root is null) return "";
@@ -42,41 +42,71 @@ internal static class Emit
         return " : " + string.Join(", ", parents);
     }
 
-    public static string Type(Grammar grammar, GrammarType type)
+    public static string TypeName(Language language, TypeNode type)
+        => TypeName(language.Grammar, type.Symbol);
+
+    public static string TypeName(GrammarNode grammar, TypeNode type)
+        => TypeName(grammar, type.Symbol);
+
+    public static string TypeName(Language language, Symbol symbol)
+        => TypeName(language.Grammar, symbol);
+
+    public static string TypeName(GrammarNode grammar, Symbol symbol)
+        => grammar.TypeName(symbol);
+
+    public static string QualifiedTypeName(Language language, TypeNode type)
+        => QualifiedTypeName(language, type.Symbol);
+
+    public static string QualifiedTypeName(Language language, Symbol symbol)
+        => symbol.IsQuoted ? TypeName(language, symbol) : $"{language.Name}.{TypeName(language, symbol)}";
+
+    public static string Type(Language language, TypeNode type)
+        => Type(language.Grammar, type);
+
+    public static string Type(GrammarNode grammar, TypeNode type)
     {
-        var name = grammar.TypeName(type.Symbol);
+        var name = TypeName(grammar, type);
         return TypeDecorations(grammar, type, name);
     }
 
-    private static string TypeDecorations(Grammar grammar, GrammarType type, string name)
+    public static string QualifiedType(Language language, TypeNode type)
     {
-        if (type.IsRef)
-        {
-            name = "ref " + name;
-            if (type.IsOptional) name = "[DisallowNull] " + name;
-        }
+        var name = QualifiedTypeName(language, type);
+        return TypeDecorations(language.Grammar, type, name);
+    }
 
+    private static string TypeDecorations(GrammarNode grammar, TypeNode type, string name)
+    {
         if (type.IsList) name = $"{grammar.ListType}<{name}>";
         if (type.IsOptional) name += "?";
         return name;
     }
 
-    public static string ClassType(Language language, GrammarType type)
+    public static string ClassType(Language language, TypeNode type)
     {
         var name = ClassName(language, type.Symbol);
         return TypeDecorations(language.Grammar, type, name);
     }
 
-    public static string PropertyIsNew(Grammar grammar, GrammarRule rule, GrammarProperty property)
+    public static string ClassModifier(Language language, RuleNode rule)
+        => language.Grammar.IsTerminal(rule) ? "sealed" : "abstract";
+
+    public static string PropertyIsNew(GrammarNode grammar, RuleNode rule, PropertyNode property)
         => grammar.IsNewDefinition(rule, property) ? "new " : "";
 
-    public static string ClassName(Language language, GrammarSymbol symbol)
-        => symbol.IsQuoted ? symbol.Text : $"{symbol.Text}{language.Grammar.Suffix}_{language.Name}";
+    public static string ClassPropertyModifier(Language language, RuleNode rule)
+        => language.Grammar.IsTerminal(rule) ? "override" : "abstract";
 
-    public static string PropertyParameters(Grammar grammar, GrammarRule rule)
-        => string.Join(", ", grammar.AllProperties(rule).Select(p => $"{Type(grammar, p.Type)} {p.Name.ToCamelCase()}"));
+    public static string ClassName(Language language, Symbol? symbol)
+    {
+        if (symbol is null) return $"{language.Grammar.Suffix}Node";
+        return symbol.IsQuoted ? symbol.Text : $"{symbol.Text}{language.Grammar.Suffix}Node";
+    }
 
-    public static string ModifiedPropertyParameters(Language language, GrammarRule rule)
+    public static string PropertyParameters(Language language, RuleNode rule)
+        => string.Join(", ", language.Grammar.AllProperties(rule).Select(p => $"{Type(language, p.Type)} {p.Name.ToCamelCase()}"));
+
+    public static string ModifiedPropertyParameters(Language language, RuleNode rule)
     {
         var grammar = language.Grammar;
         var correctLanguage = language.Extends?.RuleDefinedIn[rule.Defines]!;
@@ -84,23 +114,23 @@ internal static class Emit
         var oldProperties = correctLanguage.Grammar.AllProperties(rule).Select(p => p.Name).ToFixedSet();
         return $"{correctLanguage.Name}.{typeName} {typeName.ToCamelCase()}, " + string.Join(", ",
             grammar.AllProperties(rule).Where(p => !oldProperties.Contains(p.Name))
-                   .Select(p => $"{Type(grammar, p.Type)} {p.Name.ToCamelCase()}"));
+                   .Select(p => $"{Type(language, p.Type)} {p.Name.ToCamelCase()}"));
     }
 
-    public static string PropertyClassParameters(Language language, GrammarRule rule)
+    public static string PropertyClassParameters(Language language, RuleNode rule)
         => string.Join(", ", language.Grammar.AllProperties(rule).Select(p => $"{ClassType(language, p.Type)} {p.Name.ToCamelCase()}"));
 
-    public static string PropertyArguments(Language language, GrammarRule rule)
+    public static string PropertyArguments(Language language, RuleNode rule)
     {
         return string.Join(", ", language.Grammar.AllProperties(rule).Select(ToArgument));
-        string ToArgument(GrammarProperty p)
+        string ToArgument(PropertyNode p)
         {
             var cast = language.Grammar.IsNonterminal(p) ? $"({SmartClassType(language, p.Type)})" : "";
             return $"{cast}{p.Name.ToCamelCase()}";
         }
     }
 
-    public static string ModifiedPropertyArguments(Language language, GrammarRule rule)
+    public static string ModifiedPropertyArguments(Language language, RuleNode rule)
     {
         string oldNode = language.Grammar.TypeName(rule.Defines).ToCamelCase();
         var correctLanguage = language.Extends?.RuleDefinedIn[rule.Defines]!;
@@ -108,20 +138,20 @@ internal static class Emit
 
         return string.Join(", ", language.Grammar.AllProperties(rule).Select(ToArgument));
 
-        string ToArgument(GrammarProperty p)
+        string ToArgument(PropertyNode p)
         {
             var cast = language.Grammar.IsNonterminal(p) ? $"({SmartClassType(language, p.Type)})" : "";
             return oldProperties.Contains(p.Name) ? $"{cast}{oldNode}.{p.Name}" : $"{cast}{p.Name.ToCamelCase()}";
         }
     }
 
-    public static string SmartClassType(Language language, GrammarType type)
+    public static string SmartClassType(Language language, TypeNode type)
     {
         string name = SmartClassName(language, type.Symbol);
         return TypeDecorations(language.Grammar, type, name);
     }
 
-    public static string SmartClassName(Language language, GrammarSymbol symbol)
+    public static string SmartClassName(Language language, Symbol symbol)
     {
         var correctLanguage = language.RuleDefinedIn[symbol];
         return ClassName(correctLanguage, symbol);

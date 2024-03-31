@@ -25,7 +25,7 @@ public sealed class Typed
         CompilationUnit TestingCompilationUnits { get; }
 
         // public static Package Create(IPackageSyntax syntax, PackageSymbol symbol, IFixedList<PackageReference> references, IFixedList<CompilationUnit> compilationUnits, CompilationUnit testingCompilationUnits)
-        //     => new Package_Concrete(syntax, symbol, (IFixedList<PackageReference_Concrete>)references, (IFixedList<CompilationUnit_Concrete>)compilationUnits, (CompilationUnit_Concrete)testingCompilationUnits);
+        //     => new PackageNode(syntax, symbol, (IFixedList<PackageReferenceNode>)references, (IFixedList<CompilationUnitNode>)compilationUnits, (CompilationUnitNode)testingCompilationUnits);
     }
 
     public interface PackageReference : IImplementationRestricted
@@ -33,7 +33,7 @@ public sealed class Typed
         IdentifierName AliasOrName { get; }
 
         // public static PackageReference Create(IdentifierName aliasOrName)
-        //     => new PackageReference_Concrete(aliasOrName);
+        //     => new PackageReferenceNode(aliasOrName);
     }
 
     public interface CompilationUnit : IHasSyntax
@@ -45,7 +45,7 @@ public sealed class Typed
         IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
         // public static CompilationUnit Create(ICompilationUnitSyntax syntax, CodeFile file, NamespaceName implicitNamespaceName, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations)
-        //     => new CompilationUnit_Concrete(syntax, file, implicitNamespaceName, (IFixedList<UsingDirective_Concrete>)usingDirectives, (IFixedList<NamespaceMemberDeclaration_Concrete>)declarations);
+        //     => new CompilationUnitNode(syntax, file, implicitNamespaceName, (IFixedList<UsingDirectiveNode>)usingDirectives, (IFixedList<NamespaceMemberDeclarationNode>)declarations);
     }
 
     public interface UsingDirective : IHasSyntax
@@ -54,7 +54,7 @@ public sealed class Typed
         NamespaceName Name { get; }
 
         // public static UsingDirective Create(IUsingDirectiveSyntax syntax, NamespaceName name)
-        //     => new UsingDirective_Concrete(syntax, name);
+        //     => new UsingDirectiveNode(syntax, name);
     }
 
     [Closed(
@@ -69,6 +69,7 @@ public sealed class Typed
     [Closed(
         typeof(NamespaceDeclaration),
         typeof(NamespaceMemberDeclaration),
+        typeof(TypeDeclaration),
         typeof(TypeMemberDeclaration))]
     public interface Declaration : IHasSyntax
     {
@@ -84,12 +85,11 @@ public sealed class Typed
         IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
         // public static NamespaceDeclaration Create(INamespaceDeclarationSyntax syntax, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations, Symbol symbol, IdentifierName name)
-        //     => new NamespaceDeclaration_Concrete(syntax, (IFixedList<UsingDirective_Concrete>)usingDirectives, (IFixedList<NamespaceMemberDeclaration_Concrete>)declarations, symbol, name);
+        //     => new NamespaceDeclarationNode(syntax, (IFixedList<UsingDirectiveNode>)usingDirectives, (IFixedList<NamespaceMemberDeclarationNode>)declarations, symbol, name);
     }
 
     [Closed(
-        typeof(TypeDeclaration),
-        typeof(FunctionDeclaration))]
+        typeof(TypeDeclaration))]
     public interface NamespaceMemberDeclaration : Declaration
     {
     }
@@ -98,7 +98,7 @@ public sealed class Typed
         typeof(ClassDeclaration),
         typeof(StructDeclaration),
         typeof(TraitDeclaration))]
-    public interface TypeDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
+    public interface TypeDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration, Declaration
     {
         new ITypeDeclarationSyntax Syntax { get; }
     }
@@ -109,8 +109,8 @@ public sealed class Typed
         bool IsAbstract { get; }
         IFixedList<ClassMemberDeclaration> Members { get; }
 
-        // public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name)
-        //     => new ClassDeclaration_Concrete(syntax, isAbstract, (IFixedList<ClassMemberDeclaration_Concrete>)members, symbol, name, symbol, name);
+        // public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name)
+        //     => new ClassDeclarationNode(syntax, isAbstract, (IFixedList<ClassMemberDeclarationNode>)members, symbol, name, symbol, name, symbol, name);
     }
 
     public interface StructDeclaration : TypeDeclaration
@@ -118,8 +118,8 @@ public sealed class Typed
         new IStructDeclarationSyntax Syntax { get; }
         IFixedList<StructMemberDeclaration> Members { get; }
 
-        // public static StructDeclaration Create(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name)
-        //     => new StructDeclaration_Concrete(syntax, (IFixedList<StructMemberDeclaration_Concrete>)members, symbol, name, symbol, name);
+        // public static StructDeclaration Create(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name)
+        //     => new StructDeclarationNode(syntax, (IFixedList<StructMemberDeclarationNode>)members, symbol, name, symbol, name, symbol, name);
     }
 
     public interface TraitDeclaration : TypeDeclaration
@@ -127,16 +127,15 @@ public sealed class Typed
         new ITraitDeclarationSyntax Syntax { get; }
         IFixedList<TraitMemberDeclaration> Members { get; }
 
-        // public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name)
-        //     => new TraitDeclaration_Concrete(syntax, (IFixedList<TraitMemberDeclaration_Concrete>)members, symbol, name, symbol, name);
+        // public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name)
+        //     => new TraitDeclarationNode(syntax, (IFixedList<TraitMemberDeclarationNode>)members, symbol, name, symbol, name, symbol, name);
     }
 
     [Closed(
         typeof(TypeDeclaration),
         typeof(ClassMemberDeclaration),
         typeof(TraitMemberDeclaration),
-        typeof(StructMemberDeclaration),
-        typeof(FunctionDeclaration))]
+        typeof(StructMemberDeclaration))]
     public interface TypeMemberDeclaration : Declaration
     {
     }
@@ -145,29 +144,29 @@ public sealed class Typed
     {
 
         // public static ClassMemberDeclaration Create(IDeclarationSyntax syntax, Symbol symbol, IdentifierName name)
-        //     => new ClassMemberDeclaration_Concrete(syntax, symbol, name);
+        //     => new ClassMemberDeclarationNode(syntax, symbol, name);
     }
 
     public interface TraitMemberDeclaration : TypeMemberDeclaration
     {
 
         // public static TraitMemberDeclaration Create(IDeclarationSyntax syntax, Symbol symbol, IdentifierName name)
-        //     => new TraitMemberDeclaration_Concrete(syntax, symbol, name);
+        //     => new TraitMemberDeclarationNode(syntax, symbol, name);
     }
 
     public interface StructMemberDeclaration : TypeMemberDeclaration
     {
 
         // public static StructMemberDeclaration Create(IDeclarationSyntax syntax, Symbol symbol, IdentifierName name)
-        //     => new StructMemberDeclaration_Concrete(syntax, symbol, name);
+        //     => new StructMemberDeclarationNode(syntax, symbol, name);
     }
 
     public interface FunctionDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
     {
-        new IFunctionDeclarationSyntax Syntax { get; }
+        IFunctionDeclarationSyntax Syntax { get; }
 
-        // public static FunctionDeclaration Create(IFunctionDeclarationSyntax syntax, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name)
-        //     => new FunctionDeclaration_Concrete(syntax, symbol, name, symbol, name);
+        // public static FunctionDeclaration Create(IFunctionDeclarationSyntax syntax)
+        //     => new FunctionDeclarationNode(syntax);
     }
 
 }

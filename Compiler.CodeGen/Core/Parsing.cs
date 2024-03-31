@@ -54,13 +54,13 @@ internal static class Parsing
     }
 
     [return: NotNullIfNotNull(nameof(symbol))]
-    public static GrammarSymbol? ParseSymbol(string? symbol)
+    public static Symbol? ParseSymbol(string? symbol)
     {
         if (symbol is null) return null;
         if ((symbol.StartsWith('\'') && symbol.EndsWith('\'')
             || (symbol.StartsWith('`') && symbol.EndsWith('`'))))
-            return new GrammarSymbol(symbol[1..^1], true);
-        return new GrammarSymbol(symbol);
+            return new Symbol(symbol[1..^1], true);
+        return new Symbol(symbol);
     }
 
     public static IEnumerable<string> ParseToStatements(IEnumerable<string> lines)
@@ -86,29 +86,30 @@ internal static class Parsing
             yield return currentStatement.ToString().Trim();
     }
 
-    public static IEnumerable<GrammarRule> ParseRules(IEnumerable<string> lines)
+    public static IEnumerable<RuleNode> ParseRules(IEnumerable<string> lines)
     {
         var statements = ParseToStatements(lines).ToFixedList();
         foreach (var statement in statements)
             yield return ParseRule(statement);
     }
 
-    public static GrammarRule ParseRule(string statement)
+    public static RuleNode ParseRule(string statement)
     {
         var (declaration, definition) = SplitDeclarationAndDefinition(statement);
-        var (nonterminal, parents) = ParseDeclaration(declaration);
+        var (defines, parent, supertypes) = ParseDeclaration(declaration);
         var properties = ParseProperties(definition).ToFixedList();
-        return new GrammarRule(nonterminal, parents, properties);
+        return new RuleNode(defines, parent, supertypes, properties);
     }
 
     public static (string Declaration, string? Definition) SplitDeclarationAndDefinition(string statement)
     {
         var equalSplit = statement.Split('=');
-        if (equalSplit.Length > 2) throw new FormatException($"Too many equal signs on line: '{statement}'");
+        if (equalSplit.Length > 2)
+            throw new FormatException($"Too many equal signs on line: '{statement}'");
         return (equalSplit[0].Trim(), equalSplit.Length > 1 ? equalSplit[1].Trim() : null);
     }
 
-    private static IEnumerable<GrammarProperty> ParseProperties(string? definition)
+    private static IEnumerable<PropertyNode> ParseProperties(string? definition)
     {
         if (definition is null) yield break;
 
@@ -117,11 +118,8 @@ internal static class Parsing
             yield return ParseProperty(property);
     }
 
-    public static GrammarProperty ParseProperty(string property)
+    public static PropertyNode ParseProperty(string property)
     {
-        var isRef = property.StartsWith('&');
-        property = isRef ? property[1..] : property;
-
         var isOptional = property.EndsWith('?');
         property = isOptional ? property[..^1] : property;
 
@@ -135,15 +133,15 @@ internal static class Parsing
             case 1:
             {
                 var name = parts[0];
-                var grammarType = new GrammarType(ParseSymbol(name), isRef, isList, isOptional);
-                return new GrammarProperty(name, grammarType);
+                var grammarType = new TypeNode(ParseSymbol(name), isList, isOptional);
+                return new PropertyNode(name, grammarType);
             }
             case 2:
             {
                 var name = parts[0];
                 var type = parts[1];
-                var grammarType = new GrammarType(ParseSymbol(type), isRef, isList, isOptional);
-                return new GrammarProperty(name, grammarType);
+                var grammarType = new TypeNode(ParseSymbol(type), isList, isOptional);
+                return new PropertyNode(name, grammarType);
             }
             default:
                 throw new FormatException($"Too many colons in property: '{property}'");
@@ -153,24 +151,44 @@ internal static class Parsing
     public static IEnumerable<string> SplitProperties(string definition)
         => definition.SplitOrEmpty(' ').Where(v => !string.IsNullOrWhiteSpace(v));
 
-    private static (GrammarSymbol nonterminal, IEnumerable<GrammarSymbol> parents) ParseDeclaration(string declaration)
+    private static (Symbol Defines, Symbol? Parent, IEnumerable<Symbol> Supertypes) ParseDeclaration(string declaration)
     {
-        var (nonterminalText, parents) = SplitNonterminalAndParents(declaration);
-        var nonterminal = ParseSymbol(nonterminalText);
-        var parentSymbols = ParseParents(parents);
-        return (nonterminal, parentSymbols);
+        var (defines, parent, parents) = SplitDeclaration(declaration);
+        var definesSymbol = ParseSymbol(defines);
+        var parentSymbol = ParseSymbol(parent);
+        var supertypes = ParseSupertypes(parents);
+        return (definesSymbol, parentSymbol, supertypes);
     }
 
-    public static (string Nonterminal, string? Parents) SplitNonterminalAndParents(string declaration)
+    public static (string Defines, string? Parent, string? Parents) SplitDeclaration(string declaration)
     {
-        var declarationSplit = declaration.Split(':');
-        if (declarationSplit.Length > 2) throw new FormatException($"Too many colons in declaration: '{declaration}'");
-        return (declarationSplit[0].Trim(), declarationSplit.Length > 1 ? declarationSplit[1].Trim() : null);
+        var remainder = declaration.Trim();
+        string? parents = null;
+        if (remainder.Contains("<:"))
+        {
+            var split = remainder.Split("<:");
+            if (split.Length > 2)
+                throw new FormatException($"Too many `<:` in declaration: '{declaration}'");
+            remainder = split[0].Trim();
+            parents = split[1].Trim();
+        }
+
+        string? parent = null;
+        if (remainder.Contains(':'))
+        {
+            var split = remainder.Split(':');
+            if (split.Length > 2)
+                throw new FormatException($"Too many colons in declaration: '{declaration}'");
+            remainder = split[0].Trim();
+            parent = split[1].Trim();
+        }
+
+        return (remainder, parent, parents);
     }
 
-    private static IEnumerable<GrammarSymbol> ParseParents(string? parents)
+    private static IEnumerable<Symbol> ParseSupertypes(string? parents)
     {
-        if (parents is null) return Enumerable.Empty<GrammarSymbol>();
+        if (parents is null) return Enumerable.Empty<Symbol>();
 
         return SplitParents(parents)
                .Select(p => ParseSymbol(p));
@@ -179,6 +197,6 @@ internal static class Parsing
     public static IEnumerable<string> SplitParents(string parents)
         => parents.Split(',').Select(p => p.Trim());
 
-    public static IEnumerable<GrammarRule> ParseRules(IFixedList<string> lines, GrammarSymbol? rootType)
-        => ParseRules(lines).Select(r => r.WithDefaultRootType(rootType));
+    public static IEnumerable<RuleNode> ParseRules(IFixedList<string> lines, Symbol? defaultParent)
+        => ParseRules(lines).Select(r => r.WithDefaultParent(defaultParent));
 }

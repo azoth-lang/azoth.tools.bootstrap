@@ -81,7 +81,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write("    public interface ");
             
             #line 20 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Defines)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(language, rule.Defines)));
             
             #line default
             #line hidden
@@ -107,7 +107,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             #line hidden
             
             #line 23 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(grammar, property.Type)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(language, property.Type)));
             
             #line default
             #line hidden
@@ -134,14 +134,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write("\r\n        // public static ");
             
             #line 27 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Defines)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(language, rule.Defines)));
             
             #line default
             #line hidden
             this.Write(" Create(");
             
             #line 27 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.PropertyParameters(grammar, rule)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.PropertyParameters(language, rule)));
             
             #line default
             #line hidden
@@ -169,7 +169,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write("\r\n        // public static ");
             
             #line 31 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.TypeName(rule.Defines)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(language, rule.Defines)));
             
             #line default
             #line hidden

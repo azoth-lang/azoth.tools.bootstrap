@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
 public partial class LanguageCodeTemplate
 {
     private readonly Language language;
-    private readonly Grammar grammar;
+    private readonly GrammarNode grammar;
 
     public LanguageCodeTemplate(Language language)
     {
