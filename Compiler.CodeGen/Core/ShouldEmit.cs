@@ -1,5 +1,4 @@
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
@@ -21,6 +20,6 @@ public static class ShouldEmit
 
     public static bool Class(RuleNode rule) => !rule.Defines.IsQuoted;
 
-    public static bool Constructor(Language language, RuleNode rule)
+    public static bool Constructor(LanguageNode language, RuleNode rule)
         => language.Grammar.IsTerminal(rule);
 }

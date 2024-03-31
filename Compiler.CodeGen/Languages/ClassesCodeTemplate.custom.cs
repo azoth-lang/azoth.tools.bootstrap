@@ -7,16 +7,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
 
 public partial class ClassesCodeTemplate
 {
-    private readonly Language language;
+    private readonly LanguageNode language;
     private readonly GrammarNode grammar;
 
-    public ClassesCodeTemplate(Language language)
+    public ClassesCodeTemplate(LanguageNode language)
     {
         this.language = language;
         grammar = language.Grammar;
     }
 
-    public IReadOnlyDictionary<Language, IFixedList<RuleNode>> OtherLanguagesDefiningRules()
+    public IReadOnlyDictionary<LanguageNode, IFixedList<RuleNode>> OtherLanguagesDefiningRules()
     {
         return language.RuleDefinedIn.Where(kvp => kvp.Value != language).GroupBy(kvp => kvp.Value)
                        .ToDictionary(g => g.Key, g => g.Select(kvp => grammar.RuleFor(kvp.Key)!).ToFixedList());

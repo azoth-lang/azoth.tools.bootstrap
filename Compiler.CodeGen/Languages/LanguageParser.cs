@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
 
 internal static class LanguageParser
 {
-    public static Language ParseLanguage(string inputPath, string input)
+    public static LanguageNode ParseLanguage(string inputPath, string input)
     {
         var lines = Parsing.ParseLines(input).ToFixedList();
 
@@ -29,7 +29,7 @@ internal static class LanguageParser
             var extends = extendsLanguage.Grammar;
             var rules = ParseRuleExtensions(extendsLanguage, lines, extends.RootType).ToFixedList();
             var grammar = new GrammarNode(extends.Namespace, extends.RootType, extends.Prefix, extends.Suffix, extends.ListType, usingNamespaces, rules);
-            return new Language(name, grammar, extendsLanguage);
+            return new LanguageNode(name, grammar, extendsLanguage);
         }
         else
         {
@@ -40,14 +40,14 @@ internal static class LanguageParser
             var listType = Parsing.GetConfig(lines, "list") ?? "List";
             var rules = Parsing.ParseRules(lines, rootType).ToFixedList();
             var grammar = new GrammarNode(ns, rootType, prefix, suffix, listType, usingNamespaces, rules);
-            return new Language(name, grammar, extends: null);
+            return new LanguageNode(name, grammar, extends: null);
         }
     }
 
-    private static IEnumerable<RuleNode> ParseRuleExtensions(Language extends, IEnumerable<string> lines, Symbol? defaultParent)
+    private static IEnumerable<RuleNode> ParseRuleExtensions(LanguageNode extends, IEnumerable<string> lines, Symbol? defaultParent)
         => ParseRuleExtensions(extends, lines).Select(r => r.WithDefaultParent(defaultParent));
 
-    public static IEnumerable<RuleNode> ParseRuleExtensions(Language extends, IEnumerable<string> lines)
+    public static IEnumerable<RuleNode> ParseRuleExtensions(LanguageNode extends, IEnumerable<string> lines)
     {
         var extendingRules = extends.Grammar.Rules.ToDictionary(r => r.Defines);
         var statements = Parsing.ParseToStatements(lines).ToFixedList();
