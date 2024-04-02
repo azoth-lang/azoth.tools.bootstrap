@@ -27,8 +27,11 @@ public sealed class <#=language.Name #>
             => new <#=Emit.SmartClassName(rule.Defines) #>(<#=Emit.PropertyArguments(rule) #>);
 <#          if (rule.IsModified) { #>
 
-        // public static <#= Emit.TypeName(rule.Defines) #> Create(<#=Emit.ModifiedPropertyParameters(rule) #>)
-        //     => new <#=Emit.SmartClassName(rule.Defines) #>(<#=Emit.ModifiedPropertyArguments(rule) #>);
+        public static <#=Emit.TypeName(rule.Defines) #> Modify(<#=Emit.ModifiedPropertyParameters(rule) #>)
+        {
+            var node = (<#=Emit.ClassName(language, rule.Defines) #>)<#= Emit.TypeName(rule.Defines).ToCamelCase() #>;
+            return node;
+        }
 <#          } #>
 <#      } #>
     }

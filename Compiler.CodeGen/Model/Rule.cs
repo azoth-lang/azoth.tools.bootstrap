@@ -53,8 +53,19 @@ public class Rule
     public IFixedList<Property> AllProperties => allProperties.Value;
     private readonly Lazy<IFixedList<Property>> allProperties;
 
+
+    public Rule? ExtendsRule => extendsRule.Value;
+    private readonly Lazy<Rule?> extendsRule;
+
+    /// <summary>
+    /// Whether this rule is new in this language (e.g. added in this language or no language is
+    /// being extended).
+    /// </summary>
     public bool IsNew => isNew.Value;
     private readonly Lazy<bool> isNew;
+    /// <summary>
+    /// Whether this rule is modified relative to the rule in the language being extended.
+    /// </summary>
     public bool IsModified => isModified.Value;
     private readonly Lazy<bool> isModified;
 
@@ -89,10 +100,11 @@ public class Rule
                    .ToFixedList();
         });
 
-        isNew = new(() => grammar.Language.Extends?.Grammar.RuleFor(Defines.Syntax) is null);
+        extendsRule = new(() => grammar.Language.Extends?.Grammar.RuleFor(Defines.Syntax));
+        isNew = new(() => ExtendsRule is null);
         isModified = new(() =>
         {
-            var oldRule = grammar.Language.Extends?.Grammar.RuleFor(Defines.Syntax);
+            var oldRule = ExtendsRule;
             if (oldRule is null)
                 return false;
 

@@ -112,16 +112,16 @@ internal static class Emit
 
     public static string ModifiedPropertyParameters(Rule rule)
     {
-        var correctLanguage = rule.DefinedInLanguage;
+        var correctLanguage = rule.Language.Extends!;
         string typeName = TypeName(rule.Defines);
-        var oldProperties = OldProperties(rule, correctLanguage);
-        return $"{correctLanguage.Name}.{typeName} {typeName.ToCamelCase()}, " + string.Join(", ",
-            rule.AllProperties.Where(p => !oldProperties.Contains(p.Name))
-                   .Select(p => $"{Type(p.Type)} {p.Name.ToCamelCase()}"));
+        var oldProperties = OldProperties(rule);
+        return string.Join(", ", rule.AllProperties.Where(p => !oldProperties.Contains(p.Name))
+                                     .Select(p => $"{Type(p.Type)} {p.Name.ToCamelCase()}")
+                                     .Prepend($"{correctLanguage.Name}.{typeName} {typeName.ToCamelCase()}"));
     }
 
-    private static IFixedSet<string> OldProperties(Rule rule, Language inLanguage)
-        => inLanguage.Grammar.RuleFor(rule.Defines.Syntax)!.AllProperties.Select(p => p.Name).ToFixedSet();
+    private static IFixedSet<string> OldProperties(Rule rule)
+        => rule.ExtendsRule!.AllProperties.Select(p => p.Name).ToFixedSet();
 
     public static string PropertyClassParameters(Rule rule)
         => string.Join(", ", rule.AllProperties.Select(p => $"{ClassType(p.Type)} {p.Name.ToCamelCase()}"));
@@ -140,7 +140,7 @@ internal static class Emit
     {
         string oldNode = TypeName(rule.Defines).ToCamelCase();
         var correctLanguage = rule.DefinedInLanguage;
-        var oldProperties = OldProperties(rule, correctLanguage);
+        var oldProperties = OldProperties(rule);
 
         return string.Join(", ", rule.AllProperties.Select(ToArgument));
 
