@@ -71,9 +71,9 @@ public class TreeParserTests
     }
 
     [Fact]
-    public void ParsesBaseType()
+    public void ParsesRootType()
     {
-        const string grammar = "◊base MyBase;";
+        const string grammar = "◊root MyBase;";
 
         var config = TreeParser.ParseGrammar(grammar);
 
@@ -81,9 +81,9 @@ public class TreeParserTests
     }
 
     [Fact]
-    public void ParsesQuotedBaseType()
+    public void ParsesQuotedRootType()
     {
-        const string grammar = "◊base 'MyBase';";
+        const string grammar = "◊root `MyBase`;";
 
         var config = TreeParser.ParseGrammar(grammar);
 
@@ -147,7 +147,7 @@ public class TreeParserTests
     [Fact]
     public void ParsesSimpleQuotedTerminalRule()
     {
-        const string grammar = "'IMyFullTypeName';";
+        const string grammar = "`IMyFullTypeName`;";
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
@@ -157,15 +157,15 @@ public class TreeParserTests
     }
 
     [Fact]
-    public void ParsesSimpleTerminalRuleWithDefaultBaseType()
+    public void ParsesSimpleTerminalRuleWithRootType()
     {
-        const string grammar = "◊base MyBase;\nSubType;";
+        const string grammar = "◊root MyBase;\nSubType;";
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("SubType"), rule.Defines);
         var expectedParents = FixedList(Symbol("MyBase"));
-        Assert.Equal(expectedParents, rule.Supertypes);
+        Assert.Equal(expectedParents, rule.Parents);
         Assert.Empty(rule.DeclaredProperties);
     }
 
@@ -190,14 +190,14 @@ public class TreeParserTests
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("SubType"), rule.Defines);
-        Assert.Single(rule.Supertypes, Symbol("BaseType"));
+        Assert.Single(rule.Parents, Symbol("BaseType"));
         Assert.Empty(rule.DeclaredProperties);
     }
 
     [Fact]
     public void ParsesMultipleInheritanceRule()
     {
-        const string grammar = "SubType: BaseType1, BaseType2;";
+        const string grammar = "SubType <: BaseType1, BaseType2;";
 
         var config = TreeParser.ParseGrammar(grammar);
 
@@ -211,14 +211,14 @@ public class TreeParserTests
     [Fact]
     public void ParseQuotedInheritanceRule()
     {
-        const string grammar = "SubType: 'BaseType1', BaseType2;";
+        const string grammar = "SubType: `BaseType1` <: BaseType2;";
 
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(new SymbolNode("SubType"), rule.Defines);
         var expectedParents = FixedList(QuotedSymbol("BaseType1"), Symbol("BaseType2"));
-        Assert.Equal(expectedParents, rule.Supertypes);
+        Assert.Equal(expectedParents, rule.Parents);
         Assert.Empty(rule.DeclaredProperties);
     }
 
@@ -239,7 +239,7 @@ public class TreeParserTests
 
         var ex = Assert.Throws<FormatException>(() => TreeParser.ParseGrammar(grammar));
 
-        Assert.Equal("Too many colons in declaration: 'SubType: BaseType: What '", ex.Message);
+        Assert.Equal("Too many colons in declaration: 'SubType: BaseType: What'", ex.Message);
     }
     #endregion
 
@@ -280,18 +280,6 @@ public class TreeParserTests
     }
 
     [Fact]
-    public void ParsesSimpleReferenceProperty()
-    {
-        const string grammar = "MyNonterminal = &MyProperty;";
-        var config = TreeParser.ParseGrammar(grammar);
-
-        var rule = Assert.Single(config.Rules);
-        var property = Assert.Single(rule.DeclaredProperties);
-        Assert.Equal("MyProperty", property.Name);
-        Assert.Equal(RefType(Symbol("MyProperty")), property.Type);
-    }
-
-    [Fact]
     public void ParsesTypedProperty()
     {
         const string grammar = "MyNonterminal = MyProperty:MyType;";
@@ -306,7 +294,7 @@ public class TreeParserTests
     [Fact]
     public void ParsesQuotedTypedProperty()
     {
-        const string grammar = "MyNonterminal = MyProperty:'MyType';";
+        const string grammar = "MyNonterminal = MyProperty:`MyType`;";
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
@@ -342,7 +330,7 @@ public class TreeParserTests
     [Fact]
     public void ParsesListOfOptionalTypedProperty()
     {
-        const string grammar = "MyNonterminal = MyProperty:MyType?*;";
+        const string grammar = "MyNonterminal = MyProperty:MyType*?;";
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
@@ -352,25 +340,13 @@ public class TreeParserTests
     }
 
     [Fact]
-    public void ParsesReferenceTypedProperty()
-    {
-        const string grammar = "MyNonterminal = &MyProperty:MyType;";
-        var config = TreeParser.ParseGrammar(grammar);
-
-        var rule = Assert.Single(config.Rules);
-        var property = Assert.Single(rule.DeclaredProperties);
-        Assert.Equal("MyProperty", property.Name);
-        Assert.Equal(RefType(Symbol("MyType")), property.Type);
-    }
-
-    [Fact]
     public void ParseErrorTooManyColonsInDefinition()
     {
         const string grammar = "MyNonterminal = MyProperty:MyType:What;";
 
         var ex = Assert.Throws<FormatException>(() => TreeParser.ParseGrammar(grammar));
 
-        Assert.Equal("Too many colons in definition: 'MyProperty:MyType:What'", ex.Message);
+        Assert.Equal("Too many colons in property: 'MyProperty:MyType:What'", ex.Message);
     }
 
     [Fact]
@@ -396,7 +372,7 @@ public class TreeParserTests
     {
         const string grammar = "MyNonterminal = Something Something:'Blah';";
 
-        var ex = Assert.Throws<FormatException>(() => TreeParser.ParseGrammar(grammar));
+        var ex = Assert.Throws<ArgumentException>(() => TreeParser.ParseGrammar(grammar));
 
         Assert.Equal("Rule for MyNonterminal contains duplicate property definitions", ex.Message);
     }
