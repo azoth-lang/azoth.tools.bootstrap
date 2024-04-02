@@ -1,5 +1,4 @@
-using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
@@ -12,14 +11,15 @@ public static class ShouldEmit
     /// 3. the property is defined in multiple parents, in that case it is
     ///    ambiguous unless it is redefined in the current interface.
     /// </summary>
-    public static bool Property(GrammarNode grammar, RuleNode rule, PropertyNode property)
-    {
-        var baseProperties = grammar.InheritedProperties(rule, property.Name).ToList();
-        return baseProperties.Count != 1 || baseProperties[0].Type != property.Type;
-    }
+    public static bool Property(Rule rule, Property property)
+        => property.IsDeclared;
 
-    public static bool Class(RuleNode rule) => !rule.Defines.IsQuoted;
+    public static bool NewClass(Rule rule)
+        => rule.IsNew && !rule.Defines.Syntax.IsQuoted;
 
-    public static bool Constructor(LanguageNode language, RuleNode rule)
-        => language.Grammar.IsTerminal(rule);
+    public static bool AmendedClass(Rule rule)
+        => !rule.IsNew && !rule.Defines.Syntax.IsQuoted;
+
+    public static bool Constructor(Rule rule)
+        => rule.IsTerminal;
 }

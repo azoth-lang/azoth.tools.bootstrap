@@ -14,13 +14,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal sealed partial class PackageNode : Node, Concrete.Package
 {
-    public override IPackageSyntax Syntax { get; }
-    public override PackageSymbol Symbol { get; }
-    public override IFixedList<PackageReferenceNode> References { get; }
+    public IPackageSyntax Syntax { get; }
+    public PackageSymbol Symbol { get; }
+    public IFixedList<PackageReferenceNode> References { get; }
     IFixedList<Concrete.PackageReference> Concrete.Package.References => References;
-    public override IFixedList<CompilationUnitNode> CompilationUnits { get; }
+    public IFixedList<CompilationUnitNode> CompilationUnits { get; }
     IFixedList<Concrete.CompilationUnit> Concrete.Package.CompilationUnits => CompilationUnits;
-    public override CompilationUnitNode TestingCompilationUnits { get; }
+    public CompilationUnitNode TestingCompilationUnits { get; }
     Concrete.CompilationUnit Concrete.Package.TestingCompilationUnits => TestingCompilationUnits;
 
     public PackageNode(IPackageSyntax syntax, PackageSymbol symbol, IFixedList<PackageReferenceNode> references, IFixedList<CompilationUnitNode> compilationUnits, CompilationUnitNode testingCompilationUnits)
@@ -36,7 +36,7 @@ internal sealed partial class PackageNode : Node, Concrete.Package
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal sealed partial class PackageReferenceNode : Node, Concrete.PackageReference
 {
-    public override IdentifierName AliasOrName { get; }
+    public IdentifierName AliasOrName { get; }
 
     public PackageReferenceNode(IdentifierName aliasOrName)
     {
@@ -47,12 +47,13 @@ internal sealed partial class PackageReferenceNode : Node, Concrete.PackageRefer
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal sealed partial class CompilationUnitNode : Node, Concrete.CompilationUnit
 {
-    public override ICompilationUnitSyntax Syntax { get; }
-    public override CodeFile File { get; }
-    public override NamespaceName ImplicitNamespaceName { get; }
-    public override IFixedList<UsingDirectiveNode> UsingDirectives { get; }
+    public ICompilationUnitSyntax Syntax { get; }
+    ISyntax Concrete.IHasSyntax.Syntax => Syntax;
+    public CodeFile File { get; }
+    public NamespaceName ImplicitNamespaceName { get; }
+    public IFixedList<UsingDirectiveNode> UsingDirectives { get; }
     IFixedList<Concrete.UsingDirective> Concrete.CompilationUnit.UsingDirectives => UsingDirectives;
-    public override IFixedList<NamespaceMemberDeclarationNode> Declarations { get; }
+    public IFixedList<NamespaceMemberDeclarationNode> Declarations { get; }
     IFixedList<Concrete.NamespaceMemberDeclaration> Concrete.CompilationUnit.Declarations => Declarations;
 
     public CompilationUnitNode(ICompilationUnitSyntax syntax, CodeFile file, NamespaceName implicitNamespaceName, IFixedList<UsingDirectiveNode> usingDirectives, IFixedList<NamespaceMemberDeclarationNode> declarations)
@@ -68,8 +69,9 @@ internal sealed partial class CompilationUnitNode : Node, Concrete.CompilationUn
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal sealed partial class UsingDirectiveNode : Node, Concrete.UsingDirective
 {
-    public override IUsingDirectiveSyntax Syntax { get; }
-    public override NamespaceName Name { get; }
+    public IUsingDirectiveSyntax Syntax { get; }
+    ISyntax Concrete.IHasSyntax.Syntax => Syntax;
+    public NamespaceName Name { get; }
 
     public UsingDirectiveNode(IUsingDirectiveSyntax syntax, NamespaceName name)
     {
@@ -82,6 +84,7 @@ internal sealed partial class UsingDirectiveNode : Node, Concrete.UsingDirective
 internal abstract partial class DeclarationNode : Node, Concrete.Declaration
 {
     public abstract IDeclarationSyntax Syntax { get; }
+    ISyntax Concrete.IHasSyntax.Syntax => Syntax;
     public abstract Symbol Symbol { get; }
     public abstract IdentifierName Name { get; }
 
@@ -91,9 +94,9 @@ internal abstract partial class DeclarationNode : Node, Concrete.Declaration
 internal sealed partial class NamespaceDeclarationNode : DeclarationNode, Concrete.NamespaceDeclaration
 {
     public override INamespaceDeclarationSyntax Syntax { get; }
-    public override IFixedList<UsingDirectiveNode> UsingDirectives { get; }
+    public IFixedList<UsingDirectiveNode> UsingDirectives { get; }
     IFixedList<Concrete.UsingDirective> Concrete.NamespaceDeclaration.UsingDirectives => UsingDirectives;
-    public override IFixedList<NamespaceMemberDeclarationNode> Declarations { get; }
+    public IFixedList<NamespaceMemberDeclarationNode> Declarations { get; }
     IFixedList<Concrete.NamespaceMemberDeclaration> Concrete.NamespaceDeclaration.Declarations => Declarations;
     public override Symbol Symbol { get; }
     public override IdentifierName Name { get; }
@@ -111,22 +114,18 @@ internal sealed partial class NamespaceDeclarationNode : DeclarationNode, Concre
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal abstract partial class NamespaceMemberDeclarationNode : DeclarationNode, Concrete.NamespaceMemberDeclaration
 {
-    public abstract IDeclarationSyntax Syntax { get; }
-    public abstract Symbol Symbol { get; }
-    public abstract IdentifierName Name { get; }
+    public abstract override IDeclarationSyntax Syntax { get; }
+    public abstract override Symbol Symbol { get; }
+    public abstract override IdentifierName Name { get; }
 
  }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal abstract partial class TypeDeclarationNode : DeclarationNode, Concrete.TypeDeclaration
 {
-    public abstract ITypeDeclarationSyntax Syntax { get; }
-    public abstract Symbol Symbol { get; }
-    public abstract IdentifierName Name { get; }
-    public abstract Symbol Symbol { get; }
-    public abstract IdentifierName Name { get; }
-    public abstract Symbol Symbol { get; }
-    public abstract IdentifierName Name { get; }
+    public abstract override ITypeDeclarationSyntax Syntax { get; }
+    public abstract override Symbol Symbol { get; }
+    public abstract override IdentifierName Name { get; }
 
  }
 
@@ -134,25 +133,17 @@ internal abstract partial class TypeDeclarationNode : DeclarationNode, Concrete.
 internal sealed partial class ClassDeclarationNode : TypeDeclarationNode, Concrete.ClassDeclaration
 {
     public override IClassDeclarationSyntax Syntax { get; }
-    public override bool IsAbstract { get; }
-    public override IFixedList<ClassMemberDeclarationNode> Members { get; }
+    public bool IsAbstract { get; }
+    public IFixedList<ClassMemberDeclarationNode> Members { get; }
     IFixedList<Concrete.ClassMemberDeclaration> Concrete.ClassDeclaration.Members => Members;
     public override Symbol Symbol { get; }
     public override IdentifierName Name { get; }
-    public override Symbol Symbol { get; }
-    public override IdentifierName Name { get; }
-    public override Symbol Symbol { get; }
-    public override IdentifierName Name { get; }
 
-    public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclarationNode> members, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name)
+    public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclarationNode> members, Symbol symbol, IdentifierName name)
     {
         Syntax = syntax;
         IsAbstract = isAbstract;
         Members = members;
-        Symbol = symbol;
-        Name = name;
-        Symbol = symbol;
-        Name = name;
         Symbol = symbol;
         Name = name;
     }
@@ -162,23 +153,15 @@ internal sealed partial class ClassDeclarationNode : TypeDeclarationNode, Concre
 internal sealed partial class StructDeclarationNode : TypeDeclarationNode, Concrete.StructDeclaration
 {
     public override IStructDeclarationSyntax Syntax { get; }
-    public override IFixedList<StructMemberDeclarationNode> Members { get; }
+    public IFixedList<StructMemberDeclarationNode> Members { get; }
     IFixedList<Concrete.StructMemberDeclaration> Concrete.StructDeclaration.Members => Members;
     public override Symbol Symbol { get; }
     public override IdentifierName Name { get; }
-    public override Symbol Symbol { get; }
-    public override IdentifierName Name { get; }
-    public override Symbol Symbol { get; }
-    public override IdentifierName Name { get; }
 
-    public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclarationNode> members, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name)
+    public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclarationNode> members, Symbol symbol, IdentifierName name)
     {
         Syntax = syntax;
         Members = members;
-        Symbol = symbol;
-        Name = name;
-        Symbol = symbol;
-        Name = name;
         Symbol = symbol;
         Name = name;
     }
@@ -188,23 +171,15 @@ internal sealed partial class StructDeclarationNode : TypeDeclarationNode, Concr
 internal sealed partial class TraitDeclarationNode : TypeDeclarationNode, Concrete.TraitDeclaration
 {
     public override ITraitDeclarationSyntax Syntax { get; }
-    public override IFixedList<TraitMemberDeclarationNode> Members { get; }
+    public IFixedList<TraitMemberDeclarationNode> Members { get; }
     IFixedList<Concrete.TraitMemberDeclaration> Concrete.TraitDeclaration.Members => Members;
     public override Symbol Symbol { get; }
     public override IdentifierName Name { get; }
-    public override Symbol Symbol { get; }
-    public override IdentifierName Name { get; }
-    public override Symbol Symbol { get; }
-    public override IdentifierName Name { get; }
 
-    public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclarationNode> members, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name)
+    public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclarationNode> members, Symbol symbol, IdentifierName name)
     {
         Syntax = syntax;
         Members = members;
-        Symbol = symbol;
-        Name = name;
-        Symbol = symbol;
-        Name = name;
         Symbol = symbol;
         Name = name;
     }
@@ -213,9 +188,9 @@ internal sealed partial class TraitDeclarationNode : TypeDeclarationNode, Concre
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal abstract partial class TypeMemberDeclarationNode : DeclarationNode, Concrete.TypeMemberDeclaration
 {
-    public abstract IDeclarationSyntax Syntax { get; }
-    public abstract Symbol Symbol { get; }
-    public abstract IdentifierName Name { get; }
+    public abstract override IDeclarationSyntax Syntax { get; }
+    public abstract override Symbol Symbol { get; }
+    public abstract override IdentifierName Name { get; }
 
  }
 
@@ -265,14 +240,17 @@ internal sealed partial class StructMemberDeclarationNode : TypeMemberDeclaratio
  }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class FunctionDeclarationNode : NamespaceMemberDeclaration, TypeMemberDeclarationNode, Concrete.FunctionDeclaration
+internal sealed partial class FunctionDeclarationNode : DeclarationNode, Concrete.FunctionDeclaration
 {
     public override IFunctionDeclarationSyntax Syntax { get; }
+    public override Symbol Symbol { get; }
+    public override IdentifierName Name { get; }
 
-    public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax)
+    public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax, Symbol symbol, IdentifierName name)
     {
         Syntax = syntax;
+        Symbol = symbol;
+        Name = name;
     }
  }
-
 

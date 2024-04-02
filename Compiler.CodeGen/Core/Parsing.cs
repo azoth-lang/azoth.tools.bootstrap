@@ -54,13 +54,12 @@ internal static class Parsing
     }
 
     [return: NotNullIfNotNull(nameof(symbol))]
-    public static Symbol? ParseSymbol(string? symbol)
+    public static SymbolNode? ParseSymbol(string? symbol)
     {
         if (symbol is null) return null;
-        if ((symbol.StartsWith('\'') && symbol.EndsWith('\'')
-            || (symbol.StartsWith('`') && symbol.EndsWith('`'))))
-            return new Symbol(symbol[1..^1], true);
-        return new Symbol(symbol);
+        if (symbol.StartsWith('`') && symbol.EndsWith('`'))
+            return new SymbolNode(symbol[1..^1], true);
+        return new SymbolNode(symbol);
     }
 
     public static IEnumerable<string> ParseToStatements(IEnumerable<string> lines)
@@ -151,7 +150,7 @@ internal static class Parsing
     public static IEnumerable<string> SplitProperties(string definition)
         => definition.SplitOrEmpty(' ').Where(v => !string.IsNullOrWhiteSpace(v));
 
-    private static (Symbol Defines, Symbol? Parent, IEnumerable<Symbol> Supertypes) ParseDeclaration(string declaration)
+    private static (SymbolNode Defines, SymbolNode? Parent, IEnumerable<SymbolNode> Supertypes) ParseDeclaration(string declaration)
     {
         var (defines, parent, parents) = SplitDeclaration(declaration);
         var definesSymbol = ParseSymbol(defines);
@@ -186,9 +185,9 @@ internal static class Parsing
         return (remainder, parent, parents);
     }
 
-    private static IEnumerable<Symbol> ParseSupertypes(string? parents)
+    private static IEnumerable<SymbolNode> ParseSupertypes(string? parents)
     {
-        if (parents is null) return Enumerable.Empty<Symbol>();
+        if (parents is null) return Enumerable.Empty<SymbolNode>();
 
         return SplitParents(parents)
                .Select(p => ParseSymbol(p));
@@ -197,6 +196,6 @@ internal static class Parsing
     public static IEnumerable<string> SplitParents(string parents)
         => parents.Split(',').Select(p => p.Trim());
 
-    public static IEnumerable<RuleNode> ParseRules(IFixedList<string> lines, Symbol? defaultParent)
+    public static IEnumerable<RuleNode> ParseRules(IFixedList<string> lines, SymbolNode? defaultParent)
         => ParseRules(lines).Select(r => r.WithDefaultParent(defaultParent));
 }

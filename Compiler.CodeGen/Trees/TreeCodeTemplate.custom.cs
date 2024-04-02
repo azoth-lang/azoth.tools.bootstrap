@@ -1,14 +1,15 @@
-using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 
 public partial class TreeCodeTemplate
 {
-    private readonly GrammarNode grammar;
+    private readonly Language language;
+    private readonly Grammar grammar;
 
-    public TreeCodeTemplate(GrammarNode grammar)
+    public TreeCodeTemplate(Language language)
     {
-        this.grammar = grammar;
+        this.language = language;
+        grammar = language.Grammar;
     }
 }

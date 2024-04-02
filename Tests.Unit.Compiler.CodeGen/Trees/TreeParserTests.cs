@@ -27,7 +27,7 @@ public class TreeParserTests
 
         var config = TreeParser.ParseGrammar(grammar);
 
-        Assert.Null(config.RootType);
+        Assert.Null(config.DefaultParent);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class TreeParserTests
 
         var config = TreeParser.ParseGrammar(grammar);
 
-        Assert.Equal(Symbol("MyBase"), config.RootType);
+        Assert.Equal(Symbol("MyBase"), config.DefaultParent);
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class TreeParserTests
 
         var config = TreeParser.ParseGrammar(grammar);
 
-        Assert.Equal(QuotedSymbol("MyBase"), config.RootType);
+        Assert.Equal(QuotedSymbol("MyBase"), config.DefaultParent);
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("SubType"), rule.Defines);
         Assert.Empty(rule.Supertypes);
-        Assert.Empty(rule.Properties);
+        Assert.Empty(rule.DeclaredProperties);
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Rules);
         Assert.Equal(QuotedSymbol("IMyFullTypeName"), rule.Defines);
         Assert.Empty(rule.Supertypes);
-        Assert.Empty(rule.Properties);
+        Assert.Empty(rule.DeclaredProperties);
     }
 
     [Fact]
@@ -166,7 +166,7 @@ public class TreeParserTests
         Assert.Equal(Symbol("SubType"), rule.Defines);
         var expectedParents = FixedList(Symbol("MyBase"));
         Assert.Equal(expectedParents, rule.Supertypes);
-        Assert.Empty(rule.Properties);
+        Assert.Empty(rule.DeclaredProperties);
     }
 
     [Fact]
@@ -178,7 +178,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("MyBase"), rule.Defines);
         Assert.Empty(rule.Supertypes);
-        Assert.Empty(rule.Properties);
+        Assert.Empty(rule.DeclaredProperties);
     }
 
     [Fact]
@@ -191,7 +191,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("SubType"), rule.Defines);
         Assert.Single(rule.Supertypes, Symbol("BaseType"));
-        Assert.Empty(rule.Properties);
+        Assert.Empty(rule.DeclaredProperties);
     }
 
     [Fact]
@@ -205,7 +205,7 @@ public class TreeParserTests
         Assert.Equal(Symbol("SubType"), rule.Defines);
         var expectedParents = FixedList(Symbol("BaseType1"), Symbol("BaseType2"));
         Assert.Equal(expectedParents, rule.Supertypes);
-        Assert.Empty(rule.Properties);
+        Assert.Empty(rule.DeclaredProperties);
     }
 
     [Fact]
@@ -216,10 +216,10 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        Assert.Equal(new Symbol("SubType"), rule.Defines);
+        Assert.Equal(new SymbolNode("SubType"), rule.Defines);
         var expectedParents = FixedList(QuotedSymbol("BaseType1"), Symbol("BaseType2"));
         Assert.Equal(expectedParents, rule.Supertypes);
-        Assert.Empty(rule.Properties);
+        Assert.Empty(rule.DeclaredProperties);
     }
 
     [Fact]
@@ -262,7 +262,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        var property = Assert.Single(rule.Properties);
+        var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
         Assert.Equal(Type(Symbol("MyProperty")), property.Type);
     }
@@ -274,7 +274,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        var property = Assert.Single(rule.Properties);
+        var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
         Assert.Equal(OptionalType(Symbol("MyProperty")), property.Type);
     }
@@ -286,7 +286,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        var property = Assert.Single(rule.Properties);
+        var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
         Assert.Equal(RefType(Symbol("MyProperty")), property.Type);
     }
@@ -298,7 +298,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        var property = Assert.Single(rule.Properties);
+        var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
         Assert.Equal(Type(Symbol("MyType")), property.Type);
     }
@@ -310,7 +310,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        var property = Assert.Single(rule.Properties);
+        var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
         Assert.Equal(Type(QuotedSymbol("MyType")), property.Type);
     }
@@ -322,7 +322,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        var property = Assert.Single(rule.Properties);
+        var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
         Assert.Equal(ListType(Symbol("MyType")), property.Type);
     }
@@ -334,7 +334,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        var property = Assert.Single(rule.Properties);
+        var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
         Assert.Equal(OptionalType(Symbol("MyType")), property.Type);
     }
@@ -346,7 +346,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        var property = Assert.Single(rule.Properties);
+        var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
         Assert.Equal(new TypeNode(Symbol("MyType"), true, true), property.Type);
     }
@@ -358,7 +358,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        var property = Assert.Single(rule.Properties);
+        var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
         Assert.Equal(RefType(Symbol("MyType")), property.Type);
     }
@@ -380,7 +380,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        Assert.Collection(rule.Properties, p1 =>
+        Assert.Collection(rule.DeclaredProperties, p1 =>
         {
             Assert.Equal("MyProperty1", p1.Name);
             Assert.Equal(Type(Symbol("MyType1")), p1.Type);
@@ -402,32 +402,32 @@ public class TreeParserTests
     }
     #endregion
 
-    private static Symbol Symbol(string text)
+    private static SymbolNode Symbol(string text)
     {
-        return new Symbol(text);
+        return new SymbolNode(text);
     }
 
-    private static Symbol QuotedSymbol(string text)
+    private static SymbolNode QuotedSymbol(string text)
     {
-        return new Symbol(text, true);
+        return new SymbolNode(text, true);
     }
 
-    private static TypeNode Type(Symbol symbol)
+    private static TypeNode Type(SymbolNode symbol)
     {
         return new TypeNode(symbol, false, false);
     }
 
-    private static TypeNode OptionalType(Symbol symbol)
+    private static TypeNode OptionalType(SymbolNode symbol)
     {
         return new TypeNode(symbol, false, true);
     }
 
-    private static TypeNode ListType(Symbol symbol)
+    private static TypeNode ListType(SymbolNode symbol)
     {
         return new TypeNode(symbol, true, false);
     }
 
-    private static TypeNode RefType(Symbol symbol)
+    private static TypeNode RefType(SymbolNode symbol)
     {
         return new TypeNode(symbol, false, false);
     }

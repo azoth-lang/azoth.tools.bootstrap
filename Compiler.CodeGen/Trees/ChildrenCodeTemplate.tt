@@ -3,6 +3,7 @@
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,18 +12,18 @@ using ExhaustiveMatching;
 namespace <#=grammar.Namespace #>;
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public static class <#=TypeName(grammar.RootType)#>Extensions
+public static class <#=Emit.TypeName(grammar.DefaultParent)#>Extensions
 {
     [DebuggerStepThrough]
-    public static IEnumerable<<#=TypeName(grammar.RootType)#>> Children(this <#=TypeName(grammar.RootType)#> node)
+    public static IEnumerable<<#=Emit.TypeName(grammar.DefaultParent)#>> Children(this <#=Emit.TypeName(grammar.DefaultParent)#> node)
     {
         switch (node)
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
-<#  foreach(var rule in grammar.Rules.Where(grammar.IsTerminal)) { #>
-            case <#=TypeName(rule.Defines) #> n:
-<#      foreach(var property in rule.Properties.Where(grammar.IsNonterminal)) { #>
+<#  foreach(var rule in grammar.Rules.Where(r => r.IsTerminal)) { #>
+            case <#=Emit.TypeName(rule.Defines) #> n:
+<#      foreach(var property in rule.DeclaredProperties.Where(p => p.ReferencesRule)) { #>
 <#          if (property.Type.IsList) { #>
                 foreach (var child in n.<#=property.Name #>)
                     yield return child;

@@ -4,7 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
-<#  foreach(var usingNamespace in grammar.OrderedUsingNamespaces("System.CodeDom.Compiler")) { #>
+<#  foreach(var usingNamespace in Build.OrderedNamespaces(grammar, "System.CodeDom.Compiler")) { #>
 using <#=usingNamespace #>;
 <#  } #>
 
@@ -14,21 +14,24 @@ using <#=usingNamespace #>;
 // ReSharper disable once CheckNamespace
 namespace <#=grammar.Namespace #>;
 
-<#  foreach(var rule in language.DifferentRules.Where(ShouldEmit.Class)) {#>
+<#  foreach(var rule in grammar.Rules.Where(ShouldEmit.NewClass)) {#>
 [GeneratedCode("AzothCompilerCodeGen", null)]
-internal <#=Emit.ClassModifier(language, rule) #> partial class <#=Emit.ClassName(language, rule.Defines) #> : <#=Emit.ClassName(language, rule.Parent) #>, <#=Emit.QualifiedTypeName(language, rule.Defines) #>
+internal <#=Emit.ClassModifier(rule) #> partial class <#=Emit.ClassName(language, rule.Defines) #> : <#=Emit.ClassName(language, rule.Parent) #>, <#=Emit.QualifiedTypeName(rule.Defines) #>
 {
-<#      foreach(var property in grammar.AllProperties(rule)) { #>
-    public <#=Emit.ClassPropertyModifier(language, rule) #> <#=Emit.ClassType(language, property.Type) #> <#=property.Name #> { get; }
-<#          if (grammar.IsNonterminal(property)) { #>
-    <#=Emit.QualifiedType(language, property.Type) #> <#= Emit.QualifiedTypeName(language, rule.Defines) #>.<#=property.Name #> => <#=property.Name #>;
+<#      foreach (var property in rule.AllProperties) { #>
+    public <#=Emit.ClassPropertyModifier(rule, property) #><#=Emit.ClassType(property.Type) #> <#=property.Name #> { get; }
+<#          if (property.ReferencesRule) { #>
+    <#=Emit.QualifiedType(property.Type) #> <#= Emit.QualifiedTypeName(rule.Defines) #>.<#=property.Name #> => <#=property.Name #>;
+<#          } #>
+<#          foreach (var baseProperty in rule.SupertypePropertiesNamed(property).Where(p => p.IsDeclared)) { #>
+    <#=Emit.QualifiedType(baseProperty.Type) #> <#= Emit.QualifiedTypeName(baseProperty.Rule.Defines) #>.<#=baseProperty.Name #> => <#=property.Name #>;
 <#          } #>
 <#      } #>
 
-<#      if (ShouldEmit.Constructor(language, rule)) { #>
-    public <#=Emit.ClassName(language, rule.Defines) #>(<#=Emit.PropertyClassParameters(language, rule) #>)
+<#      if (ShouldEmit.Constructor(rule)) { #>
+    public <#=Emit.ClassName(language, rule.Defines) #>(<#=Emit.PropertyClassParameters(rule) #>)
     {
-<#          foreach(var property in grammar.AllProperties(rule)) { #>
+<#          foreach(var property in rule.AllProperties) { #>
         <#=property.Name #> = <#=property.Name.ToCamelCase() #>;
 <#          } #>
     }
@@ -36,21 +39,17 @@ internal <#=Emit.ClassModifier(language, rule) #> partial class <#=Emit.ClassNam
  }
 
 <#  } #>
-
-<#   foreach(var (otherLanguage, rules) in OtherLanguagesDefiningRules()) {#>
-namespace <#=otherLanguage.Grammar.Namespace #>.Classes
+<#   foreach(var rule in grammar.Rules.Where(ShouldEmit.AmendedClass)) {#>
+internal partial class <#=Emit.ClassName(language, rule.Defines) #> : <#= Emit.QualifiedTypeName(rule.Defines) #>
 {
-    using static <#=grammar.Namespace #>.<#=language.Name #>;
-
-<#      foreach(var rule in rules.Where(r => grammar.IsTerminal(r))) {#>
-    internal sealed partial class <#=Emit.ClassName(otherLanguage, rule.Defines) #> : <#= grammar.TypeName(rule.Defines) #>
-    {
-<#      foreach(var property in grammar.AllProperties(rule)) { #>
-<#          if (grammar.IsNonterminal(property)) { #>
-        <#=Emit.Type(language, property.Type) #> <#= Emit.TypeName(language, rule.Defines) #>.<#=property.Name #> => <#=property.Name #>;
+<#      foreach(var property in rule.AllProperties) { #>
+<#          if (property.IsDeclared && rule.DeclaredProperties.Contains(property)) { #>
+    <#=Emit.QualifiedType(property.Type) #> <#= Emit.QualifiedTypeName(rule.Defines) #>.<#=property.Name #> => <#=property.Name #>;
+<#          } #>
+<#          foreach (var baseProperty in rule.SupertypePropertiesNamed(property).Where(p => p.IsDeclared)) { #>
+    <#=Emit.QualifiedType(baseProperty.Type) #> <#= Emit.QualifiedTypeName(baseProperty.Rule.Defines) #>.<#=baseProperty.Name #> => <#=property.Name #>;
 <#          } #>
 <#      } #>
-    }
-<#      } #>
 }
+
 <#  } #>

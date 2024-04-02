@@ -101,7 +101,7 @@ public partial interface IInvocableDeclaration : IDeclaration
     typeof(IConcreteMethodDeclaration),
     typeof(IConstructorDeclaration),
     typeof(IInitializerDeclaration))]
-public partial interface IConcreteInvocableDeclaration : IInvocableDeclaration, IExecutableDeclaration, IDeclaration
+public partial interface IConcreteInvocableDeclaration : IDeclaration, IInvocableDeclaration, IExecutableDeclaration
 {
     IBody Body { get; }
 }
@@ -157,7 +157,7 @@ public partial interface ITraitDeclaration : ITypeDeclaration
     new IFixedList<ITraitMemberDeclaration> Members { get; }
 }
 
-public partial interface IFunctionDeclaration : IConcreteFunctionInvocableDeclaration, INonMemberDeclaration
+public partial interface IFunctionDeclaration : INonMemberDeclaration, IConcreteFunctionInvocableDeclaration
 {
     IFixedList<IAttribute> Attributes { get; }
     new FunctionSymbol Symbol { get; }
@@ -205,7 +205,7 @@ public partial interface ITraitMemberDeclaration : IMemberDeclaration
 [Closed(
     typeof(IAbstractMethodDeclaration),
     typeof(IConcreteMethodDeclaration))]
-public partial interface IMethodDeclaration : IClassMemberDeclaration, ITraitMemberDeclaration, IMemberDeclaration
+public partial interface IMethodDeclaration : IMemberDeclaration, IClassMemberDeclaration, ITraitMemberDeclaration
 {
     new MethodSymbol Symbol { get; }
     ISelfParameter SelfParameter { get; }
@@ -220,7 +220,7 @@ public partial interface IAbstractMethodDeclaration : IMethodDeclaration
     typeof(IStandardMethodDeclaration),
     typeof(IGetterMethodDeclaration),
     typeof(ISetterMethodDeclaration))]
-public partial interface IConcreteMethodDeclaration : IStructMemberDeclaration, IConcreteInvocableDeclaration, IMethodDeclaration
+public partial interface IConcreteMethodDeclaration : IMethodDeclaration, IStructMemberDeclaration, IConcreteInvocableDeclaration
 {
     new MethodSymbol Symbol { get; }
     new IFixedList<INamedParameter> Parameters { get; }
@@ -238,27 +238,27 @@ public partial interface ISetterMethodDeclaration : IConcreteMethodDeclaration
 {
 }
 
-public partial interface IConstructorDeclaration : IClassMemberDeclaration, IConcreteInvocableDeclaration, IMemberDeclaration
+public partial interface IConstructorDeclaration : IMemberDeclaration, IClassMemberDeclaration, IConcreteInvocableDeclaration
 {
     new IClassDeclaration DeclaringType { get; }
     new ConstructorSymbol Symbol { get; }
     ISelfParameter SelfParameter { get; }
 }
 
-public partial interface IInitializerDeclaration : IStructMemberDeclaration, IConcreteInvocableDeclaration, IMemberDeclaration
+public partial interface IInitializerDeclaration : IMemberDeclaration, IStructMemberDeclaration, IConcreteInvocableDeclaration
 {
     new IStructDeclaration DeclaringType { get; }
     new InitializerSymbol Symbol { get; }
     ISelfParameter SelfParameter { get; }
 }
 
-public partial interface IFieldDeclaration : IClassMemberDeclaration, IStructMemberDeclaration, IExecutableDeclaration, IBinding, IMemberDeclaration
+public partial interface IFieldDeclaration : IMemberDeclaration, IClassMemberDeclaration, IStructMemberDeclaration, IExecutableDeclaration, IBinding
 {
     new IClassOrStructDeclaration DeclaringType { get; }
     new FieldSymbol Symbol { get; }
 }
 
-public partial interface IAssociatedFunctionDeclaration : IClassMemberDeclaration, IStructMemberDeclaration, ITraitMemberDeclaration, IConcreteFunctionInvocableDeclaration, IMemberDeclaration
+public partial interface IAssociatedFunctionDeclaration : IMemberDeclaration, IClassMemberDeclaration, IStructMemberDeclaration, ITraitMemberDeclaration, IConcreteFunctionInvocableDeclaration
 {
     new FunctionSymbol Symbol { get; }
 }
@@ -289,22 +289,22 @@ public partial interface IConstructorOrInitializerParameter : IParameter
 [Closed(
     typeof(INamedParameter),
     typeof(ISelfParameter))]
-public partial interface IBindingParameter : IBinding, IParameter
+public partial interface IBindingParameter : IParameter, IBinding
 {
 }
 
-public partial interface INamedParameter : IConstructorOrInitializerParameter, IBindingParameter, ILocalBinding, IParameter
+public partial interface INamedParameter : IParameter, IConstructorOrInitializerParameter, IBindingParameter, ILocalBinding
 {
     new NamedVariableSymbol Symbol { get; }
     IExpression? DefaultValue { get; }
 }
 
-public partial interface ISelfParameter : IBindingParameter, IParameter
+public partial interface ISelfParameter : IParameter, IBindingParameter
 {
     new SelfParameterSymbol Symbol { get; }
 }
 
-public partial interface IFieldParameter : IConstructorOrInitializerParameter, IParameter
+public partial interface IFieldParameter : IParameter, IConstructorOrInitializerParameter
 {
     FieldSymbol ReferencedSymbol { get; }
     IExpression? DefaultValue { get; }
@@ -322,7 +322,7 @@ public partial interface IStatement : IAbstractSyntax
 {
 }
 
-public partial interface IResultStatement : IBlockOrResult, IStatement
+public partial interface IResultStatement : IStatement, IBlockOrResult
 {
     IExpression Expression { get; }
 }
@@ -334,7 +334,7 @@ public partial interface IBodyStatement : IStatement
 {
 }
 
-public partial interface IVariableDeclarationStatement : ILocalBinding, IBodyStatement
+public partial interface IVariableDeclarationStatement : IBodyStatement, ILocalBinding
 {
     TextSpan NameSpan { get; }
     new NamedVariableSymbol Symbol { get; }
@@ -355,7 +355,7 @@ public partial interface IPattern : IAbstractSyntax
 {
 }
 
-public partial interface IBindingPattern : ILocalBinding, IPattern
+public partial interface IBindingPattern : IPattern, ILocalBinding
 {
     new NamedVariableSymbol Symbol { get; }
     Promise<bool> VariableIsLiveAfter { get; }
@@ -422,7 +422,7 @@ public partial interface IAssignableExpression : IExpression
 {
 }
 
-public partial interface IBlockExpression : IBlockOrResult, IBodyOrBlock, IExpression
+public partial interface IBlockExpression : IExpression, IBlockOrResult, IBodyOrBlock
 {
 }
 
@@ -492,7 +492,7 @@ public partial interface IPatternMatchExpression : IExpression
     IPattern Pattern { get; }
 }
 
-public partial interface IIfExpression : IElseClause, IExpression
+public partial interface IIfExpression : IExpression, IElseClause
 {
     IExpression Condition { get; }
     IBlockOrResult ThenBlock { get; }
@@ -510,7 +510,7 @@ public partial interface IWhileExpression : IExpression
     IBlockExpression Block { get; }
 }
 
-public partial interface IForeachExpression : ILocalBinding, IExpression
+public partial interface IForeachExpression : IExpression, ILocalBinding
 {
     new NamedVariableSymbol Symbol { get; }
     IExpression InExpression { get; }
@@ -602,7 +602,7 @@ public partial interface IFunctionReferenceInvocationExpression : IInvocationExp
     IExpression Referent { get; }
 }
 
-public partial interface IVariableNameExpression : IAssignableExpression, INameExpression
+public partial interface IVariableNameExpression : INameExpression, IAssignableExpression
 {
     NamedVariableSymbol ReferencedSymbol { get; }
     bool IsMove { get; }

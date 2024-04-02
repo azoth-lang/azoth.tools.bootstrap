@@ -1,18 +1,18 @@
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 
 public static class TreeCodeBuilder
 {
-    public static string GenerateTree(GrammarNode grammar)
+    public static string GenerateTree(Language language)
     {
-        var template = new TreeCodeTemplate(grammar);
+        var template = new TreeCodeTemplate(language);
         return template.TransformText();
     }
 
-    public static string GenerateChildren(GrammarNode grammar)
+    public static string GenerateChildren(Language language)
     {
-        var template = new ChildrenCodeTemplate(grammar);
+        var template = new ChildrenCodeTemplate(language);
         return template.TransformText();
     }
 }

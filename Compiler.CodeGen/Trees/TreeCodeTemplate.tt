@@ -4,7 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
-<#  foreach(var usingNamespace in grammar.OrderedUsingNamespaces("ExhaustiveMatching")) { #>
+<#  foreach(var usingNamespace in Build.OrderedNamespaces(grammar, "ExhaustiveMatching")) { #>
 using <#=usingNamespace #>;
 <#  } #>
 
@@ -13,10 +13,10 @@ namespace <#=grammar.Namespace #>;
 // ReSharper disable PartialTypeWithSinglePart
 
 <#  foreach(var rule in grammar.Rules) {#>
-<#=Emit.ClosedAttribute(grammar, rule) #>public partial interface <#= Emit.TypeName(grammar, rule.Defines) #><#= Emit.BaseTypes(grammar, rule) #>
+<#=Emit.ClosedAttribute(rule) #>public partial interface <#= Emit.TypeName(rule.Defines) #><#= Emit.BaseTypes(rule) #>
 {
-<#      foreach(var property in rule.Properties.Where(p => ShouldEmit.Property(grammar, rule, p))) { #>
-    <#=Emit.PropertyIsNew(grammar, rule, property) #><#=Emit.Type(grammar, property.Type) #> <#=property.Name #> { get; }
+<#      foreach(var property in rule.DeclaredProperties.Where(p => ShouldEmit.Property(rule, p))) { #>
+    <#=Emit.PropertyIsNew(property) #><#=Emit.Type(property.Type) #> <#=property.Name #> { get; }
 <#      } #>
 }
 

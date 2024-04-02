@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 using McMaster.Extensions.CommandLineUtils;
 
@@ -53,14 +55,17 @@ public static class Program
 
             var inputFile = File.ReadAllText(inputPath)
                             ?? throw new InvalidOperationException("null from reading input file");
-            var grammar = TreeParser.ParseGrammar(inputFile);
+            var grammarSyntax = TreeParser.ParseGrammar(inputFile);
 
-            grammar.ValidateTreeOrdering();
+            var languageSyntax = new LanguageNode(null, grammarSyntax, null);
+            var language = new Language(languageSyntax);
 
-            var treeCode = TreeCodeBuilder.GenerateTree(grammar);
+            language.Grammar.ValidateTreeOrdering();
+
+            var treeCode = TreeCodeBuilder.GenerateTree(language);
             WriteIfChanged(treeOutputPath, treeCode);
 
-            var walkerCode = TreeCodeBuilder.GenerateChildren(grammar);
+            var walkerCode = TreeCodeBuilder.GenerateChildren(language);
             WriteIfChanged(childrenOutputPath, walkerCode);
             return 0;
         }
@@ -84,7 +89,7 @@ public static class Program
 
             var inputFile = File.ReadAllText(inputPath)
                             ?? throw new InvalidOperationException("null from reading input file");
-            var language = LanguageParser.ParseLanguage(inputPath, inputFile);
+            var language = new Language(LanguageParser.ParseLanguage(inputPath, inputFile));
 
             var languageCode = LanguageCodeBuilder.GenerateLanguage(language);
             WriteIfChanged(langOutputPath, languageCode);

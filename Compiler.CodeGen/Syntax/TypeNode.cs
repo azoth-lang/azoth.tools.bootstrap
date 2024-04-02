@@ -3,7 +3,7 @@ using System.Diagnostics;
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
 [DebuggerDisplay("{" + nameof(ToString) + ",nq}")]
-public sealed record TypeNode(Symbol Symbol, bool IsList, bool IsOptional)
+public sealed record TypeNode(SymbolNode Symbol, bool IsList, bool IsOptional)
 {
     public override string ToString()
     {

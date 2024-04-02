@@ -9,7 +9,6 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.IST;
 
 // ReSharper disable InconsistentNaming
-// ReSharper disable PartialTypeWithSinglePart
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public sealed class Concrete
@@ -68,7 +67,8 @@ public sealed class Concrete
         typeof(NamespaceDeclaration),
         typeof(NamespaceMemberDeclaration),
         typeof(TypeDeclaration),
-        typeof(TypeMemberDeclaration))]
+        typeof(TypeMemberDeclaration),
+        typeof(FunctionDeclaration))]
     public interface Declaration : IHasSyntax
     {
         new IDeclarationSyntax Syntax { get; }
@@ -87,7 +87,8 @@ public sealed class Concrete
     }
 
     [Closed(
-        typeof(TypeDeclaration))]
+        typeof(TypeDeclaration),
+        typeof(FunctionDeclaration))]
     public interface NamespaceMemberDeclaration : Declaration
     {
     }
@@ -96,7 +97,7 @@ public sealed class Concrete
         typeof(ClassDeclaration),
         typeof(StructDeclaration),
         typeof(TraitDeclaration))]
-    public interface TypeDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration, Declaration
+    public interface TypeDeclaration : Declaration, NamespaceMemberDeclaration, TypeMemberDeclaration
     {
         new ITypeDeclarationSyntax Syntax { get; }
     }
@@ -107,8 +108,8 @@ public sealed class Concrete
         bool IsAbstract { get; }
         IFixedList<ClassMemberDeclaration> Members { get; }
 
-        // public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name)
-        //     => new ClassDeclarationNode(syntax, isAbstract, (IFixedList<ClassMemberDeclarationNode>)members, symbol, name, symbol, name, symbol, name);
+        // public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members, Symbol symbol, IdentifierName name)
+        //     => new ClassDeclarationNode(syntax, isAbstract, (IFixedList<ClassMemberDeclarationNode>)members, symbol, name);
     }
 
     public interface StructDeclaration : TypeDeclaration
@@ -116,8 +117,8 @@ public sealed class Concrete
         new IStructDeclarationSyntax Syntax { get; }
         IFixedList<StructMemberDeclaration> Members { get; }
 
-        // public static StructDeclaration Create(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name)
-        //     => new StructDeclarationNode(syntax, (IFixedList<StructMemberDeclarationNode>)members, symbol, name, symbol, name, symbol, name);
+        // public static StructDeclaration Create(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, Symbol symbol, IdentifierName name)
+        //     => new StructDeclarationNode(syntax, (IFixedList<StructMemberDeclarationNode>)members, symbol, name);
     }
 
     public interface TraitDeclaration : TypeDeclaration
@@ -125,15 +126,16 @@ public sealed class Concrete
         new ITraitDeclarationSyntax Syntax { get; }
         IFixedList<TraitMemberDeclaration> Members { get; }
 
-        // public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name, Symbol symbol, IdentifierName name)
-        //     => new TraitDeclarationNode(syntax, (IFixedList<TraitMemberDeclarationNode>)members, symbol, name, symbol, name, symbol, name);
+        // public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, Symbol symbol, IdentifierName name)
+        //     => new TraitDeclarationNode(syntax, (IFixedList<TraitMemberDeclarationNode>)members, symbol, name);
     }
 
     [Closed(
         typeof(TypeDeclaration),
         typeof(ClassMemberDeclaration),
         typeof(TraitMemberDeclaration),
-        typeof(StructMemberDeclaration))]
+        typeof(StructMemberDeclaration),
+        typeof(FunctionDeclaration))]
     public interface TypeMemberDeclaration : Declaration
     {
     }
@@ -159,12 +161,12 @@ public sealed class Concrete
         //     => new StructMemberDeclarationNode(syntax, symbol, name);
     }
 
-    public interface FunctionDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
+    public interface FunctionDeclaration : Declaration, NamespaceMemberDeclaration, TypeMemberDeclaration
     {
-        IFunctionDeclarationSyntax Syntax { get; }
+        new IFunctionDeclarationSyntax Syntax { get; }
 
-        // public static FunctionDeclaration Create(IFunctionDeclarationSyntax syntax)
-        //     => new FunctionDeclarationNode(syntax);
+        // public static FunctionDeclaration Create(IFunctionDeclarationSyntax syntax, Symbol symbol, IdentifierName name)
+        //     => new FunctionDeclarationNode(syntax, symbol, name);
     }
 
 }

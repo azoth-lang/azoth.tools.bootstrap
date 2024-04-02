@@ -1,26 +1,15 @@
-using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 
 public partial class ChildrenCodeTemplate
 {
-    private readonly GrammarNode grammar;
+    private readonly Language language;
+    private readonly Grammar grammar;
 
-    public ChildrenCodeTemplate(GrammarNode grammar)
+    public ChildrenCodeTemplate(Language language)
     {
-        this.grammar = grammar;
-    }
-
-    private string TypeName(Symbol symbol)
-    {
-        if (symbol.IsQuoted)
-            return symbol.Text;
-
-        // If it is a nonterminal, then transform the name
-        if (grammar.Rules.Any(r => r.Defines == symbol))
-            return $"{grammar.Prefix}{symbol.Text}{grammar.Suffix}";
-
-        return symbol.Text;
+        this.language = language;
+        grammar = language.Grammar;
     }
 }

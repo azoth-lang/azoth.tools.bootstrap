@@ -1,13 +1,13 @@
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
 
 public partial class LanguageCodeTemplate
 {
-    private readonly LanguageNode language;
-    private readonly GrammarNode grammar;
+    private readonly Language language;
+    private readonly Grammar grammar;
 
-    public LanguageCodeTemplate(LanguageNode language)
+    public LanguageCodeTemplate(Language language)
     {
         this.language = language;
         grammar = language.Grammar;

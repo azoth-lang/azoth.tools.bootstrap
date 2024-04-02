@@ -17,7 +17,7 @@ PackageReference = AliasOrName:`IdentifierName`;
 CompilationUnit <: `IHasSyntax` = Syntax:`ICompilationUnitSyntax` File:`CodeFile` ImplicitNamespaceName:`NamespaceName`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
 
-UsingDirective <: `IHasSyntax` = Syntax:`IUsingDirectiveSyntax` Name:'NamespaceName';
+UsingDirective <: `IHasSyntax` = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
 `IHasSyntax` = Syntax:`ISyntax`;
 
@@ -29,7 +29,7 @@ NamespaceMemberDeclaration: Declaration;
 
 // ---------- Type Declarations
 TypeDeclaration: Declaration <: NamespaceMemberDeclaration, TypeMemberDeclaration = Syntax:`ITypeDeclarationSyntax`;
-ClassDeclaration: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:'bool' Members:ClassMemberDeclaration*;
+ClassDeclaration: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:`bool` Members:ClassMemberDeclaration*;
 StructDeclaration: TypeDeclaration = Syntax:`IStructDeclarationSyntax` Members:StructMemberDeclaration*;
 TraitDeclaration: TypeDeclaration = Syntax:`ITraitDeclarationSyntax` Members:TraitMemberDeclaration*;
 
@@ -40,5 +40,4 @@ TraitMemberDeclaration: TypeMemberDeclaration;
 StructMemberDeclaration: TypeMemberDeclaration;
 
 // ---------- Invocable Declarations
-FunctionDeclaration: NamespaceMemberDeclaration, TypeMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`;
-
+FunctionDeclaration: Declaration <: NamespaceMemberDeclaration, TypeMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`;

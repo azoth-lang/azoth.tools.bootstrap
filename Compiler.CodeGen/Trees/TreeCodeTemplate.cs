@@ -31,7 +31,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
         {
             
             #line 7 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-  foreach(var usingNamespace in grammar.OrderedUsingNamespaces("ExhaustiveMatching")) { 
+  foreach(var usingNamespace in Build.OrderedNamespaces(grammar, "ExhaustiveMatching")) { 
             
             #line default
             #line hidden
@@ -65,40 +65,40 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             #line hidden
             
             #line 16 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClosedAttribute(grammar, rule)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClosedAttribute(rule)));
             
             #line default
             #line hidden
             this.Write("public partial interface ");
             
             #line 16 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(grammar, rule.Defines)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(rule.Defines)));
             
             #line default
             #line hidden
             
             #line 16 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseTypes(grammar, rule)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseTypes(rule)));
             
             #line default
             #line hidden
             this.Write("\r\n{\r\n");
             
             #line 18 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      foreach(var property in rule.Properties.Where(p => ShouldEmit.Property(grammar, rule, p))) { 
+      foreach(var property in rule.DeclaredProperties.Where(p => ShouldEmit.Property(rule, p))) { 
             
             #line default
             #line hidden
             this.Write("    ");
             
             #line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.PropertyIsNew(grammar, rule, property)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.PropertyIsNew(property)));
             
             #line default
             #line hidden
             
             #line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(grammar, property.Type)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(property.Type)));
             
             #line default
             #line hidden

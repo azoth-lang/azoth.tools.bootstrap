@@ -27,8 +27,8 @@ internal static class LanguageParser
             var extendsLanguage = ParseLanguage(extendedLanguagePath, extendedLanguageInputFile);
 
             var extends = extendsLanguage.Grammar;
-            var rules = ParseRuleExtensions(extendsLanguage, lines, extends.RootType).ToFixedList();
-            var grammar = new GrammarNode(extends.Namespace, extends.RootType, extends.Prefix, extends.Suffix, extends.ListType, usingNamespaces, rules);
+            var rules = ParseRuleExtensions(extendsLanguage, lines, extends.DefaultParent).ToFixedList();
+            var grammar = new GrammarNode(extends.Namespace, extends.DefaultParent, extends.Prefix, extends.Suffix, extends.ListType, usingNamespaces, rules);
             return new LanguageNode(name, grammar, extendsLanguage);
         }
         else
@@ -44,7 +44,7 @@ internal static class LanguageParser
         }
     }
 
-    private static IEnumerable<RuleNode> ParseRuleExtensions(LanguageNode extends, IEnumerable<string> lines, Symbol? defaultParent)
+    private static IEnumerable<RuleNode> ParseRuleExtensions(LanguageNode extends, IEnumerable<string> lines, SymbolNode? defaultParent)
         => ParseRuleExtensions(extends, lines).Select(r => r.WithDefaultParent(defaultParent));
 
     public static IEnumerable<RuleNode> ParseRuleExtensions(LanguageNode extends, IEnumerable<string> lines)
@@ -65,7 +65,7 @@ internal static class LanguageParser
 
     private static RuleNode? ParseRuleExtension(
         string statement,
-        Dictionary<Symbol, RuleNode> extendingRules)
+        Dictionary<SymbolNode, RuleNode> extendingRules)
         => statement[0] switch
         {
             '+' => ParseRuleAddition(statement[1..]),
@@ -80,7 +80,7 @@ internal static class LanguageParser
 
     private static RuleNode ParseRuleModification(
         string statement,
-        IDictionary<Symbol, RuleNode> extendingRules)
+        IDictionary<SymbolNode, RuleNode> extendingRules)
     {
         var (declaration, definition) = Parsing.SplitDeclarationAndDefinition(statement);
         var (extendingRule, parent, supertypes) = ParseModifiedDeclaration(declaration, extendingRules);
@@ -88,9 +88,9 @@ internal static class LanguageParser
         return new RuleNode(extendingRule.Defines, parent, supertypes, properties);
     }
 
-    private static (RuleNode extendingRule, Symbol? parent, IEnumerable<Symbol> supertypeSymbols) ParseModifiedDeclaration(
+    private static (RuleNode extendingRule, SymbolNode? parent, IEnumerable<SymbolNode> supertypeSymbols) ParseModifiedDeclaration(
         string declaration,
-        IDictionary<Symbol, RuleNode> extendingRules)
+        IDictionary<SymbolNode, RuleNode> extendingRules)
     {
         var (defines, parent, parents) = Parsing.SplitDeclaration(declaration);
         var definesSymbol = Parsing.ParseSymbol(defines);
@@ -101,7 +101,7 @@ internal static class LanguageParser
         return (extendingRule, parentSymbol, supertypeSymbols);
     }
 
-    private static IEnumerable<Symbol> ParseModifiedSupertypes(string? parents, RuleNode extendingRule)
+    private static IEnumerable<SymbolNode> ParseModifiedSupertypes(string? parents, RuleNode extendingRule)
     {
         if (parents is null)
             return extendingRule.Supertypes;
@@ -109,7 +109,7 @@ internal static class LanguageParser
         return ParseModifiedParentsInternal(parents, extendingRule);
     }
 
-    private static IEnumerable<Symbol> ParseModifiedParentsInternal(string parents, RuleNode extendingRule)
+    private static IEnumerable<SymbolNode> ParseModifiedParentsInternal(string parents, RuleNode extendingRule)
     {
         var supertypesSet = extendingRule.Supertypes.ToHashSet();
 
@@ -143,14 +143,14 @@ internal static class LanguageParser
     private static IEnumerable<PropertyNode> ParseModifiedProperties(string? definition, RuleNode extendingRule)
     {
         if (definition is null)
-            return extendingRule.Properties;
+            return extendingRule.DeclaredProperties;
 
         return ParseModifiedPropertiesInternal(definition, extendingRule);
     }
 
     private static IEnumerable<PropertyNode> ParseModifiedPropertiesInternal(string definition, RuleNode extendingRule)
     {
-        var oldProperties = extendingRule.Properties.ToDictionary(p => p.Name);
+        var oldProperties = extendingRule.DeclaredProperties.ToDictionary(p => p.Name);
         foreach (var property in Parsing.SplitProperties(definition))
         {
             switch (property[0])
@@ -192,7 +192,7 @@ internal static class LanguageParser
 
     private static RuleNode? ParseRuleRemoval(
         string statement,
-        IDictionary<Symbol, RuleNode> extendingRules)
+        IDictionary<SymbolNode, RuleNode> extendingRules)
     {
         var symbol = Parsing.ParseSymbol(statement);
         if (!extendingRules.Remove(symbol))
