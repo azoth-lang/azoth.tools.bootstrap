@@ -21,16 +21,16 @@ public sealed class Concrete
         IFixedList<CompilationUnit> CompilationUnits { get; }
         CompilationUnit TestingCompilationUnits { get; }
 
-        // public static Package Create(IPackageSyntax syntax, PackageSymbol symbol, IFixedList<PackageReference> references, IFixedList<CompilationUnit> compilationUnits, CompilationUnit testingCompilationUnits)
-        //     => new PackageNode(syntax, symbol, (IFixedList<PackageReferenceNode>)references, (IFixedList<CompilationUnitNode>)compilationUnits, (CompilationUnitNode)testingCompilationUnits);
+        public static Package Create(IPackageSyntax syntax, PackageSymbol symbol, IFixedList<PackageReference> references, IFixedList<CompilationUnit> compilationUnits, CompilationUnit testingCompilationUnits)
+            => new PackageNode(syntax, symbol, (IFixedList<PackageReferenceNode>)references, (IFixedList<CompilationUnitNode>)compilationUnits, (CompilationUnitNode)testingCompilationUnits);
     }
 
     public interface PackageReference : IImplementationRestricted
     {
         IdentifierName AliasOrName { get; }
 
-        // public static PackageReference Create(IdentifierName aliasOrName)
-        //     => new PackageReferenceNode(aliasOrName);
+        public static PackageReference Create(IdentifierName aliasOrName)
+            => new PackageReferenceNode(aliasOrName);
     }
 
     public interface CompilationUnit : IHasSyntax
@@ -41,8 +41,8 @@ public sealed class Concrete
         IFixedList<UsingDirective> UsingDirectives { get; }
         IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
-        // public static CompilationUnit Create(ICompilationUnitSyntax syntax, CodeFile file, NamespaceName implicitNamespaceName, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations)
-        //     => new CompilationUnitNode(syntax, file, implicitNamespaceName, (IFixedList<UsingDirectiveNode>)usingDirectives, (IFixedList<NamespaceMemberDeclarationNode>)declarations);
+        public static CompilationUnit Create(ICompilationUnitSyntax syntax, CodeFile file, NamespaceName implicitNamespaceName, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations)
+            => new CompilationUnitNode(syntax, file, implicitNamespaceName, (IFixedList<UsingDirectiveNode>)usingDirectives, (IFixedList<NamespaceMemberDeclarationNode>)declarations);
     }
 
     public interface UsingDirective : IHasSyntax
@@ -50,8 +50,8 @@ public sealed class Concrete
         new IUsingDirectiveSyntax Syntax { get; }
         NamespaceName Name { get; }
 
-        // public static UsingDirective Create(IUsingDirectiveSyntax syntax, NamespaceName name)
-        //     => new UsingDirectiveNode(syntax, name);
+        public static UsingDirective Create(IUsingDirectiveSyntax syntax, NamespaceName name)
+            => new UsingDirectiveNode(syntax, name);
     }
 
     [Closed(
@@ -82,8 +82,8 @@ public sealed class Concrete
         IFixedList<UsingDirective> UsingDirectives { get; }
         IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
-        // public static NamespaceDeclaration Create(INamespaceDeclarationSyntax syntax, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations, Symbol symbol, IdentifierName name)
-        //     => new NamespaceDeclarationNode(syntax, (IFixedList<UsingDirectiveNode>)usingDirectives, (IFixedList<NamespaceMemberDeclarationNode>)declarations, symbol, name);
+        public static NamespaceDeclaration Create(INamespaceDeclarationSyntax syntax, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations, Symbol symbol, IdentifierName name)
+            => new NamespaceDeclarationNode(syntax, (IFixedList<UsingDirectiveNode>)usingDirectives, (IFixedList<NamespaceMemberDeclarationNode>)declarations, symbol, name);
     }
 
     [Closed(
@@ -108,8 +108,8 @@ public sealed class Concrete
         bool IsAbstract { get; }
         IFixedList<ClassMemberDeclaration> Members { get; }
 
-        // public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members, Symbol symbol, IdentifierName name)
-        //     => new ClassDeclarationNode(syntax, isAbstract, (IFixedList<ClassMemberDeclarationNode>)members, symbol, name);
+        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members, Symbol symbol, IdentifierName name)
+            => new ClassDeclarationNode(syntax, isAbstract, (IFixedList<ClassMemberDeclarationNode>)members, symbol, name);
     }
 
     public interface StructDeclaration : TypeDeclaration
@@ -117,8 +117,8 @@ public sealed class Concrete
         new IStructDeclarationSyntax Syntax { get; }
         IFixedList<StructMemberDeclaration> Members { get; }
 
-        // public static StructDeclaration Create(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, Symbol symbol, IdentifierName name)
-        //     => new StructDeclarationNode(syntax, (IFixedList<StructMemberDeclarationNode>)members, symbol, name);
+        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, Symbol symbol, IdentifierName name)
+            => new StructDeclarationNode(syntax, (IFixedList<StructMemberDeclarationNode>)members, symbol, name);
     }
 
     public interface TraitDeclaration : TypeDeclaration
@@ -126,8 +126,8 @@ public sealed class Concrete
         new ITraitDeclarationSyntax Syntax { get; }
         IFixedList<TraitMemberDeclaration> Members { get; }
 
-        // public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, Symbol symbol, IdentifierName name)
-        //     => new TraitDeclarationNode(syntax, (IFixedList<TraitMemberDeclarationNode>)members, symbol, name);
+        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, Symbol symbol, IdentifierName name)
+            => new TraitDeclarationNode(syntax, (IFixedList<TraitMemberDeclarationNode>)members, symbol, name);
     }
 
     [Closed(
@@ -143,30 +143,30 @@ public sealed class Concrete
     public interface ClassMemberDeclaration : TypeMemberDeclaration
     {
 
-        // public static ClassMemberDeclaration Create(IDeclarationSyntax syntax, Symbol symbol, IdentifierName name)
-        //     => new ClassMemberDeclarationNode(syntax, symbol, name);
+        public static ClassMemberDeclaration Create(IDeclarationSyntax syntax, Symbol symbol, IdentifierName name)
+            => new ClassMemberDeclarationNode(syntax, symbol, name);
     }
 
     public interface TraitMemberDeclaration : TypeMemberDeclaration
     {
 
-        // public static TraitMemberDeclaration Create(IDeclarationSyntax syntax, Symbol symbol, IdentifierName name)
-        //     => new TraitMemberDeclarationNode(syntax, symbol, name);
+        public static TraitMemberDeclaration Create(IDeclarationSyntax syntax, Symbol symbol, IdentifierName name)
+            => new TraitMemberDeclarationNode(syntax, symbol, name);
     }
 
     public interface StructMemberDeclaration : TypeMemberDeclaration
     {
 
-        // public static StructMemberDeclaration Create(IDeclarationSyntax syntax, Symbol symbol, IdentifierName name)
-        //     => new StructMemberDeclarationNode(syntax, symbol, name);
+        public static StructMemberDeclaration Create(IDeclarationSyntax syntax, Symbol symbol, IdentifierName name)
+            => new StructMemberDeclarationNode(syntax, symbol, name);
     }
 
     public interface FunctionDeclaration : Declaration, NamespaceMemberDeclaration, TypeMemberDeclaration
     {
         new IFunctionDeclarationSyntax Syntax { get; }
 
-        // public static FunctionDeclaration Create(IFunctionDeclarationSyntax syntax, Symbol symbol, IdentifierName name)
-        //     => new FunctionDeclarationNode(syntax, symbol, name);
+        public static FunctionDeclaration Create(IFunctionDeclarationSyntax syntax, Symbol symbol, IdentifierName name)
+            => new FunctionDeclarationNode(syntax, symbol, name);
     }
 
 }

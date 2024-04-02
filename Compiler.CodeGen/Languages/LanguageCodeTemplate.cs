@@ -130,7 +130,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             
             #line default
             #line hidden
-            this.Write("\r\n        // public static ");
+            this.Write("\r\n        public static ");
             
             #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(rule.Defines)));
@@ -144,7 +144,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             
             #line default
             #line hidden
-            this.Write(")\r\n        //     => new ");
+            this.Write(")\r\n            => new ");
             
             #line 27 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.SmartClassName(rule.Defines)));

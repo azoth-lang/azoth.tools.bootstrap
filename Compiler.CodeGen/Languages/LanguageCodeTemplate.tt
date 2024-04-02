@@ -23,8 +23,8 @@ public sealed class <#=language.Name #>
 <#      } #>
 <#      if (rule.IsTerminal) { #>
 
-        // public static <#= Emit.TypeName(rule.Defines) #> Create(<#=Emit.PropertyParameters(rule) #>)
-        //     => new <#=Emit.SmartClassName(rule.Defines) #>(<#=Emit.PropertyArguments(rule) #>);
+        public static <#= Emit.TypeName(rule.Defines) #> Create(<#=Emit.PropertyParameters(rule) #>)
+            => new <#=Emit.SmartClassName(rule.Defines) #>(<#=Emit.PropertyArguments(rule) #>);
 <#          if (rule.IsModified) { #>
 
         // public static <#= Emit.TypeName(rule.Defines) #> Create(<#=Emit.ModifiedPropertyParameters(rule) #>)
