@@ -101,7 +101,7 @@ public partial interface ILocalBindingSyntax : IBindingSyntax
 [Closed(
     typeof(IEntityDeclarationSyntax),
     typeof(INonMemberDeclarationSyntax))]
-public partial interface IDeclarationSyntax : ISyntax
+public partial interface IDeclarationSyntax : ISyntax, IHasContainingLexicalScope
 {
     CodeFile File { get; }
     TypeName? Name { get; }
@@ -225,7 +225,7 @@ public partial interface IGenericParameterSyntax : ISyntax
     Promise<GenericParameterTypeSymbol> Symbol { get; }
 }
 
-public partial interface ISupertypeNameSyntax : ISyntax
+public partial interface ISupertypeNameSyntax : ISyntax, IHasContainingLexicalScope
 {
     TypeName Name { get; }
     IFixedList<ITypeSyntax> TypeArguments { get; }
@@ -460,7 +460,7 @@ public partial interface ITypeSyntax : ISyntax
     typeof(ISimpleTypeNameSyntax),
     typeof(IIdentifierTypeNameSyntax),
     typeof(IQualifiedTypeNameSyntax))]
-public partial interface ITypeNameSyntax : ITypeSyntax
+public partial interface ITypeNameSyntax : ITypeSyntax, IHasContainingLexicalScope
 {
     TypeName Name { get; }
     Promise<TypeSymbol?> ReferencedSymbol { get; }
@@ -821,7 +821,7 @@ public partial interface IReturnExpressionSyntax : INeverTypedExpressionSyntax
     IExpressionSyntax? Value { get; }
 }
 
-public partial interface IInvocationExpressionSyntax : IDataTypedExpressionSyntax
+public partial interface IInvocationExpressionSyntax : IDataTypedExpressionSyntax, IHasContainingLexicalScope
 {
     IExpressionSyntax Expression { get; }
     IFixedList<IExpressionSyntax> Arguments { get; }
@@ -863,7 +863,7 @@ public partial interface IVariableNameExpressionSyntax : INameExpressionSyntax
 [Closed(
     typeof(IIdentifierNameExpressionSyntax),
     typeof(IGenericNameExpressionSyntax))]
-public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax
+public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax, IHasContainingLexicalScope
 {
     StandardName? Name { get; }
 }

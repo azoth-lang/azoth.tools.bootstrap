@@ -31,10 +31,10 @@ internal static class Emit
 
     public static string BaseTypes(Rule rule, string? root = null)
     {
-        bool anyParents = rule.ParentRules.Any();
+        bool anyParents = rule.Parents.Any();
         if (!anyParents && root is null) return "";
 
-        var parents = rule.ParentRules.Select(r => r.Defines.Name);
+        var parents = rule.Parents.Select(p => p.Name);
         if (root is not null && !anyParents)
             parents = parents.Append(root);
 
