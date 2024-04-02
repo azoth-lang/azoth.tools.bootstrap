@@ -8,24 +8,24 @@
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 Package = Syntax:`IPackageSyntax` Symbol:`PackageSymbol` References:PackageReference*
-    CompilationUnits:CompilationUnit* TestingCompilationUnits:CompilationUnit;
+    CompilationUnits:CompilationUnit* TestingCompilationUnits:CompilationUnit*;
 
 // TODO add Syntax:`PackageReferenceSyntax` IsTrusted:`bool` once other layers support it
-// TODO Package:`AST.Package`
-PackageReference = AliasOrName:`IdentifierName`;
+PackageReference = AliasOrName:`IdentifierName` Package:`AST.Package`;
 
-CompilationUnit <: `IHasSyntax` = Syntax:`ICompilationUnitSyntax` File:`CodeFile` ImplicitNamespaceName:`NamespaceName`
+CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile` ImplicitNamespaceName:`NamespaceName`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
 
-UsingDirective <: `IHasSyntax` = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
+UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
-`IHasSyntax` = Syntax:`ISyntax`;
+Code = Syntax:`ISyntax`;
+
 
 // ---------- Declarations
-Declaration <: `IHasSyntax` = Syntax:`IDeclarationSyntax` Symbol:`Symbol` Name:`IdentifierName`;
-NamespaceDeclaration: Declaration = Syntax:`INamespaceDeclarationSyntax`
-    UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
+Declaration <: Code = Syntax:`IDeclarationSyntax`;
 NamespaceMemberDeclaration: Declaration;
+NamespaceDeclaration: Declaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`
+    UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
 
 // ---------- Type Declarations
 TypeDeclaration: Declaration <: NamespaceMemberDeclaration, TypeMemberDeclaration = Syntax:`ITypeDeclarationSyntax`;

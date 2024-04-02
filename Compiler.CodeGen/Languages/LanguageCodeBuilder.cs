@@ -10,9 +10,9 @@ internal static class LanguageCodeBuilder
         return template.TransformText();
     }
 
-    public static string GenerateClasses(Language language)
+    public static string GenerateNodes(Language language)
     {
-        var template = new ClassesCodeTemplate(language);
+        var template = new NodeCodeTemplate(language);
         return template.TransformText();
     }
 }

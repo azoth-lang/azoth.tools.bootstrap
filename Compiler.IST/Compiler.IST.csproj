@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Compiler.AST\Compiler.AST.csproj" />
     <ProjectReference Include="..\Compiler.CST\Compiler.CST.csproj" />
     <ProjectReference Include="..\Compiler.Symbols\Compiler.Symbols.csproj" />
   </ItemGroup>
@@ -40,13 +41,13 @@
     <Compile Update="Concrete.lang.cs">
       <DependentUpon>Concrete.lang</DependentUpon>
     </Compile>
-    <Compile Update="Concrete.classes.cs">
+    <Compile Update="Concrete.nodes.cs">
       <DependentUpon>Concrete.lang</DependentUpon>
     </Compile>
     <Compile Update="Typed.lang.cs">
       <DependentUpon>Typed.lang</DependentUpon>
     </Compile>
-    <Compile Update="Typed.classes.cs">
+    <Compile Update="Typed.nodes.cs">
       <DependentUpon>Typed.lang</DependentUpon>
     </Compile>
   </ItemGroup>

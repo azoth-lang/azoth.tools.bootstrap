@@ -23,7 +23,7 @@ public sealed class RuleNode
         Parent = parent;
         Supertypes = supertypes.ToFixedSet();
         DeclaredProperties = declaredProperties.ToFixedList();
-        Parents = (Parent is null ? Supertypes : Supertypes.Append(Parent)).ToFixedList();
+        Parents = (Parent is null ? Supertypes : Supertypes.Prepend(Parent)).ToFixedList();
         if (Parents.Distinct().Count() != Parents.Count)
             throw new ArgumentException($"Rule for {defines} contains duplicate parent definitions");
         if (DeclaredProperties.Select(p => p.Name).Distinct().Count() != DeclaredProperties.Count)

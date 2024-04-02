@@ -53,6 +53,8 @@ public class Rule
     public IFixedList<Property> AllProperties => allProperties.Value;
     private readonly Lazy<IFixedList<Property>> allProperties;
 
+    public IFixedSet<Property> AncestorProperties => ancestorProperties.Value;
+    private readonly Lazy<IFixedSet<Property>> ancestorProperties;
 
     public Rule? ExtendsRule => extendsRule.Value;
     private readonly Lazy<Rule?> extendsRule;
@@ -84,7 +86,7 @@ public class Rule
 
         supertypeRules = new(() => Supertypes.Select(s => s.ReferencedRule).WhereNotNull().ToFixedSet());
         parentRules = new(() => ParentRule is null ? SupertypeRules : SupertypeRules.Prepend(ParentRule).ToFixedSet());
-        ancestorRules = new(() => ParentRules.SelectMany(p => p.AncestorRules).ToFixedSet());
+        ancestorRules = new(() => ParentRules.Concat(ParentRules.SelectMany(p => p.AncestorRules)).ToFixedSet());
         childRules = new(() => Grammar.Rules.Where(r => r.ParentRules.Contains(this)).ToFixedSet());
 
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new Property(this, p)).ToFixedList();
@@ -99,6 +101,7 @@ public class Rule
                    .Concat(InheritedProperties.Where(p => !rulePropertyNames.Contains(p.Name)))
                    .ToFixedList();
         });
+        ancestorProperties = new(() => AncestorRules.SelectMany(r => r.DeclaredProperties).ToFixedSet());
 
         extendsRule = new(() => grammar.Language.Extends?.Grammar.RuleFor(Defines.Syntax));
         isNew = new(() => ExtendsRule is null);
@@ -132,4 +135,10 @@ public class Rule
 
     public IEnumerable<Property> SupertypePropertiesNamed(string propertyName)
         => SupertypeProperties.Where(p => p.Name == propertyName);
+
+    public IEnumerable<Property> AncestorPropertiesNamed(Property property)
+        => AncestorPropertiesNamed(property.Name);
+
+    public IEnumerable<Property> AncestorPropertiesNamed(string propertyName)
+        => AncestorProperties.Where(p => p.Name == propertyName);
 }

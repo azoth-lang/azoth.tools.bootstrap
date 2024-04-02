@@ -27,9 +27,9 @@
     <ProjectReference Include="..\Framework\Framework.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Languages\ClassesCodeTemplate.tt">
+    <None Update="Languages\NodeCodeTemplate.tt">
       <CustomToolNamespace>Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages</CustomToolNamespace>
-      <LastGenOutput>ClassesCodeTemplate.cs</LastGenOutput>
+      <LastGenOutput>NodeCodeTemplate.cs</LastGenOutput>
       <Generator>TextTemplatingFilePreprocessor</Generator>
     </None>
     <None Update="Languages\LanguageCodeTemplate.tt">
@@ -52,8 +52,8 @@
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Languages\ClassesCodeTemplate.cs">
-      <DependentUpon>ClassesCodeTemplate.tt</DependentUpon>
+    <Compile Update="Languages\NodeCodeTemplate.cs">
+      <DependentUpon>NodeCodeTemplate.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>

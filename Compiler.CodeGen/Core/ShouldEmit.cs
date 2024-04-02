@@ -14,11 +14,14 @@ public static class ShouldEmit
     public static bool Property(Rule rule, Property property)
         => property.IsDeclared;
 
-    public static bool NewClass(Rule rule)
-        => rule.IsNew && !rule.Defines.Syntax.IsQuoted;
+    public static bool NewRule(Rule rule)
+        => rule.IsNew;
 
-    public static bool AmendedClass(Rule rule)
-        => !rule.IsNew && !rule.Defines.Syntax.IsQuoted;
+    public static bool Class(Rule rule)
+        => rule.IsTerminal && !rule.Defines.Syntax.IsQuoted;
+
+    public static bool AmendedRule(Rule rule)
+        => !rule.IsNew;
 
     public static bool Constructor(Rule rule)
         => rule.IsTerminal;
