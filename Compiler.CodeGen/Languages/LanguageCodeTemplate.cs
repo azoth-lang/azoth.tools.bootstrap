@@ -165,50 +165,51 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             
             #line default
             #line hidden
-            this.Write("\r\n        public static ");
+            this.Write("\r\n        // TODO move this to the other type as a method?\r\n        public static" +
+                    " ");
             
-            #line 30 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
+            #line 31 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(rule.Defines)));
             
             #line default
             #line hidden
-            this.Write(" Modify(");
+            this.Write(" Rewrite(");
             
-            #line 30 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
+            #line 31 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ModifiedPropertyParameters(rule)));
             
             #line default
             #line hidden
             this.Write(")\r\n        {\r\n            var node = (");
             
-            #line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
+            #line 33 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(language, rule.Defines)));
             
             #line default
             #line hidden
             this.Write(")");
             
-            #line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
+            #line 33 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(rule.Defines).ToCamelCase()));
             
             #line default
             #line hidden
             this.Write(";\r\n            return node;\r\n        }\r\n");
             
-            #line 35 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
+            #line 36 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
           } 
             
             #line default
             #line hidden
             
-            #line 36 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
+            #line 37 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
             this.Write("    }\r\n\r\n");
             
-            #line 39 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
+            #line 40 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
   } 
             
             #line default

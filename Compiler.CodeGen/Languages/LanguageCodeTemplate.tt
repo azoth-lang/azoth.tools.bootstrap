@@ -27,7 +27,8 @@ public sealed class <#=language.Name #>
             => new <#=Emit.SmartClassName(rule.Defines) #>(<#=Emit.PropertyArguments(rule) #>);
 <#          if (rule.IsModified) { #>
 
-        public static <#=Emit.TypeName(rule.Defines) #> Modify(<#=Emit.ModifiedPropertyParameters(rule) #>)
+        // TODO move this to the other type as a method?
+        public static <#=Emit.TypeName(rule.Defines) #> Rewrite(<#=Emit.ModifiedPropertyParameters(rule) #>)
         {
             var node = (<#=Emit.ClassName(language, rule.Defines) #>)<#= Emit.TypeName(rule.Defines).ToCamelCase() #>;
             return node;

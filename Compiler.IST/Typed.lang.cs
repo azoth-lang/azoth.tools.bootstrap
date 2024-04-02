@@ -27,7 +27,8 @@ public sealed class Typed
         public static Package Create(IPackageSyntax syntax, PackageSymbol symbol, IEnumerable<PackageReference> references, IEnumerable<CompilationUnit> compilationUnits, IEnumerable<CompilationUnit> testingCompilationUnits)
             => new PackageNode(syntax, symbol, references.CastToFixedList<CommonPackageReference>(), compilationUnits.CastToFixedList<CommonCompilationUnit>(), testingCompilationUnits.CastToFixedList<CommonCompilationUnit>());
 
-        public static Package Modify(Concrete.Package package)
+        // TODO move this to the other type as a method?
+        public static Package Rewrite(Concrete.Package package)
         {
             var node = (PackageNode)package;
             return node;
@@ -42,7 +43,8 @@ public sealed class Typed
         public static PackageReference Create(IdentifierName aliasOrName, AST.Package package)
             => new PackageReferenceNode(aliasOrName, package);
 
-        public static PackageReference Modify(Concrete.PackageReference packageReference)
+        // TODO move this to the other type as a method?
+        public static PackageReference Rewrite(Concrete.PackageReference packageReference)
         {
             var node = (PackageReferenceNode)packageReference;
             return node;
@@ -60,7 +62,8 @@ public sealed class Typed
         public static CompilationUnit Create(ICompilationUnitSyntax syntax, CodeFile file, NamespaceName implicitNamespaceName, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations)
             => new CompilationUnitNode(syntax, file, implicitNamespaceName, usingDirectives.CastToFixedList<CommonUsingDirective>(), declarations.CastToFixedList<CommonNamespaceMemberDeclaration>());
 
-        public static CompilationUnit Modify(Concrete.CompilationUnit compilationUnit)
+        // TODO move this to the other type as a method?
+        public static CompilationUnit Rewrite(Concrete.CompilationUnit compilationUnit)
         {
             var node = (CompilationUnitNode)compilationUnit;
             return node;
@@ -75,7 +78,8 @@ public sealed class Typed
         public static UsingDirective Create(IUsingDirectiveSyntax syntax, NamespaceName name)
             => new UsingDirectiveNode(syntax, name);
 
-        public static UsingDirective Modify(Concrete.UsingDirective usingDirective)
+        // TODO move this to the other type as a method?
+        public static UsingDirective Rewrite(Concrete.UsingDirective usingDirective)
         {
             var node = (UsingDirectiveNode)usingDirective;
             return node;
@@ -119,7 +123,8 @@ public sealed class Typed
         public static NamespaceDeclaration Create(INamespaceDeclarationSyntax syntax, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations)
             => new NamespaceDeclarationNode(syntax, usingDirectives.CastToFixedList<CommonUsingDirective>(), declarations.CastToFixedList<CommonNamespaceMemberDeclaration>());
 
-        public static NamespaceDeclaration Modify(Concrete.NamespaceDeclaration namespaceDeclaration)
+        // TODO move this to the other type as a method?
+        public static NamespaceDeclaration Rewrite(Concrete.NamespaceDeclaration namespaceDeclaration)
         {
             var node = (NamespaceDeclarationNode)namespaceDeclaration;
             return node;
@@ -144,7 +149,8 @@ public sealed class Typed
         public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IEnumerable<ClassMemberDeclaration> members)
             => new ClassDeclarationNode(syntax, isAbstract, members.CastToFixedList<CommonClassMemberDeclaration>());
 
-        public static ClassDeclaration Modify(Concrete.ClassDeclaration classDeclaration)
+        // TODO move this to the other type as a method?
+        public static ClassDeclaration Rewrite(Concrete.ClassDeclaration classDeclaration)
         {
             var node = (ClassDeclarationNode)classDeclaration;
             return node;
@@ -159,7 +165,8 @@ public sealed class Typed
         public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members)
             => new StructDeclarationNode(syntax, members.CastToFixedList<CommonStructMemberDeclaration>());
 
-        public static StructDeclaration Modify(Concrete.StructDeclaration structDeclaration)
+        // TODO move this to the other type as a method?
+        public static StructDeclaration Rewrite(Concrete.StructDeclaration structDeclaration)
         {
             var node = (StructDeclarationNode)structDeclaration;
             return node;
@@ -174,7 +181,8 @@ public sealed class Typed
         public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members)
             => new TraitDeclarationNode(syntax, members.CastToFixedList<CommonTraitMemberDeclaration>());
 
-        public static TraitDeclaration Modify(Concrete.TraitDeclaration traitDeclaration)
+        // TODO move this to the other type as a method?
+        public static TraitDeclaration Rewrite(Concrete.TraitDeclaration traitDeclaration)
         {
             var node = (TraitDeclarationNode)traitDeclaration;
             return node;
@@ -197,7 +205,8 @@ public sealed class Typed
         public static ClassMemberDeclaration Create(IDeclarationSyntax syntax)
             => new ClassMemberDeclarationNode(syntax);
 
-        public static ClassMemberDeclaration Modify(Concrete.ClassMemberDeclaration classMemberDeclaration)
+        // TODO move this to the other type as a method?
+        public static ClassMemberDeclaration Rewrite(Concrete.ClassMemberDeclaration classMemberDeclaration)
         {
             var node = (ClassMemberDeclarationNode)classMemberDeclaration;
             return node;
@@ -210,7 +219,8 @@ public sealed class Typed
         public static TraitMemberDeclaration Create(IDeclarationSyntax syntax)
             => new TraitMemberDeclarationNode(syntax);
 
-        public static TraitMemberDeclaration Modify(Concrete.TraitMemberDeclaration traitMemberDeclaration)
+        // TODO move this to the other type as a method?
+        public static TraitMemberDeclaration Rewrite(Concrete.TraitMemberDeclaration traitMemberDeclaration)
         {
             var node = (TraitMemberDeclarationNode)traitMemberDeclaration;
             return node;
@@ -223,7 +233,8 @@ public sealed class Typed
         public static StructMemberDeclaration Create(IDeclarationSyntax syntax)
             => new StructMemberDeclarationNode(syntax);
 
-        public static StructMemberDeclaration Modify(Concrete.StructMemberDeclaration structMemberDeclaration)
+        // TODO move this to the other type as a method?
+        public static StructMemberDeclaration Rewrite(Concrete.StructMemberDeclaration structMemberDeclaration)
         {
             var node = (StructMemberDeclarationNode)structMemberDeclaration;
             return node;
@@ -237,7 +248,8 @@ public sealed class Typed
         public static FunctionDeclaration Create(IFunctionDeclarationSyntax syntax)
             => new FunctionDeclarationNode(syntax);
 
-        public static FunctionDeclaration Modify(Concrete.FunctionDeclaration functionDeclaration)
+        // TODO move this to the other type as a method?
+        public static FunctionDeclaration Rewrite(Concrete.FunctionDeclaration functionDeclaration)
         {
             var node = (FunctionDeclarationNode)functionDeclaration;
             return node;
