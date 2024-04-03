@@ -60,7 +60,6 @@ internal partial interface CommonCompilationUnit : Concrete.CompilationUnit, Com
 internal sealed partial class CompilationUnitNode : Node, CommonCompilationUnit
 {
     public ICompilationUnitSyntax Syntax { get; }
-    ISyntax Concrete.Code.Syntax => Syntax;
     public CodeFile File { get; }
     public NamespaceName ImplicitNamespaceName { get; }
     public IFixedList<CommonUsingDirective> UsingDirectives { get; }
@@ -85,7 +84,6 @@ internal partial interface CommonUsingDirective : Concrete.UsingDirective, Commo
 internal sealed partial class UsingDirectiveNode : Node, CommonUsingDirective
 {
     public IUsingDirectiveSyntax Syntax { get; }
-    ISyntax Concrete.Code.Syntax => Syntax;
     public NamespaceName Name { get; }
 
     public UsingDirectiveNode(IUsingDirectiveSyntax syntax, NamespaceName name)
@@ -125,8 +123,6 @@ internal partial interface CommonNamespaceDeclaration : Concrete.NamespaceDeclar
 internal sealed partial class NamespaceDeclarationNode : Node, CommonNamespaceDeclaration
 {
     public INamespaceDeclarationSyntax Syntax { get; }
-    IDeclarationSyntax Concrete.Declaration.Syntax => Syntax;
-    ISyntax Concrete.Code.Syntax => Syntax;
     public IFixedList<CommonUsingDirective> UsingDirectives { get; }
     IFixedList<Concrete.UsingDirective> Concrete.NamespaceDeclaration.UsingDirectives => UsingDirectives;
     public IFixedList<CommonNamespaceMemberDeclaration> Declarations { get; }
@@ -154,9 +150,6 @@ internal partial interface CommonClassDeclaration : Concrete.ClassDeclaration, C
 internal sealed partial class ClassDeclarationNode : Node, CommonClassDeclaration
 {
     public IClassDeclarationSyntax Syntax { get; }
-    ITypeDeclarationSyntax Concrete.TypeDeclaration.Syntax => Syntax;
-    IDeclarationSyntax Concrete.Declaration.Syntax => Syntax;
-    ISyntax Concrete.Code.Syntax => Syntax;
     public bool IsAbstract { get; }
     public IFixedList<CommonClassMemberDeclaration> Members { get; }
     IFixedList<Concrete.ClassMemberDeclaration> Concrete.ClassDeclaration.Members => Members;
@@ -176,9 +169,6 @@ internal partial interface CommonStructDeclaration : Concrete.StructDeclaration,
 internal sealed partial class StructDeclarationNode : Node, CommonStructDeclaration
 {
     public IStructDeclarationSyntax Syntax { get; }
-    ITypeDeclarationSyntax Concrete.TypeDeclaration.Syntax => Syntax;
-    IDeclarationSyntax Concrete.Declaration.Syntax => Syntax;
-    ISyntax Concrete.Code.Syntax => Syntax;
     public IFixedList<CommonStructMemberDeclaration> Members { get; }
     IFixedList<Concrete.StructMemberDeclaration> Concrete.StructDeclaration.Members => Members;
 
@@ -196,9 +186,6 @@ internal partial interface CommonTraitDeclaration : Concrete.TraitDeclaration, C
 internal sealed partial class TraitDeclarationNode : Node, CommonTraitDeclaration
 {
     public ITraitDeclarationSyntax Syntax { get; }
-    ITypeDeclarationSyntax Concrete.TypeDeclaration.Syntax => Syntax;
-    IDeclarationSyntax Concrete.Declaration.Syntax => Syntax;
-    ISyntax Concrete.Code.Syntax => Syntax;
     public IFixedList<CommonTraitMemberDeclaration> Members { get; }
     IFixedList<Concrete.TraitMemberDeclaration> Concrete.TraitDeclaration.Members => Members;
 
@@ -225,8 +212,6 @@ internal partial interface CommonClassMemberDeclaration : Concrete.ClassMemberDe
 internal sealed partial class ClassMemberDeclarationNode : Node, CommonClassMemberDeclaration
 {
     public IDeclarationSyntax Syntax { get; }
-    IDeclarationSyntax Concrete.Declaration.Syntax => Syntax;
-    ISyntax Concrete.Code.Syntax => Syntax;
 
     public ClassMemberDeclarationNode(IDeclarationSyntax syntax)
     {
@@ -241,8 +226,6 @@ internal partial interface CommonTraitMemberDeclaration : Concrete.TraitMemberDe
 internal sealed partial class TraitMemberDeclarationNode : Node, CommonTraitMemberDeclaration
 {
     public IDeclarationSyntax Syntax { get; }
-    IDeclarationSyntax Concrete.Declaration.Syntax => Syntax;
-    ISyntax Concrete.Code.Syntax => Syntax;
 
     public TraitMemberDeclarationNode(IDeclarationSyntax syntax)
     {
@@ -257,8 +240,6 @@ internal partial interface CommonStructMemberDeclaration : Concrete.StructMember
 internal sealed partial class StructMemberDeclarationNode : Node, CommonStructMemberDeclaration
 {
     public IDeclarationSyntax Syntax { get; }
-    IDeclarationSyntax Concrete.Declaration.Syntax => Syntax;
-    ISyntax Concrete.Code.Syntax => Syntax;
 
     public StructMemberDeclarationNode(IDeclarationSyntax syntax)
     {
@@ -273,8 +254,6 @@ internal partial interface CommonFunctionDeclaration : Concrete.FunctionDeclarat
 internal sealed partial class FunctionDeclarationNode : Node, CommonFunctionDeclaration
 {
     public IFunctionDeclarationSyntax Syntax { get; }
-    IDeclarationSyntax Concrete.Declaration.Syntax => Syntax;
-    ISyntax Concrete.Code.Syntax => Syntax;
 
     public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax)
     {

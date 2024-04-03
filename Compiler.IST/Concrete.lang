@@ -7,6 +7,8 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
+// TODO ◊entry Package
+
 Package = Syntax:`IPackageSyntax` Symbol:`PackageSymbol` References:PackageReference*
     CompilationUnits:CompilationUnit* TestingCompilationUnits:CompilationUnit*;
 

@@ -38,6 +38,7 @@ public sealed class Concrete
     public interface CompilationUnit : Code
     {
         new ICompilationUnitSyntax Syntax { get; }
+        ISyntax Code.Syntax => Syntax;
         CodeFile File { get; }
         NamespaceName ImplicitNamespaceName { get; }
         IFixedList<UsingDirective> UsingDirectives { get; }
@@ -50,6 +51,7 @@ public sealed class Concrete
     public interface UsingDirective : Code
     {
         new IUsingDirectiveSyntax Syntax { get; }
+        ISyntax Code.Syntax => Syntax;
         NamespaceName Name { get; }
 
         public static UsingDirective Create(IUsingDirectiveSyntax syntax, NamespaceName name)
@@ -74,6 +76,7 @@ public sealed class Concrete
     public interface Declaration : Code
     {
         new IDeclarationSyntax Syntax { get; }
+        ISyntax Code.Syntax => Syntax;
     }
 
     [Closed(
@@ -87,6 +90,7 @@ public sealed class Concrete
     public interface NamespaceDeclaration : Declaration, NamespaceMemberDeclaration
     {
         new INamespaceDeclarationSyntax Syntax { get; }
+        IDeclarationSyntax Declaration.Syntax => Syntax;
         IFixedList<UsingDirective> UsingDirectives { get; }
         IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
@@ -101,11 +105,13 @@ public sealed class Concrete
     public interface TypeDeclaration : Declaration, NamespaceMemberDeclaration, TypeMemberDeclaration
     {
         new ITypeDeclarationSyntax Syntax { get; }
+        IDeclarationSyntax Declaration.Syntax => Syntax;
     }
 
     public interface ClassDeclaration : TypeDeclaration
     {
         new IClassDeclarationSyntax Syntax { get; }
+        ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         bool IsAbstract { get; }
         IFixedList<ClassMemberDeclaration> Members { get; }
 
@@ -116,6 +122,7 @@ public sealed class Concrete
     public interface StructDeclaration : TypeDeclaration
     {
         new IStructDeclarationSyntax Syntax { get; }
+        ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<StructMemberDeclaration> Members { get; }
 
         public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members)
@@ -125,6 +132,7 @@ public sealed class Concrete
     public interface TraitDeclaration : TypeDeclaration
     {
         new ITraitDeclarationSyntax Syntax { get; }
+        ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<TraitMemberDeclaration> Members { get; }
 
         public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members)
@@ -165,6 +173,7 @@ public sealed class Concrete
     public interface FunctionDeclaration : Declaration, NamespaceMemberDeclaration, TypeMemberDeclaration
     {
         new IFunctionDeclarationSyntax Syntax { get; }
+        IDeclarationSyntax Declaration.Syntax => Syntax;
 
         public static FunctionDeclaration Create(IFunctionDeclarationSyntax syntax)
             => new FunctionDeclarationNode(syntax);

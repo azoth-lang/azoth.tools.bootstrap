@@ -27,9 +27,6 @@ internal <#=Emit.ClassModifier(rule) #> partial class <#=Emit.ClassName(language
 <#          if (property.ReferencesRule) { #>
     <#=Emit.QualifiedType(property.Type) #> <#= Emit.QualifiedTypeName(rule.Defines) #>.<#=property.Name #> => <#=property.Name #>;
 <#          } #>
-<#          foreach (var baseProperty in rule.AncestorPropertiesNamed(property).Where(p => p.IsDeclared)) { #>
-    <#=Emit.QualifiedType(baseProperty.Type) #> <#= Emit.QualifiedTypeName(baseProperty.Rule.Defines) #>.<#=baseProperty.Name #> => <#=property.Name #>;
-<#          } #>
 <#      } #>
 
 <#      if (ShouldEmit.Constructor(rule)) { #>
