@@ -131,6 +131,8 @@ internal static class Emit
     public static string PropertyIsNew(Property property)
         => property.IsNewDefinition ? "new " : "";
 
+    public static string ClassName(Rule rule) => ClassName(rule.Language, rule.Defines);
+
     public static string ClassName(Language language, Symbol? symbol)
     {
         if (symbol is null) return $"{language.Grammar.Suffix}Node";
@@ -167,7 +169,7 @@ internal static class Emit
         => rule.ExtendsRule!.AllProperties.Select(p => p.Name).ToFixedSet();
 
     public static string PropertyClassParameters(Rule rule)
-        => string.Join(", ", rule.AllProperties.Select(p => $"{CommonType(p.Type)} {p.Name.ToCamelCase()}"));
+        => string.Join(", ", rule.AllProperties.Select(p => $"{Type(p.Type)} {p.Name.ToCamelCase()}"));
 
     public static string PropertyArguments(Rule rule)
     {
@@ -175,9 +177,8 @@ internal static class Emit
         static string ToArgument(Property p)
         {
             if (p.Type.IsList)
-                return $"{p.Name.ToCamelCase()}.CastToFixedList<{CommonTypeName(p.Type)}>()";
-            var cast = p.ReferencesRule ? $"({CommonTypeName(p.Type)})" : "";
-            return $"{cast}{p.Name.ToCamelCase()}";
+                return $"{p.Name.ToCamelCase()}.ToFixedList()";
+            return p.Name.ToCamelCase();
         }
     }
 

@@ -31,7 +31,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
         {
             
             #line 7 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-  foreach(var usingNamespace in Build.OrderedNamespaces(grammar, "ExhaustiveMatching", "System.CodeDom.Compiler")) { 
+  foreach(var usingNamespace in Build.OrderedNamespaces(grammar)) { 
             
             #line default
             #line hidden
@@ -49,351 +49,120 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             
             #line default
             #line hidden
-            this.Write("\r\n// ReSharper disable InconsistentNaming\r\n// ReSharper disable PartialTypeWithSi" +
-                    "nglePart\r\n\r\n// ReSharper disable once CheckNamespace\r\nnamespace ");
+            this.Write("\r\nnamespace ");
             
-            #line 15 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            #line 11 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(grammar.Namespace));
             
             #line default
             #line hidden
-            this.Write(";\r\n\r\n");
+            this.Write(";\r\n\r\n// ReSharper disable MemberHidesStaticFromOuterClass\r\n\r\npublic sealed partia" +
+                    "l class ");
             
-            #line 17 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-  foreach(var rule in grammar.Rules.Where(ShouldEmit.NewRule)) {
-            
-            #line default
-            #line hidden
-            this.Write("// ReSharper disable once PossibleInterfaceMemberAmbiguity\r\n");
-            
-            #line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.CommonClosedAttribute(rule)));
-            
-            #line default
-            #line hidden
-            this.Write("internal partial interface ");
-            
-            #line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.CommonTypeName(rule)));
-            
-            #line default
-            #line hidden
-            this.Write(" : ");
-            
-            #line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.CommonBaseTypes(rule)));
-            
-            #line default
-            #line hidden
-            this.Write(" { }\r\n\r\n");
-            
-            #line 21 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-      if (ShouldEmit.Class(rule)) { 
-            
-            #line default
-            #line hidden
-            this.Write("[GeneratedCode(\"AzothCompilerCodeGen\", null)]\r\ninternal ");
-            
-            #line 23 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassModifier(rule)));
-            
-            #line default
-            #line hidden
-            this.Write(" partial class ");
-            
-            #line 23 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(language, rule.Defines)));
-            
-            #line default
-            #line hidden
-            this.Write(" : Node, ");
-            
-            #line 23 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.CommonTypeName(rule)));
+            #line 15 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(language.Name));
             
             #line default
             #line hidden
             this.Write("\r\n{\r\n");
             
-            #line 25 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            #line 17 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+  foreach(var rule in grammar.Rules.Where(ShouldEmit.Class)) {
+            
+            #line default
+            #line hidden
+            this.Write("    private sealed class ");
+            
+            #line 18 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(rule)));
+            
+            #line default
+            #line hidden
+            this.Write(" : Node, ");
+            
+            #line 18 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(rule.Defines)));
+            
+            #line default
+            #line hidden
+            this.Write("\r\n    {\r\n");
+            
+            #line 20 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
       foreach (var property in rule.AllProperties) { 
             
             #line default
             #line hidden
-            this.Write("    public ");
+            this.Write("        public ");
             
-            #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.CommonType(property.Type)));
+            #line 21 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(property.Type)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            #line 21 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
             
             #line default
             #line hidden
             this.Write(" { get; }\r\n");
             
-            #line 27 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-          if (property.ReferencesRule) { 
-            
-            #line default
-            #line hidden
-            this.Write("    ");
-            
-            #line 28 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.QualifiedType(property.Type)));
-            
-            #line default
-            #line hidden
-            this.Write(" ");
-            
-            #line 28 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.QualifiedTypeName(rule.Defines)));
-            
-            #line default
-            #line hidden
-            this.Write(".");
-            
-            #line 28 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
-            
-            #line default
-            #line hidden
-            this.Write(" => ");
-            
-            #line 28 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
-            
-            #line default
-            #line hidden
-            this.Write(";\r\n");
-            
-            #line 29 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-          } 
-            
-            #line default
-            #line hidden
-            
-            #line 30 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            #line 22 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
-            this.Write("\r\n");
+            this.Write("\r\n        public ");
             
-            #line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-      if (ShouldEmit.Constructor(rule)) { 
-            
-            #line default
-            #line hidden
-            this.Write("    public ");
-            
-            #line 33 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            #line 24 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(language, rule.Defines)));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 33 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            #line 24 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.PropertyClassParameters(rule)));
             
             #line default
             #line hidden
-            this.Write(")\r\n    {\r\n");
+            this.Write(")\r\n        {\r\n");
             
-            #line 35 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
           foreach(var property in rule.AllProperties) { 
             
             #line default
             #line hidden
-            this.Write("        ");
+            this.Write("            ");
             
-            #line 36 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            #line 27 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
             
             #line default
             #line hidden
             this.Write(" = ");
             
-            #line 36 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            #line 27 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.Name.ToCamelCase()));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 37 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            #line 28 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
           } 
             
             #line default
             #line hidden
-            this.Write("    }\r\n");
+            this.Write("        }\r\n    }\r\n\r\n");
             
-            #line 39 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-      } 
-            
-            #line default
-            #line hidden
-            this.Write(" }\r\n\r\n");
-            
-            #line 42 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-      } 
-            
-            #line default
-            #line hidden
-            
-            #line 43 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
+            #line 32 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
   } 
             
             #line default
             #line hidden
-            
-            #line 44 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-   foreach(var rule in grammar.Rules.Where(ShouldEmit.AmendedRule)) {
-            
-            #line default
-            #line hidden
-            this.Write("// ReSharper disable once PossibleInterfaceMemberAmbiguity\r\ninternal partial inte" +
-                    "rface ");
-            
-            #line 46 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.CommonTypeName(rule)));
-            
-            #line default
-            #line hidden
-            this.Write(" : ");
-            
-            #line 46 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.QualifiedTypeName(rule.Defines)));
-            
-            #line default
-            #line hidden
-            this.Write(" { }\r\n\r\n");
-            
-            #line 48 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-      if (ShouldEmit.Class(rule)) { 
-            
-            #line default
-            #line hidden
-            this.Write("internal partial class ");
-            
-            #line 49 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(language, rule.Defines)));
-            
-            #line default
-            #line hidden
-            this.Write("\r\n{\r\n");
-            
-            #line 51 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-      foreach(var property in rule.AllProperties) { 
-            
-            #line default
-            #line hidden
-            
-            #line 52 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-          if (property.IsDeclared && rule.DeclaredProperties.Contains(property)) { 
-            
-            #line default
-            #line hidden
-            this.Write("    ");
-            
-            #line 53 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.QualifiedType(property.Type)));
-            
-            #line default
-            #line hidden
-            this.Write(" ");
-            
-            #line 53 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.QualifiedTypeName(rule.Defines)));
-            
-            #line default
-            #line hidden
-            this.Write(".");
-            
-            #line 53 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
-            
-            #line default
-            #line hidden
-            this.Write(" => ");
-            
-            #line 53 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
-            
-            #line default
-            #line hidden
-            this.Write(";\r\n");
-            
-            #line 54 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-          } 
-            
-            #line default
-            #line hidden
-            
-            #line 55 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-          foreach (var baseProperty in rule.AncestorPropertiesNamed(property).Where(p => p.IsDeclared)) { 
-            
-            #line default
-            #line hidden
-            this.Write("    ");
-            
-            #line 56 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.QualifiedType(baseProperty.Type)));
-            
-            #line default
-            #line hidden
-            this.Write(" ");
-            
-            #line 56 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.QualifiedTypeName(baseProperty.Rule.Defines)));
-            
-            #line default
-            #line hidden
-            this.Write(".");
-            
-            #line 56 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(baseProperty.Name));
-            
-            #line default
-            #line hidden
-            this.Write(" => ");
-            
-            #line 56 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
-            
-            #line default
-            #line hidden
-            this.Write(";\r\n");
-            
-            #line 57 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-          } 
-            
-            #line default
-            #line hidden
-            
-            #line 58 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-      } 
-            
-            #line default
-            #line hidden
-            this.Write("}\r\n\r\n");
-            
-            #line 61 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-      } 
-            
-            #line default
-            #line hidden
-            
-            #line 62 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\NodeCodeTemplate.tt"
-  } 
-            
-            #line default
-            #line hidden
+            this.Write("}\r\n");
             return this.GenerationEnvironment.ToString();
         }
     }

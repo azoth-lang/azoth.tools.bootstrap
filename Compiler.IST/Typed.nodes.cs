@@ -1,161 +1,165 @@
-using System.CodeDom.Compiler;
-using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
-using ExhaustiveMatching;
 
-// ReSharper disable InconsistentNaming
-// ReSharper disable PartialTypeWithSinglePart
-
-// ReSharper disable once CheckNamespace
 namespace Azoth.Tools.Bootstrap.Compiler.IST;
 
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonPackage : Typed.Package { }
+// ReSharper disable MemberHidesStaticFromOuterClass
 
-internal partial class PackageNode
+public sealed partial class Typed
 {
-    IPackageSyntax Typed.Package.Syntax => Syntax;
-    PackageSymbol Typed.Package.Symbol => Symbol;
-    IFixedList<Typed.PackageReference> Typed.Package.References => References;
-    IFixedList<Typed.CompilationUnit> Typed.Package.CompilationUnits => CompilationUnits;
-    IFixedList<Typed.CompilationUnit> Typed.Package.TestingCompilationUnits => TestingCompilationUnits;
+    private sealed class PackageNode : Node, Package
+    {
+        public IPackageSyntax Syntax { get; }
+        public PackageSymbol Symbol { get; }
+        public IFixedList<PackageReference> References { get; }
+        public IFixedList<CompilationUnit> CompilationUnits { get; }
+        public IFixedList<CompilationUnit> TestingCompilationUnits { get; }
+
+        public PackageNode(IPackageSyntax syntax, PackageSymbol symbol, IFixedList<PackageReference> references, IFixedList<CompilationUnit> compilationUnits, IFixedList<CompilationUnit> testingCompilationUnits)
+        {
+            Syntax = syntax;
+            Symbol = symbol;
+            References = references;
+            CompilationUnits = compilationUnits;
+            TestingCompilationUnits = testingCompilationUnits;
+        }
+    }
+
+    private sealed class PackageReferenceNode : Node, PackageReference
+    {
+        public IdentifierName AliasOrName { get; }
+        public AST.Package Package { get; }
+
+        public PackageReferenceNode(IdentifierName aliasOrName, AST.Package package)
+        {
+            AliasOrName = aliasOrName;
+            Package = package;
+        }
+    }
+
+    private sealed class CompilationUnitNode : Node, CompilationUnit
+    {
+        public ICompilationUnitSyntax Syntax { get; }
+        public CodeFile File { get; }
+        public NamespaceName ImplicitNamespaceName { get; }
+        public IFixedList<UsingDirective> UsingDirectives { get; }
+        public IFixedList<NamespaceMemberDeclaration> Declarations { get; }
+
+        public CompilationUnitNode(ICompilationUnitSyntax syntax, CodeFile file, NamespaceName implicitNamespaceName, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations)
+        {
+            Syntax = syntax;
+            File = file;
+            ImplicitNamespaceName = implicitNamespaceName;
+            UsingDirectives = usingDirectives;
+            Declarations = declarations;
+        }
+    }
+
+    private sealed class UsingDirectiveNode : Node, UsingDirective
+    {
+        public IUsingDirectiveSyntax Syntax { get; }
+        public NamespaceName Name { get; }
+
+        public UsingDirectiveNode(IUsingDirectiveSyntax syntax, NamespaceName name)
+        {
+            Syntax = syntax;
+            Name = name;
+        }
+    }
+
+    private sealed class NamespaceDeclarationNode : Node, NamespaceDeclaration
+    {
+        public INamespaceDeclarationSyntax Syntax { get; }
+        public IFixedList<UsingDirective> UsingDirectives { get; }
+        public IFixedList<NamespaceMemberDeclaration> Declarations { get; }
+
+        public NamespaceDeclarationNode(INamespaceDeclarationSyntax syntax, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations)
+        {
+            Syntax = syntax;
+            UsingDirectives = usingDirectives;
+            Declarations = declarations;
+        }
+    }
+
+    private sealed class ClassDeclarationNode : Node, ClassDeclaration
+    {
+        public IClassDeclarationSyntax Syntax { get; }
+        public bool IsAbstract { get; }
+        public IFixedList<ClassMemberDeclaration> Members { get; }
+
+        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members)
+        {
+            Syntax = syntax;
+            IsAbstract = isAbstract;
+            Members = members;
+        }
+    }
+
+    private sealed class StructDeclarationNode : Node, StructDeclaration
+    {
+        public IStructDeclarationSyntax Syntax { get; }
+        public IFixedList<StructMemberDeclaration> Members { get; }
+
+        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members)
+        {
+            Syntax = syntax;
+            Members = members;
+        }
+    }
+
+    private sealed class TraitDeclarationNode : Node, TraitDeclaration
+    {
+        public ITraitDeclarationSyntax Syntax { get; }
+        public IFixedList<TraitMemberDeclaration> Members { get; }
+
+        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members)
+        {
+            Syntax = syntax;
+            Members = members;
+        }
+    }
+
+    private sealed class ClassMemberDeclarationNode : Node, ClassMemberDeclaration
+    {
+        public IDeclarationSyntax Syntax { get; }
+
+        public ClassMemberDeclarationNode(IDeclarationSyntax syntax)
+        {
+            Syntax = syntax;
+        }
+    }
+
+    private sealed class TraitMemberDeclarationNode : Node, TraitMemberDeclaration
+    {
+        public IDeclarationSyntax Syntax { get; }
+
+        public TraitMemberDeclarationNode(IDeclarationSyntax syntax)
+        {
+            Syntax = syntax;
+        }
+    }
+
+    private sealed class StructMemberDeclarationNode : Node, StructMemberDeclaration
+    {
+        public IDeclarationSyntax Syntax { get; }
+
+        public StructMemberDeclarationNode(IDeclarationSyntax syntax)
+        {
+            Syntax = syntax;
+        }
+    }
+
+    private sealed class FunctionDeclarationNode : Node, FunctionDeclaration
+    {
+        public IFunctionDeclarationSyntax Syntax { get; }
+
+        public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax)
+        {
+            Syntax = syntax;
+        }
+    }
+
 }
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonPackageReference : Typed.PackageReference { }
-
-internal partial class PackageReferenceNode
-{
-    IdentifierName Typed.PackageReference.AliasOrName => AliasOrName;
-    AST.Package Typed.PackageReference.Package => Package;
-}
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonCompilationUnit : Typed.CompilationUnit { }
-
-internal partial class CompilationUnitNode
-{
-    ICompilationUnitSyntax Typed.CompilationUnit.Syntax => Syntax;
-    ISyntax Typed.Code.Syntax => Syntax;
-    CodeFile Typed.CompilationUnit.File => File;
-    NamespaceName Typed.CompilationUnit.ImplicitNamespaceName => ImplicitNamespaceName;
-    IFixedList<Typed.UsingDirective> Typed.CompilationUnit.UsingDirectives => UsingDirectives;
-    IFixedList<Typed.NamespaceMemberDeclaration> Typed.CompilationUnit.Declarations => Declarations;
-}
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonUsingDirective : Typed.UsingDirective { }
-
-internal partial class UsingDirectiveNode
-{
-    IUsingDirectiveSyntax Typed.UsingDirective.Syntax => Syntax;
-    ISyntax Typed.Code.Syntax => Syntax;
-    NamespaceName Typed.UsingDirective.Name => Name;
-}
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonCode : Typed.Code { }
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonDeclaration : Typed.Declaration { }
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonNamespaceMemberDeclaration : Typed.NamespaceMemberDeclaration { }
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonNamespaceDeclaration : Typed.NamespaceDeclaration { }
-
-internal partial class NamespaceDeclarationNode
-{
-    INamespaceDeclarationSyntax Typed.NamespaceDeclaration.Syntax => Syntax;
-    IDeclarationSyntax Typed.Declaration.Syntax => Syntax;
-    ISyntax Typed.Code.Syntax => Syntax;
-    IFixedList<Typed.UsingDirective> Typed.NamespaceDeclaration.UsingDirectives => UsingDirectives;
-    IFixedList<Typed.NamespaceMemberDeclaration> Typed.NamespaceDeclaration.Declarations => Declarations;
-}
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonTypeDeclaration : Typed.TypeDeclaration { }
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonClassDeclaration : Typed.ClassDeclaration { }
-
-internal partial class ClassDeclarationNode
-{
-    IClassDeclarationSyntax Typed.ClassDeclaration.Syntax => Syntax;
-    ITypeDeclarationSyntax Typed.TypeDeclaration.Syntax => Syntax;
-    IDeclarationSyntax Typed.Declaration.Syntax => Syntax;
-    ISyntax Typed.Code.Syntax => Syntax;
-    bool Typed.ClassDeclaration.IsAbstract => IsAbstract;
-    IFixedList<Typed.ClassMemberDeclaration> Typed.ClassDeclaration.Members => Members;
-}
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonStructDeclaration : Typed.StructDeclaration { }
-
-internal partial class StructDeclarationNode
-{
-    IStructDeclarationSyntax Typed.StructDeclaration.Syntax => Syntax;
-    ITypeDeclarationSyntax Typed.TypeDeclaration.Syntax => Syntax;
-    IDeclarationSyntax Typed.Declaration.Syntax => Syntax;
-    ISyntax Typed.Code.Syntax => Syntax;
-    IFixedList<Typed.StructMemberDeclaration> Typed.StructDeclaration.Members => Members;
-}
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonTraitDeclaration : Typed.TraitDeclaration { }
-
-internal partial class TraitDeclarationNode
-{
-    ITraitDeclarationSyntax Typed.TraitDeclaration.Syntax => Syntax;
-    ITypeDeclarationSyntax Typed.TypeDeclaration.Syntax => Syntax;
-    IDeclarationSyntax Typed.Declaration.Syntax => Syntax;
-    ISyntax Typed.Code.Syntax => Syntax;
-    IFixedList<Typed.TraitMemberDeclaration> Typed.TraitDeclaration.Members => Members;
-}
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonTypeMemberDeclaration : Typed.TypeMemberDeclaration { }
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonClassMemberDeclaration : Typed.ClassMemberDeclaration { }
-
-internal partial class ClassMemberDeclarationNode
-{
-    IDeclarationSyntax Typed.Declaration.Syntax => Syntax;
-    ISyntax Typed.Code.Syntax => Syntax;
-}
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonTraitMemberDeclaration : Typed.TraitMemberDeclaration { }
-
-internal partial class TraitMemberDeclarationNode
-{
-    IDeclarationSyntax Typed.Declaration.Syntax => Syntax;
-    ISyntax Typed.Code.Syntax => Syntax;
-}
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonStructMemberDeclaration : Typed.StructMemberDeclaration { }
-
-internal partial class StructMemberDeclarationNode
-{
-    IDeclarationSyntax Typed.Declaration.Syntax => Syntax;
-    ISyntax Typed.Code.Syntax => Syntax;
-}
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonFunctionDeclaration : Typed.FunctionDeclaration { }
-
-internal partial class FunctionDeclarationNode
-{
-    IFunctionDeclarationSyntax Typed.FunctionDeclaration.Syntax => Syntax;
-    IDeclarationSyntax Typed.Declaration.Syntax => Syntax;
-    ISyntax Typed.Code.Syntax => Syntax;
-}
-

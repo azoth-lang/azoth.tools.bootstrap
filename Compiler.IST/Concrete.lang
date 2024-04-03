@@ -26,11 +26,11 @@ Code = Syntax:`ISyntax`;
 // ---------- Declarations
 Declaration <: Code = Syntax:`IDeclarationSyntax`;
 NamespaceMemberDeclaration: Declaration;
-NamespaceDeclaration: Declaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`
+NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
 
 // ---------- Type Declarations
-TypeDeclaration: Declaration <: NamespaceMemberDeclaration, TypeMemberDeclaration = Syntax:`ITypeDeclarationSyntax`;
+TypeDeclaration <: NamespaceMemberDeclaration, TypeMemberDeclaration = Syntax:`ITypeDeclarationSyntax`;
 ClassDeclaration: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:`bool` Members:ClassMemberDeclaration*;
 StructDeclaration: TypeDeclaration = Syntax:`IStructDeclarationSyntax` Members:StructMemberDeclaration*;
 TraitDeclaration: TypeDeclaration = Syntax:`ITraitDeclarationSyntax` Members:TraitMemberDeclaration*;
@@ -42,4 +42,4 @@ TraitMemberDeclaration: TypeMemberDeclaration;
 StructMemberDeclaration: TypeMemberDeclaration;
 
 // ---------- Invocable Declarations
-FunctionDeclaration: Declaration <: NamespaceMemberDeclaration, TypeMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`;
+FunctionDeclaration <: NamespaceMemberDeclaration, TypeMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`;

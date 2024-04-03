@@ -4,59 +4,30 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
-<#  foreach(var usingNamespace in Build.OrderedNamespaces(grammar, "ExhaustiveMatching", "System.CodeDom.Compiler")) { #>
+<#  foreach(var usingNamespace in Build.OrderedNamespaces(grammar)) { #>
 using <#=usingNamespace #>;
 <#  } #>
 
-// ReSharper disable InconsistentNaming
-// ReSharper disable PartialTypeWithSinglePart
-
-// ReSharper disable once CheckNamespace
 namespace <#=grammar.Namespace #>;
 
-<#  foreach(var rule in grammar.Rules.Where(ShouldEmit.NewRule)) {#>
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-<#=Emit.CommonClosedAttribute(rule) #>internal partial interface <#=Emit.CommonTypeName(rule) #> : <#=Emit.CommonBaseTypes(rule) #> { }
+// ReSharper disable MemberHidesStaticFromOuterClass
 
-<#      if (ShouldEmit.Class(rule)) { #>
-[GeneratedCode("AzothCompilerCodeGen", null)]
-internal <#=Emit.ClassModifier(rule) #> partial class <#=Emit.ClassName(language, rule.Defines) #> : Node, <#=Emit.CommonTypeName(rule) #>
+public sealed partial class <#=language.Name #>
 {
-<#      foreach (var property in rule.AllProperties) { #>
-    public <#=Emit.CommonType(property.Type) #> <#=property.Name #> { get; }
-<#          if (property.ReferencesRule) { #>
-    <#=Emit.QualifiedType(property.Type) #> <#= Emit.QualifiedTypeName(rule.Defines) #>.<#=property.Name #> => <#=property.Name #>;
-<#          } #>
-<#      } #>
-
-<#      if (ShouldEmit.Constructor(rule)) { #>
-    public <#=Emit.ClassName(language, rule.Defines) #>(<#=Emit.PropertyClassParameters(rule) #>)
+<#  foreach(var rule in grammar.Rules.Where(ShouldEmit.Class)) {#>
+    private sealed class <#=Emit.ClassName(rule) #> : Node, <#= Emit.TypeName(rule.Defines) #>
     {
+<#      foreach (var property in rule.AllProperties) { #>
+        public <#=Emit.Type(property.Type) #> <#=property.Name #> { get; }
+<#      } #>
+
+        public <#=Emit.ClassName(language, rule.Defines) #>(<#=Emit.PropertyClassParameters(rule) #>)
+        {
 <#          foreach(var property in rule.AllProperties) { #>
-        <#=property.Name #> = <#=property.Name.ToCamelCase() #>;
+            <#=property.Name #> = <#=property.Name.ToCamelCase() #>;
 <#          } #>
+        }
     }
-<#      } #>
- }
 
-<#      } #>
 <#  } #>
-<#   foreach(var rule in grammar.Rules.Where(ShouldEmit.AmendedRule)) {#>
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface <#=Emit.CommonTypeName(rule) #> : <#=Emit.QualifiedTypeName(rule.Defines) #> { }
-
-<#      if (ShouldEmit.Class(rule)) { #>
-internal partial class <#=Emit.ClassName(language, rule.Defines) #>
-{
-<#      foreach(var property in rule.AllProperties) { #>
-<#          if (property.IsDeclared && rule.DeclaredProperties.Contains(property)) { #>
-    <#=Emit.QualifiedType(property.Type) #> <#= Emit.QualifiedTypeName(rule.Defines) #>.<#=property.Name #> => <#=property.Name #>;
-<#          } #>
-<#          foreach (var baseProperty in rule.AncestorPropertiesNamed(property).Where(p => p.IsDeclared)) { #>
-    <#=Emit.QualifiedType(baseProperty.Type) #> <#= Emit.QualifiedTypeName(baseProperty.Rule.Defines) #>.<#=baseProperty.Name #> => <#=property.Name #>;
-<#          } #>
-<#      } #>
 }
-
-<#      } #>
-<#  } #>

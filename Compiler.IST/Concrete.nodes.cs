@@ -1,263 +1,165 @@
-using System.CodeDom.Compiler;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
-using ExhaustiveMatching;
 
-// ReSharper disable InconsistentNaming
-// ReSharper disable PartialTypeWithSinglePart
-
-// ReSharper disable once CheckNamespace
 namespace Azoth.Tools.Bootstrap.Compiler.IST;
 
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonPackage : Concrete.Package { }
+// ReSharper disable MemberHidesStaticFromOuterClass
 
-[GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class PackageNode : Node, CommonPackage
+public sealed partial class Concrete
 {
-    public IPackageSyntax Syntax { get; }
-    public PackageSymbol Symbol { get; }
-    public IFixedList<CommonPackageReference> References { get; }
-    IFixedList<Concrete.PackageReference> Concrete.Package.References => References;
-    public IFixedList<CommonCompilationUnit> CompilationUnits { get; }
-    IFixedList<Concrete.CompilationUnit> Concrete.Package.CompilationUnits => CompilationUnits;
-    public IFixedList<CommonCompilationUnit> TestingCompilationUnits { get; }
-    IFixedList<Concrete.CompilationUnit> Concrete.Package.TestingCompilationUnits => TestingCompilationUnits;
-
-    public PackageNode(IPackageSyntax syntax, PackageSymbol symbol, IFixedList<CommonPackageReference> references, IFixedList<CommonCompilationUnit> compilationUnits, IFixedList<CommonCompilationUnit> testingCompilationUnits)
+    private sealed class PackageNode : Node, Package
     {
-        Syntax = syntax;
-        Symbol = symbol;
-        References = references;
-        CompilationUnits = compilationUnits;
-        TestingCompilationUnits = testingCompilationUnits;
+        public IPackageSyntax Syntax { get; }
+        public PackageSymbol Symbol { get; }
+        public IFixedList<PackageReference> References { get; }
+        public IFixedList<CompilationUnit> CompilationUnits { get; }
+        public IFixedList<CompilationUnit> TestingCompilationUnits { get; }
+
+        public PackageNode(IPackageSyntax syntax, PackageSymbol symbol, IFixedList<PackageReference> references, IFixedList<CompilationUnit> compilationUnits, IFixedList<CompilationUnit> testingCompilationUnits)
+        {
+            Syntax = syntax;
+            Symbol = symbol;
+            References = references;
+            CompilationUnits = compilationUnits;
+            TestingCompilationUnits = testingCompilationUnits;
+        }
     }
- }
 
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonPackageReference : Concrete.PackageReference { }
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class PackageReferenceNode : Node, CommonPackageReference
-{
-    public IdentifierName AliasOrName { get; }
-    public AST.Package Package { get; }
-
-    public PackageReferenceNode(IdentifierName aliasOrName, AST.Package package)
+    private sealed class PackageReferenceNode : Node, PackageReference
     {
-        AliasOrName = aliasOrName;
-        Package = package;
+        public IdentifierName AliasOrName { get; }
+        public AST.Package Package { get; }
+
+        public PackageReferenceNode(IdentifierName aliasOrName, AST.Package package)
+        {
+            AliasOrName = aliasOrName;
+            Package = package;
+        }
     }
- }
 
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonCompilationUnit : Concrete.CompilationUnit, CommonCode { }
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class CompilationUnitNode : Node, CommonCompilationUnit
-{
-    public ICompilationUnitSyntax Syntax { get; }
-    public CodeFile File { get; }
-    public NamespaceName ImplicitNamespaceName { get; }
-    public IFixedList<CommonUsingDirective> UsingDirectives { get; }
-    IFixedList<Concrete.UsingDirective> Concrete.CompilationUnit.UsingDirectives => UsingDirectives;
-    public IFixedList<CommonNamespaceMemberDeclaration> Declarations { get; }
-    IFixedList<Concrete.NamespaceMemberDeclaration> Concrete.CompilationUnit.Declarations => Declarations;
-
-    public CompilationUnitNode(ICompilationUnitSyntax syntax, CodeFile file, NamespaceName implicitNamespaceName, IFixedList<CommonUsingDirective> usingDirectives, IFixedList<CommonNamespaceMemberDeclaration> declarations)
+    private sealed class CompilationUnitNode : Node, CompilationUnit
     {
-        Syntax = syntax;
-        File = file;
-        ImplicitNamespaceName = implicitNamespaceName;
-        UsingDirectives = usingDirectives;
-        Declarations = declarations;
+        public ICompilationUnitSyntax Syntax { get; }
+        public CodeFile File { get; }
+        public NamespaceName ImplicitNamespaceName { get; }
+        public IFixedList<UsingDirective> UsingDirectives { get; }
+        public IFixedList<NamespaceMemberDeclaration> Declarations { get; }
+
+        public CompilationUnitNode(ICompilationUnitSyntax syntax, CodeFile file, NamespaceName implicitNamespaceName, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations)
+        {
+            Syntax = syntax;
+            File = file;
+            ImplicitNamespaceName = implicitNamespaceName;
+            UsingDirectives = usingDirectives;
+            Declarations = declarations;
+        }
     }
- }
 
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonUsingDirective : Concrete.UsingDirective, CommonCode { }
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class UsingDirectiveNode : Node, CommonUsingDirective
-{
-    public IUsingDirectiveSyntax Syntax { get; }
-    public NamespaceName Name { get; }
-
-    public UsingDirectiveNode(IUsingDirectiveSyntax syntax, NamespaceName name)
+    private sealed class UsingDirectiveNode : Node, UsingDirective
     {
-        Syntax = syntax;
-        Name = name;
+        public IUsingDirectiveSyntax Syntax { get; }
+        public NamespaceName Name { get; }
+
+        public UsingDirectiveNode(IUsingDirectiveSyntax syntax, NamespaceName name)
+        {
+            Syntax = syntax;
+            Name = name;
+        }
     }
- }
 
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-[Closed(
-    typeof(CommonCompilationUnit),
-    typeof(CommonUsingDirective),
-    typeof(CommonDeclaration))]
-internal partial interface CommonCode : Concrete.Code { }
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-[Closed(
-    typeof(CommonNamespaceMemberDeclaration),
-    typeof(CommonNamespaceDeclaration),
-    typeof(CommonTypeDeclaration),
-    typeof(CommonTypeMemberDeclaration),
-    typeof(CommonFunctionDeclaration))]
-internal partial interface CommonDeclaration : Concrete.Declaration, CommonCode { }
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-[Closed(
-    typeof(CommonNamespaceDeclaration),
-    typeof(CommonTypeDeclaration),
-    typeof(CommonFunctionDeclaration))]
-internal partial interface CommonNamespaceMemberDeclaration : Concrete.NamespaceMemberDeclaration, CommonDeclaration { }
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonNamespaceDeclaration : Concrete.NamespaceDeclaration, CommonDeclaration, CommonNamespaceMemberDeclaration { }
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class NamespaceDeclarationNode : Node, CommonNamespaceDeclaration
-{
-    public INamespaceDeclarationSyntax Syntax { get; }
-    public IFixedList<CommonUsingDirective> UsingDirectives { get; }
-    IFixedList<Concrete.UsingDirective> Concrete.NamespaceDeclaration.UsingDirectives => UsingDirectives;
-    public IFixedList<CommonNamespaceMemberDeclaration> Declarations { get; }
-    IFixedList<Concrete.NamespaceMemberDeclaration> Concrete.NamespaceDeclaration.Declarations => Declarations;
-
-    public NamespaceDeclarationNode(INamespaceDeclarationSyntax syntax, IFixedList<CommonUsingDirective> usingDirectives, IFixedList<CommonNamespaceMemberDeclaration> declarations)
+    private sealed class NamespaceDeclarationNode : Node, NamespaceDeclaration
     {
-        Syntax = syntax;
-        UsingDirectives = usingDirectives;
-        Declarations = declarations;
+        public INamespaceDeclarationSyntax Syntax { get; }
+        public IFixedList<UsingDirective> UsingDirectives { get; }
+        public IFixedList<NamespaceMemberDeclaration> Declarations { get; }
+
+        public NamespaceDeclarationNode(INamespaceDeclarationSyntax syntax, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations)
+        {
+            Syntax = syntax;
+            UsingDirectives = usingDirectives;
+            Declarations = declarations;
+        }
     }
- }
 
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-[Closed(
-    typeof(CommonClassDeclaration),
-    typeof(CommonStructDeclaration),
-    typeof(CommonTraitDeclaration))]
-internal partial interface CommonTypeDeclaration : Concrete.TypeDeclaration, CommonDeclaration, CommonNamespaceMemberDeclaration, CommonTypeMemberDeclaration { }
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonClassDeclaration : Concrete.ClassDeclaration, CommonTypeDeclaration { }
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class ClassDeclarationNode : Node, CommonClassDeclaration
-{
-    public IClassDeclarationSyntax Syntax { get; }
-    public bool IsAbstract { get; }
-    public IFixedList<CommonClassMemberDeclaration> Members { get; }
-    IFixedList<Concrete.ClassMemberDeclaration> Concrete.ClassDeclaration.Members => Members;
-
-    public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<CommonClassMemberDeclaration> members)
+    private sealed class ClassDeclarationNode : Node, ClassDeclaration
     {
-        Syntax = syntax;
-        IsAbstract = isAbstract;
-        Members = members;
+        public IClassDeclarationSyntax Syntax { get; }
+        public bool IsAbstract { get; }
+        public IFixedList<ClassMemberDeclaration> Members { get; }
+
+        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members)
+        {
+            Syntax = syntax;
+            IsAbstract = isAbstract;
+            Members = members;
+        }
     }
- }
 
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonStructDeclaration : Concrete.StructDeclaration, CommonTypeDeclaration { }
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class StructDeclarationNode : Node, CommonStructDeclaration
-{
-    public IStructDeclarationSyntax Syntax { get; }
-    public IFixedList<CommonStructMemberDeclaration> Members { get; }
-    IFixedList<Concrete.StructMemberDeclaration> Concrete.StructDeclaration.Members => Members;
-
-    public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<CommonStructMemberDeclaration> members)
+    private sealed class StructDeclarationNode : Node, StructDeclaration
     {
-        Syntax = syntax;
-        Members = members;
+        public IStructDeclarationSyntax Syntax { get; }
+        public IFixedList<StructMemberDeclaration> Members { get; }
+
+        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members)
+        {
+            Syntax = syntax;
+            Members = members;
+        }
     }
- }
 
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonTraitDeclaration : Concrete.TraitDeclaration, CommonTypeDeclaration { }
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class TraitDeclarationNode : Node, CommonTraitDeclaration
-{
-    public ITraitDeclarationSyntax Syntax { get; }
-    public IFixedList<CommonTraitMemberDeclaration> Members { get; }
-    IFixedList<Concrete.TraitMemberDeclaration> Concrete.TraitDeclaration.Members => Members;
-
-    public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<CommonTraitMemberDeclaration> members)
+    private sealed class TraitDeclarationNode : Node, TraitDeclaration
     {
-        Syntax = syntax;
-        Members = members;
+        public ITraitDeclarationSyntax Syntax { get; }
+        public IFixedList<TraitMemberDeclaration> Members { get; }
+
+        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members)
+        {
+            Syntax = syntax;
+            Members = members;
+        }
     }
- }
 
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-[Closed(
-    typeof(CommonTypeDeclaration),
-    typeof(CommonClassMemberDeclaration),
-    typeof(CommonTraitMemberDeclaration),
-    typeof(CommonStructMemberDeclaration),
-    typeof(CommonFunctionDeclaration))]
-internal partial interface CommonTypeMemberDeclaration : Concrete.TypeMemberDeclaration, CommonDeclaration { }
-
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonClassMemberDeclaration : Concrete.ClassMemberDeclaration, CommonTypeMemberDeclaration { }
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class ClassMemberDeclarationNode : Node, CommonClassMemberDeclaration
-{
-    public IDeclarationSyntax Syntax { get; }
-
-    public ClassMemberDeclarationNode(IDeclarationSyntax syntax)
+    private sealed class ClassMemberDeclarationNode : Node, ClassMemberDeclaration
     {
-        Syntax = syntax;
+        public IDeclarationSyntax Syntax { get; }
+
+        public ClassMemberDeclarationNode(IDeclarationSyntax syntax)
+        {
+            Syntax = syntax;
+        }
     }
- }
 
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonTraitMemberDeclaration : Concrete.TraitMemberDeclaration, CommonTypeMemberDeclaration { }
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class TraitMemberDeclarationNode : Node, CommonTraitMemberDeclaration
-{
-    public IDeclarationSyntax Syntax { get; }
-
-    public TraitMemberDeclarationNode(IDeclarationSyntax syntax)
+    private sealed class TraitMemberDeclarationNode : Node, TraitMemberDeclaration
     {
-        Syntax = syntax;
+        public IDeclarationSyntax Syntax { get; }
+
+        public TraitMemberDeclarationNode(IDeclarationSyntax syntax)
+        {
+            Syntax = syntax;
+        }
     }
- }
 
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonStructMemberDeclaration : Concrete.StructMemberDeclaration, CommonTypeMemberDeclaration { }
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class StructMemberDeclarationNode : Node, CommonStructMemberDeclaration
-{
-    public IDeclarationSyntax Syntax { get; }
-
-    public StructMemberDeclarationNode(IDeclarationSyntax syntax)
+    private sealed class StructMemberDeclarationNode : Node, StructMemberDeclaration
     {
-        Syntax = syntax;
+        public IDeclarationSyntax Syntax { get; }
+
+        public StructMemberDeclarationNode(IDeclarationSyntax syntax)
+        {
+            Syntax = syntax;
+        }
     }
- }
 
-// ReSharper disable once PossibleInterfaceMemberAmbiguity
-internal partial interface CommonFunctionDeclaration : Concrete.FunctionDeclaration, CommonDeclaration, CommonNamespaceMemberDeclaration, CommonTypeMemberDeclaration { }
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class FunctionDeclarationNode : Node, CommonFunctionDeclaration
-{
-    public IFunctionDeclarationSyntax Syntax { get; }
-
-    public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax)
+    private sealed class FunctionDeclarationNode : Node, FunctionDeclaration
     {
-        Syntax = syntax;
-    }
- }
+        public IFunctionDeclarationSyntax Syntax { get; }
 
+        public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax)
+        {
+            Syntax = syntax;
+        }
+    }
+
+}

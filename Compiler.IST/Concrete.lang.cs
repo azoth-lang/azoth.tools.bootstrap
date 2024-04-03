@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 // ReSharper disable InconsistentNaming
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public sealed class Concrete
+public sealed partial class Concrete
 {
     public interface Package : IImplementationRestricted
     {
@@ -23,7 +23,7 @@ public sealed class Concrete
         IFixedList<CompilationUnit> TestingCompilationUnits { get; }
 
         public static Package Create(IPackageSyntax syntax, PackageSymbol symbol, IEnumerable<PackageReference> references, IEnumerable<CompilationUnit> compilationUnits, IEnumerable<CompilationUnit> testingCompilationUnits)
-            => new PackageNode(syntax, symbol, references.CastToFixedList<CommonPackageReference>(), compilationUnits.CastToFixedList<CommonCompilationUnit>(), testingCompilationUnits.CastToFixedList<CommonCompilationUnit>());
+            => new PackageNode(syntax, symbol, references.ToFixedList(), compilationUnits.ToFixedList(), testingCompilationUnits.ToFixedList());
     }
 
     public interface PackageReference : IImplementationRestricted
@@ -45,7 +45,7 @@ public sealed class Concrete
         IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
         public static CompilationUnit Create(ICompilationUnitSyntax syntax, CodeFile file, NamespaceName implicitNamespaceName, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations)
-            => new CompilationUnitNode(syntax, file, implicitNamespaceName, usingDirectives.CastToFixedList<CommonUsingDirective>(), declarations.CastToFixedList<CommonNamespaceMemberDeclaration>());
+            => new CompilationUnitNode(syntax, file, implicitNamespaceName, usingDirectives.ToFixedList(), declarations.ToFixedList());
     }
 
     public interface UsingDirective : Code
@@ -69,10 +69,7 @@ public sealed class Concrete
 
     [Closed(
         typeof(NamespaceMemberDeclaration),
-        typeof(NamespaceDeclaration),
-        typeof(TypeDeclaration),
-        typeof(TypeMemberDeclaration),
-        typeof(FunctionDeclaration))]
+        typeof(TypeMemberDeclaration))]
     public interface Declaration : Code
     {
         new IDeclarationSyntax Syntax { get; }
@@ -87,7 +84,7 @@ public sealed class Concrete
     {
     }
 
-    public interface NamespaceDeclaration : Declaration, NamespaceMemberDeclaration
+    public interface NamespaceDeclaration : NamespaceMemberDeclaration
     {
         new INamespaceDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
@@ -95,14 +92,14 @@ public sealed class Concrete
         IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
         public static NamespaceDeclaration Create(INamespaceDeclarationSyntax syntax, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations)
-            => new NamespaceDeclarationNode(syntax, usingDirectives.CastToFixedList<CommonUsingDirective>(), declarations.CastToFixedList<CommonNamespaceMemberDeclaration>());
+            => new NamespaceDeclarationNode(syntax, usingDirectives.ToFixedList(), declarations.ToFixedList());
     }
 
     [Closed(
         typeof(ClassDeclaration),
         typeof(StructDeclaration),
         typeof(TraitDeclaration))]
-    public interface TypeDeclaration : Declaration, NamespaceMemberDeclaration, TypeMemberDeclaration
+    public interface TypeDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
     {
         new ITypeDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
@@ -116,7 +113,7 @@ public sealed class Concrete
         IFixedList<ClassMemberDeclaration> Members { get; }
 
         public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IEnumerable<ClassMemberDeclaration> members)
-            => new ClassDeclarationNode(syntax, isAbstract, members.CastToFixedList<CommonClassMemberDeclaration>());
+            => new ClassDeclarationNode(syntax, isAbstract, members.ToFixedList());
     }
 
     public interface StructDeclaration : TypeDeclaration
@@ -126,7 +123,7 @@ public sealed class Concrete
         IFixedList<StructMemberDeclaration> Members { get; }
 
         public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members)
-            => new StructDeclarationNode(syntax, members.CastToFixedList<CommonStructMemberDeclaration>());
+            => new StructDeclarationNode(syntax, members.ToFixedList());
     }
 
     public interface TraitDeclaration : TypeDeclaration
@@ -136,7 +133,7 @@ public sealed class Concrete
         IFixedList<TraitMemberDeclaration> Members { get; }
 
         public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members)
-            => new TraitDeclarationNode(syntax, members.CastToFixedList<CommonTraitMemberDeclaration>());
+            => new TraitDeclarationNode(syntax, members.ToFixedList());
     }
 
     [Closed(
@@ -170,7 +167,7 @@ public sealed class Concrete
             => new StructMemberDeclarationNode(syntax);
     }
 
-    public interface FunctionDeclaration : Declaration, NamespaceMemberDeclaration, TypeMemberDeclaration
+    public interface FunctionDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
     {
         new IFunctionDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;

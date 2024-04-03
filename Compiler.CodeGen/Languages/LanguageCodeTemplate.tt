@@ -13,7 +13,7 @@ namespace <#=grammar.Namespace #>;
 // ReSharper disable InconsistentNaming
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public sealed class <#=language.Name #>
+public sealed partial class <#=language.Name #>
 {
 <#  foreach(var rule in grammar.Rules) {#>
 <#=Emit.ClosedAttribute(rule, indent: "    ") #>    public interface <#= Emit.TypeName(rule.Defines) #><#= Emit.BaseTypes(rule, "IImplementationRestricted") #>
@@ -28,15 +28,6 @@ public sealed class <#=language.Name #>
 
         public static <#= Emit.TypeName(rule.Defines) #> Create(<#=Emit.PropertyParameters(rule) #>)
             => new <#=Emit.SmartClassName(rule.Defines) #>(<#=Emit.PropertyArguments(rule) #>);
-<#          if (rule.IsModified) { #>
-
-        // TODO move this to the other type as a method?
-        public static <#=Emit.TypeName(rule.Defines) #> Rewrite(<#=Emit.ModifiedPropertyParameters(rule) #>)
-        {
-            var node = (<#=Emit.ClassName(language, rule.Defines) #>)<#= Emit.TypeName(rule.Defines).ToCamelCase() #>;
-            return node;
-        }
-<#          } #>
 <#      } #>
     }
 
