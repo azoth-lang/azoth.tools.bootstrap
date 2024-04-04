@@ -1,0 +1,19 @@
+◊name BuildLexicalScopesPass;
+◊from Concrete; // TODO have languages define entry points
+◊from Scoped; // TODO have languages define entry points
+//◊context Void;
+
+
+// Package -> Package; Implicitly required becuase the lower layers require parameters
+
+(PackagesScope packagesScope, IFixedList<NonMemberSymbol> declarationSymbols) -> void;
+enter CompilationUnit*;
+
+(NestedScope globalScope, FixedDictionary<NamespaceName, Namespace> namespaces, NestedScope containingScope) -> void;
+enter CompilationUnit;
+TypeDeclaration -> TypeDeclaration;
+FunctionDeclaration
+
+(NestedScope globalScope, FixedDictionary<NamespaceName, Namespace> namespaces, NestedScope containingScope) -> ConditionalLexicalScopes;
+AssignmentExpression = default;
+BinaryOperatorExpression;
