@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 // ReSharper disable InconsistentNaming
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public sealed partial class Typed
+public sealed partial class LexicalScopes
 {
     public interface HasLexicalScope : IImplementationRestricted
     {

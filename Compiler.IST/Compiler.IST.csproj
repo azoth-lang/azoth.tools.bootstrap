@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Concrete.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Typed.lang&quot;" />
+    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Concrete.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)LexicalScopes.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Typed.lang&quot;" />
   </Target>
 
   <ItemGroup>
@@ -43,6 +43,12 @@
     </Compile>
     <Compile Update="Concrete.nodes.cs">
       <DependentUpon>Concrete.lang</DependentUpon>
+    </Compile>
+    <Compile Update="LexicalScopes.lang.cs">
+      <DependentUpon>LexicalScopes.lang</DependentUpon>
+    </Compile>
+    <Compile Update="LexicalScopes.nodes.cs">
+      <DependentUpon>LexicalScopes.lang</DependentUpon>
     </Compile>
     <Compile Update="Typed.lang.cs">
       <DependentUpon>Typed.lang</DependentUpon>

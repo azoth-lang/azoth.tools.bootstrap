@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 
 // ReSharper disable MemberHidesStaticFromOuterClass
 
-public sealed partial class Typed
+public sealed partial class LexicalScopes
 {
     private sealed class HasLexicalScopeNode : Node, HasLexicalScope
     {
