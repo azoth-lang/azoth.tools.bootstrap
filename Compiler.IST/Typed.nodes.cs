@@ -11,16 +11,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 
 public sealed partial class Typed
 {
-    private sealed class HasLexicalScopeNode : Node, HasLexicalScope
-    {
-        public LexicalScope ContainingLexicalScope { get; }
-
-        public HasLexicalScopeNode(LexicalScope containingLexicalScope)
-        {
-            ContainingLexicalScope = containingLexicalScope;
-        }
-    }
-
     private sealed class PackageNode : Node, Package
     {
         public IPackageSyntax Syntax { get; }
@@ -86,12 +76,14 @@ public sealed partial class Typed
         public INamespaceDeclarationSyntax Syntax { get; }
         public IFixedList<UsingDirective> UsingDirectives { get; }
         public IFixedList<NamespaceMemberDeclaration> Declarations { get; }
+        public LexicalScope ContainingLexicalScope { get; }
 
-        public NamespaceDeclarationNode(INamespaceDeclarationSyntax syntax, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations)
+        public NamespaceDeclarationNode(INamespaceDeclarationSyntax syntax, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations, LexicalScope containingLexicalScope)
         {
             Syntax = syntax;
             UsingDirectives = usingDirectives;
             Declarations = declarations;
+            ContainingLexicalScope = containingLexicalScope;
         }
     }
 
@@ -100,12 +92,14 @@ public sealed partial class Typed
         public IClassDeclarationSyntax Syntax { get; }
         public bool IsAbstract { get; }
         public IFixedList<ClassMemberDeclaration> Members { get; }
+        public LexicalScope ContainingLexicalScope { get; }
 
-        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members)
+        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members, LexicalScope containingLexicalScope)
         {
             Syntax = syntax;
             IsAbstract = isAbstract;
             Members = members;
+            ContainingLexicalScope = containingLexicalScope;
         }
     }
 
@@ -113,11 +107,13 @@ public sealed partial class Typed
     {
         public IStructDeclarationSyntax Syntax { get; }
         public IFixedList<StructMemberDeclaration> Members { get; }
+        public LexicalScope ContainingLexicalScope { get; }
 
-        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members)
+        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, LexicalScope containingLexicalScope)
         {
             Syntax = syntax;
             Members = members;
+            ContainingLexicalScope = containingLexicalScope;
         }
     }
 
@@ -125,51 +121,61 @@ public sealed partial class Typed
     {
         public ITraitDeclarationSyntax Syntax { get; }
         public IFixedList<TraitMemberDeclaration> Members { get; }
+        public LexicalScope ContainingLexicalScope { get; }
 
-        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members)
+        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, LexicalScope containingLexicalScope)
         {
             Syntax = syntax;
             Members = members;
+            ContainingLexicalScope = containingLexicalScope;
         }
     }
 
     private sealed class ClassMemberDeclarationNode : Node, ClassMemberDeclaration
     {
         public IDeclarationSyntax Syntax { get; }
+        public LexicalScope ContainingLexicalScope { get; }
 
-        public ClassMemberDeclarationNode(IDeclarationSyntax syntax)
+        public ClassMemberDeclarationNode(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
         {
             Syntax = syntax;
+            ContainingLexicalScope = containingLexicalScope;
         }
     }
 
     private sealed class TraitMemberDeclarationNode : Node, TraitMemberDeclaration
     {
         public IDeclarationSyntax Syntax { get; }
+        public LexicalScope ContainingLexicalScope { get; }
 
-        public TraitMemberDeclarationNode(IDeclarationSyntax syntax)
+        public TraitMemberDeclarationNode(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
         {
             Syntax = syntax;
+            ContainingLexicalScope = containingLexicalScope;
         }
     }
 
     private sealed class StructMemberDeclarationNode : Node, StructMemberDeclaration
     {
         public IDeclarationSyntax Syntax { get; }
+        public LexicalScope ContainingLexicalScope { get; }
 
-        public StructMemberDeclarationNode(IDeclarationSyntax syntax)
+        public StructMemberDeclarationNode(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
         {
             Syntax = syntax;
+            ContainingLexicalScope = containingLexicalScope;
         }
     }
 
     private sealed class FunctionDeclarationNode : Node, FunctionDeclaration
     {
         public IFunctionDeclarationSyntax Syntax { get; }
+        public LexicalScope ContainingLexicalScope { get; }
 
-        public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax)
+        public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax, LexicalScope containingLexicalScope)
         {
             Syntax = syntax;
+            ContainingLexicalScope = containingLexicalScope;
         }
     }
 

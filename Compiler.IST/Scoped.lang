@@ -1,4 +1,4 @@
-◊name LexicalScopes;
+◊name Scoped;
 ◊extends Concrete;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -8,3 +8,5 @@
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 +HasLexicalScope = ContainingLexicalScope:`LexicalScope`;
+
+*Declaration <: +HasLexicalScope;

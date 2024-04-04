@@ -13,14 +13,22 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 // ReSharper disable InconsistentNaming
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public sealed partial class LexicalScopes
+public sealed partial class Scoped
 {
+    [Closed(
+        typeof(Declaration))]
     public interface HasLexicalScope : IImplementationRestricted
     {
         LexicalScope ContainingLexicalScope { get; }
+    }
 
-        public static HasLexicalScope Create(LexicalScope containingLexicalScope)
-            => new HasLexicalScopeNode(containingLexicalScope);
+    [Closed(
+        typeof(NamespaceMemberDeclaration),
+        typeof(TypeMemberDeclaration))]
+    public interface Declaration : HasLexicalScope, Code
+    {
+        new IDeclarationSyntax Syntax { get; }
+        ISyntax Code.Syntax => Syntax;
     }
 
     public interface Package : IImplementationRestricted
@@ -68,21 +76,12 @@ public sealed partial class LexicalScopes
     }
 
     [Closed(
+        typeof(Declaration),
         typeof(CompilationUnit),
-        typeof(UsingDirective),
-        typeof(Declaration))]
+        typeof(UsingDirective))]
     public interface Code : IImplementationRestricted
     {
         ISyntax Syntax { get; }
-    }
-
-    [Closed(
-        typeof(NamespaceMemberDeclaration),
-        typeof(TypeMemberDeclaration))]
-    public interface Declaration : Code
-    {
-        new IDeclarationSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
     }
 
     [Closed(
@@ -100,8 +99,8 @@ public sealed partial class LexicalScopes
         IFixedList<UsingDirective> UsingDirectives { get; }
         IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
-        public static NamespaceDeclaration Create(INamespaceDeclarationSyntax syntax, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations)
-            => new NamespaceDeclarationNode(syntax, usingDirectives.ToFixedList(), declarations.ToFixedList());
+        public static NamespaceDeclaration Create(INamespaceDeclarationSyntax syntax, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations, LexicalScope containingLexicalScope)
+            => new NamespaceDeclarationNode(syntax, usingDirectives.ToFixedList(), declarations.ToFixedList(), containingLexicalScope);
     }
 
     [Closed(
@@ -121,8 +120,8 @@ public sealed partial class LexicalScopes
         bool IsAbstract { get; }
         IFixedList<ClassMemberDeclaration> Members { get; }
 
-        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IEnumerable<ClassMemberDeclaration> members)
-            => new ClassDeclarationNode(syntax, isAbstract, members.ToFixedList());
+        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IEnumerable<ClassMemberDeclaration> members, LexicalScope containingLexicalScope)
+            => new ClassDeclarationNode(syntax, isAbstract, members.ToFixedList(), containingLexicalScope);
     }
 
     public interface StructDeclaration : TypeDeclaration
@@ -131,8 +130,8 @@ public sealed partial class LexicalScopes
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<StructMemberDeclaration> Members { get; }
 
-        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members)
-            => new StructDeclarationNode(syntax, members.ToFixedList());
+        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, LexicalScope containingLexicalScope)
+            => new StructDeclarationNode(syntax, members.ToFixedList(), containingLexicalScope);
     }
 
     public interface TraitDeclaration : TypeDeclaration
@@ -141,8 +140,8 @@ public sealed partial class LexicalScopes
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<TraitMemberDeclaration> Members { get; }
 
-        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members)
-            => new TraitDeclarationNode(syntax, members.ToFixedList());
+        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, LexicalScope containingLexicalScope)
+            => new TraitDeclarationNode(syntax, members.ToFixedList(), containingLexicalScope);
     }
 
     [Closed(
@@ -158,22 +157,22 @@ public sealed partial class LexicalScopes
     public interface ClassMemberDeclaration : TypeMemberDeclaration
     {
 
-        public static ClassMemberDeclaration Create(IDeclarationSyntax syntax)
-            => new ClassMemberDeclarationNode(syntax);
+        public static ClassMemberDeclaration Create(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
+            => new ClassMemberDeclarationNode(syntax, containingLexicalScope);
     }
 
     public interface TraitMemberDeclaration : TypeMemberDeclaration
     {
 
-        public static TraitMemberDeclaration Create(IDeclarationSyntax syntax)
-            => new TraitMemberDeclarationNode(syntax);
+        public static TraitMemberDeclaration Create(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
+            => new TraitMemberDeclarationNode(syntax, containingLexicalScope);
     }
 
     public interface StructMemberDeclaration : TypeMemberDeclaration
     {
 
-        public static StructMemberDeclaration Create(IDeclarationSyntax syntax)
-            => new StructMemberDeclarationNode(syntax);
+        public static StructMemberDeclaration Create(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
+            => new StructMemberDeclarationNode(syntax, containingLexicalScope);
     }
 
     public interface FunctionDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
@@ -181,8 +180,8 @@ public sealed partial class LexicalScopes
         new IFunctionDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
 
-        public static FunctionDeclaration Create(IFunctionDeclarationSyntax syntax)
-            => new FunctionDeclarationNode(syntax);
+        public static FunctionDeclaration Create(IFunctionDeclarationSyntax syntax, LexicalScope containingLexicalScope)
+            => new FunctionDeclarationNode(syntax, containingLexicalScope);
     }
 
 }
