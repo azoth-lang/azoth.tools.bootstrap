@@ -1,8 +1,6 @@
 namespace Azoth.Tools.Bootstrap.Compiler.IST;
 
-public interface IPass<in TContext, in TFrom, out TTo>
+public interface IPass<TFrom, TContextIn, TTo, TContextOut>
 {
-    public static abstract TTo Run(TContext context, TFrom from);
-
-    protected TTo Run(TFrom from);
+    public static abstract (TTo, TContextOut) Run(TFrom from, TContextIn context);
 }

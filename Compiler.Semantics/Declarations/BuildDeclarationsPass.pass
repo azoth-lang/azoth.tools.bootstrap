@@ -1,0 +1,12 @@
+◊name BuildDeclarationsPass;
+◊from Concrete; // TODO have languages define entry points
+◊to WithDeclarations; // TODO have languages define entry points
+◊context DiagnosticsContext -> DeclarationsContext;
+
+Package -> ~, `PackageDeclaration`;
+
+ComplicationUnit* -> ~, `NamespaceDeclaration`;
+CompilationUnit -> ~, `NamespaceDeclaration`;
+ClassDeclaration -> ~, `ClassDeclaration`;
+NamespaceDeclaration -> ~, `NamespaceDeclaration`;
+ClassMemberDeclaration* -> ~, `ClassMemberDeclaration`* = auto;

@@ -5,12 +5,12 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
-public sealed partial class BuildLexicalScopesPass : IPass<Void, Concrete.Package, Scoped.Package>
+public sealed partial class BuildLexicalScopesPass : IPass<Concrete.Package, Void, Scoped.Package, Void>
 {
-    public static Scoped.Package Run(Void context, Concrete.Package from)
+    public static (Scoped.Package, Void) Run(Concrete.Package from, Void context)
     {
         var pass = new BuildLexicalScopesPass(context);
-        return pass.Run(from);
+        return (pass.Run(from), default);
     }
 
     public Scoped.Package Run(Concrete.Package from) => Transform(from);
