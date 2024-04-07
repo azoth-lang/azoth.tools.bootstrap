@@ -36,7 +36,7 @@ public abstract class CapabilityType : NonEmptyType
     /// <summary>
     /// Does this capability allow a reference with it to be moved if reference sharing permits.
     /// </summary>
-    public bool AllowsMove => Capability.AllowsMove && !BareType.IsDeclaredConstType;
+    public bool AllowsMove => Capability.AllowsMove && !BareType.IsDeclaredConst;
 
     /// <summary>
     /// Does this capability allow a reference with it to be frozen to const if reference

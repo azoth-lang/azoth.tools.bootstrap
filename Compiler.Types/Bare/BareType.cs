@@ -55,7 +55,7 @@ public abstract class BareType : IEquatable<BareType>
     /// Whether this type was declared `const` meaning that most references should be treated as
     /// const.
     /// </summary>
-    public bool IsDeclaredConstType => DeclaredType.IsDeclaredConst;
+    public bool IsDeclaredConst => DeclaredType.IsDeclaredConst;
 
     private readonly Lazy<TypeReplacements> typeReplacements;
 

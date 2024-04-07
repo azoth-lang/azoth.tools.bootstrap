@@ -1,6 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -262,11 +260,6 @@ public static class DataTypeExtensions
 
     //}
 
-    public static string ToSourceCodeString(this IPromise<DataType?> promise)
-        => promise.ToString(t => t?.ToSourceCodeString() ?? "⧼null⧽");
-
-    public static string ToILString(this IFixedList<DataType> types)
-        => string.Join(", ", types.Select(t => t.ToILString()));
 
     /// <summary>
     /// If this is a reference type or an optional reference type, the underlying reference type.
@@ -281,15 +274,6 @@ public static class DataTypeExtensions
             _ => null
         };
     }
-
-    [return: NotNullIfNotNull(nameof(type))]
-    public static DataType? ToOptional(this DataType? type)
-        => type switch
-        {
-            null => null,
-            UnknownType or NeverType or VoidType => type,
-            _ => new OptionalType(type),
-        };
 
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
@@ -356,13 +340,5 @@ public static class DataTypeExtensions
             (IntegerConstValueType { IsSigned: false } left, FixedSizeIntegerType { IsSigned: false } right)
                 => left.ToSmallestSignedIntegerType().NumericOperatorCommonType(right),
             _ => null
-        };
-
-    private static INumericType? AsNumericType(this NonEmptyType type)
-        => type switch
-        {
-            ValueType { DeclaredType: NumericType t } => t,
-            IntegerConstValueType t => t,
-            _ => null,
         };
 }
