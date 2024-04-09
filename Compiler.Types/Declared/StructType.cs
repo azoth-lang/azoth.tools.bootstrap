@@ -79,7 +79,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         => With(IsDeclaredConst ? Capability.Constant : Capability.Isolated, GenericParameterTypes);
 
     /// <summary>
-    /// Determine the return type of a constructor with the given parameter types.
+    /// Determine the return type of an initializer with the given parameter types.
     /// </summary>
     /// <remarks>The capability of the return type is restricted by the parameter types because the
     /// newly constructed object could contain references to them.</remarks>
