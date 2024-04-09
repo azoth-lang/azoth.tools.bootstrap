@@ -40,8 +40,9 @@ public class SemanticAnalyzer
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
     public Package Check(PackageSyntax<Package> packageSyntax)
     {
-        // TODO remove or switch to new analysis
-        new NanopassSemanticAnalyzer().Check(packageSyntax);
+        // TODO Plan to migrate to nanopass: work from earlier passes to later. For each, build the
+        // pass and then modify the old steps to just apply that to the CST. Once everything is
+        // done in nanopass: remove the old steps and all the properties from the CST.
 
         // If there are errors from the lex and parse phase, don't continue on
         packageSyntax.Diagnostics.ThrowIfFatalErrors();

@@ -64,7 +64,7 @@ public static class Intrinsic
 
     private static FixedSymbolTree DefineIntrinsicSymbols()
     {
-        var intrinsicsPackage = new PackageSymbol("intrinsics");
+        var intrinsicsPackage = new PackageSymbol("azoth.intrinsics");
         var tree = new SymbolTreeBuilder(intrinsicsPackage);
 
         var intrinsicsNamespace = new NamespaceSymbol(intrinsicsPackage, "intrinsics");

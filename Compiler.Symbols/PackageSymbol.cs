@@ -22,8 +22,8 @@ public class PackageSymbol : NamespaceOrPackageSymbol
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is PackageSymbol otherNamespace
-               && Name == otherNamespace.Name;
+        return other is PackageSymbol otherPackageSymbol
+               && Name == otherPackageSymbol.Name;
     }
 
     public override int GetHashCode() => HashCode.Combine(Name);

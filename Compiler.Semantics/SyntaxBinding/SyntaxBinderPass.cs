@@ -4,7 +4,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using static Azoth.Tools.Bootstrap.Compiler.IST.Concrete;
 
