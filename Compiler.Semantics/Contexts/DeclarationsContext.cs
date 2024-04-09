@@ -8,7 +8,7 @@ public sealed class DeclarationsContext
     public Diagnostics Diagnostics { get; init; }
     public required DeclarationTree Declarations { get; init; }
 
-    public DeclarationsContext(DiagnosticsContext context)
+    public DeclarationsContext(SymbolBuilderContext context)
     {
         Diagnostics = context.Diagnostics;
     }

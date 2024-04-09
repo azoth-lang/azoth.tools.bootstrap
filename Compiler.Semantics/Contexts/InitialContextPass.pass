@@ -1,0 +1,5 @@
+◊name InitialContextPass;
+◊context PackageSyntax<Package> -> DiagnosticsContext;
+◊from `IPackageSyntax`;
+
+syntax:`IPackageSyntax` -> Diagnostics;

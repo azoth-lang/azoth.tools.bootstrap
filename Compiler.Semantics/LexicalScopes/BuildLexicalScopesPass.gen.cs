@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
-public sealed partial class BuildLexicalScopesPass : IPass<Concrete.Package, Void, Scoped.Package, Void>
+public sealed partial class BuildLexicalScopesPass : ITransformPass<Concrete.Package, Void, Scoped.Package, Void>
 {
     public static (Scoped.Package, Void) Run(Concrete.Package from, Void context)
     {

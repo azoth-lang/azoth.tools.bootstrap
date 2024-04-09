@@ -3,9 +3,9 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Declarations;
 
-public sealed partial class BuildDeclarationsPass : IPass<Concrete.Package, DiagnosticsContext, Scoped.Package, DeclarationsContext>
+public sealed partial class BuildDeclarationsPass : ITransformPass<Concrete.Package, SymbolBuilderContext, Scoped.Package, DeclarationsContext>
 {
-    public static (Scoped.Package, DeclarationsContext) Run(Concrete.Package from, DiagnosticsContext context)
+    public static (Scoped.Package, DeclarationsContext) Run(Concrete.Package from, SymbolBuilderContext context)
     {
         var pass = new BuildDeclarationsPass(context);
         pass.StartRun();

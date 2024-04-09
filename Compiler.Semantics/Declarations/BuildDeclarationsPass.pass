@@ -1,7 +1,7 @@
 ◊name BuildDeclarationsPass;
+◊context DiagnosticsContext -> DeclarationsContext;
 ◊from Concrete; // TODO have languages define entry points
 ◊to WithDeclarations; // TODO have languages define entry points
-◊context DiagnosticsContext -> DeclarationsContext;
 
 Package -> ~, `PackageDeclaration`;
 

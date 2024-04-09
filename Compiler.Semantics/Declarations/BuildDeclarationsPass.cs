@@ -9,7 +9,7 @@ public sealed partial class BuildDeclarationsPass
 {
     private readonly Diagnostics diagnostics;
 
-    private BuildDeclarationsPass(DiagnosticsContext context)
+    private BuildDeclarationsPass(SymbolBuilderContext context)
     {
         diagnostics = context.Diagnostics;
     }

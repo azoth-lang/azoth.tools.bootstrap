@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.AST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -44,8 +45,11 @@ public class SemanticAnalyzer
         // pass and then modify the old steps to just apply that to the CST. Once everything is
         // done in nanopass: remove the old steps and all the properties from the CST.
 
+        // TODO eliminate the context parameter here
+        var initialContext = InitialContextPass.Run(packageSyntax, packageSyntax);
+
         // If there are errors from the lex and parse phase, don't continue on
-        packageSyntax.Diagnostics.ThrowIfFatalErrors();
+        initialContext.Diagnostics.ThrowIfFatalErrors();
 
         NamespaceSymbolBuilder.BuildNamespaceSymbols(packageSyntax);
 
