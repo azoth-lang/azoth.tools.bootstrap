@@ -9,12 +9,12 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 
-public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
+public class LegacyNamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
 {
     private readonly ISymbolTreeBuilder treeBuilder;
     private readonly PackageSymbol packageSymbol;
 
-    private NamespaceSymbolBuilder(ISymbolTreeBuilder treeBuilder, PackageSymbol packageSymbol)
+    private LegacyNamespaceSymbolBuilder(ISymbolTreeBuilder treeBuilder, PackageSymbol packageSymbol)
     {
         this.treeBuilder = treeBuilder;
         this.packageSymbol = packageSymbol;
@@ -31,7 +31,7 @@ public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
         ISymbolTreeBuilder treeBuilder,
         IFixedSet<ICompilationUnitSyntax> compilationUnits)
     {
-        var builder = new NamespaceSymbolBuilder(treeBuilder, package.Symbol);
+        var builder = new LegacyNamespaceSymbolBuilder(treeBuilder, package.Symbol);
         foreach (var compilationUnit in compilationUnits)
             builder.Walk(compilationUnit, package.Symbol);
     }

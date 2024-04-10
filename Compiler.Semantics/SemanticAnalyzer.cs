@@ -54,7 +54,7 @@ public class SemanticAnalyzer
 
         var (package, context) = SyntaxBinder.Run(packageSyntax, initialContext);
 
-        NamespaceSymbolBuilder.BuildNamespaceSymbols(packageSyntax);
+        LegacyNamespaceSymbolBuilder.BuildNamespaceSymbols(packageSyntax);
 
         // Build up lexical scopes down to the declaration level
         new LexicalScopesBuilder().BuildFor(packageSyntax);
