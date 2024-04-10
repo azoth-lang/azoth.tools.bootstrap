@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 /// <summary>
-/// A symbol for a package.
+/// A symbol for a package. This is also used as the symbol for the global namespace.
 /// </summary>
 /// <remarks>
 /// A package alias has no effect on the symbol. It is still the same package.

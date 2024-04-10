@@ -6,6 +6,6 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-*Declaration = +ContainingSymbol:`NamespaceOrPackageSymbol`?;
-*NamespaceDeclaration = +ContainingSymbol:`NamespaceOrPackageSymbol` +Symbol:`NamespaceOrPackageSymbol`;
-*FunctionDeclaration = +ContainingSymbol:`NamespaceOrPackageSymbol`;
+*Declaration = +ContainingSymbol:`NamespaceSymbol`?;
+*NamespaceDeclaration = +ContainingSymbol:`NamespaceSymbol` +Symbol:`NamespaceSymbol`;
+*FunctionDeclaration = +ContainingSymbol:`NamespaceSymbol`;

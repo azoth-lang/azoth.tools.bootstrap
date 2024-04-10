@@ -3,6 +3,9 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
+/// <summary>
+/// A symbol for a namespace, whether global or local.
+/// </summary>
 [Closed(
     typeof(LocalNamespaceSymbol),
     typeof(PackageSymbol))]
