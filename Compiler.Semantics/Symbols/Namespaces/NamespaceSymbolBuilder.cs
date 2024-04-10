@@ -43,18 +43,30 @@ internal sealed partial class NamespaceSymbolBuilder
         if (from.IsGlobalQualified)
             containingSymbol = packageSymbol;
         var sym = BuildNamespaceSymbol(containingSymbol, from.DeclaredNames, treeBuilder);
+        // TODO remove properties on Syntax nodes
+        from.Syntax.ContainingNamespaceSymbol = containingSymbol;
+        from.Syntax.Symbol.Fulfill(sym);
         return Create(from, containingSymbol, sym, treeBuilder);
     }
 
+    // TODO this should be more automatic
     private partial To.FunctionDeclaration Transform(
         From.FunctionDeclaration from,
         NamespaceOrPackageSymbol containingSymbol)
-        => Create(from, containingSymbol);
+    {
+        // TODO remove properties on Syntax nodes
+        from.Syntax.ContainingNamespaceSymbol = containingSymbol;
+        return Create(from, containingSymbol);
+    }
 
     private partial To.TypeDeclaration Transform(
         From.TypeDeclaration from,
         NamespaceOrPackageSymbol? containingSymbol)
-        => Create(from, containingSymbol, childContainingSymbol: null);
+    {
+        // TODO remove properties on Syntax nodes
+        from.Syntax.ContainingNamespaceSymbol = containingSymbol!;
+        return Create(from, containingSymbol, childContainingSymbol: null);
+    }
 
     private static NamespaceOrPackageSymbol BuildNamespaceSymbol(
         NamespaceOrPackageSymbol containingSymbol,
