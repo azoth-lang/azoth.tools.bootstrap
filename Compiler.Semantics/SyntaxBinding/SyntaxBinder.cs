@@ -14,7 +14,7 @@ using AST = Compiler.AST;
 /// <summary>
 /// A nanopass that constructs the IST from the CST and binds it to the CST.
 /// </summary>
-public sealed class SyntaxBinderPass
+public sealed class SyntaxBinder
 {
     public static Package Build(PackageSyntax<AST.Package> syntax)
     {

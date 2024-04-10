@@ -16,7 +16,7 @@ public class NanopassSemanticAnalyzer
         packageSyntax.Diagnostics.ThrowIfFatalErrors();
 
         // TODO construct the IST from the CST
-        var package = SyntaxBinderPass.Build(packageSyntax);
+        var package = SyntaxBinder.Build(packageSyntax);
 
         // TODO construct the AST from the IST
         return null!;
