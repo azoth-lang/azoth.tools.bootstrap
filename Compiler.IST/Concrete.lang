@@ -1,6 +1,7 @@
 ◊name Concrete;
 ◊namespace Azoth.Tools.Bootstrap.Compiler.IST;
 ◊list IFixedList;
+◊set IFixedSet;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -9,8 +10,8 @@
 
 // TODO ◊entry Package
 
-Package = Syntax:`IPackageSyntax` Symbol:`PackageSymbol` References:PackageReference*
-    CompilationUnits:CompilationUnit* TestingCompilationUnits:CompilationUnit*;
+Package = Syntax:`IPackageSyntax` Symbol:`PackageSymbol` References:{PackageReference}
+    CompilationUnits:{CompilationUnit} TestingCompilationUnits:{CompilationUnit};
 
 PackageReference = Syntax:`IPackageReferenceSyntax`
     AliasOrName:`IdentifierName` Package:`IPackageSymbols` IsTrusted:`bool`;

@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 using Azoth.Tools.Bootstrap.Framework;
@@ -336,7 +337,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Rules);
         var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
-        Assert.Equal(new TypeNode(Symbol("MyType"), true, true), property.Type);
+        Assert.Equal(new TypeNode(Symbol("MyType"), CollectionKind.List, true), property.Type);
     }
 
     [Fact]
@@ -390,22 +391,22 @@ public class TreeParserTests
 
     private static TypeNode Type(SymbolNode symbol)
     {
-        return new TypeNode(symbol, false, false);
+        return new TypeNode(symbol, CollectionKind.None, false);
     }
 
     private static TypeNode OptionalType(SymbolNode symbol)
     {
-        return new TypeNode(symbol, false, true);
+        return new TypeNode(symbol, CollectionKind.None, true);
     }
 
     private static TypeNode ListType(SymbolNode symbol)
     {
-        return new TypeNode(symbol, true, false);
+        return new TypeNode(symbol, CollectionKind.List, false);
     }
 
     private static TypeNode RefType(SymbolNode symbol)
     {
-        return new TypeNode(symbol, false, false);
+        return new TypeNode(symbol, CollectionKind.None, false);
     }
 
     private static IFixedList<T> FixedList<T>(params T[] values)

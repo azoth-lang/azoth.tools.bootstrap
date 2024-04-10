@@ -15,11 +15,11 @@ public sealed partial class Scoped
     {
         public IPackageSyntax Syntax { get; }
         public PackageSymbol Symbol { get; }
-        public IFixedList<PackageReference> References { get; }
-        public IFixedList<CompilationUnit> CompilationUnits { get; }
-        public IFixedList<CompilationUnit> TestingCompilationUnits { get; }
+        public IFixedSet<PackageReference> References { get; }
+        public IFixedSet<CompilationUnit> CompilationUnits { get; }
+        public IFixedSet<CompilationUnit> TestingCompilationUnits { get; }
 
-        public PackageNode(IPackageSyntax syntax, PackageSymbol symbol, IFixedList<PackageReference> references, IFixedList<CompilationUnit> compilationUnits, IFixedList<CompilationUnit> testingCompilationUnits)
+        public PackageNode(IPackageSyntax syntax, PackageSymbol symbol, IFixedSet<PackageReference> references, IFixedSet<CompilationUnit> compilationUnits, IFixedSet<CompilationUnit> testingCompilationUnits)
         {
             Syntax = syntax;
             Symbol = symbol;

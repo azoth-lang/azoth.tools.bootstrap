@@ -28,7 +28,7 @@ internal static class LanguageParser
 
             var extends = extendsLanguage.Grammar;
             var rules = ParseRuleExtensions(extendsLanguage, lines, extends.DefaultParent).ToFixedList();
-            var grammar = new GrammarNode(extends.Namespace, extends.DefaultParent, extends.Prefix, extends.Suffix, extends.ListType, usingNamespaces, rules);
+            var grammar = new GrammarNode(extends.Namespace, extends.DefaultParent, extends.Prefix, extends.Suffix, extends.ListType, extends.SetType, usingNamespaces, rules);
             return new LanguageNode(name, grammar, extendsLanguage);
         }
         else
@@ -37,9 +37,10 @@ internal static class LanguageParser
             var rootType = Parsing.ParseSymbol(Parsing.GetConfig(lines, "root"));
             var prefix = Parsing.GetConfig(lines, "prefix") ?? "";
             var suffix = Parsing.GetConfig(lines, "suffix") ?? "";
-            var listType = Parsing.GetConfig(lines, "list") ?? "List";
+            var listType = Parsing.GetListConfig(lines);
+            var setType = Parsing.GetSetConfig(lines);
             var rules = Parsing.ParseRules(lines, rootType).ToFixedList();
-            var grammar = new GrammarNode(ns, rootType, prefix, suffix, listType, usingNamespaces, rules);
+            var grammar = new GrammarNode(ns, rootType, prefix, suffix, listType, setType, usingNamespaces, rules);
             return new LanguageNode(name, grammar, extends: null);
         }
     }

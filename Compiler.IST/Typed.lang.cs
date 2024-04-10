@@ -35,12 +35,12 @@ public sealed partial class Typed
     {
         IPackageSyntax Syntax { get; }
         PackageSymbol Symbol { get; }
-        IFixedList<PackageReference> References { get; }
-        IFixedList<CompilationUnit> CompilationUnits { get; }
-        IFixedList<CompilationUnit> TestingCompilationUnits { get; }
+        IFixedSet<PackageReference> References { get; }
+        IFixedSet<CompilationUnit> CompilationUnits { get; }
+        IFixedSet<CompilationUnit> TestingCompilationUnits { get; }
 
         public static Package Create(IPackageSyntax syntax, PackageSymbol symbol, IEnumerable<PackageReference> references, IEnumerable<CompilationUnit> compilationUnits, IEnumerable<CompilationUnit> testingCompilationUnits)
-            => new PackageNode(syntax, symbol, references.ToFixedList(), compilationUnits.ToFixedList(), testingCompilationUnits.ToFixedList());
+            => new PackageNode(syntax, symbol, references.ToFixedSet(), compilationUnits.ToFixedSet(), testingCompilationUnits.ToFixedSet());
     }
 
     public interface PackageReference : IImplementationRestricted

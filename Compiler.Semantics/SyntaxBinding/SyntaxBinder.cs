@@ -8,8 +8,9 @@ using ExhaustiveMatching;
 using static Azoth.Tools.Bootstrap.Compiler.IST.Concrete;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
+
 /// <summary>
-/// A nanopass that constructs the IST from the CST and binds it to the CST.
+/// Constructs the IST from the CST and binds it to the CST.
 /// </summary>
 internal sealed partial class SyntaxBinder
 {
@@ -29,78 +30,78 @@ internal sealed partial class SyntaxBinder
     private partial Package Transform(IPackageSyntax from)
     {
         var symbol = new PackageSymbol(from.Name);
-        var references = from.References.Select(Build);
-        var compilationUnits = from.CompilationUnits.Select(Build);
-        var testingCompilationUnits = from.TestingCompilationUnits.Select(Build);
+        var references = from.References.Select(Transform);
+        var compilationUnits = Transform(from.CompilationUnits);
+        var testingCompilationUnits = Transform(from.TestingCompilationUnits);
         return Package.Create(from, symbol, references, compilationUnits, testingCompilationUnits);
     }
 
-    private static PackageReference Build(IPackageReferenceSyntax reference)
+    private static PackageReference Transform(IPackageReferenceSyntax reference)
         => PackageReference.Create(reference, reference.AliasOrName, reference.Package, reference.IsTrusted);
 
-    private static CompilationUnit Build(ICompilationUnitSyntax syntax)
+    private partial CompilationUnit Transform(ICompilationUnitSyntax from)
     {
-        var usingDirectives = syntax.UsingDirectives.Select(Build);
-        var declarations = syntax.Declarations.Select(Build);
-        return CompilationUnit.Create(syntax, syntax.File, syntax.ImplicitNamespaceName, usingDirectives, declarations);
+        var usingDirectives = from.UsingDirectives.Select(Transform);
+        var declarations = from.Declarations.Select(Transform);
+        return CompilationUnit.Create(from, from.File, from.ImplicitNamespaceName, usingDirectives, declarations);
     }
 
-    private static UsingDirective Build(IUsingDirectiveSyntax syntax)
+    private static UsingDirective Transform(IUsingDirectiveSyntax syntax)
         => UsingDirective.Create(syntax, syntax.Name);
 
-    private static NamespaceMemberDeclaration Build(INonMemberDeclarationSyntax syntax)
+    private static NamespaceMemberDeclaration Transform(INonMemberDeclarationSyntax syntax)
         => syntax switch
         {
-            INamespaceDeclarationSyntax syn => Build(syn),
-            ITypeDeclarationSyntax syn => Build(syn),
-            IFunctionDeclarationSyntax syn => Build(syn),
+            INamespaceDeclarationSyntax syn => Transform(syn),
+            ITypeDeclarationSyntax syn => Transform(syn),
+            IFunctionDeclarationSyntax syn => Transform(syn),
             _ => throw ExhaustiveMatch.Failed(syntax),
         };
 
-    private static NamespaceDeclaration Build(INamespaceDeclarationSyntax syntax)
+    private static NamespaceDeclaration Transform(INamespaceDeclarationSyntax syntax)
     {
-        var usingDirectives = syntax.UsingDirectives.Select(Build);
-        var declarations = syntax.Declarations.Select(Build);
+        var usingDirectives = syntax.UsingDirectives.Select(Transform);
+        var declarations = syntax.Declarations.Select(Transform);
         return NamespaceDeclaration.Create(syntax, usingDirectives, declarations);
     }
 
-    private static FunctionDeclaration Build(IFunctionDeclarationSyntax syntax)
+    private static FunctionDeclaration Transform(IFunctionDeclarationSyntax syntax)
         => FunctionDeclaration.Create(syntax);
 
-    private static TypeDeclaration Build(ITypeDeclarationSyntax syntax)
+    private static TypeDeclaration Transform(ITypeDeclarationSyntax syntax)
         => syntax switch
         {
-            IClassDeclarationSyntax syn => Build(syn),
-            IStructDeclarationSyntax syn => Build(syn),
-            ITraitDeclarationSyntax syn => Build(syn),
+            IClassDeclarationSyntax syn => Transform(syn),
+            IStructDeclarationSyntax syn => Transform(syn),
+            ITraitDeclarationSyntax syn => Transform(syn),
             _ => throw ExhaustiveMatch.Failed(syntax),
         };
 
-    private static ClassDeclaration Build(IClassDeclarationSyntax syntax)
+    private static ClassDeclaration Transform(IClassDeclarationSyntax syntax)
     {
         var isAbstract = syntax.AbstractModifier is not null;
         var members = Enumerable.Empty<ClassMemberDeclaration>(); // TODO syntax.Members.Select(Build);
         return ClassDeclaration.Create(syntax, isAbstract, members);
     }
 
-    private static ClassMemberDeclaration Build(IClassMemberDeclarationSyntax syntax)
+    private static ClassMemberDeclaration Transform(IClassMemberDeclarationSyntax syntax)
         => throw new NotImplementedException();
 
-    private static StructDeclaration Build(IStructDeclarationSyntax syntax)
+    private static StructDeclaration Transform(IStructDeclarationSyntax syntax)
     {
         var members = Enumerable.Empty<StructMemberDeclaration>(); // TODO syntax.Members.Select(Build);
         return StructDeclaration.Create(syntax, members);
     }
 
-    private static StructMemberDeclaration Build(IStructMemberDeclarationSyntax syntax)
+    private static StructMemberDeclaration Transform(IStructMemberDeclarationSyntax syntax)
         => throw new NotImplementedException();
 
-    private static TraitDeclaration Build(ITraitDeclarationSyntax syntax)
+    private static TraitDeclaration Transform(ITraitDeclarationSyntax syntax)
     {
         var members = Enumerable.Empty<TraitMemberDeclaration>(); // TODO syntax.Members.Select(Build);
         return TraitDeclaration.Create(syntax, members);
     }
 
-    private static TraitMemberDeclaration Build(ITraitMemberDeclarationSyntax syntax)
+    private static TraitMemberDeclaration Transform(ITraitMemberDeclarationSyntax syntax)
         => throw new NotImplementedException();
 }

@@ -2,6 +2,7 @@ using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
@@ -123,7 +124,21 @@ internal static class Emit
 
     private static string TypeDecorations(Type type, string name)
     {
-        if (type.IsList) name = $"{type.Grammar.ListType}<{name}>";
+        switch (type.CollectionKind)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(type.CollectionKind);
+            case CollectionKind.None:
+                // Nothing
+                break;
+            case CollectionKind.List:
+                name = $"{type.Grammar.ListType}<{name}>";
+                break;
+            case CollectionKind.Set:
+                name = $"{type.Grammar.SetType}<{name}>";
+                break;
+        }
+
         if (type.IsOptional) name += "?";
         return name;
     }
@@ -163,7 +178,7 @@ internal static class Emit
 
     private static string ParameterTypeDecorations(Type type, string name)
     {
-        if (type.IsList) name = $"IEnumerable<{name}>";
+        if (type.CollectionKind != CollectionKind.None) name = $"IEnumerable<{name}>";
         if (type.IsOptional) name += "?";
         return name;
     }
@@ -179,10 +194,28 @@ internal static class Emit
         return string.Join(", ", rule.AllProperties.Select(ToArgument));
         static string ToArgument(Property p)
         {
-            if (p.Type.IsList)
-                return $"{p.Name.ToCamelCase()}.ToFixedList()";
+            var collectionType = CollectionType(p.Type);
+            if (collectionType is not null)
+                return $"{p.Name.ToCamelCase()}.To{collectionType.WithoutInterfacePrefix()}()";
             return p.Name.ToCamelCase();
         }
+    }
+
+    private static string? CollectionType(Type type)
+    {
+        return type.CollectionKind switch
+        {
+            CollectionKind.None => null,
+            CollectionKind.List => type.Grammar.ListType,
+            CollectionKind.Set => type.Grammar.SetType,
+            _ => throw ExhaustiveMatch.Failed(type.CollectionKind)
+        };
+    }
+
+    private static string WithoutInterfacePrefix(this string name)
+    {
+        if (name.StartsWith("I")) return name[1..];
+        return name;
     }
 
     public static string ModifiedPropertyArguments(Rule rule)

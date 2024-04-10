@@ -11,7 +11,7 @@ public sealed class Type
 
     public Symbol Symbol { get; }
     public string Name => Symbol.Name;
-    public bool IsList => Syntax.IsList;
+    public CollectionKind CollectionKind => Syntax.CollectionKind;
     public bool IsOptional => Syntax.IsOptional;
 
     public Type(Property property, TypeNode syntax)
@@ -24,9 +24,9 @@ public sealed class Type
 
     public bool IsEquivalentTo(Type other)
     {
-        return IsList == other.IsList
-            && IsOptional == other.IsOptional
-            && Name == other.Name
-            && Symbol.Syntax == other.Symbol.Syntax;
+        return CollectionKind == other.CollectionKind
+               && IsOptional == other.IsOptional
+               && Name == other.Name
+               && Symbol.Syntax == other.Symbol.Syntax;
     }
 }

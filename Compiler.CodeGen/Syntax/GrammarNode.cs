@@ -12,6 +12,7 @@ public sealed class GrammarNode
     public string Prefix { get; }
     public string Suffix { get; }
     public string ListType { get; }
+    public string SetType { get; }
     public IFixedSet<string> UsingNamespaces { get; }
     public IFixedList<RuleNode> Rules { get; }
 
@@ -21,6 +22,7 @@ public sealed class GrammarNode
         string prefix,
         string suffix,
         string listType,
+        string setType,
         IEnumerable<string> usingNamespaces,
         IEnumerable<RuleNode> rules)
     {
@@ -29,6 +31,7 @@ public sealed class GrammarNode
         Prefix = prefix;
         Suffix = suffix;
         ListType = listType;
+        SetType = setType;
         UsingNamespaces = usingNamespaces.ToFixedSet();
         Rules = rules.ToFixedList();
         if (Rules.Select(r => r.Defines).Distinct().Count() != Rules.Count)

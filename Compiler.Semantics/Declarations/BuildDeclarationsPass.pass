@@ -5,7 +5,7 @@
 
 Package -> ~, `PackageDeclaration`;
 
-ComplicationUnit* -> ~, `NamespaceDeclaration`;
+CompilationUnit* -> ~, `NamespaceDeclaration`;
 CompilationUnit -> ~, `NamespaceDeclaration`;
 ClassDeclaration -> ~, `ClassDeclaration`;
 NamespaceDeclaration -> ~, `NamespaceDeclaration`;

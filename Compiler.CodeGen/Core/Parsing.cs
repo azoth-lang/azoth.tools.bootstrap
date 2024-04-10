@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -29,6 +30,10 @@ internal static class Parsing
         line = line?.Trim();
         return line;
     }
+
+    public static string GetListConfig(IFixedList<string> lines) => GetConfig(lines, "list") ?? "List";
+
+    public static string GetSetConfig(IFixedList<string> lines) => GetConfig(lines, "set") ?? "HashSet";
 
     private static string ConfigStart(string config) => DirectiveMarker + config + " ";
 
@@ -122,9 +127,6 @@ internal static class Parsing
         var isOptional = property.EndsWith('?');
         property = isOptional ? property[..^1] : property;
 
-        var isList = property.EndsWith('*');
-        property = isList ? property[..^1] : property;
-
         var parts = property.Split(':').Select(p => p.Trim()).ToArray();
 
         switch (parts.Length)
@@ -132,19 +134,35 @@ internal static class Parsing
             case 1:
             {
                 var name = parts[0];
-                var grammarType = new TypeNode(ParseSymbol(name), isList, isOptional);
+                var collectionKind = ParseCollectionKind(ref name);
+                var grammarType = new TypeNode(ParseSymbol(name), collectionKind, isOptional);
                 return new PropertyNode(name, grammarType);
             }
             case 2:
             {
                 var name = parts[0];
                 var type = parts[1];
-                var grammarType = new TypeNode(ParseSymbol(type), isList, isOptional);
+                var collectionKind = ParseCollectionKind(ref type);
+                var grammarType = new TypeNode(ParseSymbol(type), collectionKind, isOptional);
                 return new PropertyNode(name, grammarType);
             }
             default:
                 throw new FormatException($"Too many colons in property: '{property}'");
         }
+    }
+
+    private static CollectionKind ParseCollectionKind(ref string type)
+    {
+        var isList = type.EndsWith('*');
+        type = isList ? type[..^1] : type;
+
+        var isSet = type.StartsWith('{') && type.EndsWith('}');
+        type = isSet ? type[1..^1] : type;
+
+        if (isList && isSet) throw new FormatException("Property cannot be both a list and a set");
+        if (isList) return CollectionKind.List;
+        if (isSet) return CollectionKind.Set;
+        return CollectionKind.None;
     }
 
     public static IEnumerable<string> SplitProperties(string definition)
