@@ -32,7 +32,7 @@ internal sealed partial class NamespaceSymbolBuilder
         From.CompilationUnit from, PackageSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
     {
         var sym = BuildNamespaceSymbol(containingSymbol, from.ImplicitNamespaceName, treeBuilder);
-        return Create(from, Transform(from.Declarations, sym, treeBuilder));
+        return Create(from, sym, treeBuilder);
     }
 
     private partial To.NamespaceDeclaration Transform(
@@ -43,8 +43,7 @@ internal sealed partial class NamespaceSymbolBuilder
         if (from.IsGlobalQualified)
             containingSymbol = packageSymbol;
         var sym = BuildNamespaceSymbol(containingSymbol, from.DeclaredNames, treeBuilder);
-        var declarations = Transform(from.Declarations, sym, treeBuilder);
-        return Create(from, containingSymbol, sym, declarations);
+        return Create(from, containingSymbol, sym, treeBuilder);
     }
 
     private partial To.FunctionDeclaration Transform(

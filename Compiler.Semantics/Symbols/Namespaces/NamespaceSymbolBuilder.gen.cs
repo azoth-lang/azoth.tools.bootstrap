@@ -47,6 +47,12 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
         IEnumerable<To.NamespaceMemberDeclaration> declarations)
         => To.CompilationUnit.Create(from.Syntax, from.File, from.ImplicitNamespaceName, from.UsingDirectives, declarations);
 
+    private To.CompilationUnit Create(
+        From.CompilationUnit from,
+        NamespaceOrPackageSymbol containingSymbol,
+        ISymbolTreeBuilder treeBuilder)
+        => Create(from, Transform(from.Declarations, containingSymbol, treeBuilder));
+
     private IFixedList<To.NamespaceMemberDeclaration> Transform(IEnumerable<From.NamespaceMemberDeclaration> from, NamespaceOrPackageSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
         => from.Select(f => Transform(f, containingSymbol, treeBuilder)).ToFixedList();
 
@@ -72,6 +78,16 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
         NamespaceOrPackageSymbol symbol,
         IEnumerable<To.NamespaceMemberDeclaration> declarations)
         => To.NamespaceDeclaration.Create(symbol, containingSymbol, from.Syntax, from.IsGlobalQualified, from.DeclaredNames, from.UsingDirectives, declarations);
+
+    private To.NamespaceDeclaration Create(
+        From.NamespaceDeclaration from,
+        NamespaceOrPackageSymbol containingSymbol,
+        NamespaceOrPackageSymbol childContainingSymbol,
+        ISymbolTreeBuilder treeBuilder)
+    {
+        var declarations = Transform(from.Declarations, childContainingSymbol, treeBuilder);
+        return Create(from, containingSymbol, childContainingSymbol, declarations);
+    }
 
     private partial To.FunctionDeclaration Transform(
         From.FunctionDeclaration from,
