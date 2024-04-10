@@ -20,7 +20,7 @@ internal class NonMemberSymbol
     public static NonMemberSymbol ForExternalSymbol(Symbol symbol)
         => new NonMemberSymbol(symbol);
 
-    public static NonMemberSymbol ForPackageNamespace(NamespaceSymbol ns)
+    public static NonMemberSymbol ForPackageNamespace(LocalNamespaceSymbol ns)
         => new NonMemberSymbol(ns);
 
     public bool InCurrentPackage { get; }
@@ -69,7 +69,7 @@ internal class NonMemberSymbol
         Symbol = Promise.ForValue(symbol);
     }
 
-    private NonMemberSymbol(NamespaceSymbol ns)
+    private NonMemberSymbol(LocalNamespaceSymbol ns)
     {
         InCurrentPackage = true;
         ContainingNamespace = ns.ContainingSymbol.NamespaceName;

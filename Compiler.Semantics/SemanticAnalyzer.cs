@@ -85,7 +85,7 @@ public class SemanticAnalyzer
         var stringSymbol = globalObjectTypeSymbols.SingleOrDefault(s => s.Name == "String");
         // TODO handle `range` better
         var azothNamespaceSymbols = packageSyntax.SymbolTrees.GlobalSymbols
-            .OfType<NamespaceSymbol>().Where(s => s.Name == "azoth");
+            .OfType<LocalNamespaceSymbol>().Where(s => s.Name == "azoth");
         var rangeSymbol = azothNamespaceSymbols.SelectMany(packageSyntax.SymbolTrees.Children)
             .OfType<UserTypeSymbol>().SingleOrDefault(s => s.Name == "range");
 

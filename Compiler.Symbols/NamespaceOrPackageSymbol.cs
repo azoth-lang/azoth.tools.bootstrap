@@ -4,7 +4,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 [Closed(
-    typeof(NamespaceSymbol),
+    typeof(LocalNamespaceSymbol),
     typeof(PackageSymbol))]
 public abstract class NamespaceOrPackageSymbol : Symbol
 {

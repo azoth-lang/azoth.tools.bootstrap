@@ -58,7 +58,7 @@ public partial class BuildLexicalScopesPass
         IEnumerable<FixedSymbolTree> referencedSymbolTrees)
     {
         // Namespaces in the package need to be created even if they are empty
-        var packageNamespaces = packageSymbolTree.Symbols.OfType<NamespaceSymbol>()
+        var packageNamespaces = packageSymbolTree.Symbols.OfType<LocalNamespaceSymbol>()
                                                  .Select(NonMemberSymbol.ForPackageNamespace);
 
         var packageNonMemberEntitySymbols = packageEntityDeclarations.OfType<INonMemberEntityDeclarationSyntax>()

@@ -76,11 +76,11 @@ internal sealed partial class NamespaceSymbolBuilder
         foreach (var nsName in namespaces.Segments)
         {
             var nsSymbol = treeBuilder.GetChildrenOf(containingSymbol)
-                                      .OfType<NamespaceSymbol>()
+                                      .OfType<LocalNamespaceSymbol>()
                                       .SingleOrDefault(c => c.Name == nsName);
             if (nsSymbol is null)
             {
-                nsSymbol = new NamespaceSymbol(containingSymbol, nsName);
+                nsSymbol = new LocalNamespaceSymbol(containingSymbol, nsName);
                 treeBuilder.Add(nsSymbol);
             }
 

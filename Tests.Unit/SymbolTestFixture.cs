@@ -15,7 +15,7 @@ public abstract class SymbolTestFixture
 {
     private int unique;
 
-    protected NamespaceSymbol Namespace(string? name = null, NamespaceOrPackageSymbol? ns = null)
+    protected LocalNamespaceSymbol Namespace(string? name = null, NamespaceOrPackageSymbol? ns = null)
         => new(ns ?? Package(), Name(name) ?? DefaultName("namespace"));
 
     protected PackageSymbol Package(string? name = null)

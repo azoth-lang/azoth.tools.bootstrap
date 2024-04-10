@@ -54,7 +54,7 @@ public class LexicalScopesBuilder
     {
         // Namespaces in the package need to be created even if they are empty
         var packageNamespaces = packageSymbolTree.Symbols
-                                                 .OfType<NamespaceSymbol>()
+                                                 .OfType<LocalNamespaceSymbol>()
                                                  .Select(NonMemberSymbol.ForPackageNamespace);
 
         var packageNonMemberEntitySymbols = packageEntityDeclarations
