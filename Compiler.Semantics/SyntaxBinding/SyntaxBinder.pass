@@ -4,5 +4,7 @@
 ◊context DiagnosticsContext -> SymbolBuilderContext;
 
 syntax:`IPackageSyntax` -> Package;
+`IPackageReference`* -> {PackageReference} = auto;
+`IPackageReference` -> PackageReference;
 `ICompilationUnit`* -> {CompilationUnit} = auto;
 `ICompilationUnit` -> CompilationUnit;

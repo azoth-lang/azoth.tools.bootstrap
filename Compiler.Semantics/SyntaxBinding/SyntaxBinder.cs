@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using static Azoth.Tools.Bootstrap.Compiler.IST.Concrete;
 
@@ -30,14 +31,12 @@ internal sealed partial class SyntaxBinder
     private partial Package Transform(IPackageSyntax from)
     {
         var symbol = new PackageSymbol(from.Name);
-        var references = from.References.Select(Transform);
-        var compilationUnits = Transform(from.CompilationUnits);
-        var testingCompilationUnits = Transform(from.TestingCompilationUnits);
-        return Package.Create(from, symbol, references, compilationUnits, testingCompilationUnits);
+        return Package.Create(from, symbol, Transform(from.References),
+            Transform(from.CompilationUnits), Transform(from.TestingCompilationUnits));
     }
 
-    private static PackageReference Transform(IPackageReferenceSyntax reference)
-        => PackageReference.Create(reference, reference.AliasOrName, reference.Package, reference.IsTrusted);
+    private partial PackageReference Transform(IPackageReferenceSyntax from)
+        => PackageReference.Create(from, from.AliasOrName, from.Package, from.IsTrusted);
 
     private partial CompilationUnit Transform(ICompilationUnitSyntax from)
     {

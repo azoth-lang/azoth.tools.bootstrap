@@ -13,6 +13,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Liveness;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Startup;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.BindingMutability;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.DefiniteAssignment;
@@ -50,6 +51,8 @@ public class SemanticAnalyzer
 
         // If there are errors from the lex and parse phase, don't continue on
         initialContext.Diagnostics.ThrowIfFatalErrors();
+
+        var (package, context) = SyntaxBinder.Run(packageSyntax, initialContext);
 
         NamespaceSymbolBuilder.BuildNamespaceSymbols(packageSyntax);
 

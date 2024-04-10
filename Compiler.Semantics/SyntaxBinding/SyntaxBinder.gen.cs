@@ -23,6 +23,11 @@ internal sealed partial class SyntaxBinder : ITransformPass<IPackageSyntax, Diag
 
     private partial Concrete.Package Transform(IPackageSyntax from);
 
+    private IFixedSet<Concrete.PackageReference> Transform(IEnumerable<IPackageReferenceSyntax> from)
+        => from.Select(Transform).ToFixedSet();
+
+    private partial Concrete.PackageReference Transform(IPackageReferenceSyntax from);
+
     private IFixedSet<Concrete.CompilationUnit> Transform(IEnumerable<ICompilationUnitSyntax> from)
         => from.Select(Transform).ToFixedSet();
 
