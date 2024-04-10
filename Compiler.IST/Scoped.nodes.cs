@@ -78,13 +78,17 @@ public sealed partial class Scoped
     private sealed class NamespaceDeclarationNode : Node, NamespaceDeclaration
     {
         public INamespaceDeclarationSyntax Syntax { get; }
+        public bool IsGlobalQualified { get; }
+        public NamespaceName DeclaredNames { get; }
         public IFixedList<UsingDirective> UsingDirectives { get; }
         public IFixedList<NamespaceMemberDeclaration> Declarations { get; }
         public LexicalScope ContainingLexicalScope { get; }
 
-        public NamespaceDeclarationNode(INamespaceDeclarationSyntax syntax, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations, LexicalScope containingLexicalScope)
+        public NamespaceDeclarationNode(INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations, LexicalScope containingLexicalScope)
         {
             Syntax = syntax;
+            IsGlobalQualified = isGlobalQualified;
+            DeclaredNames = declaredNames;
             UsingDirectives = usingDirectives;
             Declarations = declarations;
             ContainingLexicalScope = containingLexicalScope;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
@@ -65,11 +66,38 @@ public class Rule
     /// </summary>
     public bool IsNew => isNew.Value;
     private readonly Lazy<bool> isNew;
+
     /// <summary>
     /// Whether this rule is modified relative to the rule in the language being extended.
     /// </summary>
     public bool IsModified => isModified.Value;
     private readonly Lazy<bool> isModified;
+
+    /// <summary>
+    /// Whether this rule or any decedents of it have been modified.
+    /// </summary>
+    public bool DescendantsModified
+    {
+        get
+        {
+            if (descendantsModified.TryBeginFulfilling(DescendantsModifiedInCycle))
+                descendantsModified.Fulfill(ComputeDescendantsModified());
+
+            return descendantsModified.Result;
+        }
+    }
+    private readonly AcyclicPromise<bool> descendantsModified = new();
+
+    internal bool TryDescendantsModified
+    {
+        get
+        {
+            if (descendantsModified.TryBeginFulfilling())
+                descendantsModified.Fulfill(ComputeDescendantsModified());
+
+            return descendantsModified.ResultOr(false);
+        }
+    }
 
     public Language DefinedInLanguage => definedInLanguage.Value;
     private readonly Lazy<Language> definedInLanguage;
@@ -113,7 +141,7 @@ public class Rule
 
             var currentProperties = AllProperties.ToFixedSet();
             var oldProperties = oldRule.AllProperties.ToFixedSet();
-            return !currentProperties.SequenceEqual(oldProperties);
+            return !currentProperties.SequenceEqual(oldProperties, Property.NameAndTypeComparer);
         });
 
         definedInLanguage = new(() => IsNew || IsModified ? grammar.Language : grammar.Language.Extends?.Grammar.RuleFor(Defines.Syntax)?.DefinedInLanguage!);
@@ -141,4 +169,18 @@ public class Rule
 
     public IEnumerable<Property> AncestorPropertiesNamed(string propertyName)
         => AncestorProperties.Where(p => p.Name == propertyName);
+
+    private bool ComputeDescendantsModified()
+    {
+        return IsModified
+               // Note: added child rules are not a problem for the cases that matter here
+               || ChildRules.Any(r => r.DescendantsModified)
+               || DeclaredProperties.Select(p => p.Type.Symbol.ReferencedRule)
+                                    .WhereNotNull()
+                                    .Except(this)
+                                    .Any(r => r.TryDescendantsModified);
+    }
+
+    private static void DescendantsModifiedInCycle()
+        => throw new InvalidOperationException("Cycle detected while computing descendants modified");
 }

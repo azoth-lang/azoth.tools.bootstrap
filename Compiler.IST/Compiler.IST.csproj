@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Concrete.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Scoped.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Typed.lang&quot;" />
+    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Concrete.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithNamespaceSymbols.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Scoped.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Typed.lang&quot;" />
   </Target>
 
   <ItemGroup>
@@ -43,6 +43,12 @@
     </Compile>
     <Compile Update="Concrete.nodes.cs">
       <DependentUpon>Concrete.lang</DependentUpon>
+    </Compile>
+    <Compile Update="WithNamespaceSymbols.lang.cs">
+      <DependentUpon>WithNamespaceSymbols.lang</DependentUpon>
+    </Compile>
+    <Compile Update="WithNamespaceSymbols.nodes.cs">
+      <DependentUpon>WithNamespaceSymbols.lang</DependentUpon>
     </Compile>
     <Compile Update="Scoped.lang.cs">
       <DependentUpon>Scoped.lang</DependentUpon>

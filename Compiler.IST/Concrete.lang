@@ -28,6 +28,7 @@ Code = Syntax:`ISyntax`;
 Declaration <: Code = Syntax:`IDeclarationSyntax`;
 NamespaceMemberDeclaration: Declaration;
 NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`
+    IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
 
 // ---------- Type Declarations

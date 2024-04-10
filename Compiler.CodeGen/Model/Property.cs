@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
@@ -6,6 +7,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
 public sealed class Property
 {
+    public static IEqualityComparer<Property> NameAndTypeComparer { get; } = EqualityComparer<Property>.Create(
+        (p1, p2) => p1!.Name == p2!.Name && p1.Type.IsEquivalentTo(p2.Type));
+
     public PropertyNode Syntax { get; }
 
     public Rule Rule { get; }

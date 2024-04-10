@@ -1,0 +1,10 @@
+◊name NamespaceSymbolBuilder;
+◊from Concrete;
+◊to WithNamespaceSymbols;
+◊context SymbolBuilderContext;
+
+Package -> ~;
+CompilationUnit, containingSymbol:PackageSymbol, treeBuilder:`ISymbolTreeBuilder` -> ~;
+FunctionDeclaration, containingSymbol:NamespaceOrPackageSymbol -> ~;
+NamespaceDeclaration, containingSymbol:NamespaceOrPackageSymbol, treeBuilder:`ISymbolTreeBuilder` -> ~;
+TypeDeclaration, containingSymbol:NamespaceOrPackageSymbol?, treeBuilder:`ISymbolTreeBuilder` -> ~;

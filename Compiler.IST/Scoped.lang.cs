@@ -17,7 +17,7 @@ public sealed partial class Scoped
 {
     [Closed(
         typeof(Declaration))]
-    public interface HasLexicalScope : IImplementationRestricted
+    public partial interface HasLexicalScope : IImplementationRestricted
     {
         LexicalScope ContainingLexicalScope { get; }
     }
@@ -25,13 +25,13 @@ public sealed partial class Scoped
     [Closed(
         typeof(NamespaceMemberDeclaration),
         typeof(TypeMemberDeclaration))]
-    public interface Declaration : HasLexicalScope, Code
+    public partial interface Declaration : HasLexicalScope, Code
     {
         new IDeclarationSyntax Syntax { get; }
         ISyntax Code.Syntax => Syntax;
     }
 
-    public interface Package : IImplementationRestricted
+    public partial interface Package : IImplementationRestricted
     {
         IPackageSyntax Syntax { get; }
         PackageSymbol Symbol { get; }
@@ -43,7 +43,7 @@ public sealed partial class Scoped
             => new PackageNode(syntax, symbol, references.ToFixedSet(), compilationUnits.ToFixedSet(), testingCompilationUnits.ToFixedSet());
     }
 
-    public interface PackageReference : IImplementationRestricted
+    public partial interface PackageReference : IImplementationRestricted
     {
         IPackageReferenceSyntax Syntax { get; }
         IdentifierName AliasOrName { get; }
@@ -54,7 +54,7 @@ public sealed partial class Scoped
             => new PackageReferenceNode(syntax, aliasOrName, package, isTrusted);
     }
 
-    public interface CompilationUnit : Code
+    public partial interface CompilationUnit : Code
     {
         new ICompilationUnitSyntax Syntax { get; }
         ISyntax Code.Syntax => Syntax;
@@ -67,7 +67,7 @@ public sealed partial class Scoped
             => new CompilationUnitNode(syntax, file, implicitNamespaceName, usingDirectives.ToFixedList(), declarations.ToFixedList());
     }
 
-    public interface UsingDirective : Code
+    public partial interface UsingDirective : Code
     {
         new IUsingDirectiveSyntax Syntax { get; }
         ISyntax Code.Syntax => Syntax;
@@ -81,7 +81,7 @@ public sealed partial class Scoped
         typeof(Declaration),
         typeof(CompilationUnit),
         typeof(UsingDirective))]
-    public interface Code : IImplementationRestricted
+    public partial interface Code : IImplementationRestricted
     {
         ISyntax Syntax { get; }
     }
@@ -90,32 +90,34 @@ public sealed partial class Scoped
         typeof(NamespaceDeclaration),
         typeof(TypeDeclaration),
         typeof(FunctionDeclaration))]
-    public interface NamespaceMemberDeclaration : Declaration
+    public partial interface NamespaceMemberDeclaration : Declaration
     {
     }
 
-    public interface NamespaceDeclaration : NamespaceMemberDeclaration
+    public partial interface NamespaceDeclaration : NamespaceMemberDeclaration
     {
         new INamespaceDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
+        bool IsGlobalQualified { get; }
+        NamespaceName DeclaredNames { get; }
         IFixedList<UsingDirective> UsingDirectives { get; }
         IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
-        public static NamespaceDeclaration Create(INamespaceDeclarationSyntax syntax, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations, LexicalScope containingLexicalScope)
-            => new NamespaceDeclarationNode(syntax, usingDirectives.ToFixedList(), declarations.ToFixedList(), containingLexicalScope);
+        public static NamespaceDeclaration Create(INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations, LexicalScope containingLexicalScope)
+            => new NamespaceDeclarationNode(syntax, isGlobalQualified, declaredNames, usingDirectives.ToFixedList(), declarations.ToFixedList(), containingLexicalScope);
     }
 
     [Closed(
         typeof(ClassDeclaration),
         typeof(StructDeclaration),
         typeof(TraitDeclaration))]
-    public interface TypeDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
+    public partial interface TypeDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
     {
         new ITypeDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
     }
 
-    public interface ClassDeclaration : TypeDeclaration
+    public partial interface ClassDeclaration : TypeDeclaration
     {
         new IClassDeclarationSyntax Syntax { get; }
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
@@ -126,7 +128,7 @@ public sealed partial class Scoped
             => new ClassDeclarationNode(syntax, isAbstract, members.ToFixedList(), containingLexicalScope);
     }
 
-    public interface StructDeclaration : TypeDeclaration
+    public partial interface StructDeclaration : TypeDeclaration
     {
         new IStructDeclarationSyntax Syntax { get; }
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
@@ -136,7 +138,7 @@ public sealed partial class Scoped
             => new StructDeclarationNode(syntax, members.ToFixedList(), containingLexicalScope);
     }
 
-    public interface TraitDeclaration : TypeDeclaration
+    public partial interface TraitDeclaration : TypeDeclaration
     {
         new ITraitDeclarationSyntax Syntax { get; }
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
@@ -152,32 +154,32 @@ public sealed partial class Scoped
         typeof(TraitMemberDeclaration),
         typeof(StructMemberDeclaration),
         typeof(FunctionDeclaration))]
-    public interface TypeMemberDeclaration : Declaration
+    public partial interface TypeMemberDeclaration : Declaration
     {
     }
 
-    public interface ClassMemberDeclaration : TypeMemberDeclaration
+    public partial interface ClassMemberDeclaration : TypeMemberDeclaration
     {
 
         public static ClassMemberDeclaration Create(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
             => new ClassMemberDeclarationNode(syntax, containingLexicalScope);
     }
 
-    public interface TraitMemberDeclaration : TypeMemberDeclaration
+    public partial interface TraitMemberDeclaration : TypeMemberDeclaration
     {
 
         public static TraitMemberDeclaration Create(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
             => new TraitMemberDeclarationNode(syntax, containingLexicalScope);
     }
 
-    public interface StructMemberDeclaration : TypeMemberDeclaration
+    public partial interface StructMemberDeclaration : TypeMemberDeclaration
     {
 
         public static StructMemberDeclaration Create(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
             => new StructMemberDeclarationNode(syntax, containingLexicalScope);
     }
 
-    public interface FunctionDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
+    public partial interface FunctionDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
     {
         new IFunctionDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
@@ -187,3 +189,16 @@ public sealed partial class Scoped
     }
 
 }
+
+public sealed partial class Concrete
+{
+    public partial interface PackageReference : Scoped.PackageReference
+    {
+    }
+
+    public partial interface UsingDirective : Scoped.UsingDirective
+    {
+    }
+
+}
+

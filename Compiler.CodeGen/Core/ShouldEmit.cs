@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
@@ -25,4 +26,11 @@ public static class ShouldEmit
 
     public static bool Constructor(Rule rule)
         => rule.IsTerminal;
+
+    public static bool ExtendsSupertype(Rule rule)
+    {
+        if (rule.Defines.Name == "CompilationUnit")
+            Debugger.Break();
+        return !rule.DescendantsModified;
+    }
 }

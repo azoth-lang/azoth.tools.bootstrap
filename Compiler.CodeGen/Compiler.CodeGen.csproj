@@ -23,6 +23,7 @@
     <PackageReference Include="System.CodeDom" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Compiler.Core\Compiler.Core.csproj" />
     <ProjectReference Include="..\Framework\Framework.csproj" />
   </ItemGroup>
   <ItemGroup>

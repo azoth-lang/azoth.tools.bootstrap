@@ -1,6 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
@@ -9,8 +8,42 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 
 // ReSharper disable MemberHidesStaticFromOuterClass
 
-public sealed partial class Typed
+public sealed partial class WithNamespaceSymbols
 {
+    private sealed class NamespaceDeclarationNode : Node, NamespaceDeclaration
+    {
+        public NamespaceOrPackageSymbol ContainingSymbol { get; }
+        public NamespaceOrPackageSymbol Symbol { get; }
+        public INamespaceDeclarationSyntax Syntax { get; }
+        public bool IsGlobalQualified { get; }
+        public NamespaceName DeclaredNames { get; }
+        public IFixedList<UsingDirective> UsingDirectives { get; }
+        public IFixedList<NamespaceMemberDeclaration> Declarations { get; }
+
+        public NamespaceDeclarationNode(NamespaceOrPackageSymbol containingSymbol, NamespaceOrPackageSymbol symbol, INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations)
+        {
+            ContainingSymbol = containingSymbol;
+            Symbol = symbol;
+            Syntax = syntax;
+            IsGlobalQualified = isGlobalQualified;
+            DeclaredNames = declaredNames;
+            UsingDirectives = usingDirectives;
+            Declarations = declarations;
+        }
+    }
+
+    private sealed class FunctionDeclarationNode : Node, FunctionDeclaration
+    {
+        public NamespaceOrPackageSymbol ContainingSymbol { get; }
+        public IFunctionDeclarationSyntax Syntax { get; }
+
+        public FunctionDeclarationNode(NamespaceOrPackageSymbol containingSymbol, IFunctionDeclarationSyntax syntax)
+        {
+            ContainingSymbol = containingSymbol;
+            Syntax = syntax;
+        }
+    }
+
     private sealed class PackageNode : Node, Package
     {
         public IPackageSyntax Syntax { get; }
@@ -75,39 +108,19 @@ public sealed partial class Typed
         }
     }
 
-    private sealed class NamespaceDeclarationNode : Node, NamespaceDeclaration
-    {
-        public INamespaceDeclarationSyntax Syntax { get; }
-        public bool IsGlobalQualified { get; }
-        public NamespaceName DeclaredNames { get; }
-        public IFixedList<UsingDirective> UsingDirectives { get; }
-        public IFixedList<NamespaceMemberDeclaration> Declarations { get; }
-        public LexicalScope ContainingLexicalScope { get; }
-
-        public NamespaceDeclarationNode(INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations, LexicalScope containingLexicalScope)
-        {
-            Syntax = syntax;
-            IsGlobalQualified = isGlobalQualified;
-            DeclaredNames = declaredNames;
-            UsingDirectives = usingDirectives;
-            Declarations = declarations;
-            ContainingLexicalScope = containingLexicalScope;
-        }
-    }
-
     private sealed class ClassDeclarationNode : Node, ClassDeclaration
     {
         public IClassDeclarationSyntax Syntax { get; }
         public bool IsAbstract { get; }
         public IFixedList<ClassMemberDeclaration> Members { get; }
-        public LexicalScope ContainingLexicalScope { get; }
+        public NamespaceOrPackageSymbol? ContainingSymbol { get; }
 
-        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members, LexicalScope containingLexicalScope)
+        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members, NamespaceOrPackageSymbol? containingSymbol)
         {
             Syntax = syntax;
             IsAbstract = isAbstract;
             Members = members;
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingSymbol = containingSymbol;
         }
     }
 
@@ -115,13 +128,13 @@ public sealed partial class Typed
     {
         public IStructDeclarationSyntax Syntax { get; }
         public IFixedList<StructMemberDeclaration> Members { get; }
-        public LexicalScope ContainingLexicalScope { get; }
+        public NamespaceOrPackageSymbol? ContainingSymbol { get; }
 
-        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, LexicalScope containingLexicalScope)
+        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, NamespaceOrPackageSymbol? containingSymbol)
         {
             Syntax = syntax;
             Members = members;
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingSymbol = containingSymbol;
         }
     }
 
@@ -129,61 +142,49 @@ public sealed partial class Typed
     {
         public ITraitDeclarationSyntax Syntax { get; }
         public IFixedList<TraitMemberDeclaration> Members { get; }
-        public LexicalScope ContainingLexicalScope { get; }
+        public NamespaceOrPackageSymbol? ContainingSymbol { get; }
 
-        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, LexicalScope containingLexicalScope)
+        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, NamespaceOrPackageSymbol? containingSymbol)
         {
             Syntax = syntax;
             Members = members;
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingSymbol = containingSymbol;
         }
     }
 
     private sealed class ClassMemberDeclarationNode : Node, ClassMemberDeclaration
     {
         public IDeclarationSyntax Syntax { get; }
-        public LexicalScope ContainingLexicalScope { get; }
+        public NamespaceOrPackageSymbol? ContainingSymbol { get; }
 
-        public ClassMemberDeclarationNode(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
+        public ClassMemberDeclarationNode(IDeclarationSyntax syntax, NamespaceOrPackageSymbol? containingSymbol)
         {
             Syntax = syntax;
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingSymbol = containingSymbol;
         }
     }
 
     private sealed class TraitMemberDeclarationNode : Node, TraitMemberDeclaration
     {
         public IDeclarationSyntax Syntax { get; }
-        public LexicalScope ContainingLexicalScope { get; }
+        public NamespaceOrPackageSymbol? ContainingSymbol { get; }
 
-        public TraitMemberDeclarationNode(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
+        public TraitMemberDeclarationNode(IDeclarationSyntax syntax, NamespaceOrPackageSymbol? containingSymbol)
         {
             Syntax = syntax;
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingSymbol = containingSymbol;
         }
     }
 
     private sealed class StructMemberDeclarationNode : Node, StructMemberDeclaration
     {
         public IDeclarationSyntax Syntax { get; }
-        public LexicalScope ContainingLexicalScope { get; }
+        public NamespaceOrPackageSymbol? ContainingSymbol { get; }
 
-        public StructMemberDeclarationNode(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
+        public StructMemberDeclarationNode(IDeclarationSyntax syntax, NamespaceOrPackageSymbol? containingSymbol)
         {
             Syntax = syntax;
-            ContainingLexicalScope = containingLexicalScope;
-        }
-    }
-
-    private sealed class FunctionDeclarationNode : Node, FunctionDeclaration
-    {
-        public IFunctionDeclarationSyntax Syntax { get; }
-        public LexicalScope ContainingLexicalScope { get; }
-
-        public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax, LexicalScope containingLexicalScope)
-        {
-            Syntax = syntax;
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingSymbol = containingSymbol;
         }
     }
 

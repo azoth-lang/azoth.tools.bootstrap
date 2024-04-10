@@ -4,9 +4,9 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using static Azoth.Tools.Bootstrap.Compiler.IST.Concrete;
+using ASTPackage = Azoth.Tools.Bootstrap.Compiler.AST.Package;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 
@@ -25,7 +25,11 @@ internal sealed partial class SyntaxBinder
     private partial SymbolBuilderContext EndRun(Package package)
     {
         var packageSymbol = package.Symbol;
-        return new SymbolBuilderContext(diagnostics);
+        // TODO remove downcast
+        var packageSyntax = (PackageSyntax<ASTPackage>)package.Syntax;
+        var symbolTree = packageSyntax.SymbolTree; // TODO new SymbolTreeBuilder(packageSymbol);
+        var testingSymbolTree = packageSyntax.TestingSymbolTree; // TODO new SymbolTreeBuilder(symbolTree);
+        return new SymbolBuilderContext(diagnostics, symbolTree, testingSymbolTree);
     }
 
     private partial Package Transform(IPackageSyntax from)
@@ -61,7 +65,7 @@ internal sealed partial class SyntaxBinder
     {
         var usingDirectives = syntax.UsingDirectives.Select(Transform);
         var declarations = syntax.Declarations.Select(Transform);
-        return NamespaceDeclaration.Create(syntax, usingDirectives, declarations);
+        return NamespaceDeclaration.Create(syntax, syntax.IsGlobalQualified, syntax.DeclaredNames, usingDirectives, declarations);
     }
 
     private static FunctionDeclaration Transform(IFunctionDeclarationSyntax syntax)

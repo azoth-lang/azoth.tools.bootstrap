@@ -12,8 +12,45 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 // ReSharper disable InconsistentNaming
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public sealed partial class Concrete
+public sealed partial class WithNamespaceSymbols
 {
+    [Closed(
+        typeof(NamespaceMemberDeclaration),
+        typeof(TypeMemberDeclaration))]
+    public partial interface Declaration : Code
+    {
+        NamespaceOrPackageSymbol? ContainingSymbol { get; }
+        new IDeclarationSyntax Syntax { get; }
+        ISyntax Code.Syntax => Syntax;
+    }
+
+    public partial interface NamespaceDeclaration : NamespaceMemberDeclaration
+    {
+        new NamespaceOrPackageSymbol ContainingSymbol { get; }
+        NamespaceOrPackageSymbol? Declaration.ContainingSymbol => ContainingSymbol;
+        NamespaceOrPackageSymbol Symbol { get; }
+        new INamespaceDeclarationSyntax Syntax { get; }
+        IDeclarationSyntax Declaration.Syntax => Syntax;
+        bool IsGlobalQualified { get; }
+        NamespaceName DeclaredNames { get; }
+        IFixedList<UsingDirective> UsingDirectives { get; }
+        IFixedList<NamespaceMemberDeclaration> Declarations { get; }
+
+        public static NamespaceDeclaration Create(NamespaceOrPackageSymbol containingSymbol, NamespaceOrPackageSymbol symbol, INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations)
+            => new NamespaceDeclarationNode(containingSymbol, symbol, syntax, isGlobalQualified, declaredNames, usingDirectives.ToFixedList(), declarations.ToFixedList());
+    }
+
+    public partial interface FunctionDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
+    {
+        new NamespaceOrPackageSymbol ContainingSymbol { get; }
+        NamespaceOrPackageSymbol? Declaration.ContainingSymbol => ContainingSymbol;
+        new IFunctionDeclarationSyntax Syntax { get; }
+        IDeclarationSyntax Declaration.Syntax => Syntax;
+
+        public static FunctionDeclaration Create(NamespaceOrPackageSymbol containingSymbol, IFunctionDeclarationSyntax syntax)
+            => new FunctionDeclarationNode(containingSymbol, syntax);
+    }
+
     public partial interface Package : IImplementationRestricted
     {
         IPackageSyntax Syntax { get; }
@@ -61,42 +98,20 @@ public sealed partial class Concrete
     }
 
     [Closed(
+        typeof(Declaration),
         typeof(CompilationUnit),
-        typeof(UsingDirective),
-        typeof(Declaration))]
+        typeof(UsingDirective))]
     public partial interface Code : IImplementationRestricted
     {
         ISyntax Syntax { get; }
     }
 
     [Closed(
-        typeof(NamespaceMemberDeclaration),
-        typeof(TypeMemberDeclaration))]
-    public partial interface Declaration : Code
-    {
-        new IDeclarationSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
-    }
-
-    [Closed(
         typeof(NamespaceDeclaration),
-        typeof(TypeDeclaration),
-        typeof(FunctionDeclaration))]
+        typeof(FunctionDeclaration),
+        typeof(TypeDeclaration))]
     public partial interface NamespaceMemberDeclaration : Declaration
     {
-    }
-
-    public partial interface NamespaceDeclaration : NamespaceMemberDeclaration
-    {
-        new INamespaceDeclarationSyntax Syntax { get; }
-        IDeclarationSyntax Declaration.Syntax => Syntax;
-        bool IsGlobalQualified { get; }
-        NamespaceName DeclaredNames { get; }
-        IFixedList<UsingDirective> UsingDirectives { get; }
-        IFixedList<NamespaceMemberDeclaration> Declarations { get; }
-
-        public static NamespaceDeclaration Create(INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations)
-            => new NamespaceDeclarationNode(syntax, isGlobalQualified, declaredNames, usingDirectives.ToFixedList(), declarations.ToFixedList());
     }
 
     [Closed(
@@ -116,8 +131,8 @@ public sealed partial class Concrete
         bool IsAbstract { get; }
         IFixedList<ClassMemberDeclaration> Members { get; }
 
-        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IEnumerable<ClassMemberDeclaration> members)
-            => new ClassDeclarationNode(syntax, isAbstract, members.ToFixedList());
+        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IEnumerable<ClassMemberDeclaration> members, NamespaceOrPackageSymbol? containingSymbol)
+            => new ClassDeclarationNode(syntax, isAbstract, members.ToFixedList(), containingSymbol);
     }
 
     public partial interface StructDeclaration : TypeDeclaration
@@ -126,8 +141,8 @@ public sealed partial class Concrete
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<StructMemberDeclaration> Members { get; }
 
-        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members)
-            => new StructDeclarationNode(syntax, members.ToFixedList());
+        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, NamespaceOrPackageSymbol? containingSymbol)
+            => new StructDeclarationNode(syntax, members.ToFixedList(), containingSymbol);
     }
 
     public partial interface TraitDeclaration : TypeDeclaration
@@ -136,16 +151,16 @@ public sealed partial class Concrete
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<TraitMemberDeclaration> Members { get; }
 
-        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members)
-            => new TraitDeclarationNode(syntax, members.ToFixedList());
+        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, NamespaceOrPackageSymbol? containingSymbol)
+            => new TraitDeclarationNode(syntax, members.ToFixedList(), containingSymbol);
     }
 
     [Closed(
+        typeof(FunctionDeclaration),
         typeof(TypeDeclaration),
         typeof(ClassMemberDeclaration),
         typeof(TraitMemberDeclaration),
-        typeof(StructMemberDeclaration),
-        typeof(FunctionDeclaration))]
+        typeof(StructMemberDeclaration))]
     public partial interface TypeMemberDeclaration : Declaration
     {
     }
@@ -153,31 +168,35 @@ public sealed partial class Concrete
     public partial interface ClassMemberDeclaration : TypeMemberDeclaration
     {
 
-        public static ClassMemberDeclaration Create(IDeclarationSyntax syntax)
-            => new ClassMemberDeclarationNode(syntax);
+        public static ClassMemberDeclaration Create(IDeclarationSyntax syntax, NamespaceOrPackageSymbol? containingSymbol)
+            => new ClassMemberDeclarationNode(syntax, containingSymbol);
     }
 
     public partial interface TraitMemberDeclaration : TypeMemberDeclaration
     {
 
-        public static TraitMemberDeclaration Create(IDeclarationSyntax syntax)
-            => new TraitMemberDeclarationNode(syntax);
+        public static TraitMemberDeclaration Create(IDeclarationSyntax syntax, NamespaceOrPackageSymbol? containingSymbol)
+            => new TraitMemberDeclarationNode(syntax, containingSymbol);
     }
 
     public partial interface StructMemberDeclaration : TypeMemberDeclaration
     {
 
-        public static StructMemberDeclaration Create(IDeclarationSyntax syntax)
-            => new StructMemberDeclarationNode(syntax);
-    }
-
-    public partial interface FunctionDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
-    {
-        new IFunctionDeclarationSyntax Syntax { get; }
-        IDeclarationSyntax Declaration.Syntax => Syntax;
-
-        public static FunctionDeclaration Create(IFunctionDeclarationSyntax syntax)
-            => new FunctionDeclarationNode(syntax);
+        public static StructMemberDeclaration Create(IDeclarationSyntax syntax, NamespaceOrPackageSymbol? containingSymbol)
+            => new StructMemberDeclarationNode(syntax, containingSymbol);
     }
 
 }
+
+public sealed partial class Concrete
+{
+    public partial interface PackageReference : WithNamespaceSymbols.PackageReference
+    {
+    }
+
+    public partial interface UsingDirective : WithNamespaceSymbols.UsingDirective
+    {
+    }
+
+}
+

@@ -16,7 +16,7 @@ namespace <#=grammar.Namespace #>;
 public sealed partial class <#=language.Name #>
 {
 <#  foreach(var rule in grammar.Rules) {#>
-<#=Emit.ClosedAttribute(rule, indent: "    ") #>    public interface <#= Emit.TypeName(rule.Defines) #><#= Emit.BaseTypes(rule, "IImplementationRestricted") #>
+<#=Emit.ClosedAttribute(rule, indent: "    ") #>    public partial interface <#= Emit.TypeName(rule.Defines) #><#= Emit.BaseTypes(rule, "IImplementationRestricted") #>
     {
 <#      foreach (var property in rule.DeclaredProperties.Where(p => ShouldEmit.Property(rule, p))) { #>
         <#=Emit.PropertyIsNew(property) #><#=Emit.Type(property.Type) #> <#=property.Name #> { get; }
@@ -33,3 +33,19 @@ public sealed partial class <#=language.Name #>
 
 <#  } #>
 }
+<#  if (language.Extends is not null) { #>
+
+public sealed partial class <#=language.Extends.Name #>
+{
+<#      foreach(var rule in grammar.Rules.Where(ShouldEmit.ExtendsSupertype)) {#>
+    public partial interface <#= Emit.TypeName(rule.Defines) #> : <#= Emit.QualifiedTypeName(rule.Defines) #>
+    {
+<#          foreach (var property in rule.DeclaredProperties.Where(p => p.ReferencesRule)) { #>
+        <#= Emit.QualifiedType(property.Type) #> <#= Emit.QualifiedTypeName(property.Rule.Defines) #>.<#=property.Name #> => <#=property.Name #>;
+<#          } #>
+    }
+
+<#      } #>
+}
+
+<#  } #>
