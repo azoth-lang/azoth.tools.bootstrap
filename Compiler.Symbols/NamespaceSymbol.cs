@@ -6,13 +6,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 [Closed(
     typeof(LocalNamespaceSymbol),
     typeof(PackageSymbol))]
-public abstract class NamespaceOrPackageSymbol : Symbol
+public abstract class NamespaceSymbol : Symbol
 {
     public override PackageSymbol Package { get; }
     public NamespaceName NamespaceName { get; }
     public override IdentifierName Name { get; }
 
-    protected NamespaceOrPackageSymbol(PackageSymbol package, NamespaceOrPackageSymbol? containingSymbol, IdentifierName name)
+    protected NamespaceSymbol(PackageSymbol package, NamespaceSymbol? containingSymbol, IdentifierName name)
     {
         Package = package;
         NamespaceName = containingSymbol is null

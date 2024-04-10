@@ -12,15 +12,15 @@ public sealed partial class WithNamespaceSymbols
 {
     private sealed class NamespaceDeclarationNode : Node, NamespaceDeclaration
     {
-        public NamespaceOrPackageSymbol ContainingSymbol { get; }
-        public NamespaceOrPackageSymbol Symbol { get; }
+        public NamespaceSymbol ContainingSymbol { get; }
+        public NamespaceSymbol Symbol { get; }
         public INamespaceDeclarationSyntax Syntax { get; }
         public bool IsGlobalQualified { get; }
         public NamespaceName DeclaredNames { get; }
         public IFixedList<UsingDirective> UsingDirectives { get; }
         public IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
-        public NamespaceDeclarationNode(NamespaceOrPackageSymbol containingSymbol, NamespaceOrPackageSymbol symbol, INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations)
+        public NamespaceDeclarationNode(NamespaceSymbol containingSymbol, NamespaceSymbol symbol, INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations)
         {
             ContainingSymbol = containingSymbol;
             Symbol = symbol;
@@ -34,10 +34,10 @@ public sealed partial class WithNamespaceSymbols
 
     private sealed class FunctionDeclarationNode : Node, FunctionDeclaration
     {
-        public NamespaceOrPackageSymbol ContainingSymbol { get; }
+        public NamespaceSymbol ContainingSymbol { get; }
         public IFunctionDeclarationSyntax Syntax { get; }
 
-        public FunctionDeclarationNode(NamespaceOrPackageSymbol containingSymbol, IFunctionDeclarationSyntax syntax)
+        public FunctionDeclarationNode(NamespaceSymbol containingSymbol, IFunctionDeclarationSyntax syntax)
         {
             ContainingSymbol = containingSymbol;
             Syntax = syntax;
@@ -113,9 +113,9 @@ public sealed partial class WithNamespaceSymbols
         public IClassDeclarationSyntax Syntax { get; }
         public bool IsAbstract { get; }
         public IFixedList<ClassMemberDeclaration> Members { get; }
-        public NamespaceOrPackageSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingSymbol { get; }
 
-        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members, NamespaceOrPackageSymbol? containingSymbol)
+        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             IsAbstract = isAbstract;
@@ -128,9 +128,9 @@ public sealed partial class WithNamespaceSymbols
     {
         public IStructDeclarationSyntax Syntax { get; }
         public IFixedList<StructMemberDeclaration> Members { get; }
-        public NamespaceOrPackageSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingSymbol { get; }
 
-        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, NamespaceOrPackageSymbol? containingSymbol)
+        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             Members = members;
@@ -142,9 +142,9 @@ public sealed partial class WithNamespaceSymbols
     {
         public ITraitDeclarationSyntax Syntax { get; }
         public IFixedList<TraitMemberDeclaration> Members { get; }
-        public NamespaceOrPackageSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingSymbol { get; }
 
-        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, NamespaceOrPackageSymbol? containingSymbol)
+        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             Members = members;
@@ -155,9 +155,9 @@ public sealed partial class WithNamespaceSymbols
     private sealed class ClassMemberDeclarationNode : Node, ClassMemberDeclaration
     {
         public IDeclarationSyntax Syntax { get; }
-        public NamespaceOrPackageSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingSymbol { get; }
 
-        public ClassMemberDeclarationNode(IDeclarationSyntax syntax, NamespaceOrPackageSymbol? containingSymbol)
+        public ClassMemberDeclarationNode(IDeclarationSyntax syntax, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             ContainingSymbol = containingSymbol;
@@ -167,9 +167,9 @@ public sealed partial class WithNamespaceSymbols
     private sealed class TraitMemberDeclarationNode : Node, TraitMemberDeclaration
     {
         public IDeclarationSyntax Syntax { get; }
-        public NamespaceOrPackageSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingSymbol { get; }
 
-        public TraitMemberDeclarationNode(IDeclarationSyntax syntax, NamespaceOrPackageSymbol? containingSymbol)
+        public TraitMemberDeclarationNode(IDeclarationSyntax syntax, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             ContainingSymbol = containingSymbol;
@@ -179,9 +179,9 @@ public sealed partial class WithNamespaceSymbols
     private sealed class StructMemberDeclarationNode : Node, StructMemberDeclaration
     {
         public IDeclarationSyntax Syntax { get; }
-        public NamespaceOrPackageSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingSymbol { get; }
 
-        public StructMemberDeclarationNode(IDeclarationSyntax syntax, NamespaceOrPackageSymbol? containingSymbol)
+        public StructMemberDeclarationNode(IDeclarationSyntax syntax, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             ContainingSymbol = containingSymbol;

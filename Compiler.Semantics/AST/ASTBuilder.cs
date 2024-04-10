@@ -579,7 +579,7 @@ internal class ASTBuilder
                 throw new InvalidOperationException("Invocation expression cannot invoke a type.");
             case ConstructorSymbol _:
                 throw new InvalidOperationException("Invocation expression cannot invoke a constructor.");
-            case NamespaceOrPackageSymbol _:
+            case NamespaceSymbol _:
                 throw new InvalidOperationException("Invocation expression cannot invoke a namespace or package.");
         }
     }
@@ -711,7 +711,7 @@ internal class ASTBuilder
             FunctionSymbol symbol => BuildFunctionNameExpression(syn, symbol),
             TypeSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a type."),
             InvocableSymbol _ => throw new InvalidOperationException("Cannot build a name expression for an invocable."),
-            NamespaceOrPackageSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a namespace or package."),
+            NamespaceSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a namespace or package."),
             FieldSymbol _ => throw new UnreachableException("Field would be a different expression."),
             SelfParameterSymbol _ => throw new UnreachableException("Self parameter would be a different expression."),
             _ => throw ExhaustiveMatch.Failed(syn),

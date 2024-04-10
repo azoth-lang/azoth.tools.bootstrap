@@ -151,7 +151,7 @@ public partial interface INamespaceDeclarationSyntax : INonMemberDeclarationSynt
     bool IsGlobalQualified { get; }
     NamespaceName DeclaredNames { get; }
     NamespaceName FullName { get; }
-    new Promise<NamespaceOrPackageSymbol> Symbol { get; }
+    new Promise<NamespaceSymbol> Symbol { get; }
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     IFixedList<INonMemberDeclarationSyntax> Declarations { get; }
 }

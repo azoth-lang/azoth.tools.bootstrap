@@ -66,7 +66,7 @@ public partial class BuildLexicalScopesPass
 
         // TODO it might be better to go to the declarations and get their symbols (once that is implemented)
         var referencedSymbols = referencedSymbolTrees.SelectMany(t => t.Symbols).Concat(Intrinsic.SymbolTree.Symbols)
-                                                     .Where(s => s.ContainingSymbol is NamespaceOrPackageSymbol)
+                                                     .Where(s => s.ContainingSymbol is NamespaceSymbol)
                                                      .Select(NonMemberSymbol.ForExternalSymbol);
         return primitiveEntitySymbols.Concat(packageNamespaces).Concat(packageNonMemberEntitySymbols)
                                      .Concat(referencedSymbols).ToFixedList();

@@ -13,12 +13,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// IL doesn't even directly represent namespaces, for symbols, a namespace
 /// is the container of all the names in it. There is one symbol per namespace.</para>
 /// </remarks>
-public sealed class LocalNamespaceSymbol : NamespaceOrPackageSymbol
+public sealed class LocalNamespaceSymbol : NamespaceSymbol
 {
-    public override NamespaceOrPackageSymbol ContainingSymbol { get; }
+    public override NamespaceSymbol ContainingSymbol { get; }
     public override TypeSymbol? ContextTypeSymbol => null;
 
-    public LocalNamespaceSymbol(NamespaceOrPackageSymbol containingSymbol, IdentifierName name)
+    public LocalNamespaceSymbol(NamespaceSymbol containingSymbol, IdentifierName name)
         : base(containingSymbol.Package, containingSymbol, name)
     {
         ContainingSymbol = containingSymbol;

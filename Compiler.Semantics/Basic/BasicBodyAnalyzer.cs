@@ -1819,7 +1819,7 @@ public class BasicBodyAnalyzer
                         case NamedVariableSymbol _:
                         case EmptyTypeSymbol _:
                         case PrimitiveTypeSymbol _:
-                        case NamespaceOrPackageSymbol _: // NamespaceSymbol covered above
+                        case NamespaceSymbol _: // NamespaceSymbol covered above
                         case FunctionSymbol _: // Covered above
                         case ConstructorSymbol _:
                             throw new UnreachableException();
@@ -1889,7 +1889,7 @@ public class BasicBodyAnalyzer
             case NamedVariableSymbol _:
             case EmptyTypeSymbol _:
             case PrimitiveTypeSymbol _:
-            case NamespaceOrPackageSymbol _:
+            case NamespaceSymbol _:
             case FunctionSymbol _:
             case ConstructorSymbol _:
                 throw new UnreachableException();

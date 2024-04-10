@@ -18,7 +18,7 @@ internal class NamespaceDeclarationSyntax : NonMemberDeclarationSyntax, INamespa
     public bool IsGlobalQualified { get; }
     public NamespaceName DeclaredNames { get; }
     public NamespaceName FullName { get; }
-    public new Promise<NamespaceOrPackageSymbol> Symbol { get; }
+    public new Promise<NamespaceSymbol> Symbol { get; }
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     public IFixedList<INonMemberDeclarationSyntax> Declarations { get; }
 
@@ -31,14 +31,14 @@ internal class NamespaceDeclarationSyntax : NonMemberDeclarationSyntax, INamespa
         TextSpan nameSpan,
         IFixedList<IUsingDirectiveSyntax> usingDirectives,
         IFixedList<INonMemberDeclarationSyntax> declarations)
-        : base(containingNamespaceName, span, file, declaredNames.Segments.LastOrDefault(), nameSpan, new Promise<NamespaceOrPackageSymbol>())
+        : base(containingNamespaceName, span, file, declaredNames.Segments.LastOrDefault(), nameSpan, new Promise<NamespaceSymbol>())
     {
         DeclaredNames = declaredNames;
         FullName = containingNamespaceName.Qualify(declaredNames);
         UsingDirectives = usingDirectives;
         Declarations = declarations;
         IsGlobalQualified = isGlobalQualified;
-        Symbol = (Promise<NamespaceOrPackageSymbol>)base.Symbol;
+        Symbol = (Promise<NamespaceSymbol>)base.Symbol;
     }
 
     public override string ToString() => $"namespace ::{FullName} {{ … }}";

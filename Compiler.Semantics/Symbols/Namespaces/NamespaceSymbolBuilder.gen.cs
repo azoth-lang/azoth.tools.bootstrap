@@ -49,14 +49,14 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
 
     private To.CompilationUnit Create(
         From.CompilationUnit from,
-        NamespaceOrPackageSymbol containingSymbol,
+        NamespaceSymbol containingSymbol,
         ISymbolTreeBuilder treeBuilder)
         => Create(from, Transform(from.Declarations, containingSymbol, treeBuilder));
 
-    private IFixedList<To.NamespaceMemberDeclaration> Transform(IEnumerable<From.NamespaceMemberDeclaration> from, NamespaceOrPackageSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
+    private IFixedList<To.NamespaceMemberDeclaration> Transform(IEnumerable<From.NamespaceMemberDeclaration> from, NamespaceSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
         => from.Select(f => Transform(f, containingSymbol, treeBuilder)).ToFixedList();
 
-    private To.NamespaceMemberDeclaration Transform(From.NamespaceMemberDeclaration from, NamespaceOrPackageSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
+    private To.NamespaceMemberDeclaration Transform(From.NamespaceMemberDeclaration from, NamespaceSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
     {
         return from switch
         {
@@ -69,20 +69,20 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
 
     private partial To.NamespaceDeclaration Transform(
         From.NamespaceDeclaration from,
-        NamespaceOrPackageSymbol containingSymbol,
+        NamespaceSymbol containingSymbol,
         ISymbolTreeBuilder treeBuilder);
 
     private static To.NamespaceDeclaration Create(
         From.NamespaceDeclaration from,
-        NamespaceOrPackageSymbol containingSymbol,
-        NamespaceOrPackageSymbol symbol,
+        NamespaceSymbol containingSymbol,
+        NamespaceSymbol symbol,
         IEnumerable<To.NamespaceMemberDeclaration> declarations)
         => To.NamespaceDeclaration.Create(symbol, containingSymbol, from.Syntax, from.IsGlobalQualified, from.DeclaredNames, from.UsingDirectives, declarations);
 
     private To.NamespaceDeclaration Create(
         From.NamespaceDeclaration from,
-        NamespaceOrPackageSymbol containingSymbol,
-        NamespaceOrPackageSymbol childContainingSymbol,
+        NamespaceSymbol containingSymbol,
+        NamespaceSymbol childContainingSymbol,
         ISymbolTreeBuilder treeBuilder)
     {
         var declarations = Transform(from.Declarations, childContainingSymbol, treeBuilder);
@@ -91,18 +91,18 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
 
     private partial To.FunctionDeclaration Transform(
         From.FunctionDeclaration from,
-        NamespaceOrPackageSymbol containingSymbol);
+        NamespaceSymbol containingSymbol);
 
     private static To.FunctionDeclaration Create(
         From.FunctionDeclaration from,
-        NamespaceOrPackageSymbol containingSymbol)
+        NamespaceSymbol containingSymbol)
         => To.FunctionDeclaration.Create(containingSymbol, from.Syntax);
 
     private partial To.TypeDeclaration Transform(
         From.TypeDeclaration from,
-        NamespaceOrPackageSymbol? containingSymbol);
+        NamespaceSymbol? containingSymbol);
 
-    private static To.TypeDeclaration Create(From.TypeDeclaration from, NamespaceOrPackageSymbol? containingSymbol, NamespaceOrPackageSymbol? childContainingSymbol)
+    private static To.TypeDeclaration Create(From.TypeDeclaration from, NamespaceSymbol? containingSymbol, NamespaceSymbol? childContainingSymbol)
     {
         return from switch
         {
@@ -113,25 +113,25 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
         };
     }
 
-    private static IFixedList<To.ClassMemberDeclaration> Transform(IEnumerable<From.ClassMemberDeclaration> from, NamespaceOrPackageSymbol? containingSymbol)
+    private static IFixedList<To.ClassMemberDeclaration> Transform(IEnumerable<From.ClassMemberDeclaration> from, NamespaceSymbol? containingSymbol)
         => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
 
-    private static To.ClassMemberDeclaration Transform(From.ClassMemberDeclaration from, NamespaceOrPackageSymbol? containingSymbol)
+    private static To.ClassMemberDeclaration Transform(From.ClassMemberDeclaration from, NamespaceSymbol? containingSymbol)
         => To.ClassMemberDeclaration.Create(from.Syntax, containingSymbol);
 
     private static IEnumerable<To.TraitMemberDeclaration> Transform(
         IEnumerable<From.TraitMemberDeclaration> from,
-        NamespaceOrPackageSymbol? containingSymbol)
+        NamespaceSymbol? containingSymbol)
         => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
 
-    private static To.TraitMemberDeclaration Transform(From.TraitMemberDeclaration from, NamespaceOrPackageSymbol? containingSymbol)
+    private static To.TraitMemberDeclaration Transform(From.TraitMemberDeclaration from, NamespaceSymbol? containingSymbol)
         => To.TraitMemberDeclaration.Create(from.Syntax, containingSymbol);
 
     private static IEnumerable<To.StructMemberDeclaration> Transform(
         IEnumerable<From.StructMemberDeclaration> from,
-        NamespaceOrPackageSymbol? containingSymbol)
+        NamespaceSymbol? containingSymbol)
         => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
 
-    private static To.StructMemberDeclaration Transform(From.StructMemberDeclaration from, NamespaceOrPackageSymbol? containingSymbol)
+    private static To.StructMemberDeclaration Transform(From.StructMemberDeclaration from, NamespaceSymbol? containingSymbol)
         => To.StructMemberDeclaration.Create(from.Syntax, containingSymbol);
 }

@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 /// <remarks>
 /// A package alias has no effect on the symbol. It is still the same package.
 /// </remarks>
-public class PackageSymbol : NamespaceOrPackageSymbol
+public class PackageSymbol : NamespaceSymbol
 {
     public override PackageSymbol Package => this;
     public override Symbol? ContainingSymbol => null;

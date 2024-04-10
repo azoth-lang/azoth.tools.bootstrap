@@ -10,13 +10,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class UserTypeSymbol : TypeSymbol
 {
     public override PackageSymbol Package { get; }
-    public override NamespaceOrPackageSymbol ContainingSymbol { get; }
+    public override NamespaceSymbol ContainingSymbol { get; }
     public override TypeSymbol? ContextTypeSymbol => null;
     public override StandardName Name { get; }
     public IDeclaredUserType DeclaresType { get; }
 
     public UserTypeSymbol(
-        NamespaceOrPackageSymbol containingSymbol,
+        NamespaceSymbol containingSymbol,
         IDeclaredUserType declaresType)
         : base(declaresType.Name)
     {

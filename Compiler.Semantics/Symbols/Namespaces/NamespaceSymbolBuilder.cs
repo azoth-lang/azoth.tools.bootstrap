@@ -37,7 +37,7 @@ internal sealed partial class NamespaceSymbolBuilder
 
     private partial To.NamespaceDeclaration Transform(
         From.NamespaceDeclaration from,
-        NamespaceOrPackageSymbol containingSymbol,
+        NamespaceSymbol containingSymbol,
         ISymbolTreeBuilder treeBuilder)
     {
         if (from.IsGlobalQualified)
@@ -52,7 +52,7 @@ internal sealed partial class NamespaceSymbolBuilder
     // TODO this should be more automatic
     private partial To.FunctionDeclaration Transform(
         From.FunctionDeclaration from,
-        NamespaceOrPackageSymbol containingSymbol)
+        NamespaceSymbol containingSymbol)
     {
         // TODO remove properties on Syntax nodes
         from.Syntax.ContainingNamespaceSymbol = containingSymbol;
@@ -61,15 +61,15 @@ internal sealed partial class NamespaceSymbolBuilder
 
     private partial To.TypeDeclaration Transform(
         From.TypeDeclaration from,
-        NamespaceOrPackageSymbol? containingSymbol)
+        NamespaceSymbol? containingSymbol)
     {
         // TODO remove properties on Syntax nodes
         from.Syntax.ContainingNamespaceSymbol = containingSymbol!;
         return Create(from, containingSymbol, childContainingSymbol: null);
     }
 
-    private static NamespaceOrPackageSymbol BuildNamespaceSymbol(
-        NamespaceOrPackageSymbol containingSymbol,
+    private static NamespaceSymbol BuildNamespaceSymbol(
+        NamespaceSymbol containingSymbol,
         NamespaceName namespaces,
         ISymbolTreeBuilder treeBuilder)
     {

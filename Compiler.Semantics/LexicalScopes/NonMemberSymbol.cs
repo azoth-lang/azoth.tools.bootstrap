@@ -59,9 +59,9 @@ internal class NonMemberSymbol
 
     private NonMemberSymbol(Symbol symbol)
     {
-        if (symbol.ContainingSymbol is not (NamespaceOrPackageSymbol or null))
+        if (symbol.ContainingSymbol is not (NamespaceSymbol or null))
             throw new ArgumentException("Symbol must be for a non-member declaration", nameof(symbol));
-        var containingSymbol = symbol.ContainingSymbol as NamespaceOrPackageSymbol;
+        var containingSymbol = symbol.ContainingSymbol as NamespaceSymbol;
         InCurrentPackage = false;
         ContainingNamespace = containingSymbol?.NamespaceName ?? NamespaceName.Global;
         Name = symbol.Name ?? throw new ArgumentException("Symbol must have a name", nameof(symbol));

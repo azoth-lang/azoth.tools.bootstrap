@@ -19,16 +19,16 @@ public sealed partial class WithNamespaceSymbols
         typeof(TypeMemberDeclaration))]
     public partial interface Declaration : Code
     {
-        NamespaceOrPackageSymbol? ContainingSymbol { get; }
+        NamespaceSymbol? ContainingSymbol { get; }
         new IDeclarationSyntax Syntax { get; }
         ISyntax Code.Syntax => Syntax;
     }
 
     public partial interface NamespaceDeclaration : NamespaceMemberDeclaration
     {
-        new NamespaceOrPackageSymbol ContainingSymbol { get; }
-        NamespaceOrPackageSymbol? Declaration.ContainingSymbol => ContainingSymbol;
-        NamespaceOrPackageSymbol Symbol { get; }
+        new NamespaceSymbol ContainingSymbol { get; }
+        NamespaceSymbol? Declaration.ContainingSymbol => ContainingSymbol;
+        NamespaceSymbol Symbol { get; }
         new INamespaceDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
         bool IsGlobalQualified { get; }
@@ -36,18 +36,18 @@ public sealed partial class WithNamespaceSymbols
         IFixedList<UsingDirective> UsingDirectives { get; }
         IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
-        public static NamespaceDeclaration Create(NamespaceOrPackageSymbol containingSymbol, NamespaceOrPackageSymbol symbol, INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations)
+        public static NamespaceDeclaration Create(NamespaceSymbol containingSymbol, NamespaceSymbol symbol, INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations)
             => new NamespaceDeclarationNode(containingSymbol, symbol, syntax, isGlobalQualified, declaredNames, usingDirectives.ToFixedList(), declarations.ToFixedList());
     }
 
     public partial interface FunctionDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
     {
-        new NamespaceOrPackageSymbol ContainingSymbol { get; }
-        NamespaceOrPackageSymbol? Declaration.ContainingSymbol => ContainingSymbol;
+        new NamespaceSymbol ContainingSymbol { get; }
+        NamespaceSymbol? Declaration.ContainingSymbol => ContainingSymbol;
         new IFunctionDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
 
-        public static FunctionDeclaration Create(NamespaceOrPackageSymbol containingSymbol, IFunctionDeclarationSyntax syntax)
+        public static FunctionDeclaration Create(NamespaceSymbol containingSymbol, IFunctionDeclarationSyntax syntax)
             => new FunctionDeclarationNode(containingSymbol, syntax);
     }
 
@@ -131,7 +131,7 @@ public sealed partial class WithNamespaceSymbols
         bool IsAbstract { get; }
         IFixedList<ClassMemberDeclaration> Members { get; }
 
-        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IEnumerable<ClassMemberDeclaration> members, NamespaceOrPackageSymbol? containingSymbol)
+        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IEnumerable<ClassMemberDeclaration> members, NamespaceSymbol? containingSymbol)
             => new ClassDeclarationNode(syntax, isAbstract, members.ToFixedList(), containingSymbol);
     }
 
@@ -141,7 +141,7 @@ public sealed partial class WithNamespaceSymbols
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<StructMemberDeclaration> Members { get; }
 
-        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, NamespaceOrPackageSymbol? containingSymbol)
+        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, NamespaceSymbol? containingSymbol)
             => new StructDeclarationNode(syntax, members.ToFixedList(), containingSymbol);
     }
 
@@ -151,7 +151,7 @@ public sealed partial class WithNamespaceSymbols
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<TraitMemberDeclaration> Members { get; }
 
-        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, NamespaceOrPackageSymbol? containingSymbol)
+        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, NamespaceSymbol? containingSymbol)
             => new TraitDeclarationNode(syntax, members.ToFixedList(), containingSymbol);
     }
 
@@ -168,21 +168,21 @@ public sealed partial class WithNamespaceSymbols
     public partial interface ClassMemberDeclaration : TypeMemberDeclaration
     {
 
-        public static ClassMemberDeclaration Create(IDeclarationSyntax syntax, NamespaceOrPackageSymbol? containingSymbol)
+        public static ClassMemberDeclaration Create(IDeclarationSyntax syntax, NamespaceSymbol? containingSymbol)
             => new ClassMemberDeclarationNode(syntax, containingSymbol);
     }
 
     public partial interface TraitMemberDeclaration : TypeMemberDeclaration
     {
 
-        public static TraitMemberDeclaration Create(IDeclarationSyntax syntax, NamespaceOrPackageSymbol? containingSymbol)
+        public static TraitMemberDeclaration Create(IDeclarationSyntax syntax, NamespaceSymbol? containingSymbol)
             => new TraitMemberDeclarationNode(syntax, containingSymbol);
     }
 
     public partial interface StructMemberDeclaration : TypeMemberDeclaration
     {
 
-        public static StructMemberDeclaration Create(IDeclarationSyntax syntax, NamespaceOrPackageSymbol? containingSymbol)
+        public static StructMemberDeclaration Create(IDeclarationSyntax syntax, NamespaceSymbol? containingSymbol)
             => new StructMemberDeclarationNode(syntax, containingSymbol);
     }
 

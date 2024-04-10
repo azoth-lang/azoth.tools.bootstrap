@@ -13,8 +13,8 @@ internal abstract class InvocableNonMemberEntityDeclarationSyntax : InvocableDec
 {
     public NamespaceName ContainingNamespaceName { get; }
 
-    private NamespaceOrPackageSymbol? containingNamespaceSymbol;
-    public NamespaceOrPackageSymbol ContainingNamespaceSymbol
+    private NamespaceSymbol? containingNamespaceSymbol;
+    public NamespaceSymbol ContainingNamespaceSymbol
     {
         get => containingNamespaceSymbol
                ?? throw new InvalidOperationException($"{ContainingNamespaceSymbol} not yet assigned");
