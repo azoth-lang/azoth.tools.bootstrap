@@ -101,7 +101,7 @@ public class LexicalScopesBuilder
     private static PackagesScope BuildPackagesScope(PackageSyntax<Package> package)
     {
         var packageAliases = package.References
-                                    .ToDictionary(p => p.Key, p => p.Value.Symbol)
+                                    .ToDictionary(r => r.AliasOrName, r => r.Package.Symbol)
                                     .ToFixedDictionary();
         return new PackagesScope(package.Symbol, packageAliases);
     }

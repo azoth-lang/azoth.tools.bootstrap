@@ -1,6 +1,6 @@
 ◊name SynaxBinderPass;
 ◊from `IPackageSyntax`;
-◊to Concrete; // TODO have languages define entry points
+◊to Concrete;
 ◊context DiagnosticsContext -> SymbolBuilderContext;
 
 syntax:`IPackageSyntax` -> Package;

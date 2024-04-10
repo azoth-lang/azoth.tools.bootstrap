@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Azoth.Tools.Bootstrap.Framework.Functions;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
@@ -36,4 +37,10 @@ public static class DictionaryExtensions
         Func<IEnumerable<TSource>, TValue> valueSelector)
         where TKey : notnull
         => new(source.GroupBy(keySelector).ToDictionary(g => g.Key, g => valueSelector(g)));
+
+    public static Dictionary<TSource, TValue> ToDictionaryWithValue<TSource, TValue>(
+        this IEnumerable<TSource> source,
+        Func<TSource, TValue> valueSelector)
+        where TSource : notnull
+        => source.ToDictionary(Identity, valueSelector);
 }

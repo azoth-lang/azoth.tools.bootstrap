@@ -29,6 +29,9 @@ internal static class Emit
         return builder.ToString();
     }
 
+    /// <remarks><paramref name="root"/> is distinct from the default parent. The default parent has
+    /// already been applied to the <see cref="Rule"/>. <paramref name="root"/> is used to apply
+    /// a base interface outside of the default parent.</remarks>
     public static string BaseTypes(Rule rule, string? root = null)
     {
         bool anyParents = rule.Parents.Any();

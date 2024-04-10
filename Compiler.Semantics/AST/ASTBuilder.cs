@@ -33,7 +33,7 @@ internal class ASTBuilder
         var symbolTree = packageSyntax.SymbolTree.Build();
         var testingSymbolTree = packageSyntax.TestingSymbolTree.Build();
         return new PackageBuilder(declarations, testingDeclarations, symbolTree, testingSymbolTree,
-            packageSyntax.Diagnostics, packageSyntax.References);
+            packageSyntax.Diagnostics, packageSyntax.References.Select(r => r.Package).ToFixedSet());
     }
 
     private static IFixedSet<INonMemberDeclaration> BuildNonMemberDeclarations(

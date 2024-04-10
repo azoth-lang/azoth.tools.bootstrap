@@ -31,13 +31,17 @@ public sealed partial class Typed
 
     private sealed class PackageReferenceNode : Node, PackageReference
     {
+        public IPackageReferenceSyntax Syntax { get; }
         public IdentifierName AliasOrName { get; }
-        public AST.Package Package { get; }
+        public IPackageSymbols Package { get; }
+        public bool IsTrusted { get; }
 
-        public PackageReferenceNode(IdentifierName aliasOrName, AST.Package package)
+        public PackageReferenceNode(IPackageReferenceSyntax syntax, IdentifierName aliasOrName, IPackageSymbols package, bool isTrusted)
         {
+            Syntax = syntax;
             AliasOrName = aliasOrName;
             Package = package;
+            IsTrusted = isTrusted;
         }
     }
 

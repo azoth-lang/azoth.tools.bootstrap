@@ -1,32 +1,42 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using ExhaustiveMatching;
 using static Azoth.Tools.Bootstrap.Compiler.IST.Concrete;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
-
-using AST = Compiler.AST;
-
 /// <summary>
 /// A nanopass that constructs the IST from the CST and binds it to the CST.
 /// </summary>
-public sealed class SyntaxBinder
+internal sealed partial class SyntaxBinder
 {
-    public static Package Build(PackageSyntax<AST.Package> syntax)
+    private readonly Diagnostics diagnostics;
+
+    private SyntaxBinder(DiagnosticsContext context)
     {
-        var symbol = new PackageSymbol(syntax.Symbol.Name);
-        var references = syntax.References.Select(Build);
-        var compilationUnits = syntax.CompilationUnits.Select(Build);
-        var testingCompilationUnits = syntax.TestingCompilationUnits.Select(Build);
-        return Package.Create(syntax, symbol, references, compilationUnits, testingCompilationUnits);
+        diagnostics = context.Diagnostics;
     }
 
-    private static PackageReference Build(KeyValuePair<IdentifierName, AST.Package> reference)
-        => PackageReference.Create(reference.Key, reference.Value);
+    private partial SymbolBuilderContext EndRun(Package package)
+    {
+        var packageSymbol = package.Symbol;
+        return new SymbolBuilderContext(diagnostics);
+    }
+
+    private partial Package Transform(IPackageSyntax from)
+    {
+        var symbol = new PackageSymbol(from.Name);
+        var references = from.References.Select(Build);
+        var compilationUnits = from.CompilationUnits.Select(Build);
+        var testingCompilationUnits = from.TestingCompilationUnits.Select(Build);
+        return Package.Create(from, symbol, references, compilationUnits, testingCompilationUnits);
+    }
+
+    private static PackageReference Build(IPackageReferenceSyntax reference)
+        => PackageReference.Create(reference, reference.AliasOrName, reference.Package, reference.IsTrusted);
 
     private static CompilationUnit Build(ICompilationUnitSyntax syntax)
     {

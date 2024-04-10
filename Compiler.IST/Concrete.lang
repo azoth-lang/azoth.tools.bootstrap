@@ -12,8 +12,8 @@
 Package = Syntax:`IPackageSyntax` Symbol:`PackageSymbol` References:PackageReference*
     CompilationUnits:CompilationUnit* TestingCompilationUnits:CompilationUnit*;
 
-// TODO add Syntax:`PackageReferenceSyntax` IsTrusted:`bool` once other layers support it
-PackageReference = AliasOrName:`IdentifierName` Package:`AST.Package`;
+PackageReference = Syntax:`IPackageReferenceSyntax`
+    AliasOrName:`IdentifierName` Package:`IPackageSymbols` IsTrusted:`bool`;
 
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile` ImplicitNamespaceName:`NamespaceName`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;

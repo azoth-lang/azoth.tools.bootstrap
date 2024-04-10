@@ -99,7 +99,7 @@ public partial class BuildLexicalScopesPass
     private static PackagesScope BuildPackagesScope(Concrete.Package package)
     {
         var syntax = (PackageSyntax<Package>)package.Syntax;
-        var packageAliases = syntax.References.ToDictionary(p => p.Key, p => p.Value.Symbol).ToFixedDictionary();
+        var packageAliases = syntax.References.ToDictionary(r => r.AliasOrName, r => r.Package.Symbol).ToFixedDictionary();
         return new PackagesScope(package.Symbol, packageAliases);
     }
 

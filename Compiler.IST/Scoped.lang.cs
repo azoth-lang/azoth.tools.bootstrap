@@ -45,11 +45,13 @@ public sealed partial class Scoped
 
     public interface PackageReference : IImplementationRestricted
     {
+        IPackageReferenceSyntax Syntax { get; }
         IdentifierName AliasOrName { get; }
-        AST.Package Package { get; }
+        IPackageSymbols Package { get; }
+        bool IsTrusted { get; }
 
-        public static PackageReference Create(IdentifierName aliasOrName, AST.Package package)
-            => new PackageReferenceNode(aliasOrName, package);
+        public static PackageReference Create(IPackageReferenceSyntax syntax, IdentifierName aliasOrName, IPackageSymbols package, bool isTrusted)
+            => new PackageReferenceNode(syntax, aliasOrName, package, isTrusted);
     }
 
     public interface CompilationUnit : Code

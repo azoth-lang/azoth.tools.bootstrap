@@ -6,13 +6,14 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST;
 
-public class Package : IHasSymbolTree
+public class Package : IPackageSymbols
 {
     public IFixedSet<IDeclaration> Declarations { get; }
     public IFixedSet<IDeclaration> TestingDeclarations { get; }
     public IFixedSet<INonMemberDeclaration> NonMemberDeclarations { get; }
     public IFixedSet<INonMemberDeclaration> TestingNonMemberDeclarations { get; }
     public PackageSymbol Symbol { get; }
+    PackageSymbol IPackageSymbols.PackageSymbol => Symbol;
     public FixedSymbolTree SymbolTree { get; }
     public FixedSymbolTree TestingSymbolTree { get; }
     public IFixedList<Diagnostic> Diagnostics { get; }

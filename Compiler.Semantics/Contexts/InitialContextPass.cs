@@ -25,5 +25,6 @@ internal sealed partial class InitialContextPass
         => new(context.Diagnostics);
 
     private partial Diagnostics Analyze(IPackageSyntax syntax)
-        => new(syntax.CompilationUnits.SelectMany(cu => cu.Diagnostics));
+        => new(syntax.CompilationUnits.Concat(syntax.TestingCompilationUnits)
+                     .SelectMany(cu => cu.Diagnostics));
 }

@@ -5,7 +5,6 @@
     <RootNamespace>Azoth.Tools.Bootstrap.Compiler.CLI</RootNamespace>
     <StartupObject>
     </StartupObject>
-    <LangVersion>default</LangVersion>
     <Nullable>enable</Nullable>
     <AssemblyName>azothc</AssemblyName>
   </PropertyGroup>
