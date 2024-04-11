@@ -112,8 +112,10 @@ public class Rule
         Supertypes = syntax.Supertypes.Select(s => new Symbol(grammar, s)).ToFixedSet();
         Parents = Parent is null ? Supertypes : Supertypes.Prepend(Parent).ToFixedSet();
 
-        supertypeRules = new(() => Supertypes.Select(s => s.ReferencedRule).WhereNotNull().ToFixedSet());
-        parentRules = new(() => ParentRule is null ? SupertypeRules : SupertypeRules.Prepend(ParentRule).ToFixedSet());
+        supertypeRules = new(() => Supertypes.Select(s => s.ReferencedRule).WhereNotNull()
+                                             .EliminateRedundantRules().ToFixedSet());
+        parentRules = new(() => ParentRule is null ? SupertypeRules
+            : SupertypeRules.Prepend(ParentRule).EliminateRedundantRules().ToFixedSet());
         ancestorRules = new(() => ParentRules.Concat(ParentRules.SelectMany(p => p.AncestorRules)).ToFixedSet());
         childRules = new(() => Grammar.Rules.Where(r => r.ParentRules.Contains(this)).ToFixedSet());
 
@@ -158,6 +160,20 @@ public class Rule
     public IEnumerable<Property> InheritedPropertiesNamed(string propertyName)
         => InheritedProperties.Where(p => p.Name == propertyName);
 
+    public IEnumerable<Property> InheritedPropertiesWithoutMostSpecificImplementationNamed(Property property)
+        => InheritedPropertiesWithoutMostSpecificImplementationNamed(property.Name);
+    public IEnumerable<Property> InheritedPropertiesWithoutMostSpecificImplementationNamed(string propertyName)
+    {
+        var inheritedProperties = InheritedPropertiesNamed(propertyName).ToFixedSet();
+        if (inheritedProperties.Count <= 1)
+            return Enumerable.Empty<Property>();
+
+        return inheritedProperties
+               .SelectMany(p => p.Rule.InheritedPropertiesNamed(propertyName))
+               .Distinct()
+               .Except(inheritedProperties);
+    }
+
     public IEnumerable<Property> SupertypePropertiesNamed(Property property)
         => SupertypePropertiesNamed(property.Name);
 
@@ -174,7 +190,7 @@ public class Rule
     {
         return IsModified
                // Note: added child rules are not a problem for the cases that matter here
-               || ChildRules.Any(r => r.DescendantsModified)
+               || ChildRules.Any(r => r.TryDescendantsModified)
                || DeclaredProperties.Select(p => p.Type.Symbol.ReferencedRule)
                                     .WhereNotNull()
                                     .Except(this)

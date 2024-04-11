@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -113,14 +114,20 @@ public sealed partial class WithNamespaceSymbols
     {
         public IClassDeclarationSyntax Syntax { get; }
         public bool IsAbstract { get; }
+        public UnresolvedSupertypeName? BaseTypeName { get; }
         public IFixedList<ClassMemberDeclaration> Members { get; }
+        public IFixedList<GenericParameter> GenericParameters { get; }
+        public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public NamespaceSymbol? ContainingSymbol { get; }
 
-        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members, NamespaceSymbol? containingSymbol)
+        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             IsAbstract = isAbstract;
+            BaseTypeName = baseTypeName;
             Members = members;
+            GenericParameters = genericParameters;
+            SupertypeNames = supertypeNames;
             ContainingSymbol = containingSymbol;
         }
     }
@@ -129,12 +136,16 @@ public sealed partial class WithNamespaceSymbols
     {
         public IStructDeclarationSyntax Syntax { get; }
         public IFixedList<StructMemberDeclaration> Members { get; }
+        public IFixedList<GenericParameter> GenericParameters { get; }
+        public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public NamespaceSymbol? ContainingSymbol { get; }
 
-        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, NamespaceSymbol? containingSymbol)
+        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             Members = members;
+            GenericParameters = genericParameters;
+            SupertypeNames = supertypeNames;
             ContainingSymbol = containingSymbol;
         }
     }
@@ -143,49 +154,49 @@ public sealed partial class WithNamespaceSymbols
     {
         public ITraitDeclarationSyntax Syntax { get; }
         public IFixedList<TraitMemberDeclaration> Members { get; }
+        public IFixedList<GenericParameter> GenericParameters { get; }
+        public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public NamespaceSymbol? ContainingSymbol { get; }
 
-        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, NamespaceSymbol? containingSymbol)
+        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             Members = members;
+            GenericParameters = genericParameters;
+            SupertypeNames = supertypeNames;
             ContainingSymbol = containingSymbol;
         }
     }
 
-    private sealed class ClassMemberDeclarationNode : Node, ClassMemberDeclaration
+    private sealed class GenericParameterNode : Node, GenericParameter
     {
-        public IDeclarationSyntax Syntax { get; }
-        public NamespaceSymbol? ContainingSymbol { get; }
+        public IGenericParameterSyntax Syntax { get; }
+        public CapabilityConstraint Constraint { get; }
+        public IdentifierName Name { get; }
+        public ParameterIndependence Independence { get; }
+        public ParameterVariance Variance { get; }
 
-        public ClassMemberDeclarationNode(IDeclarationSyntax syntax, NamespaceSymbol? containingSymbol)
+        public GenericParameterNode(IGenericParameterSyntax syntax, CapabilityConstraint constraint, IdentifierName name, ParameterIndependence independence, ParameterVariance variance)
         {
             Syntax = syntax;
-            ContainingSymbol = containingSymbol;
+            Constraint = constraint;
+            Name = name;
+            Independence = independence;
+            Variance = variance;
         }
     }
 
-    private sealed class TraitMemberDeclarationNode : Node, TraitMemberDeclaration
+    private sealed class UnresolvedSupertypeNameNode : Node, UnresolvedSupertypeName
     {
-        public IDeclarationSyntax Syntax { get; }
-        public NamespaceSymbol? ContainingSymbol { get; }
+        public ISupertypeNameSyntax Syntax { get; }
+        public TypeName Name { get; }
+        public IFixedList<UnresolvedType> TypeArguments { get; }
 
-        public TraitMemberDeclarationNode(IDeclarationSyntax syntax, NamespaceSymbol? containingSymbol)
+        public UnresolvedSupertypeNameNode(ISupertypeNameSyntax syntax, TypeName name, IFixedList<UnresolvedType> typeArguments)
         {
             Syntax = syntax;
-            ContainingSymbol = containingSymbol;
-        }
-    }
-
-    private sealed class StructMemberDeclarationNode : Node, StructMemberDeclaration
-    {
-        public IDeclarationSyntax Syntax { get; }
-        public NamespaceSymbol? ContainingSymbol { get; }
-
-        public StructMemberDeclarationNode(IDeclarationSyntax syntax, NamespaceSymbol? containingSymbol)
-        {
-            Syntax = syntax;
-            ContainingSymbol = containingSymbol;
+            Name = name;
+            TypeArguments = typeArguments;
         }
     }
 

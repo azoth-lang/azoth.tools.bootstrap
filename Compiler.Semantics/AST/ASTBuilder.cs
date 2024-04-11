@@ -124,6 +124,7 @@ internal class ASTBuilder
             ISetterMethodDeclarationSyntax syn => BuildSetter(declaringClass, syn),
             IConstructorDeclarationSyntax syn => BuildConstructor(declaringClass, syn),
             IFieldDeclarationSyntax syn => BuildField(declaringClass, syn),
+            ITypeDeclarationSyntax _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(member)
         };
     }
@@ -140,6 +141,7 @@ internal class ASTBuilder
             ISetterMethodDeclarationSyntax syn => BuildSetter(declaringStruct, syn),
             IInitializerDeclarationSyntax syn => BuildInitializer(declaringStruct, syn),
             IFieldDeclarationSyntax syn => BuildField(declaringStruct, syn),
+            ITypeDeclarationSyntax _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(member)
         };
     }
@@ -155,6 +157,7 @@ internal class ASTBuilder
             IStandardMethodDeclarationSyntax syn => BuildStandardMethod(declaringTrait, syn),
             IGetterMethodDeclarationSyntax syn => BuildGetter(declaringTrait, syn),
             ISetterMethodDeclarationSyntax syn => BuildSetter(declaringTrait, syn),
+            ITypeDeclarationSyntax _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(member)
         };
     }
@@ -167,7 +170,7 @@ internal class ASTBuilder
         var nameSpan = syn.NameSpan;
         var parameters = syn.Parameters.Select(BuildParameter).ToFixedList();
         var body = BuildBody(syn.Body);
-        return new AssociatedFunctionDeclaration(syn.File, syn.Span, declaringType, symbol, nameSpan, parameters, body);
+        return new AssociatedFunctionDeclaration(declaringType, syn.File, syn.Span, symbol, nameSpan, parameters, body);
     }
 
     private static IAbstractMethodDeclaration BuildAbstractMethod(

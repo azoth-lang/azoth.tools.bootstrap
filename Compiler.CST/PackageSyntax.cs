@@ -81,7 +81,11 @@ public class PackageSyntax<TPackage> : IPackageSyntax
             {
                 default:
                     throw ExhaustiveMatch.Failed(declaration);
-                case IMemberDeclarationSyntax syn:
+                case ITypeDeclarationSyntax syn:
+                    yield return syn;
+                    declarations.EnqueueRange(syn.Members);
+                    break;
+                case ITypeMemberDeclarationSyntax syn:
                     yield return syn;
                     break;
                 case IFunctionDeclarationSyntax syn:
@@ -89,10 +93,6 @@ public class PackageSyntax<TPackage> : IPackageSyntax
                     break;
                 case INamespaceDeclarationSyntax syn:
                     declarations.EnqueueRange(syn.Declarations);
-                    break;
-                case ITypeDeclarationSyntax syn:
-                    yield return syn;
-                    declarations.EnqueueRange(syn.Members);
                     break;
             }
     }

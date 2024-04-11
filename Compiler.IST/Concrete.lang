@@ -6,6 +6,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
+◊using Azoth.Tools.Bootstrap.Compiler.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
@@ -32,19 +33,24 @@ NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarati
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
 
 // ---------- Type Declarations
-TypeDeclaration <: NamespaceMemberDeclaration, TypeMemberDeclaration = Syntax:`ITypeDeclarationSyntax`;
-ClassDeclaration: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:`bool` Members:ClassMemberDeclaration*;
+TypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
+    = Syntax:`ITypeDeclarationSyntax` GenericParameters:GenericParameter* SupertypeNames:UnresolvedSupertypeName*;
+ClassDeclaration: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:`bool` BaseTypeName:UnresolvedSupertypeName? Members:ClassMemberDeclaration*;
 StructDeclaration: TypeDeclaration = Syntax:`IStructDeclarationSyntax` Members:StructMemberDeclaration*;
 TraitDeclaration: TypeDeclaration = Syntax:`ITraitDeclarationSyntax` Members:TraitMemberDeclaration*;
 
+// ---------- Type Declaration Parts
+GenericParameter: Code = Syntax:`IGenericParameterSyntax` Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance`;
+UnresolvedSupertypeName: Code = Syntax:`ISupertypeNameSyntax` Name:`TypeName` TypeArguments:UnresolvedType*;
+
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
-TypeMemberDeclaration: Declaration = Syntax:`IDeclarationSyntax`;
-ClassMemberDeclaration: TypeMemberDeclaration;
-TraitMemberDeclaration: TypeMemberDeclaration;
-StructMemberDeclaration: TypeMemberDeclaration;
+TypeMemberDeclaration: Declaration = Syntax:`ITypeMemberDeclarationSyntax`;
+ClassMemberDeclaration: TypeMemberDeclaration = Syntax:`IClassMemberDeclarationSyntax`;
+TraitMemberDeclaration: TypeMemberDeclaration = Syntax:`ITraitMemberDeclarationSyntax`;
+StructMemberDeclaration: TypeMemberDeclaration = Syntax:`IStructMemberDeclarationSyntax`;
 
 // ---------- Invocable Declarations
-FunctionDeclaration <: NamespaceMemberDeclaration, TypeMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`;
+FunctionDeclaration <: NamespaceMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`;
 
 // ---------- Capabilities
 CapabilityConstraint: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`ICapabilityConstraint`;

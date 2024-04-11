@@ -13,7 +13,7 @@ internal sealed class ConstructorDeclarationSyntax : InvocableDeclarationSyntax,
 {
     public IClassDeclarationSyntax DeclaringType { get; }
     public new IdentifierName? Name { get; }
-    ITypeDeclarationSyntax IMemberDeclarationSyntax.DeclaringType => DeclaringType;
+    ITypeDeclarationSyntax ITypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
     public IConstructorSelfParameterSyntax SelfParameter { get; }
     public new IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
     public override IFixedList<IParameterSyntax> AllParameters { get; }

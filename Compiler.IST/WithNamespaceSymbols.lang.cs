@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -41,7 +42,7 @@ public sealed partial class WithNamespaceSymbols
             => new NamespaceDeclarationNode(containingSymbol, symbol, syntax, isGlobalQualified, declaredNames, usingDirectives.ToFixedList(), declarations.ToFixedList());
     }
 
-    public partial interface FunctionDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
+    public partial interface FunctionDeclaration : NamespaceMemberDeclaration
     {
         new NamespaceSymbol ContainingSymbol { get; }
         NamespaceSymbol? Declaration.ContainingSymbol => ContainingSymbol;
@@ -102,6 +103,8 @@ public sealed partial class WithNamespaceSymbols
         typeof(Declaration),
         typeof(CompilationUnit),
         typeof(UsingDirective),
+        typeof(GenericParameter),
+        typeof(UnresolvedSupertypeName),
         typeof(CapabilityConstraint),
         typeof(UnresolvedType))]
     public partial interface Code : IImplementationRestricted
@@ -121,10 +124,17 @@ public sealed partial class WithNamespaceSymbols
         typeof(ClassDeclaration),
         typeof(StructDeclaration),
         typeof(TraitDeclaration))]
-    public partial interface TypeDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
+    public partial interface TypeDeclaration : NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     {
         new ITypeDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
+        IClassMemberDeclarationSyntax ClassMemberDeclaration.Syntax => Syntax;
+        ITraitMemberDeclarationSyntax TraitMemberDeclaration.Syntax => Syntax;
+        IStructMemberDeclarationSyntax StructMemberDeclaration.Syntax => Syntax;
+        ISyntax Code.Syntax => Syntax;
+        ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
+        IFixedList<GenericParameter> GenericParameters { get; }
+        IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
     }
 
     public partial interface ClassDeclaration : TypeDeclaration
@@ -132,10 +142,11 @@ public sealed partial class WithNamespaceSymbols
         new IClassDeclarationSyntax Syntax { get; }
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         bool IsAbstract { get; }
+        UnresolvedSupertypeName? BaseTypeName { get; }
         IFixedList<ClassMemberDeclaration> Members { get; }
 
-        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IEnumerable<ClassMemberDeclaration> members, NamespaceSymbol? containingSymbol)
-            => new ClassDeclarationNode(syntax, isAbstract, members.ToFixedList(), containingSymbol);
+        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
+            => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingSymbol);
     }
 
     public partial interface StructDeclaration : TypeDeclaration
@@ -144,8 +155,8 @@ public sealed partial class WithNamespaceSymbols
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<StructMemberDeclaration> Members { get; }
 
-        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, NamespaceSymbol? containingSymbol)
-            => new StructDeclarationNode(syntax, members.ToFixedList(), containingSymbol);
+        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
+            => new StructDeclarationNode(syntax, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingSymbol);
     }
 
     public partial interface TraitDeclaration : TypeDeclaration
@@ -154,39 +165,66 @@ public sealed partial class WithNamespaceSymbols
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<TraitMemberDeclaration> Members { get; }
 
-        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, NamespaceSymbol? containingSymbol)
-            => new TraitDeclarationNode(syntax, members.ToFixedList(), containingSymbol);
+        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
+            => new TraitDeclarationNode(syntax, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingSymbol);
+    }
+
+    public partial interface GenericParameter : Code
+    {
+        new IGenericParameterSyntax Syntax { get; }
+        ISyntax Code.Syntax => Syntax;
+        CapabilityConstraint Constraint { get; }
+        IdentifierName Name { get; }
+        ParameterIndependence Independence { get; }
+        ParameterVariance Variance { get; }
+
+        public static GenericParameter Create(IGenericParameterSyntax syntax, CapabilityConstraint constraint, IdentifierName name, ParameterIndependence independence, ParameterVariance variance)
+            => new GenericParameterNode(syntax, constraint, name, independence, variance);
+    }
+
+    public partial interface UnresolvedSupertypeName : Code
+    {
+        new ISupertypeNameSyntax Syntax { get; }
+        ISyntax Code.Syntax => Syntax;
+        TypeName Name { get; }
+        IFixedList<UnresolvedType> TypeArguments { get; }
+
+        public static UnresolvedSupertypeName Create(ISupertypeNameSyntax syntax, TypeName name, IEnumerable<UnresolvedType> typeArguments)
+            => new UnresolvedSupertypeNameNode(syntax, name, typeArguments.ToFixedList());
     }
 
     [Closed(
-        typeof(FunctionDeclaration),
-        typeof(TypeDeclaration),
         typeof(ClassMemberDeclaration),
         typeof(TraitMemberDeclaration),
         typeof(StructMemberDeclaration))]
     public partial interface TypeMemberDeclaration : Declaration
     {
+        new ITypeMemberDeclarationSyntax Syntax { get; }
+        IDeclarationSyntax Declaration.Syntax => Syntax;
     }
 
+    [Closed(
+        typeof(TypeDeclaration))]
     public partial interface ClassMemberDeclaration : TypeMemberDeclaration
     {
-
-        public static ClassMemberDeclaration Create(IDeclarationSyntax syntax, NamespaceSymbol? containingSymbol)
-            => new ClassMemberDeclarationNode(syntax, containingSymbol);
+        new IClassMemberDeclarationSyntax Syntax { get; }
+        ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
     }
 
+    [Closed(
+        typeof(TypeDeclaration))]
     public partial interface TraitMemberDeclaration : TypeMemberDeclaration
     {
-
-        public static TraitMemberDeclaration Create(IDeclarationSyntax syntax, NamespaceSymbol? containingSymbol)
-            => new TraitMemberDeclarationNode(syntax, containingSymbol);
+        new ITraitMemberDeclarationSyntax Syntax { get; }
+        ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
     }
 
+    [Closed(
+        typeof(TypeDeclaration))]
     public partial interface StructMemberDeclaration : TypeMemberDeclaration
     {
-
-        public static StructMemberDeclaration Create(IDeclarationSyntax syntax, NamespaceSymbol? containingSymbol)
-            => new StructMemberDeclarationNode(syntax, containingSymbol);
+        new IStructMemberDeclarationSyntax Syntax { get; }
+        ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
     }
 
     [Closed(
@@ -237,7 +275,6 @@ public sealed partial class WithNamespaceSymbols
     [Closed(
         typeof(UnresolvedStandardTypeName),
         typeof(UnresolvedSimpleTypeName),
-        typeof(UnresolvedIdentifierTypeName),
         typeof(UnresolvedQualifiedTypeName))]
     public partial interface UnresolvedTypeName : UnresolvedType
     {
@@ -266,15 +303,15 @@ public sealed partial class WithNamespaceSymbols
         ITypeNameSyntax UnresolvedTypeName.Syntax => Syntax;
     }
 
-    public partial interface UnresolvedIdentifierTypeName : UnresolvedTypeName, UnresolvedStandardTypeName, UnresolvedSimpleTypeName
+    public partial interface UnresolvedIdentifierTypeName : UnresolvedStandardTypeName, UnresolvedSimpleTypeName
     {
         new IIdentifierTypeNameSyntax Syntax { get; }
-        ITypeNameSyntax UnresolvedTypeName.Syntax => Syntax;
         IStandardTypeNameSyntax UnresolvedStandardTypeName.Syntax => Syntax;
         ISimpleTypeNameSyntax UnresolvedSimpleTypeName.Syntax => Syntax;
+        ITypeNameSyntax UnresolvedTypeName.Syntax => Syntax;
         new IdentifierName Name { get; }
-        TypeName UnresolvedTypeName.Name => Name;
         StandardName UnresolvedStandardTypeName.Name => Name;
+        TypeName UnresolvedTypeName.Name => Name;
 
         public static UnresolvedIdentifierTypeName Create(IIdentifierTypeNameSyntax syntax, IdentifierName name)
             => new UnresolvedIdentifierTypeNameNode(syntax, name);
@@ -395,6 +432,16 @@ public sealed partial class Concrete
 
     public partial interface UsingDirective : WithNamespaceSymbols.UsingDirective
     {
+    }
+
+    public partial interface GenericParameter : WithNamespaceSymbols.GenericParameter
+    {
+        WithNamespaceSymbols.CapabilityConstraint WithNamespaceSymbols.GenericParameter.Constraint => Constraint;
+    }
+
+    public partial interface UnresolvedSupertypeName : WithNamespaceSymbols.UnresolvedSupertypeName
+    {
+        IFixedList<WithNamespaceSymbols.UnresolvedType> WithNamespaceSymbols.UnresolvedSupertypeName.TypeArguments => TypeArguments;
     }
 
     public partial interface CapabilityConstraint : WithNamespaceSymbols.CapabilityConstraint

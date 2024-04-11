@@ -93,7 +93,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write("\r\n    {\r\n");
             
             #line 21 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-      foreach (var property in rule.DeclaredProperties.Where(p => ShouldEmit.Property(rule, p))) { 
+      foreach (var property in rule.DeclaredProperties.Where(ShouldEmit.Property)) { 
             
             #line default
             #line hidden
@@ -120,7 +120,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write(" { get; }\r\n");
             
             #line 23 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-          foreach (var baseProperty in rule.InheritedPropertiesNamed(property).Where(p => p.IsDeclared)) { 
+          foreach (var baseProperty in rule.InheritedPropertiesNamed(property).Concat(rule.InheritedPropertiesWithoutMostSpecificImplementationNamed(property)).Where(p => p.IsDeclared)) { 
             
             #line default
             #line hidden

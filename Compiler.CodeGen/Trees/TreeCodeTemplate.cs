@@ -85,7 +85,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write("\r\n{\r\n");
             
             #line 18 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      foreach(var property in rule.DeclaredProperties.Where(p => ShouldEmit.Property(rule, p))) { 
+      foreach(var property in rule.DeclaredProperties.Where(ShouldEmit.Property)) { 
             
             #line default
             #line hidden

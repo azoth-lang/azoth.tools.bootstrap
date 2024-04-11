@@ -15,7 +15,7 @@ namespace <#=grammar.Namespace #>;
 <#  foreach(var rule in grammar.Rules) {#>
 <#=Emit.ClosedAttribute(rule) #>public partial interface <#= Emit.TypeName(rule.Defines) #><#= Emit.BaseTypes(rule) #>
 {
-<#      foreach(var property in rule.DeclaredProperties.Where(p => ShouldEmit.Property(rule, p))) { #>
+<#      foreach(var property in rule.DeclaredProperties.Where(ShouldEmit.Property)) { #>
     <#=Emit.PropertyIsNew(property) #><#=Emit.Type(property.Type) #> <#=property.Name #> { get; }
 <#      } #>
 }

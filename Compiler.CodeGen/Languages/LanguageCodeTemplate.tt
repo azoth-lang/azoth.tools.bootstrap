@@ -18,9 +18,9 @@ public sealed partial class <#=language.Name #>
 <#  foreach(var rule in grammar.Rules) {#>
 <#=Emit.ClosedAttribute(rule, indent: "    ") #>    public partial interface <#= Emit.TypeName(rule.Defines) #><#= Emit.BaseTypes(rule, "IImplementationRestricted") #>
     {
-<#      foreach (var property in rule.DeclaredProperties.Where(p => ShouldEmit.Property(rule, p))) { #>
+<#      foreach (var property in rule.DeclaredProperties.Where(ShouldEmit.Property)) { #>
         <#=Emit.PropertyIsNew(property) #><#=Emit.Type(property.Type) #> <#=property.Name #> { get; }
-<#          foreach (var baseProperty in rule.InheritedPropertiesNamed(property).Where(p => p.IsDeclared)) { #>
+<#          foreach (var baseProperty in rule.InheritedPropertiesNamed(property).Concat(rule.InheritedPropertiesWithoutMostSpecificImplementationNamed(property)).Where(p => p.IsDeclared)) { #>
         <#=Emit.Type(baseProperty.Type) #> <#= Emit.TypeName(baseProperty.Rule.Defines) #>.<#=baseProperty.Name #> => <#=property.Name #>;
 <#          } #>
 <#      } #>

@@ -205,7 +205,8 @@ public partial class Parser
         var headerSpan = TextSpan.Covering(classKeywordSpan, identifier.Span, generic?.Span, baseClass?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)));
         var bodyParser = BodyParser();
-        return new ClassDeclarationSyntax(ContainingNamespace, headerSpan, File, accessModifier,
+        // TODO parse nested traits
+        return new ClassDeclarationSyntax(ContainingNamespace, declaringType: null, headerSpan, File, accessModifier,
             abstractModifier, constModifier, moveModifier, identifier.Span, name, genericParameters,
             baseClass, superTypes, bodyParser.ParseClassBody);
     }
@@ -321,7 +322,8 @@ public partial class Parser
         var headerSpan = TextSpan.Covering(structKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)));
         var bodyParser = BodyParser();
-        return new StructDeclarationSyntax(ContainingNamespace, headerSpan, File, accessModifier,
+        // TODO parse nested traits
+        return new StructDeclarationSyntax(ContainingNamespace, declaringType: null, headerSpan, File, accessModifier,
             constModifier, structKindModifier, identifier.Span, name, genericParameters, superTypes,
             bodyParser.ParseStructBody);
     }
@@ -380,7 +382,8 @@ public partial class Parser
         var headerSpan = TextSpan.Covering(traitKeywordSpan, identifier.Span, generic?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)));
         var bodyParser = BodyParser();
-        return new TraitDeclarationSyntax(ContainingNamespace, headerSpan, File, accessModifier,
+        // TODO parse nested traits
+        return new TraitDeclarationSyntax(ContainingNamespace, declaringType: null, headerSpan, File, accessModifier,
             constModifier, moveModifier, identifier.Span, name, genericParameters, superTypes, bodyParser.ParseTraitBody);
     }
 

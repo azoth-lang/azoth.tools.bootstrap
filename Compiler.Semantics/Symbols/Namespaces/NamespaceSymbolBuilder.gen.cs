@@ -102,36 +102,72 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
         From.TypeDeclaration from,
         NamespaceSymbol? containingSymbol);
 
-    private static To.TypeDeclaration Create(From.TypeDeclaration from, NamespaceSymbol? containingSymbol, NamespaceSymbol? childContainingSymbol)
+    private To.TypeDeclaration Create(From.TypeDeclaration from, NamespaceSymbol? containingSymbol, NamespaceSymbol? childContainingSymbol)
     {
         return from switch
         {
-            From.ClassDeclaration f => To.ClassDeclaration.Create(f.Syntax, f.IsAbstract, Transform(f.Members, childContainingSymbol), containingSymbol),
-            From.TraitDeclaration f => To.TraitDeclaration.Create(f.Syntax, Transform(f.Members, childContainingSymbol), containingSymbol),
-            From.StructDeclaration f => To.StructDeclaration.Create(f.Syntax, Transform(f.Members, childContainingSymbol), containingSymbol),
+            From.ClassDeclaration f => Create(f, containingSymbol, childContainingSymbol),
+            From.TraitDeclaration f => Create(f, containingSymbol, childContainingSymbol),
+            From.StructDeclaration f => Create(f, containingSymbol, childContainingSymbol),
             _ => throw ExhaustiveMatch.Failed(from)
         };
     }
 
-    private static IFixedList<To.ClassMemberDeclaration> Transform(IEnumerable<From.ClassMemberDeclaration> from, NamespaceSymbol? containingSymbol)
+    private To.ClassDeclaration Create(
+        From.ClassDeclaration from,
+        NamespaceSymbol? containingSymbol,
+        NamespaceSymbol? childContainingSymbol)
+        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, Transform(from.Members, childContainingSymbol), from.GenericParameters, from.SupertypeNames, containingSymbol);
+
+    private To.TraitDeclaration Create(
+        From.TraitDeclaration from,
+        NamespaceSymbol? containingSymbol,
+        NamespaceSymbol? childContainingSymbol)
+        => To.TraitDeclaration.Create(from.Syntax, Transform(from.Members, childContainingSymbol), from.GenericParameters, from.SupertypeNames, containingSymbol);
+
+    private To.StructDeclaration Create(
+        From.StructDeclaration from,
+        NamespaceSymbol? containingSymbol,
+        NamespaceSymbol? childContainingSymbol)
+        => To.StructDeclaration.Create(from.Syntax, Transform(from.Members, childContainingSymbol), from.GenericParameters, from.SupertypeNames, containingSymbol);
+
+    private IFixedList<To.ClassMemberDeclaration> Transform(IEnumerable<From.ClassMemberDeclaration> from, NamespaceSymbol? containingSymbol)
         => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
 
-    private static To.ClassMemberDeclaration Transform(From.ClassMemberDeclaration from, NamespaceSymbol? containingSymbol)
-        => To.ClassMemberDeclaration.Create(from.Syntax, containingSymbol);
+    private To.ClassMemberDeclaration Transform(From.ClassMemberDeclaration from, NamespaceSymbol? containingSymbol)
+    {
+        return from switch
+        {
+            From.TypeDeclaration f => Transform(f, containingSymbol),
+            _ => throw ExhaustiveMatch.Failed(from)
+        };
+    }
 
-    private static IEnumerable<To.TraitMemberDeclaration> Transform(
+    private IEnumerable<To.TraitMemberDeclaration> Transform(
         IEnumerable<From.TraitMemberDeclaration> from,
         NamespaceSymbol? containingSymbol)
         => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
 
-    private static To.TraitMemberDeclaration Transform(From.TraitMemberDeclaration from, NamespaceSymbol? containingSymbol)
-        => To.TraitMemberDeclaration.Create(from.Syntax, containingSymbol);
+    private To.TraitMemberDeclaration Transform(From.TraitMemberDeclaration from, NamespaceSymbol? containingSymbol)
+    {
+        return from switch
+        {
+            From.TypeDeclaration f => Transform(f, containingSymbol),
+            _ => throw ExhaustiveMatch.Failed(from)
+        };
+    }
 
-    private static IEnumerable<To.StructMemberDeclaration> Transform(
+    private IEnumerable<To.StructMemberDeclaration> Transform(
         IEnumerable<From.StructMemberDeclaration> from,
         NamespaceSymbol? containingSymbol)
         => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
 
-    private static To.StructMemberDeclaration Transform(From.StructMemberDeclaration from, NamespaceSymbol? containingSymbol)
-        => To.StructMemberDeclaration.Create(from.Syntax, containingSymbol);
+    private To.StructMemberDeclaration Transform(From.StructMemberDeclaration from, NamespaceSymbol? containingSymbol)
+    {
+        return from switch
+        {
+            From.TypeDeclaration f => Transform(f, containingSymbol),
+            _ => throw ExhaustiveMatch.Failed(from)
+        };
+    }
 }

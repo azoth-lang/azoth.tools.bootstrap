@@ -35,12 +35,15 @@ internal static class Emit
     /// a base interface outside of the default parent.</remarks>
     public static string BaseTypes(Rule rule, string? root = null)
     {
-        bool anyParents = rule.Parents.Any();
+        var parents = rule.Parents.Where(p => p.ReferencedRule is null).Select(p => p.Name)
+                          .Concat(rule.ParentRules.Select(r => TypeName(r.Defines)))
+                          .ToFixedList();
+
+        bool anyParents = parents.Any();
         if (!anyParents && root is null) return "";
 
-        var parents = rule.Parents.Select(p => p.Name);
         if (root is not null && !anyParents)
-            parents = parents.Append(root);
+            parents = parents.Append(root).ToFixedList();
 
         return " : " + string.Join(", ", parents);
     }
@@ -66,7 +69,6 @@ internal static class Emit
         builder.AppendLine(")]");
         return builder.ToString();
     }
-
 
     public static string CommonBaseTypes(Rule rule)
     {

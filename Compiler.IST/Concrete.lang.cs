@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -65,6 +66,8 @@ public sealed partial class Concrete
         typeof(CompilationUnit),
         typeof(UsingDirective),
         typeof(Declaration),
+        typeof(GenericParameter),
+        typeof(UnresolvedSupertypeName),
         typeof(CapabilityConstraint),
         typeof(UnresolvedType))]
     public partial interface Code : IImplementationRestricted
@@ -106,10 +109,17 @@ public sealed partial class Concrete
         typeof(ClassDeclaration),
         typeof(StructDeclaration),
         typeof(TraitDeclaration))]
-    public partial interface TypeDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
+    public partial interface TypeDeclaration : NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     {
         new ITypeDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
+        IClassMemberDeclarationSyntax ClassMemberDeclaration.Syntax => Syntax;
+        ITraitMemberDeclarationSyntax TraitMemberDeclaration.Syntax => Syntax;
+        IStructMemberDeclarationSyntax StructMemberDeclaration.Syntax => Syntax;
+        ISyntax Code.Syntax => Syntax;
+        ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
+        IFixedList<GenericParameter> GenericParameters { get; }
+        IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
     }
 
     public partial interface ClassDeclaration : TypeDeclaration
@@ -117,10 +127,11 @@ public sealed partial class Concrete
         new IClassDeclarationSyntax Syntax { get; }
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         bool IsAbstract { get; }
+        UnresolvedSupertypeName? BaseTypeName { get; }
         IFixedList<ClassMemberDeclaration> Members { get; }
 
-        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, IEnumerable<ClassMemberDeclaration> members)
-            => new ClassDeclarationNode(syntax, isAbstract, members.ToFixedList());
+        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames)
+            => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList());
     }
 
     public partial interface StructDeclaration : TypeDeclaration
@@ -129,8 +140,8 @@ public sealed partial class Concrete
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<StructMemberDeclaration> Members { get; }
 
-        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members)
-            => new StructDeclarationNode(syntax, members.ToFixedList());
+        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames)
+            => new StructDeclarationNode(syntax, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList());
     }
 
     public partial interface TraitDeclaration : TypeDeclaration
@@ -139,42 +150,69 @@ public sealed partial class Concrete
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<TraitMemberDeclaration> Members { get; }
 
-        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members)
-            => new TraitDeclarationNode(syntax, members.ToFixedList());
+        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames)
+            => new TraitDeclarationNode(syntax, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList());
+    }
+
+    public partial interface GenericParameter : Code
+    {
+        new IGenericParameterSyntax Syntax { get; }
+        ISyntax Code.Syntax => Syntax;
+        CapabilityConstraint Constraint { get; }
+        IdentifierName Name { get; }
+        ParameterIndependence Independence { get; }
+        ParameterVariance Variance { get; }
+
+        public static GenericParameter Create(IGenericParameterSyntax syntax, CapabilityConstraint constraint, IdentifierName name, ParameterIndependence independence, ParameterVariance variance)
+            => new GenericParameterNode(syntax, constraint, name, independence, variance);
+    }
+
+    public partial interface UnresolvedSupertypeName : Code
+    {
+        new ISupertypeNameSyntax Syntax { get; }
+        ISyntax Code.Syntax => Syntax;
+        TypeName Name { get; }
+        IFixedList<UnresolvedType> TypeArguments { get; }
+
+        public static UnresolvedSupertypeName Create(ISupertypeNameSyntax syntax, TypeName name, IEnumerable<UnresolvedType> typeArguments)
+            => new UnresolvedSupertypeNameNode(syntax, name, typeArguments.ToFixedList());
     }
 
     [Closed(
-        typeof(TypeDeclaration),
         typeof(ClassMemberDeclaration),
         typeof(TraitMemberDeclaration),
-        typeof(StructMemberDeclaration),
-        typeof(FunctionDeclaration))]
+        typeof(StructMemberDeclaration))]
     public partial interface TypeMemberDeclaration : Declaration
     {
+        new ITypeMemberDeclarationSyntax Syntax { get; }
+        IDeclarationSyntax Declaration.Syntax => Syntax;
     }
 
+    [Closed(
+        typeof(TypeDeclaration))]
     public partial interface ClassMemberDeclaration : TypeMemberDeclaration
     {
-
-        public static ClassMemberDeclaration Create(IDeclarationSyntax syntax)
-            => new ClassMemberDeclarationNode(syntax);
+        new IClassMemberDeclarationSyntax Syntax { get; }
+        ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
     }
 
+    [Closed(
+        typeof(TypeDeclaration))]
     public partial interface TraitMemberDeclaration : TypeMemberDeclaration
     {
-
-        public static TraitMemberDeclaration Create(IDeclarationSyntax syntax)
-            => new TraitMemberDeclarationNode(syntax);
+        new ITraitMemberDeclarationSyntax Syntax { get; }
+        ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
     }
 
+    [Closed(
+        typeof(TypeDeclaration))]
     public partial interface StructMemberDeclaration : TypeMemberDeclaration
     {
-
-        public static StructMemberDeclaration Create(IDeclarationSyntax syntax)
-            => new StructMemberDeclarationNode(syntax);
+        new IStructMemberDeclarationSyntax Syntax { get; }
+        ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
     }
 
-    public partial interface FunctionDeclaration : NamespaceMemberDeclaration, TypeMemberDeclaration
+    public partial interface FunctionDeclaration : NamespaceMemberDeclaration
     {
         new IFunctionDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
@@ -231,7 +269,6 @@ public sealed partial class Concrete
     [Closed(
         typeof(UnresolvedStandardTypeName),
         typeof(UnresolvedSimpleTypeName),
-        typeof(UnresolvedIdentifierTypeName),
         typeof(UnresolvedQualifiedTypeName))]
     public partial interface UnresolvedTypeName : UnresolvedType
     {
@@ -260,15 +297,15 @@ public sealed partial class Concrete
         ITypeNameSyntax UnresolvedTypeName.Syntax => Syntax;
     }
 
-    public partial interface UnresolvedIdentifierTypeName : UnresolvedTypeName, UnresolvedStandardTypeName, UnresolvedSimpleTypeName
+    public partial interface UnresolvedIdentifierTypeName : UnresolvedStandardTypeName, UnresolvedSimpleTypeName
     {
         new IIdentifierTypeNameSyntax Syntax { get; }
-        ITypeNameSyntax UnresolvedTypeName.Syntax => Syntax;
         IStandardTypeNameSyntax UnresolvedStandardTypeName.Syntax => Syntax;
         ISimpleTypeNameSyntax UnresolvedSimpleTypeName.Syntax => Syntax;
+        ITypeNameSyntax UnresolvedTypeName.Syntax => Syntax;
         new IdentifierName Name { get; }
-        TypeName UnresolvedTypeName.Name => Name;
         StandardName UnresolvedStandardTypeName.Name => Name;
+        TypeName UnresolvedTypeName.Name => Name;
 
         public static UnresolvedIdentifierTypeName Create(IIdentifierTypeNameSyntax syntax, IdentifierName name)
             => new UnresolvedIdentifierTypeNameNode(syntax, name);

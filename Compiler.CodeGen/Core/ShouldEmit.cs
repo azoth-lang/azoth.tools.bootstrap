@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
@@ -12,7 +11,7 @@ public static class ShouldEmit
     /// 3. the property is defined in multiple parents, in that case it is
     ///    ambiguous unless it is redefined in the current interface.
     /// </summary>
-    public static bool Property(Rule rule, Property property)
+    public static bool Property(Property property)
         => property.IsDeclared;
 
     public static bool NewRule(Rule rule)
@@ -28,9 +27,5 @@ public static class ShouldEmit
         => rule.IsTerminal;
 
     public static bool ExtendsSupertype(Rule rule)
-    {
-        if (rule.Defines.Name == "CompilationUnit")
-            Debugger.Break();
-        return !rule.DescendantsModified;
-    }
+        => !rule.DescendantsModified;
 }

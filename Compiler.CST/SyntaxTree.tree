@@ -46,7 +46,8 @@ NamespaceDeclaration: NonMemberDeclaration = IsGlobalQualified:`bool` DeclaredNa
 
 // ---------- Non-Member Entity Declarations
 NonMemberEntityDeclaration: EntityDeclaration <: NonMemberDeclaration = Name:`TypeName`;
-TypeDeclaration: NonMemberEntityDeclaration = ConstModifier:`IConstKeywordToken`? IsConst:`bool` MoveModifier:`IMoveKeywordToken`? IsMove:`bool` Name:`StandardName` GenericParameters:GenericParameter* Symbol:`AcyclicPromise<UserTypeSymbol>` SupertypeNames:SupertypeName* Members:MemberDeclaration*;
+TypeDeclaration <: NonMemberEntityDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
+    = ConstModifier:`IConstKeywordToken`? IsConst:`bool` MoveModifier:`IMoveKeywordToken`? IsMove:`bool` Name:`StandardName` GenericParameters:GenericParameter* Symbol:`AcyclicPromise<UserTypeSymbol>` SupertypeNames:SupertypeName* Members:TypeMemberDeclaration*;
 ClassOrStructDeclaration: TypeDeclaration;
 ClassDeclaration: ClassOrStructDeclaration = AbstractModifier:`IAbstractKeywordToken`? IsAbstract:`bool` GenericParameters:GenericParameter* BaseTypeName:SupertypeName? SupertypeNames:SupertypeName* DefaultConstructorSymbol:`ConstructorSymbol`? Members:ClassMemberDeclaration*;
 StructDeclaration: ClassOrStructDeclaration = GenericParameters:GenericParameter* SupertypeNames:SupertypeName* DefaultInitializerSymbol:`InitializerSymbol`? Members:StructMemberDeclaration*;
@@ -57,22 +58,31 @@ FunctionDeclaration: NonMemberEntityDeclaration <: ConcreteInvocableDeclaration 
 GenericParameter = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance` Symbol:`Promise<GenericParameterTypeSymbol>`;
 SupertypeName: `ISyntax` <: `IHasContainingLexicalScope` = Name:`TypeName` TypeArguments:Type* ReferencedSymbol:`Promise<UserTypeSymbol?>`;
 
-// ---------- Member Declarations
+// ---------- Member Declarations Categories
 // Note: by declaring the DeclaringType property type with quotes, it avoids the system assuming it must represent a child syntax node
-MemberDeclaration: EntityDeclaration = DeclaringType:`ITypeDeclarationSyntax`;
-ClassMemberDeclaration: MemberDeclaration;
-TraitMemberDeclaration: MemberDeclaration;
-StructMemberDeclaration: MemberDeclaration;
-MethodDeclaration: MemberDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration = Kind:`MethodKind` Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Symbol:`AcyclicPromise<MethodSymbol>`;
+TypeMemberDeclaration: EntityDeclaration = DeclaringType:`ITypeDeclarationSyntax`?;
+ClassMemberDeclaration: TypeMemberDeclaration;
+TraitMemberDeclaration: TypeMemberDeclaration;
+StructMemberDeclaration: TypeMemberDeclaration;
+AlwaysTypeMemberDeclaration: TypeMemberDeclaration = DeclaringType:`ITypeDeclarationSyntax`;
+
+// ---------- Member Declarations
+MethodDeclaration: AlwaysTypeMemberDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration
+    = Kind:`MethodKind` Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Symbol:`AcyclicPromise<MethodSymbol>`;
 AbstractMethodDeclaration: MethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return?;
-ConcreteMethodDeclaration: MethodDeclaration <: StructMemberDeclaration, ConcreteInvocableDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
+ConcreteMethodDeclaration: MethodDeclaration <: StructMemberDeclaration, ConcreteInvocableDeclaration
+    = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
 StandardMethodDeclaration: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
 GetterMethodDeclaration: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return Body;
 SetterMethodDeclaration: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
-ConstructorDeclaration: ConcreteInvocableDeclaration <: ClassMemberDeclaration = DeclaringType:`IClassDeclarationSyntax` Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:`AcyclicPromise<ConstructorSymbol>`;
-InitializerDeclaration: ConcreteInvocableDeclaration <: StructMemberDeclaration = DeclaringType:`IStructDeclarationSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:`AcyclicPromise<InitializerSymbol>`;
-FieldDeclaration: MemberDeclaration <: ClassMemberDeclaration, StructMemberDeclaration, Binding = DeclaringType:`IClassOrStructDeclarationSyntax` Name:`IdentifierName` Type Symbol:`AcyclicPromise<FieldSymbol>` Initializer:Expression?;
-AssociatedFunctionDeclaration: MemberDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration = Name:`IdentifierName` Parameters:NamedParameter* Return? Body Symbol:`AcyclicPromise<FunctionSymbol>`;
+ConstructorDeclaration: ConcreteInvocableDeclaration <: ClassMemberDeclaration
+    = DeclaringType:`IClassDeclarationSyntax` Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:`AcyclicPromise<ConstructorSymbol>`;
+InitializerDeclaration: ConcreteInvocableDeclaration <: StructMemberDeclaration
+    = DeclaringType:`IStructDeclarationSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:`AcyclicPromise<InitializerSymbol>`;
+FieldDeclaration: AlwaysTypeMemberDeclaration <: ClassMemberDeclaration, StructMemberDeclaration, Binding
+    = DeclaringType:`IClassOrStructDeclarationSyntax` Name:`IdentifierName` Type Symbol:`AcyclicPromise<FieldSymbol>` Initializer:Expression?;
+AssociatedFunctionDeclaration: AlwaysTypeMemberDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration
+    = Name:`IdentifierName` Parameters:NamedParameter* Return? Body Symbol:`AcyclicPromise<FunctionSymbol>`;
 
 // ---------- Attributes
 Attribute = TypeName;

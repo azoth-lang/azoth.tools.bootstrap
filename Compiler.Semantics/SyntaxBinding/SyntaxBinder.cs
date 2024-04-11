@@ -49,10 +49,10 @@ internal sealed partial class SyntaxBinder
         return CompilationUnit.Create(from, from.File, from.ImplicitNamespaceName, usingDirectives, declarations);
     }
 
-    private static UsingDirective Transform(IUsingDirectiveSyntax syntax)
+    private UsingDirective Transform(IUsingDirectiveSyntax syntax)
         => UsingDirective.Create(syntax, syntax.Name);
 
-    private static NamespaceMemberDeclaration Transform(INonMemberDeclarationSyntax syntax)
+    private NamespaceMemberDeclaration Transform(INonMemberDeclarationSyntax syntax)
         => syntax switch
         {
             INamespaceDeclarationSyntax syn => Transform(syn),
@@ -61,17 +61,17 @@ internal sealed partial class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax),
         };
 
-    private static NamespaceDeclaration Transform(INamespaceDeclarationSyntax syntax)
+    private NamespaceDeclaration Transform(INamespaceDeclarationSyntax syntax)
     {
         var usingDirectives = syntax.UsingDirectives.Select(Transform);
         var declarations = syntax.Declarations.Select(Transform);
         return NamespaceDeclaration.Create(syntax, syntax.IsGlobalQualified, syntax.DeclaredNames, usingDirectives, declarations);
     }
 
-    private static FunctionDeclaration Transform(IFunctionDeclarationSyntax syntax)
+    private FunctionDeclaration Transform(IFunctionDeclarationSyntax syntax)
         => FunctionDeclaration.Create(syntax);
 
-    private static TypeDeclaration Transform(ITypeDeclarationSyntax syntax)
+    private TypeDeclaration Transform(ITypeDeclarationSyntax syntax)
         => syntax switch
         {
             IClassDeclarationSyntax syn => Transform(syn),
@@ -80,31 +80,135 @@ internal sealed partial class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax),
         };
 
-    private static ClassDeclaration Transform(IClassDeclarationSyntax syntax)
+    private ClassDeclaration Transform(IClassDeclarationSyntax syntax)
     {
         var isAbstract = syntax.AbstractModifier is not null;
         var members = Enumerable.Empty<ClassMemberDeclaration>(); // TODO syntax.Members.Select(Build);
-        return ClassDeclaration.Create(syntax, isAbstract, members);
+        var genericParameters = Transform(syntax.GenericParameters);
+        var baseTypeName = Transform(syntax.BaseTypeName);
+        var superTypeNames = Transform(syntax.SupertypeNames);
+        return ClassDeclaration.Create(syntax, isAbstract, baseTypeName, members, genericParameters, superTypeNames);
     }
 
-    private static ClassMemberDeclaration Transform(IClassMemberDeclarationSyntax syntax)
+    private ClassMemberDeclaration Transform(IClassMemberDeclarationSyntax syntax)
         => throw new NotImplementedException();
 
-    private static StructDeclaration Transform(IStructDeclarationSyntax syntax)
+    private StructDeclaration Transform(IStructDeclarationSyntax syntax)
     {
         var members = Enumerable.Empty<StructMemberDeclaration>(); // TODO syntax.Members.Select(Build);
-        return StructDeclaration.Create(syntax, members);
+        var genericParameters = Transform(syntax.GenericParameters);
+        var superTypeNames = Transform(syntax.SupertypeNames);
+        return StructDeclaration.Create(syntax, members, genericParameters, superTypeNames);
     }
 
-    private static StructMemberDeclaration Transform(IStructMemberDeclarationSyntax syntax)
+    private StructMemberDeclaration Transform(IStructMemberDeclarationSyntax syntax)
         => throw new NotImplementedException();
 
-    private static TraitDeclaration Transform(ITraitDeclarationSyntax syntax)
+    private TraitDeclaration Transform(ITraitDeclarationSyntax syntax)
     {
         var members = Enumerable.Empty<TraitMemberDeclaration>(); // TODO syntax.Members.Select(Build);
-        return TraitDeclaration.Create(syntax, members);
+        var genericParameters = Transform(syntax.GenericParameters);
+        var superTypeNames = Transform(syntax.SupertypeNames);
+        return TraitDeclaration.Create(syntax, members, genericParameters, superTypeNames);
     }
 
-    private static TraitMemberDeclaration Transform(ITraitMemberDeclarationSyntax syntax)
+    private TraitMemberDeclaration Transform(ITraitMemberDeclarationSyntax syntax)
+        => throw new NotImplementedException();
+
+    private partial GenericParameter Transform(IGenericParameterSyntax from)
+        => GenericParameter.Create(from, Transform(from.Constraint), from.Name, from.Independence, from.Variance);
+
+    private CapabilityConstraint Transform(ICapabilityConstraintSyntax from)
+    {
+        return from switch
+        {
+            ICapabilitySyntax f => Transform(f),
+            ICapabilitySetSyntax f => Transform(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+    }
+
+    private Capability Transform(ICapabilitySyntax from)
+        // TODO fix to avoid needing to pass capability twice
+        => Capability.Create(from, from.Capability, from.Capability);
+
+    private CapabilitySet Transform(ICapabilitySetSyntax from)
+        => CapabilitySet.Create(from, from.Constraint);
+
+    private partial UnresolvedSupertypeName? Transform(ISupertypeNameSyntax? from)
+    {
+        if (from is null)
+            return null;
+
+        var typeArguments = Transform(from.TypeArguments);
+        return UnresolvedSupertypeName.Create(from, from.Name, typeArguments);
+    }
+
+    private partial UnresolvedType Transform(ITypeSyntax from)
+    {
+        return from switch
+        {
+            ITypeNameSyntax f => Transform(f),
+            IOptionalTypeSyntax f => Transform(f),
+            ICapabilityTypeSyntax f => Transform(f),
+            IFunctionTypeSyntax f => Transform(f),
+            IViewpointTypeSyntax f => Transform(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+    }
+
+    private UnresolvedTypeName Transform(ITypeNameSyntax from)
+    {
+        return from switch
+        {
+            IStandardTypeNameSyntax f => Transform(f),
+            ISimpleTypeNameSyntax f => Transform(f),
+            IQualifiedTypeNameSyntax f => Transform(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+    }
+
+    private UnresolvedTypeName Transform(IStandardTypeNameSyntax from)
+    {
+        return from switch
+        {
+            IIdentifierTypeNameSyntax f => Transform(f),
+            IGenericTypeNameSyntax f => Transform(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+    }
+
+    private UnresolvedIdentifierTypeName Transform(IIdentifierTypeNameSyntax from)
+        => UnresolvedIdentifierTypeName.Create(from, from.Name);
+
+    private UnresolvedGenericTypeName Transform(IGenericTypeNameSyntax from)
+        => UnresolvedGenericTypeName.Create(from, from.Name, Transform(from.TypeArguments));
+
+    private UnresolvedSimpleTypeName Transform(ISimpleTypeNameSyntax from)
+    {
+        return from switch
+        {
+            IIdentifierTypeNameSyntax f => Transform(f),
+            ISpecialTypeNameSyntax f => Transform(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+    }
+
+    private UnresolvedSpecialTypeName Transform(ISpecialTypeNameSyntax from)
+        => UnresolvedSpecialTypeName.Create(from, from.Name);
+
+    private UnresolvedTypeName Transform(IQualifiedTypeNameSyntax from)
+        => throw new NotImplementedException();
+
+    private UnresolvedOptionalType Transform(IOptionalTypeSyntax from)
+        => UnresolvedOptionalType.Create(from, Transform(from.Referent));
+
+    private UnresolvedCapabilityType Transform(ICapabilityTypeSyntax from)
+        => UnresolvedCapabilityType.Create(from, Transform(from.Capability), Transform(from.Referent));
+
+    private UnresolvedFunctionType Transform(IFunctionTypeSyntax from)
+        => throw new NotImplementedException();
+
+    private UnresolvedViewpointType Transform(IViewpointTypeSyntax from)
         => throw new NotImplementedException();
 }

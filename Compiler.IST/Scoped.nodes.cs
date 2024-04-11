@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -100,14 +101,20 @@ public sealed partial class Scoped
     {
         public IClassDeclarationSyntax Syntax { get; }
         public bool IsAbstract { get; }
+        public UnresolvedSupertypeName? BaseTypeName { get; }
         public IFixedList<ClassMemberDeclaration> Members { get; }
+        public IFixedList<GenericParameter> GenericParameters { get; }
+        public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public LexicalScope ContainingLexicalScope { get; }
 
-        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, IFixedList<ClassMemberDeclaration> members, LexicalScope containingLexicalScope)
+        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, LexicalScope containingLexicalScope)
         {
             Syntax = syntax;
             IsAbstract = isAbstract;
+            BaseTypeName = baseTypeName;
             Members = members;
+            GenericParameters = genericParameters;
+            SupertypeNames = supertypeNames;
             ContainingLexicalScope = containingLexicalScope;
         }
     }
@@ -116,12 +123,16 @@ public sealed partial class Scoped
     {
         public IStructDeclarationSyntax Syntax { get; }
         public IFixedList<StructMemberDeclaration> Members { get; }
+        public IFixedList<GenericParameter> GenericParameters { get; }
+        public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public LexicalScope ContainingLexicalScope { get; }
 
-        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, LexicalScope containingLexicalScope)
+        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, LexicalScope containingLexicalScope)
         {
             Syntax = syntax;
             Members = members;
+            GenericParameters = genericParameters;
+            SupertypeNames = supertypeNames;
             ContainingLexicalScope = containingLexicalScope;
         }
     }
@@ -130,49 +141,49 @@ public sealed partial class Scoped
     {
         public ITraitDeclarationSyntax Syntax { get; }
         public IFixedList<TraitMemberDeclaration> Members { get; }
+        public IFixedList<GenericParameter> GenericParameters { get; }
+        public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public LexicalScope ContainingLexicalScope { get; }
 
-        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, LexicalScope containingLexicalScope)
+        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, LexicalScope containingLexicalScope)
         {
             Syntax = syntax;
             Members = members;
+            GenericParameters = genericParameters;
+            SupertypeNames = supertypeNames;
             ContainingLexicalScope = containingLexicalScope;
         }
     }
 
-    private sealed class ClassMemberDeclarationNode : Node, ClassMemberDeclaration
+    private sealed class GenericParameterNode : Node, GenericParameter
     {
-        public IDeclarationSyntax Syntax { get; }
-        public LexicalScope ContainingLexicalScope { get; }
+        public IGenericParameterSyntax Syntax { get; }
+        public CapabilityConstraint Constraint { get; }
+        public IdentifierName Name { get; }
+        public ParameterIndependence Independence { get; }
+        public ParameterVariance Variance { get; }
 
-        public ClassMemberDeclarationNode(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
+        public GenericParameterNode(IGenericParameterSyntax syntax, CapabilityConstraint constraint, IdentifierName name, ParameterIndependence independence, ParameterVariance variance)
         {
             Syntax = syntax;
-            ContainingLexicalScope = containingLexicalScope;
+            Constraint = constraint;
+            Name = name;
+            Independence = independence;
+            Variance = variance;
         }
     }
 
-    private sealed class TraitMemberDeclarationNode : Node, TraitMemberDeclaration
+    private sealed class UnresolvedSupertypeNameNode : Node, UnresolvedSupertypeName
     {
-        public IDeclarationSyntax Syntax { get; }
-        public LexicalScope ContainingLexicalScope { get; }
+        public ISupertypeNameSyntax Syntax { get; }
+        public TypeName Name { get; }
+        public IFixedList<UnresolvedType> TypeArguments { get; }
 
-        public TraitMemberDeclarationNode(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
+        public UnresolvedSupertypeNameNode(ISupertypeNameSyntax syntax, TypeName name, IFixedList<UnresolvedType> typeArguments)
         {
             Syntax = syntax;
-            ContainingLexicalScope = containingLexicalScope;
-        }
-    }
-
-    private sealed class StructMemberDeclarationNode : Node, StructMemberDeclaration
-    {
-        public IDeclarationSyntax Syntax { get; }
-        public LexicalScope ContainingLexicalScope { get; }
-
-        public StructMemberDeclarationNode(IDeclarationSyntax syntax, LexicalScope containingLexicalScope)
-        {
-            Syntax = syntax;
-            ContainingLexicalScope = containingLexicalScope;
+            Name = name;
+            TypeArguments = typeArguments;
         }
     }
 
