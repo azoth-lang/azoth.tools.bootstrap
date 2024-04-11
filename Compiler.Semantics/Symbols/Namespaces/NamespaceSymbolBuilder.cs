@@ -31,8 +31,8 @@ internal sealed partial class NamespaceSymbolBuilder
     private partial To.CompilationUnit Transform(
         From.CompilationUnit from, PackageSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
     {
-        var sym = BuildNamespaceSymbol(containingSymbol, from.ImplicitNamespaceName, treeBuilder);
-        return Create(from, sym, treeBuilder);
+        var implicitNamespaceSymbol = BuildNamespaceSymbol(containingSymbol, from.ImplicitNamespaceName, treeBuilder);
+        return Create(from, implicitNamespaceSymbol, treeBuilder);
     }
 
     private partial To.NamespaceDeclaration Transform(
@@ -42,11 +42,11 @@ internal sealed partial class NamespaceSymbolBuilder
     {
         if (from.IsGlobalQualified)
             containingSymbol = packageSymbol;
-        var sym = BuildNamespaceSymbol(containingSymbol, from.DeclaredNames, treeBuilder);
+        var namespaceSymbol = BuildNamespaceSymbol(containingSymbol, from.DeclaredNames, treeBuilder);
         // TODO remove properties on Syntax nodes
         from.Syntax.ContainingNamespaceSymbol = containingSymbol;
-        from.Syntax.Symbol.Fulfill(sym);
-        return Create(from, containingSymbol, sym, treeBuilder);
+        from.Syntax.Symbol.Fulfill(namespaceSymbol);
+        return Create(from, containingSymbol, namespaceSymbol, treeBuilder);
     }
 
     // TODO this should be more automatic
