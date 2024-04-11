@@ -77,6 +77,11 @@ AssociatedFunctionDeclaration: MemberDeclaration <: ClassMemberDeclaration, Trai
 // ---------- Attributes
 Attribute = TypeName;
 
+// ---------- Capabilities
+CapabilityConstraint = Constraint:`ICapabilityConstraint`;
+CapabilitySet: CapabilityConstraint = Constraint:`CapabilitySet`;
+Capability: CapabilityConstraint = Tokens:`ICapabilityToken`* Declared:`DeclaredCapability` Capability:`Capability`;
+
 // ---------- Parameters and Return
 Parameter = Name:`IdentifierName`? DataType:`IPromise<Pseudotype>` Unused:`bool`;
 /// A non-self parameter that can be declared in a constructor
@@ -86,8 +91,6 @@ SelfParameter: Parameter = IsLentBinding:`bool` Symbol:`Promise<SelfParameterSym
 ConstructorSelfParameter: SelfParameter = IsLentBinding:`bool` Capability DataType:`IPromise<DataType>` Symbol:`Promise<SelfParameterSymbol>`;
 InitializerSelfParameter: SelfParameter = IsLentBinding:`bool` Capability DataType:`IPromise<DataType>` Symbol:`Promise<SelfParameterSymbol>`;
 MethodSelfParameter: SelfParameter = IsLentBinding:`bool` Capability:CapabilityConstraint Symbol:`Promise<SelfParameterSymbol>`;
-CapabilityConstraint = Constraint:`ICapabilityConstraint`;
-CapabilitySet: CapabilityConstraint = Constraint:`CapabilitySet`;
 FieldParameter: ConstructorOrInitializerParameter = Name:`IdentifierName` ReferencedSymbol:`Promise<FieldSymbol?>` DefaultValue:Expression?;
 Return = Type; // Return type of a function or method
 
@@ -107,7 +110,6 @@ GenericTypeName: StandardTypeName =  Name:`GenericName` TypeArguments:Type*;
 QualifiedTypeName: TypeName = Context:TypeName QualifiedName:StandardTypeName;
 OptionalType: Type = Referent:Type;
 CapabilityType: Type = Capability Referent:Type;
-Capability: CapabilityConstraint = Tokens:`ICapabilityToken`* Declared:`DeclaredCapability` Capability:`Capability`;
 FunctionType: Type = Parameters:ParameterType* Return:ReturnType;
 ParameterType = IsLent:`bool` Referent:Type;
 ReturnType = Referent:Type; // Return type of function type

@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.IST;
@@ -185,6 +186,166 @@ public sealed partial class WithNamespaceSymbols
         {
             Syntax = syntax;
             ContainingSymbol = containingSymbol;
+        }
+    }
+
+    private sealed class CapabilitySetNode : Node, CapabilitySet
+    {
+        public ICapabilitySetSyntax Syntax { get; }
+        public Types.Capabilities.CapabilitySet Constraint { get; }
+
+        public CapabilitySetNode(ICapabilitySetSyntax syntax, Types.Capabilities.CapabilitySet constraint)
+        {
+            Syntax = syntax;
+            Constraint = constraint;
+        }
+    }
+
+    private sealed class CapabilityNode : Node, Capability
+    {
+        public ICapabilitySyntax Syntax { get; }
+        public Types.Capabilities.Capability Capability { get; }
+        public Types.Capabilities.Capability Constraint { get; }
+
+        public CapabilityNode(ICapabilitySyntax syntax, Types.Capabilities.Capability capability, Types.Capabilities.Capability constraint)
+        {
+            Syntax = syntax;
+            Capability = capability;
+            Constraint = constraint;
+        }
+    }
+
+    private sealed class UnresolvedIdentifierTypeNameNode : Node, UnresolvedIdentifierTypeName
+    {
+        public IIdentifierTypeNameSyntax Syntax { get; }
+        public IdentifierName Name { get; }
+
+        public UnresolvedIdentifierTypeNameNode(IIdentifierTypeNameSyntax syntax, IdentifierName name)
+        {
+            Syntax = syntax;
+            Name = name;
+        }
+    }
+
+    private sealed class UnresolvedSpecialTypeNameNode : Node, UnresolvedSpecialTypeName
+    {
+        public ISpecialTypeNameSyntax Syntax { get; }
+        public SpecialTypeName Name { get; }
+
+        public UnresolvedSpecialTypeNameNode(ISpecialTypeNameSyntax syntax, SpecialTypeName name)
+        {
+            Syntax = syntax;
+            Name = name;
+        }
+    }
+
+    private sealed class UnresolvedGenericTypeNameNode : Node, UnresolvedGenericTypeName
+    {
+        public IGenericTypeNameSyntax Syntax { get; }
+        public GenericName Name { get; }
+        public IFixedList<UnresolvedType> TypeArguments { get; }
+
+        public UnresolvedGenericTypeNameNode(IGenericTypeNameSyntax syntax, GenericName name, IFixedList<UnresolvedType> typeArguments)
+        {
+            Syntax = syntax;
+            Name = name;
+            TypeArguments = typeArguments;
+        }
+    }
+
+    private sealed class UnresolvedQualifiedTypeNameNode : Node, UnresolvedQualifiedTypeName
+    {
+        public IQualifiedTypeNameSyntax Syntax { get; }
+        public UnresolvedTypeName Context { get; }
+        public UnresolvedStandardTypeName QualifiedName { get; }
+        public TypeName Name { get; }
+
+        public UnresolvedQualifiedTypeNameNode(IQualifiedTypeNameSyntax syntax, UnresolvedTypeName context, UnresolvedStandardTypeName qualifiedName, TypeName name)
+        {
+            Syntax = syntax;
+            Context = context;
+            QualifiedName = qualifiedName;
+            Name = name;
+        }
+    }
+
+    private sealed class UnresolvedOptionalTypeNode : Node, UnresolvedOptionalType
+    {
+        public IOptionalTypeSyntax Syntax { get; }
+        public UnresolvedType Referent { get; }
+
+        public UnresolvedOptionalTypeNode(IOptionalTypeSyntax syntax, UnresolvedType referent)
+        {
+            Syntax = syntax;
+            Referent = referent;
+        }
+    }
+
+    private sealed class UnresolvedCapabilityTypeNode : Node, UnresolvedCapabilityType
+    {
+        public ICapabilityTypeSyntax Syntax { get; }
+        public Capability Capability { get; }
+        public UnresolvedType Referent { get; }
+
+        public UnresolvedCapabilityTypeNode(ICapabilityTypeSyntax syntax, Capability capability, UnresolvedType referent)
+        {
+            Syntax = syntax;
+            Capability = capability;
+            Referent = referent;
+        }
+    }
+
+    private sealed class UnresolvedFunctionTypeNode : Node, UnresolvedFunctionType
+    {
+        public IFunctionTypeSyntax Syntax { get; }
+        public IFixedList<UnresolvedParameterType> Parameters { get; }
+        public UnresolvedType Return { get; }
+
+        public UnresolvedFunctionTypeNode(IFunctionTypeSyntax syntax, IFixedList<UnresolvedParameterType> parameters, UnresolvedType @return)
+        {
+            Syntax = syntax;
+            Parameters = parameters;
+            Return = @return;
+        }
+    }
+
+    private sealed class UnresolvedParameterTypeNode : Node, UnresolvedParameterType
+    {
+        public IParameterTypeSyntax Syntax { get; }
+        public bool IsLent { get; }
+        public UnresolvedType Referent { get; }
+
+        public UnresolvedParameterTypeNode(IParameterTypeSyntax syntax, bool isLent, UnresolvedType referent)
+        {
+            Syntax = syntax;
+            IsLent = isLent;
+            Referent = referent;
+        }
+    }
+
+    private sealed class UnresolvedCapabilityViewpointTypeNode : Node, UnresolvedCapabilityViewpointType
+    {
+        public ICapabilityViewpointTypeSyntax Syntax { get; }
+        public Capability Capability { get; }
+        public UnresolvedType Referent { get; }
+
+        public UnresolvedCapabilityViewpointTypeNode(ICapabilityViewpointTypeSyntax syntax, Capability capability, UnresolvedType referent)
+        {
+            Syntax = syntax;
+            Capability = capability;
+            Referent = referent;
+        }
+    }
+
+    private sealed class UnresolvedSelfViewpointTypeNode : Node, UnresolvedSelfViewpointType
+    {
+        public ISelfViewpointTypeSyntax Syntax { get; }
+        public UnresolvedType Referent { get; }
+
+        public UnresolvedSelfViewpointTypeNode(ISelfViewpointTypeSyntax syntax, UnresolvedType referent)
+        {
+            Syntax = syntax;
+            Referent = referent;
         }
     }
 

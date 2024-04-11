@@ -6,6 +6,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // TODO ◊entry Package
@@ -23,9 +24,8 @@ UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
 Code = Syntax:`ISyntax`;
 
-
 // ---------- Declarations
-Declaration <: Code = Syntax:`IDeclarationSyntax`;
+Declaration: Code = Syntax:`IDeclarationSyntax`;
 NamespaceMemberDeclaration: Declaration;
 NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`
     IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
@@ -45,3 +45,26 @@ StructMemberDeclaration: TypeMemberDeclaration;
 
 // ---------- Invocable Declarations
 FunctionDeclaration <: NamespaceMemberDeclaration, TypeMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`;
+
+// ---------- Capabilities
+CapabilityConstraint: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`ICapabilityConstraint`;
+CapabilitySet: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint:`Types.Capabilities.CapabilitySet`;
+// TODO have a way to make Capability hide Constraint
+Capability: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Types.Capabilities.Capability` Constraint:`Types.Capabilities.Capability`;
+
+// ---------- Unresolved Types
+UnresolvedType: Code = Syntax:`ITypeSyntax`;
+UnresolvedTypeName: UnresolvedType = Syntax:`ITypeNameSyntax` Name:`TypeName`;
+UnresolvedStandardTypeName: UnresolvedTypeName = Syntax:`IStandardTypeNameSyntax` Name:`StandardName`;
+UnresolvedSimpleTypeName: UnresolvedTypeName = Syntax:`ISimpleTypeNameSyntax`;
+UnresolvedIdentifierTypeName: UnresolvedTypeName <: UnresolvedStandardTypeName, UnresolvedSimpleTypeName = Syntax:`IIdentifierTypeNameSyntax` Name:`IdentifierName`;
+UnresolvedSpecialTypeName: UnresolvedSimpleTypeName = Syntax:`ISpecialTypeNameSyntax` Name:`SpecialTypeName`;
+UnresolvedGenericTypeName: UnresolvedStandardTypeName = Syntax:`IGenericTypeNameSyntax` Name:`GenericName` TypeArguments:UnresolvedType*;
+UnresolvedQualifiedTypeName: UnresolvedTypeName = Syntax:`IQualifiedTypeNameSyntax` Context:UnresolvedTypeName QualifiedName:UnresolvedStandardTypeName;
+UnresolvedOptionalType: UnresolvedType = Syntax:`IOptionalTypeSyntax` Referent:UnresolvedType;
+UnresolvedCapabilityType: UnresolvedType = Syntax:`ICapabilityTypeSyntax` Capability Referent:UnresolvedType;
+UnresolvedFunctionType: UnresolvedType = Syntax:`IFunctionTypeSyntax` Parameters:UnresolvedParameterType* Return:UnresolvedType;
+UnresolvedParameterType = Syntax:`IParameterTypeSyntax` IsLent:`bool` Referent:UnresolvedType;
+UnresolvedViewpointType: UnresolvedType = Syntax:`IViewpointTypeSyntax` Referent:UnresolvedType;
+UnresolvedCapabilityViewpointType: UnresolvedViewpointType = Syntax:`ICapabilityViewpointTypeSyntax` Capability;
+UnresolvedSelfViewpointType: UnresolvedViewpointType = Syntax:`ISelfViewpointTypeSyntax`;

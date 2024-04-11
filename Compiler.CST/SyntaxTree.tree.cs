@@ -28,8 +28,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(IGenericParameterSyntax),
     typeof(ISupertypeNameSyntax),
     typeof(IAttributeSyntax),
-    typeof(IParameterSyntax),
     typeof(ICapabilityConstraintSyntax),
+    typeof(IParameterSyntax),
     typeof(IReturnSyntax),
     typeof(ITypeSyntax),
     typeof(IParameterTypeSyntax),
@@ -349,6 +349,26 @@ public partial interface IAttributeSyntax : ISyntax
 }
 
 [Closed(
+    typeof(ICapabilitySetSyntax),
+    typeof(ICapabilitySyntax))]
+public partial interface ICapabilityConstraintSyntax : ISyntax
+{
+    ICapabilityConstraint Constraint { get; }
+}
+
+public partial interface ICapabilitySetSyntax : ICapabilityConstraintSyntax
+{
+    new CapabilitySet Constraint { get; }
+}
+
+public partial interface ICapabilitySyntax : ICapabilityConstraintSyntax
+{
+    IFixedList<ICapabilityToken> Tokens { get; }
+    DeclaredCapability Declared { get; }
+    Capability Capability { get; }
+}
+
+[Closed(
     typeof(IConstructorOrInitializerParameterSyntax),
     typeof(ISelfParameterSyntax))]
 public partial interface IParameterSyntax : ISyntax
@@ -401,19 +421,6 @@ public partial interface IInitializerSelfParameterSyntax : ISelfParameterSyntax
 public partial interface IMethodSelfParameterSyntax : ISelfParameterSyntax
 {
     ICapabilityConstraintSyntax Capability { get; }
-}
-
-[Closed(
-    typeof(ICapabilitySetSyntax),
-    typeof(ICapabilitySyntax))]
-public partial interface ICapabilityConstraintSyntax : ISyntax
-{
-    ICapabilityConstraint Constraint { get; }
-}
-
-public partial interface ICapabilitySetSyntax : ICapabilityConstraintSyntax
-{
-    new CapabilitySet Constraint { get; }
 }
 
 public partial interface IFieldParameterSyntax : IConstructorOrInitializerParameterSyntax
@@ -512,13 +519,6 @@ public partial interface ICapabilityTypeSyntax : ITypeSyntax
 {
     ICapabilitySyntax Capability { get; }
     ITypeSyntax Referent { get; }
-}
-
-public partial interface ICapabilitySyntax : ICapabilityConstraintSyntax
-{
-    IFixedList<ICapabilityToken> Tokens { get; }
-    DeclaredCapability Declared { get; }
-    Capability Capability { get; }
 }
 
 public partial interface IFunctionTypeSyntax : ITypeSyntax

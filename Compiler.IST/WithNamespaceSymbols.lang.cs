@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -100,7 +101,9 @@ public sealed partial class WithNamespaceSymbols
     [Closed(
         typeof(Declaration),
         typeof(CompilationUnit),
-        typeof(UsingDirective))]
+        typeof(UsingDirective),
+        typeof(CapabilityConstraint),
+        typeof(UnresolvedType))]
     public partial interface Code : IImplementationRestricted
     {
         ISyntax Syntax { get; }
@@ -186,6 +189,202 @@ public sealed partial class WithNamespaceSymbols
             => new StructMemberDeclarationNode(syntax, containingSymbol);
     }
 
+    [Closed(
+        typeof(CapabilitySet),
+        typeof(Capability))]
+    public partial interface CapabilityConstraint : Code
+    {
+        new ICapabilityConstraintSyntax Syntax { get; }
+        ISyntax Code.Syntax => Syntax;
+        ICapabilityConstraint Constraint { get; }
+    }
+
+    public partial interface CapabilitySet : CapabilityConstraint
+    {
+        new ICapabilitySetSyntax Syntax { get; }
+        ICapabilityConstraintSyntax CapabilityConstraint.Syntax => Syntax;
+        new Types.Capabilities.CapabilitySet Constraint { get; }
+        ICapabilityConstraint CapabilityConstraint.Constraint => Constraint;
+
+        public static CapabilitySet Create(ICapabilitySetSyntax syntax, Types.Capabilities.CapabilitySet constraint)
+            => new CapabilitySetNode(syntax, constraint);
+    }
+
+    public partial interface Capability : CapabilityConstraint
+    {
+        new ICapabilitySyntax Syntax { get; }
+        ICapabilityConstraintSyntax CapabilityConstraint.Syntax => Syntax;
+        Types.Capabilities.Capability Capability { get; }
+        new Types.Capabilities.Capability Constraint { get; }
+        ICapabilityConstraint CapabilityConstraint.Constraint => Constraint;
+
+        public static Capability Create(ICapabilitySyntax syntax, Types.Capabilities.Capability capability, Types.Capabilities.Capability constraint)
+            => new CapabilityNode(syntax, capability, constraint);
+    }
+
+    [Closed(
+        typeof(UnresolvedTypeName),
+        typeof(UnresolvedOptionalType),
+        typeof(UnresolvedCapabilityType),
+        typeof(UnresolvedFunctionType),
+        typeof(UnresolvedViewpointType))]
+    public partial interface UnresolvedType : Code
+    {
+        new ITypeSyntax Syntax { get; }
+        ISyntax Code.Syntax => Syntax;
+    }
+
+    [Closed(
+        typeof(UnresolvedStandardTypeName),
+        typeof(UnresolvedSimpleTypeName),
+        typeof(UnresolvedIdentifierTypeName),
+        typeof(UnresolvedQualifiedTypeName))]
+    public partial interface UnresolvedTypeName : UnresolvedType
+    {
+        new ITypeNameSyntax Syntax { get; }
+        ITypeSyntax UnresolvedType.Syntax => Syntax;
+        TypeName Name { get; }
+    }
+
+    [Closed(
+        typeof(UnresolvedIdentifierTypeName),
+        typeof(UnresolvedGenericTypeName))]
+    public partial interface UnresolvedStandardTypeName : UnresolvedTypeName
+    {
+        new IStandardTypeNameSyntax Syntax { get; }
+        ITypeNameSyntax UnresolvedTypeName.Syntax => Syntax;
+        new StandardName Name { get; }
+        TypeName UnresolvedTypeName.Name => Name;
+    }
+
+    [Closed(
+        typeof(UnresolvedIdentifierTypeName),
+        typeof(UnresolvedSpecialTypeName))]
+    public partial interface UnresolvedSimpleTypeName : UnresolvedTypeName
+    {
+        new ISimpleTypeNameSyntax Syntax { get; }
+        ITypeNameSyntax UnresolvedTypeName.Syntax => Syntax;
+    }
+
+    public partial interface UnresolvedIdentifierTypeName : UnresolvedTypeName, UnresolvedStandardTypeName, UnresolvedSimpleTypeName
+    {
+        new IIdentifierTypeNameSyntax Syntax { get; }
+        ITypeNameSyntax UnresolvedTypeName.Syntax => Syntax;
+        IStandardTypeNameSyntax UnresolvedStandardTypeName.Syntax => Syntax;
+        ISimpleTypeNameSyntax UnresolvedSimpleTypeName.Syntax => Syntax;
+        new IdentifierName Name { get; }
+        TypeName UnresolvedTypeName.Name => Name;
+        StandardName UnresolvedStandardTypeName.Name => Name;
+
+        public static UnresolvedIdentifierTypeName Create(IIdentifierTypeNameSyntax syntax, IdentifierName name)
+            => new UnresolvedIdentifierTypeNameNode(syntax, name);
+    }
+
+    public partial interface UnresolvedSpecialTypeName : UnresolvedSimpleTypeName
+    {
+        new ISpecialTypeNameSyntax Syntax { get; }
+        ISimpleTypeNameSyntax UnresolvedSimpleTypeName.Syntax => Syntax;
+        new SpecialTypeName Name { get; }
+        TypeName UnresolvedTypeName.Name => Name;
+
+        public static UnresolvedSpecialTypeName Create(ISpecialTypeNameSyntax syntax, SpecialTypeName name)
+            => new UnresolvedSpecialTypeNameNode(syntax, name);
+    }
+
+    public partial interface UnresolvedGenericTypeName : UnresolvedStandardTypeName
+    {
+        new IGenericTypeNameSyntax Syntax { get; }
+        IStandardTypeNameSyntax UnresolvedStandardTypeName.Syntax => Syntax;
+        new GenericName Name { get; }
+        StandardName UnresolvedStandardTypeName.Name => Name;
+        IFixedList<UnresolvedType> TypeArguments { get; }
+
+        public static UnresolvedGenericTypeName Create(IGenericTypeNameSyntax syntax, GenericName name, IEnumerable<UnresolvedType> typeArguments)
+            => new UnresolvedGenericTypeNameNode(syntax, name, typeArguments.ToFixedList());
+    }
+
+    public partial interface UnresolvedQualifiedTypeName : UnresolvedTypeName
+    {
+        new IQualifiedTypeNameSyntax Syntax { get; }
+        ITypeNameSyntax UnresolvedTypeName.Syntax => Syntax;
+        UnresolvedTypeName Context { get; }
+        UnresolvedStandardTypeName QualifiedName { get; }
+
+        public static UnresolvedQualifiedTypeName Create(IQualifiedTypeNameSyntax syntax, UnresolvedTypeName context, UnresolvedStandardTypeName qualifiedName, TypeName name)
+            => new UnresolvedQualifiedTypeNameNode(syntax, context, qualifiedName, name);
+    }
+
+    public partial interface UnresolvedOptionalType : UnresolvedType
+    {
+        new IOptionalTypeSyntax Syntax { get; }
+        ITypeSyntax UnresolvedType.Syntax => Syntax;
+        UnresolvedType Referent { get; }
+
+        public static UnresolvedOptionalType Create(IOptionalTypeSyntax syntax, UnresolvedType referent)
+            => new UnresolvedOptionalTypeNode(syntax, referent);
+    }
+
+    public partial interface UnresolvedCapabilityType : UnresolvedType
+    {
+        new ICapabilityTypeSyntax Syntax { get; }
+        ITypeSyntax UnresolvedType.Syntax => Syntax;
+        Capability Capability { get; }
+        UnresolvedType Referent { get; }
+
+        public static UnresolvedCapabilityType Create(ICapabilityTypeSyntax syntax, Capability capability, UnresolvedType referent)
+            => new UnresolvedCapabilityTypeNode(syntax, capability, referent);
+    }
+
+    public partial interface UnresolvedFunctionType : UnresolvedType
+    {
+        new IFunctionTypeSyntax Syntax { get; }
+        ITypeSyntax UnresolvedType.Syntax => Syntax;
+        IFixedList<UnresolvedParameterType> Parameters { get; }
+        UnresolvedType Return { get; }
+
+        public static UnresolvedFunctionType Create(IFunctionTypeSyntax syntax, IEnumerable<UnresolvedParameterType> parameters, UnresolvedType @return)
+            => new UnresolvedFunctionTypeNode(syntax, parameters.ToFixedList(), @return);
+    }
+
+    public partial interface UnresolvedParameterType : IImplementationRestricted
+    {
+        IParameterTypeSyntax Syntax { get; }
+        bool IsLent { get; }
+        UnresolvedType Referent { get; }
+
+        public static UnresolvedParameterType Create(IParameterTypeSyntax syntax, bool isLent, UnresolvedType referent)
+            => new UnresolvedParameterTypeNode(syntax, isLent, referent);
+    }
+
+    [Closed(
+        typeof(UnresolvedCapabilityViewpointType),
+        typeof(UnresolvedSelfViewpointType))]
+    public partial interface UnresolvedViewpointType : UnresolvedType
+    {
+        new IViewpointTypeSyntax Syntax { get; }
+        ITypeSyntax UnresolvedType.Syntax => Syntax;
+        UnresolvedType Referent { get; }
+    }
+
+    public partial interface UnresolvedCapabilityViewpointType : UnresolvedViewpointType
+    {
+        new ICapabilityViewpointTypeSyntax Syntax { get; }
+        IViewpointTypeSyntax UnresolvedViewpointType.Syntax => Syntax;
+        Capability Capability { get; }
+
+        public static UnresolvedCapabilityViewpointType Create(ICapabilityViewpointTypeSyntax syntax, Capability capability, UnresolvedType referent)
+            => new UnresolvedCapabilityViewpointTypeNode(syntax, capability, referent);
+    }
+
+    public partial interface UnresolvedSelfViewpointType : UnresolvedViewpointType
+    {
+        new ISelfViewpointTypeSyntax Syntax { get; }
+        IViewpointTypeSyntax UnresolvedViewpointType.Syntax => Syntax;
+
+        public static UnresolvedSelfViewpointType Create(ISelfViewpointTypeSyntax syntax, UnresolvedType referent)
+            => new UnresolvedSelfViewpointTypeNode(syntax, referent);
+    }
+
 }
 
 public sealed partial class Concrete
@@ -195,6 +394,89 @@ public sealed partial class Concrete
     }
 
     public partial interface UsingDirective : WithNamespaceSymbols.UsingDirective
+    {
+    }
+
+    public partial interface CapabilityConstraint : WithNamespaceSymbols.CapabilityConstraint
+    {
+    }
+
+    public partial interface CapabilitySet : WithNamespaceSymbols.CapabilitySet
+    {
+    }
+
+    public partial interface Capability : WithNamespaceSymbols.Capability
+    {
+    }
+
+    public partial interface UnresolvedType : WithNamespaceSymbols.UnresolvedType
+    {
+    }
+
+    public partial interface UnresolvedTypeName : WithNamespaceSymbols.UnresolvedTypeName
+    {
+    }
+
+    public partial interface UnresolvedStandardTypeName : WithNamespaceSymbols.UnresolvedStandardTypeName
+    {
+    }
+
+    public partial interface UnresolvedSimpleTypeName : WithNamespaceSymbols.UnresolvedSimpleTypeName
+    {
+    }
+
+    public partial interface UnresolvedIdentifierTypeName : WithNamespaceSymbols.UnresolvedIdentifierTypeName
+    {
+    }
+
+    public partial interface UnresolvedSpecialTypeName : WithNamespaceSymbols.UnresolvedSpecialTypeName
+    {
+    }
+
+    public partial interface UnresolvedGenericTypeName : WithNamespaceSymbols.UnresolvedGenericTypeName
+    {
+        IFixedList<WithNamespaceSymbols.UnresolvedType> WithNamespaceSymbols.UnresolvedGenericTypeName.TypeArguments => TypeArguments;
+    }
+
+    public partial interface UnresolvedQualifiedTypeName : WithNamespaceSymbols.UnresolvedQualifiedTypeName
+    {
+        WithNamespaceSymbols.UnresolvedTypeName WithNamespaceSymbols.UnresolvedQualifiedTypeName.Context => Context;
+        WithNamespaceSymbols.UnresolvedStandardTypeName WithNamespaceSymbols.UnresolvedQualifiedTypeName.QualifiedName => QualifiedName;
+    }
+
+    public partial interface UnresolvedOptionalType : WithNamespaceSymbols.UnresolvedOptionalType
+    {
+        WithNamespaceSymbols.UnresolvedType WithNamespaceSymbols.UnresolvedOptionalType.Referent => Referent;
+    }
+
+    public partial interface UnresolvedCapabilityType : WithNamespaceSymbols.UnresolvedCapabilityType
+    {
+        WithNamespaceSymbols.Capability WithNamespaceSymbols.UnresolvedCapabilityType.Capability => Capability;
+        WithNamespaceSymbols.UnresolvedType WithNamespaceSymbols.UnresolvedCapabilityType.Referent => Referent;
+    }
+
+    public partial interface UnresolvedFunctionType : WithNamespaceSymbols.UnresolvedFunctionType
+    {
+        IFixedList<WithNamespaceSymbols.UnresolvedParameterType> WithNamespaceSymbols.UnresolvedFunctionType.Parameters => Parameters;
+        WithNamespaceSymbols.UnresolvedType WithNamespaceSymbols.UnresolvedFunctionType.Return => Return;
+    }
+
+    public partial interface UnresolvedParameterType : WithNamespaceSymbols.UnresolvedParameterType
+    {
+        WithNamespaceSymbols.UnresolvedType WithNamespaceSymbols.UnresolvedParameterType.Referent => Referent;
+    }
+
+    public partial interface UnresolvedViewpointType : WithNamespaceSymbols.UnresolvedViewpointType
+    {
+        WithNamespaceSymbols.UnresolvedType WithNamespaceSymbols.UnresolvedViewpointType.Referent => Referent;
+    }
+
+    public partial interface UnresolvedCapabilityViewpointType : WithNamespaceSymbols.UnresolvedCapabilityViewpointType
+    {
+        WithNamespaceSymbols.Capability WithNamespaceSymbols.UnresolvedCapabilityViewpointType.Capability => Capability;
+    }
+
+    public partial interface UnresolvedSelfViewpointType : WithNamespaceSymbols.UnresolvedSelfViewpointType
     {
     }
 
