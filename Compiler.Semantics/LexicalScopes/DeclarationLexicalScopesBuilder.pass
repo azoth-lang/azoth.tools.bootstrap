@@ -2,14 +2,8 @@
 ◊from WithNamespaceSymbols; // TODO have languages define entry points
 ◊to WithDeclarationLexicalScopes; // TODO have languages define entry points
 
-// Package -> Package; Implicitly required becuase the lower layers require parameters
+// Package -> Package; // Automaticlly generated because package has new property
 
-CompilationUnit*, context:PackageContext -> ~;
-
-CompilationUnit, context:ScopeContext -> ~;
-TypeDeclaration, context:ScopeContext -> ~;
-FunctionDeclaration, context:ScopeContext -> ~;
-
-//(NestedScope globalScope, FixedDictionary<NamespaceName, Namespace> namespaces, NestedScope containingScope) -> ConditionalLexicalScopes;
-AssignmentExpression, context:ScopeContext -> ~, `ConditionalLexicalScope` = auto;
-BinaryOperatorExpression;
+CompilationUnit, containingScope:PackageReferenceScope -> ~;
+TypeDeclaration, containingScope:DeclarationLexicalScope -> ~;
+FunctionDeclaration, containingScope:DeclarationLexicalScope -> ~;
