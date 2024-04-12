@@ -191,7 +191,7 @@ public class Rule
         return IsModified
                // Note: added child rules are not a problem for the cases that matter here
                || ChildRules.Any(r => r.TryDescendantsModified)
-               || DeclaredProperties.Select(p => p.Type.Symbol.ReferencedRule)
+               || AllProperties.Select(p => p.Type.Symbol.ReferencedRule)
                                     .WhereNotNull()
                                     .Except(this)
                                     .Any(r => r.TryDescendantsModified);

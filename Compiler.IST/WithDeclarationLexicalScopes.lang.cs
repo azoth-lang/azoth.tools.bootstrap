@@ -2,6 +2,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -16,11 +17,39 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public sealed partial class WithDeclarationLexicalScopes
 {
+    public partial interface Package : IImplementationRestricted
+    {
+        PackageReferenceScope LexicalScope { get; }
+        IPackageSyntax Syntax { get; }
+        PackageSymbol Symbol { get; }
+        IFixedSet<PackageReference> References { get; }
+        IFixedSet<CompilationUnit> CompilationUnits { get; }
+        IFixedSet<CompilationUnit> TestingCompilationUnits { get; }
+
+        public static Package Create(PackageReferenceScope lexicalScope, IPackageSyntax syntax, PackageSymbol symbol, IEnumerable<PackageReference> references, IEnumerable<CompilationUnit> compilationUnits, IEnumerable<CompilationUnit> testingCompilationUnits)
+            => new PackageNode(lexicalScope, syntax, symbol, references.ToFixedSet(), compilationUnits.ToFixedSet(), testingCompilationUnits.ToFixedSet());
+    }
+
+    public partial interface CompilationUnit : Code
+    {
+        DeclarationScope LexicalScope { get; }
+        new ICompilationUnitSyntax Syntax { get; }
+        ISyntax Code.Syntax => Syntax;
+        CodeFile File { get; }
+        NamespaceName ImplicitNamespaceName { get; }
+        IFixedList<UsingDirective> UsingDirectives { get; }
+        IFixedList<NamespaceMemberDeclaration> Declarations { get; }
+
+        public static CompilationUnit Create(DeclarationScope lexicalScope, ICompilationUnitSyntax syntax, CodeFile file, NamespaceName implicitNamespaceName, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations)
+            => new CompilationUnitNode(lexicalScope, syntax, file, implicitNamespaceName, usingDirectives.ToFixedList(), declarations.ToFixedList());
+    }
+
     [Closed(
         typeof(NamespaceMemberDeclaration),
         typeof(TypeMemberDeclaration))]
     public partial interface Declaration : Code
     {
+        DeclarationLexicalScope ContainingLexicalScope { get; }
         NamespaceSymbol? ContainingSymbol { get; }
         new IDeclarationSyntax Syntax { get; }
         ISyntax Code.Syntax => Syntax;
@@ -28,6 +57,7 @@ public sealed partial class WithDeclarationLexicalScopes
 
     public partial interface NamespaceDeclaration : NamespaceMemberDeclaration
     {
+        DeclarationScope LexicalScope { get; }
         new NamespaceSymbol ContainingSymbol { get; }
         NamespaceSymbol? Declaration.ContainingSymbol => ContainingSymbol;
         NamespaceSymbol Symbol { get; }
@@ -38,8 +68,50 @@ public sealed partial class WithDeclarationLexicalScopes
         IFixedList<UsingDirective> UsingDirectives { get; }
         IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
-        public static NamespaceDeclaration Create(NamespaceSymbol containingSymbol, NamespaceSymbol symbol, INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations)
-            => new NamespaceDeclarationNode(containingSymbol, symbol, syntax, isGlobalQualified, declaredNames, usingDirectives.ToFixedList(), declarations.ToFixedList());
+        public static NamespaceDeclaration Create(DeclarationScope lexicalScope, NamespaceSymbol containingSymbol, NamespaceSymbol symbol, INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations, DeclarationLexicalScope containingLexicalScope)
+            => new NamespaceDeclarationNode(lexicalScope, containingSymbol, symbol, syntax, isGlobalQualified, declaredNames, usingDirectives.ToFixedList(), declarations.ToFixedList(), containingLexicalScope);
+    }
+
+    [Closed(
+        typeof(ClassDeclaration),
+        typeof(StructDeclaration),
+        typeof(TraitDeclaration))]
+    public partial interface TypeDeclaration : NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
+    {
+        DeclarationScope LexicalScope { get; }
+        new ITypeDeclarationSyntax Syntax { get; }
+        IDeclarationSyntax Declaration.Syntax => Syntax;
+        IClassMemberDeclarationSyntax ClassMemberDeclaration.Syntax => Syntax;
+        ITraitMemberDeclarationSyntax TraitMemberDeclaration.Syntax => Syntax;
+        IStructMemberDeclarationSyntax StructMemberDeclaration.Syntax => Syntax;
+        ISyntax Code.Syntax => Syntax;
+        ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
+        IFixedList<GenericParameter> GenericParameters { get; }
+        IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
+    }
+
+    public partial interface UnresolvedSupertypeName : Code
+    {
+        DeclarationLexicalScope ContainingLexicalScope { get; }
+        new ISupertypeNameSyntax Syntax { get; }
+        ISyntax Code.Syntax => Syntax;
+        TypeName Name { get; }
+        IFixedList<UnresolvedType> TypeArguments { get; }
+
+        public static UnresolvedSupertypeName Create(DeclarationLexicalScope containingLexicalScope, ISupertypeNameSyntax syntax, TypeName name, IEnumerable<UnresolvedType> typeArguments)
+            => new UnresolvedSupertypeNameNode(containingLexicalScope, syntax, name, typeArguments.ToFixedList());
+    }
+
+    [Closed(
+        typeof(UnresolvedStandardTypeName),
+        typeof(UnresolvedSimpleTypeName),
+        typeof(UnresolvedQualifiedTypeName))]
+    public partial interface UnresolvedTypeName : UnresolvedType
+    {
+        DeclarationLexicalScope ContainingLexicalScope { get; }
+        new ITypeNameSyntax Syntax { get; }
+        ITypeSyntax UnresolvedType.Syntax => Syntax;
+        TypeName Name { get; }
     }
 
     public partial interface FunctionDeclaration : NamespaceMemberDeclaration
@@ -49,20 +121,8 @@ public sealed partial class WithDeclarationLexicalScopes
         new IFunctionDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
 
-        public static FunctionDeclaration Create(NamespaceSymbol containingSymbol, IFunctionDeclarationSyntax syntax)
-            => new FunctionDeclarationNode(containingSymbol, syntax);
-    }
-
-    public partial interface Package : IImplementationRestricted
-    {
-        IPackageSyntax Syntax { get; }
-        PackageSymbol Symbol { get; }
-        IFixedSet<PackageReference> References { get; }
-        IFixedSet<CompilationUnit> CompilationUnits { get; }
-        IFixedSet<CompilationUnit> TestingCompilationUnits { get; }
-
-        public static Package Create(IPackageSyntax syntax, PackageSymbol symbol, IEnumerable<PackageReference> references, IEnumerable<CompilationUnit> compilationUnits, IEnumerable<CompilationUnit> testingCompilationUnits)
-            => new PackageNode(syntax, symbol, references.ToFixedSet(), compilationUnits.ToFixedSet(), testingCompilationUnits.ToFixedSet());
+        public static FunctionDeclaration Create(NamespaceSymbol containingSymbol, IFunctionDeclarationSyntax syntax, DeclarationLexicalScope containingLexicalScope)
+            => new FunctionDeclarationNode(containingSymbol, syntax, containingLexicalScope);
     }
 
     public partial interface PackageReference : IImplementationRestricted
@@ -76,19 +136,6 @@ public sealed partial class WithDeclarationLexicalScopes
             => new PackageReferenceNode(syntax, aliasOrName, package, isTrusted);
     }
 
-    public partial interface CompilationUnit : Code
-    {
-        new ICompilationUnitSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
-        CodeFile File { get; }
-        NamespaceName ImplicitNamespaceName { get; }
-        IFixedList<UsingDirective> UsingDirectives { get; }
-        IFixedList<NamespaceMemberDeclaration> Declarations { get; }
-
-        public static CompilationUnit Create(ICompilationUnitSyntax syntax, CodeFile file, NamespaceName implicitNamespaceName, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations)
-            => new CompilationUnitNode(syntax, file, implicitNamespaceName, usingDirectives.ToFixedList(), declarations.ToFixedList());
-    }
-
     public partial interface UsingDirective : Code
     {
         new IUsingDirectiveSyntax Syntax { get; }
@@ -100,11 +147,11 @@ public sealed partial class WithDeclarationLexicalScopes
     }
 
     [Closed(
-        typeof(Declaration),
         typeof(CompilationUnit),
+        typeof(Declaration),
+        typeof(UnresolvedSupertypeName),
         typeof(UsingDirective),
         typeof(GenericParameter),
-        typeof(UnresolvedSupertypeName),
         typeof(CapabilityConstraint),
         typeof(UnresolvedType))]
     public partial interface Code : IImplementationRestricted
@@ -114,27 +161,10 @@ public sealed partial class WithDeclarationLexicalScopes
 
     [Closed(
         typeof(NamespaceDeclaration),
-        typeof(FunctionDeclaration),
-        typeof(TypeDeclaration))]
+        typeof(TypeDeclaration),
+        typeof(FunctionDeclaration))]
     public partial interface NamespaceMemberDeclaration : Declaration
     {
-    }
-
-    [Closed(
-        typeof(ClassDeclaration),
-        typeof(StructDeclaration),
-        typeof(TraitDeclaration))]
-    public partial interface TypeDeclaration : NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
-    {
-        new ITypeDeclarationSyntax Syntax { get; }
-        IDeclarationSyntax Declaration.Syntax => Syntax;
-        IClassMemberDeclarationSyntax ClassMemberDeclaration.Syntax => Syntax;
-        ITraitMemberDeclarationSyntax TraitMemberDeclaration.Syntax => Syntax;
-        IStructMemberDeclarationSyntax StructMemberDeclaration.Syntax => Syntax;
-        ISyntax Code.Syntax => Syntax;
-        ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
-        IFixedList<GenericParameter> GenericParameters { get; }
-        IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
     }
 
     public partial interface ClassDeclaration : TypeDeclaration
@@ -145,8 +175,8 @@ public sealed partial class WithDeclarationLexicalScopes
         UnresolvedSupertypeName? BaseTypeName { get; }
         IFixedList<ClassMemberDeclaration> Members { get; }
 
-        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
-            => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingSymbol);
+        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, DeclarationScope lexicalScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
+            => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), lexicalScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingLexicalScope, containingSymbol);
     }
 
     public partial interface StructDeclaration : TypeDeclaration
@@ -155,8 +185,8 @@ public sealed partial class WithDeclarationLexicalScopes
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<StructMemberDeclaration> Members { get; }
 
-        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
-            => new StructDeclarationNode(syntax, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingSymbol);
+        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, DeclarationScope lexicalScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
+            => new StructDeclarationNode(syntax, members.ToFixedList(), lexicalScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingLexicalScope, containingSymbol);
     }
 
     public partial interface TraitDeclaration : TypeDeclaration
@@ -165,8 +195,8 @@ public sealed partial class WithDeclarationLexicalScopes
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<TraitMemberDeclaration> Members { get; }
 
-        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
-            => new TraitDeclarationNode(syntax, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingSymbol);
+        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, DeclarationScope lexicalScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
+            => new TraitDeclarationNode(syntax, members.ToFixedList(), lexicalScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingLexicalScope, containingSymbol);
     }
 
     public partial interface GenericParameter : Code
@@ -180,17 +210,6 @@ public sealed partial class WithDeclarationLexicalScopes
 
         public static GenericParameter Create(IGenericParameterSyntax syntax, CapabilityConstraint constraint, IdentifierName name, ParameterIndependence independence, ParameterVariance variance)
             => new GenericParameterNode(syntax, constraint, name, independence, variance);
-    }
-
-    public partial interface UnresolvedSupertypeName : Code
-    {
-        new ISupertypeNameSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
-        TypeName Name { get; }
-        IFixedList<UnresolvedType> TypeArguments { get; }
-
-        public static UnresolvedSupertypeName Create(ISupertypeNameSyntax syntax, TypeName name, IEnumerable<UnresolvedType> typeArguments)
-            => new UnresolvedSupertypeNameNode(syntax, name, typeArguments.ToFixedList());
     }
 
     [Closed(
@@ -273,17 +292,6 @@ public sealed partial class WithDeclarationLexicalScopes
     }
 
     [Closed(
-        typeof(UnresolvedStandardTypeName),
-        typeof(UnresolvedSimpleTypeName),
-        typeof(UnresolvedQualifiedTypeName))]
-    public partial interface UnresolvedTypeName : UnresolvedType
-    {
-        new ITypeNameSyntax Syntax { get; }
-        ITypeSyntax UnresolvedType.Syntax => Syntax;
-        TypeName Name { get; }
-    }
-
-    [Closed(
         typeof(UnresolvedIdentifierTypeName),
         typeof(UnresolvedGenericTypeName))]
     public partial interface UnresolvedStandardTypeName : UnresolvedTypeName
@@ -313,8 +321,8 @@ public sealed partial class WithDeclarationLexicalScopes
         StandardName UnresolvedStandardTypeName.Name => Name;
         TypeName UnresolvedTypeName.Name => Name;
 
-        public static UnresolvedIdentifierTypeName Create(IIdentifierTypeNameSyntax syntax, IdentifierName name)
-            => new UnresolvedIdentifierTypeNameNode(syntax, name);
+        public static UnresolvedIdentifierTypeName Create(IIdentifierTypeNameSyntax syntax, IdentifierName name, DeclarationLexicalScope containingLexicalScope)
+            => new UnresolvedIdentifierTypeNameNode(syntax, name, containingLexicalScope);
     }
 
     public partial interface UnresolvedSpecialTypeName : UnresolvedSimpleTypeName
@@ -324,8 +332,8 @@ public sealed partial class WithDeclarationLexicalScopes
         new SpecialTypeName Name { get; }
         TypeName UnresolvedTypeName.Name => Name;
 
-        public static UnresolvedSpecialTypeName Create(ISpecialTypeNameSyntax syntax, SpecialTypeName name)
-            => new UnresolvedSpecialTypeNameNode(syntax, name);
+        public static UnresolvedSpecialTypeName Create(ISpecialTypeNameSyntax syntax, SpecialTypeName name, DeclarationLexicalScope containingLexicalScope)
+            => new UnresolvedSpecialTypeNameNode(syntax, name, containingLexicalScope);
     }
 
     public partial interface UnresolvedGenericTypeName : UnresolvedStandardTypeName
@@ -336,8 +344,8 @@ public sealed partial class WithDeclarationLexicalScopes
         StandardName UnresolvedStandardTypeName.Name => Name;
         IFixedList<UnresolvedType> TypeArguments { get; }
 
-        public static UnresolvedGenericTypeName Create(IGenericTypeNameSyntax syntax, GenericName name, IEnumerable<UnresolvedType> typeArguments)
-            => new UnresolvedGenericTypeNameNode(syntax, name, typeArguments.ToFixedList());
+        public static UnresolvedGenericTypeName Create(IGenericTypeNameSyntax syntax, GenericName name, IEnumerable<UnresolvedType> typeArguments, DeclarationLexicalScope containingLexicalScope)
+            => new UnresolvedGenericTypeNameNode(syntax, name, typeArguments.ToFixedList(), containingLexicalScope);
     }
 
     public partial interface UnresolvedQualifiedTypeName : UnresolvedTypeName
@@ -347,8 +355,8 @@ public sealed partial class WithDeclarationLexicalScopes
         UnresolvedTypeName Context { get; }
         UnresolvedStandardTypeName QualifiedName { get; }
 
-        public static UnresolvedQualifiedTypeName Create(IQualifiedTypeNameSyntax syntax, UnresolvedTypeName context, UnresolvedStandardTypeName qualifiedName, TypeName name)
-            => new UnresolvedQualifiedTypeNameNode(syntax, context, qualifiedName, name);
+        public static UnresolvedQualifiedTypeName Create(IQualifiedTypeNameSyntax syntax, UnresolvedTypeName context, UnresolvedStandardTypeName qualifiedName, DeclarationLexicalScope containingLexicalScope, TypeName name)
+            => new UnresolvedQualifiedTypeNameNode(syntax, context, qualifiedName, containingLexicalScope, name);
     }
 
     public partial interface UnresolvedOptionalType : UnresolvedType
@@ -426,95 +434,17 @@ public sealed partial class WithDeclarationLexicalScopes
 
 public sealed partial class WithNamespaceSymbols
 {
-    public partial interface Declaration : WithDeclarationLexicalScopes.Declaration
-    {
-    }
-
-    public partial interface NamespaceDeclaration : WithDeclarationLexicalScopes.NamespaceDeclaration
-    {
-        IFixedList<WithDeclarationLexicalScopes.UsingDirective> WithDeclarationLexicalScopes.NamespaceDeclaration.UsingDirectives => UsingDirectives;
-        IFixedList<WithDeclarationLexicalScopes.NamespaceMemberDeclaration> WithDeclarationLexicalScopes.NamespaceDeclaration.Declarations => Declarations;
-    }
-
-    public partial interface FunctionDeclaration : WithDeclarationLexicalScopes.FunctionDeclaration
-    {
-    }
-
-    public partial interface Package : WithDeclarationLexicalScopes.Package
-    {
-        IFixedSet<WithDeclarationLexicalScopes.PackageReference> WithDeclarationLexicalScopes.Package.References => References;
-        IFixedSet<WithDeclarationLexicalScopes.CompilationUnit> WithDeclarationLexicalScopes.Package.CompilationUnits => CompilationUnits;
-        IFixedSet<WithDeclarationLexicalScopes.CompilationUnit> WithDeclarationLexicalScopes.Package.TestingCompilationUnits => TestingCompilationUnits;
-    }
-
     public partial interface PackageReference : WithDeclarationLexicalScopes.PackageReference
     {
-    }
-
-    public partial interface CompilationUnit : WithDeclarationLexicalScopes.CompilationUnit
-    {
-        IFixedList<WithDeclarationLexicalScopes.UsingDirective> WithDeclarationLexicalScopes.CompilationUnit.UsingDirectives => UsingDirectives;
-        IFixedList<WithDeclarationLexicalScopes.NamespaceMemberDeclaration> WithDeclarationLexicalScopes.CompilationUnit.Declarations => Declarations;
     }
 
     public partial interface UsingDirective : WithDeclarationLexicalScopes.UsingDirective
     {
     }
 
-    public partial interface Code : WithDeclarationLexicalScopes.Code
-    {
-    }
-
-    public partial interface NamespaceMemberDeclaration : WithDeclarationLexicalScopes.NamespaceMemberDeclaration
-    {
-    }
-
-    public partial interface TypeDeclaration : WithDeclarationLexicalScopes.TypeDeclaration
-    {
-        IFixedList<WithDeclarationLexicalScopes.GenericParameter> WithDeclarationLexicalScopes.TypeDeclaration.GenericParameters => GenericParameters;
-        IFixedList<WithDeclarationLexicalScopes.UnresolvedSupertypeName> WithDeclarationLexicalScopes.TypeDeclaration.SupertypeNames => SupertypeNames;
-    }
-
-    public partial interface ClassDeclaration : WithDeclarationLexicalScopes.ClassDeclaration
-    {
-        WithDeclarationLexicalScopes.UnresolvedSupertypeName? WithDeclarationLexicalScopes.ClassDeclaration.BaseTypeName => BaseTypeName;
-        IFixedList<WithDeclarationLexicalScopes.ClassMemberDeclaration> WithDeclarationLexicalScopes.ClassDeclaration.Members => Members;
-    }
-
-    public partial interface StructDeclaration : WithDeclarationLexicalScopes.StructDeclaration
-    {
-        IFixedList<WithDeclarationLexicalScopes.StructMemberDeclaration> WithDeclarationLexicalScopes.StructDeclaration.Members => Members;
-    }
-
-    public partial interface TraitDeclaration : WithDeclarationLexicalScopes.TraitDeclaration
-    {
-        IFixedList<WithDeclarationLexicalScopes.TraitMemberDeclaration> WithDeclarationLexicalScopes.TraitDeclaration.Members => Members;
-    }
-
     public partial interface GenericParameter : WithDeclarationLexicalScopes.GenericParameter
     {
         WithDeclarationLexicalScopes.CapabilityConstraint WithDeclarationLexicalScopes.GenericParameter.Constraint => Constraint;
-    }
-
-    public partial interface UnresolvedSupertypeName : WithDeclarationLexicalScopes.UnresolvedSupertypeName
-    {
-        IFixedList<WithDeclarationLexicalScopes.UnresolvedType> WithDeclarationLexicalScopes.UnresolvedSupertypeName.TypeArguments => TypeArguments;
-    }
-
-    public partial interface TypeMemberDeclaration : WithDeclarationLexicalScopes.TypeMemberDeclaration
-    {
-    }
-
-    public partial interface ClassMemberDeclaration : WithDeclarationLexicalScopes.ClassMemberDeclaration
-    {
-    }
-
-    public partial interface TraitMemberDeclaration : WithDeclarationLexicalScopes.TraitMemberDeclaration
-    {
-    }
-
-    public partial interface StructMemberDeclaration : WithDeclarationLexicalScopes.StructMemberDeclaration
-    {
     }
 
     public partial interface CapabilityConstraint : WithDeclarationLexicalScopes.CapabilityConstraint
@@ -526,77 +456,6 @@ public sealed partial class WithNamespaceSymbols
     }
 
     public partial interface Capability : WithDeclarationLexicalScopes.Capability
-    {
-    }
-
-    public partial interface UnresolvedType : WithDeclarationLexicalScopes.UnresolvedType
-    {
-    }
-
-    public partial interface UnresolvedTypeName : WithDeclarationLexicalScopes.UnresolvedTypeName
-    {
-    }
-
-    public partial interface UnresolvedStandardTypeName : WithDeclarationLexicalScopes.UnresolvedStandardTypeName
-    {
-    }
-
-    public partial interface UnresolvedSimpleTypeName : WithDeclarationLexicalScopes.UnresolvedSimpleTypeName
-    {
-    }
-
-    public partial interface UnresolvedIdentifierTypeName : WithDeclarationLexicalScopes.UnresolvedIdentifierTypeName
-    {
-    }
-
-    public partial interface UnresolvedSpecialTypeName : WithDeclarationLexicalScopes.UnresolvedSpecialTypeName
-    {
-    }
-
-    public partial interface UnresolvedGenericTypeName : WithDeclarationLexicalScopes.UnresolvedGenericTypeName
-    {
-        IFixedList<WithDeclarationLexicalScopes.UnresolvedType> WithDeclarationLexicalScopes.UnresolvedGenericTypeName.TypeArguments => TypeArguments;
-    }
-
-    public partial interface UnresolvedQualifiedTypeName : WithDeclarationLexicalScopes.UnresolvedQualifiedTypeName
-    {
-        WithDeclarationLexicalScopes.UnresolvedTypeName WithDeclarationLexicalScopes.UnresolvedQualifiedTypeName.Context => Context;
-        WithDeclarationLexicalScopes.UnresolvedStandardTypeName WithDeclarationLexicalScopes.UnresolvedQualifiedTypeName.QualifiedName => QualifiedName;
-    }
-
-    public partial interface UnresolvedOptionalType : WithDeclarationLexicalScopes.UnresolvedOptionalType
-    {
-        WithDeclarationLexicalScopes.UnresolvedType WithDeclarationLexicalScopes.UnresolvedOptionalType.Referent => Referent;
-    }
-
-    public partial interface UnresolvedCapabilityType : WithDeclarationLexicalScopes.UnresolvedCapabilityType
-    {
-        WithDeclarationLexicalScopes.Capability WithDeclarationLexicalScopes.UnresolvedCapabilityType.Capability => Capability;
-        WithDeclarationLexicalScopes.UnresolvedType WithDeclarationLexicalScopes.UnresolvedCapabilityType.Referent => Referent;
-    }
-
-    public partial interface UnresolvedFunctionType : WithDeclarationLexicalScopes.UnresolvedFunctionType
-    {
-        IFixedList<WithDeclarationLexicalScopes.UnresolvedParameterType> WithDeclarationLexicalScopes.UnresolvedFunctionType.Parameters => Parameters;
-        WithDeclarationLexicalScopes.UnresolvedType WithDeclarationLexicalScopes.UnresolvedFunctionType.Return => Return;
-    }
-
-    public partial interface UnresolvedParameterType : WithDeclarationLexicalScopes.UnresolvedParameterType
-    {
-        WithDeclarationLexicalScopes.UnresolvedType WithDeclarationLexicalScopes.UnresolvedParameterType.Referent => Referent;
-    }
-
-    public partial interface UnresolvedViewpointType : WithDeclarationLexicalScopes.UnresolvedViewpointType
-    {
-        WithDeclarationLexicalScopes.UnresolvedType WithDeclarationLexicalScopes.UnresolvedViewpointType.Referent => Referent;
-    }
-
-    public partial interface UnresolvedCapabilityViewpointType : WithDeclarationLexicalScopes.UnresolvedCapabilityViewpointType
-    {
-        WithDeclarationLexicalScopes.Capability WithDeclarationLexicalScopes.UnresolvedCapabilityViewpointType.Capability => Capability;
-    }
-
-    public partial interface UnresolvedSelfViewpointType : WithDeclarationLexicalScopes.UnresolvedSelfViewpointType
     {
     }
 
