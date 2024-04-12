@@ -45,9 +45,6 @@ public class NestedScope : LexicalScope
         this.symbolsInNestedScopes = symbolsInNestedScopes;
     }
 
-    public override IEnumerable<IPromise<Symbol>> LookupInGlobalScope(TypeName name)
-        => !isGlobalScope ? containingScope.LookupInGlobalScope(name) : Lookup(name, false);
-
     public override IEnumerable<IPromise<Symbol>> Lookup(TypeName name, bool includeNested = true)
     {
         if (symbolsInScope.TryGetValue(name, out var symbols)) return symbols;
