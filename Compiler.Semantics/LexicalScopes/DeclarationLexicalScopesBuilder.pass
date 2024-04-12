@@ -1,7 +1,6 @@
-◊name BuildLexicalScopesPass;
-◊from Concrete; // TODO have languages define entry points
-◊from Scoped; // TODO have languages define entry points
-◊context DeclarationsContext;
+◊name DeclarationLexicalScopesBuilder;
+◊from WithNamespaceSymbols; // TODO have languages define entry points
+◊to WithDeclarationLexicalScopes; // TODO have languages define entry points
 
 // Package -> Package; Implicitly required becuase the lower layers require parameters
 
