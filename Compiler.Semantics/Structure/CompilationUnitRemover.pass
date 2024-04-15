@@ -1,0 +1,8 @@
+◊name CompilationUnitRemover;
+◊from WithDeclarationLexicalScopes;
+◊to WithNamespaceSymbols;
+
+//Package -> ~; // Implicitly generated because of changes in the AST
+CompilationUnit -> NamespaceMemberDeclaration*;
+NamespaceDeclaration, file:`CodeFile` -> NamespaceMemberDeclaration* = auto;
+NamespaceMemberDeclaration, file:`CodeFile` -> ~* = auto;

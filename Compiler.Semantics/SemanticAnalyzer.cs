@@ -11,6 +11,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Liveness;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Startup;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
@@ -57,6 +58,8 @@ public class SemanticAnalyzer
         (var packageWithNamespaceSymbols, context) = NamespaceSymbolBuilder.Run(package, context);
 
         var packageWithScopes = DeclarationLexicalScopesBuilder.Run(packageWithNamespaceSymbols);
+
+        var packageWithoutCompilationUnits = CompilationUnitRemover.Run(packageWithScopes);
 
         // Build up lexical scopes down to the declaration level
         new LexicalScopesBuilder().BuildFor(packageSyntax);

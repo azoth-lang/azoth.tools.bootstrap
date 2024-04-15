@@ -8,3 +8,12 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 ◊using Azoth.Tools.Bootstrap.Framework;
+
+*Package = -CompilationUnits +Declarations:{NamespaceMemberDeclaration}
+    -TestingCompilationUnits +TestingDeclarations:{NamespaceMemberDeclaration};
+
+-CompilationUnit;
+-NamespaceDeclaration;
+-UsingDirective;
+
+*NamespaceMemberDeclaration = +File:`CodeFile`;
