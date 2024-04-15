@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Concrete.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithNamespaceSymbols.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithDeclarationLexicalScopes.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithoutCompilationUnits.lang&quot;" />
+    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Concrete.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithNamespaceSymbols.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithDeclarationLexicalScopes.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithoutCompilationUnits.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithTypeDeclarationPromises.lang&quot;" />
   </Target>
 
   <ItemGroup>
@@ -49,6 +49,12 @@
     </Compile>
     <Compile Update="WithDeclarationLexicalScopes.nodes.cs">
       <DependentUpon>WithDeclarationLexicalScopes.lang</DependentUpon>
+    </Compile>
+    <Compile Update="WithTypeDeclarationPromises.lang.cs">
+      <DependentUpon>WithTypeDeclarationPromises.lang</DependentUpon>
+    </Compile>
+    <Compile Update="WithTypeDeclarationPromises.nodes.cs">
+      <DependentUpon>WithTypeDeclarationPromises.lang</DependentUpon>
     </Compile>
     <Compile Update="WithoutCompilationUnits.lang.cs">
       <DependentUpon>WithoutCompilationUnits.lang</DependentUpon>
