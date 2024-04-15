@@ -1,0 +1,5 @@
+◊name TypeSymbolPromiseAdder;
+◊from WithoutCompilationUnits;
+◊to WithTypeDeclarationPromises;
+
+// TypeDeclaration -> ~; // Automatically generated

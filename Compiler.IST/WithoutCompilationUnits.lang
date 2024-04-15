@@ -16,4 +16,5 @@
 -NamespaceDeclaration;
 -UsingDirective;
 
+// ---------- Declarations
 *NamespaceMemberDeclaration = +File:`CodeFile`;

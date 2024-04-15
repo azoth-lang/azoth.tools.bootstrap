@@ -8,6 +8,9 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
+// ---------- Declarations
 *Declaration = +ContainingSymbol:`NamespaceSymbol`?;
 *NamespaceDeclaration = +ContainingSymbol:`NamespaceSymbol` +Symbol:`NamespaceSymbol`;
+
+// ---------- Invocable Declarations
 *FunctionDeclaration = +ContainingSymbol:`NamespaceSymbol`;

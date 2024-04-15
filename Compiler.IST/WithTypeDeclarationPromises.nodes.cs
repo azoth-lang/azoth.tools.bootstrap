@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -87,6 +88,7 @@ public sealed partial class WithTypeDeclarationPromises
         public bool IsAbstract { get; }
         public UnresolvedSupertypeName? BaseTypeName { get; }
         public IFixedList<ClassMemberDeclaration> Members { get; }
+        public AcyclicPromise<UserTypeSymbol> Symbol { get; }
         public DeclarationScope LexicalScope { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
@@ -94,12 +96,13 @@ public sealed partial class WithTypeDeclarationPromises
         public DeclarationLexicalScope ContainingLexicalScope { get; }
         public NamespaceSymbol? ContainingSymbol { get; }
 
-        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, DeclarationScope lexicalScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
+        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, DeclarationScope lexicalScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             IsAbstract = isAbstract;
             BaseTypeName = baseTypeName;
             Members = members;
+            Symbol = symbol;
             LexicalScope = lexicalScope;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
@@ -113,6 +116,7 @@ public sealed partial class WithTypeDeclarationPromises
     {
         public IStructDeclarationSyntax Syntax { get; }
         public IFixedList<StructMemberDeclaration> Members { get; }
+        public AcyclicPromise<UserTypeSymbol> Symbol { get; }
         public DeclarationScope LexicalScope { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
@@ -120,10 +124,11 @@ public sealed partial class WithTypeDeclarationPromises
         public DeclarationLexicalScope ContainingLexicalScope { get; }
         public NamespaceSymbol? ContainingSymbol { get; }
 
-        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, DeclarationScope lexicalScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
+        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, DeclarationScope lexicalScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             Members = members;
+            Symbol = symbol;
             LexicalScope = lexicalScope;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
@@ -137,6 +142,7 @@ public sealed partial class WithTypeDeclarationPromises
     {
         public ITraitDeclarationSyntax Syntax { get; }
         public IFixedList<TraitMemberDeclaration> Members { get; }
+        public AcyclicPromise<UserTypeSymbol> Symbol { get; }
         public DeclarationScope LexicalScope { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
@@ -144,10 +150,11 @@ public sealed partial class WithTypeDeclarationPromises
         public DeclarationLexicalScope ContainingLexicalScope { get; }
         public NamespaceSymbol? ContainingSymbol { get; }
 
-        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, DeclarationScope lexicalScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
+        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, DeclarationScope lexicalScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             Members = members;
+            Symbol = symbol;
             LexicalScope = lexicalScope;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
