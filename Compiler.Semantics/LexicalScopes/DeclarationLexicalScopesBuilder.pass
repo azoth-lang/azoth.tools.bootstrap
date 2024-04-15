@@ -6,4 +6,3 @@
 
 CompilationUnit, containingScope:PackageReferenceScope -> ~;
 TypeDeclaration, containingScope:DeclarationLexicalScope -> ~;
-FunctionDeclaration, containingScope:DeclarationLexicalScope -> ~;

@@ -56,6 +56,8 @@ public class SemanticAnalyzer
 
         (var packageWithNamespaceSymbols, context) = NamespaceSymbolBuilder.Run(package, context);
 
+        var packageWithScopes = DeclarationLexicalScopesBuilder.Run(packageWithNamespaceSymbols);
+
         // Build up lexical scopes down to the declaration level
         new LexicalScopesBuilder().BuildFor(packageSyntax);
 

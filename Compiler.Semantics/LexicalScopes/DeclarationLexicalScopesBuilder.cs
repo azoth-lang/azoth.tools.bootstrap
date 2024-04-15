@@ -31,4 +31,13 @@ public partial class DeclarationLexicalScopesBuilder
         var scope = new DeclarationScope(containingScope);
         return Create(from, containingScope, scope);
     }
+
+    private partial To.TypeDeclaration Transform(
+        From.TypeDeclaration from,
+        DeclarationLexicalScope containingScope)
+    {
+        // TODO add info about scope
+        var scope = new DeclarationScope(containingScope);
+        return Create(from, containingScope, scope);
+    }
 }

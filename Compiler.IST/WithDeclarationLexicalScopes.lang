@@ -23,4 +23,5 @@
 *UnresolvedSupertypeName = +ContainingLexicalScope:`DeclarationLexicalScope`;
 
 // ---------- Unresolved Types
+// TODO isn't this going to make it want to apply this to types inside of method bodies?
 *UnresolvedTypeName = +ContainingLexicalScope:`DeclarationLexicalScope`;
