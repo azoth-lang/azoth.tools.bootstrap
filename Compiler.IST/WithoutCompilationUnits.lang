@@ -1,5 +1,5 @@
-◊name Typed;
-◊extends WithNamespaceSymbols;
+◊name WithoutCompilationUnits;
+◊extends WithDeclarationLexicalScopes;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;

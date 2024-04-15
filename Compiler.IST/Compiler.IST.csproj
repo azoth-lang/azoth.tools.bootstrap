@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Concrete.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithNamespaceSymbols.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithDeclarationLexicalScopes.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Typed.lang&quot;" />
+    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Concrete.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithNamespaceSymbols.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithDeclarationLexicalScopes.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithoutCompilationUnits.lang&quot;" />
   </Target>
 
   <ItemGroup>
@@ -50,17 +50,17 @@
     <Compile Update="WithDeclarationLexicalScopes.nodes.cs">
       <DependentUpon>WithDeclarationLexicalScopes.lang</DependentUpon>
     </Compile>
+    <Compile Update="WithoutCompilationUnits.lang.cs">
+      <DependentUpon>WithoutCompilationUnits.lang</DependentUpon>
+    </Compile>
+    <Compile Update="WithoutCompilationUnits.nodes.cs">
+      <DependentUpon>WithoutCompilationUnits.lang</DependentUpon>
+    </Compile>
     <Compile Update="WithNamespaceSymbols.lang.cs">
       <DependentUpon>WithNamespaceSymbols.lang</DependentUpon>
     </Compile>
     <Compile Update="WithNamespaceSymbols.nodes.cs">
       <DependentUpon>WithNamespaceSymbols.lang</DependentUpon>
-    </Compile>
-    <Compile Update="Typed.lang.cs">
-      <DependentUpon>Typed.lang</DependentUpon>
-    </Compile>
-    <Compile Update="Typed.nodes.cs">
-      <DependentUpon>Typed.lang</DependentUpon>
     </Compile>
   </ItemGroup>
 
