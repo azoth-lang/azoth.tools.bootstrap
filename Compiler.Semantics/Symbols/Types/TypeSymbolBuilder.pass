@@ -1,0 +1,8 @@
+◊name TypeSymbolBuilder;
+◊from WithNamespaceSymbols;
+◊to WithTypeSymbols;
+◊context SymbolBuilderContext;
+
+ClassDeclaration -> ~;
+StructDeclaration -> ~;
+TraitDeclaration -> ~;
