@@ -8,5 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using From = Azoth.Tools.Bootstrap.Compiler.IST.WithoutCompilationUnits;
+using To = Azoth.Tools.Bootstrap.Compiler.IST.WithTypeDeclarationPromises;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Types;

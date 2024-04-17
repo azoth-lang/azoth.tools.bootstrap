@@ -6,6 +6,5 @@
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(pass, "ExhaustiveMatching")) { #>
 using <#=usingNamespace #>;
-<#  } #>
-
+<#  } #><#=Emit.UsingAlias("From", pass.FromLanguage)#><#=Emit.UsingAlias("To", pass.ToLanguage)#>
 namespace <#=pass.Namespace #>;

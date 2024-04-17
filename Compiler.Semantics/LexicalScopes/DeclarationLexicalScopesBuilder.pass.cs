@@ -7,5 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using From = Azoth.Tools.Bootstrap.Compiler.IST.WithNamespaceSymbols;
+using To = Azoth.Tools.Bootstrap.Compiler.IST.WithDeclarationLexicalScopes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;

@@ -246,4 +246,10 @@ internal static class Emit
         var correctLanguage = symbol.ReferencedRule!.DefinedInLanguage;
         return ClassName(correctLanguage, symbol);
     }
+
+    public static string UsingAlias(string alias, Language? language)
+    {
+        if (language is null) return "";
+        return $"using {alias} = {language.Grammar.Namespace}.{language.Name};\r\n";
+    }
 }
