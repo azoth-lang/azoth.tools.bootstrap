@@ -2,4 +2,5 @@
 ◊from WithoutCompilationUnits;
 ◊to WithTypeDeclarationPromises;
 
-// TypeDeclaration -> ~; // Automatically generated
+Package -> ~;
+TypeDeclaration, containingSymbol:IPromise<Symbol>? -> ~;
