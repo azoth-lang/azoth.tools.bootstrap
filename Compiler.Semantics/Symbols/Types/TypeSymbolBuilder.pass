@@ -1,6 +1,6 @@
 ◊name TypeSymbolBuilder;
-◊from WithNamespaceSymbols;
-◊to WithTypeSymbols;
+◊from WithTypeDeclarationPromises;
+◊to WithTypeDeclarationPromises;
 ◊context SymbolBuilderContext;
 
 ClassDeclaration -> ~;

@@ -19,7 +19,7 @@ internal static class LanguageParser
         var extendsLanguageName = Parsing.GetConfig(lines, "extends");
         if (extendsLanguageName is not null)
         {
-            Console.WriteLine($"Extending: {extendsLanguageName}");
+            Console.WriteLine($"'{name}' extends '{extendsLanguageName}'");
             var extendsLanguage = languageLoader.GetOrLoadLanguageNamed(extendsLanguageName).Syntax;
 
             var extends = extendsLanguage.Grammar;

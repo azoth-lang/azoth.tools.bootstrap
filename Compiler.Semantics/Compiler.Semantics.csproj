@@ -31,4 +31,7 @@
     <ProjectReference Include="..\Compiler.LexicalScopes\Compiler.LexicalScopes.csproj" />
     <ProjectReference Include="..\Compiler.Primitives\Compiler.Primitives.csproj" />
   </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="&quot;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe&quot; -p &quot;$(SolutionDir)Compiler.IST&quot; &quot;$(ProjectDir)Contexts\InitialContextPass.pass&quot; &quot;$(ProjectDir)LexicalScopes\DeclarationLexicalScopesBuilder.pass&quot; &quot;$(ProjectDir)Structure\CompilationUnitRemover.pass&quot; &quot;$(ProjectDir)Symbols\Namespaces\NamespaceSymbolBuilder.pass&quot; &quot;$(ProjectDir)Symbols\Types\TypeSymbolBuilder.pass&quot; &quot;$(ProjectDir)Symbols\Types\TypeSymbolPromiseAdder.pass&quot; &quot;$(ProjectDir)SyntaxBinding\SyntaxBinder.pass&quot;" />
+  </Target>
 </Project>
