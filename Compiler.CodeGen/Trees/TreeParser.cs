@@ -10,7 +10,7 @@ internal static class TreeParser
     {
         var lines = Parsing.ParseLines(grammar).ToFixedList();
 
-        var ns = Parsing.GetConfig(lines, "namespace");
+        var ns = Parsing.GetRequiredConfig(lines, "namespace");
         var rootType = Parsing.ParseSymbol(Parsing.GetConfig(lines, "root"));
         var prefix = Parsing.GetConfig(lines, "prefix") ?? "";
         var suffix = Parsing.GetConfig(lines, "suffix") ?? "";

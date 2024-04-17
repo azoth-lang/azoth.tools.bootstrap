@@ -8,7 +8,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen;
 
-internal sealed class LanguageLoader(string? langPath)
+public sealed class LanguageLoader(string? langPath)
 {
     private readonly Dictionary<string, Language> languages = new();
     private readonly IFixedList<string> languageSearchPaths = langPath.YieldValue()

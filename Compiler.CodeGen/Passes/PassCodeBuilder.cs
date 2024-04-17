@@ -4,5 +4,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes;
 
 internal static class PassCodeBuilder
 {
-    public static string GeneratePass(Pass pass) => "";
+    public static string GeneratePass(Pass pass)
+    {
+        var template = new PassCodeTemplate(pass);
+        return template.TransformText();
+    }
 }

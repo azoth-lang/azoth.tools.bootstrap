@@ -1,4 +1,5 @@
 ◊name TypeSymbolPromiseAdder;
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Types;
 ◊from WithoutCompilationUnits;
 ◊to WithTypeDeclarationPromises;
 

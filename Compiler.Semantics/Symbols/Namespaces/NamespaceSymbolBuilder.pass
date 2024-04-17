@@ -1,7 +1,8 @@
 ◊name NamespaceSymbolBuilder;
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
+◊context SymbolBuilderContext;
 ◊from Concrete;
 ◊to WithNamespaceSymbols;
-◊context SymbolBuilderContext;
 
 Package -> ~;
 CompilationUnit, containingSymbol:PackageSymbol, treeBuilder:`ISymbolTreeBuilder` -> ~;

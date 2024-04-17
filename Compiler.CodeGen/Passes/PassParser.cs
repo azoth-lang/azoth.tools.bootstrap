@@ -12,7 +12,8 @@ internal static class PassParser
     {
         var lines = Parsing.ParseLines(input).ToFixedList();
 
-        var name = Parsing.GetConfig(lines, "name") ?? throw new FormatException("Pass name is required");
+        var name = Parsing.GetRequiredConfig(lines, "name");
+        var ns = Parsing.GetRequiredConfig(lines, "namespace");
         var fromName = Parsing.ParseSymbol(Parsing.GetConfig(lines, "from"));
         var toName = Parsing.ParseSymbol(Parsing.GetConfig(lines, "to"));
         var context = Parsing.GetConfig(lines, "context");
@@ -22,7 +23,7 @@ internal static class PassParser
         var hasToLanguage = toName is not null && !toName.IsQuoted;
         var transforms = ParseTransforms(lines, hasFromLanguage, hasToLanguage).ToFixedList();
 
-        return new PassNode(name, fromName, toName, fromContext, toContext, transforms);
+        return new PassNode(ns, name, fromName, toName, fromContext, toContext, transforms);
     }
 
     private static (SymbolNode?, SymbolNode?) ParseContext(string? context)

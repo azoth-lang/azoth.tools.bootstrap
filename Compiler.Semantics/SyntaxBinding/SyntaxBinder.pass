@@ -1,7 +1,8 @@
 ◊name SynaxBinderPass;
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
+◊context DiagnosticsContext -> SymbolBuilderContext;
 ◊from `IPackageSyntax`;
 ◊to Concrete;
-◊context DiagnosticsContext -> SymbolBuilderContext;
 
 syntax:`IPackageSyntax` -> Package;
 `IPackageReference`* -> {PackageReference} = auto;

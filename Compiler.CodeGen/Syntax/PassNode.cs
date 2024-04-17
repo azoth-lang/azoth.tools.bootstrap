@@ -2,9 +2,10 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
-internal sealed class PassNode
+public sealed class PassNode
 {
     public string Name { get; }
+    public string Namespace { get; }
     public SymbolNode? From { get; }
     public SymbolNode? To { get; }
     public SymbolNode? FromContext { get; }
@@ -12,6 +13,7 @@ internal sealed class PassNode
     public IFixedList<TransformNode> Transforms { get; }
 
     public PassNode(
+        string ns,
         string name,
         SymbolNode? from,
         SymbolNode? to,
@@ -25,5 +27,6 @@ internal sealed class PassNode
         FromContext = fromContext;
         ToContext = toContext;
         Transforms = transforms;
+        Namespace = ns;
     }
 }

@@ -1,4 +1,5 @@
 ◊name CompilationUnitRemover;
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 ◊from WithDeclarationLexicalScopes;
 ◊to WithNamespaceSymbols;
 

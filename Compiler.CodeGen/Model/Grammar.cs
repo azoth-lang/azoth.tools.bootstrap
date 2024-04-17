@@ -10,7 +10,7 @@ public sealed class Grammar
     public GrammarNode Syntax { get; }
 
     public Language Language { get; }
-    public string? Namespace => Syntax.Namespace;
+    public string Namespace => Syntax.Namespace;
     public Symbol? DefaultParent { get; }
     public string Prefix => Syntax.Prefix;
     public string Suffix => Syntax.Suffix;

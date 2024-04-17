@@ -2,10 +2,11 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
-internal class Pass
+public class Pass
 {
     public PassNode Syntax { get; }
     public string Name => Syntax.Name;
+    public string Namespace => Syntax.Namespace;
     public SymbolNode? From => Syntax.From;
     public Language? FromLanguage { get; }
     public SymbolNode? To => Syntax.To;

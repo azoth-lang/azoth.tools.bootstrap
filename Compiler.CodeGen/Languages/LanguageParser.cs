@@ -13,7 +13,7 @@ internal static class LanguageParser
     {
         var lines = Parsing.ParseLines(input).ToFixedList();
 
-        var name = Parsing.GetConfig(lines, "name") ?? throw new FormatException("Language name is required");
+        var name = Parsing.GetRequiredConfig(lines, "name");
         var usingNamespaces = Parsing.ParseUsingNamespaces(lines).ToFixedList();
 
         var extendsLanguageName = Parsing.GetConfig(lines, "extends");
@@ -29,7 +29,7 @@ internal static class LanguageParser
         }
         else
         {
-            var ns = Parsing.GetConfig(lines, "namespace");
+            var ns = Parsing.GetRequiredConfig(lines, "namespace");
             var rootType = Parsing.ParseSymbol(Parsing.GetConfig(lines, "root"));
             var prefix = Parsing.GetConfig(lines, "prefix") ?? "";
             var suffix = Parsing.GetConfig(lines, "suffix") ?? "";

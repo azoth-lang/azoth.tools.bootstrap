@@ -2,7 +2,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
-internal class TransformNode
+public class TransformNode
 {
     public IFixedList<PropertyNode> From { get; }
     public IFixedList<PropertyNode> To { get; }
