@@ -11,7 +11,7 @@ using Void = Azoth.Tools.Bootstrap.Framework.Void;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
-public sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<From.Package, Void, To.Package, Void>
+internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<From.Package, Void, To.Package, Void>
 {
     public static To.Package Run(From.Package from)
     {

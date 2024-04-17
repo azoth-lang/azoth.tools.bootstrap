@@ -1,4 +1,3 @@
-using System.CodeDom.Compiler;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -6,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.IST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
 
-[GeneratedCode(null, null)]
 internal sealed partial class InitialContextPass : IAnalyzePass<IPackageSyntax, PackageSyntax<Package>, DiagnosticsContext>
 {
     public static DiagnosticsContext Run(IPackageSyntax value, PackageSyntax<Package> context)

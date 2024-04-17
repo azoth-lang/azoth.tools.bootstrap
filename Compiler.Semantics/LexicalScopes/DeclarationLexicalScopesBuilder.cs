@@ -5,7 +5,7 @@ using To = Azoth.Tools.Bootstrap.Compiler.IST.WithDeclarationLexicalScopes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
-public partial class DeclarationLexicalScopesBuilder
+internal partial class DeclarationLexicalScopesBuilder
 {
     private DeclarationLexicalScopesBuilder() { }
 

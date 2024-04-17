@@ -1,7 +1,7 @@
 ◊name DeclarationLexicalScopesBuilder;
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-◊from WithNamespaceSymbols; // TODO have languages define entry points
-◊to WithDeclarationLexicalScopes; // TODO have languages define entry points
+◊from WithNamespaceSymbols;
+◊to WithDeclarationLexicalScopes;
 
 // Package -> Package; // Automaticlly generated because package has new property
 

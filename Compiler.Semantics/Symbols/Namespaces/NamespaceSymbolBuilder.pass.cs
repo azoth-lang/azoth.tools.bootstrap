@@ -1,3 +1,4 @@
+using System.CodeDom.Compiler;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -10,3 +11,8 @@ using From = Azoth.Tools.Bootstrap.Compiler.IST.Concrete;
 using To = Azoth.Tools.Bootstrap.Compiler.IST.WithNamespaceSymbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+internal sealed partial class NamespaceSymbolBuilder
+{
+}

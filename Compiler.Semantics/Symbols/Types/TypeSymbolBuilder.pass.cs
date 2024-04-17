@@ -1,3 +1,4 @@
+using System.CodeDom.Compiler;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -12,3 +13,8 @@ using From = Azoth.Tools.Bootstrap.Compiler.IST.WithTypeDeclarationPromises;
 using To = Azoth.Tools.Bootstrap.Compiler.IST.WithTypeDeclarationPromises;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Types;
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+internal sealed partial class TypeSymbolBuilder
+{
+}

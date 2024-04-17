@@ -31,7 +31,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
         {
             
             #line 7 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-  foreach(var usingNamespace in Build.OrderedNamespaces(pass, "ExhaustiveMatching")) { 
+  foreach(var usingNamespace in Build.OrderedNamespaces(pass, "ExhaustiveMatching", "System.CodeDom.Compiler")) { 
             
             #line default
             #line hidden
@@ -68,7 +68,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             
             #line default
             #line hidden
-            this.Write(";\r\n");
+            this.Write(";\r\n\r\n[GeneratedCode(\"AzothCompilerCodeGen\", null)]\r\ninternal sealed partial class" +
+                    " ");
+            
+            #line 13 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(pass.Name));
+            
+            #line default
+            #line hidden
+            this.Write("\r\n{\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
     }
