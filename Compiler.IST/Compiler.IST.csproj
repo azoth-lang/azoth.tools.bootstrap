@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Concrete.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithNamespaceSymbols.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithDeclarationLexicalScopes.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithoutCompilationUnits.lang&quot;&#xD;&#xA;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)WithTypeDeclarationPromises.lang&quot;" />
+    <Exec Command="&quot;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe&quot; -p &quot;$(ProjectDir)\&quot; Concrete.lang WithNamespaceSymbols.lang WithDeclarationLexicalScopes.lang WithoutCompilationUnits.lang WithTypeDeclarationPromises.lang" />
   </Target>
 
   <ItemGroup>

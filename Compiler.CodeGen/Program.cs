@@ -21,29 +21,43 @@ public static class Program
 
         app.HelpOption();
 
-        var inputFileArg = app.Argument("input file", "The input file to generate code from").IsRequired();
+        var langDirPathOption = app.Option("-p|--path <path>", "A directory path to search for language files", CommandOptionType.SingleValue);
+        var inputFileArgs = app.Argument("input file(s)", "The input file(s) to generate code from", multipleValues: true).IsRequired();
 
         app.OnExecute(() =>
         {
             Console.WriteLine("Azoth Compiler Code Generator");
-            var inputFile = inputFileArg.Value!;
-            var extension = Path.GetExtension(inputFile);
-            switch (extension)
-            {
-                case ".tree":
-                    return GenerateTree(inputFile);
-                case ".lang":
-                    return GenerateLang(inputFile);
-                default:
-                    Console.WriteLine($"Unknown file extension: {extension}");
-                    return 1;
-            }
+            var langDirPath = langDirPathOption.Value();
+            if (langDirPath is not null)
+                Console.WriteLine($"Language Path: {langDirPath}");
+
+            var languageLoader = new LanguageLoader(langDirPath);
+            bool success = true;
+            foreach (var inputPath in inputFileArgs.Values)
+                success &= Generate(inputPath!, languageLoader);
+
+            return success ? 0 : 1;
         });
 
         return app.Execute(args);
     }
 
-    private static int GenerateTree(string inputPath)
+    private static bool Generate(string inputPath, LanguageLoader languageLoader)
+    {
+        var extension = Path.GetExtension(inputPath);
+        switch (extension)
+        {
+            case ".tree":
+                return GenerateTree(inputPath);
+            case ".lang":
+                return GenerateLang(inputPath, languageLoader);
+            default:
+                Console.WriteLine($"Unknown file extension: {extension}");
+                return false;
+        }
+    }
+
+    private static bool GenerateTree(string inputPath)
     {
         try
         {
@@ -57,7 +71,7 @@ public static class Program
                             ?? throw new InvalidOperationException("null from reading input file");
             var grammarSyntax = TreeParser.ParseGrammar(inputFile);
 
-            var languageSyntax = new LanguageNode(null, grammarSyntax, null);
+            var languageSyntax = new LanguageNode(null, inputPath, grammarSyntax, null);
             var language = new Language(languageSyntax);
 
             language.Grammar.ValidateTreeOrdering();
@@ -67,42 +81,40 @@ public static class Program
 
             var walkerCode = TreeCodeBuilder.GenerateChildren(language);
             WriteIfChanged(childrenOutputPath, walkerCode);
-            return 0;
+            return true;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
             Console.WriteLine(ex.StackTrace);
-            return 1;
+            return false;
         }
     }
 
-    private static int GenerateLang(string inputPath)
+    private static bool GenerateLang(string inputPath, LanguageLoader languageLoader)
     {
         try
         {
-            var langOutputPath = Path.ChangeExtension(inputPath, ".lang.cs");
-            var classesOutputPath = Path.ChangeExtension(inputPath, ".nodes.cs");
-            Console.WriteLine($"Input:  {inputPath}");
+            Console.WriteLine($"Input: {inputPath}");
+            var language = languageLoader.GetOrLoadLanguageFromPath(inputPath);
+            var fullPath = language.Syntax.DefinitionFilePath;
+            var langOutputPath = Path.ChangeExtension(fullPath, ".lang.cs");
+            var classesOutputPath = Path.ChangeExtension(fullPath, ".nodes.cs");
             Console.WriteLine($"Lang Output: {langOutputPath}");
             Console.WriteLine($"Nodes Output: {classesOutputPath}");
-
-            var inputFile = File.ReadAllText(inputPath)
-                            ?? throw new InvalidOperationException("null from reading input file");
-            var language = new Language(LanguageParser.ParseLanguage(inputPath, inputFile));
 
             var languageCode = LanguageCodeBuilder.GenerateLanguage(language);
             WriteIfChanged(langOutputPath, languageCode);
 
             var nodesCode = LanguageCodeBuilder.GenerateNodes(language);
             WriteIfChanged(classesOutputPath, nodesCode);
-            return 0;
+            return true;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
             Console.WriteLine(ex.StackTrace);
-            return 1;
+            return false;
         }
     }
 

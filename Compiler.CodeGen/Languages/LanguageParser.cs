@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
@@ -10,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages;
 
 internal static class LanguageParser
 {
-    public static LanguageNode ParseLanguage(string inputPath, string input)
+    public static LanguageNode ParseLanguage(string input, string path, LanguageLoader languageLoader)
     {
         var lines = Parsing.ParseLines(input).ToFixedList();
 
@@ -20,16 +19,13 @@ internal static class LanguageParser
         var extendsLanguageName = Parsing.GetConfig(lines, "extends");
         if (extendsLanguageName is not null)
         {
-            var extendedLanguagePath = Path.Combine(Path.GetDirectoryName(inputPath)!, Path.ChangeExtension(extendsLanguageName, "lang"));
-            Console.WriteLine($"Extending : {extendedLanguagePath}");
-            var extendedLanguageInputFile = File.ReadAllText(extendedLanguagePath)
-                            ?? throw new InvalidOperationException($"null from reading file {extendedLanguagePath}");
-            var extendsLanguage = ParseLanguage(extendedLanguagePath, extendedLanguageInputFile);
+            Console.WriteLine($"Extending: {extendsLanguageName}");
+            var extendsLanguage = languageLoader.GetOrLoadLanguageNamed(extendsLanguageName).Syntax;
 
             var extends = extendsLanguage.Grammar;
             var rules = ParseRuleExtensions(extendsLanguage, lines, extends.DefaultParent).ToFixedList();
             var grammar = new GrammarNode(extends.Namespace, extends.DefaultParent, extends.Prefix, extends.Suffix, extends.ListType, extends.SetType, usingNamespaces, rules);
-            return new LanguageNode(name, grammar, extendsLanguage);
+            return new LanguageNode(name, path, grammar, extendsLanguage);
         }
         else
         {
@@ -41,7 +37,7 @@ internal static class LanguageParser
             var setType = Parsing.GetSetConfig(lines);
             var rules = Parsing.ParseRules(lines, rootType).ToFixedList();
             var grammar = new GrammarNode(ns, rootType, prefix, suffix, listType, setType, usingNamespaces, rules);
-            return new LanguageNode(name, grammar, extends: null);
+            return new LanguageNode(name, path, grammar, extends: null);
         }
     }
 
