@@ -125,7 +125,9 @@ public static class Program
     {
         try
         {
+            var passOutputPath = Path.ChangeExtension(inputPath, ".pass.cs");
             Console.WriteLine($"Input: {inputPath}");
+            Console.WriteLine($"Pass Output: {passOutputPath}");
 
             var inputFile = File.ReadAllText(inputPath)
                             ?? throw new InvalidOperationException("null from reading input file");
@@ -133,6 +135,8 @@ public static class Program
 
             var pass = new Pass(syntax, languageLoader);
 
+            var passCode = PassCodeBuilder.GeneratePass(pass);
+            WriteIfChanged(passOutputPath, passCode);
             return true;
         }
         catch (Exception ex)
