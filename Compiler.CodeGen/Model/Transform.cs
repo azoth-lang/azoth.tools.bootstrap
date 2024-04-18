@@ -18,8 +18,8 @@ public sealed class Transform
     {
         Pass = pass;
         Syntax = syntax;
-        From = Syntax.From.Select(p => new Parameter(pass.FromLanguage?.Grammar, p)).ToFixedList();
-        To = Syntax.To.Select(p => new Parameter(pass.ToLanguage?.Grammar, p)).ToFixedList();
+        From = Syntax.From.Select(p => Parameter.CreateFromSyntax(pass.FromLanguage?.Grammar, p)).ToFixedList();
+        To = Syntax.To.Select(p => Parameter.CreateFromSyntax(pass.ToLanguage?.Grammar, p)).ToFixedList();
         AutoGenerate = Syntax.AutoGenerate;
     }
 

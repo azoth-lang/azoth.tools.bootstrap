@@ -22,7 +22,7 @@ public sealed class Grammar
     {
         Language = language;
         Syntax = syntax;
-        DefaultParent = syntax.DefaultParent is null ? null : new Symbol(this, syntax.DefaultParent);
+        DefaultParent = Symbol.CreateFromSyntax(this, syntax.DefaultParent);
         Rules = syntax.Rules.Select(r => new Rule(this, r)).ToFixedList();
         rulesLookup = Rules.ToFixedDictionary(r => r.Defines.ShortName);
     }

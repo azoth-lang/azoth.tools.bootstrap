@@ -16,6 +16,6 @@ public class Language
         Syntax = syntax;
         Extends = syntax.Extends is null ? null : languageLoader.GetOrLoadLanguageNamed(syntax.Extends.Name!);
         Grammar = new Grammar(this, syntax.Grammar);
-        Entry = new Symbol(Grammar, syntax.Entry);
+        Entry = Symbol.CreateFromSyntax(Grammar, syntax.Entry);
     }
 }

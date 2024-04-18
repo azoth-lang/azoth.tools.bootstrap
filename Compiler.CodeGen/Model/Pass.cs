@@ -59,8 +59,7 @@ public class Pass
 
     private Parameter CreateFromParameter()
     {
-        var fromType = Type.Create(FromLanguage?.Grammar,
-            FromLanguage?.Entry ?? Symbol.Create(FromLanguage?.Grammar, Syntax.From));
+        var fromType = Type.Create(FromLanguage?.Entry ?? Symbol.Create(FromLanguage?.Grammar, Syntax.From));
         var fromParameter = Parameter.Create(fromType, "from");
         fromParameter ??= Parameter.Void;
         return fromParameter;
@@ -68,7 +67,7 @@ public class Pass
 
     private Parameter CreateFromContextParameter()
     {
-        var contextType = Type.Create(FromLanguage?.Grammar, FromContext);
+        var contextType = Type.Create(FromContext);
         var contextParameter = Parameter.Create(contextType, "context");
         contextParameter ??= Parameter.Void;
         return contextParameter;
@@ -76,15 +75,14 @@ public class Pass
 
     private Parameter CreateToParameter()
     {
-        var toType = Type.Create(ToLanguage?.Grammar,
-            ToLanguage?.Entry ?? Symbol.Create(ToLanguage?.Grammar, Syntax.To));
+        var toType = Type.Create(ToLanguage?.Entry ?? Symbol.Create(ToLanguage?.Grammar, Syntax.To));
         var toParameter = Parameter.Create(toType, "to");
         toParameter ??= Parameter.Void;
         return toParameter;
     }
     private Parameter CreateToContextParameter()
     {
-        var contextType = Type.Create(ToLanguage?.Grammar, ToContext);
+        var contextType = Type.Create(ToContext);
         var contextParameter = Parameter.Create(contextType, "toContext");
         contextParameter ??= Parameter.Void;
         return contextParameter;
@@ -151,7 +149,7 @@ public class Pass
                     {
                         var fromParameter = Parameter.Create(parentFromType, "from");
                         var toSymbol = toGrammar?.RuleFor(parentFromType.Symbol.ShortName)?.Defines;
-                        var toType = Type.Create(toGrammar, toSymbol, parentFromType.CollectionKind);
+                        var toType = Type.Create(toSymbol, parentFromType.CollectionKind);
                         var toParameter = Parameter.Create(toType, "to");
                         if (toParameter is null)
                             // No way to make an auto transform, assume it is somehow covered
@@ -190,7 +188,7 @@ public class Pass
         foreach (var rule in grammar.Rules)
         {
             if (rule.AllProperties.Any(p => p.Type == fromType))
-                yield return Type.Create(grammar, rule.Defines);
+                yield return Type.Create(rule.Defines);
 
             if (fromType.CollectionKind == CollectionKind.None)
                 foreach (var property in rule.AllProperties.Where(p => p.Type.Symbol == fromType.Symbol && p.Type.IsCollection))
@@ -201,7 +199,7 @@ public class Pass
     private TransformTypePair CreateTransformTypePairFromTargetType(Type targetType)
     {
         var fromSymbol = targetType.Symbol.ReferencedRule!.ExtendsRule!.Defines;
-        var fromType = Type.Create(FromLanguage!.Grammar, fromSymbol, targetType.CollectionKind);
+        var fromType = Type.Create(fromSymbol, targetType.CollectionKind);
         return new(fromType, targetType);
     }
 

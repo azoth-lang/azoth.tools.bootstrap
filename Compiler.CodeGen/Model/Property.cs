@@ -51,7 +51,7 @@ public sealed class Property
         Rule = rule;
         Syntax = syntax;
 
-        Type = new Type(Rule.Grammar, syntax.Type);
+        Type = Type.CreateFromSyntax(Rule.Grammar, syntax.Type);
         isNewDefinition = new(() => rule.InheritedPropertiesNamed(this).Any());
         isDeclared = new(() =>
         {

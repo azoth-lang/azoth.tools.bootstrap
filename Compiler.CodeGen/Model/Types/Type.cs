@@ -18,8 +18,16 @@ public sealed class Type : IEquatable<Type>
     public static Type Void { get; } = new Type(Symbol.Void, CollectionKind.None, isOptional: false);
 
     [return: NotNullIfNotNull(nameof(symbol))]
-    public static Type? Create(Grammar? grammar, Symbol? symbol, CollectionKind collectionKind = CollectionKind.None)
+    public static Type? Create(Symbol? symbol, CollectionKind collectionKind = CollectionKind.None)
         => symbol is not null ? new Type(symbol, collectionKind, isOptional: false) : null;
+
+    [return: NotNullIfNotNull(nameof(syntax))]
+    public static Type? CreateFromSyntax(Grammar grammar, TypeNode? syntax)
+        => syntax is not null ? new Type(grammar, syntax) : null;
+
+    [return: NotNullIfNotNull(nameof(syntax))]
+    public static Type? CreateExternalFromSyntax(TypeNode? syntax)
+        => syntax is not null ? new Type(Symbol.CreateExternalFromSyntax(syntax.Symbol), syntax.CollectionKind, syntax.IsOptional) : null;
 
     public Symbol Symbol { get; }
     public string Name => Symbol.FullName;
@@ -28,9 +36,9 @@ public sealed class Type : IEquatable<Type>
     public bool IsOptional { get; }
     public Type UnderlyingType { get; }
 
-    public Type(Grammar? grammar, TypeNode syntax)
+    private Type(Grammar grammar, TypeNode syntax)
     {
-        Symbol = new Symbol(grammar, syntax.Symbol);
+        Symbol = Symbol.CreateFromSyntax(grammar, syntax.Symbol);
         CollectionKind = syntax.CollectionKind;
         IsOptional = syntax.IsOptional;
         UnderlyingType = CreateUnderlyingType();

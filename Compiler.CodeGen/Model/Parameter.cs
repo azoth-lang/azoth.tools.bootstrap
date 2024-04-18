@@ -13,16 +13,17 @@ public sealed class Parameter : IEquatable<Parameter>
     public static Parameter? Create(Type? type, string name)
         => type is not null ? new Parameter(type, name) : null;
 
-    public ParameterNode? Syntax { get; }
+    [return: NotNullIfNotNull(nameof(syntax))]
+    public static Parameter? CreateFromSyntax(Grammar? grammar, ParameterNode? syntax)
+    {
+        if (syntax is null) return null;
+        var type = grammar is not null ? Type.CreateFromSyntax(grammar, syntax.Type)
+            : Type.CreateExternalFromSyntax(syntax.Type);
+        return new(type, syntax.Name);
+    }
+
     public Type Type { get; }
     public string Name { get; }
-
-    public Parameter(Grammar? grammar, ParameterNode syntax)
-    {
-        Syntax = syntax;
-        Type = new Type(grammar, syntax.Type);
-        Name = syntax.Name;
-    }
 
     private Parameter(Type type, string name)
     {

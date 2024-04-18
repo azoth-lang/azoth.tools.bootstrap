@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
@@ -17,6 +18,17 @@ public sealed class Symbol : IEquatable<Symbol>
     public static Symbol? Create(Grammar? grammar, SymbolNode? syntax)
         => syntax is null ? null : new(grammar, syntax);
 
+    [return: NotNullIfNotNull(nameof(syntax))]
+    public static Symbol? CreateFromSyntax(Grammar grammar, SymbolNode? syntax)
+        => syntax is null ? null : new(grammar, syntax);
+
+    public static Symbol CreateExternalFromSyntax(SymbolNode syntax)
+    {
+        if (!syntax.IsQuoted)
+            throw new ArgumentException("External symbol must be quoted.", nameof(syntax));
+        return new(null, syntax);
+    }
+
     private SymbolNode Syntax { get; }
     public string ShortName { get; }
     public string FullName { get; }
@@ -24,7 +36,7 @@ public sealed class Symbol : IEquatable<Symbol>
     private readonly Lazy<Rule?> referencedRule;
     public Rule? ReferencedRule => referencedRule.Value;
 
-    public Symbol(Grammar? grammar, SymbolNode syntax)
+    private Symbol(Grammar? grammar, SymbolNode syntax)
     {
         if (!syntax.IsQuoted && grammar is null)
             throw new ArgumentNullException(nameof(grammar), "Grammar must be provided for unquoted symbols.");

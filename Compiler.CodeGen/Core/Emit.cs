@@ -420,7 +420,7 @@ internal static class Emit
         var modifiedProperties = rule.AllProperties
                                      .Where(CouldBeModified)
                                      .Except(extendsRule.AllProperties, Property.NameAndTypeComparer);
-        var fromType = Model.Types.Type.Create(rule.Grammar, extendsRule.Defines);
+        var fromType = Model.Types.Type.Create(extendsRule.Defines);
         var parameters = new List<Parameter>() { Model.Parameter.Create(fromType, "from") };
         parameters.AddRange(modifiedProperties.Select(p => Model.Parameter.Create(p.Type, p.Name.ToCamelCase())));
         return Parameters(pass, parameters);

@@ -108,9 +108,9 @@ public class Rule
         Language = grammar.Language;
         Grammar = grammar;
         Syntax = syntax;
-        Defines = new Symbol(grammar, syntax.Defines);
-        Parent = syntax.Parent is null ? null : new Symbol(grammar, syntax.Parent);
-        Supertypes = syntax.Supertypes.Select(s => new Symbol(grammar, s)).ToFixedSet();
+        Defines = Symbol.CreateFromSyntax(grammar, syntax.Defines);
+        Parent = Symbol.CreateFromSyntax(grammar, syntax.Parent);
+        Supertypes = syntax.Supertypes.Select(s => Symbol.CreateFromSyntax(grammar, s)).ToFixedSet();
         Parents = Parent is null ? Supertypes : Supertypes.Prepend(Parent).ToFixedSet();
 
         supertypeRules = new(() => Supertypes.Select(s => s.ReferencedRule).WhereNotNull()
