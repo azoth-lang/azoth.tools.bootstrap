@@ -15,8 +15,8 @@ public class Rule
     public RuleNode Syntax { get; }
 
 
-    public Symbol Defines { get; }
-    public Symbol? Parent { get; }
+    public InternalSymbol Defines { get; }
+    public InternalSymbol? Parent { get; }
     public Rule? ParentRule => Parent?.ReferencedRule;
     public IFixedSet<Symbol> Supertypes { get; }
     private readonly Lazy<IFixedSet<Rule>> supertypeRules;
@@ -108,12 +108,12 @@ public class Rule
         Language = grammar.Language;
         Grammar = grammar;
         Syntax = syntax;
-        Defines = Symbol.CreateFromSyntax(grammar, syntax.Defines);
-        Parent = Symbol.CreateFromSyntax(grammar, syntax.Parent);
+        Defines = Symbol.CreateInternalFromSyntax(grammar, syntax.Defines);
+        Parent = Symbol.CreateInternalFromSyntax(grammar, syntax.Parent);
         Supertypes = syntax.Supertypes.Select(s => Symbol.CreateFromSyntax(grammar, s)).ToFixedSet();
         Parents = Parent is null ? Supertypes : Supertypes.Prepend(Parent).ToFixedSet();
 
-        supertypeRules = new(() => Supertypes.Select(s => s.ReferencedRule).WhereNotNull()
+        supertypeRules = new(() => Supertypes.OfType<InternalSymbol>().Select(s => s.ReferencedRule)
                                              .EliminateRedundantRules().ToFixedSet());
         parentRules = new(() => ParentRule is null ? SupertypeRules
             : SupertypeRules.Prepend(ParentRule).EliminateRedundantRules().ToFixedSet());
@@ -174,10 +174,12 @@ public class Rule
         return IsModified
                // Note: added child rules are not a problem for the cases that matter here
                || ChildRules.Any(r => r.TryDescendantsModified)
-               || AllProperties.Select(p => p.Type.Symbol.ReferencedRule)
-                                    .WhereNotNull()
-                                    .Except(this)
-                                    .Any(r => r.TryDescendantsModified);
+               || AllProperties
+                  .Select(p => p.Type.Symbol)
+                  .OfType<InternalSymbol>()
+                  .Select(s => s.ReferencedRule)
+                  .Except(this)
+                  .Any(r => r.TryDescendantsModified);
     }
 
     private static void DescendantsModifiedInCycle()

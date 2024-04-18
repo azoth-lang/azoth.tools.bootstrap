@@ -41,7 +41,7 @@ internal static class Emit
     /// a base interface outside of the default parent.</remarks>
     public static string BaseTypes(Rule rule, string? root = null)
     {
-        var parents = rule.Parents.Where(p => p.ReferencedRule is null).Select(p => p.FullName)
+        var parents = rule.Parents.OfType<ExternalSymbol>().Select(p => p.FullName)
                           .Concat(rule.ParentRules.Select(r => TypeName(r.Defines)))
                           .ToFixedList();
 
@@ -64,10 +64,12 @@ internal static class Emit
         => QualifiedTypeName(type.Symbol);
 
     public static string QualifiedTypeName(Symbol symbol)
-    {
-        var languageName = symbol.ReferencedRule?.Language.Name;
-        return languageName is null ? symbol.FullName : $"{languageName}.{symbol.FullName}";
-    }
+        => symbol switch
+        {
+            InternalSymbol sym => $"{sym.ReferencedRule.Language.Name}.{symbol.FullName}",
+            ExternalSymbol sym => sym.FullName,
+            _ => throw ExhaustiveMatch.Failed(symbol)
+        };
 
     public static string Type(Type type)
     {
@@ -108,23 +110,16 @@ internal static class Emit
     public static string ClassName(Rule rule) => ClassName(rule.Language, rule.Defines);
 
     public static string ClassName(Language language, Symbol? symbol)
-    {
-        if (symbol is null) return $"{language.Grammar.Suffix}Node";
-        return symbol.IsExternal ? symbol.FullName : $"{symbol.ShortName}{language.Grammar.Suffix}Node";
-    }
+        => symbol switch
+        {
+            null => $"{language.Grammar.Suffix}Node",
+            InternalSymbol sym => $"{sym.FullName}Node",
+            ExternalSymbol sym => sym.FullName,
+            _ => throw ExhaustiveMatch.Failed(symbol)
+        };
 
     public static string PropertyParameters(Rule rule)
         => string.Join(", ", rule.AllProperties.Select(p => $"{ParameterType(p.Type)} {p.Name.ToCamelCase()}"));
-
-    public static string ModifiedPropertyParameters(Rule rule)
-    {
-        var correctLanguage = rule.Language.Extends!;
-        string typeName = TypeName(rule.Defines);
-        var oldProperties = OldProperties(rule);
-        return string.Join(", ", rule.AllProperties.Where(p => !oldProperties.Contains(p.Name))
-                                     .Select(p => $"{ParameterType(p.Type)} {p.Name.ToCamelCase()}")
-                                     .Prepend($"{correctLanguage.Name}.{typeName} {typeName.ToCamelCase()}"));
-    }
 
     private static string ParameterType(Type type)
     {
@@ -138,9 +133,6 @@ internal static class Emit
         if (type.IsOptional) name += "?";
         return name;
     }
-
-    private static IFixedSet<string> OldProperties(Rule rule)
-        => rule.ExtendsRule!.AllProperties.Select(p => p.Name).ToFixedSet();
 
     public static string PropertyClassParameters(Rule rule)
         => string.Join(", ", rule.AllProperties.Select(p => $"{Type(p.Type)} {p.Name.ToCamelCase()}"));
@@ -174,30 +166,9 @@ internal static class Emit
         return name;
     }
 
-    public static string ModifiedPropertyArguments(Rule rule)
+    public static string SmartClassName(InternalSymbol symbol)
     {
-        string oldNode = TypeName(rule.Defines).ToCamelCase();
-        var correctLanguage = rule.DefinedInLanguage;
-        var oldProperties = OldProperties(rule);
-
-        return string.Join(", ", rule.AllProperties.Select(ToArgument));
-
-        string ToArgument(Property p)
-        {
-            var cast = p.ReferencesRule ? $"({SmartClassType(p.Type)})" : "";
-            return oldProperties.Contains(p.Name) ? $"{cast}{oldNode}.{p.Name}" : $"{cast}{p.Name.ToCamelCase()}";
-        }
-    }
-
-    public static string SmartClassType(Type type)
-    {
-        string name = SmartClassName(type.Symbol);
-        return TypeDecorations(type, name);
-    }
-
-    public static string SmartClassName(Symbol symbol)
-    {
-        var correctLanguage = symbol.ReferencedRule!.DefinedInLanguage;
+        var correctLanguage = symbol.ReferencedRule.DefinedInLanguage;
         return ClassName(correctLanguage, symbol);
     }
 
@@ -273,16 +244,22 @@ internal static class Emit
     public static string PassTypeName(Pass pass, Symbol symbol)
     {
         if (symbol == Symbol.Void) return "Void";
-        if (symbol.IsExternal) return symbol.FullName;
-
-        var language = symbol.ReferencedRule?.Language;
-        var languageName = language switch
+        switch (symbol)
         {
-            _ when language == pass.FromLanguage => "From",
-            _ when language == pass.ToLanguage => "To",
-            _ => throw new FormatException($"Invalid symbol for pass type name '{symbol}'")
-        };
-        return $"{languageName}.{symbol.FullName}";
+            default:
+                throw ExhaustiveMatch.Failed(symbol);
+            case ExternalSymbol _:
+                return symbol.FullName;
+            case InternalSymbol sym:
+                var language = sym.ReferencedRule.Language;
+                var languageName = language switch
+                {
+                    _ when language == pass.FromLanguage => "From",
+                    _ when language == pass.ToLanguage => "To",
+                    _ => throw new FormatException($"Invalid symbol for pass type name '{symbol}'")
+                };
+                return $"{languageName}.{symbol.FullName}";
+        }
     }
 
     public static string FullRunReturnType(Pass pass)
@@ -421,13 +398,13 @@ internal static class Emit
                                      .Where(CouldBeModified)
                                      .Except(extendsRule.AllProperties, Property.NameAndTypeComparer);
         var fromType = Model.Types.Type.Create(extendsRule.Defines);
-        var parameters = new List<Parameter>() { Model.Parameter.Create(fromType, "from") };
+        var parameters = new List<Parameter> { Model.Parameter.Create(fromType, "from") };
         parameters.AddRange(modifiedProperties.Select(p => Model.Parameter.Create(p.Type, p.Name.ToCamelCase())));
         return Parameters(pass, parameters);
     }
 
     private static bool CouldBeModified(Property property)
-        => property.Type.Symbol.ReferencedRule?.DescendantsModified ?? true;
+        => property.Type.Symbol is InternalSymbol { ReferencedRule.DescendantsModified: true } or ExternalSymbol;
 
     public static string SimpleCreateParameters(Rule rule)
     {

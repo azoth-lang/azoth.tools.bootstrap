@@ -148,7 +148,7 @@ public class Pass
                     else
                     {
                         var fromParameter = Parameter.Create(parentFromType, "from");
-                        var toSymbol = toGrammar?.RuleFor(parentFromType.Symbol.ShortName)?.Defines;
+                        var toSymbol = toGrammar?.RuleFor(((InternalSymbol)parentFromType.Symbol).ShortName)?.Defines;
                         var toType = Type.Create(toSymbol, parentFromType.CollectionKind);
                         var toParameter = Parameter.Create(toType, "to");
                         if (toParameter is null)
@@ -198,7 +198,7 @@ public class Pass
 
     private TransformTypePair CreateTransformTypePairFromTargetType(Type targetType)
     {
-        var fromSymbol = targetType.Symbol.ReferencedRule!.ExtendsRule!.Defines;
+        var fromSymbol = ((InternalSymbol)targetType.Symbol).ReferencedRule!.ExtendsRule!.Defines;
         var fromType = Type.Create(fromSymbol, targetType.CollectionKind);
         return new(fromType, targetType);
     }

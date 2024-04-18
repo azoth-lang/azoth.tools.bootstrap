@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Type = Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types.Type;
 
@@ -44,7 +45,7 @@ public sealed class Property
     /// <summary>
     /// Is the type of this property a reference to another rule?
     /// </summary>
-    public bool ReferencesRule => Type.Symbol.ReferencedRule is not null;
+    public bool ReferencesRule => Type.Symbol is InternalSymbol { ReferencedRule: not null };
 
     public Property(Rule rule, PropertyNode syntax)
     {
