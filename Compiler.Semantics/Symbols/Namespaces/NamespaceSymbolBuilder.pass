@@ -1,5 +1,6 @@
 ◊name NamespaceSymbolBuilder;
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
 ◊context SymbolBuilderContext;
 ◊from Concrete;
 ◊to WithNamespaceSymbols;

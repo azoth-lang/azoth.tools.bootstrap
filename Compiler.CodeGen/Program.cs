@@ -74,7 +74,7 @@ public static class Program
                             ?? throw new InvalidOperationException("null from reading input file");
             var grammarSyntax = TreeParser.ParseGrammar(inputFile);
 
-            var languageSyntax = new LanguageNode(null, inputPath, grammarSyntax, null);
+            var languageSyntax = new LanguageNode(null, inputPath, SymbolNode.Void, grammarSyntax, null);
             var language = new Language(languageSyntax);
 
             language.Grammar.ValidateTreeOrdering();

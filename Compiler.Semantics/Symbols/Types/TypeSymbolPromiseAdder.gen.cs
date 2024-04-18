@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
-using Azoth.Tools.Bootstrap.Compiler.IST;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -10,20 +9,8 @@ using To = Azoth.Tools.Bootstrap.Compiler.IST.WithTypeDeclarationPromises;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Types;
 
-internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Package, Void, To.Package, Void>
+internal sealed partial class TypeSymbolPromiseAdder
 {
-    public static To.Package Run(From.Package from)
-    {
-        var pass = new TypeSymbolPromiseAdder();
-        pass.StartRun();
-        var to = pass.Transform(from);
-        pass.EndRun(to);
-        return to;
-    }
-
-    static (To.Package, Void) ITransformPass<From.Package, Void, To.Package, Void>.Run(From.Package from, Void context)
-        => (Run(from), default);
-
     partial void StartRun();
 
     partial void EndRun(To.Package package);

@@ -15,6 +15,10 @@ internal static class Build
         var fromNamespaces = pass.FromLanguage?.Grammar.UsingNamespaces ?? FixedSet.Empty<string>();
         var toNamespaces = pass.ToLanguage?.Grammar.UsingNamespaces ?? FixedSet.Empty<string>();
 
-        return fromNamespaces.Concat(toNamespaces).Concat(additionalNamespaces).Distinct().OrderBy(v => v, NamespaceComparer.Instance);
+        return pass.UsingNamespaces
+                   .Concat(fromNamespaces)
+                   .Concat(toNamespaces)
+                   .Concat(additionalNamespaces)
+                   .Distinct().OrderBy(v => v, NamespaceComparer.Instance);
     }
 }

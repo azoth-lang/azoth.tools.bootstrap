@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -48,35 +50,6 @@ internal static class Emit
         return " : " + string.Join(", ", parents);
     }
 
-    public static string CommonClosedAttribute(Rule rule, string indent = "")
-    {
-        var children = rule.ChildRules;
-        if (!children.Any()) return "";
-        var builder = new StringBuilder();
-        builder.Append(indent);
-        builder.AppendLine("[Closed(");
-        bool first = true;
-        foreach (var child in children)
-        {
-            if (first)
-                first = false;
-            else
-                builder.AppendLine(",");
-            builder.Append(indent);
-            builder.Append($"    typeof({CommonTypeName(child)})");
-        }
-
-        builder.AppendLine(")]");
-        return builder.ToString();
-    }
-
-    public static string CommonBaseTypes(Rule rule)
-    {
-        var languageTypeName = QualifiedTypeName(rule.Defines);
-        var parents = rule.ParentRules.Select(CommonTypeName);
-        return string.Join(", ", parents.Prepend(languageTypeName));
-    }
-
     public static string TypeName(Type type)
         => TypeName(type.Symbol);
 
@@ -92,14 +65,6 @@ internal static class Emit
         return languageName is null ? symbol.Name : $"{languageName}.{symbol.Name}";
     }
 
-    public static string CommonTypeName(Rule rule)
-        => CommonTypeName(rule.Defines);
-
-    public static string CommonTypeName(Type type) => CommonTypeName(type.Symbol);
-
-    public static string CommonTypeName(Symbol symbol)
-        => symbol.Syntax.IsQuoted ? symbol.Name : $"Common{symbol.Name}";
-
     public static string Type(Type type)
     {
         var name = TypeName(type);
@@ -109,18 +74,6 @@ internal static class Emit
     public static string QualifiedType(Type type)
     {
         var name = QualifiedTypeName(type);
-        return TypeDecorations(type, name);
-    }
-
-    public static string CommonType(Type type)
-    {
-        var name = CommonTypeName(type.Symbol);
-        return TypeDecorations(type, name);
-    }
-
-    public static string ClassType(Type type)
-    {
-        var name = ClassName(type.Language, type.Symbol);
         return TypeDecorations(type, name);
     }
 
@@ -134,19 +87,16 @@ internal static class Emit
                 // Nothing
                 break;
             case CollectionKind.List:
-                name = $"{type.Grammar.ListType}<{name}>";
+                name = $"{type.Grammar!.ListType}<{name}>";
                 break;
             case CollectionKind.Set:
-                name = $"{type.Grammar.SetType}<{name}>";
+                name = $"{type.Grammar!.SetType}<{name}>";
                 break;
         }
 
         if (type.IsOptional) name += "?";
         return name;
     }
-
-    public static string ClassModifier(Rule rule)
-        => rule.IsTerminal ? "sealed" : "abstract";
 
     public static string PropertyIsNew(Property property)
         => property.IsNewDefinition ? "new " : "";
@@ -208,8 +158,8 @@ internal static class Emit
         return type.CollectionKind switch
         {
             CollectionKind.None => null,
-            CollectionKind.List => type.Grammar.ListType,
-            CollectionKind.Set => type.Grammar.SetType,
+            CollectionKind.List => type.Grammar!.ListType,
+            CollectionKind.Set => type.Grammar!.SetType,
             _ => throw ExhaustiveMatch.Failed(type.CollectionKind)
         };
     }
@@ -252,4 +202,140 @@ internal static class Emit
         if (language is null) return "";
         return $"using {alias} = {language.Grammar.Namespace}.{language.Name};\r\n";
     }
+
+    public static string TransformInterfaceTypeParameters(Pass pass)
+        => string.Join(", ", TransformInterfaceTypeParametersInternal(pass));
+
+    private static IEnumerable<string> TransformInterfaceTypeParametersInternal(Pass pass)
+    {
+        yield return FromEntryType(pass);
+
+        yield return ContextType(pass.FromContext);
+
+        yield return ToEntryType(pass);
+
+        yield return ContextType(pass.ToContext);
+    }
+
+    private static string FromEntryType(Pass pass)
+        => EntryType(pass.FromLanguage, pass.From, "From");
+
+    private static string ToEntryType(Pass pass)
+        => EntryType(pass.ToLanguage, pass.To, "To");
+
+    private static string EntryType(Language? language, SymbolNode? symbol, string languageAlias)
+    {
+        if (language is not null)
+            return $"{languageAlias}.{TypeName(language.Entry)}";
+        return symbol is not null ? symbol.Text : "Void";
+    }
+
+    private static string ContextType(Symbol? fromContext)
+        => fromContext is not null ? fromContext.Name : "Void";
+
+    public static string FullRunParameters(Pass pass)
+        => Parameters(pass, pass.FullRunParameters);
+
+    public static string RunParameters(Pass pass)
+        => Parameters(pass, pass.RunParameters);
+
+    public static string EndRunParameterNames(Pass pass)
+        => ParameterNames(pass.EntryTransform.To);
+
+    public static string ParameterNames(IEnumerable<Parameter> parameters)
+        => string.Join(", ", parameters.Select(ParameterName));
+
+    private static string ParameterName(Parameter parameter)
+        => parameter == Model.Parameter.Void ? "" : parameter.Name;
+
+    public static string Parameters(Pass pass, IEnumerable<Parameter> parameters)
+        => string.Join(", ", parameters.Select(p => Parameter(pass, p)));
+
+    public static string Parameter(Pass pass, Parameter parameter)
+        => $"{PassType(pass, parameter.Type)} {parameter.Name}";
+
+    public static string PassType(Pass pass, Type type)
+    {
+        var name = PassTypeName(pass, type);
+        return TypeDecorations(type, name);
+    }
+
+    public static string PassTypeName(Pass pass, Type type)
+        => PassTypeName(pass, type.Symbol);
+
+    public static string PassTypeName(Pass pass, Symbol symbol)
+    {
+        if (symbol == Symbol.Void) return "Void";
+        var language = symbol.ReferencedRule?.Language;
+        var languageName = language switch
+        {
+            null => null,
+            _ when language == pass.FromLanguage => "From",
+            _ when language == pass.ToLanguage => "To",
+            _ => language.Name
+        };
+        return languageName is null ? symbol.Name : $"{languageName}.{symbol.Name}";
+    }
+
+    public static string FullRunReturnType(Pass pass)
+        => PassReturnType(pass, pass.FullRunReturn);
+
+    public static string RunReturnType(Pass pass)
+        => PassReturnType(pass, pass.RunReturn);
+
+    public static string RunReturnNames(Pass pass)
+        => ReturnNames(pass.RunReturn);
+
+    public static string ReturnNames(IFixedList<Parameter> returnValues)
+    {
+        return returnValues.Count switch
+        {
+            0 => "",
+            1 => ParameterName(returnValues[0]),
+            _ => $"({string.Join(", ", returnValues.Select(ParameterName))})"
+        };
+    }
+
+    public static string PassReturnType(Pass pass, IFixedList<Parameter> returnValues)
+    {
+        return returnValues.Count switch
+        {
+            0 => "void",
+            1 => PassType(pass, returnValues[0].Type),
+            _ => $"({string.Join(", ", returnValues.Select(p => PassType(pass, p.Type)))})"
+        };
+    }
+
+    public static string RunForward(Pass pass)
+    {
+        var result = $"Run({ParameterNames(pass.RunParameters)})";
+        if (pass.ToContext is null) return $"({result}, default)";
+        if (pass.To is null) return $"(default, {result})";
+        return result;
+    }
+
+    public static string ContextParameterName(Pass pass)
+        => ParameterName(pass.FromContextParameter);
+
+    public static string EntryResult(Pass pass)
+        => Result(pass.EntryTransform.To);
+
+    private static string Result(IFixedList<Parameter> returnValues)
+    {
+        return returnValues.Count switch
+        {
+            0 => "",
+            1 => $"var {returnValues[0].Name} = ",
+            _ => $"var ({ParameterNames(returnValues)} = ",
+        };
+    }
+
+    public static string MethodName(Pass pass)
+        => pass.To is not null ? "Transform" : "Analyze";
+
+    public static string EntryParameterNames(Pass pass)
+        => ParameterNames(pass.EntryTransform.From);
+
+    public static string ContextResult(Pass pass)
+        => pass.ToContextParameter.Type == Model.Type.Void ? "" : $"var {pass.ToContextParameter.Name} = ";
 }

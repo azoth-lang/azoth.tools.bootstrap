@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.IST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
@@ -11,16 +10,8 @@ using To = Azoth.Tools.Bootstrap.Compiler.IST.WithNamespaceSymbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 
-internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Package, SymbolBuilderContext, To.Package, SymbolBuilderContext>
+internal sealed partial class NamespaceSymbolBuilder
 {
-    public static (To.Package, SymbolBuilderContext) Run(From.Package from, SymbolBuilderContext context)
-    {
-        var pass = new NamespaceSymbolBuilder(context);
-        pass.StartRun();
-        var to = pass.Transform(from);
-        return (to, pass.EndRun(to));
-    }
-
     partial void StartRun();
 
     private partial SymbolBuilderContext EndRun(To.Package package);

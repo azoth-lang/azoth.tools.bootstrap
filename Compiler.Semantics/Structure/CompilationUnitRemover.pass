@@ -1,7 +1,7 @@
 ◊name CompilationUnitRemover;
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 ◊from WithDeclarationLexicalScopes;
-◊to WithNamespaceSymbols;
+◊to WithoutCompilationUnits;
 
 //Package -> ~; // Implicitly generated because of changes in the AST
 CompilationUnit -> NamespaceMemberDeclaration*;

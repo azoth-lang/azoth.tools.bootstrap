@@ -126,6 +126,12 @@ internal static class Parsing
     }
 
     public static PropertyNode ParseProperty(string property)
+        => ParseBinding(property, (name, type) => new PropertyNode(name, type));
+
+    public static ParameterNode ParseParameter(string property)
+        => ParseBinding(property, (name, type) => new ParameterNode(name.ToCamelCase(), type));
+
+    private static T ParseBinding<T>(string property, Func<string, TypeNode, T> create)
     {
         var isOptional = property.EndsWith('?');
         property = isOptional ? property[..^1] : property;
@@ -136,10 +142,10 @@ internal static class Parsing
         {
             case 1:
             {
-                var name = parts[0];
-                var collectionKind = ParseCollectionKind(ref name);
-                var grammarType = new TypeNode(ParseSymbol(name), collectionKind, isOptional);
-                return new PropertyNode(name, grammarType);
+                var type = parts[0];
+                var collectionKind = ParseCollectionKind(ref type);
+                var grammarType = new TypeNode(ParseSymbol(type), collectionKind, isOptional);
+                return create(grammarType.Symbol.Text, grammarType);
             }
             case 2:
             {
@@ -147,10 +153,10 @@ internal static class Parsing
                 var type = parts[1];
                 var collectionKind = ParseCollectionKind(ref type);
                 var grammarType = new TypeNode(ParseSymbol(type), collectionKind, isOptional);
-                return new PropertyNode(name, grammarType);
+                return create(name, grammarType);
             }
             default:
-                throw new FormatException($"Too many colons in property: '{property}'");
+                throw new FormatException($"Too many colons in binding: '{property}'");
         }
     }
 

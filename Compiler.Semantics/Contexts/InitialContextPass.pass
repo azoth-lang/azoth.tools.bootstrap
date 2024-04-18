@@ -1,6 +1,8 @@
 ◊name InitialContextPass;
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
+◊using Azoth.Tools.Bootstrap.Compiler.AST;
+◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊context PackageSyntax<Package> -> DiagnosticsContext;
 ◊from `IPackageSyntax`;
 
-syntax:`IPackageSyntax` -> Diagnostics;
+from:`IPackageSyntax` -> `Diagnostics`;

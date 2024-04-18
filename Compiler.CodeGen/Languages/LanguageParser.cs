@@ -23,21 +23,23 @@ internal static class LanguageParser
             var extendsLanguage = languageLoader.GetOrLoadLanguageNamed(extendsLanguageName).Syntax;
 
             var extends = extendsLanguage.Grammar;
+            var entry = Parsing.ParseSymbol(Parsing.GetConfig(lines, "entry")) ?? extendsLanguage.Entry;
             var rules = ParseRuleExtensions(extendsLanguage, lines, extends.DefaultParent).ToFixedList();
             var grammar = new GrammarNode(extends.Namespace, extends.DefaultParent, extends.Prefix, extends.Suffix, extends.ListType, extends.SetType, usingNamespaces, rules);
-            return new LanguageNode(name, path, grammar, extendsLanguage);
+            return new LanguageNode(name, path, entry, grammar, extendsLanguage);
         }
         else
         {
             var ns = Parsing.GetRequiredConfig(lines, "namespace");
             var rootType = Parsing.ParseSymbol(Parsing.GetConfig(lines, "root"));
+            var entry = Parsing.ParseSymbol(Parsing.GetRequiredConfig(lines, "entry"));
             var prefix = Parsing.GetConfig(lines, "prefix") ?? "";
             var suffix = Parsing.GetConfig(lines, "suffix") ?? "";
             var listType = Parsing.GetListConfig(lines);
             var setType = Parsing.GetSetConfig(lines);
             var rules = Parsing.ParseRules(lines, rootType).ToFixedList();
             var grammar = new GrammarNode(ns, rootType, prefix, suffix, listType, setType, usingNamespaces, rules);
-            return new LanguageNode(name, path, grammar, extends: null);
+            return new LanguageNode(name, path, entry, grammar, extends: null);
         }
     }
 

@@ -1,5 +1,6 @@
 ◊name TypeSymbolBuilder;
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Types;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
 ◊context SymbolBuilderContext;
 ◊from WithTypeDeclarationPromises;
 ◊to WithTypeDeclarationPromises;

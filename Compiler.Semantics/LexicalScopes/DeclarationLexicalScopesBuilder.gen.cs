@@ -1,29 +1,24 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.IST;
 using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using From = Azoth.Tools.Bootstrap.Compiler.IST.WithNamespaceSymbols;
 using To = Azoth.Tools.Bootstrap.Compiler.IST.WithDeclarationLexicalScopes;
-using Void = Azoth.Tools.Bootstrap.Framework.Void;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
-internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<From.Package, Void, To.Package, Void>
+internal sealed partial class DeclarationLexicalScopesBuilder
 {
-    public static To.Package Run(From.Package from)
-    {
-        var pass = new DeclarationLexicalScopesBuilder();
-        pass.StartRun();
-        var to = pass.Transform(from);
-        pass.EndRun(to);
-        return to;
-    }
-
-    static (To.Package, Void) ITransformPass<From.Package, Void, To.Package, Void>.Run(From.Package from, Void context)
-        => (Run(from), default);
+    //public static To.Package Run(From.Package from)
+    //{
+    //    var pass = new DeclarationLexicalScopesBuilder();
+    //    pass.StartRun();
+    //    var to = pass.Transform(from);
+    //    pass.EndRun(to);
+    //    return to;
+    //}
 
     partial void StartRun();
 

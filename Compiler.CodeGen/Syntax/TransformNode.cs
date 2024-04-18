@@ -4,11 +4,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
 public class TransformNode
 {
-    public IFixedList<PropertyNode> From { get; }
-    public IFixedList<PropertyNode> To { get; }
+    public IFixedList<ParameterNode> From { get; }
+    public IFixedList<ParameterNode> To { get; }
     public bool AutoGenerate { get; }
 
-    public TransformNode(IFixedList<PropertyNode> from, IFixedList<PropertyNode> to, bool autoGenerate)
+    public TransformNode(IFixedList<ParameterNode> from, IFixedList<ParameterNode> to, bool autoGenerate)
     {
         From = from;
         To = to;

@@ -4,12 +4,26 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
-<#  foreach(var usingNamespace in Build.OrderedNamespaces(pass, "ExhaustiveMatching", "System.CodeDom.Compiler")) { #>
+<#  foreach(var usingNamespace in Build.OrderedNamespaces(pass, "ExhaustiveMatching", "System.CodeDom.Compiler", "Azoth.Tools.Bootstrap.Compiler.IST", "Azoth.Tools.Bootstrap.Framework")) { #>
 using <#=usingNamespace #>;
 <#  } #><#=Emit.UsingAlias("From", pass.FromLanguage)#><#=Emit.UsingAlias("To", pass.ToLanguage)#>
 namespace <#=pass.Namespace #>;
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class <#=pass.Name #>
+internal sealed partial class <#=pass.Name #> : ITransformPass<<#=Emit.TransformInterfaceTypeParameters(pass)#>>
 {
+    public static <#=Emit.RunReturnType(pass)#> Run(<#=Emit.RunParameters(pass)#>)
+    {
+        var pass = new <#=pass.Name#>(<#=Emit.ContextParameterName(pass)#>);
+        pass.StartRun();
+        <#=Emit.EntryResult(pass)#>pass.<#=Emit.MethodName(pass)#>(<#=Emit.EntryParameterNames(pass)#>);
+        <#=Emit.ContextResult(pass)#>pass.EndRun(<#=Emit.EndRunParameterNames(pass)#>);
+        return <#=Emit.RunReturnNames(pass)#>;
+    }
+
+<#  if (ShouldEmit.RunExplicitImplementation(pass)) { #>
+    static <#=Emit.FullRunReturnType(pass)#> ITransformPass<<#=Emit.TransformInterfaceTypeParameters(pass)#>>.Run(<#=Emit.FullRunParameters(pass)#>)
+        => <#=Emit.RunForward(pass)#>;
+
+<#  } #>
 }

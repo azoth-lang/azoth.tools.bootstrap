@@ -14,6 +14,7 @@ internal static class PassParser
 
         var name = Parsing.GetRequiredConfig(lines, "name");
         var ns = Parsing.GetRequiredConfig(lines, "namespace");
+        var usingNamespaces = Parsing.ParseUsingNamespaces(lines);
         var fromName = Parsing.ParseSymbol(Parsing.GetConfig(lines, "from"));
         var toName = Parsing.ParseSymbol(Parsing.GetConfig(lines, "to"));
         var context = Parsing.GetConfig(lines, "context");
@@ -23,7 +24,7 @@ internal static class PassParser
         var hasToLanguage = toName is not null && !toName.IsQuoted;
         var transforms = ParseTransforms(lines, hasFromLanguage, hasToLanguage).ToFixedList();
 
-        return new PassNode(ns, name, fromName, toName, fromContext, toContext, transforms);
+        return new PassNode(ns, name, usingNamespaces, fromContext, toContext, fromName, toName, transforms);
     }
 
     private static (SymbolNode?, SymbolNode?) ParseContext(string? context)
@@ -65,7 +66,7 @@ internal static class PassParser
                 if (hasToLanguage)
                     throw new FormatException($"Transform must have a return type because transforming to a language. '{transform}'");
                 var transformFrom = ParseTransformFrom(parts[0], hasFromLanguage);
-                return new TransformNode(transformFrom, FixedList.Empty<PropertyNode>(), autoGenerate);
+                return new TransformNode(transformFrom, FixedList.Empty<ParameterNode>(), autoGenerate);
             }
             case 2:
             {
@@ -78,7 +79,7 @@ internal static class PassParser
         }
     }
 
-    private static IFixedList<PropertyNode> ParseTransformFrom(string parameters, bool hasFromLanguage)
+    private static IFixedList<ParameterNode> ParseTransformFrom(string parameters, bool hasFromLanguage)
     {
         var parameterSyntax = ParseParameters(parameters).ToFixedList();
         if (hasFromLanguage)
@@ -91,18 +92,18 @@ internal static class PassParser
         return parameterSyntax;
     }
 
-    private static IEnumerable<PropertyNode> ParseParameters(string parameters)
+    private static IEnumerable<ParameterNode> ParseParameters(string parameters)
     {
         var properties = SplitParameters(parameters);
         foreach (var property in properties)
-            yield return Parsing.ParseProperty(property);
+            yield return Parsing.ParseParameter(property);
     }
 
     public static IEnumerable<string> SplitParameters(string definition)
         => definition.SplitOrEmpty(',');
 
 
-    private static IFixedList<PropertyNode> ParseTransformTo(string returnValues, bool hasToLanguage)
+    private static IFixedList<ParameterNode> ParseTransformTo(string returnValues, bool hasToLanguage)
     {
         var returnSyntax = ParseParameters(returnValues).ToFixedList();
         if (hasToLanguage)
