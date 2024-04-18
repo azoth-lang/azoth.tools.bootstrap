@@ -1,11 +1,16 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
-public sealed class Parameter
+public sealed class Parameter : IEquatable<Parameter>
 {
-    public static Parameter Void { get; } = new Parameter(Model.Type.Void, "_");
+    public static Parameter Void { get; } = new Parameter(Type.Void, "_");
+
+    [return: NotNullIfNotNull(nameof(type))]
+    public static Parameter? Create(Type? type, string name)
+        => type is not null ? new Parameter(type, name) : null;
 
     public ParameterNode? Syntax { get; }
     public Type Type { get; }
@@ -24,9 +29,25 @@ public sealed class Parameter
         Name = name;
     }
 
-    [return: NotNullIfNotNull(nameof(type))]
-    public static Parameter? Create(Type? type, string name)
-        => type is not null ? new Parameter(type, name) : null;
+    #region Equality
+    public bool Equals(Parameter? other)
+    {
+        if (other is null)
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return Name == other.Name && Type == other.Type;
+    }
+
+    public override bool Equals(object? obj) => obj is Parameter other && Equals(other);
+
+    public override int GetHashCode() => HashCode.Combine(Type, Name);
+
+    public static bool operator ==(Parameter? left, Parameter? right) => Equals(left, right);
+
+    public static bool operator !=(Parameter? left, Parameter? right) => !Equals(left, right);
+    #endregion
 
     public override string ToString() => $"{Type} {Name}";
 }

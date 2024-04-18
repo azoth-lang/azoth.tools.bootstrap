@@ -392,8 +392,7 @@ internal static class Emit
     {
         var fromType = transform.From[0].Type;
         var toType = transform.To[0].Type;
-        if (fromType.CollectionKind != CollectionKind.None
-            && toType.CollectionKind != CollectionKind.None)
+        if (fromType.IsCollection && toType.IsCollection)
         {
             var resultCollection = toType.CollectionKind switch
             {
@@ -402,8 +401,13 @@ internal static class Emit
                 CollectionKind.None => throw new UnreachableException(),
                 _ => throw ExhaustiveMatch.Failed(toType.CollectionKind)
             };
-            var parameterNames = string.Join(", ", transform.From.Skip(1).Select(ParameterName).Prepend("f"));
-            return $"{ParameterName(transform.From[0])}.Select(f => {MethodName(transform.Pass)}({parameterNames})).To{resultCollection}()";
+            var calledParameters = transform.From.Skip(1).Prepend(Model.Parameter.Create(fromType.UnderlyingType, "from")).ToFixedList();
+            var calledTransform = transform.Pass.Transforms.SingleOrDefault(t => t.From.SequenceEqual(calledParameters));
+            var calledTransformReturnsCollection = calledTransform?.To[0].Type.IsCollection ?? false;
+            var selectMethod = calledTransformReturnsCollection ? "SelectMany" : "Select";
+            var parameters = transform.From.Skip(1).Select(ParameterName).Prepend("f").ToFixedList();
+            var parameterNames = string.Join(", ", parameters);
+            return $"{ParameterName(transform.From[0])}.{selectMethod}(f => {MethodName(transform.Pass)}({parameterNames})).To{resultCollection}()";
         }
 
         return $"Create({ParameterNames(transform.From)})";

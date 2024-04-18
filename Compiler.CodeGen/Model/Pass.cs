@@ -19,7 +19,6 @@ public class Pass
     public SymbolNode? To => Syntax.To;
     public Language? ToLanguage { get; }
 
-
     public Parameter FromParameter { get; }
     public Parameter FromContextParameter { get; }
     public Parameter ToParameter { get; }
@@ -49,7 +48,7 @@ public class Pass
         FullRunReturn = Parameters(ToParameter, ToContextParameter);
         RunReturn = RemoveVoid(FullRunReturn);
         DeclaredTransforms = Syntax.Transforms.Select(t => new Transform(this, t)).ToFixedList();
-        EntryTransform = DeclaredTransforms.FirstOrDefault(IsEntryTransform) ?? CreateEntryTransform();
+        EntryTransform = DeclaredTransforms.SingleOrDefault(IsEntryTransform) ?? CreateEntryTransform();
         Transforms = CreateTransforms();
     }
 
@@ -113,18 +112,88 @@ public class Pass
     {
         var transforms = new List<Transform>(DeclaredTransforms.Prepend(EntryTransform).Distinct());
 
-        var coveredTransformPairs = transforms.Select(TransformTypePair.Create).WhereNotNull().ToFixedSet();
+        if (FromLanguage is not null)
+        {
+            var coveredFromTypes = transforms.Select(t => t.From[0].Type).ToFixedSet();
+            var newTransforms = new Dictionary<Type, Transform>();
+            // bubble additional parameters upwards
+            foreach (var declaredTransform in DeclaredTransforms)
+                BubbleParametersUp(declaredTransform);
 
-        var transformToPairs = ToLanguage?.Grammar.Rules.SelectMany(r => r.DeclaredProperties.Select(p => p.Type))
-                                           .Where(t => t.Symbol.ReferencedRule?.IsModified ?? false)
-                                           .Distinct()
-                                           .Select(CreateTransformTypePairFromTargetType)
-                                           .Except(coveredTransformPairs)
-                                           .ToFixedList() ?? FixedList.Empty<TransformTypePair>();
+            transforms.AddRange(newTransforms.Values);
+
+            void BubbleParametersUp(Transform transform)
+            {
+                var fromType = transform.From[0].Type;
+                var additionalParameters = transform.From.Skip(1).ToFixedList();
+                if (additionalParameters.Count == 0) return;
+                var parentTransformsFrom = ParentTransformsFrom(fromType).Except(coveredFromTypes);
+                var toGrammar = ToLanguage?.Grammar;
+                foreach (var parentFromType in parentTransformsFrom)
+                {
+                    if (newTransforms.TryGetValue(parentFromType, out var parentTransform))
+                    {
+                        var missingParameters = additionalParameters.Except(parentTransform.From).ToFixedList();
+                        if (!missingParameters.Any())
+                        {
+                            // All parameters are already covered
+                            continue;
+                        }
+
+                        // Need to create a new transform with the additional parameters
+                        parentTransform = new Transform(this,
+                            parentTransform.From.Concat(missingParameters),
+                            parentTransform.To, true);
+                    }
+                    else
+                    {
+                        var fromParameter = Parameter.Create(parentFromType, "from");
+                        var toSymbol = toGrammar?.RuleFor(parentFromType.Symbol.Syntax)?.Defines;
+                        var toType = Type.Create(toGrammar, toSymbol, parentFromType.CollectionKind);
+                        var toParameter = Parameter.Create(toType, "to");
+                        if (toParameter is null)
+                            // No way to make an auto transform, assume it is somehow covered
+                            continue;
+                        parentTransform = new Transform(this,
+                            additionalParameters.Prepend(fromParameter),
+                            Parameters(toParameter), true);
+                    }
+
+                    // Put new transform in the dictionary
+                    newTransforms[parentFromType] = parentTransform;
+
+                    // Now bubble up the additional parameters
+                    BubbleParametersUp(parentTransform);
+                }
+            }
+        }
+
+        //var coveredTransformPairs = transforms.Select(TransformTypePair.Create).WhereNotNull().ToFixedSet();
+
+        //var transformToPairs = ToLanguage?.Grammar.Rules.SelectMany(r => r.DeclaredProperties.Select(p => p.Type))
+        //                                   .Where(t => t.Symbol.ReferencedRule?.IsModified ?? false)
+        //                                   .Distinct()
+        //                                   .Select(CreateTransformTypePairFromTargetType)
+        //                                   .Except(coveredTransformPairs)
+        //                                   .ToFixedList() ?? FixedList.Empty<TransformTypePair>();
 
         //transforms.AddRange(transformToPairs.Select(p => p.ToTransform(this)));
 
         return transforms.ToFixedList();
+    }
+
+    private IEnumerable<Type> ParentTransformsFrom(Type fromType)
+    {
+        var grammar = FromLanguage!.Grammar;
+        foreach (var rule in grammar.Rules)
+        {
+            if (rule.AllProperties.Any(p => p.Type == fromType))
+                yield return Type.Create(grammar, rule.Defines);
+
+            if (fromType.CollectionKind == CollectionKind.None)
+                foreach (var property in rule.AllProperties.Where(p => p.Type.Symbol == fromType.Symbol && p.Type.IsCollection))
+                    yield return property.Type;
+        }
     }
 
     private TransformTypePair CreateTransformTypePairFromTargetType(Type targetType)

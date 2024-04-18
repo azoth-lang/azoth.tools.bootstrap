@@ -14,9 +14,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder
     private To.Package Create(From.Package from, PackageReferenceScope lexicalScope, PackageReferenceScope containingScope)
         => Create(from, lexicalScope, Transform(from.CompilationUnits, containingScope), Transform(from.TestingCompilationUnits, containingScope));
 
-    private IFixedSet<To.CompilationUnit> Transform(IEnumerable<From.CompilationUnit> from, PackageReferenceScope containingScope)
-        => from.Select(f => Transform(f, containingScope)).ToFixedSet();
-
     private To.CompilationUnit Create(
         From.CompilationUnit from,
         DeclarationScope scope)

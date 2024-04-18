@@ -44,6 +44,9 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
 
     private partial To.TypeDeclaration Transform(From.TypeDeclaration from, NamespaceSymbol? containingSymbol);
 
+    private IFixedSet<To.CompilationUnit> Transform(IEnumerable<From.CompilationUnit> from, PackageSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
+        => from.Select(f => Transform(f, containingSymbol, treeBuilder)).ToFixedSet();
+
     private To.NamespaceDeclaration Create(From.NamespaceDeclaration from, NamespaceSymbol containingSymbol, NamespaceSymbol symbol, IEnumerable<To.NamespaceMemberDeclaration> declarations)
         => To.NamespaceDeclaration.Create(containingSymbol, symbol, from.Syntax, from.IsGlobalQualified, from.DeclaredNames, from.UsingDirectives, declarations);
 

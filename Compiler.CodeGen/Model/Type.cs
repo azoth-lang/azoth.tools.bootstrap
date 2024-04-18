@@ -27,7 +27,9 @@ public sealed class Type : IEquatable<Type>
     public Symbol Symbol { get; }
     public string Name => Symbol.Name;
     public CollectionKind CollectionKind { get; }
+    public bool IsCollection => CollectionKind != CollectionKind.None;
     public bool IsOptional => Syntax?.IsOptional ?? false;
+    public Type UnderlyingType { get; }
 
     public Type(Grammar? grammar, TypeNode syntax)
     {
@@ -36,6 +38,7 @@ public sealed class Type : IEquatable<Type>
         Syntax = syntax;
         Symbol = new Symbol(grammar, syntax.Symbol);
         CollectionKind = syntax.CollectionKind;
+        UnderlyingType = CreateUnderlyingType();
     }
 
     private Type(Grammar? grammar, Symbol symbol, CollectionKind collectionKind)
@@ -44,6 +47,13 @@ public sealed class Type : IEquatable<Type>
         Grammar = grammar;
         Symbol = symbol;
         CollectionKind = collectionKind;
+        UnderlyingType = CreateUnderlyingType();
+    }
+
+    private Type CreateUnderlyingType()
+    {
+        if (!IsCollection) return this;
+        return new Type(Grammar, Symbol, CollectionKind.None);
     }
 
     public bool IsEquivalentTo(Type? other)

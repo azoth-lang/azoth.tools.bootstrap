@@ -20,9 +20,6 @@ internal sealed partial class CompilationUnitRemover
     private IFixedSet<To.NamespaceMemberDeclaration> Transform(IEnumerable<From.CompilationUnit> from)
         => from.SelectMany(Transform).ToFixedSet();
 
-    private IFixedList<To.NamespaceMemberDeclaration> Transform(IFixedList<From.NamespaceMemberDeclaration> from, CodeFile file)
-        => from.SelectMany(f => Transform(f, file)).ToFixedList();
-
     private IFixedSet<To.NamespaceMemberDeclaration> Create(From.NamespaceMemberDeclaration from, CodeFile file)
         => from switch
         {

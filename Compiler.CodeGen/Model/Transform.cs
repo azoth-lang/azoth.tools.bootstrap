@@ -9,6 +9,7 @@ public sealed class Transform
 {
     public Pass Pass { get; }
     public TransformNode? Syntax { get; }
+    public bool IsDeclared => Syntax is not null;
     public IFixedList<Parameter> From { get; }
     public IFixedList<Parameter> To { get; }
     public bool AutoGenerate { get; }

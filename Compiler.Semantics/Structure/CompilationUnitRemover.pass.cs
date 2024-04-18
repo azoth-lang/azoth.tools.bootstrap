@@ -43,6 +43,9 @@ internal sealed partial class CompilationUnitRemover : ITransformPass<From.Packa
     private IFixedSet<To.NamespaceMemberDeclaration> Transform(From.NamespaceMemberDeclaration from, CodeFile file)
         => Create(from, file);
 
+    private IFixedList<To.NamespaceMemberDeclaration> Transform(IEnumerable<From.NamespaceMemberDeclaration> from, CodeFile file)
+        => from.SelectMany(f => Transform(f, file)).ToFixedList();
+
     private To.Package Create(From.Package from, IEnumerable<To.NamespaceMemberDeclaration> declarations, IEnumerable<To.NamespaceMemberDeclaration> testingDeclarations)
         => To.Package.Create(declarations, testingDeclarations, from.LexicalScope, from.Syntax, from.Symbol, from.References);
 

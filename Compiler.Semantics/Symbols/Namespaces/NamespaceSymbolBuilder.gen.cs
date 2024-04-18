@@ -11,9 +11,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 
 internal sealed partial class NamespaceSymbolBuilder
 {
-    private IFixedSet<To.CompilationUnit> Transform(IEnumerable<From.CompilationUnit> from, PackageSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
-        => from.Select(cu => Transform(cu, containingSymbol, treeBuilder)).ToFixedSet();
-
     private To.CompilationUnit Create(
         From.CompilationUnit from,
         NamespaceSymbol containingSymbol,
