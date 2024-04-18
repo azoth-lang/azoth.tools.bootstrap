@@ -83,7 +83,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             #line hidden
             
             #line 28 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-          if (property.Type.CollectionKind != CollectionKind.None) { 
+          if (property.Type.IsCollection) { 
             
             #line default
             #line hidden

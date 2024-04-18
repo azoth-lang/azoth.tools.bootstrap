@@ -30,7 +30,7 @@ public sealed class Type : IEquatable<Type>
         => syntax is not null ? new Type(Symbol.CreateExternalFromSyntax(syntax.Symbol), syntax.CollectionKind, syntax.IsOptional) : null;
 
     public Symbol Symbol { get; }
-    public string Name => Symbol.FullName;
+    private string Name => Symbol.FullName;
     public CollectionKind CollectionKind { get; }
     public bool IsCollection => CollectionKind != CollectionKind.None;
     public bool IsOptional { get; }

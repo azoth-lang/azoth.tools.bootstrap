@@ -190,7 +190,7 @@ public class Pass
             if (rule.AllProperties.Any(p => p.Type == fromType))
                 yield return Type.Create(rule.Defines);
 
-            if (fromType.CollectionKind == CollectionKind.None)
+            if (!fromType.IsCollection)
                 foreach (var property in rule.AllProperties.Where(p => p.Type.Symbol == fromType.Symbol && p.Type.IsCollection))
                     yield return property.Type;
         }

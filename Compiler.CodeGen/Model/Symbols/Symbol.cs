@@ -7,7 +7,8 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-[Closed(typeof(InternalSymbol),
+[Closed(
+    typeof(InternalSymbol),
     typeof(ExternalSymbol))]
 public abstract class Symbol : IEquatable<Symbol>
 {

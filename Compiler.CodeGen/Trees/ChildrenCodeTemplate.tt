@@ -25,7 +25,7 @@ public static class <#=Emit.TypeName(grammar.DefaultParent)#>Extensions
 <#  foreach(var rule in grammar.Rules.Where(r => r.IsTerminal)) { #>
             case <#=Emit.TypeName(rule.Defines) #> n:
 <#      foreach(var property in rule.DeclaredProperties.Where(p => p.ReferencesRule)) { #>
-<#          if (property.Type.CollectionKind != CollectionKind.None) { #>
+<#          if (property.Type.IsCollection) { #>
                 foreach (var child in n.<#=property.Name #>)
                     yield return child;
 <#          } else if (property.Type.IsOptional) { #>

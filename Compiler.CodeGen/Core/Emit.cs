@@ -129,7 +129,7 @@ internal static class Emit
 
     private static string ParameterTypeDecorations(Type type, string name)
     {
-        if (type.CollectionKind != CollectionKind.None) name = $"IEnumerable<{name}>";
+        if (type.IsCollection) name = $"IEnumerable<{name}>";
         if (type.IsOptional) name += "?";
         return name;
     }
