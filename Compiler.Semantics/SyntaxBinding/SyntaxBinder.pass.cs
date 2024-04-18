@@ -25,4 +25,6 @@ internal sealed partial class SyntaxBinder : ITransformPass<IPackageSyntax, Diag
         return (to, toContext);
     }
 
+
+    partial void StartRun();
 }

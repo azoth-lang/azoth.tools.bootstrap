@@ -11,17 +11,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 internal sealed partial class DeclarationLexicalScopesBuilder
 {
-    //public static To.Package Run(From.Package from)
-    //{
-    //    var pass = new DeclarationLexicalScopesBuilder();
-    //    pass.StartRun();
-    //    var to = pass.Transform(from);
-    //    pass.EndRun(to);
-    //    return to;
-    //}
-
-    partial void StartRun();
-
     partial void EndRun(To.Package package);
 
     private partial To.Package Transform(From.Package from);

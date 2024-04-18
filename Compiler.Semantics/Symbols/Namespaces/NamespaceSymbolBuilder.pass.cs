@@ -26,4 +26,6 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
         return (to, toContext);
     }
 
+
+    partial void StartRun();
 }

@@ -195,7 +195,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             
             #line default
             #line hidden
-            this.Write("}\r\n");
+            this.Write("\r\n    ");
+            
+            #line 30 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.StartRunAccessModifier(pass)));
+            
+            #line default
+            #line hidden
+            this.Write("partial ");
+            
+            #line 30 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.StartRunReturnType(pass)));
+            
+            #line default
+            #line hidden
+            this.Write(" StartRun();\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
     }

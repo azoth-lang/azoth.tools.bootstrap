@@ -28,4 +28,6 @@ internal sealed partial class TypeSymbolBuilder : ITransformPass<From.Package, S
         return (to, toContext);
     }
 
+
+    partial void StartRun();
 }

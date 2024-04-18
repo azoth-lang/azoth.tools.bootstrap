@@ -11,8 +11,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Types;
 
 internal sealed partial class TypeSymbolPromiseAdder
 {
-    partial void StartRun();
-
     partial void EndRun(To.Package package);
 
     private partial To.Package Transform(From.Package from);

@@ -338,4 +338,16 @@ internal static class Emit
 
     public static string ContextResult(Pass pass)
         => pass.ToContextParameter.Type == Model.Type.Void ? "" : $"var {pass.ToContextParameter.Name} = ";
+
+    public static string StartRunAccessModifier(Pass pass)
+        => StartRunReturnValues(pass).Any() ? "private " : "";
+
+    public static string StartRunReturnType(Pass pass)
+        => PassReturnType(pass, StartRunReturnValues(pass).ToFixedList());
+
+    private static IEnumerable<Parameter> StartRunReturnValues(Pass pass)
+    {
+        if (pass.From is null) return pass.EntryTransform.From;
+        return pass.EntryTransform.From.Skip(1);
+    }
 }

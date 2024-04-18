@@ -22,4 +22,6 @@ internal sealed partial class InitialContextPass : ITransformPass<IPackageSyntax
     static (Void, DiagnosticsContext) ITransformPass<IPackageSyntax, PackageSyntax<Package>, Void, DiagnosticsContext>.Run(IPackageSyntax from, PackageSyntax<Package> context)
         => (default, Run(from, context));
 
+
+    partial void StartRun();
 }

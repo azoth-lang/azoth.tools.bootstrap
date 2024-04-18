@@ -10,8 +10,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal sealed partial class CompilationUnitRemover
 {
-    partial void StartRun();
-
     partial void EndRun(To.Package package);
 
     private partial To.Package Transform(From.Package from);

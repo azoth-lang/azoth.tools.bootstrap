@@ -12,8 +12,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 
 internal sealed partial class NamespaceSymbolBuilder
 {
-    partial void StartRun();
-
     private partial SymbolBuilderContext EndRun(To.Package package);
 
     private partial To.Package Transform(From.Package value);

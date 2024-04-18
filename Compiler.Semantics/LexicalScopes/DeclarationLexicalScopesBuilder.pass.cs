@@ -29,4 +29,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
     static (To.Package, Void) ITransformPass<From.Package, Void, To.Package, Void>.Run(From.Package from, Void _)
         => (Run(from), default);
 
+
+    partial void StartRun();
 }

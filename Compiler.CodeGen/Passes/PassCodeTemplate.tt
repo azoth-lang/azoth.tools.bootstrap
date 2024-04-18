@@ -26,4 +26,6 @@ internal sealed partial class <#=pass.Name #> : ITransformPass<<#=Emit.Transform
         => <#=Emit.RunForward(pass)#>;
 
 <#  } #>
+
+    <#=Emit.StartRunAccessModifier(pass)#>partial <#=Emit.StartRunReturnType(pass)#> StartRun();
 }
