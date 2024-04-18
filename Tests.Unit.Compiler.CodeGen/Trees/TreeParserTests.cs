@@ -42,16 +42,6 @@ public class TreeParserTests
     }
 
     [Fact]
-    public void DefaultsListTypeToList()
-    {
-        const string grammar = "◊namespace Foo.Bar.Baz;";
-
-        var config = TreeParser.ParseGrammar(grammar);
-
-        Assert.Equal("List", config.ListType);
-    }
-
-    [Fact]
     public void ParsesNamespace()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;";
@@ -99,16 +89,6 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         Assert.Equal("MySuffix", config.Suffix);
-    }
-
-    [Fact]
-    public void ParsesListType()
-    {
-        const string grammar = "◊namespace Foo.Bar.Baz;\r◊list MyList;";
-
-        var config = TreeParser.ParseGrammar(grammar);
-
-        Assert.Equal("MyList", config.ListType);
     }
 
     [Fact]

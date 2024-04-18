@@ -90,10 +90,10 @@ internal static class Emit
                 // Nothing
                 break;
             case CollectionKind.List:
-                name = $"{type.Grammar!.ListType}<{name}>";
+                name = $"{CollectionType(type)}<{name}>";
                 break;
             case CollectionKind.Set:
-                name = $"{type.Grammar!.SetType}<{name}>";
+                name = $"{CollectionType(type)}<{name}>";
                 break;
         }
 
@@ -161,8 +161,8 @@ internal static class Emit
         return type.CollectionKind switch
         {
             CollectionKind.None => null,
-            CollectionKind.List => type.Grammar!.ListType,
-            CollectionKind.Set => type.Grammar!.SetType,
+            CollectionKind.List => "IFixedList",
+            CollectionKind.Set => "IFixedSet",
             _ => throw ExhaustiveMatch.Failed(type.CollectionKind)
         };
     }

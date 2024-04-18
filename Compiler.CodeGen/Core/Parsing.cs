@@ -34,10 +34,6 @@ internal static class Parsing
     public static string GetRequiredConfig(IEnumerable<string> lines, string config)
         => GetConfig(lines, config) ?? throw new FormatException($"Missing required config: '{config}'");
 
-    public static string GetListConfig(IFixedList<string> lines) => GetConfig(lines, "list") ?? "List";
-
-    public static string GetSetConfig(IFixedList<string> lines) => GetConfig(lines, "set") ?? "HashSet";
-
     private static string ConfigStart(string config) => DirectiveMarker + config + " ";
 
     public static IEnumerable<string> ParseUsingNamespaces(IEnumerable<string> lines)

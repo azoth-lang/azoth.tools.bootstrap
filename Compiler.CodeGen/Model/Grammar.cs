@@ -14,8 +14,6 @@ public sealed class Grammar
     public Symbol? DefaultParent { get; }
     public string Prefix => Syntax.Prefix;
     public string Suffix => Syntax.Suffix;
-    public string ListType => Syntax.ListType;
-    public string SetType => Syntax.SetType;
     public IFixedSet<string> UsingNamespaces => Syntax.UsingNamespaces;
     public IFixedList<Rule> Rules { get; }
 

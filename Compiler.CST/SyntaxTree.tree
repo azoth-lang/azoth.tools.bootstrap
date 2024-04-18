@@ -3,7 +3,6 @@
 ◊root `ISyntax`;
 ◊prefix I;
 ◊suffix Syntax;
-◊list IFixedList;
 ◊using System.Numerics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
