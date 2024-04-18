@@ -19,11 +19,19 @@ public sealed class Symbol : IEquatable<Symbol>
         => syntax is null ? null : new(grammar, syntax);
 
     [return: NotNullIfNotNull(nameof(syntax))]
-    public static Symbol? CreateFromSyntax(Grammar grammar, SymbolNode? syntax)
-        => syntax is null ? null : new(grammar, syntax);
-
-    public static Symbol CreateExternalFromSyntax(SymbolNode syntax)
+    public static Symbol? CreateFromSyntax(Grammar? grammar, SymbolNode? syntax)
     {
+        if (syntax is null)
+            return null;
+        return grammar is null
+            ? CreateExternalFromSyntax(syntax)
+            : new(grammar, syntax);
+    }
+
+    [return: NotNullIfNotNull(nameof(syntax))]
+    public static Symbol? CreateExternalFromSyntax(SymbolNode? syntax)
+    {
+        if (syntax is null) return null;
         if (!syntax.IsQuoted)
             throw new ArgumentException("External symbol must be quoted.", nameof(syntax));
         return new(null, syntax);

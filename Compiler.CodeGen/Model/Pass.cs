@@ -39,8 +39,8 @@ public class Pass
         Syntax = syntax;
         FromLanguage = GetOrLoadLanguageNamed(Syntax.From, languageLoader);
         ToLanguage = GetOrLoadLanguageNamed(Syntax.To, languageLoader);
-        FromContext = Symbol.Create(FromLanguage?.Grammar, Syntax.FromContext);
-        ToContext = Symbol.Create(ToLanguage?.Grammar, Syntax.ToContext);
+        FromContext = Symbol.CreateFromSyntax(FromLanguage?.Grammar, Syntax.FromContext);
+        ToContext = Symbol.CreateFromSyntax(ToLanguage?.Grammar, Syntax.ToContext);
         FromParameter = CreateFromParameter();
         FromContextParameter = CreateFromContextParameter();
         FullRunParameters = Parameters(FromParameter, FromContextParameter);
@@ -59,7 +59,7 @@ public class Pass
 
     private Parameter CreateFromParameter()
     {
-        var fromType = Type.Create(FromLanguage?.Entry ?? Symbol.Create(FromLanguage?.Grammar, Syntax.From));
+        var fromType = Type.Create(FromLanguage?.Entry ?? Symbol.CreateExternalFromSyntax(Syntax.From));
         var fromParameter = Parameter.Create(fromType, "from");
         fromParameter ??= Parameter.Void;
         return fromParameter;
@@ -75,7 +75,7 @@ public class Pass
 
     private Parameter CreateToParameter()
     {
-        var toType = Type.Create(ToLanguage?.Entry ?? Symbol.Create(ToLanguage?.Grammar, Syntax.To));
+        var toType = Type.Create(ToLanguage?.Entry ?? Symbol.CreateExternalFromSyntax(Syntax.To));
         var toParameter = Parameter.Create(toType, "to");
         toParameter ??= Parameter.Void;
         return toParameter;
