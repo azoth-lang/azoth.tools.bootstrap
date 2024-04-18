@@ -6,10 +6,10 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public static class ISyntaxExtensions
+public static class IConcreteSyntaxExtensions
 {
     [DebuggerStepThrough]
-    public static IEnumerable<ISyntax> Children(this ISyntax node)
+    public static IEnumerable<IConcreteSyntax> Children(this IConcreteSyntax node)
     {
         switch (node)
         {

@@ -347,7 +347,7 @@ public class TypeResolver
         return typeSymbolBuilder.Build(promise);
     }
 
-    private BareType? CheckTypeArgumentsAreConstructable(BareType type, ISyntax typeSyntax)
+    private BareType? CheckTypeArgumentsAreConstructable(BareType type, IConcreteSyntax typeSyntax)
     {
         var constructable = true;
         foreach (var (param, arg) in type.GenericParameterArguments)
@@ -356,7 +356,7 @@ public class TypeResolver
         return constructable ? type : null;
     }
 
-    private bool CheckTypeArgumentIsConstructable(GenericParameter param, DataType arg, ISyntax typeSyntax)
+    private bool CheckTypeArgumentIsConstructable(GenericParameter param, DataType arg, IConcreteSyntax typeSyntax)
     {
         switch (arg)
         {

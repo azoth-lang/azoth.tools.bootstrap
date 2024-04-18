@@ -22,7 +22,7 @@ public class DeclarationNumberAssigner : SyntaxWalker
         }
     }
 
-    protected override void WalkNonNull(ISyntax syntax)
+    protected override void WalkNonNull(IConcreteSyntax syntax)
     {
         switch (syntax)
         {

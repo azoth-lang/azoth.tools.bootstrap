@@ -1,5 +1,5 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.AST;
-◊root `IAbstractSyntax`;
+◊root AbstractSyntax;
 ◊prefix I;
 ◊using System.Numerics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -10,7 +10,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-`IAbstractSyntax` = Span:`TextSpan`;
+AbstractSyntax = Span:`TextSpan`;
 
 // ---------- Special Parts
 BodyOrBlock = Statements:Statement*;

@@ -32,7 +32,7 @@ public sealed partial class WithTypeDeclarationPromises
         IClassMemberDeclarationSyntax ClassMemberDeclaration.Syntax => Syntax;
         ITraitMemberDeclarationSyntax TraitMemberDeclaration.Syntax => Syntax;
         IStructMemberDeclarationSyntax StructMemberDeclaration.Syntax => Syntax;
-        ISyntax Code.Syntax => Syntax;
+        IConcreteSyntax Code.Syntax => Syntax;
         ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
         IFixedList<GenericParameter> GenericParameters { get; }
         IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
@@ -67,14 +67,14 @@ public sealed partial class WithTypeDeclarationPromises
         DeclarationLexicalScope ContainingLexicalScope { get; }
         NamespaceSymbol? ContainingSymbol { get; }
         new IDeclarationSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
+        IConcreteSyntax Code.Syntax => Syntax;
     }
 
     public partial interface UnresolvedSupertypeName : Code
     {
         DeclarationLexicalScope ContainingLexicalScope { get; }
         new ISupertypeNameSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
+        IConcreteSyntax Code.Syntax => Syntax;
         TypeName Name { get; }
         IFixedList<UnresolvedType> TypeArguments { get; }
 
@@ -124,7 +124,7 @@ public sealed partial class WithTypeDeclarationPromises
         typeof(UnresolvedType))]
     public partial interface Code : IImplementationRestricted
     {
-        ISyntax Syntax { get; }
+        IConcreteSyntax Syntax { get; }
     }
 
     public partial interface ClassDeclaration : TypeDeclaration
@@ -162,7 +162,7 @@ public sealed partial class WithTypeDeclarationPromises
     public partial interface GenericParameter : Code
     {
         new IGenericParameterSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
+        IConcreteSyntax Code.Syntax => Syntax;
         CapabilityConstraint Constraint { get; }
         IdentifierName Name { get; }
         ParameterIndependence Independence { get; }
@@ -212,7 +212,7 @@ public sealed partial class WithTypeDeclarationPromises
     public partial interface CapabilityConstraint : Code
     {
         new ICapabilityConstraintSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
+        IConcreteSyntax Code.Syntax => Syntax;
         ICapabilityConstraint Constraint { get; }
     }
 
@@ -248,7 +248,7 @@ public sealed partial class WithTypeDeclarationPromises
     public partial interface UnresolvedType : Code
     {
         new ITypeSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
+        IConcreteSyntax Code.Syntax => Syntax;
     }
 
     [Closed(

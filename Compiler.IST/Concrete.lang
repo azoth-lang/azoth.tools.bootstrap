@@ -20,7 +20,7 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile` Implic
 
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
-Code = Syntax:`ISyntax`;
+Code = Syntax:`IConcreteSyntax`;
 
 // ---------- Declarations
 Declaration: Code = Syntax:`IDeclarationSyntax`;

@@ -38,12 +38,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(IStatementSyntax),
     typeof(IPatternSyntax),
     typeof(IExpressionSyntax))]
-public partial interface ISyntax
+public partial interface IConcreteSyntax
 {
     TextSpan Span { get; }
 }
 
-public partial interface ICompilationUnitSyntax : ISyntax
+public partial interface ICompilationUnitSyntax : IConcreteSyntax
 {
     CodeFile File { get; }
     NamespaceName ImplicitNamespaceName { get; }
@@ -52,7 +52,7 @@ public partial interface ICompilationUnitSyntax : ISyntax
     IFixedList<INonMemberDeclarationSyntax> Declarations { get; }
 }
 
-public partial interface IUsingDirectiveSyntax : ISyntax
+public partial interface IUsingDirectiveSyntax : IConcreteSyntax
 {
     NamespaceName Name { get; }
 }
@@ -60,7 +60,7 @@ public partial interface IUsingDirectiveSyntax : ISyntax
 [Closed(
     typeof(IBodySyntax),
     typeof(IBlockExpressionSyntax))]
-public partial interface IBodyOrBlockSyntax : ISyntax
+public partial interface IBodyOrBlockSyntax : IConcreteSyntax
 {
     IFixedList<IStatementSyntax> Statements { get; }
 }
@@ -68,7 +68,7 @@ public partial interface IBodyOrBlockSyntax : ISyntax
 [Closed(
     typeof(IBlockOrResultSyntax),
     typeof(IIfExpressionSyntax))]
-public partial interface IElseClauseSyntax : ISyntax
+public partial interface IElseClauseSyntax : IConcreteSyntax
 {
 }
 
@@ -83,7 +83,7 @@ public partial interface IBlockOrResultSyntax : IElseClauseSyntax
 [Closed(
     typeof(ILocalBindingSyntax),
     typeof(IFieldDeclarationSyntax))]
-public partial interface IBindingSyntax : ISyntax
+public partial interface IBindingSyntax : IConcreteSyntax
 {
     bool IsMutableBinding { get; }
     IPromise<BindingSymbol> Symbol { get; }
@@ -102,7 +102,7 @@ public partial interface ILocalBindingSyntax : IBindingSyntax
 [Closed(
     typeof(IEntityDeclarationSyntax),
     typeof(INonMemberDeclarationSyntax))]
-public partial interface IDeclarationSyntax : IHasContainingLexicalScope, ISyntax
+public partial interface IDeclarationSyntax : IHasContainingLexicalScope, IConcreteSyntax
 {
     CodeFile File { get; }
     TypeName? Name { get; }
@@ -168,7 +168,7 @@ public partial interface INonMemberEntityDeclarationSyntax : IEntityDeclarationS
 [Closed(
     typeof(IClassOrStructDeclarationSyntax),
     typeof(ITraitDeclarationSyntax))]
-public partial interface ITypeDeclarationSyntax : ISyntax, INonMemberEntityDeclarationSyntax, IClassMemberDeclarationSyntax, ITraitMemberDeclarationSyntax, IStructMemberDeclarationSyntax
+public partial interface ITypeDeclarationSyntax : IConcreteSyntax, INonMemberEntityDeclarationSyntax, IClassMemberDeclarationSyntax, ITraitMemberDeclarationSyntax, IStructMemberDeclarationSyntax
 {
     IConstKeywordToken? ConstModifier { get; }
     bool IsConst { get; }
@@ -217,7 +217,7 @@ public partial interface IFunctionDeclarationSyntax : INonMemberEntityDeclaratio
     new AcyclicPromise<FunctionSymbol> Symbol { get; }
 }
 
-public partial interface IGenericParameterSyntax : ISyntax
+public partial interface IGenericParameterSyntax : IConcreteSyntax
 {
     ICapabilityConstraintSyntax Constraint { get; }
     IdentifierName Name { get; }
@@ -226,7 +226,7 @@ public partial interface IGenericParameterSyntax : ISyntax
     Promise<GenericParameterTypeSymbol> Symbol { get; }
 }
 
-public partial interface ISupertypeNameSyntax : IHasContainingLexicalScope, ISyntax
+public partial interface ISupertypeNameSyntax : IHasContainingLexicalScope, IConcreteSyntax
 {
     TypeName Name { get; }
     IFixedList<ITypeSyntax> TypeArguments { get; }
@@ -354,7 +354,7 @@ public partial interface IAssociatedFunctionDeclarationSyntax : IAlwaysTypeMembe
     new AcyclicPromise<FunctionSymbol> Symbol { get; }
 }
 
-public partial interface IAttributeSyntax : ISyntax
+public partial interface IAttributeSyntax : IConcreteSyntax
 {
     ITypeNameSyntax TypeName { get; }
 }
@@ -362,7 +362,7 @@ public partial interface IAttributeSyntax : ISyntax
 [Closed(
     typeof(ICapabilitySetSyntax),
     typeof(ICapabilitySyntax))]
-public partial interface ICapabilityConstraintSyntax : ISyntax
+public partial interface ICapabilityConstraintSyntax : IConcreteSyntax
 {
     ICapabilityConstraint Constraint { get; }
 }
@@ -382,7 +382,7 @@ public partial interface ICapabilitySyntax : ICapabilityConstraintSyntax
 [Closed(
     typeof(IConstructorOrInitializerParameterSyntax),
     typeof(ISelfParameterSyntax))]
-public partial interface IParameterSyntax : ISyntax
+public partial interface IParameterSyntax : IConcreteSyntax
 {
     IdentifierName? Name { get; }
     IPromise<Pseudotype> DataType { get; }
@@ -441,7 +441,7 @@ public partial interface IFieldParameterSyntax : IConstructorOrInitializerParame
     IExpressionSyntax? DefaultValue { get; }
 }
 
-public partial interface IReturnSyntax : ISyntax
+public partial interface IReturnSyntax : IConcreteSyntax
 {
     ITypeSyntax Type { get; }
 }
@@ -469,7 +469,7 @@ public partial interface IExpressionBodySyntax : IBodySyntax
     typeof(ICapabilityTypeSyntax),
     typeof(IFunctionTypeSyntax),
     typeof(IViewpointTypeSyntax))]
-public partial interface ITypeSyntax : ISyntax
+public partial interface ITypeSyntax : IConcreteSyntax
 {
 }
 
@@ -537,13 +537,13 @@ public partial interface IFunctionTypeSyntax : ITypeSyntax
     IReturnTypeSyntax Return { get; }
 }
 
-public partial interface IParameterTypeSyntax : ISyntax
+public partial interface IParameterTypeSyntax : IConcreteSyntax
 {
     bool IsLent { get; }
     ITypeSyntax Referent { get; }
 }
 
-public partial interface IReturnTypeSyntax : ISyntax
+public partial interface IReturnTypeSyntax : IConcreteSyntax
 {
     ITypeSyntax Referent { get; }
 }
@@ -569,7 +569,7 @@ public partial interface ISelfViewpointTypeSyntax : IViewpointTypeSyntax
 [Closed(
     typeof(IResultStatementSyntax),
     typeof(IBodyStatementSyntax))]
-public partial interface IStatementSyntax : ISyntax
+public partial interface IStatementSyntax : IConcreteSyntax
 {
 }
 
@@ -604,7 +604,7 @@ public partial interface IExpressionStatementSyntax : IBodyStatementSyntax
 [Closed(
     typeof(IBindingContextPatternSyntax),
     typeof(IOptionalOrBindingPatternSyntax))]
-public partial interface IPatternSyntax : ISyntax
+public partial interface IPatternSyntax : IConcreteSyntax
 {
 }
 
@@ -637,7 +637,7 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
 [Closed(
     typeof(ITypedExpressionSyntax),
     typeof(INameExpressionSyntax))]
-public partial interface IExpressionSyntax : ISyntax
+public partial interface IExpressionSyntax : IConcreteSyntax
 {
     IPromise<DataType?> DataType { get; }
     Conversion ImplicitConversion { get; }

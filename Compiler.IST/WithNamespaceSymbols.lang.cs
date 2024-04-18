@@ -23,7 +23,7 @@ public sealed partial class WithNamespaceSymbols
     {
         NamespaceSymbol? ContainingSymbol { get; }
         new IDeclarationSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
+        IConcreteSyntax Code.Syntax => Syntax;
     }
 
     public partial interface NamespaceDeclaration : NamespaceMemberDeclaration
@@ -79,7 +79,7 @@ public sealed partial class WithNamespaceSymbols
     public partial interface CompilationUnit : Code
     {
         new ICompilationUnitSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
+        IConcreteSyntax Code.Syntax => Syntax;
         CodeFile File { get; }
         NamespaceName ImplicitNamespaceName { get; }
         IFixedList<UsingDirective> UsingDirectives { get; }
@@ -92,7 +92,7 @@ public sealed partial class WithNamespaceSymbols
     public partial interface UsingDirective : Code
     {
         new IUsingDirectiveSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
+        IConcreteSyntax Code.Syntax => Syntax;
         NamespaceName Name { get; }
 
         public static UsingDirective Create(IUsingDirectiveSyntax syntax, NamespaceName name)
@@ -109,7 +109,7 @@ public sealed partial class WithNamespaceSymbols
         typeof(UnresolvedType))]
     public partial interface Code : IImplementationRestricted
     {
-        ISyntax Syntax { get; }
+        IConcreteSyntax Syntax { get; }
     }
 
     [Closed(
@@ -131,7 +131,7 @@ public sealed partial class WithNamespaceSymbols
         IClassMemberDeclarationSyntax ClassMemberDeclaration.Syntax => Syntax;
         ITraitMemberDeclarationSyntax TraitMemberDeclaration.Syntax => Syntax;
         IStructMemberDeclarationSyntax StructMemberDeclaration.Syntax => Syntax;
-        ISyntax Code.Syntax => Syntax;
+        IConcreteSyntax Code.Syntax => Syntax;
         ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
         IFixedList<GenericParameter> GenericParameters { get; }
         IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
@@ -172,7 +172,7 @@ public sealed partial class WithNamespaceSymbols
     public partial interface GenericParameter : Code
     {
         new IGenericParameterSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
+        IConcreteSyntax Code.Syntax => Syntax;
         CapabilityConstraint Constraint { get; }
         IdentifierName Name { get; }
         ParameterIndependence Independence { get; }
@@ -185,7 +185,7 @@ public sealed partial class WithNamespaceSymbols
     public partial interface UnresolvedSupertypeName : Code
     {
         new ISupertypeNameSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
+        IConcreteSyntax Code.Syntax => Syntax;
         TypeName Name { get; }
         IFixedList<UnresolvedType> TypeArguments { get; }
 
@@ -233,7 +233,7 @@ public sealed partial class WithNamespaceSymbols
     public partial interface CapabilityConstraint : Code
     {
         new ICapabilityConstraintSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
+        IConcreteSyntax Code.Syntax => Syntax;
         ICapabilityConstraint Constraint { get; }
     }
 
@@ -269,7 +269,7 @@ public sealed partial class WithNamespaceSymbols
     public partial interface UnresolvedType : Code
     {
         new ITypeSyntax Syntax { get; }
-        ISyntax Code.Syntax => Syntax;
+        IConcreteSyntax Code.Syntax => Syntax;
     }
 
     [Closed(
