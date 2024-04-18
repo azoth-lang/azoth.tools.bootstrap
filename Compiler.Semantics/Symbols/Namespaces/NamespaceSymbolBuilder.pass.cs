@@ -44,4 +44,25 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
 
     private partial To.TypeDeclaration Transform(From.TypeDeclaration from, NamespaceSymbol? containingSymbol);
 
+    private To.NamespaceDeclaration Create(From.NamespaceDeclaration from, NamespaceSymbol containingSymbol, NamespaceSymbol symbol, IEnumerable<To.NamespaceMemberDeclaration> declarations)
+        => To.NamespaceDeclaration.Create(containingSymbol, symbol, from.Syntax, from.IsGlobalQualified, from.DeclaredNames, from.UsingDirectives, declarations);
+
+    private To.FunctionDeclaration Create(From.FunctionDeclaration from, NamespaceSymbol containingSymbol)
+        => To.FunctionDeclaration.Create(containingSymbol, from.Syntax);
+
+    private To.Package Create(From.Package from, IEnumerable<To.CompilationUnit> compilationUnits, IEnumerable<To.CompilationUnit> testingCompilationUnits)
+        => To.Package.Create(from.Syntax, from.Symbol, from.References, compilationUnits, testingCompilationUnits);
+
+    private To.CompilationUnit Create(From.CompilationUnit from, IEnumerable<To.NamespaceMemberDeclaration> declarations)
+        => To.CompilationUnit.Create(from.Syntax, from.File, from.ImplicitNamespaceName, from.UsingDirectives, declarations);
+
+    private To.ClassDeclaration Create(From.ClassDeclaration from, IEnumerable<To.ClassMemberDeclaration> members, NamespaceSymbol? containingSymbol)
+        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, members, from.GenericParameters, from.SupertypeNames, containingSymbol);
+
+    private To.StructDeclaration Create(From.StructDeclaration from, IEnumerable<To.StructMemberDeclaration> members, NamespaceSymbol? containingSymbol)
+        => To.StructDeclaration.Create(from.Syntax, members, from.GenericParameters, from.SupertypeNames, containingSymbol);
+
+    private To.TraitDeclaration Create(From.TraitDeclaration from, IEnumerable<To.TraitMemberDeclaration> members, NamespaceSymbol? containingSymbol)
+        => To.TraitDeclaration.Create(from.Syntax, members, from.GenericParameters, from.SupertypeNames, containingSymbol);
+
 }

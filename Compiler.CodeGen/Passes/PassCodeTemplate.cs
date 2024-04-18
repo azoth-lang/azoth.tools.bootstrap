@@ -313,6 +313,47 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             
             #line default
             #line hidden
+            
+            #line 43 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+  foreach (var rule in Build.SimpleCreateRules(pass)) { 
+            
+            #line default
+            #line hidden
+            this.Write("    private ");
+            
+            #line 44 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.PassTypeName(pass, rule.Defines)));
+            
+            #line default
+            #line hidden
+            this.Write(" Create(");
+            
+            #line 44 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ModifiedParameters(pass, rule)));
+            
+            #line default
+            #line hidden
+            this.Write(")\r\n        => ");
+            
+            #line 45 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.PassTypeName(pass, rule.Defines)));
+            
+            #line default
+            #line hidden
+            this.Write(".Create(");
+            
+            #line 45 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.SimpleCreateParameters(rule)));
+            
+            #line default
+            #line hidden
+            this.Write(");\r\n\r\n");
+            
+            #line 47 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+  } 
+            
+            #line default
+            #line hidden
             this.Write("}\r\n");
             return this.GenerationEnvironment.ToString();
         }

@@ -14,13 +14,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder
     private To.Package Create(From.Package from, PackageReferenceScope lexicalScope, PackageReferenceScope containingScope)
         => Create(from, lexicalScope, Transform(from.CompilationUnits, containingScope), Transform(from.TestingCompilationUnits, containingScope));
 
-    private To.Package Create(
-        From.Package from,
-        PackageReferenceScope lexicalScope,
-        IEnumerable<To.CompilationUnit> compilationUnits,
-        IEnumerable<To.CompilationUnit> testingCompilationUnits)
-        => To.Package.Create(lexicalScope, from.Syntax, from.Symbol, from.References, compilationUnits, testingCompilationUnits);
-
     private IFixedSet<To.CompilationUnit> Transform(IEnumerable<From.CompilationUnit> from, PackageReferenceScope containingScope)
         => from.Select(f => Transform(f, containingScope)).ToFixedSet();
 
@@ -28,13 +21,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder
         From.CompilationUnit from,
         DeclarationScope scope)
         => Create(from, scope, Transform(from.Declarations, scope));
-
-    private To.CompilationUnit Create(
-        From.CompilationUnit from,
-        DeclarationScope lexicalScope,
-        IEnumerable<To.NamespaceMemberDeclaration> declarations)
-        => To.CompilationUnit.Create(lexicalScope, from.Syntax, from.File, from.ImplicitNamespaceName,
-            from.UsingDirectives, declarations);
 
     private IFixedList<To.NamespaceMemberDeclaration> Transform(
         IEnumerable<From.NamespaceMemberDeclaration> from,

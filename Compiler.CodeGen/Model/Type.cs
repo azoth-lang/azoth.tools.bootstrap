@@ -8,11 +8,11 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public sealed class Type
+public sealed class Type : IEquatable<Type>
 {
     public static IEqualityComparer<Type> EquivalenceComparer { get; }
         = EqualityComparer<Type>.Create((a, b) => a?.IsEquivalentTo(b) ?? false,
-            t => HashCode.Combine(t.CollectionKind, t.IsOptional, t.Name, t.Symbol.Syntax));
+            t => HashCode.Combine(t.CollectionKind, t.IsOptional, t.Name, t.Symbol.Syntax.IsQuoted));
 
     public static Type Void { get; } = new Type(null, Symbol.Void, CollectionKind.None);
 
@@ -53,8 +53,30 @@ public sealed class Type
         return CollectionKind == other.CollectionKind
                && IsOptional == other.IsOptional
                && Name == other.Name
-               && Symbol.Syntax == other.Symbol.Syntax;
+               && Symbol.Syntax.IsQuoted == other.Symbol.Syntax.IsQuoted;
     }
+
+    #region Equality
+    public bool Equals(Type? other)
+    {
+        if (other is null)
+            return false;
+
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return CollectionKind == other.CollectionKind
+        && Symbol == other.Symbol;
+    }
+
+    public override bool Equals(object? obj) => obj is Type other && Equals(other);
+
+    public override int GetHashCode() => HashCode.Combine(Symbol, (int)CollectionKind);
+
+    public static bool operator ==(Type? left, Type? right) => Equals(left, right);
+
+    public static bool operator !=(Type? left, Type? right) => !Equals(left, right);
+    #endregion
 
     public override string ToString()
     {

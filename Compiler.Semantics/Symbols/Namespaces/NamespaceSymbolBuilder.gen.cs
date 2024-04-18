@@ -11,23 +11,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 
 internal sealed partial class NamespaceSymbolBuilder
 {
-    private static To.Package Create(
-        From.Package from,
-        IEnumerable<To.CompilationUnit> compilationUnits,
-        IEnumerable<To.CompilationUnit> testingCompilationUnits)
-    {
-        return To.Package.Create(from.Syntax, from.Symbol, from.References,
-                                  compilationUnits.ToFixedSet(),
-                                  testingCompilationUnits.ToFixedSet());
-    }
-
     private IFixedSet<To.CompilationUnit> Transform(IEnumerable<From.CompilationUnit> from, PackageSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
         => from.Select(cu => Transform(cu, containingSymbol, treeBuilder)).ToFixedSet();
-
-    private static To.CompilationUnit Create(
-        From.CompilationUnit from,
-        IEnumerable<To.NamespaceMemberDeclaration> declarations)
-        => To.CompilationUnit.Create(from.Syntax, from.File, from.ImplicitNamespaceName, from.UsingDirectives, declarations);
 
     private To.CompilationUnit Create(
         From.CompilationUnit from,
@@ -49,13 +34,6 @@ internal sealed partial class NamespaceSymbolBuilder
         };
     }
 
-    private static To.NamespaceDeclaration Create(
-        From.NamespaceDeclaration from,
-        NamespaceSymbol containingSymbol,
-        NamespaceSymbol symbol,
-        IEnumerable<To.NamespaceMemberDeclaration> declarations)
-        => To.NamespaceDeclaration.Create(symbol, containingSymbol, from.Syntax, from.IsGlobalQualified, from.DeclaredNames, from.UsingDirectives, declarations);
-
     private To.NamespaceDeclaration Create(
         From.NamespaceDeclaration from,
         NamespaceSymbol containingSymbol,
@@ -65,11 +43,6 @@ internal sealed partial class NamespaceSymbolBuilder
         var declarations = Transform(from.Declarations, childContainingSymbol, treeBuilder);
         return Create(from, containingSymbol, childContainingSymbol, declarations);
     }
-
-    private static To.FunctionDeclaration Create(
-        From.FunctionDeclaration from,
-        NamespaceSymbol containingSymbol)
-        => To.FunctionDeclaration.Create(containingSymbol, from.Syntax);
 
     private To.TypeDeclaration Create(From.TypeDeclaration from, NamespaceSymbol? containingSymbol, NamespaceSymbol? childContainingSymbol)
     {

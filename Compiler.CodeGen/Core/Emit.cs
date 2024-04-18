@@ -408,4 +408,32 @@ internal static class Emit
 
         return $"Create({ParameterNames(transform.From)})";
     }
+
+    public static string ModifiedParameters(Pass pass, Rule rule)
+    {
+        var extendsRule = rule.ExtendsRule!;
+        var modifiedProperties = rule.AllProperties
+                                     .Where(CouldBeModified)
+                                     .Except(extendsRule.AllProperties, Property.NameAndTypeComparer);
+        var fromType = Model.Type.Create(rule.Grammar, extendsRule.Defines);
+        var parameters = new List<Parameter>() { Model.Parameter.Create(fromType, "from") };
+        parameters.AddRange(modifiedProperties.Select(p => Model.Parameter.Create(p.Type, p.Name.ToCamelCase())));
+        return Parameters(pass, parameters);
+    }
+
+    private static bool CouldBeModified(Property property)
+        => property.Type.Symbol.ReferencedRule?.DescendantsModified ?? true;
+
+    public static string SimpleCreateParameters(Rule rule)
+    {
+        var extendsRule = rule.ExtendsRule!;
+        var oldProperties = new HashSet<Property>(Property.NameAndTypeComparer);
+        oldProperties.AddRange(extendsRule.AllProperties);
+        var parameters = new List<string>();
+        foreach (var property in rule.AllProperties)
+            parameters.Add(oldProperties.Contains(property) || !CouldBeModified(property)
+                ? $"from.{property.Name}"
+                : property.Name.ToCamelCase());
+        return string.Join(", ", parameters);
+    }
 }

@@ -40,4 +40,9 @@ internal sealed partial class <#=pass.Name #> : ITransformPass<<#=Emit.Transform
         => <#=Emit.TransformMethodBody(transform)#>;
 
 <#  } #>
+<#  foreach (var rule in Build.SimpleCreateRules(pass)) { #>
+    private <#=Emit.PassTypeName(pass, rule.Defines)#> Create(<#=Emit.ModifiedParameters(pass, rule)#>)
+        => <#=Emit.PassTypeName(pass, rule.Defines)#>.Create(<#=Emit.SimpleCreateParameters(rule)#>);
+
+<#  } #>
 }

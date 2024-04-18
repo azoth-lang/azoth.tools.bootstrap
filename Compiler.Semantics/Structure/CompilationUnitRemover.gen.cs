@@ -104,7 +104,4 @@ internal sealed partial class CompilationUnitRemover
         From.FunctionDeclaration from,
         CodeFile file)
         => Create(from, file).Yield().ToFixedSet();
-
-    private To.FunctionDeclaration Create(From.FunctionDeclaration from, CodeFile file)
-        => To.FunctionDeclaration.Create(from.ContainingSymbol, from.Syntax, file, from.ContainingLexicalScope);
 }

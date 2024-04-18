@@ -15,11 +15,6 @@ internal sealed partial class TypeSymbolPromiseAdder
         => Create(from, Transform(from.Declarations, childContainingSymbol),
             Transform(from.TestingDeclarations, childContainingSymbol));
 
-    private To.Package Create(From.Package from,
-        IEnumerable<To.NamespaceMemberDeclaration> declarations,
-        IEnumerable<To.NamespaceMemberDeclaration> testingDeclarations)
-        => To.Package.Create(declarations, testingDeclarations, from.LexicalScope, from.Syntax, from.Symbol, from.References);
-
     private IFixedSet<To.NamespaceMemberDeclaration> Transform(
         IEnumerable<From.NamespaceMemberDeclaration> from,
         IPromise<Symbol>? containingSymbol)
@@ -51,15 +46,6 @@ internal sealed partial class TypeSymbolPromiseAdder
         IPromise<Symbol>? childContainingSymbol)
         => Create(from, Transform(from.Members, childContainingSymbol), symbol, containingSymbol);
 
-    private To.ClassDeclaration Create(
-        From.ClassDeclaration from,
-        IEnumerable<To.ClassMemberDeclaration> members,
-        AcyclicPromise<UserTypeSymbol> symbol,
-        IPromise<Symbol> containingSymbol)
-        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, members, symbol, containingSymbol,
-            from.LexicalScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingLexicalScope,
-            from.ContainingSymbol);
-
     private IFixedList<To.ClassMemberDeclaration> Transform(
         IEnumerable<From.ClassMemberDeclaration> from,
         IPromise<Symbol>? containingSymbol)
@@ -81,13 +67,6 @@ internal sealed partial class TypeSymbolPromiseAdder
         IPromise<Symbol>? childContainingSymbol)
         => Create(from, Transform(from.Members, childContainingSymbol), symbol, containingSymbol);
 
-    private To.TraitDeclaration Create(
-        From.TraitDeclaration from,
-        IEnumerable<To.TraitMemberDeclaration> members,
-        AcyclicPromise<UserTypeSymbol> symbol,
-        IPromise<Symbol> containingSymbol)
-        => To.TraitDeclaration.Create(from.Syntax, members, symbol, containingSymbol, from.LexicalScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingLexicalScope, from.ContainingSymbol);
-
     private IFixedList<To.TraitMemberDeclaration> Transform(
         IEnumerable<From.TraitMemberDeclaration> from,
         IPromise<Symbol>? containingSymbol)
@@ -108,12 +87,6 @@ internal sealed partial class TypeSymbolPromiseAdder
         IPromise<Symbol> containingSymbol,
         IPromise<Symbol>? childContainingSymbol)
         => Create(from, Transform(from.Members, childContainingSymbol), symbol, containingSymbol);
-
-    private To.StructDeclaration Create(From.StructDeclaration from,
-        IEnumerable<To.StructMemberDeclaration> members,
-        AcyclicPromise<UserTypeSymbol> symbol,
-        IPromise<Symbol> containingSymbol)
-        => To.StructDeclaration.Create(from.Syntax, members, symbol, containingSymbol, from.LexicalScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingLexicalScope, from.ContainingSymbol);
 
     private IFixedList<To.StructMemberDeclaration> Transform(
         IEnumerable<From.StructMemberDeclaration> from,

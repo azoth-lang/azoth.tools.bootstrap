@@ -117,7 +117,7 @@ public class Pass
 
         var transformToPairs = ToLanguage?.Grammar.Rules.SelectMany(r => r.DeclaredProperties.Select(p => p.Type))
                                            .Where(t => t.Symbol.ReferencedRule?.IsModified ?? false)
-                                           .Distinct(Type.EquivalenceComparer)
+                                           .Distinct()
                                            .Select(CreateTransformTypePairFromTargetType)
                                            .Except(coveredTransformPairs)
                                            .ToFixedList() ?? FixedList.Empty<TransformTypePair>();

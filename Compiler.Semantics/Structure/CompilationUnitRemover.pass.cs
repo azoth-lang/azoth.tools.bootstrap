@@ -43,4 +43,19 @@ internal sealed partial class CompilationUnitRemover : ITransformPass<From.Packa
     private IFixedSet<To.NamespaceMemberDeclaration> Transform(From.NamespaceMemberDeclaration from, CodeFile file)
         => Create(from, file);
 
+    private To.Package Create(From.Package from, IEnumerable<To.NamespaceMemberDeclaration> declarations, IEnumerable<To.NamespaceMemberDeclaration> testingDeclarations)
+        => To.Package.Create(declarations, testingDeclarations, from.LexicalScope, from.Syntax, from.Symbol, from.References);
+
+    private To.FunctionDeclaration Create(From.FunctionDeclaration from, CodeFile file)
+        => To.FunctionDeclaration.Create(from.ContainingSymbol, from.Syntax, file, from.ContainingLexicalScope);
+
+    private To.ClassDeclaration Create(From.ClassDeclaration from, IEnumerable<To.ClassMemberDeclaration> members, CodeFile file)
+        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, members, from.LexicalScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingLexicalScope, from.ContainingSymbol);
+
+    private To.StructDeclaration Create(From.StructDeclaration from, IEnumerable<To.StructMemberDeclaration> members, CodeFile file)
+        => To.StructDeclaration.Create(from.Syntax, members, from.LexicalScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingLexicalScope, from.ContainingSymbol);
+
+    private To.TraitDeclaration Create(From.TraitDeclaration from, IEnumerable<To.TraitMemberDeclaration> members, CodeFile file)
+        => To.TraitDeclaration.Create(from.Syntax, members, from.LexicalScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingLexicalScope, from.ContainingSymbol);
+
 }

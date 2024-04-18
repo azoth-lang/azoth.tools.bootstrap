@@ -143,17 +143,11 @@ public class Rule
 
             var currentProperties = AllProperties.ToFixedSet();
             var oldProperties = oldRule.AllProperties.ToFixedSet();
-            return !currentProperties.SequenceEqual(oldProperties, Property.NameAndTypeComparer);
+            return !currentProperties.SequenceEqual(oldProperties, Property.NameAndTypeEquivalenceComparer);
         });
 
         definedInLanguage = new(() => IsNew || IsModified ? grammar.Language : grammar.Language.Extends?.Grammar.RuleFor(Defines.Syntax)?.DefinedInLanguage!);
     }
-
-    public Property? ParentPropertiesNamed(Property property)
-        => ParentPropertiesNamed(property.Name);
-
-    public Property? ParentPropertiesNamed(string propertyName)
-        => ParentRule?.AllProperties.Where(p => p.Name == propertyName).TrySingle();
 
     public IEnumerable<Property> InheritedPropertiesNamed(Property property)
         => InheritedPropertiesNamed(property.Name);
@@ -173,18 +167,6 @@ public class Rule
                .Distinct()
                .Except(inheritedProperties);
     }
-
-    public IEnumerable<Property> SupertypePropertiesNamed(Property property)
-        => SupertypePropertiesNamed(property.Name);
-
-    public IEnumerable<Property> SupertypePropertiesNamed(string propertyName)
-        => SupertypeProperties.Where(p => p.Name == propertyName);
-
-    public IEnumerable<Property> AncestorPropertiesNamed(Property property)
-        => AncestorPropertiesNamed(property.Name);
-
-    public IEnumerable<Property> AncestorPropertiesNamed(string propertyName)
-        => AncestorProperties.Where(p => p.Name == propertyName);
 
     private bool ComputeDescendantsModified()
     {

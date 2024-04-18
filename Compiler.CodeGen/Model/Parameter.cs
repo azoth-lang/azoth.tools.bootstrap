@@ -27,4 +27,6 @@ public sealed class Parameter
     [return: NotNullIfNotNull(nameof(type))]
     public static Parameter? Create(Type? type, string name)
         => type is not null ? new Parameter(type, name) : null;
+
+    public override string ToString() => $"{Type} {Name}";
 }
