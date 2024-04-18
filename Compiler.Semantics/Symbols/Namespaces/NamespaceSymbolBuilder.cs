@@ -19,7 +19,7 @@ internal sealed partial class NamespaceSymbolBuilder
         packageSymbol = context.SymbolTree.Package.Assigned();
     }
 
-    private partial SymbolBuilderContext EndRun(To.Package package) => context;
+    private partial SymbolBuilderContext EndRun(To.Package to) => context;
 
     private partial To.Package Transform(From.Package value)
     {

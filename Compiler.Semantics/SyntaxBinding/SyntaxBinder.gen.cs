@@ -3,15 +3,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.IST;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 
 internal sealed partial class SyntaxBinder
 {
-    private partial SymbolBuilderContext EndRun(Concrete.Package package);
-
     private partial Concrete.Package Transform(IPackageSyntax from);
 
     private IFixedSet<Concrete.PackageReference> Transform(IEnumerable<IPackageReferenceSyntax> from)

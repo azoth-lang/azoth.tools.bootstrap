@@ -17,7 +17,7 @@ internal sealed partial class <#=pass.Name #> : ITransformPass<<#=Emit.Transform
         var pass = new <#=pass.Name#>(<#=Emit.ContextParameterName(pass)#>);
         pass.StartRun();
         <#=Emit.EntryResult(pass)#>pass.<#=Emit.MethodName(pass)#>(<#=Emit.EntryParameterNames(pass)#>);
-        <#=Emit.ContextResult(pass)#>pass.EndRun(<#=Emit.EndRunParameterNames(pass)#>);
+        <#=Emit.EndRunResult(pass)#>pass.EndRun(<#=Emit.EndRunParameterNames(pass)#>);
         return <#=Emit.RunReturnNames(pass)#>;
     }
 
@@ -28,4 +28,6 @@ internal sealed partial class <#=pass.Name #> : ITransformPass<<#=Emit.Transform
 <#  } #>
 
     <#=Emit.StartRunAccessModifier(pass)#>partial <#=Emit.StartRunReturnType(pass)#> StartRun();
+
+    <#=Emit.EndRunAccessModifier(pass)#>partial <#=Emit.EndRunReturnType(pass)#> EndRun(<#=Emit.EndRunParameters(pass)#>);
 }

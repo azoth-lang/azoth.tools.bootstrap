@@ -27,7 +27,6 @@ public class Pass
     public IFixedList<Parameter> RunParameters { get; }
     public IFixedList<Parameter> FullRunReturn { get; }
     public IFixedList<Parameter> RunReturn { get; }
-    public IFixedList<Parameter> EndRunParameters { get; }
 
     public IFixedList<Transform> DeclaredTransforms { get; }
     public Transform EntryTransform { get; }
@@ -47,7 +46,6 @@ public class Pass
         ToContextParameter = CreateToContextParameter();
         FullRunReturn = Parameters(ToParameter, ToContextParameter);
         RunReturn = RemoveVoid(FullRunReturn);
-        EndRunParameters = RemoveVoid(Parameters(ToParameter));
         DeclaredTransforms = Syntax.Transforms.Select(t => new Transform(this, t)).ToFixedList();
         EntryTransform = DeclaredTransforms.FirstOrDefault(IsEntryTransform) ?? CreateEntryTransform();
     }

@@ -10,7 +10,7 @@ internal partial class TypeSymbolBuilder
         throw new System.NotImplementedException();
     }
 
-    private partial SymbolBuilderContext EndRun(To.Package package)
+    private partial SymbolBuilderContext EndRun(To.Package to)
         => throw new System.NotImplementedException();
 
     private partial To.Package Transform(To.Package from)

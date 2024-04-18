@@ -22,11 +22,11 @@ internal sealed partial class SyntaxBinder
         diagnostics = context.Diagnostics;
     }
 
-    private partial SymbolBuilderContext EndRun(Package package)
+    private partial SymbolBuilderContext EndRun(Package to)
     {
-        var packageSymbol = package.Symbol;
+        var packageSymbol = to.Symbol;
         // TODO remove downcast
-        var packageSyntax = (PackageSyntax<ASTPackage>)package.Syntax;
+        var packageSyntax = (PackageSyntax<ASTPackage>)to.Syntax;
         var symbolTree = packageSyntax.SymbolTree; // TODO new SymbolTreeBuilder(packageSymbol);
         var testingSymbolTree = packageSyntax.TestingSymbolTree; // TODO new SymbolTreeBuilder(symbolTree);
         return new SymbolBuilderContext(diagnostics, symbolTree, testingSymbolTree);

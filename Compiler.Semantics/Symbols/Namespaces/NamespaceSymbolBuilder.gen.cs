@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Framework;
@@ -12,8 +11,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 
 internal sealed partial class NamespaceSymbolBuilder
 {
-    private partial SymbolBuilderContext EndRun(To.Package package);
-
     private partial To.Package Transform(From.Package value);
 
     private static To.Package Create(

@@ -11,8 +11,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 internal sealed partial class DeclarationLexicalScopesBuilder
 {
-    partial void EndRun(To.Package package);
-
     private partial To.Package Transform(From.Package from);
 
     private To.Package Create(From.Package from, PackageReferenceScope lexicalScope, PackageReferenceScope containingScope)

@@ -336,7 +336,7 @@ internal static class Emit
     public static string EntryParameterNames(Pass pass)
         => ParameterNames(pass.EntryTransform.From);
 
-    public static string ContextResult(Pass pass)
+    public static string EndRunResult(Pass pass)
         => pass.ToContextParameter.Type == Model.Type.Void ? "" : $"var {pass.ToContextParameter.Name} = ";
 
     public static string StartRunAccessModifier(Pass pass)
@@ -350,4 +350,19 @@ internal static class Emit
         if (pass.From is null) return pass.EntryTransform.From;
         return pass.EntryTransform.From.Skip(1);
     }
+
+    public static string EndRunAccessModifier(Pass pass)
+        => EndRunReturnValues(pass).Any() ? "private " : "";
+
+    public static string EndRunReturnType(Pass pass)
+        => PassReturnType(pass, EndRunReturnValues(pass).ToFixedList());
+
+    private static IEnumerable<Parameter> EndRunReturnValues(Pass pass)
+    {
+        if (pass.ToContextParameter.Type != Model.Type.Void)
+            yield return pass.ToContextParameter;
+    }
+
+    public static string EndRunParameters(Pass pass)
+        => Parameters(pass, pass.EntryTransform.To);
 }

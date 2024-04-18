@@ -32,4 +32,6 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
 
 
     partial void StartRun();
+
+    partial void EndRun(To.Package to);
 }

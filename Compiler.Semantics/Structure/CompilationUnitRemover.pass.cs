@@ -31,4 +31,6 @@ internal sealed partial class CompilationUnitRemover : ITransformPass<From.Packa
 
 
     partial void StartRun();
+
+    partial void EndRun(To.Package to);
 }

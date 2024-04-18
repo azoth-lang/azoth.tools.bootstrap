@@ -31,4 +31,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
 
 
     partial void StartRun();
+
+    partial void EndRun(To.Package to);
 }

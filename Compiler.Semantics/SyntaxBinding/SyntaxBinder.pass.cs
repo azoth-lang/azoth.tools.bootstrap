@@ -27,4 +27,6 @@ internal sealed partial class SyntaxBinder : ITransformPass<IPackageSyntax, Diag
 
 
     partial void StartRun();
+
+    private partial SymbolBuilderContext EndRun(To.Package to);
 }

@@ -1,5 +1,6 @@
 using System.CodeDom.Compiler;
 using Azoth.Tools.Bootstrap.Compiler.AST;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.IST;
 using Azoth.Tools.Bootstrap.Framework;
@@ -24,4 +25,6 @@ internal sealed partial class InitialContextPass : ITransformPass<IPackageSyntax
 
 
     partial void StartRun();
+
+    private partial DiagnosticsContext EndRun(Diagnostics diagnostics);
 }
