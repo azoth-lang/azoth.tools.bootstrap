@@ -9,17 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 
 internal sealed partial class SyntaxBinder
 {
-    private partial Concrete.Package Transform(IPackageSyntax from);
-
     private IFixedSet<Concrete.PackageReference> Transform(IEnumerable<IPackageReferenceSyntax> from)
         => from.Select(Transform).ToFixedSet();
 
-    private partial Concrete.PackageReference Transform(IPackageReferenceSyntax from);
-
     private IFixedSet<Concrete.CompilationUnit> Transform(IEnumerable<ICompilationUnitSyntax> from)
         => from.Select(Transform).ToFixedSet();
-
-    private partial Concrete.CompilationUnit Transform(ICompilationUnitSyntax from);
 
     private IEnumerable<Concrete.GenericParameter> Transform(IEnumerable<IGenericParameterSyntax> from)
         => from.Select(Transform).ToFixedSet();

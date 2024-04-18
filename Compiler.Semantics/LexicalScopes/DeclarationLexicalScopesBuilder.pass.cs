@@ -33,4 +33,11 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
     partial void StartRun();
 
     partial void EndRun(To.Package to);
+
+    private partial To.Package Transform(From.Package from);
+
+    private partial To.CompilationUnit Transform(From.CompilationUnit from, PackageReferenceScope containingScope);
+
+    private partial To.TypeDeclaration Transform(From.TypeDeclaration from, DeclarationLexicalScope containingScope);
+
 }

@@ -5,5 +5,5 @@
 
 // Package -> Package; // Automaticlly generated because package has new property
 
-CompilationUnit, containingScope:PackageReferenceScope -> ~;
-TypeDeclaration, containingScope:DeclarationLexicalScope -> ~;
+CompilationUnit, containingScope:`PackageReferenceScope` -> ~;
+TypeDeclaration, containingScope:`DeclarationLexicalScope` -> ~;

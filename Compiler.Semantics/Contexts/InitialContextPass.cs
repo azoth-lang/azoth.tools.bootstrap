@@ -24,7 +24,7 @@ internal sealed partial class InitialContextPass
         // TODO use `diagnostics` parameter when nanopass is fully transitioned
         => new(context.Diagnostics);
 
-    private partial Diagnostics Analyze(IPackageSyntax syntax)
-        => new(syntax.CompilationUnits.Concat(syntax.TestingCompilationUnits)
+    private partial Diagnostics Analyze(IPackageSyntax from)
+        => new(from.CompilationUnits.Concat(from.TestingCompilationUnits)
                      .SelectMany(cu => cu.Diagnostics));
 }

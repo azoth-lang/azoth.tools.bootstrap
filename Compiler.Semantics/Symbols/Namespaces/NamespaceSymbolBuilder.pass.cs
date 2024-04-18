@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.IST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
@@ -30,4 +31,15 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
     partial void StartRun();
 
     private partial SymbolBuilderContext EndRun(To.Package to);
+
+    private partial To.Package Transform(From.Package from);
+
+    private partial To.CompilationUnit Transform(From.CompilationUnit from, PackageSymbol containingSymbol, ISymbolTreeBuilder treeBuilder);
+
+    private partial To.FunctionDeclaration Transform(From.FunctionDeclaration from, NamespaceSymbol containingSymbol);
+
+    private partial To.NamespaceDeclaration Transform(From.NamespaceDeclaration from, NamespaceSymbol containingSymbol, ISymbolTreeBuilder treeBuilder);
+
+    private partial To.TypeDeclaration Transform(From.TypeDeclaration from, NamespaceSymbol? containingSymbol);
+
 }

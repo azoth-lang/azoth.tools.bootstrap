@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -5,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using Type = Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
@@ -242,6 +244,9 @@ internal static class Emit
     public static string EndRunParameterNames(Pass pass)
         => ParameterNames(pass.EntryTransform.To);
 
+    public static string Parameters(Transform transform)
+        => Parameters(transform.Pass, transform.From);
+
     public static string ParameterNames(IEnumerable<Parameter> parameters)
         => string.Join(", ", parameters.Select(ParameterName));
 
@@ -252,12 +257,12 @@ internal static class Emit
         => string.Join(", ", parameters.Select(p => Parameter(pass, p)));
 
     public static string Parameter(Pass pass, Parameter parameter)
-        => $"{PassType(pass, parameter.Type)} {parameter.Name}";
+        => $"{PassParameterType(pass, parameter.Type)} {parameter.Name}";
 
-    public static string PassType(Pass pass, Type type)
+    public static string PassParameterType(Pass pass, Type type)
     {
         var name = PassTypeName(pass, type);
-        return TypeDecorations(type, name);
+        return ParameterTypeDecorations(type, name);
     }
 
     public static string PassTypeName(Pass pass, Type type)
@@ -266,15 +271,16 @@ internal static class Emit
     public static string PassTypeName(Pass pass, Symbol symbol)
     {
         if (symbol == Symbol.Void) return "Void";
+        if (symbol.Syntax.IsQuoted) return symbol.Syntax.Text;
+
         var language = symbol.ReferencedRule?.Language;
         var languageName = language switch
         {
-            null => null,
             _ when language == pass.FromLanguage => "From",
             _ when language == pass.ToLanguage => "To",
-            _ => language.Name
+            _ => throw new FormatException($"Invalid symbol for pass type name '{symbol}'")
         };
-        return languageName is null ? symbol.Name : $"{languageName}.{symbol.Name}";
+        return $"{languageName}.{symbol.Name}";
     }
 
     public static string FullRunReturnType(Pass pass)
@@ -296,14 +302,23 @@ internal static class Emit
         };
     }
 
+    public static string ReturnType(Transform transform)
+        => PassReturnType(transform.Pass, transform.To);
+
     public static string PassReturnType(Pass pass, IFixedList<Parameter> returnValues)
     {
         return returnValues.Count switch
         {
             0 => "void",
-            1 => PassType(pass, returnValues[0].Type),
-            _ => $"({string.Join(", ", returnValues.Select(p => PassType(pass, p.Type)))})"
+            1 => PassReturnType(pass, returnValues[0].Type),
+            _ => $"({string.Join(", ", returnValues.Select(p => PassReturnType(pass, p.Type)))})"
         };
+    }
+
+    public static string PassReturnType(Pass pass, Type type)
+    {
+        var name = PassTypeName(pass, type);
+        return TypeDecorations(type, name);
     }
 
     public static string RunForward(Pass pass)
@@ -340,7 +355,13 @@ internal static class Emit
         => pass.ToContextParameter.Type == Model.Type.Void ? "" : $"var {pass.ToContextParameter.Name} = ";
 
     public static string StartRunAccessModifier(Pass pass)
-        => StartRunReturnValues(pass).Any() ? "private " : "";
+        => AccessModifier(StartRunReturnValues(pass));
+
+    public static string AccessModifier(Transform transform)
+        => AccessModifier(transform.To);
+
+    private static string AccessModifier(IEnumerable<Parameter> returnValues)
+        => returnValues.Any() ? "private " : "";
 
     public static string StartRunReturnType(Pass pass)
         => PassReturnType(pass, StartRunReturnValues(pass).ToFixedList());

@@ -230,7 +230,49 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             
             #line default
             #line hidden
-            this.Write(");\r\n}\r\n");
+            this.Write(");\r\n\r\n");
+            
+            #line 34 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+  foreach (var transform in pass.Transforms.Where(t => !t.AutoGenerate)) { 
+            
+            #line default
+            #line hidden
+            this.Write("    ");
+            
+            #line 35 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.AccessModifier(transform)));
+            
+            #line default
+            #line hidden
+            this.Write("partial ");
+            
+            #line 35 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ReturnType(transform)));
+            
+            #line default
+            #line hidden
+            this.Write(" ");
+            
+            #line 35 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.MethodName(pass)));
+            
+            #line default
+            #line hidden
+            this.Write("(");
+            
+            #line 35 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Parameters(transform)));
+            
+            #line default
+            #line hidden
+            this.Write(");\r\n\r\n");
+            
+            #line 37 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+  } 
+            
+            #line default
+            #line hidden
+            this.Write("}\r\n");
             return this.GenerationEnvironment.ToString();
         }
     }

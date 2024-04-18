@@ -29,4 +29,11 @@ internal sealed partial class SyntaxBinder : ITransformPass<IPackageSyntax, Diag
     partial void StartRun();
 
     private partial SymbolBuilderContext EndRun(To.Package to);
+
+    private partial To.Package Transform(IPackageSyntax from);
+
+    private partial To.PackageReference Transform(IPackageReferenceSyntax from);
+
+    private partial To.CompilationUnit Transform(ICompilationUnitSyntax from);
+
 }

@@ -5,8 +5,8 @@
 ◊from `IPackageSyntax`;
 ◊to Concrete;
 
-from:`IPackageSyntax` -> to:Package;
-`IPackageReference`* -> {PackageReference} = auto;
-`IPackageReference` -> PackageReference;
-`ICompilationUnit`* -> {CompilationUnit} = auto;
-`ICompilationUnit` -> CompilationUnit;
+from:`IPackageSyntax` -> Package;
+from:`IPackageReferenceSyntax`* -> {PackageReference} = auto;
+from:`IPackageReferenceSyntax` -> PackageReference;
+from:`ICompilationUnitSyntax`* -> {CompilationUnit} = auto;
+from:`ICompilationUnitSyntax` -> CompilationUnit;

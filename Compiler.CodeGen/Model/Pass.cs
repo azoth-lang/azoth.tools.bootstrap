@@ -30,6 +30,7 @@ public class Pass
 
     public IFixedList<Transform> DeclaredTransforms { get; }
     public Transform EntryTransform { get; }
+    public IFixedList<Transform> Transforms { get; }
 
     public Pass(PassNode syntax, LanguageLoader languageLoader)
     {
@@ -48,6 +49,7 @@ public class Pass
         RunReturn = RemoveVoid(FullRunReturn);
         DeclaredTransforms = Syntax.Transforms.Select(t => new Transform(this, t)).ToFixedList();
         EntryTransform = DeclaredTransforms.FirstOrDefault(IsEntryTransform) ?? CreateEntryTransform();
+        Transforms = DeclaredTransforms.Prepend(EntryTransform).Distinct().ToFixedList();
     }
 
     private static Language? GetOrLoadLanguageNamed(SymbolNode? name, LanguageLoader languageLoader)
@@ -104,5 +106,5 @@ public class Pass
     }
 
     private Transform CreateEntryTransform()
-        => new(NonVoidParameters(FromParameter), NonVoidParameters(ToParameter));
+        => new(this, NonVoidParameters(FromParameter), NonVoidParameters(ToParameter));
 }

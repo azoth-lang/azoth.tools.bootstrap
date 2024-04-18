@@ -11,8 +11,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Types;
 
 internal sealed partial class TypeSymbolPromiseAdder
 {
-    private partial To.Package Transform(From.Package from);
-
     private To.Package Create(From.Package from, IPromise<Symbol>? childContainingSymbol)
         => Create(from, Transform(from.Declarations, childContainingSymbol),
             Transform(from.TestingDeclarations, childContainingSymbol));
@@ -34,8 +32,6 @@ internal sealed partial class TypeSymbolPromiseAdder
             From.FunctionDeclaration f => f,
             _ => throw ExhaustiveMatch.Failed(from),
         };
-
-    private partial To.TypeDeclaration Transform(From.TypeDeclaration from, IPromise<Symbol>? containingSymbol);
 
     private To.TypeDeclaration Create(From.TypeDeclaration from,
         AcyclicPromise<UserTypeSymbol> symbol,

@@ -1,12 +1,14 @@
 ◊name NamespaceSymbolBuilder;
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
+◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
+◊using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 ◊context SymbolBuilderContext;
 ◊from Concrete;
 ◊to WithNamespaceSymbols;
 
 Package -> ~;
-CompilationUnit, containingSymbol:PackageSymbol, treeBuilder:`ISymbolTreeBuilder` -> ~;
-FunctionDeclaration, containingSymbol:NamespaceOrPackageSymbol -> ~;
-NamespaceDeclaration, containingSymbol:NamespaceOrPackageSymbol, treeBuilder:`ISymbolTreeBuilder` -> ~;
-TypeDeclaration, containingSymbol:NamespaceOrPackageSymbol?, treeBuilder:`ISymbolTreeBuilder` -> ~;
+CompilationUnit, containingSymbol:`PackageSymbol`, treeBuilder:`ISymbolTreeBuilder` -> ~;
+FunctionDeclaration, containingSymbol:`NamespaceSymbol` -> ~;
+NamespaceDeclaration, containingSymbol:`NamespaceSymbol`, treeBuilder:`ISymbolTreeBuilder` -> ~;
+TypeDeclaration, containingSymbol:`NamespaceSymbol`? -> ~;

@@ -4,4 +4,4 @@
 ◊to WithTypeDeclarationPromises;
 
 Package -> ~;
-TypeDeclaration, containingSymbol:IPromise<Symbol>? -> ~;
+TypeDeclaration, containingSymbol:`IPromise<Symbol>`? -> ~;

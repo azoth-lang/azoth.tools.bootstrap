@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
@@ -57,7 +58,7 @@ internal static class PassParser
 
     private static TransformNode ParseTransform(string transform, bool hasFromLanguage, bool hasToLanguage)
     {
-        var autoGenerate = false; // TODO Parse autoGenerate
+        (transform, var autoGenerate) = ParseAutoGenerate(transform);
         var parts = transform.Split("->");
         switch (parts.Length)
         {
@@ -71,7 +72,8 @@ internal static class PassParser
             case 2:
             {
                 var transformFrom = ParseTransformFrom(parts[0], hasFromLanguage);
-                var transformTo = ParseTransformTo(parts[1], hasToLanguage);
+                var defaultSymbol = hasFromLanguage ? transformFrom[0].Type.Symbol : null;
+                var transformTo = ParseTransformTo(parts[1], hasToLanguage, defaultSymbol);
                 return new TransformNode(transformFrom, transformTo, autoGenerate);
             }
             default:
@@ -79,9 +81,20 @@ internal static class PassParser
         }
     }
 
+    private static (string, bool) ParseAutoGenerate(string transform)
+    {
+        var parts = transform.Split("=");
+        if (parts.Length == 1)
+            return (transform, false);
+        if (parts.Length == 2)
+            return (parts[0].Trim(), true);
+        throw new FormatException($"Invalid transform format '{transform}'");
+    }
+
     private static IFixedList<ParameterNode> ParseTransformFrom(string parameters, bool hasFromLanguage)
     {
-        var parameterSyntax = ParseParameters(parameters).ToFixedList();
+        var defaultFirstName = hasFromLanguage ? "from" : null;
+        var parameterSyntax = ParseParameters(parameters, defaultFirstName).ToFixedList();
         if (hasFromLanguage)
         {
             if (parameterSyntax.Count == 0)
@@ -92,20 +105,29 @@ internal static class PassParser
         return parameterSyntax;
     }
 
-    private static IEnumerable<ParameterNode> ParseParameters(string parameters)
+    private static IEnumerable<ParameterNode> ParseParameters(string parameters, string? defaultFirstName)
     {
         var properties = SplitParameters(parameters);
+        var defaultName = defaultFirstName;
         foreach (var property in properties)
-            yield return Parsing.ParseParameter(property);
+        {
+            yield return Parsing.ParseParameter(property, defaultName);
+            defaultName = null;
+        }
     }
 
     public static IEnumerable<string> SplitParameters(string definition)
-        => definition.SplitOrEmpty(',');
+        => definition.SplitOrEmpty(',').Select(p => p.Trim());
 
-
-    private static IFixedList<ParameterNode> ParseTransformTo(string returnValues, bool hasToLanguage)
+    private static IFixedList<ParameterNode> ParseTransformTo(
+        string returnValues,
+        bool hasToLanguage,
+        SymbolNode? defaultSymbol)
     {
-        var returnSyntax = ParseParameters(returnValues).ToFixedList();
+        if (defaultSymbol is not null)
+            returnValues = returnValues.Replace("~", defaultSymbol.ToString());
+        var defaultFirstName = hasToLanguage ? "to" : null;
+        var returnSyntax = ParseParameters(returnValues, defaultFirstName).ToFixedList();
         if (hasToLanguage)
         {
             if (returnSyntax.Count == 0)

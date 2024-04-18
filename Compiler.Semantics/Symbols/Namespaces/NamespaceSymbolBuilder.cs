@@ -21,11 +21,11 @@ internal sealed partial class NamespaceSymbolBuilder
 
     private partial SymbolBuilderContext EndRun(To.Package to) => context;
 
-    private partial To.Package Transform(From.Package value)
+    private partial To.Package Transform(From.Package from)
     {
-        var compilationUnits = Transform(value.CompilationUnits, packageSymbol, context.SymbolTree);
-        var testingCompilationUnits = Transform(value.TestingCompilationUnits, packageSymbol, context.TestingSymbolTree);
-        return Create(value, compilationUnits, testingCompilationUnits);
+        var compilationUnits = Transform(from.CompilationUnits, packageSymbol, context.SymbolTree);
+        var testingCompilationUnits = Transform(from.TestingCompilationUnits, packageSymbol, context.TestingSymbolTree);
+        return Create(from, compilationUnits, testingCompilationUnits);
     }
 
     private partial To.CompilationUnit Transform(

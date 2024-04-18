@@ -33,4 +33,9 @@ internal sealed partial class CompilationUnitRemover : ITransformPass<From.Packa
     partial void StartRun();
 
     partial void EndRun(To.Package to);
+
+    private partial To.Package Transform(From.Package from);
+
+    private partial IFixedList<To.NamespaceMemberDeclaration> Transform(From.CompilationUnit from);
+
 }

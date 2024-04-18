@@ -11,8 +11,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 internal sealed partial class DeclarationLexicalScopesBuilder
 {
-    private partial To.Package Transform(From.Package from);
-
     private To.Package Create(From.Package from, PackageReferenceScope lexicalScope, PackageReferenceScope containingScope)
         => Create(from, lexicalScope, Transform(from.CompilationUnits, containingScope), Transform(from.TestingCompilationUnits, containingScope));
 
@@ -25,8 +23,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder
 
     private IFixedSet<To.CompilationUnit> Transform(IEnumerable<From.CompilationUnit> from, PackageReferenceScope containingScope)
         => from.Select(f => Transform(f, containingScope)).ToFixedSet();
-
-    private partial To.CompilationUnit Transform(From.CompilationUnit from, PackageReferenceScope containingScope);
 
     private To.CompilationUnit Create(
         From.CompilationUnit from,
@@ -68,8 +64,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder
         DeclarationScope lexicalScope,
         IEnumerable<To.NamespaceMemberDeclaration> declarations)
         => To.NamespaceDeclaration.Create(lexicalScope, from.ContainingSymbol, from.Symbol, from.Syntax, from.IsGlobalQualified, from.DeclaredNames, from.UsingDirectives, declarations, containingScope);
-
-    private partial To.TypeDeclaration Transform(From.TypeDeclaration from, DeclarationLexicalScope containingScope);
 
     private To.TypeDeclaration Create(
         From.TypeDeclaration from,

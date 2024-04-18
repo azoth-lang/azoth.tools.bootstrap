@@ -17,7 +17,6 @@ public sealed class Symbol
     private readonly Lazy<Rule?> referencedRule;
     public Rule? ReferencedRule => referencedRule.Value;
 
-
     public Symbol(Grammar? grammar, SymbolNode syntax)
     {
         if (!syntax.IsQuoted && grammar is null)

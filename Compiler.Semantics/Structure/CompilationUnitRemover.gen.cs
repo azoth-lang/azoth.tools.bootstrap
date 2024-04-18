@@ -10,8 +10,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal sealed partial class CompilationUnitRemover
 {
-    private partial To.Package Transform(From.Package from);
-
     private To.Package Create(
         From.Package from,
         IFixedSet<To.NamespaceMemberDeclaration> declarations,
@@ -21,8 +19,6 @@ internal sealed partial class CompilationUnitRemover
 
     private IFixedSet<To.NamespaceMemberDeclaration> Transform(IEnumerable<From.CompilationUnit> from)
         => from.SelectMany(Transform).ToFixedSet();
-
-    private partial IEnumerable<To.NamespaceMemberDeclaration> Transform(From.CompilationUnit from);
 
     private IFixedList<To.NamespaceMemberDeclaration> Transform(IFixedList<From.NamespaceMemberDeclaration> from, CodeFile file)
         => from.SelectMany(f => Transform(f, file)).ToFixedList();

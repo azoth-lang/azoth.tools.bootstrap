@@ -11,8 +11,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 
 internal sealed partial class NamespaceSymbolBuilder
 {
-    private partial To.Package Transform(From.Package value);
-
     private static To.Package Create(
         From.Package from,
         IEnumerable<To.CompilationUnit> compilationUnits,
@@ -25,8 +23,6 @@ internal sealed partial class NamespaceSymbolBuilder
 
     private IFixedSet<To.CompilationUnit> Transform(IEnumerable<From.CompilationUnit> from, PackageSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
         => from.Select(cu => Transform(cu, containingSymbol, treeBuilder)).ToFixedSet();
-
-    private partial To.CompilationUnit Transform(From.CompilationUnit from, PackageSymbol containingSymbol, ISymbolTreeBuilder treeBuilder);
 
     private static To.CompilationUnit Create(
         From.CompilationUnit from,
@@ -53,11 +49,6 @@ internal sealed partial class NamespaceSymbolBuilder
         };
     }
 
-    private partial To.NamespaceDeclaration Transform(
-        From.NamespaceDeclaration from,
-        NamespaceSymbol containingSymbol,
-        ISymbolTreeBuilder treeBuilder);
-
     private static To.NamespaceDeclaration Create(
         From.NamespaceDeclaration from,
         NamespaceSymbol containingSymbol,
@@ -75,18 +66,10 @@ internal sealed partial class NamespaceSymbolBuilder
         return Create(from, containingSymbol, childContainingSymbol, declarations);
     }
 
-    private partial To.FunctionDeclaration Transform(
-        From.FunctionDeclaration from,
-        NamespaceSymbol containingSymbol);
-
     private static To.FunctionDeclaration Create(
         From.FunctionDeclaration from,
         NamespaceSymbol containingSymbol)
         => To.FunctionDeclaration.Create(containingSymbol, from.Syntax);
-
-    private partial To.TypeDeclaration Transform(
-        From.TypeDeclaration from,
-        NamespaceSymbol? containingSymbol);
 
     private To.TypeDeclaration Create(From.TypeDeclaration from, NamespaceSymbol? containingSymbol, NamespaceSymbol? childContainingSymbol)
     {

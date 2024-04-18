@@ -32,4 +32,7 @@ internal sealed partial class TypeSymbolBuilder : ITransformPass<From.Package, S
     partial void StartRun();
 
     private partial SymbolBuilderContext EndRun(From.Package to);
+
+    private partial From.Package Transform(From.Package from);
+
 }

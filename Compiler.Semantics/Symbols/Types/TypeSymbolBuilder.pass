@@ -5,6 +5,6 @@
 ◊from WithTypeDeclarationPromises;
 ◊to WithTypeDeclarationPromises;
 
-ClassDeclaration -> ~;
-StructDeclaration -> ~;
-TraitDeclaration -> ~;
+//ClassDeclaration -> ~;
+//StructDeclaration -> ~;
+// TraitDeclaration -> ~;
