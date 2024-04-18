@@ -110,7 +110,7 @@ internal static class Emit
     public static string ClassName(Language language, Symbol? symbol)
     {
         if (symbol is null) return $"{language.Grammar.Suffix}Node";
-        return symbol.Syntax.IsQuoted ? symbol.Syntax.Text : $"{symbol.Syntax.Text}{language.Grammar.Suffix}Node";
+        return symbol.IsExternal ? symbol.FullName : $"{symbol.ShortName}{language.Grammar.Suffix}Node";
     }
 
     public static string PropertyParameters(Rule rule)
@@ -273,7 +273,7 @@ internal static class Emit
     public static string PassTypeName(Pass pass, Symbol symbol)
     {
         if (symbol == Symbol.Void) return "Void";
-        if (symbol.Syntax.IsQuoted) return symbol.Syntax.Text;
+        if (symbol.IsExternal) return symbol.FullName;
 
         var language = symbol.ReferencedRule?.Language;
         var languageName = language switch

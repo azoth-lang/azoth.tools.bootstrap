@@ -24,13 +24,13 @@ public sealed class Grammar
         Syntax = syntax;
         DefaultParent = syntax.DefaultParent is null ? null : new Symbol(this, syntax.DefaultParent);
         Rules = syntax.Rules.Select(r => new Rule(this, r)).ToFixedList();
-        rulesLookup = Rules.ToFixedDictionary(r => r.Defines.Syntax);
+        rulesLookup = Rules.ToFixedDictionary(r => r.Defines.ShortName);
     }
 
-    public Rule? RuleFor(SymbolNode symbol)
-        => rulesLookup.TryGetValue(symbol, out var rule) ? rule : null;
+    public Rule? RuleFor(string shortName)
+        => rulesLookup.TryGetValue(shortName, out var rule) ? rule : null;
 
-    private readonly FixedDictionary<SymbolNode, Rule> rulesLookup;
+    private readonly FixedDictionary<string, Rule> rulesLookup;
 
     public void ValidateTreeOrdering()
     {

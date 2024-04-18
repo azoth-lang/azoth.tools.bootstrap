@@ -13,7 +13,7 @@ public sealed class Type : IEquatable<Type>
 {
     public static IEqualityComparer<Type> EquivalenceComparer { get; }
         = EqualityComparer<Type>.Create((a, b) => a?.IsEquivalentTo(b) ?? false,
-            t => HashCode.Combine(t.CollectionKind, t.IsOptional, t.Name, t.Symbol.Syntax.IsQuoted));
+            t => HashCode.Combine(t.CollectionKind, t.IsOptional, t.Name, t.Symbol.IsExternal));
 
     public static Type Void { get; } = new Type(Symbol.Void, CollectionKind.None, isOptional: false);
 
@@ -57,7 +57,7 @@ public sealed class Type : IEquatable<Type>
         return CollectionKind == other.CollectionKind
                && IsOptional == other.IsOptional
                && Name == other.Name
-               && Symbol.Syntax.IsQuoted == other.Symbol.Syntax.IsQuoted;
+               && Symbol.IsExternal == other.Symbol.IsExternal;
     }
 
     #region Equality

@@ -134,7 +134,7 @@ public class Rule
         });
         ancestorProperties = new(() => AncestorRules.SelectMany(r => r.DeclaredProperties).ToFixedSet());
 
-        extendsRule = new(() => grammar.Language.Extends?.Grammar.RuleFor(Defines.Syntax));
+        extendsRule = new(() => grammar.Language.Extends?.Grammar.RuleFor(Defines.ShortName));
         isNew = new(() => ExtendsRule is null);
         isModified = new(() =>
         {
@@ -147,7 +147,7 @@ public class Rule
             return !currentProperties.SequenceEqual(oldProperties, Property.NameAndTypeEquivalenceComparer);
         });
 
-        definedInLanguage = new(() => IsNew || IsModified ? grammar.Language : grammar.Language.Extends?.Grammar.RuleFor(Defines.Syntax)?.DefinedInLanguage!);
+        definedInLanguage = new(() => IsNew || IsModified ? grammar.Language : grammar.Language.Extends?.Grammar.RuleFor(Defines.ShortName)?.DefinedInLanguage!);
     }
 
     public IEnumerable<Property> InheritedPropertiesNamed(Property property)

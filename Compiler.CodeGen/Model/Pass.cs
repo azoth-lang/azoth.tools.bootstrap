@@ -150,7 +150,7 @@ public class Pass
                     else
                     {
                         var fromParameter = Parameter.Create(parentFromType, "from");
-                        var toSymbol = toGrammar?.RuleFor(parentFromType.Symbol.Syntax)?.Defines;
+                        var toSymbol = toGrammar?.RuleFor(parentFromType.Symbol.ShortName)?.Defines;
                         var toType = Type.Create(toGrammar, toSymbol, parentFromType.CollectionKind);
                         var toParameter = Parameter.Create(toType, "to");
                         if (toParameter is null)

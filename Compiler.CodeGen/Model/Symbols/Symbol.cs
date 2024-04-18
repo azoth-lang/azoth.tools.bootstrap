@@ -17,9 +17,10 @@ public sealed class Symbol : IEquatable<Symbol>
     public static Symbol? Create(Grammar? grammar, SymbolNode? syntax)
         => syntax is null ? null : new(grammar, syntax);
 
-    public SymbolNode Syntax { get; }
+    private SymbolNode Syntax { get; }
     public string ShortName { get; }
     public string FullName { get; }
+    public bool IsExternal { get; }
     private readonly Lazy<Rule?> referencedRule;
     public Rule? ReferencedRule => referencedRule.Value;
 
@@ -32,11 +33,14 @@ public sealed class Symbol : IEquatable<Symbol>
         Syntax = syntax;
         ShortName = Syntax.Text;
         FullName = Syntax.IsQuoted ? Syntax.Text : $"{grammar!.Prefix}{Syntax.Text}{grammar.Suffix}";
+        IsExternal = Syntax.IsQuoted;
         referencedRule = new(LookupReferencedRule);
         return;
         Rule? LookupReferencedRule()
         {
-            var rule = grammar?.RuleFor(Syntax);
+            if (IsExternal)
+                return null;
+            var rule = grammar?.RuleFor(ShortName);
             if (rule is null && !Syntax.IsQuoted)
                 throw new FormatException($"Symbol '{Syntax}' must be quoted because it doesn't reference a rule.");
             return rule;
