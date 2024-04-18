@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class Type : IEquatable<Type>

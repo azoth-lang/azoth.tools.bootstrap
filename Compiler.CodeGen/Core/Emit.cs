@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
-using Type = Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Type;
+using Type = Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
@@ -353,7 +353,7 @@ internal static class Emit
         => ParameterNames(pass.EntryTransform.From);
 
     public static string EndRunResult(Pass pass)
-        => pass.ToContextParameter.Type == Model.Type.Void ? "" : $"var {pass.ToContextParameter.Name} = ";
+        => pass.ToContextParameter.Type == Model.Types.Type.Void ? "" : $"var {pass.ToContextParameter.Name} = ";
 
     public static string StartRunAccessModifier(Pass pass)
         => AccessModifier(StartRunReturnValues(pass));
@@ -381,7 +381,7 @@ internal static class Emit
 
     private static IEnumerable<Parameter> EndRunReturnValues(Pass pass)
     {
-        if (pass.ToContextParameter.Type != Model.Type.Void)
+        if (pass.ToContextParameter.Type != Model.Types.Type.Void)
             yield return pass.ToContextParameter;
     }
 
@@ -419,7 +419,7 @@ internal static class Emit
         var modifiedProperties = rule.AllProperties
                                      .Where(CouldBeModified)
                                      .Except(extendsRule.AllProperties, Property.NameAndTypeComparer);
-        var fromType = Model.Type.Create(rule.Grammar, extendsRule.Defines);
+        var fromType = Model.Types.Type.Create(rule.Grammar, extendsRule.Defines);
         var parameters = new List<Parameter>() { Model.Parameter.Create(fromType, "from") };
         parameters.AddRange(modifiedProperties.Select(p => Model.Parameter.Create(p.Type, p.Name.ToCamelCase())));
         return Parameters(pass, parameters);

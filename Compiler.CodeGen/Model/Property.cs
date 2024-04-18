@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
+using Type = Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
