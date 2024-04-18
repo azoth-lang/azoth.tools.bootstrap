@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 using Type = Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types.Type;
@@ -50,7 +51,7 @@ public class Pass
         FullRunReturn = Parameters(ToParameter, ToContextParameter);
         RunReturn = RemoveVoid(FullRunReturn);
         DeclaredTransforms = Syntax.Transforms.Select(t => new Transform(this, t)).ToFixedList();
-        EntryTransform = DeclaredTransforms.SingleOrDefault(IsEntryTransform) ?? CreateEntryTransform();
+        EntryTransform = DeclaredTransforms.FirstOrDefault(IsEntryTransform) ?? CreateEntryTransform();
         Transforms = CreateTransforms();
     }
 
@@ -59,7 +60,7 @@ public class Pass
 
     private Parameter CreateFromParameter()
     {
-        var fromType = Type.Create(FromLanguage?.Entry ?? Symbol.CreateExternalFromSyntax(Syntax.From));
+        var fromType = SymbolType.Create(FromLanguage?.Entry ?? Symbol.CreateExternalFromSyntax(Syntax.From));
         var fromParameter = Parameter.Create(fromType, "from");
         fromParameter ??= Parameter.Void;
         return fromParameter;
@@ -67,7 +68,7 @@ public class Pass
 
     private Parameter CreateFromContextParameter()
     {
-        var contextType = Type.Create(FromContext);
+        var contextType = SymbolType.Create(FromContext);
         var contextParameter = Parameter.Create(contextType, "context");
         contextParameter ??= Parameter.Void;
         return contextParameter;
@@ -75,14 +76,14 @@ public class Pass
 
     private Parameter CreateToParameter()
     {
-        var toType = Type.Create(ToLanguage?.Entry ?? Symbol.CreateExternalFromSyntax(Syntax.To));
+        var toType = SymbolType.Create(ToLanguage?.Entry ?? Symbol.CreateExternalFromSyntax(Syntax.To));
         var toParameter = Parameter.Create(toType, "to");
         toParameter ??= Parameter.Void;
         return toParameter;
     }
     private Parameter CreateToContextParameter()
     {
-        var contextType = Type.Create(ToContext);
+        var contextType = SymbolType.Create(ToContext);
         var contextParameter = Parameter.Create(contextType, "toContext");
         contextParameter ??= Parameter.Void;
         return contextParameter;
@@ -101,8 +102,10 @@ public class Pass
     {
         var fromType = FromLanguage is not null ? transform.From[0].Type : null;
         var toType = ToLanguage is not null ? transform.To[0].Type : null;
-        return (fromType?.IsEquivalentTo(FromParameter.Type) ?? true)
-            && (toType?.IsEquivalentTo(ToParameter.Type) ?? true);
+        if (fromType is null || toType is null)
+            return true;
+        return Type.AreEquivalent(fromType, FromParameter.Type)
+               && Type.AreEquivalent(toType, ToParameter.Type);
     }
 
     private Transform CreateEntryTransform()
@@ -148,8 +151,8 @@ public class Pass
                     else
                     {
                         var fromParameter = Parameter.Create(parentFromType, "from");
-                        var toSymbol = toGrammar?.RuleFor(((InternalSymbol)parentFromType.Symbol).ShortName)?.Defines;
-                        var toType = Type.Create(toSymbol, parentFromType.CollectionKind);
+                        var toSymbol = toGrammar?.RuleFor(parentFromType.UnderlyingSymbol)?.Defines;
+                        var toType = toSymbol is not null ? parentFromType.WithSymbol(toSymbol) : null;
                         var toParameter = Parameter.Create(toType, "to");
                         if (toParameter is null)
                             // No way to make an auto transform, assume it is somehow covered
@@ -188,20 +191,21 @@ public class Pass
         foreach (var rule in grammar.Rules)
         {
             if (rule.AllProperties.Any(p => p.Type == fromType))
-                yield return Type.Create(rule.Defines);
+                yield return new SymbolType(rule.Defines);
 
-            if (!fromType.IsCollection)
-                foreach (var property in rule.AllProperties.Where(p => p.Type.Symbol == fromType.Symbol && p.Type.IsCollection))
+            if (fromType is not CollectionType)
+                foreach (var property in rule.AllProperties.Where(p => p.Type.UnderlyingSymbol == fromType.UnderlyingSymbol
+                                                                       && p.Type is CollectionType))
                     yield return property.Type;
         }
     }
 
-    private TransformTypePair CreateTransformTypePairFromTargetType(Type targetType)
-    {
-        var fromSymbol = ((InternalSymbol)targetType.Symbol).ReferencedRule!.ExtendsRule!.Defines;
-        var fromType = Type.Create(fromSymbol, targetType.CollectionKind);
-        return new(fromType, targetType);
-    }
+    //private TransformTypePair CreateTransformTypePairFromTargetType(Type targetType)
+    //{
+    //    var fromSymbol = ((InternalSymbol)targetType.Symbol).ReferencedRule!.ExtendsRule!.Defines;
+    //    var fromType = Type.Create(fromSymbol, targetType.CollectionKind);
+    //    return new(fromType, targetType);
+    //}
 
     private class TransformTypePair(Type from, Type to) : IEquatable<TransformTypePair>
     {
@@ -223,7 +227,8 @@ public class Pass
                 return false;
             if (ReferenceEquals(this, other))
                 return true;
-            return From.IsEquivalentTo(other.From) && To.IsEquivalentTo(other.To);
+            //return From.IsEquivalentTo(other.From) && To.IsEquivalentTo(other.To);
+            throw new NotImplementedException();
         }
 
         public override bool Equals(object? obj)

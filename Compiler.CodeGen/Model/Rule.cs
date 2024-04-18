@@ -175,7 +175,7 @@ public class Rule
                // Note: added child rules are not a problem for the cases that matter here
                || ChildRules.Any(r => r.TryDescendantsModified)
                || AllProperties
-                  .Select(p => p.Type.Symbol)
+                  .Select(p => p.Type.UnderlyingSymbol)
                   .OfType<InternalSymbol>()
                   .Select(s => s.ReferencedRule)
                   .Except(this)

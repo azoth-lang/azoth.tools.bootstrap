@@ -24,5 +24,7 @@ public sealed class ExternalSymbol : Symbol
     public override int GetHashCode() => HashCode.Combine(FullName);
     #endregion
 
+    public override int GetEquivalenceHashCode() => HashCode.Combine(FullName);
+
     public override string ToString() => $"`{FullName}`";
 }

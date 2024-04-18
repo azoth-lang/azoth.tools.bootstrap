@@ -30,6 +30,10 @@ public sealed class Grammar
     public Rule? RuleFor(string shortName)
         => rulesLookup.TryGetValue(shortName, out var rule) ? rule : null;
 
+    public Rule? RuleFor(Symbol? symbol)
+        => symbol is InternalSymbol internalSymbol
+           && rulesLookup.TryGetValue(internalSymbol.ShortName, out var rule) ? rule : null;
+
     private readonly FixedDictionary<string, Rule> rulesLookup;
 
     public void ValidateTreeOrdering()

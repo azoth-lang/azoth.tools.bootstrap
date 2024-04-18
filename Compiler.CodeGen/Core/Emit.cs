@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -54,14 +54,8 @@ internal static class Emit
         return " : " + string.Join(", ", parents);
     }
 
-    public static string TypeName(Type type)
-        => TypeName(type.Symbol);
-
     public static string TypeName(Symbol symbol)
         => symbol.FullName;
-
-    public static string QualifiedTypeName(Type type)
-        => QualifiedTypeName(type.Symbol);
 
     public static string QualifiedTypeName(Symbol symbol)
         => symbol switch
@@ -71,38 +65,53 @@ internal static class Emit
             _ => throw ExhaustiveMatch.Failed(symbol)
         };
 
-    public static string Type(Type type)
+    public static string PassTypeName(Pass pass, Symbol symbol)
     {
-        var name = TypeName(type);
-        return TypeDecorations(type, name);
-    }
-
-    public static string QualifiedType(Type type)
-    {
-        var name = QualifiedTypeName(type);
-        return TypeDecorations(type, name);
-    }
-
-    private static string TypeDecorations(Type type, string name)
-    {
-        switch (type.CollectionKind)
+        if (symbol == Symbol.Void) return "Void";
+        switch (symbol)
         {
             default:
-                throw ExhaustiveMatch.Failed(type.CollectionKind);
-            case CollectionKind.None:
-                // Nothing
-                break;
-            case CollectionKind.List:
-                name = $"{CollectionType(type)}<{name}>";
-                break;
-            case CollectionKind.Set:
-                name = $"{CollectionType(type)}<{name}>";
-                break;
+                throw ExhaustiveMatch.Failed(symbol);
+            case ExternalSymbol _:
+                return symbol.FullName;
+            case InternalSymbol sym:
+                var language = sym.ReferencedRule.Language;
+                var languageName = language switch
+                {
+                    _ when language == pass.FromLanguage => "From",
+                    _ when language == pass.ToLanguage => "To",
+                    _ => throw new FormatException($"Invalid symbol for pass type name '{symbol}'")
+                };
+                return $"{languageName}.{symbol.FullName}";
         }
-
-        if (type.IsOptional) name += "?";
-        return name;
     }
+
+    public static string Type(Type type) => Type(type, TypeName);
+
+    public static string QualifiedType(Type type) => Type(type, QualifiedTypeName);
+
+    public static string PassParameterType(Pass pass, Type type)
+        => type switch
+        {
+            SymbolType t => PassTypeName(pass, t.Symbol),
+            ListType t => $"IEnumerable<{PassParameterType(pass, t.ElementType)}>",
+            SetType t => $"IEnumerable<{PassParameterType(pass, t.ElementType)}>",
+            OptionalType t => $"{PassParameterType(pass, t.UnderlyingType)}?",
+            _ => throw ExhaustiveMatch.Failed(type)
+        };
+
+    public static string PassReturnType(Pass pass, Type type)
+        => Type(type, s => PassTypeName(pass, s));
+
+    private static string Type(Type type, Func<Symbol, string> emitSymbol)
+        => type switch
+        {
+            SymbolType t => emitSymbol(t.Symbol),
+            ListType t => $"IFixedList<{Type(t.ElementType, emitSymbol)}>",
+            SetType t => $"IFixedSet<{Type(t.ElementType, emitSymbol)}>",
+            OptionalType t => $"{Type(t.UnderlyingType, emitSymbol)}?",
+            _ => throw ExhaustiveMatch.Failed(type)
+        };
 
     public static string PropertyIsNew(Property property)
         => property.IsNewDefinition ? "new " : "";
@@ -122,17 +131,14 @@ internal static class Emit
         => string.Join(", ", rule.AllProperties.Select(p => $"{ParameterType(p.Type)} {p.Name.ToCamelCase()}"));
 
     private static string ParameterType(Type type)
-    {
-        var name = TypeName(type);
-        return ParameterTypeDecorations(type, name);
-    }
-
-    private static string ParameterTypeDecorations(Type type, string name)
-    {
-        if (type.IsCollection) name = $"IEnumerable<{name}>";
-        if (type.IsOptional) name += "?";
-        return name;
-    }
+        => type switch
+        {
+            SymbolType t => TypeName(t.Symbol),
+            ListType t => $"IEnumerable<{ParameterType(t.ElementType)}>",
+            SetType t => $"IEnumerable<{ParameterType(t.ElementType)}>",
+            OptionalType t => $"{ParameterType(t.UnderlyingType)}?",
+            _ => throw ExhaustiveMatch.Failed(type)
+        };
 
     public static string PropertyClassParameters(Rule rule)
         => string.Join(", ", rule.AllProperties.Select(p => $"{Type(p.Type)} {p.Name.ToCamelCase()}"));
@@ -140,30 +146,19 @@ internal static class Emit
     public static string PropertyArguments(Rule rule)
     {
         return string.Join(", ", rule.AllProperties.Select(ToArgument));
+
         static string ToArgument(Property p)
         {
-            var collectionType = CollectionType(p.Type);
-            if (collectionType is not null)
-                return $"{p.Name.ToCamelCase()}.To{collectionType.WithoutInterfacePrefix()}()";
-            return p.Name.ToCamelCase();
+            var parameterName = p.Name.ToCamelCase();
+            return p.Type switch
+            {
+                SymbolType t => parameterName,
+                ListType t => $"{parameterName}.ToFixedList()",
+                SetType t => $"{parameterName}.ToFixedSet()",
+                OptionalType t => parameterName,
+                _ => throw ExhaustiveMatch.Failed(p.Type)
+            };
         }
-    }
-
-    private static string? CollectionType(Type type)
-    {
-        return type.CollectionKind switch
-        {
-            CollectionKind.None => null,
-            CollectionKind.List => "IFixedList",
-            CollectionKind.Set => "IFixedSet",
-            _ => throw ExhaustiveMatch.Failed(type.CollectionKind)
-        };
-    }
-
-    private static string WithoutInterfacePrefix(this string name)
-    {
-        if (name.StartsWith("I")) return name[1..];
-        return name;
     }
 
     public static string SmartClassName(InternalSymbol symbol)
@@ -232,35 +227,7 @@ internal static class Emit
     public static string Parameter(Pass pass, Parameter parameter)
         => $"{PassParameterType(pass, parameter.Type)} {parameter.Name}";
 
-    public static string PassParameterType(Pass pass, Type type)
-    {
-        var name = PassTypeName(pass, type);
-        return ParameterTypeDecorations(type, name);
-    }
 
-    public static string PassTypeName(Pass pass, Type type)
-        => PassTypeName(pass, type.Symbol);
-
-    public static string PassTypeName(Pass pass, Symbol symbol)
-    {
-        if (symbol == Symbol.Void) return "Void";
-        switch (symbol)
-        {
-            default:
-                throw ExhaustiveMatch.Failed(symbol);
-            case ExternalSymbol _:
-                return symbol.FullName;
-            case InternalSymbol sym:
-                var language = sym.ReferencedRule.Language;
-                var languageName = language switch
-                {
-                    _ when language == pass.FromLanguage => "From",
-                    _ when language == pass.ToLanguage => "To",
-                    _ => throw new FormatException($"Invalid symbol for pass type name '{symbol}'")
-                };
-                return $"{languageName}.{symbol.FullName}";
-        }
-    }
 
     public static string FullRunReturnType(Pass pass)
         => PassReturnType(pass, pass.FullRunReturn);
@@ -292,12 +259,6 @@ internal static class Emit
             1 => PassReturnType(pass, returnValues[0].Type),
             _ => $"({string.Join(", ", returnValues.Select(p => PassReturnType(pass, p.Type)))})"
         };
-    }
-
-    public static string PassReturnType(Pass pass, Type type)
-    {
-        var name = PassTypeName(pass, type);
-        return TypeDecorations(type, name);
     }
 
     public static string RunForward(Pass pass)
@@ -370,18 +331,17 @@ internal static class Emit
     {
         var fromType = transform.From[0].Type;
         var toType = transform.To[0].Type;
-        if (fromType.IsCollection && toType.IsCollection)
+        if (fromType is CollectionType fromCollectionType && toType is CollectionType toCollectionType)
         {
-            var resultCollection = toType.CollectionKind switch
+            var resultCollection = toCollectionType switch
             {
-                CollectionKind.List => "FixedList",
-                CollectionKind.Set => "FixedSet",
-                CollectionKind.None => throw new UnreachableException(),
-                _ => throw ExhaustiveMatch.Failed(toType.CollectionKind)
+                ListType _ => "FixedList",
+                SetType _ => "FixedSet",
+                _ => throw ExhaustiveMatch.Failed(toCollectionType)
             };
-            var calledParameters = transform.From.Skip(1).Prepend(Model.Parameter.Create(fromType.UnderlyingType, "from")).ToFixedList();
+            var calledParameters = transform.From.Skip(1).Prepend(Model.Parameter.Create(fromCollectionType.ElementType, "from")).ToFixedList();
             var calledTransform = transform.Pass.Transforms.SingleOrDefault(t => t.From.SequenceEqual(calledParameters));
-            var calledTransformReturnsCollection = calledTransform?.To[0].Type.IsCollection ?? false;
+            var calledTransformReturnsCollection = calledTransform?.To[0].Type is CollectionType;
             var selectMethod = calledTransformReturnsCollection ? "SelectMany" : "Select";
             var parameters = transform.From.Skip(1).Select(ParameterName).Prepend("f").ToFixedList();
             var parameterNames = string.Join(", ", parameters);
@@ -397,14 +357,15 @@ internal static class Emit
         var modifiedProperties = rule.AllProperties
                                      .Where(CouldBeModified)
                                      .Except(extendsRule.AllProperties, Property.NameAndTypeComparer);
-        var fromType = Model.Types.Type.Create(extendsRule.Defines);
+        var fromType = new SymbolType(extendsRule.Defines);
         var parameters = new List<Parameter> { Model.Parameter.Create(fromType, "from") };
         parameters.AddRange(modifiedProperties.Select(p => Model.Parameter.Create(p.Type, p.Name.ToCamelCase())));
         return Parameters(pass, parameters);
     }
 
     private static bool CouldBeModified(Property property)
-        => property.Type.Symbol is InternalSymbol { ReferencedRule.DescendantsModified: true } or ExternalSymbol;
+        => property.Type.UnderlyingSymbol is
+            InternalSymbol { ReferencedRule.DescendantsModified: true } or ExternalSymbol;
 
     public static string SimpleCreateParameters(Rule rule)
     {

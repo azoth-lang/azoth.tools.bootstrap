@@ -5,6 +5,7 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types" #>
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,10 +26,10 @@ public static class <#=Emit.TypeName(grammar.DefaultParent)#>Extensions
 <#  foreach(var rule in grammar.Rules.Where(r => r.IsTerminal)) { #>
             case <#=Emit.TypeName(rule.Defines) #> n:
 <#      foreach(var property in rule.DeclaredProperties.Where(p => p.ReferencesRule)) { #>
-<#          if (property.Type.IsCollection) { #>
+<#          if (property.Type is CollectionType) { #>
                 foreach (var child in n.<#=property.Name #>)
                     yield return child;
-<#          } else if (property.Type.IsOptional) { #>
+<#          } else if (property.Type is OptionalType) { #>
                 if (n.<#=property.Name #> is not null)
                     yield return n.<#=property.Name #>;
 <#          } else { #>

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 
@@ -40,8 +41,10 @@ public sealed class InternalSymbol : Symbol
 
     public override int GetHashCode()
         // To avoid forcing lookup of the referenced rule, just use the grammar reference
-        => HashCode.Combine(ShortName, grammar);
+        => HashCode.Combine(ShortName, RuntimeHelpers.GetHashCode(grammar));
     #endregion
+
+    public override int GetEquivalenceHashCode() => HashCode.Combine(ShortName);
 
     public override string ToString() => ShortName;
 }

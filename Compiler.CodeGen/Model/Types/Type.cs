@@ -9,106 +9,83 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public sealed class Type : IEquatable<Type>
+[Closed(
+    typeof(SymbolType),
+    typeof(CollectionType),
+    typeof(OptionalType))]
+public abstract class Type : IEquatable<Type>
 {
     public static IEqualityComparer<Type> EquivalenceComparer { get; }
-        = EqualityComparer<Type>.Create((a, b) => a?.IsEquivalentTo(b) ?? false,
-            t => HashCode.Combine(t.CollectionKind, t.IsOptional, t.Name, t.Symbol is ExternalSymbol));
+        = EqualityComparer<Type>.Create(AreEquivalent, t => t.GetEquivalenceHashCode());
 
-    public static Type Void { get; } = new Type(Symbol.Void, CollectionKind.None, isOptional: false);
-
-    [return: NotNullIfNotNull(nameof(symbol))]
-    public static Type? Create(Symbol? symbol, CollectionKind collectionKind = CollectionKind.None)
-        => symbol is not null ? new Type(symbol, collectionKind, isOptional: false) : null;
+    public static SymbolType Void { get; } = new SymbolType(Symbol.Void);
 
     [return: NotNullIfNotNull(nameof(syntax))]
     public static Type? CreateFromSyntax(Grammar grammar, TypeNode? syntax)
-        => syntax is not null ? new Type(grammar, syntax) : null;
+    {
+        if (syntax is null)
+            return null;
+        return CreateDerivedType(SymbolType.CreateFromSyntax(grammar, syntax.Symbol), syntax);
+    }
 
     [return: NotNullIfNotNull(nameof(syntax))]
     public static Type? CreateExternalFromSyntax(TypeNode? syntax)
-        => syntax is not null ? new Type(Symbol.CreateExternalFromSyntax(syntax.Symbol), syntax.CollectionKind, syntax.IsOptional) : null;
-
-    public Symbol Symbol { get; }
-    private string Name => Symbol.FullName;
-    public CollectionKind CollectionKind { get; }
-    public bool IsCollection => CollectionKind != CollectionKind.None;
-    public bool IsOptional { get; }
-    public Type UnderlyingType { get; }
-
-    private Type(Grammar grammar, TypeNode syntax)
     {
-        Symbol = Symbol.CreateFromSyntax(grammar, syntax.Symbol);
-        CollectionKind = syntax.CollectionKind;
-        IsOptional = syntax.IsOptional;
-        UnderlyingType = CreateUnderlyingType();
+        if (syntax is null)
+            return null;
+
+        return CreateDerivedType(SymbolType.CreateExternalFromSyntax(syntax.Symbol), syntax);
     }
 
-    private Type(Symbol symbol, CollectionKind collectionKind, bool isOptional)
+    private static Type CreateDerivedType(SymbolType underlyingType, TypeNode syntax)
     {
-        Symbol = symbol;
-        CollectionKind = collectionKind;
-        IsOptional = isOptional;
-        UnderlyingType = CreateUnderlyingType();
+        var type = syntax.CollectionKind switch
+        {
+            CollectionKind.List => new ListType(underlyingType),
+            CollectionKind.Set => new SetType(underlyingType),
+            CollectionKind.None => (Type)underlyingType,
+            _ => throw ExhaustiveMatch.Failed(syntax.CollectionKind)
+        };
+        if (syntax.IsOptional) type = new OptionalType(type);
+        return type;
     }
 
-    private Type CreateUnderlyingType()
-    {
-        if (!IsCollection) return this;
-        return new Type(Symbol, CollectionKind.None, false);
-    }
+    public Symbol UnderlyingSymbol { get; }
 
-    public bool IsEquivalentTo(Type? other)
+    private protected Type(Symbol underlyingSymbol)
     {
-        if (other is null)
-            return false;
-        return CollectionKind == other.CollectionKind
-               && IsOptional == other.IsOptional
-               && Name == other.Name
-               && Symbol is ExternalSymbol == other.Symbol is ExternalSymbol;
+        UnderlyingSymbol = underlyingSymbol;
     }
 
     #region Equality
-    public bool Equals(Type? other)
-    {
-        if (other is null)
-            return false;
-
-        if (ReferenceEquals(this, other))
-            return true;
-
-        return CollectionKind == other.CollectionKind
-        && Symbol == other.Symbol;
-    }
+    public abstract bool Equals(Type? other);
 
     public override bool Equals(object? obj) => obj is Type other && Equals(other);
 
-    public override int GetHashCode() => HashCode.Combine(Symbol, (int)CollectionKind);
+    public abstract override int GetHashCode();
 
     public static bool operator ==(Type? left, Type? right) => Equals(left, right);
 
     public static bool operator !=(Type? left, Type? right) => !Equals(left, right);
     #endregion
 
-    public override string ToString()
+    public static bool AreEquivalent(Type? a, Type? b)
     {
-        var type = Symbol.ToString();
-        switch (CollectionKind)
+        if (ReferenceEquals(a, b)) return true;
+        if (a is null || b is null) return false;
+        return (a, b) switch
         {
-            default:
-                throw ExhaustiveMatch.Failed(CollectionKind);
-            case CollectionKind.None:
-                // Nothing
-                break;
-            case CollectionKind.List:
-                type += "*";
-                break;
-            case CollectionKind.Set:
-                type = $"{{{type}}}";
-                break;
-        }
-
-        if (IsOptional) type += "?";
-        return type;
+            (ListType left, ListType right) => AreEquivalent(left.ElementType, right.ElementType),
+            (SetType left, SetType right) => AreEquivalent(left.ElementType, right.ElementType),
+            (OptionalType left, OptionalType right) => AreEquivalent(left.UnderlyingType, right.UnderlyingType),
+            (SymbolType left, SymbolType right) => Symbol.AreEquivalent(left.Symbol, right.Symbol),
+            _ => false
+        };
     }
+
+    public abstract int GetEquivalenceHashCode();
+
+    public abstract Type WithSymbol(Symbol symbol);
+
+    public abstract override string ToString();
 }

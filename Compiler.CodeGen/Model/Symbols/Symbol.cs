@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using ExhaustiveMatching;
+using Type = System.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 
@@ -56,6 +57,20 @@ public abstract class Symbol : IEquatable<Symbol>
 
     public static bool operator !=(Symbol? left, Symbol? right) => !Equals(left, right);
     #endregion
+
+    public static bool AreEquivalent(Symbol? a, Symbol? b)
+    {
+        if (ReferenceEquals(a, b)) return true;
+        if (a is null || b is null) return false;
+        return (a, b) switch
+        {
+            (ExternalSymbol left, ExternalSymbol right) => left.Equals(right),
+            (InternalSymbol left, InternalSymbol right) => left.ShortName.Equals(right.ShortName),
+            _ => false
+        };
+    }
+
+    public abstract int GetEquivalenceHashCode();
 
     public abstract override string ToString();
 }

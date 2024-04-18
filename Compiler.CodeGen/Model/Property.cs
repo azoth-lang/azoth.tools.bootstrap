@@ -15,7 +15,7 @@ public sealed class Property
 
     public static IEqualityComparer<Property> NameAndTypeEquivalenceComparer { get; }
         = EqualityComparer<Property>.Create(
-            (p1, p2) => p1!.Name == p2!.Name && Type.EquivalenceComparer.Equals(p1.Type, p2.Type),
+            (p1, p2) => p1?.Name == p2?.Name && Type.EquivalenceComparer.Equals(p1?.Type, p2?.Type),
             p => HashCode.Combine(p.Name, Type.EquivalenceComparer.GetHashCode(p.Type)));
 
     public PropertyNode Syntax { get; }
@@ -45,7 +45,7 @@ public sealed class Property
     /// <summary>
     /// Is the type of this property a reference to another rule?
     /// </summary>
-    public bool ReferencesRule => Type.Symbol is InternalSymbol { ReferencedRule: not null };
+    public bool ReferencesRule => Type.UnderlyingSymbol is InternalSymbol { ReferencedRule: not null };
 
     public Property(Rule rule, PropertyNode syntax)
     {
@@ -57,7 +57,7 @@ public sealed class Property
         isDeclared = new(() =>
         {
             var baseProperties = rule.InheritedPropertiesNamed(this).ToList();
-            return baseProperties.Count != 1 || !baseProperties[0].Type.IsEquivalentTo(Type);
+            return baseProperties.Count != 1 || !Type.AreEquivalent(baseProperties[0].Type, Type);
         });
     }
 
