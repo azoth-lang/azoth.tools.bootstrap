@@ -1,4 +1,6 @@
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.IST;
@@ -35,5 +37,11 @@ internal sealed partial class SyntaxBinder : ITransformPass<IPackageSyntax, Diag
     private partial To.PackageReference Transform(IPackageReferenceSyntax from);
 
     private partial To.CompilationUnit Transform(ICompilationUnitSyntax from);
+
+    private IFixedSet<To.PackageReference> Transform(IEnumerable<IPackageReferenceSyntax> from)
+        => from.Select(f => Transform(f)).ToFixedSet();
+
+    private IFixedSet<To.CompilationUnit> Transform(IEnumerable<ICompilationUnitSyntax> from)
+        => from.Select(f => Transform(f)).ToFixedSet();
 
 }

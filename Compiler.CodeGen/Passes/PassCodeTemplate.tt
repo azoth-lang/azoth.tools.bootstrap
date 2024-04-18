@@ -4,7 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
-<#  foreach(var usingNamespace in Build.OrderedNamespaces(pass, "ExhaustiveMatching", "System.CodeDom.Compiler", "Azoth.Tools.Bootstrap.Compiler.IST", "Azoth.Tools.Bootstrap.Framework")) { #>
+<#  foreach(var usingNamespace in Build.OrderedNamespaces(pass, "ExhaustiveMatching", "System.Linq", "System.Collections.Generic", "System.CodeDom.Compiler", "Azoth.Tools.Bootstrap.Compiler.IST", "Azoth.Tools.Bootstrap.Framework")) { #>
 using <#=usingNamespace #>;
 <#  } #><#=Emit.UsingAlias("From", pass.FromLanguage)#><#=Emit.UsingAlias("To", pass.ToLanguage)#>
 namespace <#=pass.Namespace #>;
@@ -33,6 +33,11 @@ internal sealed partial class <#=pass.Name #> : ITransformPass<<#=Emit.Transform
 
 <#  foreach (var transform in pass.Transforms.Where(t => !t.AutoGenerate)) { #>
     <#=Emit.AccessModifier(transform)#>partial <#=Emit.ReturnType(transform)#> <#=Emit.MethodName(pass)#>(<#=Emit.Parameters(transform)#>);
+
+<#  } #>
+<#  foreach (var transform in pass.Transforms.Where(t => t.AutoGenerate)) { #>
+    private <#=Emit.ReturnType(transform)#> <#=Emit.MethodName(pass)#>(<#=Emit.Parameters(transform)#>)
+        => <#=Emit.TransformMethodBody(transform)#>;
 
 <#  } #>
 }

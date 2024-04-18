@@ -23,10 +23,7 @@ internal sealed partial class CompilationUnitRemover
     private IFixedList<To.NamespaceMemberDeclaration> Transform(IFixedList<From.NamespaceMemberDeclaration> from, CodeFile file)
         => from.SelectMany(f => Transform(f, file)).ToFixedList();
 
-    private IEnumerable<To.NamespaceMemberDeclaration> Transform(From.NamespaceMemberDeclaration from, CodeFile file)
-        => Create(from, file);
-
-    private IEnumerable<To.NamespaceMemberDeclaration> Create(From.NamespaceMemberDeclaration from, CodeFile file)
+    private IFixedSet<To.NamespaceMemberDeclaration> Create(From.NamespaceMemberDeclaration from, CodeFile file)
         => from switch
         {
             From.NamespaceDeclaration f => Transform(f, file),
@@ -35,13 +32,13 @@ internal sealed partial class CompilationUnitRemover
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private IFixedList<To.NamespaceMemberDeclaration> Transform(From.NamespaceDeclaration from, CodeFile file)
-        => from.Declarations.SelectMany(d => Transform(d, file)).ToFixedList();
+    private IFixedSet<To.NamespaceMemberDeclaration> Transform(From.NamespaceDeclaration from, CodeFile file)
+        => from.Declarations.SelectMany(d => Transform(d, file)).ToFixedSet();
 
-    private IEnumerable<To.NamespaceMemberDeclaration> Transform(
+    private IFixedSet<To.NamespaceMemberDeclaration> Transform(
         From.TypeDeclaration from,
         CodeFile file)
-        => Create(from, file).Yield();
+        => Create(from, file).Yield().ToFixedSet();
 
     private To.TypeDeclaration Create(From.TypeDeclaration from, CodeFile file)
         => from switch
@@ -103,10 +100,10 @@ internal sealed partial class CompilationUnitRemover
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private IEnumerable<To.FunctionDeclaration> Transform(
+    private IFixedSet<To.FunctionDeclaration> Transform(
         From.FunctionDeclaration from,
         CodeFile file)
-        => Create(from, file).Yield();
+        => Create(from, file).Yield().ToFixedSet();
 
     private To.FunctionDeclaration Create(From.FunctionDeclaration from, CodeFile file)
         => To.FunctionDeclaration.Create(from.ContainingSymbol, from.Syntax, file, from.ContainingLexicalScope);

@@ -49,7 +49,7 @@ public sealed class LanguageLoader(string? langPath)
         var inputFile = File.ReadAllText(languagePath)
                         ?? throw new InvalidOperationException("null from reading input file");
 
-        var language = new Language(LanguageParser.ParseLanguage(inputFile, languagePath, this));
+        var language = new Language(LanguageParser.ParseLanguage(inputFile, languagePath, this), this);
         languages.Add(name, language);
         return language;
     }

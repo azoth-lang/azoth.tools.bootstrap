@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
@@ -23,6 +24,7 @@ public sealed class Parameter
         Name = name;
     }
 
+    [return: NotNullIfNotNull(nameof(type))]
     public static Parameter? Create(Type? type, string name)
         => type is not null ? new Parameter(type, name) : null;
 }

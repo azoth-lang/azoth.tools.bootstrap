@@ -1,4 +1,6 @@
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.IST;
@@ -37,5 +39,8 @@ internal sealed partial class CompilationUnitRemover : ITransformPass<From.Packa
     private partial To.Package Transform(From.Package from);
 
     private partial IFixedList<To.NamespaceMemberDeclaration> Transform(From.CompilationUnit from);
+
+    private IFixedSet<To.NamespaceMemberDeclaration> Transform(From.NamespaceMemberDeclaration from, CodeFile file)
+        => Create(from, file);
 
 }

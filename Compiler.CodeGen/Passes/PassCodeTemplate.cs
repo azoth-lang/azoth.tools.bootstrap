@@ -31,7 +31,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
         {
             
             #line 7 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-  foreach(var usingNamespace in Build.OrderedNamespaces(pass, "ExhaustiveMatching", "System.CodeDom.Compiler", "Azoth.Tools.Bootstrap.Compiler.IST", "Azoth.Tools.Bootstrap.Framework")) { 
+  foreach(var usingNamespace in Build.OrderedNamespaces(pass, "ExhaustiveMatching", "System.Linq", "System.Collections.Generic", "System.CodeDom.Compiler", "Azoth.Tools.Bootstrap.Compiler.IST", "Azoth.Tools.Bootstrap.Framework")) { 
             
             #line default
             #line hidden
@@ -268,6 +268,47 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             this.Write(");\r\n\r\n");
             
             #line 37 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+  } 
+            
+            #line default
+            #line hidden
+            
+            #line 38 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+  foreach (var transform in pass.Transforms.Where(t => t.AutoGenerate)) { 
+            
+            #line default
+            #line hidden
+            this.Write("    private ");
+            
+            #line 39 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ReturnType(transform)));
+            
+            #line default
+            #line hidden
+            this.Write(" ");
+            
+            #line 39 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.MethodName(pass)));
+            
+            #line default
+            #line hidden
+            this.Write("(");
+            
+            #line 39 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Parameters(transform)));
+            
+            #line default
+            #line hidden
+            this.Write(")\r\n        => ");
+            
+            #line 40 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TransformMethodBody(transform)));
+            
+            #line default
+            #line hidden
+            this.Write(";\r\n\r\n");
+            
+            #line 42 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
   } 
             
             #line default

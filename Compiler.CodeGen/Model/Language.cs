@@ -10,10 +10,10 @@ public class Language
     public Grammar Grammar { get; }
     public Language? Extends { get; }
 
-    public Language(LanguageNode syntax)
+    public Language(LanguageNode syntax, LanguageLoader languageLoader)
     {
         Syntax = syntax;
-        Extends = syntax.Extends is null ? null : new Language(syntax.Extends);
+        Extends = syntax.Extends is null ? null : languageLoader.GetOrLoadLanguageNamed(syntax.Extends.Name!);
         Grammar = new Grammar(this, syntax.Grammar);
         Entry = new Symbol(Grammar, syntax.Entry);
     }

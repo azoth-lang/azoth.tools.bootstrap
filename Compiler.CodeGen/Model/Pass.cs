@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
@@ -49,7 +50,7 @@ public class Pass
         RunReturn = RemoveVoid(FullRunReturn);
         DeclaredTransforms = Syntax.Transforms.Select(t => new Transform(this, t)).ToFixedList();
         EntryTransform = DeclaredTransforms.FirstOrDefault(IsEntryTransform) ?? CreateEntryTransform();
-        Transforms = DeclaredTransforms.Prepend(EntryTransform).Distinct().ToFixedList();
+        Transforms = CreateTransforms();
     }
 
     private static Language? GetOrLoadLanguageNamed(SymbolNode? name, LanguageLoader languageLoader)
@@ -106,5 +107,69 @@ public class Pass
     }
 
     private Transform CreateEntryTransform()
-        => new(this, NonVoidParameters(FromParameter), NonVoidParameters(ToParameter));
+        => new(this, NonVoidParameters(FromParameter), NonVoidParameters(ToParameter), false);
+
+    private IFixedList<Transform> CreateTransforms()
+    {
+        var transforms = new List<Transform>(DeclaredTransforms.Prepend(EntryTransform).Distinct());
+
+        var coveredTransformPairs = transforms.Select(TransformTypePair.Create).WhereNotNull().ToFixedSet();
+
+        var transformToPairs = ToLanguage?.Grammar.Rules.SelectMany(r => r.DeclaredProperties.Select(p => p.Type))
+                                           .Where(t => t.Symbol.ReferencedRule?.IsModified ?? false)
+                                           .Distinct(Type.EquivalenceComparer)
+                                           .Select(CreateTransformTypePairFromTargetType)
+                                           .Except(coveredTransformPairs)
+                                           .ToFixedList() ?? FixedList.Empty<TransformTypePair>();
+
+        //transforms.AddRange(transformToPairs.Select(p => p.ToTransform(this)));
+
+        return transforms.ToFixedList();
+    }
+
+    private TransformTypePair CreateTransformTypePairFromTargetType(Type targetType)
+    {
+        var fromSymbol = targetType.Symbol.ReferencedRule!.ExtendsRule!.Defines;
+        var fromType = Type.Create(FromLanguage!.Grammar, fromSymbol, targetType.CollectionKind);
+        return new(fromType, targetType);
+    }
+
+    private class TransformTypePair(Type from, Type to) : IEquatable<TransformTypePair>
+    {
+        public static TransformTypePair? Create(Transform transform)
+        {
+            var fromType = transform.From.FirstOrDefault()?.Type;
+            var toType = transform.To.FirstOrDefault()?.Type;
+            if (fromType is null || toType is null)
+                return null;
+            return new(fromType, toType);
+        }
+
+        public Type From { get; } = from;
+        public Type To { get; } = to;
+
+        public bool Equals(TransformTypePair? other)
+        {
+            if (other is null)
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
+            return From.IsEquivalentTo(other.From) && To.IsEquivalentTo(other.To);
+        }
+
+        public override bool Equals(object? obj)
+            => obj is TransformTypePair other && Equals(other);
+
+        public override int GetHashCode() => HashCode.Combine(From, To);
+
+        public static bool operator ==(TransformTypePair? left, TransformTypePair? right) => Equals(left, right);
+
+        public static bool operator !=(TransformTypePair? left, TransformTypePair? right) => !Equals(left, right);
+
+        public Transform ToTransform(Pass pass)
+            => new Transform(pass,
+                Parameter.Create(From, "from").Yield(),
+                Parameter.Create(To, "to").Yield(),
+                autoGenerate: true);
+    }
 }

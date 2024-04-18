@@ -22,10 +22,11 @@ public sealed class Transform
         AutoGenerate = Syntax.AutoGenerate;
     }
 
-    public Transform(Pass pass, IEnumerable<Parameter> from, IEnumerable<Parameter> to)
+    public Transform(Pass pass, IEnumerable<Parameter> from, IEnumerable<Parameter> to, bool autoGenerate)
     {
         Pass = pass;
         From = from.ToFixedList();
         To = to.ToFixedList();
+        AutoGenerate = autoGenerate;
     }
 }

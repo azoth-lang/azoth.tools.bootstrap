@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
@@ -386,4 +387,25 @@ internal static class Emit
 
     public static string EndRunParameters(Pass pass)
         => Parameters(pass, pass.EntryTransform.To);
+
+    public static string TransformMethodBody(Transform transform)
+    {
+        var fromType = transform.From[0].Type;
+        var toType = transform.To[0].Type;
+        if (fromType.CollectionKind != CollectionKind.None
+            && toType.CollectionKind != CollectionKind.None)
+        {
+            var resultCollection = toType.CollectionKind switch
+            {
+                CollectionKind.List => "FixedList",
+                CollectionKind.Set => "FixedSet",
+                CollectionKind.None => throw new UnreachableException(),
+                _ => throw ExhaustiveMatch.Failed(toType.CollectionKind)
+            };
+            var parameterNames = string.Join(", ", transform.From.Skip(1).Select(ParameterName).Prepend("f"));
+            return $"{ParameterName(transform.From[0])}.Select(f => {MethodName(transform.Pass)}({parameterNames})).To{resultCollection}()";
+        }
+
+        return $"Create({ParameterNames(transform.From)})";
+    }
 }

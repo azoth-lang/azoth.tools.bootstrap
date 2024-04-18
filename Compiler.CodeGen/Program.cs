@@ -75,7 +75,7 @@ public static class Program
             var grammarSyntax = TreeParser.ParseGrammar(inputFile);
 
             var languageSyntax = new LanguageNode(null, inputPath, SymbolNode.Void, grammarSyntax, null);
-            var language = new Language(languageSyntax);
+            var language = new Language(languageSyntax, null!);
 
             language.Grammar.ValidateTreeOrdering();
 
