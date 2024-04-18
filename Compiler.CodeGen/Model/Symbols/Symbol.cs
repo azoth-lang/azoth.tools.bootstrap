@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 public sealed class Symbol : IEquatable<Symbol>
 {
     public static IEqualityComparer<Symbol> NameComparer { get; }
-        = EqualityComparer<Symbol>.Create((x, y) => x?.Name == y?.Name, x => HashCode.Combine(x.Name));
+        = EqualityComparer<Symbol>.Create((x, y) => x?.FullName == y?.FullName, x => HashCode.Combine(x.FullName));
 
     private readonly Grammar? grammar;
     public static Symbol Void { get; } = new(null, SymbolNode.Void);
@@ -18,7 +18,8 @@ public sealed class Symbol : IEquatable<Symbol>
         => syntax is null ? null : new(grammar, syntax);
 
     public SymbolNode Syntax { get; }
-    public string Name { get; }
+    public string ShortName { get; }
+    public string FullName { get; }
     private readonly Lazy<Rule?> referencedRule;
     public Rule? ReferencedRule => referencedRule.Value;
 
@@ -29,7 +30,8 @@ public sealed class Symbol : IEquatable<Symbol>
 
         this.grammar = grammar;
         Syntax = syntax;
-        Name = Syntax.IsQuoted ? Syntax.Text : $"{grammar!.Prefix}{Syntax.Text}{grammar.Suffix}";
+        ShortName = Syntax.Text;
+        FullName = Syntax.IsQuoted ? Syntax.Text : $"{grammar!.Prefix}{Syntax.Text}{grammar.Suffix}";
         referencedRule = new(LookupReferencedRule);
         return;
         Rule? LookupReferencedRule()

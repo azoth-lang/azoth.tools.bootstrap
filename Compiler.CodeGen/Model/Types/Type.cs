@@ -22,7 +22,7 @@ public sealed class Type : IEquatable<Type>
         => symbol is not null ? new Type(symbol, collectionKind, isOptional: false) : null;
 
     public Symbol Symbol { get; }
-    public string Name => Symbol.Name;
+    public string Name => Symbol.FullName;
     public CollectionKind CollectionKind { get; }
     public bool IsCollection => CollectionKind != CollectionKind.None;
     public bool IsOptional { get; }

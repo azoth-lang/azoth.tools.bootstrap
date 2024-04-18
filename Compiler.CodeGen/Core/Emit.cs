@@ -29,7 +29,7 @@ internal static class Emit
             else
                 builder.AppendLine(",");
             builder.Append(indent);
-            builder.Append($"    typeof({child.Defines.Name})");
+            builder.Append($"    typeof({child.Defines.FullName})");
         }
 
         builder.AppendLine(")]");
@@ -41,7 +41,7 @@ internal static class Emit
     /// a base interface outside of the default parent.</remarks>
     public static string BaseTypes(Rule rule, string? root = null)
     {
-        var parents = rule.Parents.Where(p => p.ReferencedRule is null).Select(p => p.Name)
+        var parents = rule.Parents.Where(p => p.ReferencedRule is null).Select(p => p.FullName)
                           .Concat(rule.ParentRules.Select(r => TypeName(r.Defines)))
                           .ToFixedList();
 
@@ -58,7 +58,7 @@ internal static class Emit
         => TypeName(type.Symbol);
 
     public static string TypeName(Symbol symbol)
-        => symbol.Name;
+        => symbol.FullName;
 
     public static string QualifiedTypeName(Type type)
         => QualifiedTypeName(type.Symbol);
@@ -66,7 +66,7 @@ internal static class Emit
     public static string QualifiedTypeName(Symbol symbol)
     {
         var languageName = symbol.ReferencedRule?.Language.Name;
-        return languageName is null ? symbol.Name : $"{languageName}.{symbol.Name}";
+        return languageName is null ? symbol.FullName : $"{languageName}.{symbol.FullName}";
     }
 
     public static string Type(Type type)
@@ -235,7 +235,7 @@ internal static class Emit
     }
 
     private static string ContextType(Symbol? fromContext)
-        => fromContext is not null ? fromContext.Name : "Void";
+        => fromContext is not null ? fromContext.FullName : "Void";
 
     public static string FullRunParameters(Pass pass)
         => Parameters(pass, pass.FullRunParameters);
@@ -282,7 +282,7 @@ internal static class Emit
             _ when language == pass.ToLanguage => "To",
             _ => throw new FormatException($"Invalid symbol for pass type name '{symbol}'")
         };
-        return $"{languageName}.{symbol.Name}";
+        return $"{languageName}.{symbol.FullName}";
     }
 
     public static string FullRunReturnType(Pass pass)
