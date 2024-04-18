@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class Symbol : IEquatable<Symbol>

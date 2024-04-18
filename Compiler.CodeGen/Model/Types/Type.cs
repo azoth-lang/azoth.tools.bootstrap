@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using ExhaustiveMatching;
 
@@ -14,46 +15,39 @@ public sealed class Type : IEquatable<Type>
         = EqualityComparer<Type>.Create((a, b) => a?.IsEquivalentTo(b) ?? false,
             t => HashCode.Combine(t.CollectionKind, t.IsOptional, t.Name, t.Symbol.Syntax.IsQuoted));
 
-    public static Type Void { get; } = new Type(null, Symbol.Void, CollectionKind.None);
+    public static Type Void { get; } = new Type(Symbol.Void, CollectionKind.None, isOptional: false);
 
     [return: NotNullIfNotNull(nameof(symbol))]
     public static Type? Create(Grammar? grammar, Symbol? symbol, CollectionKind collectionKind = CollectionKind.None)
-        => symbol is not null ? new Type(grammar, symbol, collectionKind) : null;
-
-    public Language? Language { get; }
-    public Grammar? Grammar { get; }
-    public TypeNode? Syntax { get; }
+        => symbol is not null ? new Type(symbol, collectionKind, isOptional: false) : null;
 
     public Symbol Symbol { get; }
     public string Name => Symbol.Name;
     public CollectionKind CollectionKind { get; }
     public bool IsCollection => CollectionKind != CollectionKind.None;
-    public bool IsOptional => Syntax?.IsOptional ?? false;
+    public bool IsOptional { get; }
     public Type UnderlyingType { get; }
 
     public Type(Grammar? grammar, TypeNode syntax)
     {
-        Language = grammar?.Language;
-        Grammar = grammar;
-        Syntax = syntax;
         Symbol = new Symbol(grammar, syntax.Symbol);
         CollectionKind = syntax.CollectionKind;
+        IsOptional = syntax.IsOptional;
         UnderlyingType = CreateUnderlyingType();
     }
 
-    private Type(Grammar? grammar, Symbol symbol, CollectionKind collectionKind)
+    private Type(Symbol symbol, CollectionKind collectionKind, bool isOptional)
     {
-        Language = grammar?.Language;
-        Grammar = grammar;
         Symbol = symbol;
         CollectionKind = collectionKind;
+        IsOptional = isOptional;
         UnderlyingType = CreateUnderlyingType();
     }
 
     private Type CreateUnderlyingType()
     {
         if (!IsCollection) return this;
-        return new Type(Grammar, Symbol, CollectionKind.None);
+        return new Type(Symbol, CollectionKind.None, false);
     }
 
     public bool IsEquivalentTo(Type? other)
