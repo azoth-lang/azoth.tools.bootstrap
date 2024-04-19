@@ -50,15 +50,15 @@ internal sealed partial class CompilationUnitRemover : ITransformPass<From.Packa
         => To.Package.Create(declarations, testingDeclarations, from.LexicalScope, from.Syntax, from.Symbol, from.References);
 
     private To.FunctionDeclaration Create(From.FunctionDeclaration from, CodeFile file)
-        => To.FunctionDeclaration.Create(from.ContainingSymbol, from.Syntax, file, from.ContainingLexicalScope);
+        => To.FunctionDeclaration.Create(from.ContainingSymbol, from.Syntax, file, from.ContainingScope);
 
     private To.ClassDeclaration Create(From.ClassDeclaration from, IEnumerable<To.ClassMemberDeclaration> members, CodeFile file)
-        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, members, from.LexicalScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingLexicalScope, from.ContainingSymbol);
+        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, members, from.NewScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingScope, from.ContainingSymbol);
 
     private To.StructDeclaration Create(From.StructDeclaration from, IEnumerable<To.StructMemberDeclaration> members, CodeFile file)
-        => To.StructDeclaration.Create(from.Syntax, members, from.LexicalScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingLexicalScope, from.ContainingSymbol);
+        => To.StructDeclaration.Create(from.Syntax, members, from.NewScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingScope, from.ContainingSymbol);
 
     private To.TraitDeclaration Create(From.TraitDeclaration from, IEnumerable<To.TraitMemberDeclaration> members, CodeFile file)
-        => To.TraitDeclaration.Create(from.Syntax, members, from.LexicalScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingLexicalScope, from.ContainingSymbol);
+        => To.TraitDeclaration.Create(from.Syntax, members, from.NewScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingScope, from.ContainingSymbol);
 
 }

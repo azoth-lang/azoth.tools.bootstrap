@@ -26,7 +26,7 @@ public sealed partial class WithTypeDeclarationPromises
     {
         AcyclicPromise<UserTypeSymbol> Symbol { get; }
         IPromise<Symbol> ContainingSymbolPromise { get; }
-        DeclarationScope LexicalScope { get; }
+        DeclarationScope NewScope { get; }
         new ITypeDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
         IClassMemberDeclarationSyntax ClassMemberDeclaration.Syntax => Syntax;
@@ -64,7 +64,7 @@ public sealed partial class WithTypeDeclarationPromises
         typeof(TypeMemberDeclaration))]
     public partial interface Declaration : Code
     {
-        DeclarationLexicalScope ContainingLexicalScope { get; }
+        DeclarationLexicalScope ContainingScope { get; }
         NamespaceSymbol? ContainingSymbol { get; }
         new IDeclarationSyntax Syntax { get; }
         IConcreteSyntax Code.Syntax => Syntax;
@@ -72,14 +72,14 @@ public sealed partial class WithTypeDeclarationPromises
 
     public partial interface UnresolvedSupertypeName : Code
     {
-        DeclarationLexicalScope ContainingLexicalScope { get; }
+        DeclarationLexicalScope ContainingScope { get; }
         new ISupertypeNameSyntax Syntax { get; }
         IConcreteSyntax Code.Syntax => Syntax;
         TypeName Name { get; }
         IFixedList<UnresolvedType> TypeArguments { get; }
 
-        public static UnresolvedSupertypeName Create(DeclarationLexicalScope containingLexicalScope, ISupertypeNameSyntax syntax, TypeName name, IEnumerable<UnresolvedType> typeArguments)
-            => new UnresolvedSupertypeNameNode(containingLexicalScope, syntax, name, typeArguments.ToFixedList());
+        public static UnresolvedSupertypeName Create(DeclarationLexicalScope containingScope, ISupertypeNameSyntax syntax, TypeName name, IEnumerable<UnresolvedType> typeArguments)
+            => new UnresolvedSupertypeNameNode(containingScope, syntax, name, typeArguments.ToFixedList());
     }
 
     [Closed(
@@ -88,7 +88,7 @@ public sealed partial class WithTypeDeclarationPromises
         typeof(UnresolvedQualifiedTypeName))]
     public partial interface UnresolvedTypeName : UnresolvedType
     {
-        DeclarationLexicalScope ContainingLexicalScope { get; }
+        DeclarationLexicalScope ContainingScope { get; }
         new ITypeNameSyntax Syntax { get; }
         ITypeSyntax UnresolvedType.Syntax => Syntax;
         TypeName Name { get; }
@@ -101,8 +101,8 @@ public sealed partial class WithTypeDeclarationPromises
         new IFunctionDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
 
-        public static FunctionDeclaration Create(NamespaceSymbol containingSymbol, IFunctionDeclarationSyntax syntax, CodeFile file, DeclarationLexicalScope containingLexicalScope)
-            => new FunctionDeclarationNode(containingSymbol, syntax, file, containingLexicalScope);
+        public static FunctionDeclaration Create(NamespaceSymbol containingSymbol, IFunctionDeclarationSyntax syntax, CodeFile file, DeclarationLexicalScope containingScope)
+            => new FunctionDeclarationNode(containingSymbol, syntax, file, containingScope);
     }
 
     public partial interface PackageReference : IImplementationRestricted
@@ -135,8 +135,8 @@ public sealed partial class WithTypeDeclarationPromises
         UnresolvedSupertypeName? BaseTypeName { get; }
         IFixedList<ClassMemberDeclaration> Members { get; }
 
-        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise, DeclarationScope lexicalScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
-            => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), symbol, containingSymbolPromise, lexicalScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingLexicalScope, containingSymbol);
+        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingSymbol)
+            => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), symbol, containingSymbolPromise, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope, containingSymbol);
     }
 
     public partial interface StructDeclaration : TypeDeclaration
@@ -145,8 +145,8 @@ public sealed partial class WithTypeDeclarationPromises
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<StructMemberDeclaration> Members { get; }
 
-        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise, DeclarationScope lexicalScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
-            => new StructDeclarationNode(syntax, members.ToFixedList(), symbol, containingSymbolPromise, lexicalScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingLexicalScope, containingSymbol);
+        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingSymbol)
+            => new StructDeclarationNode(syntax, members.ToFixedList(), symbol, containingSymbolPromise, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope, containingSymbol);
     }
 
     public partial interface TraitDeclaration : TypeDeclaration
@@ -155,8 +155,8 @@ public sealed partial class WithTypeDeclarationPromises
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<TraitMemberDeclaration> Members { get; }
 
-        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise, DeclarationScope lexicalScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
-            => new TraitDeclarationNode(syntax, members.ToFixedList(), symbol, containingSymbolPromise, lexicalScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingLexicalScope, containingSymbol);
+        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingSymbol)
+            => new TraitDeclarationNode(syntax, members.ToFixedList(), symbol, containingSymbolPromise, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope, containingSymbol);
     }
 
     public partial interface GenericParameter : Code
@@ -281,8 +281,8 @@ public sealed partial class WithTypeDeclarationPromises
         StandardName UnresolvedStandardTypeName.Name => Name;
         TypeName UnresolvedTypeName.Name => Name;
 
-        public static UnresolvedIdentifierTypeName Create(IIdentifierTypeNameSyntax syntax, IdentifierName name, DeclarationLexicalScope containingLexicalScope)
-            => new UnresolvedIdentifierTypeNameNode(syntax, name, containingLexicalScope);
+        public static UnresolvedIdentifierTypeName Create(IIdentifierTypeNameSyntax syntax, IdentifierName name, DeclarationLexicalScope containingScope)
+            => new UnresolvedIdentifierTypeNameNode(syntax, name, containingScope);
     }
 
     public partial interface UnresolvedSpecialTypeName : UnresolvedSimpleTypeName
@@ -292,8 +292,8 @@ public sealed partial class WithTypeDeclarationPromises
         new SpecialTypeName Name { get; }
         TypeName UnresolvedTypeName.Name => Name;
 
-        public static UnresolvedSpecialTypeName Create(ISpecialTypeNameSyntax syntax, SpecialTypeName name, DeclarationLexicalScope containingLexicalScope)
-            => new UnresolvedSpecialTypeNameNode(syntax, name, containingLexicalScope);
+        public static UnresolvedSpecialTypeName Create(ISpecialTypeNameSyntax syntax, SpecialTypeName name, DeclarationLexicalScope containingScope)
+            => new UnresolvedSpecialTypeNameNode(syntax, name, containingScope);
     }
 
     public partial interface UnresolvedGenericTypeName : UnresolvedStandardTypeName
@@ -304,8 +304,8 @@ public sealed partial class WithTypeDeclarationPromises
         StandardName UnresolvedStandardTypeName.Name => Name;
         IFixedList<UnresolvedType> TypeArguments { get; }
 
-        public static UnresolvedGenericTypeName Create(IGenericTypeNameSyntax syntax, GenericName name, IEnumerable<UnresolvedType> typeArguments, DeclarationLexicalScope containingLexicalScope)
-            => new UnresolvedGenericTypeNameNode(syntax, name, typeArguments.ToFixedList(), containingLexicalScope);
+        public static UnresolvedGenericTypeName Create(IGenericTypeNameSyntax syntax, GenericName name, IEnumerable<UnresolvedType> typeArguments, DeclarationLexicalScope containingScope)
+            => new UnresolvedGenericTypeNameNode(syntax, name, typeArguments.ToFixedList(), containingScope);
     }
 
     public partial interface UnresolvedQualifiedTypeName : UnresolvedTypeName
@@ -315,8 +315,8 @@ public sealed partial class WithTypeDeclarationPromises
         UnresolvedTypeName Context { get; }
         UnresolvedStandardTypeName QualifiedName { get; }
 
-        public static UnresolvedQualifiedTypeName Create(IQualifiedTypeNameSyntax syntax, UnresolvedTypeName context, UnresolvedStandardTypeName qualifiedName, DeclarationLexicalScope containingLexicalScope, TypeName name)
-            => new UnresolvedQualifiedTypeNameNode(syntax, context, qualifiedName, containingLexicalScope, name);
+        public static UnresolvedQualifiedTypeName Create(IQualifiedTypeNameSyntax syntax, UnresolvedTypeName context, UnresolvedStandardTypeName qualifiedName, DeclarationLexicalScope containingScope, TypeName name)
+            => new UnresolvedQualifiedTypeNameNode(syntax, context, qualifiedName, containingScope, name);
     }
 
     public partial interface UnresolvedOptionalType : UnresolvedType

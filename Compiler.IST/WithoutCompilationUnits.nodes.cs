@@ -35,14 +35,14 @@ public sealed partial class WithoutCompilationUnits
 
     private sealed class UnresolvedSupertypeNameNode : Node, UnresolvedSupertypeName
     {
-        public DeclarationLexicalScope ContainingLexicalScope { get; }
+        public DeclarationLexicalScope ContainingScope { get; }
         public ISupertypeNameSyntax Syntax { get; }
         public TypeName Name { get; }
         public IFixedList<UnresolvedType> TypeArguments { get; }
 
-        public UnresolvedSupertypeNameNode(DeclarationLexicalScope containingLexicalScope, ISupertypeNameSyntax syntax, TypeName name, IFixedList<UnresolvedType> typeArguments)
+        public UnresolvedSupertypeNameNode(DeclarationLexicalScope containingScope, ISupertypeNameSyntax syntax, TypeName name, IFixedList<UnresolvedType> typeArguments)
         {
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingScope = containingScope;
             Syntax = syntax;
             Name = name;
             TypeArguments = typeArguments;
@@ -54,14 +54,14 @@ public sealed partial class WithoutCompilationUnits
         public NamespaceSymbol ContainingSymbol { get; }
         public IFunctionDeclarationSyntax Syntax { get; }
         public CodeFile File { get; }
-        public DeclarationLexicalScope ContainingLexicalScope { get; }
+        public DeclarationLexicalScope ContainingScope { get; }
 
-        public FunctionDeclarationNode(NamespaceSymbol containingSymbol, IFunctionDeclarationSyntax syntax, CodeFile file, DeclarationLexicalScope containingLexicalScope)
+        public FunctionDeclarationNode(NamespaceSymbol containingSymbol, IFunctionDeclarationSyntax syntax, CodeFile file, DeclarationLexicalScope containingScope)
         {
             ContainingSymbol = containingSymbol;
             Syntax = syntax;
             File = file;
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingScope = containingScope;
         }
     }
 
@@ -87,24 +87,24 @@ public sealed partial class WithoutCompilationUnits
         public bool IsAbstract { get; }
         public UnresolvedSupertypeName? BaseTypeName { get; }
         public IFixedList<ClassMemberDeclaration> Members { get; }
-        public DeclarationScope LexicalScope { get; }
+        public DeclarationScope NewScope { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public CodeFile File { get; }
-        public DeclarationLexicalScope ContainingLexicalScope { get; }
+        public DeclarationLexicalScope ContainingScope { get; }
         public NamespaceSymbol? ContainingSymbol { get; }
 
-        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, DeclarationScope lexicalScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
+        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             IsAbstract = isAbstract;
             BaseTypeName = baseTypeName;
             Members = members;
-            LexicalScope = lexicalScope;
+            NewScope = newScope;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
             File = file;
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingScope = containingScope;
             ContainingSymbol = containingSymbol;
         }
     }
@@ -113,22 +113,22 @@ public sealed partial class WithoutCompilationUnits
     {
         public IStructDeclarationSyntax Syntax { get; }
         public IFixedList<StructMemberDeclaration> Members { get; }
-        public DeclarationScope LexicalScope { get; }
+        public DeclarationScope NewScope { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public CodeFile File { get; }
-        public DeclarationLexicalScope ContainingLexicalScope { get; }
+        public DeclarationLexicalScope ContainingScope { get; }
         public NamespaceSymbol? ContainingSymbol { get; }
 
-        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, DeclarationScope lexicalScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
+        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             Members = members;
-            LexicalScope = lexicalScope;
+            NewScope = newScope;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
             File = file;
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingScope = containingScope;
             ContainingSymbol = containingSymbol;
         }
     }
@@ -137,22 +137,22 @@ public sealed partial class WithoutCompilationUnits
     {
         public ITraitDeclarationSyntax Syntax { get; }
         public IFixedList<TraitMemberDeclaration> Members { get; }
-        public DeclarationScope LexicalScope { get; }
+        public DeclarationScope NewScope { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public CodeFile File { get; }
-        public DeclarationLexicalScope ContainingLexicalScope { get; }
+        public DeclarationLexicalScope ContainingScope { get; }
         public NamespaceSymbol? ContainingSymbol { get; }
 
-        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, DeclarationScope lexicalScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingLexicalScope, NamespaceSymbol? containingSymbol)
+        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingSymbol)
         {
             Syntax = syntax;
             Members = members;
-            LexicalScope = lexicalScope;
+            NewScope = newScope;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
             File = file;
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingScope = containingScope;
             ContainingSymbol = containingSymbol;
         }
     }
@@ -205,13 +205,13 @@ public sealed partial class WithoutCompilationUnits
     {
         public IIdentifierTypeNameSyntax Syntax { get; }
         public IdentifierName Name { get; }
-        public DeclarationLexicalScope ContainingLexicalScope { get; }
+        public DeclarationLexicalScope ContainingScope { get; }
 
-        public UnresolvedIdentifierTypeNameNode(IIdentifierTypeNameSyntax syntax, IdentifierName name, DeclarationLexicalScope containingLexicalScope)
+        public UnresolvedIdentifierTypeNameNode(IIdentifierTypeNameSyntax syntax, IdentifierName name, DeclarationLexicalScope containingScope)
         {
             Syntax = syntax;
             Name = name;
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingScope = containingScope;
         }
     }
 
@@ -219,13 +219,13 @@ public sealed partial class WithoutCompilationUnits
     {
         public ISpecialTypeNameSyntax Syntax { get; }
         public SpecialTypeName Name { get; }
-        public DeclarationLexicalScope ContainingLexicalScope { get; }
+        public DeclarationLexicalScope ContainingScope { get; }
 
-        public UnresolvedSpecialTypeNameNode(ISpecialTypeNameSyntax syntax, SpecialTypeName name, DeclarationLexicalScope containingLexicalScope)
+        public UnresolvedSpecialTypeNameNode(ISpecialTypeNameSyntax syntax, SpecialTypeName name, DeclarationLexicalScope containingScope)
         {
             Syntax = syntax;
             Name = name;
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingScope = containingScope;
         }
     }
 
@@ -234,14 +234,14 @@ public sealed partial class WithoutCompilationUnits
         public IGenericTypeNameSyntax Syntax { get; }
         public GenericName Name { get; }
         public IFixedList<UnresolvedType> TypeArguments { get; }
-        public DeclarationLexicalScope ContainingLexicalScope { get; }
+        public DeclarationLexicalScope ContainingScope { get; }
 
-        public UnresolvedGenericTypeNameNode(IGenericTypeNameSyntax syntax, GenericName name, IFixedList<UnresolvedType> typeArguments, DeclarationLexicalScope containingLexicalScope)
+        public UnresolvedGenericTypeNameNode(IGenericTypeNameSyntax syntax, GenericName name, IFixedList<UnresolvedType> typeArguments, DeclarationLexicalScope containingScope)
         {
             Syntax = syntax;
             Name = name;
             TypeArguments = typeArguments;
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingScope = containingScope;
         }
     }
 
@@ -250,15 +250,15 @@ public sealed partial class WithoutCompilationUnits
         public IQualifiedTypeNameSyntax Syntax { get; }
         public UnresolvedTypeName Context { get; }
         public UnresolvedStandardTypeName QualifiedName { get; }
-        public DeclarationLexicalScope ContainingLexicalScope { get; }
+        public DeclarationLexicalScope ContainingScope { get; }
         public TypeName Name { get; }
 
-        public UnresolvedQualifiedTypeNameNode(IQualifiedTypeNameSyntax syntax, UnresolvedTypeName context, UnresolvedStandardTypeName qualifiedName, DeclarationLexicalScope containingLexicalScope, TypeName name)
+        public UnresolvedQualifiedTypeNameNode(IQualifiedTypeNameSyntax syntax, UnresolvedTypeName context, UnresolvedStandardTypeName qualifiedName, DeclarationLexicalScope containingScope, TypeName name)
         {
             Syntax = syntax;
             Context = context;
             QualifiedName = qualifiedName;
-            ContainingLexicalScope = containingLexicalScope;
+            ContainingScope = containingScope;
             Name = name;
         }
     }

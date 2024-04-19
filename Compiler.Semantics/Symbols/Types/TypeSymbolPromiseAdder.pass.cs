@@ -57,12 +57,12 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
         => To.Package.Create(declarations, testingDeclarations, from.LexicalScope, from.Syntax, from.Symbol, from.References);
 
     private To.ClassDeclaration Create(From.ClassDeclaration from, IEnumerable<To.ClassMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise)
-        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, members, symbol, containingSymbolPromise, from.LexicalScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingLexicalScope, from.ContainingSymbol);
+        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, members, symbol, containingSymbolPromise, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope, from.ContainingSymbol);
 
     private To.StructDeclaration Create(From.StructDeclaration from, IEnumerable<To.StructMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise)
-        => To.StructDeclaration.Create(from.Syntax, members, symbol, containingSymbolPromise, from.LexicalScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingLexicalScope, from.ContainingSymbol);
+        => To.StructDeclaration.Create(from.Syntax, members, symbol, containingSymbolPromise, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope, from.ContainingSymbol);
 
     private To.TraitDeclaration Create(From.TraitDeclaration from, IEnumerable<To.TraitMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise)
-        => To.TraitDeclaration.Create(from.Syntax, members, symbol, containingSymbolPromise, from.LexicalScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingLexicalScope, from.ContainingSymbol);
+        => To.TraitDeclaration.Create(from.Syntax, members, symbol, containingSymbolPromise, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope, from.ContainingSymbol);
 
 }

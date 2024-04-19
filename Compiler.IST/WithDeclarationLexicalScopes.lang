@@ -13,15 +13,15 @@
 *CompilationUnit = +LexicalScope:`DeclarationScope`;
 
 // ---------- Declarations
-*Declaration = +ContainingLexicalScope:`DeclarationLexicalScope`;
-*NamespaceDeclaration = +LexicalScope:`DeclarationScope`;
+*Declaration = +ContainingScope:`DeclarationLexicalScope`;
+*NamespaceDeclaration = +NewScope:`DeclarationScope`;
 
 // ---------- Type Declarations
-*TypeDeclaration = +LexicalScope:`DeclarationScope`;
+*TypeDeclaration = +NewScope:`DeclarationScope`;
 
 // ---------- Type Declaration Parts
-*UnresolvedSupertypeName = +ContainingLexicalScope:`DeclarationLexicalScope`;
+*UnresolvedSupertypeName = +ContainingScope:`DeclarationLexicalScope`;
 
 // ---------- Unresolved Types
 // TODO isn't this going to make it want to apply this to types inside of method bodies?
-*UnresolvedTypeName = +ContainingLexicalScope:`DeclarationLexicalScope`;
+*UnresolvedTypeName = +ContainingScope:`DeclarationLexicalScope`;
