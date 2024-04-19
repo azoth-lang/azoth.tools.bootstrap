@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using ExhaustiveMatching;
-using Type = System.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 
@@ -14,6 +13,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 public abstract class Symbol : IEquatable<Symbol>
 {
     public static ExternalSymbol Void { get; } = new ExternalSymbol("void");
+
+    public static Symbol? CreateExternal(string? name)
+        => name is null or "void" ? null : new ExternalSymbol(name);
 
     [return: NotNullIfNotNull(nameof(syntax))]
     public static Symbol? CreateFromSyntax(Grammar? grammar, SymbolNode? syntax)

@@ -28,7 +28,7 @@ internal static class PassParser
         return new PassNode(ns, name, usingNamespaces, fromContext, toContext, fromName, toName, transforms);
     }
 
-    private static (SymbolNode?, SymbolNode?) ParseContext(string? context)
+    private static (string?, string?) ParseContext(string? context)
     {
         if (context is null)
             return (null, null);
@@ -37,10 +37,10 @@ internal static class PassParser
         switch (parts.Length)
         {
             case 1:
-                var contextSymbol = new SymbolNode(parts[0].Trim(), true);
-                return (contextSymbol, contextSymbol);
+                var contextName = parts[0].Trim();
+                return (contextName, contextName);
             case 2:
-                return (new SymbolNode(parts[0].Trim(), true), new SymbolNode(parts[1].Trim(), true));
+                return (parts[0].Trim(), parts[1].Trim());
             default:
                 throw new FormatException($"Invalid context format '{context}'");
         }

@@ -56,7 +56,7 @@ public class SemanticAnalyzer
 
         var (package, context) = SyntaxBinder.Run(packageSyntax, initialContext);
 
-        (var packageWithNamespaceSymbols, context) = NamespaceSymbolBuilder.Run(package, context);
+        var packageWithNamespaceSymbols = NamespaceSymbolBuilder.Run(package, context);
 
         var packageWithScopes = DeclarationLexicalScopesBuilder.Run(packageWithNamespaceSymbols);
 

@@ -97,6 +97,7 @@ internal static class Emit
             ListType t => $"IEnumerable<{PassParameterType(pass, t.ElementType)}>",
             SetType t => $"IEnumerable<{PassParameterType(pass, t.ElementType)}>",
             OptionalType t => $"{PassParameterType(pass, t.UnderlyingType)}?",
+            VoidType _ => throw new NotSupportedException("Void type is not supported as a parameter type."),
             _ => throw ExhaustiveMatch.Failed(type)
         };
 
@@ -110,6 +111,7 @@ internal static class Emit
             ListType t => $"IFixedList<{Type(t.ElementType, emitSymbol)}>",
             SetType t => $"IFixedSet<{Type(t.ElementType, emitSymbol)}>",
             OptionalType t => $"{Type(t.UnderlyingType, emitSymbol)}?",
+            VoidType _ => "void",
             _ => throw ExhaustiveMatch.Failed(type)
         };
 
@@ -137,6 +139,7 @@ internal static class Emit
             ListType t => $"IEnumerable<{ParameterType(t.ElementType)}>",
             SetType t => $"IEnumerable<{ParameterType(t.ElementType)}>",
             OptionalType t => $"{ParameterType(t.UnderlyingType)}?",
+            VoidType _ => throw new NotSupportedException("Void type is not supported as a parameter type."),
             _ => throw ExhaustiveMatch.Failed(type)
         };
 
@@ -209,17 +212,14 @@ internal static class Emit
     public static string RunParameters(Pass pass)
         => Parameters(pass, pass.RunParameters);
 
-    public static string EndRunParameterNames(Pass pass)
-        => ParameterNames(pass.EntryTransform.To);
-
     public static string Parameters(Transform transform)
         => Parameters(transform.Pass, transform.From);
 
-    public static string ParameterNames(IEnumerable<Parameter> parameters)
+    public static string Arguments(IEnumerable<Parameter> parameters)
         => string.Join(", ", parameters.Select(ParameterName));
 
     private static string ParameterName(Parameter parameter)
-        => parameter == Model.Parameter.Void ? "" : parameter.Name;
+        => parameter.Name;
 
     public static string Parameters(Pass pass, IEnumerable<Parameter> parameters)
         => string.Join(", ", parameters.Select(p => Parameter(pass, p)));
@@ -227,16 +227,14 @@ internal static class Emit
     public static string Parameter(Pass pass, Parameter parameter)
         => $"{PassParameterType(pass, parameter.Type)} {parameter.Name}";
 
-
-
     public static string FullRunReturnType(Pass pass)
-        => PassReturnType(pass, pass.FullRunReturn);
+        => PassReturnType(pass, pass.FullRunReturnValues);
 
     public static string RunReturnType(Pass pass)
-        => PassReturnType(pass, pass.RunReturn);
+        => PassReturnType(pass, pass.RunReturnValues);
 
     public static string RunReturnNames(Pass pass)
-        => ReturnNames(pass.RunReturn);
+        => ReturnNames(pass.RunReturnValues);
 
     public static string ReturnNames(IFixedList<Parameter> returnValues)
     {
@@ -263,14 +261,14 @@ internal static class Emit
 
     public static string RunForward(Pass pass)
     {
-        var result = $"Run({ParameterNames(pass.RunParameters)})";
+        var result = $"Run({Arguments(pass.RunParameters)})";
         if (pass.ToContext is null) return $"({result}, default)";
         if (pass.To is null) return $"(default, {result})";
         return result;
     }
 
     public static string ContextParameterName(Pass pass)
-        => ParameterName(pass.FromContextParameter);
+        => pass.FromContextParameter is not null ? ParameterName(pass.FromContextParameter) : "";
 
     public static string EntryResult(Pass pass)
         => Result(pass.EntryTransform.To);
@@ -281,7 +279,7 @@ internal static class Emit
         {
             0 => "",
             1 => $"var {returnValues[0].Name} = ",
-            _ => $"var ({ParameterNames(returnValues)} = ",
+            _ => $"var ({Arguments(returnValues)} = ",
         };
     }
 
@@ -289,19 +287,16 @@ internal static class Emit
         => pass.To is not null ? "Transform" : "Analyze";
 
     public static string EntryParameterNames(Pass pass)
-        => ParameterNames(pass.EntryTransform.From);
-
-    public static string EndRunResult(Pass pass)
-        => pass.ToContextParameter.Type == Model.Types.Type.Void ? "" : $"var {pass.ToContextParameter.Name} = ";
-
-    public static string StartRunAccessModifier(Pass pass)
-        => AccessModifier(StartRunReturnValues(pass));
+        => Arguments(pass.EntryTransform.From);
 
     public static string AccessModifier(Transform transform)
         => AccessModifier(transform.To);
 
     private static string AccessModifier(IEnumerable<Parameter> returnValues)
         => returnValues.Any() ? "private " : "";
+
+    #region StartRun()
+    public static string StartRunAccessModifier(Pass pass) => AccessModifier(StartRunReturnValues(pass));
 
     public static string StartRunReturnType(Pass pass)
         => PassReturnType(pass, StartRunReturnValues(pass).ToFixedList());
@@ -312,20 +307,35 @@ internal static class Emit
         return pass.EntryTransform.From.Skip(1);
     }
 
+    public static string StartRunResult(Pass pass)
+    {
+        var skip = pass.From is null ? 0 : 1;
+        return Result(pass.EntryTransform.From.Skip(skip).ToFixedList());
+    }
+    #endregion
+
+    #region EndRun()
     public static string EndRunAccessModifier(Pass pass)
         => EndRunReturnValues(pass).Any() ? "private " : "";
+
+    public static string EndRunParameters(Pass pass)
+        => Parameters(pass, pass.EntryTransform.To);
 
     public static string EndRunReturnType(Pass pass)
         => PassReturnType(pass, EndRunReturnValues(pass).ToFixedList());
 
     private static IEnumerable<Parameter> EndRunReturnValues(Pass pass)
     {
-        if (pass.ToContextParameter.Type != Model.Types.Type.Void)
+        if (pass.ToContextParameter is not null)
             yield return pass.ToContextParameter;
     }
 
-    public static string EndRunParameters(Pass pass)
-        => Parameters(pass, pass.EntryTransform.To);
+    public static string EndRunArguments(Pass pass)
+        => Arguments(pass.EntryTransform.To);
+
+    public static string EndRunResult(Pass pass)
+        => Result(pass.ToContextParameter.YieldValue().ToFixedList());
+    #endregion
 
     public static string TransformMethodBody(Transform transform)
     {
@@ -348,7 +358,7 @@ internal static class Emit
             return $"{ParameterName(transform.From[0])}.{selectMethod}(f => {MethodName(transform.Pass)}({parameterNames})).To{resultCollection}()";
         }
 
-        return $"Create({ParameterNames(transform.From)})";
+        return $"Create({Arguments(transform.From)})";
     }
 
     public static string ModifiedParameters(Pass pass, Rule rule)

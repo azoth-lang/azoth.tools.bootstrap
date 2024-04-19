@@ -8,8 +8,8 @@ public sealed class PassNode
     public string Namespace { get; }
     public string Name { get; }
     public IFixedSet<string> UsingNamespaces { get; }
-    public SymbolNode? FromContext { get; }
-    public SymbolNode? ToContext { get; }
+    public string? FromContext { get; }
+    public string? ToContext { get; }
     public SymbolNode? From { get; }
     public SymbolNode? To { get; }
     public IFixedList<TransformNode> Transforms { get; }
@@ -18,8 +18,8 @@ public sealed class PassNode
         string ns,
         string name,
         IEnumerable<string> usingNamespaces,
-        SymbolNode? fromContext,
-        SymbolNode? toContext,
+        string? fromContext,
+        string? toContext,
         SymbolNode? from,
         SymbolNode? to,
         IEnumerable<TransformNode> transforms)

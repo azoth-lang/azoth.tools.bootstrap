@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
-using Type = Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
@@ -15,14 +15,14 @@ public sealed class Property
 
     public static IEqualityComparer<Property> NameAndTypeEquivalenceComparer { get; }
         = EqualityComparer<Property>.Create(
-            (p1, p2) => p1?.Name == p2?.Name && Type.EquivalenceComparer.Equals(p1?.Type, p2?.Type),
-            p => HashCode.Combine(p.Name, Type.EquivalenceComparer.GetHashCode(p.Type)));
+            (p1, p2) => p1?.Name == p2?.Name && Types.Type.EquivalenceComparer.Equals(p1?.Type, p2?.Type),
+            p => HashCode.Combine(p.Name, Types.Type.EquivalenceComparer.GetHashCode(p.Type)));
 
     public PropertyNode Syntax { get; }
 
     public Rule Rule { get; }
     public string Name => Syntax.Name;
-    public Type Type { get; }
+    public NonVoidType Type { get; }
     /// <summary>
     /// Something is a new definition if it replaces some parent definition.
     /// </summary>
@@ -52,12 +52,15 @@ public sealed class Property
         Rule = rule;
         Syntax = syntax;
 
-        Type = Type.CreateFromSyntax(Rule.Grammar, syntax.Type);
+        var type = Types.Type.CreateFromSyntax(Rule.Grammar, syntax.Type);
+        if (type is not NonVoidType nonVoidType)
+            throw new InvalidOperationException("Property type must be a non-void type.");
+        Type = nonVoidType;
         isNewDefinition = new(() => rule.InheritedPropertiesNamed(this).Any());
         isDeclared = new(() =>
         {
             var baseProperties = rule.InheritedPropertiesNamed(this).ToList();
-            return baseProperties.Count != 1 || !Type.AreEquivalent(baseProperties[0].Type, Type);
+            return baseProperties.Count != 1 || !Types.Type.AreEquivalent(baseProperties[0].Type, Type);
         });
     }
 

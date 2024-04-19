@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
 public sealed class SetType : CollectionType
 {
-    internal SetType(Type underlyingType)
+    internal SetType(NonVoidType underlyingType)
         : base(underlyingType) { }
 
     #region Equality

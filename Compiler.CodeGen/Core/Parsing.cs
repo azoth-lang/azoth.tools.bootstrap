@@ -63,7 +63,7 @@ internal static class Parsing
         if (symbol is null) return null;
         if (symbol.StartsWith('`') && symbol.EndsWith('`'))
             return new SymbolNode(symbol[1..^1], true);
-        return new SymbolNode(symbol);
+        return new SymbolNode(symbol, symbol == "void");
     }
 
     public static IEnumerable<string> ParseToStatements(IEnumerable<string> lines)

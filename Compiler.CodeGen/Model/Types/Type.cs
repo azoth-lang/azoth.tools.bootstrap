@@ -10,15 +10,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 [Closed(
-    typeof(SymbolType),
-    typeof(CollectionType),
-    typeof(OptionalType))]
+    typeof(NonVoidType),
+    typeof(VoidType))]
 public abstract class Type : IEquatable<Type>
 {
     public static IEqualityComparer<Type> EquivalenceComparer { get; }
         = EqualityComparer<Type>.Create(AreEquivalent, t => t.GetEquivalenceHashCode());
 
-    public static SymbolType Void { get; } = new SymbolType(Symbol.Void);
+    public static VoidType Void { get; } = VoidType.Instance;
+    public static SymbolType VoidSymbol { get; } = new SymbolType(new ExternalSymbol("Void"));
 
     [return: NotNullIfNotNull(nameof(syntax))]
     public static Type? CreateFromSyntax(Grammar grammar, TypeNode? syntax)
@@ -33,29 +33,23 @@ public abstract class Type : IEquatable<Type>
     {
         if (syntax is null)
             return null;
-
         return CreateDerivedType(SymbolType.CreateExternalFromSyntax(syntax.Symbol), syntax);
     }
 
-    private static Type CreateDerivedType(SymbolType underlyingType, TypeNode syntax)
+    private static NonVoidType CreateDerivedType(SymbolType underlyingType, TypeNode syntax)
     {
         var type = syntax.CollectionKind switch
         {
             CollectionKind.List => new ListType(underlyingType),
             CollectionKind.Set => new SetType(underlyingType),
-            CollectionKind.None => (Type)underlyingType,
+            CollectionKind.None => (NonVoidType)underlyingType,
             _ => throw ExhaustiveMatch.Failed(syntax.CollectionKind)
         };
         if (syntax.IsOptional) type = new OptionalType(type);
         return type;
     }
 
-    public Symbol UnderlyingSymbol { get; }
-
-    private protected Type(Symbol underlyingSymbol)
-    {
-        UnderlyingSymbol = underlyingSymbol;
-    }
+    private protected Type() { }
 
     #region Equality
     public abstract bool Equals(Type? other);
@@ -79,6 +73,7 @@ public abstract class Type : IEquatable<Type>
             (SetType left, SetType right) => AreEquivalent(left.ElementType, right.ElementType),
             (OptionalType left, OptionalType right) => AreEquivalent(left.UnderlyingType, right.UnderlyingType),
             (SymbolType left, SymbolType right) => Symbol.AreEquivalent(left.Symbol, right.Symbol),
+            (VoidType, VoidType) => true,
             _ => false
         };
     }

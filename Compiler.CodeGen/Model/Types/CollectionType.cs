@@ -6,11 +6,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 [Closed(
     typeof(ListType),
     typeof(SetType))]
-public abstract class CollectionType : Type
+public abstract class CollectionType : NonVoidType
 {
-    public Type ElementType { get; }
+    public NonVoidType ElementType { get; }
 
-    private protected CollectionType(Type elementType)
+    private protected CollectionType(NonVoidType elementType)
         : base(elementType.UnderlyingSymbol)
     {
         ElementType = elementType;

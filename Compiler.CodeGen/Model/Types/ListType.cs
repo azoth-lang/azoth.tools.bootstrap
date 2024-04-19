@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
 public sealed class ListType : CollectionType
 {
-    internal ListType(Type elementType)
+    internal ListType(NonVoidType elementType)
         : base(elementType) { }
 
     #region Equality

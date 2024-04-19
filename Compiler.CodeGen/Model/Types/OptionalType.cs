@@ -3,11 +3,11 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
-public sealed class OptionalType : Type
+public sealed class OptionalType : NonVoidType
 {
-    public Type UnderlyingType { get; }
+    public NonVoidType UnderlyingType { get; }
 
-    public OptionalType(Type underlyingType)
+    public OptionalType(NonVoidType underlyingType)
         : base(underlyingType.UnderlyingSymbol)
     {
         UnderlyingType = underlyingType;

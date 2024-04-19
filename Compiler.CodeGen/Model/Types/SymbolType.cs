@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
-public sealed class SymbolType : Type
+public sealed class SymbolType : NonVoidType
 {
     public static SymbolType? Create(Symbol? symbol)
         => symbol is null ? null : new SymbolType(symbol);

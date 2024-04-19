@@ -22,14 +22,14 @@ public class Pass
     public SymbolNode? To => Syntax.To;
     public Language? ToLanguage { get; }
 
-    public Parameter FromParameter { get; }
-    public Parameter FromContextParameter { get; }
-    public Parameter ToParameter { get; }
-    public Parameter ToContextParameter { get; }
-    public IFixedList<Parameter> FullRunParameters { get; }
+    private readonly Parameter? fromParameter;
+    private readonly Parameter? toParameter;
+    public Parameter? FromContextParameter { get; }
+    public Parameter? ToContextParameter { get; }
     public IFixedList<Parameter> RunParameters { get; }
-    public IFixedList<Parameter> FullRunReturn { get; }
-    public IFixedList<Parameter> RunReturn { get; }
+    public IFixedList<Parameter> FullRunParameters { get; }
+    public IFixedList<Parameter> RunReturnValues { get; }
+    public IFixedList<Parameter> FullRunReturnValues { get; }
 
     public IFixedList<Transform> DeclaredTransforms { get; }
     public Transform EntryTransform { get; }
@@ -40,16 +40,18 @@ public class Pass
         Syntax = syntax;
         FromLanguage = GetOrLoadLanguageNamed(Syntax.From, languageLoader);
         ToLanguage = GetOrLoadLanguageNamed(Syntax.To, languageLoader);
-        FromContext = Symbol.CreateFromSyntax(FromLanguage?.Grammar, Syntax.FromContext);
-        ToContext = Symbol.CreateFromSyntax(ToLanguage?.Grammar, Syntax.ToContext);
-        FromParameter = CreateFromParameter();
+        FromContext = Symbol.CreateExternal(Syntax.FromContext);
+        ToContext = Symbol.CreateExternal(Syntax.ToContext);
+        fromParameter = CreateFromParameter();
         FromContextParameter = CreateFromContextParameter();
-        FullRunParameters = Parameters(FromParameter, FromContextParameter);
-        RunParameters = RemoveVoid(FullRunParameters);
-        ToParameter = CreateToParameter();
+        RunParameters = Parameters(fromParameter, FromContextParameter);
+        FullRunParameters = Parameters(fromParameter ?? Parameter.Create(Type.VoidSymbol, "from"),
+            FromContextParameter ?? Parameter.Create(Type.VoidSymbol, "context"));
+        toParameter = CreateToParameter();
         ToContextParameter = CreateToContextParameter();
-        FullRunReturn = Parameters(ToParameter, ToContextParameter);
-        RunReturn = RemoveVoid(FullRunReturn);
+        RunReturnValues = Parameters(toParameter, ToContextParameter);
+        FullRunReturnValues = Parameters(toParameter ?? Parameter.Create(Type.VoidSymbol, "to"),
+                       ToContextParameter ?? Parameter.Create(Type.VoidSymbol, "toContext"));
         DeclaredTransforms = Syntax.Transforms.Select(t => new Transform(this, t)).ToFixedList();
         EntryTransform = DeclaredTransforms.FirstOrDefault(IsEntryTransform) ?? CreateEntryTransform();
         Transforms = CreateTransforms();
@@ -58,45 +60,35 @@ public class Pass
     private static Language? GetOrLoadLanguageNamed(SymbolNode? name, LanguageLoader languageLoader)
         => name is not null && !name.IsQuoted ? languageLoader.GetOrLoadLanguageNamed(name.Text) : null;
 
-    private Parameter CreateFromParameter()
+    private Parameter? CreateFromParameter()
     {
         var fromType = SymbolType.Create(FromLanguage?.Entry ?? Symbol.CreateExternalFromSyntax(Syntax.From));
         var fromParameter = Parameter.Create(fromType, "from");
-        fromParameter ??= Parameter.Void;
         return fromParameter;
     }
 
-    private Parameter CreateFromContextParameter()
+    private Parameter? CreateFromContextParameter()
     {
         var contextType = SymbolType.Create(FromContext);
         var contextParameter = Parameter.Create(contextType, "context");
-        contextParameter ??= Parameter.Void;
         return contextParameter;
     }
 
-    private Parameter CreateToParameter()
+    private Parameter? CreateToParameter()
     {
         var toType = SymbolType.Create(ToLanguage?.Entry ?? Symbol.CreateExternalFromSyntax(Syntax.To));
         var toParameter = Parameter.Create(toType, "to");
-        toParameter ??= Parameter.Void;
         return toParameter;
     }
-    private Parameter CreateToContextParameter()
+    private Parameter? CreateToContextParameter()
     {
         var contextType = SymbolType.Create(ToContext);
         var contextParameter = Parameter.Create(contextType, "toContext");
-        contextParameter ??= Parameter.Void;
         return contextParameter;
     }
 
     private static IFixedList<Parameter> Parameters(params Parameter?[] parameters)
         => parameters.WhereNotNull().ToFixedList();
-
-    private static IFixedList<Parameter> NonVoidParameters(params Parameter[] parameters)
-        => RemoveVoid(parameters);
-
-    private static IFixedList<Parameter> RemoveVoid(IEnumerable<Parameter> parameters)
-        => parameters.Where(p => p != Parameter.Void).ToFixedList();
 
     private bool IsEntryTransform(Transform transform)
     {
@@ -104,12 +96,12 @@ public class Pass
         var toType = ToLanguage is not null ? transform.To[0].Type : null;
         if (fromType is null || toType is null)
             return true;
-        return Type.AreEquivalent(fromType, FromParameter.Type)
-               && Type.AreEquivalent(toType, ToParameter.Type);
+        return Type.AreEquivalent(fromType, fromParameter?.Type)
+               && Type.AreEquivalent(toType, toParameter?.Type);
     }
 
     private Transform CreateEntryTransform()
-        => new(this, NonVoidParameters(FromParameter), NonVoidParameters(ToParameter), false);
+        => new(this, Parameters(fromParameter), Parameters(toParameter), false);
 
     private IFixedList<Transform> CreateTransforms()
     {
@@ -185,7 +177,7 @@ public class Pass
         return transforms.ToFixedList();
     }
 
-    private IEnumerable<Type> ParentTransformsFrom(Type fromType)
+    private IEnumerable<NonVoidType> ParentTransformsFrom(NonVoidType fromType)
     {
         var grammar = FromLanguage!.Grammar;
         foreach (var rule in grammar.Rules)
@@ -207,7 +199,7 @@ public class Pass
     //    return new(fromType, targetType);
     //}
 
-    private class TransformTypePair(Type from, Type to) : IEquatable<TransformTypePair>
+    private class TransformTypePair(NonVoidType from, NonVoidType to) : IEquatable<TransformTypePair>
     {
         public static TransformTypePair? Create(Transform transform)
         {
@@ -218,8 +210,8 @@ public class Pass
             return new(fromType, toType);
         }
 
-        public Type From { get; } = from;
-        public Type To { get; } = to;
+        public NonVoidType From { get; } = from;
+        public NonVoidType To { get; } = to;
 
         public bool Equals(TransformTypePair? other)
         {

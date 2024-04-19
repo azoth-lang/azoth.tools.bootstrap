@@ -111,7 +111,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             
             #line default
             #line hidden
-            this.Write(");\r\n        pass.StartRun();\r\n        ");
+            this.Write(");\r\n        ");
+            
+            #line 18 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.StartRunResult(pass)));
+            
+            #line default
+            #line hidden
+            this.Write("pass.StartRun();\r\n        ");
             
             #line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.EntryResult(pass)));
@@ -142,7 +149,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             this.Write("pass.EndRun(");
             
             #line 20 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.EndRunParameterNames(pass)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.EndRunArguments(pass)));
             
             #line default
             #line hidden

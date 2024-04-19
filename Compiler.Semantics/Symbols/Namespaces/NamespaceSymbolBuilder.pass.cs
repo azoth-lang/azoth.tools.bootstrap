@@ -18,21 +18,24 @@ using To = Azoth.Tools.Bootstrap.Compiler.IST.WithNamespaceSymbols;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Package, SymbolBuilderContext, To.Package, SymbolBuilderContext>
+internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Package, SymbolBuilderContext, To.Package, Void>
 {
-    public static (To.Package, SymbolBuilderContext) Run(From.Package from, SymbolBuilderContext context)
+    public static To.Package Run(From.Package from, SymbolBuilderContext context)
     {
         var pass = new NamespaceSymbolBuilder(context);
         pass.StartRun();
         var to = pass.Transform(from);
-        var toContext = pass.EndRun(to);
-        return (to, toContext);
+        pass.EndRun(to);
+        return to;
     }
+
+    static (To.Package, Void) ITransformPass<From.Package, SymbolBuilderContext, To.Package, Void>.Run(From.Package from, SymbolBuilderContext context)
+        => (Run(from, context), default);
 
 
     partial void StartRun();
 
-    private partial SymbolBuilderContext EndRun(To.Package to);
+    partial void EndRun(To.Package to);
 
     private partial To.Package Transform(From.Package from);
 
