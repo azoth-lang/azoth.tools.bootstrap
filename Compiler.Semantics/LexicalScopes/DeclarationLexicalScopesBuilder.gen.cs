@@ -44,7 +44,7 @@ internal sealed partial class DeclarationLexicalScopesBuilder
         DeclarationLexicalScope containingScope,
         DeclarationScope lexicalScope,
         IEnumerable<To.NamespaceMemberDeclaration> declarations)
-        => To.NamespaceDeclaration.Create(lexicalScope, from.ContainingSymbol, from.Symbol, from.Syntax, from.IsGlobalQualified, from.DeclaredNames, from.UsingDirectives, declarations, containingScope);
+        => To.NamespaceDeclaration.Create(lexicalScope, from.ContainingNamespace, from.Symbol, from.Syntax, from.IsGlobalQualified, from.DeclaredNames, from.UsingDirectives, declarations, containingScope);
 
     private To.TypeDeclaration Create(
         From.TypeDeclaration from,
@@ -64,7 +64,7 @@ internal sealed partial class DeclarationLexicalScopesBuilder
         DeclarationScope lexicalScope)
         => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, Transform(from.BaseTypeName, containingScope),
             Transform(from.Members, containingScope), lexicalScope, from.GenericParameters, Transform(from.SupertypeNames, containingScope),
-            containingScope, from.ContainingSymbol);
+            containingScope, from.ContainingNamespace);
 
     private To.ClassMemberDeclaration Transform(From.ClassMemberDeclaration from, DeclarationLexicalScope containingScope)
         => from switch
@@ -79,7 +79,7 @@ internal sealed partial class DeclarationLexicalScopesBuilder
         DeclarationScope lexicalScope)
         => To.TraitDeclaration.Create(from.Syntax,
             Transform(from.Members, containingScope), lexicalScope, from.GenericParameters, Transform(from.SupertypeNames, containingScope),
-            containingScope, from.ContainingSymbol);
+            containingScope, from.ContainingNamespace);
 
     private To.TraitMemberDeclaration Transform(
         From.TraitMemberDeclaration from,
@@ -95,7 +95,7 @@ internal sealed partial class DeclarationLexicalScopesBuilder
         DeclarationLexicalScope containingScope,
         DeclarationScope lexicalScope)
         => To.StructDeclaration.Create(from.Syntax, Transform(from.Members, containingScope), lexicalScope, from.GenericParameters,
-            Transform(from.SupertypeNames, containingScope), containingScope, from.ContainingSymbol);
+            Transform(from.SupertypeNames, containingScope), containingScope, from.ContainingNamespace);
 
     private To.StructMemberDeclaration Transform(
         From.StructMemberDeclaration from,
@@ -210,5 +210,5 @@ internal sealed partial class DeclarationLexicalScopesBuilder
         => To.UnresolvedSelfViewpointType.Create(from.Syntax, Transform(from.Referent, containingScope));
 
     private To.FunctionDeclaration Transform(From.FunctionDeclaration from, DeclarationLexicalScope containingScope)
-        => To.FunctionDeclaration.Create(from.ContainingSymbol, from.Syntax, containingScope);
+        => To.FunctionDeclaration.Create(from.ContainingNamespace, from.Syntax, containingScope);
 }

@@ -13,7 +13,7 @@ internal partial class TypeSymbolPromiseAdder
     private partial To.TypeDeclaration Transform(From.TypeDeclaration from, IPromise<Symbol>? containingSymbol)
     {
         var typeSymbolPromise = new AcyclicPromise<UserTypeSymbol>();
-        containingSymbol ??= Promise.ForValue(from.ContainingSymbol.Assigned());
+        containingSymbol ??= Promise.ForValue(from.ContainingNamespace.Assigned());
         return Create(from, symbol: typeSymbolPromise, containingSymbol: containingSymbol,
             childContainingSymbol: typeSymbolPromise);
     }

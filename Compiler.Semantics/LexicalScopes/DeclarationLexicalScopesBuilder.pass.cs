@@ -66,22 +66,22 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
         => To.CompilationUnit.Create(lexicalScope, from.Syntax, from.File, from.ImplicitNamespaceName, from.UsingDirectives, declarations);
 
     private To.NamespaceDeclaration Create(From.NamespaceDeclaration from, DeclarationScope newScope, IEnumerable<To.NamespaceMemberDeclaration> declarations, DeclarationLexicalScope containingScope)
-        => To.NamespaceDeclaration.Create(newScope, from.ContainingSymbol, from.Symbol, from.Syntax, from.IsGlobalQualified, from.DeclaredNames, from.UsingDirectives, declarations, containingScope);
+        => To.NamespaceDeclaration.Create(newScope, from.ContainingNamespace, from.Symbol, from.Syntax, from.IsGlobalQualified, from.DeclaredNames, from.UsingDirectives, declarations, containingScope);
 
     private To.UnresolvedSupertypeName Create(From.UnresolvedSupertypeName from, DeclarationLexicalScope containingScope, IEnumerable<To.UnresolvedType> typeArguments)
         => To.UnresolvedSupertypeName.Create(containingScope, from.Syntax, from.Name, typeArguments);
 
     private To.FunctionDeclaration Create(From.FunctionDeclaration from, DeclarationLexicalScope containingScope)
-        => To.FunctionDeclaration.Create(from.ContainingSymbol, from.Syntax, containingScope);
+        => To.FunctionDeclaration.Create(from.ContainingNamespace, from.Syntax, containingScope);
 
     private To.ClassDeclaration Create(From.ClassDeclaration from, To.UnresolvedSupertypeName? baseTypeName, IEnumerable<To.ClassMemberDeclaration> members, DeclarationScope newScope, IEnumerable<To.UnresolvedSupertypeName> supertypeNames, DeclarationLexicalScope containingScope)
-        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, baseTypeName, members, newScope, from.GenericParameters, supertypeNames, containingScope, from.ContainingSymbol);
+        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, baseTypeName, members, newScope, from.GenericParameters, supertypeNames, containingScope, from.ContainingNamespace);
 
     private To.StructDeclaration Create(From.StructDeclaration from, IEnumerable<To.StructMemberDeclaration> members, DeclarationScope newScope, IEnumerable<To.UnresolvedSupertypeName> supertypeNames, DeclarationLexicalScope containingScope)
-        => To.StructDeclaration.Create(from.Syntax, members, newScope, from.GenericParameters, supertypeNames, containingScope, from.ContainingSymbol);
+        => To.StructDeclaration.Create(from.Syntax, members, newScope, from.GenericParameters, supertypeNames, containingScope, from.ContainingNamespace);
 
     private To.TraitDeclaration Create(From.TraitDeclaration from, IEnumerable<To.TraitMemberDeclaration> members, DeclarationScope newScope, IEnumerable<To.UnresolvedSupertypeName> supertypeNames, DeclarationLexicalScope containingScope)
-        => To.TraitDeclaration.Create(from.Syntax, members, newScope, from.GenericParameters, supertypeNames, containingScope, from.ContainingSymbol);
+        => To.TraitDeclaration.Create(from.Syntax, members, newScope, from.GenericParameters, supertypeNames, containingScope, from.ContainingNamespace);
 
     private To.UnresolvedIdentifierTypeName Create(From.UnresolvedIdentifierTypeName from, DeclarationLexicalScope containingScope)
         => To.UnresolvedIdentifierTypeName.Create(from.Syntax, from.Name, containingScope);

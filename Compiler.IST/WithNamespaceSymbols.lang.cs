@@ -21,15 +21,15 @@ public sealed partial class WithNamespaceSymbols
         typeof(TypeMemberDeclaration))]
     public partial interface Declaration : Code
     {
-        NamespaceSymbol? ContainingSymbol { get; }
+        NamespaceSymbol? ContainingNamespace { get; }
         new IDeclarationSyntax Syntax { get; }
         IConcreteSyntax Code.Syntax => Syntax;
     }
 
     public partial interface NamespaceDeclaration : NamespaceMemberDeclaration
     {
-        new NamespaceSymbol ContainingSymbol { get; }
-        NamespaceSymbol? Declaration.ContainingSymbol => ContainingSymbol;
+        new NamespaceSymbol ContainingNamespace { get; }
+        NamespaceSymbol? Declaration.ContainingNamespace => ContainingNamespace;
         NamespaceSymbol Symbol { get; }
         new INamespaceDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
@@ -38,19 +38,19 @@ public sealed partial class WithNamespaceSymbols
         IFixedList<UsingDirective> UsingDirectives { get; }
         IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
-        public static NamespaceDeclaration Create(NamespaceSymbol containingSymbol, NamespaceSymbol symbol, INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations)
-            => new NamespaceDeclarationNode(containingSymbol, symbol, syntax, isGlobalQualified, declaredNames, usingDirectives.ToFixedList(), declarations.ToFixedList());
+        public static NamespaceDeclaration Create(NamespaceSymbol containingNamespace, NamespaceSymbol symbol, INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IEnumerable<UsingDirective> usingDirectives, IEnumerable<NamespaceMemberDeclaration> declarations)
+            => new NamespaceDeclarationNode(containingNamespace, symbol, syntax, isGlobalQualified, declaredNames, usingDirectives.ToFixedList(), declarations.ToFixedList());
     }
 
     public partial interface FunctionDeclaration : NamespaceMemberDeclaration
     {
-        new NamespaceSymbol ContainingSymbol { get; }
-        NamespaceSymbol? Declaration.ContainingSymbol => ContainingSymbol;
+        new NamespaceSymbol ContainingNamespace { get; }
+        NamespaceSymbol? Declaration.ContainingNamespace => ContainingNamespace;
         new IFunctionDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
 
-        public static FunctionDeclaration Create(NamespaceSymbol containingSymbol, IFunctionDeclarationSyntax syntax)
-            => new FunctionDeclarationNode(containingSymbol, syntax);
+        public static FunctionDeclaration Create(NamespaceSymbol containingNamespace, IFunctionDeclarationSyntax syntax)
+            => new FunctionDeclarationNode(containingNamespace, syntax);
     }
 
     public partial interface Package : IImplementationRestricted
@@ -145,8 +145,8 @@ public sealed partial class WithNamespaceSymbols
         UnresolvedSupertypeName? BaseTypeName { get; }
         IFixedList<ClassMemberDeclaration> Members { get; }
 
-        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
-            => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingSymbol);
+        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingNamespace)
+            => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingNamespace);
     }
 
     public partial interface StructDeclaration : TypeDeclaration
@@ -155,8 +155,8 @@ public sealed partial class WithNamespaceSymbols
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<StructMemberDeclaration> Members { get; }
 
-        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
-            => new StructDeclarationNode(syntax, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingSymbol);
+        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingNamespace)
+            => new StructDeclarationNode(syntax, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingNamespace);
     }
 
     public partial interface TraitDeclaration : TypeDeclaration
@@ -165,8 +165,8 @@ public sealed partial class WithNamespaceSymbols
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<TraitMemberDeclaration> Members { get; }
 
-        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
-            => new TraitDeclarationNode(syntax, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingSymbol);
+        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingNamespace)
+            => new TraitDeclarationNode(syntax, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList(), containingNamespace);
     }
 
     public partial interface GenericParameter : Code

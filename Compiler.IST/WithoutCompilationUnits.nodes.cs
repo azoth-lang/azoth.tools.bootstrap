@@ -51,14 +51,14 @@ public sealed partial class WithoutCompilationUnits
 
     private sealed class FunctionDeclarationNode : Node, FunctionDeclaration
     {
-        public NamespaceSymbol ContainingSymbol { get; }
+        public NamespaceSymbol ContainingNamespace { get; }
         public IFunctionDeclarationSyntax Syntax { get; }
         public CodeFile File { get; }
         public DeclarationLexicalScope ContainingScope { get; }
 
-        public FunctionDeclarationNode(NamespaceSymbol containingSymbol, IFunctionDeclarationSyntax syntax, CodeFile file, DeclarationLexicalScope containingScope)
+        public FunctionDeclarationNode(NamespaceSymbol containingNamespace, IFunctionDeclarationSyntax syntax, CodeFile file, DeclarationLexicalScope containingScope)
         {
-            ContainingSymbol = containingSymbol;
+            ContainingNamespace = containingNamespace;
             Syntax = syntax;
             File = file;
             ContainingScope = containingScope;
@@ -92,9 +92,9 @@ public sealed partial class WithoutCompilationUnits
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public CodeFile File { get; }
         public DeclarationLexicalScope ContainingScope { get; }
-        public NamespaceSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingNamespace { get; }
 
-        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingSymbol)
+        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
         {
             Syntax = syntax;
             IsAbstract = isAbstract;
@@ -105,7 +105,7 @@ public sealed partial class WithoutCompilationUnits
             SupertypeNames = supertypeNames;
             File = file;
             ContainingScope = containingScope;
-            ContainingSymbol = containingSymbol;
+            ContainingNamespace = containingNamespace;
         }
     }
 
@@ -118,9 +118,9 @@ public sealed partial class WithoutCompilationUnits
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public CodeFile File { get; }
         public DeclarationLexicalScope ContainingScope { get; }
-        public NamespaceSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingNamespace { get; }
 
-        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingSymbol)
+        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
         {
             Syntax = syntax;
             Members = members;
@@ -129,7 +129,7 @@ public sealed partial class WithoutCompilationUnits
             SupertypeNames = supertypeNames;
             File = file;
             ContainingScope = containingScope;
-            ContainingSymbol = containingSymbol;
+            ContainingNamespace = containingNamespace;
         }
     }
 
@@ -142,9 +142,9 @@ public sealed partial class WithoutCompilationUnits
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public CodeFile File { get; }
         public DeclarationLexicalScope ContainingScope { get; }
-        public NamespaceSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingNamespace { get; }
 
-        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingSymbol)
+        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
         {
             Syntax = syntax;
             Members = members;
@@ -153,7 +153,7 @@ public sealed partial class WithoutCompilationUnits
             SupertypeNames = supertypeNames;
             File = file;
             ContainingScope = containingScope;
-            ContainingSymbol = containingSymbol;
+            ContainingNamespace = containingNamespace;
         }
     }
 

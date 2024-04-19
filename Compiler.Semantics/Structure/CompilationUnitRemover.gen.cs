@@ -49,7 +49,7 @@ internal sealed partial class CompilationUnitRemover
     private To.ClassDeclaration Create(From.ClassDeclaration from, CodeFile file)
         => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, Transform(from.Members, file),
             from.NewScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingScope,
-            from.ContainingSymbol);
+            from.ContainingNamespace);
 
     private IFixedList<To.ClassMemberDeclaration> Transform(IEnumerable<From.ClassMemberDeclaration> from, CodeFile file)
         => from.Select(f => Transform(f, file)).ToFixedList();
@@ -65,7 +65,7 @@ internal sealed partial class CompilationUnitRemover
 
     private To.TraitDeclaration Create(From.TraitDeclaration from, CodeFile file)
         => To.TraitDeclaration.Create(from.Syntax, Transform(from.Members, file), from.NewScope,
-            from.GenericParameters, from.SupertypeNames, file, from.ContainingScope, from.ContainingSymbol);
+            from.GenericParameters, from.SupertypeNames, file, from.ContainingScope, from.ContainingNamespace);
 
     private IFixedList<To.TraitMemberDeclaration> Transform(IEnumerable<From.TraitMemberDeclaration> from, CodeFile file)
         => from.Select(f => Transform(f, file)).ToFixedList();
@@ -81,7 +81,7 @@ internal sealed partial class CompilationUnitRemover
 
     private To.StructDeclaration Create(From.StructDeclaration from, CodeFile file)
         => To.StructDeclaration.Create(from.Syntax, Transform(from.Members, file), from.NewScope,
-            from.GenericParameters, from.SupertypeNames, file, from.ContainingScope, from.ContainingSymbol);
+            from.GenericParameters, from.SupertypeNames, file, from.ContainingScope, from.ContainingNamespace);
 
     private IFixedList<To.StructMemberDeclaration> Transform(
         IEnumerable<From.StructMemberDeclaration> from,

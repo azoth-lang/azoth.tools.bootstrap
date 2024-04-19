@@ -14,7 +14,7 @@ public sealed partial class WithNamespaceSymbols
 {
     private sealed class NamespaceDeclarationNode : Node, NamespaceDeclaration
     {
-        public NamespaceSymbol ContainingSymbol { get; }
+        public NamespaceSymbol ContainingNamespace { get; }
         public NamespaceSymbol Symbol { get; }
         public INamespaceDeclarationSyntax Syntax { get; }
         public bool IsGlobalQualified { get; }
@@ -22,9 +22,9 @@ public sealed partial class WithNamespaceSymbols
         public IFixedList<UsingDirective> UsingDirectives { get; }
         public IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
-        public NamespaceDeclarationNode(NamespaceSymbol containingSymbol, NamespaceSymbol symbol, INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations)
+        public NamespaceDeclarationNode(NamespaceSymbol containingNamespace, NamespaceSymbol symbol, INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations)
         {
-            ContainingSymbol = containingSymbol;
+            ContainingNamespace = containingNamespace;
             Symbol = symbol;
             Syntax = syntax;
             IsGlobalQualified = isGlobalQualified;
@@ -36,12 +36,12 @@ public sealed partial class WithNamespaceSymbols
 
     private sealed class FunctionDeclarationNode : Node, FunctionDeclaration
     {
-        public NamespaceSymbol ContainingSymbol { get; }
+        public NamespaceSymbol ContainingNamespace { get; }
         public IFunctionDeclarationSyntax Syntax { get; }
 
-        public FunctionDeclarationNode(NamespaceSymbol containingSymbol, IFunctionDeclarationSyntax syntax)
+        public FunctionDeclarationNode(NamespaceSymbol containingNamespace, IFunctionDeclarationSyntax syntax)
         {
-            ContainingSymbol = containingSymbol;
+            ContainingNamespace = containingNamespace;
             Syntax = syntax;
         }
     }
@@ -118,9 +118,9 @@ public sealed partial class WithNamespaceSymbols
         public IFixedList<ClassMemberDeclaration> Members { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
-        public NamespaceSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingNamespace { get; }
 
-        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
+        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingNamespace)
         {
             Syntax = syntax;
             IsAbstract = isAbstract;
@@ -128,7 +128,7 @@ public sealed partial class WithNamespaceSymbols
             Members = members;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
-            ContainingSymbol = containingSymbol;
+            ContainingNamespace = containingNamespace;
         }
     }
 
@@ -138,15 +138,15 @@ public sealed partial class WithNamespaceSymbols
         public IFixedList<StructMemberDeclaration> Members { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
-        public NamespaceSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingNamespace { get; }
 
-        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
+        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingNamespace)
         {
             Syntax = syntax;
             Members = members;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
-            ContainingSymbol = containingSymbol;
+            ContainingNamespace = containingNamespace;
         }
     }
 
@@ -156,15 +156,15 @@ public sealed partial class WithNamespaceSymbols
         public IFixedList<TraitMemberDeclaration> Members { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
-        public NamespaceSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingNamespace { get; }
 
-        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingSymbol)
+        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, NamespaceSymbol? containingNamespace)
         {
             Syntax = syntax;
             Members = members;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
-            ContainingSymbol = containingSymbol;
+            ContainingNamespace = containingNamespace;
         }
     }
 

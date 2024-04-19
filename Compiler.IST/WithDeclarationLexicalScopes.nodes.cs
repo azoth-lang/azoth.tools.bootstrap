@@ -56,7 +56,7 @@ public sealed partial class WithDeclarationLexicalScopes
     private sealed class NamespaceDeclarationNode : Node, NamespaceDeclaration
     {
         public DeclarationScope NewScope { get; }
-        public NamespaceSymbol ContainingSymbol { get; }
+        public NamespaceSymbol ContainingNamespace { get; }
         public NamespaceSymbol Symbol { get; }
         public INamespaceDeclarationSyntax Syntax { get; }
         public bool IsGlobalQualified { get; }
@@ -65,10 +65,10 @@ public sealed partial class WithDeclarationLexicalScopes
         public IFixedList<NamespaceMemberDeclaration> Declarations { get; }
         public DeclarationLexicalScope ContainingScope { get; }
 
-        public NamespaceDeclarationNode(DeclarationScope newScope, NamespaceSymbol containingSymbol, NamespaceSymbol symbol, INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations, DeclarationLexicalScope containingScope)
+        public NamespaceDeclarationNode(DeclarationScope newScope, NamespaceSymbol containingNamespace, NamespaceSymbol symbol, INamespaceDeclarationSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<UsingDirective> usingDirectives, IFixedList<NamespaceMemberDeclaration> declarations, DeclarationLexicalScope containingScope)
         {
             NewScope = newScope;
-            ContainingSymbol = containingSymbol;
+            ContainingNamespace = containingNamespace;
             Symbol = symbol;
             Syntax = syntax;
             IsGlobalQualified = isGlobalQualified;
@@ -97,13 +97,13 @@ public sealed partial class WithDeclarationLexicalScopes
 
     private sealed class FunctionDeclarationNode : Node, FunctionDeclaration
     {
-        public NamespaceSymbol ContainingSymbol { get; }
+        public NamespaceSymbol ContainingNamespace { get; }
         public IFunctionDeclarationSyntax Syntax { get; }
         public DeclarationLexicalScope ContainingScope { get; }
 
-        public FunctionDeclarationNode(NamespaceSymbol containingSymbol, IFunctionDeclarationSyntax syntax, DeclarationLexicalScope containingScope)
+        public FunctionDeclarationNode(NamespaceSymbol containingNamespace, IFunctionDeclarationSyntax syntax, DeclarationLexicalScope containingScope)
         {
-            ContainingSymbol = containingSymbol;
+            ContainingNamespace = containingNamespace;
             Syntax = syntax;
             ContainingScope = containingScope;
         }
@@ -147,9 +147,9 @@ public sealed partial class WithDeclarationLexicalScopes
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public DeclarationLexicalScope ContainingScope { get; }
-        public NamespaceSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingNamespace { get; }
 
-        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, DeclarationLexicalScope containingScope, NamespaceSymbol? containingSymbol)
+        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
         {
             Syntax = syntax;
             IsAbstract = isAbstract;
@@ -159,7 +159,7 @@ public sealed partial class WithDeclarationLexicalScopes
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
             ContainingScope = containingScope;
-            ContainingSymbol = containingSymbol;
+            ContainingNamespace = containingNamespace;
         }
     }
 
@@ -171,9 +171,9 @@ public sealed partial class WithDeclarationLexicalScopes
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public DeclarationLexicalScope ContainingScope { get; }
-        public NamespaceSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingNamespace { get; }
 
-        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, DeclarationLexicalScope containingScope, NamespaceSymbol? containingSymbol)
+        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
         {
             Syntax = syntax;
             Members = members;
@@ -181,7 +181,7 @@ public sealed partial class WithDeclarationLexicalScopes
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
             ContainingScope = containingScope;
-            ContainingSymbol = containingSymbol;
+            ContainingNamespace = containingNamespace;
         }
     }
 
@@ -193,9 +193,9 @@ public sealed partial class WithDeclarationLexicalScopes
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public DeclarationLexicalScope ContainingScope { get; }
-        public NamespaceSymbol? ContainingSymbol { get; }
+        public NamespaceSymbol? ContainingNamespace { get; }
 
-        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, DeclarationLexicalScope containingScope, NamespaceSymbol? containingSymbol)
+        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
         {
             Syntax = syntax;
             Members = members;
@@ -203,7 +203,7 @@ public sealed partial class WithDeclarationLexicalScopes
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
             ContainingScope = containingScope;
-            ContainingSymbol = containingSymbol;
+            ContainingNamespace = containingNamespace;
         }
     }
 
