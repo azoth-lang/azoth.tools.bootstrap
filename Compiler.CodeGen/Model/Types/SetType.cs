@@ -25,5 +25,8 @@ public sealed class SetType : CollectionType
     public override SetType WithSymbol(Symbol symbol)
         => new SetType(ElementType.WithSymbol(symbol));
 
+    public override bool IsSubtypeOf(Type other)
+        => other is SetType setType && ElementType.IsSubtypeOf(setType.ElementType);
+
     public override string ToString() => $"{{{ElementType}}}";
 }

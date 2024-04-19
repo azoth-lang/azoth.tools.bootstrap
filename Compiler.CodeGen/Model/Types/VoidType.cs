@@ -27,5 +27,7 @@ public sealed class VoidType : Type
 
     public override VoidType WithSymbol(Symbol symbol) => this;
 
+    public override bool IsSubtypeOf(Type other) => other is VoidType;
+
     public override string ToString() => "void";
 }

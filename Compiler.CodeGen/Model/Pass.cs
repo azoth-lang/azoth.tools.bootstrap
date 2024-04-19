@@ -26,12 +26,11 @@ public class Pass
     private readonly Parameter? toParameter;
     public Parameter? FromContextParameter { get; }
     public Parameter? ToContextParameter { get; }
-    public IFixedList<Parameter> RunParameters { get; }
-    public IFixedList<Parameter> FullRunParameters { get; }
-    public IFixedList<Parameter> RunReturnValues { get; }
-    public IFixedList<Parameter> FullRunReturnValues { get; }
-
+    public IFixedList<Parameter> PassReturnValues { get; }
     public IFixedList<Transform> DeclaredTransforms { get; }
+    public IFixedList<Parameter> RunParameters { get; }
+    public IFixedList<Parameter> RunReturnValues { get; }
+    public IFixedList<Parameter> PassParameters { get; }
     public Transform EntryTransform { get; }
     public IFixedList<Transform> Transforms { get; }
 
@@ -45,12 +44,12 @@ public class Pass
         fromParameter = CreateFromParameter();
         FromContextParameter = CreateFromContextParameter();
         RunParameters = Parameters(fromParameter, FromContextParameter);
-        FullRunParameters = Parameters(fromParameter ?? Parameter.Create(Type.VoidSymbol, "from"),
+        PassParameters = Parameters(fromParameter ?? Parameter.Create(Type.VoidSymbol, "from"),
             FromContextParameter ?? Parameter.Create(Type.VoidSymbol, "context"));
         toParameter = CreateToParameter();
         ToContextParameter = CreateToContextParameter();
         RunReturnValues = Parameters(toParameter, ToContextParameter);
-        FullRunReturnValues = Parameters(toParameter ?? Parameter.Create(Type.VoidSymbol, "to"),
+        PassReturnValues = Parameters(toParameter ?? Parameter.Create(Type.VoidSymbol, "to"),
                        ToContextParameter ?? Parameter.Create(Type.VoidSymbol, "toContext"));
         DeclaredTransforms = Syntax.Transforms.Select(t => new Transform(this, t)).ToFixedList();
         EntryTransform = DeclaredTransforms.FirstOrDefault(IsEntryTransform) ?? CreateEntryTransform();

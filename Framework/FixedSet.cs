@@ -30,10 +30,18 @@ public static class FixedSet
         return true;
     }
 
+    public static bool Contains<T>(this IFixedSet<T> set, T value)
+        => ((Of)set).Contains(value);
+
+    private abstract class Of
+    {
+        public abstract bool Contains(object? item);
+    }
+
     // These attributes make it so FixedSet.Of<T> is displayed nicely in the debugger similar to Set<T>
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
-    private sealed class Of<T> : IFixedSet<T>
+    private sealed class Of<T> : Of, IFixedSet<T>
     {
         public static readonly Of<T> Empty = new Of<T>(Enumerable.Empty<T>());
 
@@ -74,7 +82,7 @@ public static class FixedSet
         }
         #endregion
 
-        public bool Contains(T item) => items.Contains(item);
+        public override bool Contains(object? item) => item is T value && items.Contains(value);
 
         public bool IsProperSubsetOf(IEnumerable<T> other) => items.IsProperSubsetOf(other);
 

@@ -82,5 +82,7 @@ public abstract class Type : IEquatable<Type>
 
     public abstract Type WithSymbol(Symbol symbol);
 
+    public abstract bool IsSubtypeOf(Type other);
+
     public abstract override string ToString();
 }

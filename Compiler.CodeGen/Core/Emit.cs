@@ -207,7 +207,7 @@ internal static class Emit
         => fromContext is not null ? fromContext.FullName : "Void";
 
     public static string FullRunParameters(Pass pass)
-        => Parameters(pass, pass.FullRunParameters);
+        => Parameters(pass, pass.PassParameters);
 
     public static string RunParameters(Pass pass)
         => Parameters(pass, pass.RunParameters);
@@ -228,7 +228,7 @@ internal static class Emit
         => $"{PassParameterType(pass, parameter.Type)} {parameter.Name}";
 
     public static string FullRunReturnType(Pass pass)
-        => PassReturnType(pass, pass.FullRunReturnValues);
+        => PassReturnType(pass, pass.PassReturnValues);
 
     public static string RunReturnType(Pass pass)
         => PassReturnType(pass, pass.RunReturnValues);

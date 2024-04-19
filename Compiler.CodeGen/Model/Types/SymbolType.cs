@@ -1,6 +1,7 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
@@ -38,6 +39,12 @@ public sealed class SymbolType : NonVoidType
     public override int GetEquivalenceHashCode() => Symbol.GetEquivalenceHashCode();
 
     public override SymbolType WithSymbol(Symbol symbol) => new(symbol);
+
+    public override bool IsSubtypeOf(Type other)
+        => other is SymbolType type
+           && (Symbol.Equals(type.Symbol)
+               || (Symbol is InternalSymbol symbol && type.Symbol is InternalSymbol otherSymbol
+                                                   && symbol.ReferencedRule.AncestorRules.Contains(otherSymbol.ReferencedRule)));
 
     public override string ToString() => Symbol.ToString();
 }

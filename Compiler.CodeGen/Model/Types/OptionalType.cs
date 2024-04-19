@@ -31,5 +31,8 @@ public sealed class OptionalType : NonVoidType
     public override OptionalType WithSymbol(Symbol symbol)
         => new OptionalType(UnderlyingType.WithSymbol(symbol));
 
+    public override bool IsSubtypeOf(Type other)
+        => other is OptionalType optionalType && UnderlyingType.IsSubtypeOf(optionalType.UnderlyingType);
+
     public override string ToString() => UnderlyingType + "?";
 }

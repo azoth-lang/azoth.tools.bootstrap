@@ -26,5 +26,8 @@ public sealed class ListType : CollectionType
     public override ListType WithSymbol(Symbol symbol)
         => new ListType(ElementType.WithSymbol(symbol));
 
+    public override bool IsSubtypeOf(Type other)
+        => other is ListType listType && ElementType.IsSubtypeOf(listType.ElementType);
+
     public override string ToString() => ElementType + "*";
 }
