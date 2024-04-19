@@ -41,10 +41,17 @@ public sealed class SymbolType : NonVoidType
     public override SymbolType WithSymbol(Symbol symbol) => new(symbol);
 
     public override bool IsSubtypeOf(Type other)
-        => other is SymbolType type
-           && (Symbol.Equals(type.Symbol)
-               || (Symbol is InternalSymbol symbol && type.Symbol is InternalSymbol otherSymbol
-                                                   && symbol.ReferencedRule.AncestorRules.Contains(otherSymbol.ReferencedRule)));
+    {
+        if (other is OptionalType optionalType)
+            return IsSubtypeOf(optionalType.UnderlyingType);
+        if (other is not SymbolType type) return false;
+        if (Symbol.Equals(type.Symbol)) return true;
+        if (Symbol is not InternalSymbol symbol
+            || type.Symbol is not InternalSymbol otherSymbol) return false;
+        bool isSubtypeOf = symbol.ReferencedRule.AncestorRules
+                                     .Contains(otherSymbol.ReferencedRule);
+        return isSubtypeOf;
+    }
 
     public override string ToString() => Symbol.ToString();
 }

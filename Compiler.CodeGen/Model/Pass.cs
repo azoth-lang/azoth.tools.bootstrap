@@ -121,13 +121,18 @@ public class Pass
                 var fromType = transform.From[0].Type;
                 var additionalParameters = transform.From.Skip(1).ToFixedList();
                 if (additionalParameters.Count == 0) return;
-                var parentTransformsFrom = ParentTransformsFrom(fromType).Except(coveredFromTypes);
+                var parentTransformsFrom = ParentTransformsFrom(fromType)
+                                           .Except(coveredFromTypes)
+                                           .Where(t => !coveredFromTypes.Any(t.IsSubtypeOf));
                 var toGrammar = ToLanguage?.Grammar;
                 foreach (var parentFromType in parentTransformsFrom)
                 {
                     if (newTransforms.TryGetValue(parentFromType, out var parentTransform))
                     {
-                        var missingParameters = additionalParameters.Except(parentTransform.From).ToFixedList();
+                        var parentParameters = parentTransform.From;
+                        var missingParameters = additionalParameters.Except(parentParameters)
+                                                                    .Where(p => parentParameters.All(pp => pp.Name != p.Name))
+                                                                    .ToFixedList();
                         if (!missingParameters.Any())
                         {
                             // All parameters are already covered
@@ -136,13 +141,14 @@ public class Pass
 
                         // Need to create a new transform with the additional parameters
                         parentTransform = new Transform(this,
-                            parentTransform.From.Concat(missingParameters),
+                            parentParameters.Concat(missingParameters),
                             parentTransform.To, true);
                     }
                     else
                     {
                         var fromParameter = Parameter.Create(parentFromType, "from");
-                        var toSymbol = toGrammar?.RuleFor(parentFromType.UnderlyingSymbol)?.Defines;
+                        var toRule = toGrammar?.RuleFor(parentFromType.UnderlyingSymbol);
+                        var toSymbol = toRule?.Defines;
                         var toType = toSymbol is not null ? parentFromType.WithSymbol(toSymbol) : null;
                         var toParameter = Parameter.Create(toType, "to");
                         if (toParameter is null)
@@ -150,7 +156,7 @@ public class Pass
                             continue;
                         parentTransform = new Transform(this,
                             additionalParameters.Prepend(fromParameter),
-                            Parameters(toParameter), true);
+                            Parameters(toParameter), parentFromType is CollectionType || !toRule!.IsModified);
                     }
 
                     // Put new transform in the dictionary
@@ -181,12 +187,14 @@ public class Pass
         var grammar = FromLanguage!.Grammar;
         foreach (var rule in grammar.Rules)
         {
-            if (rule.AllProperties.Any(p => p.Type == fromType))
+            if (rule.AllProperties.Any(p => fromType.IsSubtypeOf(p.Type)))
                 yield return new SymbolType(rule.Defines);
 
+            foreach (var type in rule.AllProperties.Select(p => p.Type).Where(fromType.IsSubtypeOf))
+                yield return type;
+
             if (fromType is not CollectionType)
-                foreach (var property in rule.AllProperties.Where(p => p.Type.UnderlyingSymbol == fromType.UnderlyingSymbol
-                                                                       && p.Type is CollectionType))
+                foreach (var property in rule.AllProperties.Where(p => p.Type is CollectionType collectionType && fromType.IsSubtypeOf(collectionType.ElementType)))
                     yield return property.Type;
         }
     }

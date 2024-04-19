@@ -33,8 +33,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder
             _ => throw ExhaustiveMatch.Failed(from)
         };
 
-    private partial To.NamespaceDeclaration Transform(From.NamespaceDeclaration from, DeclarationLexicalScope containingScope);
-
     private To.NamespaceDeclaration Create(
         From.NamespaceDeclaration from,
         DeclarationLexicalScope containingScope,
@@ -68,11 +66,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder
             Transform(from.Members, containingScope), lexicalScope, from.GenericParameters, Transform(from.SupertypeNames, containingScope),
             containingScope, from.ContainingSymbol);
 
-    private IEnumerable<To.ClassMemberDeclaration> Transform(
-        IEnumerable<From.ClassMemberDeclaration> from,
-        DeclarationLexicalScope containingScope)
-        => from.Select(f => Transform(f, containingScope)).ToFixedList();
-
     private To.ClassMemberDeclaration Transform(From.ClassMemberDeclaration from, DeclarationLexicalScope containingScope)
         => from switch
         {
@@ -87,11 +80,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder
         => To.TraitDeclaration.Create(from.Syntax,
             Transform(from.Members, containingScope), lexicalScope, from.GenericParameters, Transform(from.SupertypeNames, containingScope),
             containingScope, from.ContainingSymbol);
-
-    private IEnumerable<To.TraitMemberDeclaration> Transform(
-        IEnumerable<From.TraitMemberDeclaration> from,
-        DeclarationLexicalScope containingScope)
-        => from.Select(f => Transform(f, containingScope)).ToFixedList();
 
     private To.TraitMemberDeclaration Transform(
         From.TraitMemberDeclaration from,
@@ -108,11 +96,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder
         DeclarationScope lexicalScope)
         => To.StructDeclaration.Create(from.Syntax, Transform(from.Members, containingScope), lexicalScope, from.GenericParameters,
             Transform(from.SupertypeNames, containingScope), containingScope, from.ContainingSymbol);
-
-    private IEnumerable<To.StructMemberDeclaration> Transform(
-        IEnumerable<From.StructMemberDeclaration> from,
-        DeclarationLexicalScope containingScope)
-        => from.Select(f => Transform(f, containingScope)).ToFixedList();
 
     private To.StructMemberDeclaration Transform(
         From.StructMemberDeclaration from,

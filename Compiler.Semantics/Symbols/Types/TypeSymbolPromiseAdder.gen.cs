@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using From = Azoth.Tools.Bootstrap.Compiler.IST.WithoutCompilationUnits;
 using To = Azoth.Tools.Bootstrap.Compiler.IST.WithTypeDeclarationPromises;
@@ -14,11 +11,6 @@ internal sealed partial class TypeSymbolPromiseAdder
     private To.Package Create(From.Package from, IPromise<Symbol>? childContainingSymbol)
         => Create(from, Transform(from.Declarations, childContainingSymbol),
             Transform(from.TestingDeclarations, childContainingSymbol));
-
-    private IFixedSet<To.NamespaceMemberDeclaration> Transform(
-        IEnumerable<From.NamespaceMemberDeclaration> from,
-        IPromise<Symbol>? containingSymbol)
-        => from.Select(f => Transform(f, containingSymbol)).ToFixedSet();
 
     private To.NamespaceMemberDeclaration Transform(From.NamespaceMemberDeclaration from, IPromise<Symbol>? containingSymbol)
         => from switch
@@ -46,11 +38,6 @@ internal sealed partial class TypeSymbolPromiseAdder
         IPromise<Symbol>? childContainingSymbol)
         => Create(from, Transform(from.Members, childContainingSymbol), symbol, containingSymbol);
 
-    private IFixedList<To.ClassMemberDeclaration> Transform(
-        IEnumerable<From.ClassMemberDeclaration> from,
-        IPromise<Symbol>? containingSymbol)
-        => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
-
     private To.ClassMemberDeclaration Transform(
         From.ClassMemberDeclaration from, IPromise<Symbol>? containingSymbol)
         => from switch
@@ -67,11 +54,6 @@ internal sealed partial class TypeSymbolPromiseAdder
         IPromise<Symbol>? childContainingSymbol)
         => Create(from, Transform(from.Members, childContainingSymbol), symbol, containingSymbol);
 
-    private IFixedList<To.TraitMemberDeclaration> Transform(
-        IEnumerable<From.TraitMemberDeclaration> from,
-        IPromise<Symbol>? containingSymbol)
-        => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
-
     private To.TraitMemberDeclaration Transform(From.TraitMemberDeclaration from, IPromise<Symbol>? containingSymbol)
         => from switch
         {
@@ -87,11 +69,6 @@ internal sealed partial class TypeSymbolPromiseAdder
         IPromise<Symbol> containingSymbol,
         IPromise<Symbol>? childContainingSymbol)
         => Create(from, Transform(from.Members, childContainingSymbol), symbol, containingSymbol);
-
-    private IFixedList<To.StructMemberDeclaration> Transform(
-        IEnumerable<From.StructMemberDeclaration> from,
-        IPromise<Symbol>? containingSymbol)
-        => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
 
     private To.StructMemberDeclaration Transform(
         From.StructMemberDeclaration from,

@@ -41,6 +41,18 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
 
     private partial To.TypeDeclaration Transform(From.TypeDeclaration from, IPromise<Symbol>? containingSymbol);
 
+    private IFixedSet<To.NamespaceMemberDeclaration> Transform(IEnumerable<From.NamespaceMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
+        => from.Select(f => Transform(f, containingSymbol)).ToFixedSet();
+
+    private IFixedList<To.ClassMemberDeclaration> Transform(IEnumerable<From.ClassMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
+        => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
+
+    private IFixedList<To.StructMemberDeclaration> Transform(IEnumerable<From.StructMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
+        => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
+
+    private IFixedList<To.TraitMemberDeclaration> Transform(IEnumerable<From.TraitMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
+        => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
+
     private To.Package Create(From.Package from, IEnumerable<To.NamespaceMemberDeclaration> declarations, IEnumerable<To.NamespaceMemberDeclaration> testingDeclarations)
         => To.Package.Create(declarations, testingDeclarations, from.LexicalScope, from.Syntax, from.Symbol, from.References);
 

@@ -42,8 +42,22 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
 
     private partial To.TypeDeclaration Transform(From.TypeDeclaration from, DeclarationLexicalScope containingScope);
 
+    private partial To.NamespaceDeclaration Transform(From.NamespaceDeclaration from, DeclarationLexicalScope containingScope);
+
     private IFixedSet<To.CompilationUnit> Transform(IEnumerable<From.CompilationUnit> from, PackageReferenceScope containingScope)
         => from.Select(f => Transform(f, containingScope)).ToFixedSet();
+
+    private IFixedList<To.NamespaceMemberDeclaration> Transform(IEnumerable<From.NamespaceMemberDeclaration> from, DeclarationLexicalScope containingScope)
+        => from.Select(f => Transform(f, containingScope)).ToFixedList();
+
+    private IFixedList<To.ClassMemberDeclaration> Transform(IEnumerable<From.ClassMemberDeclaration> from, DeclarationLexicalScope containingScope)
+        => from.Select(f => Transform(f, containingScope)).ToFixedList();
+
+    private IFixedList<To.StructMemberDeclaration> Transform(IEnumerable<From.StructMemberDeclaration> from, DeclarationLexicalScope containingScope)
+        => from.Select(f => Transform(f, containingScope)).ToFixedList();
+
+    private IFixedList<To.TraitMemberDeclaration> Transform(IEnumerable<From.TraitMemberDeclaration> from, DeclarationLexicalScope containingScope)
+        => from.Select(f => Transform(f, containingScope)).ToFixedList();
 
     private To.Package Create(From.Package from, PackageReferenceScope lexicalScope, IEnumerable<To.CompilationUnit> compilationUnits, IEnumerable<To.CompilationUnit> testingCompilationUnits)
         => To.Package.Create(lexicalScope, from.Syntax, from.Symbol, from.References, compilationUnits, testingCompilationUnits);

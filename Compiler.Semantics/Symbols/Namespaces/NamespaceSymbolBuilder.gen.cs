@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
-using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using From = Azoth.Tools.Bootstrap.Compiler.IST.Concrete;
 using To = Azoth.Tools.Bootstrap.Compiler.IST.WithNamespaceSymbols;
@@ -16,9 +13,6 @@ internal sealed partial class NamespaceSymbolBuilder
         NamespaceSymbol containingSymbol,
         ISymbolTreeBuilder treeBuilder)
         => Create(from, Transform(from.Declarations, containingSymbol, treeBuilder));
-
-    private IFixedList<To.NamespaceMemberDeclaration> Transform(IEnumerable<From.NamespaceMemberDeclaration> from, NamespaceSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
-        => from.Select(f => Transform(f, containingSymbol, treeBuilder)).ToFixedList();
 
     private To.NamespaceMemberDeclaration Transform(From.NamespaceMemberDeclaration from, NamespaceSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
     {
@@ -70,9 +64,6 @@ internal sealed partial class NamespaceSymbolBuilder
         NamespaceSymbol? childContainingSymbol)
         => To.StructDeclaration.Create(from.Syntax, Transform(from.Members, childContainingSymbol), from.GenericParameters, from.SupertypeNames, containingSymbol);
 
-    private IFixedList<To.ClassMemberDeclaration> Transform(IEnumerable<From.ClassMemberDeclaration> from, NamespaceSymbol? containingSymbol)
-        => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
-
     private To.ClassMemberDeclaration Transform(From.ClassMemberDeclaration from, NamespaceSymbol? containingSymbol)
     {
         return from switch
@@ -82,11 +73,6 @@ internal sealed partial class NamespaceSymbolBuilder
         };
     }
 
-    private IEnumerable<To.TraitMemberDeclaration> Transform(
-        IEnumerable<From.TraitMemberDeclaration> from,
-        NamespaceSymbol? containingSymbol)
-        => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
-
     private To.TraitMemberDeclaration Transform(From.TraitMemberDeclaration from, NamespaceSymbol? containingSymbol)
     {
         return from switch
@@ -95,11 +81,6 @@ internal sealed partial class NamespaceSymbolBuilder
             _ => throw ExhaustiveMatch.Failed(from)
         };
     }
-
-    private IEnumerable<To.StructMemberDeclaration> Transform(
-        IEnumerable<From.StructMemberDeclaration> from,
-        NamespaceSymbol? containingSymbol)
-        => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
 
     private To.StructMemberDeclaration Transform(From.StructMemberDeclaration from, NamespaceSymbol? containingSymbol)
     {
