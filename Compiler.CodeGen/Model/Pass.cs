@@ -182,8 +182,13 @@ public class Pass
                 yield return type;
 
             if (fromType is not CollectionType)
-                foreach (var property in rule.AllProperties.Where(p => p.Type is CollectionType collectionType && fromType.IsSubtypeOf(collectionType.ElementType)))
-                    yield return property.Type;
+                foreach (var type in rule.AllProperties
+                                             .Select(p => p.Type)
+                                             .OfType<CollectionType>()
+                                             .Where(t => fromType.IsSubtypeOf(t.ElementType)))
+                {
+                    yield return type;
+                }
         }
     }
 }
