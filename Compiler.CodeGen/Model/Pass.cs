@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
@@ -168,17 +167,6 @@ public class Pass
             }
         }
 
-        //var coveredTransformPairs = transforms.Select(TransformTypePair.Create).WhereNotNull().ToFixedSet();
-
-        //var transformToPairs = ToLanguage?.Grammar.Rules.SelectMany(r => r.DeclaredProperties.Select(p => p.Type))
-        //                                   .Where(t => t.Symbol.ReferencedRule?.IsModified ?? false)
-        //                                   .Distinct()
-        //                                   .Select(CreateTransformTypePairFromTargetType)
-        //                                   .Except(coveredTransformPairs)
-        //                                   .ToFixedList() ?? FixedList.Empty<TransformTypePair>();
-
-        //transforms.AddRange(transformToPairs.Select(p => p.ToTransform(this)));
-
         return transforms.ToFixedList();
     }
 
@@ -197,52 +185,5 @@ public class Pass
                 foreach (var property in rule.AllProperties.Where(p => p.Type is CollectionType collectionType && fromType.IsSubtypeOf(collectionType.ElementType)))
                     yield return property.Type;
         }
-    }
-
-    //private TransformTypePair CreateTransformTypePairFromTargetType(Type targetType)
-    //{
-    //    var fromSymbol = ((InternalSymbol)targetType.Symbol).ReferencedRule!.ExtendsRule!.Defines;
-    //    var fromType = Type.Create(fromSymbol, targetType.CollectionKind);
-    //    return new(fromType, targetType);
-    //}
-
-    private class TransformTypePair(NonVoidType from, NonVoidType to) : IEquatable<TransformTypePair>
-    {
-        public static TransformTypePair? Create(Transform transform)
-        {
-            var fromType = transform.From.FirstOrDefault()?.Type;
-            var toType = transform.To.FirstOrDefault()?.Type;
-            if (fromType is null || toType is null)
-                return null;
-            return new(fromType, toType);
-        }
-
-        public NonVoidType From { get; } = from;
-        public NonVoidType To { get; } = to;
-
-        public bool Equals(TransformTypePair? other)
-        {
-            if (other is null)
-                return false;
-            if (ReferenceEquals(this, other))
-                return true;
-            //return From.IsEquivalentTo(other.From) && To.IsEquivalentTo(other.To);
-            throw new NotImplementedException();
-        }
-
-        public override bool Equals(object? obj)
-            => obj is TransformTypePair other && Equals(other);
-
-        public override int GetHashCode() => HashCode.Combine(From, To);
-
-        public static bool operator ==(TransformTypePair? left, TransformTypePair? right) => Equals(left, right);
-
-        public static bool operator !=(TransformTypePair? left, TransformTypePair? right) => !Equals(left, right);
-
-        public Transform ToTransform(Pass pass)
-            => new Transform(pass,
-                Parameter.Create(From, "from").Yield(),
-                Parameter.Create(To, "to").Yield(),
-                autoGenerate: true);
     }
 }
