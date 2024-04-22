@@ -124,10 +124,10 @@ internal static class Parsing
     public static PropertyNode ParseProperty(string property)
         => ParseBinding(property, null, (name, type) => new PropertyNode(name, type));
 
-    public static ParameterNode ParseParameter(string property, string? defaultNodeName)
-        => ParseBinding(property, defaultNodeName, (name, type) => new ParameterNode(name.ToCamelCase(), type));
+    public static ParameterNode ParseParameter(string property, string? defaultName)
+        => ParseBinding(property, defaultName, (name, type) => new ParameterNode(name.ToCamelCase(), type));
 
-    private static T ParseBinding<T>(string property, string? defaultNodeName, Func<string, TypeNode, T> create)
+    private static T ParseBinding<T>(string property, string? defaultName, Func<string, TypeNode, T> create)
     {
         var isOptional = property.EndsWith('?');
         property = isOptional ? property[..^1] : property;
@@ -141,9 +141,7 @@ internal static class Parsing
                 var type = parts[0];
                 var collectionKind = ParseCollectionKind(ref type);
                 var grammarType = new TypeNode(ParseSymbol(type), collectionKind, isOptional);
-                if (grammarType.Symbol.IsQuoted)
-                    defaultNodeName = null; // Only apply default name to AST nodes
-                var name = defaultNodeName ?? grammarType.Symbol.Text;
+                var name = defaultName ?? grammarType.Symbol.Text;
                 return create(name, grammarType);
             }
             case 2:

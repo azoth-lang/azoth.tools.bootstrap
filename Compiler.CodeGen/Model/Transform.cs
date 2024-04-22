@@ -12,10 +12,10 @@ public sealed class Transform
     public bool IsDeclared => Syntax is not null;
     public Parameter? From { get; }
     public IFixedList<Parameter> AdditionalParameters { get; }
+    public IFixedList<Parameter> AllParameters { get; }
     public Parameter? To { get; }
     public IFixedList<Parameter> AdditionalReturnValues { get; }
-    public IFixedList<Parameter> Parameters { get; }
-    public IFixedList<Parameter> ReturnValues { get; }
+    public IFixedList<Parameter> AllReturnValues { get; }
     public bool AutoGenerate { get; }
 
     public Transform(Pass pass, TransformNode syntax)
@@ -25,10 +25,10 @@ public sealed class Transform
         var grammar = pass.FromLanguage?.Grammar;
         From = Parameter.CreateFromSyntax(grammar, syntax.From);
         AdditionalParameters = syntax.AdditionalParameters.Select(p => Parameter.CreateFromSyntax(grammar, p)).ToFixedList();
+        AllParameters = From.YieldValue().Concat(AdditionalParameters).ToFixedList();
         To = Parameter.CreateFromSyntax(pass.ToLanguage?.Grammar, syntax.To);
         AdditionalReturnValues = syntax.AdditionalReturnValues.Select(p => Parameter.CreateFromSyntax(pass.ToLanguage?.Grammar, p)).ToFixedList();
-        Parameters = From.YieldValue().Concat(AdditionalParameters).ToFixedList();
-        ReturnValues = To.YieldValue().Concat(AdditionalReturnValues).ToFixedList();
+        AllReturnValues = To.YieldValue().Concat(AdditionalReturnValues).ToFixedList();
         AutoGenerate = Syntax.AutoGenerate;
     }
 
@@ -38,10 +38,10 @@ public sealed class Transform
         Pass = pass;
         From = from;
         AdditionalParameters = additionalParameters.ToFixedList();
+        AllParameters = From.YieldValue().Concat(AdditionalParameters).ToFixedList();
         To = to;
         AdditionalReturnValues = additionalReturnValues.ToFixedList();
-        Parameters = From.YieldValue().Concat(AdditionalParameters).ToFixedList();
-        ReturnValues = To.YieldValue().Concat(AdditionalReturnValues).ToFixedList();
+        AllReturnValues = To.YieldValue().Concat(AdditionalReturnValues).ToFixedList();
         AutoGenerate = autoGenerate;
     }
 }

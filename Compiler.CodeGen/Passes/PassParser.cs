@@ -21,8 +21,8 @@ internal static class PassParser
         var context = Parsing.GetConfig(lines, "context");
         var (fromContext, toContext) = ParseContext(context);
 
-        var hasFromLanguage = fromName is not null && !fromName.IsQuoted;
-        var hasToLanguage = toName is not null && !toName.IsQuoted;
+        var hasFromLanguage = fromName is not null;
+        var hasToLanguage = toName is not null;
         var transforms = ParseTransforms(lines, hasFromLanguage, hasToLanguage).ToFixedList();
 
         return new PassNode(ns, name, usingNamespaces, fromContext, toContext, fromName, toName, transforms);
@@ -101,18 +101,18 @@ internal static class PassParser
     private static (ParameterNode?, IFixedList<ParameterNode>) ParseParameters(
         string parameters,
         bool hasLanguage,
-        string? defaultFirstNodeName)
+        string? defaultFirstName)
     {
-        var allParameters = ParseAllParameters(parameters, defaultFirstNodeName).ToFixedList();
-        if (!hasLanguage || (allParameters.FirstOrDefault()?.Type.Symbol.IsQuoted ?? true))
+        var allParameters = ParseAllParameters(parameters, defaultFirstName).ToFixedList();
+        if (!hasLanguage || allParameters.Count == 0)
             return (null, allParameters);
         return (allParameters[0], allParameters.Skip(1).ToFixedList());
     }
 
-    private static IEnumerable<ParameterNode> ParseAllParameters(string parameters, string? defaultFirstNodeName)
+    private static IEnumerable<ParameterNode> ParseAllParameters(string parameters, string? defaultFirstName)
     {
         var properties = SplitParameters(parameters);
-        var defaultName = defaultFirstNodeName;
+        var defaultName = defaultFirstName;
         foreach (var property in properties)
         {
             yield return Parsing.ParseParameter(property, defaultName);

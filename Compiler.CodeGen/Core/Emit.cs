@@ -213,7 +213,7 @@ internal static class Emit
         => Parameters(pass, pass.RunParameters);
 
     public static string Parameters(Transform transform)
-        => Parameters(transform.Pass, transform.Parameters);
+        => Parameters(transform.Pass, transform.AllParameters);
 
     public static string Arguments(IEnumerable<Parameter> parameters)
         => string.Join(", ", parameters.Select(ParameterName));
@@ -247,7 +247,7 @@ internal static class Emit
     }
 
     public static string ReturnType(Transform transform)
-        => PassReturnType(transform.Pass, transform.ReturnValues);
+        => PassReturnType(transform.Pass, transform.AllReturnValues);
 
     public static string PassReturnType(Pass pass, IFixedList<Parameter> returnValues)
     {
@@ -271,7 +271,7 @@ internal static class Emit
         => pass.FromContextParameter is not null ? ParameterName(pass.FromContextParameter) : "";
 
     public static string EntryResult(Pass pass)
-        => Result(pass.EntryTransform.ReturnValues);
+        => Result(pass.EntryTransform.AllReturnValues);
 
     private static string Result(IFixedList<Parameter> returnValues)
     {
@@ -287,10 +287,10 @@ internal static class Emit
         => pass.To is not null ? "Transform" : "Analyze";
 
     public static string EntryParameterNames(Pass pass)
-        => Arguments(pass.EntryTransform.Parameters);
+        => Arguments(pass.EntryTransform.AllParameters);
 
     public static string AccessModifier(Transform transform)
-        => AccessModifier(transform.ReturnValues);
+        => AccessModifier(transform.AllReturnValues);
 
     private static string AccessModifier(IEnumerable<Parameter> returnValues)
         => returnValues.Any() ? "private " : "";
@@ -302,16 +302,10 @@ internal static class Emit
         => PassReturnType(pass, StartRunReturnValues(pass).ToFixedList());
 
     private static IEnumerable<Parameter> StartRunReturnValues(Pass pass)
-    {
-        if (pass.From is null) return pass.EntryTransform.Parameters;
-        return pass.EntryTransform.Parameters.Skip(1);
-    }
+        => pass.EntryTransform.AdditionalParameters;
 
     public static string StartRunResult(Pass pass)
-    {
-        var skip = pass.From is null ? 0 : 1;
-        return Result(pass.EntryTransform.Parameters.Skip(skip).ToFixedList());
-    }
+        => Result(pass.EntryTransform.AdditionalParameters);
     #endregion
 
     #region EndRun()
@@ -319,7 +313,7 @@ internal static class Emit
         => EndRunReturnValues(pass).Any() ? "private " : "";
 
     public static string EndRunParameters(Pass pass)
-        => Parameters(pass, pass.EntryTransform.ReturnValues);
+        => Parameters(pass, pass.EntryTransform.AllReturnValues);
 
     public static string EndRunReturnType(Pass pass)
         => PassReturnType(pass, EndRunReturnValues(pass).ToFixedList());
@@ -331,7 +325,7 @@ internal static class Emit
     }
 
     public static string EndRunArguments(Pass pass)
-        => Arguments(pass.EntryTransform.ReturnValues);
+        => Arguments(pass.EntryTransform.AllReturnValues);
 
     public static string EndRunResult(Pass pass)
         => Result(pass.ToContextParameter.YieldValue().ToFixedList());
@@ -340,17 +334,17 @@ internal static class Emit
     #region Transform()
     public static string TransformNotNullAttribute(Transform transform)
     {
-        if (transform.Parameters[0].Type is not OptionalType) return "";
+        if (transform.From?.Type is not OptionalType) return "";
         return "[return: NotNullIfNotNull(nameof(from))]\r\n    ";
     }
 
     public static string TransformMethodBody(Transform transform)
     {
-        var fromType = transform.Parameters[0].Type;
-        var toType = transform.ReturnValues[0].Type;
+        var fromType = transform.From?.Type;
+        var toType = transform.To?.Type;
         if (fromType is CollectionType fromCollectionType && toType is CollectionType toCollectionType)
             return TransformCollectionMethodBody(transform, fromCollectionType, toCollectionType);
-        if (fromType.UnderlyingSymbol is InternalSymbol { ReferencedRule: { IsTerminal: false } rule })
+        if (fromType?.UnderlyingSymbol is InternalSymbol { ReferencedRule: { IsTerminal: false } rule })
             return TransformNonTerminalMethodBody(transform, rule);
 
         return TransformTerminalMethodBody(transform, fromType);
@@ -368,20 +362,18 @@ internal static class Emit
             _ => throw ExhaustiveMatch.Failed(toType)
         };
         Transform? calledTransform = CalledTransform(transform, fromType.ElementType);
-        var calledTransformReturnsCollection = calledTransform?.ReturnValues[0].Type is CollectionType;
+        var calledTransformReturnsCollection = calledTransform?.AllReturnValues[0].Type is CollectionType;
         var selectMethod = calledTransformReturnsCollection ? "SelectMany" : "Select";
-        var parameters = transform.Parameters.Skip(1).Select(ParameterName).Prepend("f").ToFixedList();
+        var parameters = transform.AdditionalParameters.Select(ParameterName).Prepend("f").ToFixedList();
         var parameterNames = string.Join(", ", parameters);
         return
-            $"{ParameterName(transform.Parameters[0])}.{selectMethod}(f => {MethodName(transform.Pass)}({parameterNames})).To{resultCollection}()";
+            $"{ParameterName(transform.From!)}.{selectMethod}(f => {MethodName(transform.Pass)}({parameterNames})).To{resultCollection}()";
     }
 
     private static Transform? CalledTransform(Transform transform, NonVoidType fromType)
     {
-        //var calledParameters = transform.From.Skip(1).Prepend(Model.Parameter.Create(fromType, "from"))
-        //                                .ToFixedList();
-        var calledTransform = transform.Pass.Transforms.SingleOrDefault(t => fromType == t.Parameters[0].Type);
-        calledTransform ??= transform.Pass.Transforms.FirstOrDefault(t => fromType.IsSubtypeOf(t.Parameters[0].Type));
+        var calledTransform = transform.Pass.Transforms.SingleOrDefault(t => fromType == t.From?.Type);
+        calledTransform ??= transform.Pass.Transforms.FirstOrDefault(t => t.From is not null && fromType.IsSubtypeOf(t.From.Type));
         return calledTransform;
     }
 
@@ -400,7 +392,7 @@ internal static class Emit
             if (calledTransform is not null)
             {
                 builder.Append("Transform(");
-                var additionalArguments = calledTransform.Parameters.Skip(1).Select(ParameterName);
+                var additionalArguments = calledTransform.AdditionalParameters.Select(ParameterName);
                 builder.AppendJoin(", ", additionalArguments.Prepend("f"));
                 builder.Append(')');
             }
@@ -415,9 +407,9 @@ internal static class Emit
         return builder.ToString();
     }
 
-    private static string TransformTerminalMethodBody(Transform transform, NonVoidType fromType)
+    private static string TransformTerminalMethodBody(Transform transform, NonVoidType? fromType)
     {
-        var body = $"Create({Arguments(transform.Parameters)})";
+        var body = $"Create({Arguments(transform.AllParameters)})";
         if (fromType is OptionalType)
             body = $"from is not null ? {body} : null";
         return body;

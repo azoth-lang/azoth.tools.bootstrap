@@ -90,12 +90,12 @@ public class Pass
 
     private bool IsEntryTransform(Transform transform)
     {
-        var fromType = FromLanguage is not null ? transform.Parameters[0].Type : null;
-        var toType = ToLanguage is not null ? transform.ReturnValues[0].Type : null;
+        var fromType = transform.From?.Type;
+        var toType = transform.To?.Type;
         if (fromType is null || toType is null)
             return true;
-        return Type.AreEquivalent(fromType, fromParameter?.Type)
-               && Type.AreEquivalent(toType, toParameter?.Type);
+        return Equals(fromType, fromParameter?.Type)
+               && Equals(toType, toParameter?.Type);
     }
 
     private Transform CreateEntryTransform()
@@ -107,7 +107,7 @@ public class Pass
 
         if (FromLanguage is not null)
         {
-            var coveredFromTypes = transforms.Select(t => t.Parameters[0].Type).ToFixedSet();
+            var coveredFromTypes = transforms.Select(t => t.From!.Type).ToFixedSet();
             var newTransforms = new Dictionary<Type, Transform>();
 
             if (ToLanguage is not null && FromLanguage != ToLanguage)
@@ -140,8 +140,8 @@ public class Pass
 
             void BubbleParametersUp(Transform transform)
             {
-                var fromType = transform.Parameters[0].Type;
-                var additionalParameters = transform.Parameters.Skip(1).ToFixedList();
+                var fromType = transform.From!.Type;
+                var additionalParameters = transform.AdditionalParameters;
                 if (additionalParameters.Count == 0) return;
                 var parentTransformsFrom = ParentTransformsFrom(fromType)
                                            .Except(coveredFromTypes).Except(fromType)
@@ -157,10 +157,10 @@ public class Pass
 
                     if (newTransforms.TryGetValue(parentLookupType, out var parentTransform))
                     {
-                        var parentParameters = parentTransform.Parameters;
-                        bool fromTypeChanged = !parentFromType.IsSubtypeOf(parentParameters[0].Type);
-                        var missingParameters = additionalParameters.Except(parentParameters)
-                                                                    .Where(p => parentParameters.All(pp => pp.Name != p.Name))
+                        bool fromTypeChanged = !parentFromType.IsSubtypeOf(parentTransform.From!.Type);
+                        var parentAdditionalParameters = parentTransform.AdditionalParameters;
+                        var missingParameters = additionalParameters.Except(parentAdditionalParameters)
+                                                                    .Where(p => parentAdditionalParameters.All(pp => pp.Name != p.Name))
                                                                     .ToFixedList();
 
                         // We have to re-create the transform if there are missing parameters OR
@@ -172,7 +172,7 @@ public class Pass
                         }
 
                         var parentFrom = parentTransform.From;
-                        var parentReturnValues = parentTransform.ReturnValues;
+                        var parentReturnValues = parentTransform.AllReturnValues;
                         var parentTo = parentTransform.To;
                         if (fromTypeChanged)
                         {
