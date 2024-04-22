@@ -66,15 +66,15 @@ internal static class PassParser
             {
                 if (hasToLanguage)
                     throw new FormatException($"Transform must have a return type because transforming to a language. '{transform}'");
-                var transformFrom = ParseTransformFrom(parts[0], hasFromLanguage);
-                return new TransformNode(transformFrom, FixedList.Empty<ParameterNode>(), autoGenerate);
+                var (from, additionalParameters) = ParseTransformFrom(parts[0], hasFromLanguage);
+                return new TransformNode(from, additionalParameters, null, FixedList.Empty<ParameterNode>(), autoGenerate);
             }
             case 2:
             {
-                var transformFrom = ParseTransformFrom(parts[0], hasFromLanguage);
-                var defaultSymbol = hasFromLanguage ? transformFrom[0].Type.Symbol : null;
-                var transformTo = ParseTransformTo(parts[1], hasToLanguage, defaultSymbol);
-                return new TransformNode(transformFrom, transformTo, autoGenerate);
+                var (from, additionalParameters) = ParseTransformFrom(parts[0], hasFromLanguage);
+                var defaultSymbol = from?.Type.Symbol;
+                var (to, additionalReturnValues) = ParseTransformTo(parts[1], hasToLanguage, defaultSymbol);
+                return new TransformNode(from, additionalParameters, to, additionalReturnValues, autoGenerate);
             }
             default:
                 throw new FormatException($"Invalid transform format '{transform}'");
@@ -91,24 +91,28 @@ internal static class PassParser
         throw new FormatException($"Invalid transform format '{transform}'");
     }
 
-    private static IFixedList<ParameterNode> ParseTransformFrom(string parameters, bool hasFromLanguage)
+    private static (ParameterNode?, IFixedList<ParameterNode>) ParseTransformFrom(string parameters, bool hasFromLanguage)
     {
         var defaultFirstName = hasFromLanguage ? "from" : null;
-        var parameterSyntax = ParseParameters(parameters, defaultFirstName).ToFixedList();
-        if (hasFromLanguage)
-        {
-            if (parameterSyntax.Count == 0)
-                throw new FormatException($"Transform must have parameters because transforming from a language. '{parameters}'");
-            if (parameterSyntax[0].Type.Symbol.IsQuoted)
-                throw new FormatException($"First parameter must not be quoted because transforming from a language. '{parameters}'");
-        }
-        return parameterSyntax;
+        var (fromSyntax, additionalParametersSyntax) = ParseParameters(parameters, hasFromLanguage, defaultFirstName);
+        return (fromSyntax, additionalParametersSyntax);
     }
 
-    private static IEnumerable<ParameterNode> ParseParameters(string parameters, string? defaultFirstName)
+    private static (ParameterNode?, IFixedList<ParameterNode>) ParseParameters(
+        string parameters,
+        bool hasLanguage,
+        string? defaultFirstNodeName)
+    {
+        var allParameters = ParseAllParameters(parameters, defaultFirstNodeName).ToFixedList();
+        if (!hasLanguage || (allParameters.FirstOrDefault()?.Type.Symbol.IsQuoted ?? true))
+            return (null, allParameters);
+        return (allParameters[0], allParameters.Skip(1).ToFixedList());
+    }
+
+    private static IEnumerable<ParameterNode> ParseAllParameters(string parameters, string? defaultFirstNodeName)
     {
         var properties = SplitParameters(parameters);
-        var defaultName = defaultFirstName;
+        var defaultName = defaultFirstNodeName;
         foreach (var property in properties)
         {
             yield return Parsing.ParseParameter(property, defaultName);
@@ -119,7 +123,7 @@ internal static class PassParser
     public static IEnumerable<string> SplitParameters(string definition)
         => definition.SplitOrEmpty(',').Select(p => p.Trim());
 
-    private static IFixedList<ParameterNode> ParseTransformTo(
+    private static (ParameterNode?, IFixedList<ParameterNode>) ParseTransformTo(
         string returnValues,
         bool hasToLanguage,
         SymbolNode? defaultSymbol)
@@ -127,14 +131,7 @@ internal static class PassParser
         if (defaultSymbol is not null)
             returnValues = returnValues.Replace("~", defaultSymbol.ToString());
         var defaultFirstName = hasToLanguage ? "to" : null;
-        var returnSyntax = ParseParameters(returnValues, defaultFirstName).ToFixedList();
-        if (hasToLanguage)
-        {
-            if (returnSyntax.Count == 0)
-                throw new FormatException($"Transform must have return values because transforming to a language. '{returnValues}'");
-            if (returnSyntax[0].Type.Symbol.IsQuoted)
-                throw new FormatException($"First return value must not be quoted because transforming to a language. '{returnValues}'");
-        }
-        return returnSyntax;
+        var (toSyntax, additionalReturnValueSyntax) = ParseParameters(returnValues, hasToLanguage, defaultFirstName);
+        return (toSyntax, additionalReturnValueSyntax);
     }
 }

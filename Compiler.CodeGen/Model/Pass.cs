@@ -90,8 +90,8 @@ public class Pass
 
     private bool IsEntryTransform(Transform transform)
     {
-        var fromType = FromLanguage is not null ? transform.From[0].Type : null;
-        var toType = ToLanguage is not null ? transform.To[0].Type : null;
+        var fromType = FromLanguage is not null ? transform.Parameters[0].Type : null;
+        var toType = ToLanguage is not null ? transform.ReturnValues[0].Type : null;
         if (fromType is null || toType is null)
             return true;
         return Type.AreEquivalent(fromType, fromParameter?.Type)
@@ -99,7 +99,7 @@ public class Pass
     }
 
     private Transform CreateEntryTransform()
-        => new(this, Parameters(fromParameter), Parameters(toParameter), false);
+        => new(this, fromParameter, FixedList.Empty<Parameter>(), toParameter, FixedList.Empty<Parameter>(), false);
 
     private IFixedList<Transform> CreateTransforms()
     {
@@ -107,7 +107,7 @@ public class Pass
 
         if (FromLanguage is not null)
         {
-            var coveredFromTypes = transforms.Select(t => t.From[0].Type).ToFixedSet();
+            var coveredFromTypes = transforms.Select(t => t.Parameters[0].Type).ToFixedSet();
             var newTransforms = new Dictionary<Type, Transform>();
 
             if (ToLanguage is not null && FromLanguage != ToLanguage)
@@ -127,9 +127,8 @@ public class Pass
                     var toType = fromType.WithSymbol(toSymbol);
                     var toParameter = Parameter.Create(toType, "to");
                     var additionalParameters = toRule.ModifiedProperties.Select(p => p.ToParameter());
-                    newTransforms[fromType] = new Transform(this,
-                        additionalParameters.Prepend(fromParameter),
-                        Parameters(toParameter), true);
+                    newTransforms[fromType] = new Transform(this, fromParameter, additionalParameters,
+                        toParameter, FixedList.Empty<Parameter>(), true);
                 }
             }
 
@@ -141,8 +140,8 @@ public class Pass
 
             void BubbleParametersUp(Transform transform)
             {
-                var fromType = transform.From[0].Type;
-                var additionalParameters = transform.From.Skip(1).ToFixedList();
+                var fromType = transform.Parameters[0].Type;
+                var additionalParameters = transform.Parameters.Skip(1).ToFixedList();
                 if (additionalParameters.Count == 0) return;
                 var parentTransformsFrom = ParentTransformsFrom(fromType)
                                            .Except(coveredFromTypes).Except(fromType)
@@ -158,7 +157,7 @@ public class Pass
 
                     if (newTransforms.TryGetValue(parentLookupType, out var parentTransform))
                     {
-                        var parentParameters = parentTransform.From;
+                        var parentParameters = parentTransform.Parameters;
                         bool fromTypeChanged = !parentFromType.IsSubtypeOf(parentParameters[0].Type);
                         var missingParameters = additionalParameters.Except(parentParameters)
                                                                     .Where(p => parentParameters.All(pp => pp.Name != p.Name))
@@ -172,21 +171,21 @@ public class Pass
                             continue;
                         }
 
-                        var parentReturnValues = parentTransform.To;
+                        var parentFrom = parentTransform.From;
+                        var parentReturnValues = parentTransform.ReturnValues;
+                        var parentTo = parentTransform.To;
                         if (fromTypeChanged)
                         {
-                            parentParameters = parentParameters.Skip(1)
-                                                               .Prepend(Parameter.Create(parentFromType, "from"))
-                                                               .ToFixedList();
+                            parentFrom = Parameter.Create(parentFromType, "from");
                             // Make the to type optional if the parent from type is optional
                             var toType = new OptionalType(parentReturnValues[0].Type);
-                            parentReturnValues = parentReturnValues.Skip(1)
-                                                                   .Prepend(Parameter.Create(toType, "to"))
-                                                                   .ToFixedList();
+                            parentTo = Parameter.Create(toType, "to");
                         }
                         // Need to create a new transform with the additional parameters
                         parentTransform = new Transform(this,
-                            parentParameters.Concat(missingParameters), parentReturnValues,
+                            parentFrom,
+                            parentTransform.AdditionalParameters.Concat(missingParameters),
+                            parentTo, parentTransform.AdditionalReturnValues,
                             parentTransform.AutoGenerate);
                     }
                     else
@@ -202,8 +201,8 @@ public class Pass
                         bool autoGenerate = parentFromType is CollectionType
                                             || !toRule!.IsModified || !toRule.IsTerminal;
                         parentTransform = new Transform(this,
-                            additionalParameters.Prepend(fromParameter),
-                            Parameters(toParameter), autoGenerate);
+                            fromParameter, additionalParameters,
+                            toParameter, FixedList.Empty<Parameter>(), autoGenerate);
                     }
 
                     // Put new transform in the dictionary
