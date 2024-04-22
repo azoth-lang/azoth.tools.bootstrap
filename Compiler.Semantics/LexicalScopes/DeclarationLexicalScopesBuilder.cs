@@ -16,7 +16,8 @@ internal partial class DeclarationLexicalScopesBuilder
         return Create(from, scope, scope);
     }
 
-    private partial To.CompilationUnit Transform(From.CompilationUnit from, PackageReferenceScope containingScope)
+    private partial To.CompilationUnit Transform(
+        From.CompilationUnit from, PackageReferenceScope containingScope)
     {
         // TODO add info about namespace and using directives
         var scope = new DeclarationScope(containingScope);

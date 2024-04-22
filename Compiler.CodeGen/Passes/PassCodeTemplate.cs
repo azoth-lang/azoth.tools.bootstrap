@@ -31,7 +31,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
         {
             
             #line 7 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-  foreach(var usingNamespace in Build.OrderedNamespaces(pass, "ExhaustiveMatching", "System.Linq", "System.Collections.Generic", "System.CodeDom.Compiler", "Azoth.Tools.Bootstrap.Compiler.IST", "Azoth.Tools.Bootstrap.Framework")) { 
+  foreach(var usingNamespace in Build.OrderedNamespaces(pass, "ExhaustiveMatching", "System.Linq", "System.Collections.Generic", "System.Diagnostics.CodeAnalysis", "System.CodeDom.Compiler", "Azoth.Tools.Bootstrap.Compiler.IST", "Azoth.Tools.Bootstrap.Framework")) { 
             
             #line default
             #line hidden
@@ -285,7 +285,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             
             #line default
             #line hidden
-            this.Write("    private ");
+            this.Write("    ");
+            
+            #line 39 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TransformNotNullAttribute(transform)));
+            
+            #line default
+            #line hidden
+            this.Write("private ");
             
             #line 39 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ReturnType(transform)));
@@ -336,7 +343,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             this.Write(" Create(");
             
             #line 44 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ModifiedParameters(pass, rule)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.DifferentParameters(pass, rule)));
             
             #line default
             #line hidden

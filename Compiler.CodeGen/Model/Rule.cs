@@ -55,6 +55,12 @@ public class Rule
     public IFixedList<Property> AllProperties => allProperties.Value;
     private readonly Lazy<IFixedList<Property>> allProperties;
 
+    public IFixedList<Property> DifferentProperties => differentProperties.Value;
+    private readonly Lazy<IFixedList<Property>> differentProperties;
+
+    public IFixedList<Property> ModifiedProperties => modifiedProperties.Value;
+    private readonly Lazy<IFixedList<Property>> modifiedProperties;
+
     public IFixedSet<Property> AncestorProperties => ancestorProperties.Value;
     private readonly Lazy<IFixedSet<Property>> ancestorProperties;
 
@@ -132,6 +138,16 @@ public class Rule
                    .Concat(InheritedProperties.Where(p => !rulePropertyNames.Contains(p.Name)))
                    .ToFixedList();
         });
+        differentProperties = new(()
+            => ExtendsRule is null
+                ? FixedList.Empty<Property>()
+                : AllProperties.Where(CouldBeModified)
+                               .Except(ExtendsRule.AllProperties, Property.NameAndTypeComparer)
+                               .ToFixedList());
+        modifiedProperties = new(() => ExtendsRule is null ? FixedList.Empty<Property>()
+            : AllProperties.Where(CouldBeModified)
+                           .Except(ExtendsRule.AllProperties, Property.NameAndTypeEquivalenceComparer)
+                           .ToFixedList());
         ancestorProperties = new(() => AncestorRules.SelectMany(r => r.DeclaredProperties).ToFixedSet());
 
         extendsRule = new(() => grammar.Language.Extends?.Grammar.RuleFor(Defines.ShortName));
@@ -184,4 +200,8 @@ public class Rule
 
     private static void DescendantsModifiedInCycle()
         => throw new InvalidOperationException("Cycle detected while computing descendants modified");
+
+    private static bool CouldBeModified(Property property)
+        => property.Type.UnderlyingSymbol is InternalSymbol { ReferencedRule.DescendantsModified: true }
+            or ExternalSymbol;
 }

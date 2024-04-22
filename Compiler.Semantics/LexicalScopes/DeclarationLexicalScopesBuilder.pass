@@ -5,3 +5,4 @@
 
 CompilationUnit, containingScope:`PackageReferenceScope` -> ~;
 TypeDeclaration, containingScope:`DeclarationLexicalScope` -> ~;
+NamespaceDeclaration, containingScope:`DeclarationLexicalScope` -> ~;

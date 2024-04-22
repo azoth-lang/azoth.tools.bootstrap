@@ -14,17 +14,6 @@ internal sealed partial class NamespaceSymbolBuilder
         ISymbolTreeBuilder treeBuilder)
         => Create(from, Transform(from.Declarations, containingSymbol, treeBuilder));
 
-    private To.NamespaceMemberDeclaration Transform(From.NamespaceMemberDeclaration from, NamespaceSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
-    {
-        return from switch
-        {
-            From.NamespaceDeclaration f => Transform(f, containingSymbol, treeBuilder),
-            From.FunctionDeclaration f => Transform(f, containingSymbol),
-            From.TypeDeclaration f => Transform(f, containingSymbol),
-            _ => throw ExhaustiveMatch.Failed(from)
-        };
-    }
-
     private To.NamespaceDeclaration Create(
         From.NamespaceDeclaration from,
         NamespaceSymbol containingSymbol,
@@ -63,31 +52,4 @@ internal sealed partial class NamespaceSymbolBuilder
         NamespaceSymbol? containingSymbol,
         NamespaceSymbol? childContainingSymbol)
         => To.StructDeclaration.Create(from.Syntax, Transform(from.Members, childContainingSymbol), from.GenericParameters, from.SupertypeNames, containingSymbol);
-
-    private To.ClassMemberDeclaration Transform(From.ClassMemberDeclaration from, NamespaceSymbol? containingSymbol)
-    {
-        return from switch
-        {
-            From.TypeDeclaration f => Transform(f, containingSymbol),
-            _ => throw ExhaustiveMatch.Failed(from)
-        };
-    }
-
-    private To.TraitMemberDeclaration Transform(From.TraitMemberDeclaration from, NamespaceSymbol? containingSymbol)
-    {
-        return from switch
-        {
-            From.TypeDeclaration f => Transform(f, containingSymbol),
-            _ => throw ExhaustiveMatch.Failed(from)
-        };
-    }
-
-    private To.StructMemberDeclaration Transform(From.StructMemberDeclaration from, NamespaceSymbol? containingSymbol)
-    {
-        return from switch
-        {
-            From.TypeDeclaration f => Transform(f, containingSymbol),
-            _ => throw ExhaustiveMatch.Failed(from)
-        };
-    }
 }

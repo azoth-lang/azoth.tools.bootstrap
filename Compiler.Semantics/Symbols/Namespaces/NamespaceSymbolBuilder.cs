@@ -27,43 +27,43 @@ internal sealed partial class NamespaceSymbolBuilder
     }
 
     private partial To.CompilationUnit Transform(
-        From.CompilationUnit from, PackageSymbol containingSymbol, ISymbolTreeBuilder treeBuilder)
+        From.CompilationUnit from, PackageSymbol containingNamespace, ISymbolTreeBuilder treeBuilder)
     {
-        var implicitNamespaceSymbol = BuildNamespaceSymbol(containingSymbol, from.ImplicitNamespaceName, treeBuilder);
+        var implicitNamespaceSymbol = BuildNamespaceSymbol(containingNamespace, from.ImplicitNamespaceName, treeBuilder);
         return Create(from, implicitNamespaceSymbol, treeBuilder);
     }
 
     private partial To.NamespaceDeclaration Transform(
         From.NamespaceDeclaration from,
-        NamespaceSymbol containingSymbol,
+        NamespaceSymbol containingNamespace,
         ISymbolTreeBuilder treeBuilder)
     {
         if (from.IsGlobalQualified)
-            containingSymbol = packageSymbol;
-        var namespaceSymbol = BuildNamespaceSymbol(containingSymbol, from.DeclaredNames, treeBuilder);
+            containingNamespace = packageSymbol;
+        var namespaceSymbol = BuildNamespaceSymbol(containingNamespace, from.DeclaredNames, treeBuilder);
         // TODO remove properties on Syntax nodes
-        from.Syntax.ContainingNamespaceSymbol = containingSymbol;
+        from.Syntax.ContainingNamespaceSymbol = containingNamespace;
         from.Syntax.Symbol.Fulfill(namespaceSymbol);
-        return Create(from, containingSymbol, namespaceSymbol, treeBuilder);
+        return Create(from, containingNamespace, namespaceSymbol, treeBuilder);
     }
 
     // TODO this should be more automatic
     private partial To.FunctionDeclaration Transform(
         From.FunctionDeclaration from,
-        NamespaceSymbol containingSymbol)
+        NamespaceSymbol containingNamespace)
     {
         // TODO remove properties on Syntax nodes
-        from.Syntax.ContainingNamespaceSymbol = containingSymbol;
-        return Create(from, containingSymbol);
+        from.Syntax.ContainingNamespaceSymbol = containingNamespace;
+        return Create(from, containingNamespace);
     }
 
     private partial To.TypeDeclaration Transform(
         From.TypeDeclaration from,
-        NamespaceSymbol? containingSymbol)
+        NamespaceSymbol? containingNamespace)
     {
         // TODO remove properties on Syntax nodes
-        from.Syntax.ContainingNamespaceSymbol = containingSymbol!;
-        return Create(from, containingSymbol, childContainingSymbol: null);
+        from.Syntax.ContainingNamespaceSymbol = containingNamespace!;
+        return Create(from, containingNamespace, childContainingSymbol: null);
     }
 
     private static NamespaceSymbol BuildNamespaceSymbol(

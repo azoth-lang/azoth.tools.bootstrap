@@ -4,5 +4,13 @@
 ◊to WithoutCompilationUnits;
 
 CompilationUnit -> NamespaceMemberDeclaration*;
-// NamespaceDeclaration, file:`CodeFile` -> {NamespaceMemberDeclaration} = auto;
-NamespaceMemberDeclaration, file:`CodeFile` -> {~} = auto;
+CompilationUnit* -> {NamespaceMemberDeclaration};
+NamespaceDeclaration, file:`CodeFile` -> {NamespaceMemberDeclaration};
+NamespaceMemberDeclaration, file:`CodeFile` -> {~};
+// Why is this needed?
+TypeDeclaration, file:`CodeFile` -> ~ = auto;
+// TODO these shouldn't be needed given the TypeDeclaration transform
+ClassDeclaration, file:`CodeFile` -> ~ = auto;
+StructDeclaration, file:`CodeFile` -> ~ = auto;
+TraitDeclaration, file:`CodeFile` -> ~ = auto;
+FunctionDeclaration, file:`CodeFile` -> ~ = auto;

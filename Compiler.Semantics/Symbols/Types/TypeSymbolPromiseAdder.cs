@@ -17,4 +17,7 @@ internal partial class TypeSymbolPromiseAdder
         return Create(from, symbol: typeSymbolPromise, containingSymbol: containingSymbol,
             childContainingSymbol: typeSymbolPromise);
     }
+
+    private To.FunctionDeclaration Create(From.FunctionDeclaration from)
+        => from;
 }

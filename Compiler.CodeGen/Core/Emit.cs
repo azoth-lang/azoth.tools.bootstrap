@@ -337,39 +337,100 @@ internal static class Emit
         => Result(pass.ToContextParameter.YieldValue().ToFixedList());
     #endregion
 
+    #region Transform()
+    public static string TransformNotNullAttribute(Transform transform)
+    {
+        if (transform.From[0].Type is not OptionalType) return "";
+        return "[return: NotNullIfNotNull(nameof(from))]\r\n    ";
+    }
+
     public static string TransformMethodBody(Transform transform)
     {
         var fromType = transform.From[0].Type;
         var toType = transform.To[0].Type;
         if (fromType is CollectionType fromCollectionType && toType is CollectionType toCollectionType)
-        {
-            var resultCollection = toCollectionType switch
-            {
-                ListType _ => "FixedList",
-                SetType _ => "FixedSet",
-                _ => throw ExhaustiveMatch.Failed(toCollectionType)
-            };
-            var calledParameters = transform.From.Skip(1).Prepend(Model.Parameter.Create(fromCollectionType.ElementType, "from")).ToFixedList();
-            var calledTransform = transform.Pass.Transforms.SingleOrDefault(t => t.From.SequenceEqual(calledParameters));
-            var calledTransformReturnsCollection = calledTransform?.To[0].Type is CollectionType;
-            var selectMethod = calledTransformReturnsCollection ? "SelectMany" : "Select";
-            var parameters = transform.From.Skip(1).Select(ParameterName).Prepend("f").ToFixedList();
-            var parameterNames = string.Join(", ", parameters);
-            return $"{ParameterName(transform.From[0])}.{selectMethod}(f => {MethodName(transform.Pass)}({parameterNames})).To{resultCollection}()";
-        }
+            return TransformCollectionMethodBody(transform, fromCollectionType, toCollectionType);
+        if (fromType.UnderlyingSymbol is InternalSymbol { ReferencedRule: { IsTerminal: false } rule })
+            return TransformNonTerminalMethodBody(transform, rule);
 
-        return $"Create({Arguments(transform.From)})";
+        return TransformTerminalMethodBody(transform, fromType);
     }
 
-    public static string ModifiedParameters(Pass pass, Rule rule)
+    private static string TransformCollectionMethodBody(
+        Transform transform,
+        CollectionType fromType,
+        CollectionType toType)
+    {
+        var resultCollection = toType switch
+        {
+            ListType _ => "FixedList",
+            SetType _ => "FixedSet",
+            _ => throw ExhaustiveMatch.Failed(toType)
+        };
+        Transform? calledTransform = CalledTransform(transform, fromType.ElementType);
+        var calledTransformReturnsCollection = calledTransform?.To[0].Type is CollectionType;
+        var selectMethod = calledTransformReturnsCollection ? "SelectMany" : "Select";
+        var parameters = transform.From.Skip(1).Select(ParameterName).Prepend("f").ToFixedList();
+        var parameterNames = string.Join(", ", parameters);
+        return
+            $"{ParameterName(transform.From[0])}.{selectMethod}(f => {MethodName(transform.Pass)}({parameterNames})).To{resultCollection}()";
+    }
+
+    private static Transform? CalledTransform(Transform transform, NonVoidType fromType)
+    {
+        //var calledParameters = transform.From.Skip(1).Prepend(Model.Parameter.Create(fromType, "from"))
+        //                                .ToFixedList();
+        var calledTransform = transform.Pass.Transforms.SingleOrDefault(t => fromType == t.From[0].Type);
+        calledTransform ??= transform.Pass.Transforms.FirstOrDefault(t => fromType.IsSubtypeOf(t.From[0].Type));
+        return calledTransform;
+    }
+
+    private static string TransformNonTerminalMethodBody(Transform transform, Rule rule)
+    {
+        var pass = transform.Pass;
+        var builder = new StringBuilder();
+        builder.AppendLine("from switch");
+        builder.AppendLine("        {");
+        foreach (var childRule in rule.ChildRules)
+        {
+            builder.Append("            ");
+            builder.Append(PassTypeName(pass, childRule.Defines));
+            builder.Append(" f => ");
+            var calledTransform = CalledTransform(transform, new SymbolType(childRule.Defines));
+            if (calledTransform is not null)
+            {
+                builder.Append("Transform(");
+                var additionalArguments = calledTransform.From.Skip(1).Select(ParameterName);
+                builder.AppendJoin(", ", additionalArguments.Prepend("f"));
+                builder.Append(')');
+            }
+            else
+                builder.Append('f');
+
+            builder.AppendLine(",");
+        }
+
+        builder.AppendLine("            _ => throw ExhaustiveMatch.Failed(from),");
+        builder.Append("        }");
+        return builder.ToString();
+    }
+
+    private static string TransformTerminalMethodBody(Transform transform, NonVoidType fromType)
+    {
+        var body = $"Create({Arguments(transform.From)})";
+        if (fromType is OptionalType)
+            body = $"from is not null ? {body} : null";
+        return body;
+    }
+    #endregion
+
+    public static string DifferentParameters(Pass pass, Rule rule)
     {
         var extendsRule = rule.ExtendsRule!;
-        var modifiedProperties = rule.AllProperties
-                                     .Where(CouldBeModified)
-                                     .Except(extendsRule.AllProperties, Property.NameAndTypeComparer);
+        var modifiedProperties = rule.DifferentProperties;
         var fromType = new SymbolType(extendsRule.Defines);
         var parameters = new List<Parameter> { Model.Parameter.Create(fromType, "from") };
-        parameters.AddRange(modifiedProperties.Select(p => Model.Parameter.Create(p.Type, p.Name.ToCamelCase())));
+        parameters.AddRange(modifiedProperties.Select(p => p.ToParameter()));
         return Parameters(pass, parameters);
     }
 

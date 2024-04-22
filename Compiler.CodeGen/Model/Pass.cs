@@ -109,9 +109,33 @@ public class Pass
         {
             var coveredFromTypes = transforms.Select(t => t.From[0].Type).ToFixedSet();
             var newTransforms = new Dictionary<Type, Transform>();
+
+            if (ToLanguage is not null && FromLanguage != ToLanguage)
+            {
+                // Add auto transforms for all modified rules
+                var modifiedTerminalRules = ToLanguage.Grammar.Rules.Where(r => r.IsModified && r.IsTerminal);
+                foreach (var toRule in modifiedTerminalRules)
+                {
+                    var fromRule = toRule.ExtendsRule!;
+                    var fromType = new SymbolType(fromRule.Defines);
+                    if (coveredFromTypes.Contains(fromType)
+                        || coveredFromTypes.Any(fromType.IsSubtypeOf))
+                        continue;
+
+                    var fromParameter = Parameter.Create(fromType, "from");
+                    var toSymbol = toRule.Defines;
+                    var toType = fromType.WithSymbol(toSymbol);
+                    var toParameter = Parameter.Create(toType, "to");
+                    var additionalParameters = toRule.ModifiedProperties.Select(p => p.ToParameter());
+                    newTransforms[fromType] = new Transform(this,
+                        additionalParameters.Prepend(fromParameter),
+                        Parameters(toParameter), true);
+                }
+            }
+
             // bubble additional parameters upwards
-            foreach (var declaredTransform in DeclaredTransforms)
-                BubbleParametersUp(declaredTransform);
+            foreach (var transform in DeclaredTransforms.Concat(newTransforms.Values).ToFixedList())
+                BubbleParametersUp(transform);
 
             transforms.AddRange(newTransforms.Values);
 
@@ -121,27 +145,49 @@ public class Pass
                 var additionalParameters = transform.From.Skip(1).ToFixedList();
                 if (additionalParameters.Count == 0) return;
                 var parentTransformsFrom = ParentTransformsFrom(fromType)
-                                           .Except(coveredFromTypes)
-                                           .Where(t => !coveredFromTypes.Any(t.IsSubtypeOf));
+                                           .Except(coveredFromTypes).Except(fromType)
+                                           .Where(t => !coveredFromTypes.Any(t.IsSubtypeOf))
+                                           .Distinct()
+                                           .ToFixedList();
                 var toGrammar = ToLanguage?.Grammar;
                 foreach (var parentFromType in parentTransformsFrom)
                 {
-                    if (newTransforms.TryGetValue(parentFromType, out var parentTransform))
+                    var parentLookupType = parentFromType;
+                    if (parentFromType is OptionalType optionalParentType)
+                        parentLookupType = optionalParentType.UnderlyingType;
+
+                    if (newTransforms.TryGetValue(parentLookupType, out var parentTransform))
                     {
                         var parentParameters = parentTransform.From;
+                        bool fromTypeChanged = !parentFromType.IsSubtypeOf(parentParameters[0].Type);
                         var missingParameters = additionalParameters.Except(parentParameters)
                                                                     .Where(p => parentParameters.All(pp => pp.Name != p.Name))
                                                                     .ToFixedList();
-                        if (!missingParameters.Any())
+
+                        // We have to re-create the transform if there are missing parameters OR
+                        // if the from type has changed (e.g. from non-optional to optional).
+                        if (!missingParameters.Any() && !fromTypeChanged)
                         {
                             // All parameters are already covered
                             continue;
                         }
 
+                        var parentReturnValues = parentTransform.To;
+                        if (fromTypeChanged)
+                        {
+                            parentParameters = parentParameters.Skip(1)
+                                                               .Prepend(Parameter.Create(parentFromType, "from"))
+                                                               .ToFixedList();
+                            // Make the to type optional if the parent from type is optional
+                            var toType = new OptionalType(parentReturnValues[0].Type);
+                            parentReturnValues = parentReturnValues.Skip(1)
+                                                                   .Prepend(Parameter.Create(toType, "to"))
+                                                                   .ToFixedList();
+                        }
                         // Need to create a new transform with the additional parameters
                         parentTransform = new Transform(this,
-                            parentParameters.Concat(missingParameters),
-                            parentTransform.To, true);
+                            parentParameters.Concat(missingParameters), parentReturnValues,
+                            parentTransform.AutoGenerate);
                     }
                     else
                     {
@@ -153,13 +199,15 @@ public class Pass
                         if (toParameter is null)
                             // No way to make an auto transform, assume it is somehow covered
                             continue;
+                        bool autoGenerate = parentFromType is CollectionType
+                                            || !toRule!.IsModified || !toRule.IsTerminal;
                         parentTransform = new Transform(this,
                             additionalParameters.Prepend(fromParameter),
-                            Parameters(toParameter), parentFromType is CollectionType || !toRule!.IsModified);
+                            Parameters(toParameter), autoGenerate);
                     }
 
                     // Put new transform in the dictionary
-                    newTransforms[parentFromType] = parentTransform;
+                    newTransforms[parentLookupType] = parentTransform;
 
                     // Now bubble up the additional parameters
                     BubbleParametersUp(parentTransform);
@@ -188,6 +236,7 @@ public class Pass
                                              .Where(t => fromType.IsSubtypeOf(t.ElementType)))
                 {
                     yield return type;
+                    yield return type.ElementType;
                 }
         }
     }
