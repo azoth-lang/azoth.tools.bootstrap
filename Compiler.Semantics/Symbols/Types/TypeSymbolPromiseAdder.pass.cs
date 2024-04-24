@@ -25,7 +25,7 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
     {
         var pass = new TypeSymbolPromiseAdder();
         pass.StartRun();
-        var to = pass.Transform(from);
+        var to = pass.TransformPackage(from);
         pass.EndRun(to);
         return to;
     }
@@ -38,51 +38,51 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
 
     partial void EndRun(To.Package to);
 
-    private partial To.Package Transform(From.Package from);
+    private partial To.Package TransformPackage(From.Package from);
 
-    private partial To.TypeDeclaration Transform(From.TypeDeclaration from, IPromise<Symbol>? containingSymbol);
+    private partial To.TypeDeclaration TransformTypeDeclaration(From.TypeDeclaration from, IPromise<Symbol>? containingSymbol);
 
-    private To.FunctionDeclaration Transform(From.FunctionDeclaration from)
-        => Create(from);
+    private To.FunctionDeclaration TransformFunctionDeclaration(From.FunctionDeclaration from)
+        => from;
 
-    private IFixedSet<To.NamespaceMemberDeclaration> Transform(IEnumerable<From.NamespaceMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
-        => from.Select(f => Transform(f, containingSymbol)).ToFixedSet();
+    private IFixedSet<To.NamespaceMemberDeclaration> TransformNamespaceMemberDeclarations(IEnumerable<From.NamespaceMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
+        => from.Select(f => TransformNamespaceMemberDeclaration(f, containingSymbol)).ToFixedSet();
 
-    private To.NamespaceMemberDeclaration Transform(From.NamespaceMemberDeclaration from, IPromise<Symbol>? containingSymbol)
+    private To.NamespaceMemberDeclaration TransformNamespaceMemberDeclaration(From.NamespaceMemberDeclaration from, IPromise<Symbol>? containingSymbol)
         => from switch
         {
-            From.TypeDeclaration f => Transform(f, containingSymbol),
-            From.FunctionDeclaration f => Transform(f),
+            From.TypeDeclaration f => TransformTypeDeclaration(f, containingSymbol),
+            From.FunctionDeclaration f => TransformFunctionDeclaration(f),
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private IFixedList<To.ClassMemberDeclaration> Transform(IEnumerable<From.ClassMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
-        => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
+    private IFixedList<To.ClassMemberDeclaration> TransformClassMemberDeclarations(IEnumerable<From.ClassMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
+        => from.Select(f => TransformClassMemberDeclaration(f, containingSymbol)).ToFixedList();
 
-    private To.ClassMemberDeclaration Transform(From.ClassMemberDeclaration from, IPromise<Symbol>? containingSymbol)
+    private To.ClassMemberDeclaration TransformClassMemberDeclaration(From.ClassMemberDeclaration from, IPromise<Symbol>? containingSymbol)
         => from switch
         {
-            From.TypeDeclaration f => Transform(f, containingSymbol),
+            From.TypeDeclaration f => TransformTypeDeclaration(f, containingSymbol),
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private IFixedList<To.StructMemberDeclaration> Transform(IEnumerable<From.StructMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
-        => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
+    private IFixedList<To.StructMemberDeclaration> TransformStructMemberDeclarations(IEnumerable<From.StructMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
+        => from.Select(f => TransformStructMemberDeclaration(f, containingSymbol)).ToFixedList();
 
-    private To.StructMemberDeclaration Transform(From.StructMemberDeclaration from, IPromise<Symbol>? containingSymbol)
+    private To.StructMemberDeclaration TransformStructMemberDeclaration(From.StructMemberDeclaration from, IPromise<Symbol>? containingSymbol)
         => from switch
         {
-            From.TypeDeclaration f => Transform(f, containingSymbol),
+            From.TypeDeclaration f => TransformTypeDeclaration(f, containingSymbol),
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private IFixedList<To.TraitMemberDeclaration> Transform(IEnumerable<From.TraitMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
-        => from.Select(f => Transform(f, containingSymbol)).ToFixedList();
+    private IFixedList<To.TraitMemberDeclaration> TransformTraitMemberDeclarations(IEnumerable<From.TraitMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
+        => from.Select(f => TransformTraitMemberDeclaration(f, containingSymbol)).ToFixedList();
 
-    private To.TraitMemberDeclaration Transform(From.TraitMemberDeclaration from, IPromise<Symbol>? containingSymbol)
+    private To.TraitMemberDeclaration TransformTraitMemberDeclaration(From.TraitMemberDeclaration from, IPromise<Symbol>? containingSymbol)
         => from switch
         {
-            From.TypeDeclaration f => Transform(f, containingSymbol),
+            From.TypeDeclaration f => TransformTypeDeclaration(f, containingSymbol),
             _ => throw ExhaustiveMatch.Failed(from),
         };
 

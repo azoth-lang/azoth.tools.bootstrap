@@ -13,6 +13,6 @@ internal partial class TypeSymbolBuilder
     private partial SymbolBuilderContext EndRun(To.Package to)
         => throw new System.NotImplementedException();
 
-    private partial To.Package Transform(To.Package from)
+    private partial To.Package TransformPackage(To.Package from)
         => throw new System.NotImplementedException();
 }

@@ -12,7 +12,7 @@ internal sealed partial class NamespaceSymbolBuilder
         From.CompilationUnit from,
         NamespaceSymbol containingSymbol,
         ISymbolTreeBuilder treeBuilder)
-        => Create(from, Transform(from.Declarations, containingSymbol, treeBuilder));
+        => Create(from, TransformNamespaceMemberDeclarations(from.Declarations, containingSymbol, treeBuilder));
 
     private To.NamespaceDeclaration Create(
         From.NamespaceDeclaration from,
@@ -20,7 +20,7 @@ internal sealed partial class NamespaceSymbolBuilder
         NamespaceSymbol childContainingSymbol,
         ISymbolTreeBuilder treeBuilder)
     {
-        var declarations = Transform(from.Declarations, childContainingSymbol, treeBuilder);
+        var declarations = TransformNamespaceMemberDeclarations(from.Declarations, childContainingSymbol, treeBuilder);
         return Create(from, containingSymbol, childContainingSymbol, declarations);
     }
 
@@ -39,17 +39,17 @@ internal sealed partial class NamespaceSymbolBuilder
         From.ClassDeclaration from,
         NamespaceSymbol? containingSymbol,
         NamespaceSymbol? childContainingSymbol)
-        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, Transform(from.Members, childContainingSymbol), from.GenericParameters, from.SupertypeNames, containingSymbol);
+        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, TransformClassMemberDeclarations(from.Members, childContainingSymbol), from.GenericParameters, from.SupertypeNames, containingSymbol);
 
     private To.TraitDeclaration Create(
         From.TraitDeclaration from,
         NamespaceSymbol? containingSymbol,
         NamespaceSymbol? childContainingSymbol)
-        => To.TraitDeclaration.Create(from.Syntax, Transform(from.Members, childContainingSymbol), from.GenericParameters, from.SupertypeNames, containingSymbol);
+        => To.TraitDeclaration.Create(from.Syntax, TransformTraitMemberDeclarations(from.Members, childContainingSymbol), from.GenericParameters, from.SupertypeNames, containingSymbol);
 
     private To.StructDeclaration Create(
         From.StructDeclaration from,
         NamespaceSymbol? containingSymbol,
         NamespaceSymbol? childContainingSymbol)
-        => To.StructDeclaration.Create(from.Syntax, Transform(from.Members, childContainingSymbol), from.GenericParameters, from.SupertypeNames, containingSymbol);
+        => To.StructDeclaration.Create(from.Syntax, TransformStructMemberDeclarations(from.Members, childContainingSymbol), from.GenericParameters, from.SupertypeNames, containingSymbol);
 }

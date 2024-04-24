@@ -18,7 +18,7 @@ internal sealed partial class InitialContextPass : ITransformPass<IPackageSyntax
     {
         var pass = new InitialContextPass(context);
         pass.StartRun();
-        var diagnostics = pass.Analyze(from);
+        var diagnostics = pass.AnalyzePackageSyntax(from);
         var toContext = pass.EndRun(diagnostics);
         return toContext;
     }
@@ -31,6 +31,6 @@ internal sealed partial class InitialContextPass : ITransformPass<IPackageSyntax
 
     private partial DiagnosticsContext EndRun(Diagnostics diagnostics);
 
-    private partial Diagnostics Analyze(IPackageSyntax from);
+    private partial Diagnostics AnalyzePackageSyntax(IPackageSyntax from);
 
 }

@@ -19,21 +19,21 @@ internal sealed partial class NamespaceSymbolBuilder
         packageSymbol = context.SymbolTree.Package.Assigned();
     }
 
-    private partial To.Package Transform(From.Package from)
+    private partial To.Package TransformPackage(From.Package from)
     {
-        var compilationUnits = Transform(from.CompilationUnits, packageSymbol, context.SymbolTree);
-        var testingCompilationUnits = Transform(from.TestingCompilationUnits, packageSymbol, context.TestingSymbolTree);
+        var compilationUnits = TransformCompilationUnits(from.CompilationUnits, packageSymbol, context.SymbolTree);
+        var testingCompilationUnits = TransformCompilationUnits(from.TestingCompilationUnits, packageSymbol, context.TestingSymbolTree);
         return Create(from, compilationUnits, testingCompilationUnits);
     }
 
-    private partial To.CompilationUnit Transform(
+    private partial To.CompilationUnit TransformCompilationUnit(
         From.CompilationUnit from, PackageSymbol containingNamespace, ISymbolTreeBuilder treeBuilder)
     {
         var implicitNamespaceSymbol = BuildNamespaceSymbol(containingNamespace, from.ImplicitNamespaceName, treeBuilder);
         return Create(from, implicitNamespaceSymbol, treeBuilder);
     }
 
-    private partial To.NamespaceDeclaration Transform(
+    private partial To.NamespaceDeclaration TransformNamespaceDeclaration(
         From.NamespaceDeclaration from,
         NamespaceSymbol containingNamespace,
         ISymbolTreeBuilder treeBuilder)
@@ -48,7 +48,7 @@ internal sealed partial class NamespaceSymbolBuilder
     }
 
     // TODO this should be more automatic
-    private partial To.FunctionDeclaration Transform(
+    private partial To.FunctionDeclaration TransformFunctionDeclaration(
         From.FunctionDeclaration from,
         NamespaceSymbol containingNamespace)
     {
@@ -57,7 +57,7 @@ internal sealed partial class NamespaceSymbolBuilder
         return Create(from, containingNamespace);
     }
 
-    private partial To.TypeDeclaration Transform(
+    private partial To.TypeDeclaration TransformTypeDeclaration(
         From.TypeDeclaration from,
         NamespaceSymbol? containingNamespace)
     {

@@ -24,7 +24,7 @@ internal sealed partial class CompilationUnitRemover : ITransformPass<From.Packa
     {
         var pass = new CompilationUnitRemover();
         pass.StartRun();
-        var to = pass.Transform(from);
+        var to = pass.TransformPackage(from);
         pass.EndRun(to);
         return to;
     }
@@ -37,67 +37,67 @@ internal sealed partial class CompilationUnitRemover : ITransformPass<From.Packa
 
     partial void EndRun(To.Package to);
 
-    private partial To.Package Transform(From.Package from);
+    private partial To.Package TransformPackage(From.Package from);
 
-    private partial IFixedList<To.NamespaceMemberDeclaration> Transform(From.CompilationUnit from);
+    private partial IFixedList<To.NamespaceMemberDeclaration> TransformCompilationUnit(From.CompilationUnit from);
 
-    private partial IFixedSet<To.NamespaceMemberDeclaration> Transform(IEnumerable<From.CompilationUnit> from);
+    private partial IFixedSet<To.NamespaceMemberDeclaration> TransformCompilationUnits(IEnumerable<From.CompilationUnit> from);
 
-    private partial IFixedSet<To.NamespaceMemberDeclaration> Transform(From.NamespaceDeclaration from, CodeFile file);
+    private partial IFixedSet<To.NamespaceMemberDeclaration> TransformNamespaceDeclaration(From.NamespaceDeclaration from, CodeFile file);
 
-    private partial IFixedSet<To.NamespaceMemberDeclaration> Transform(From.NamespaceMemberDeclaration from, CodeFile file);
+    private partial IFixedSet<To.NamespaceMemberDeclaration> TransformNamespaceMemberDeclaration(From.NamespaceMemberDeclaration from, CodeFile file);
 
-    private To.TypeDeclaration Transform(From.TypeDeclaration from, CodeFile file)
+    private To.TypeDeclaration TransformTypeDeclaration(From.TypeDeclaration from, CodeFile file)
         => from switch
         {
-            From.ClassDeclaration f => Transform(f, file),
-            From.StructDeclaration f => Transform(f, file),
-            From.TraitDeclaration f => Transform(f, file),
+            From.ClassDeclaration f => TransformClassDeclaration(f, file),
+            From.StructDeclaration f => TransformStructDeclaration(f, file),
+            From.TraitDeclaration f => TransformTraitDeclaration(f, file),
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private To.ClassDeclaration Transform(From.ClassDeclaration from, CodeFile file)
+    private To.ClassDeclaration TransformClassDeclaration(From.ClassDeclaration from, CodeFile file)
         => Create(from, file);
 
-    private To.StructDeclaration Transform(From.StructDeclaration from, CodeFile file)
+    private To.StructDeclaration TransformStructDeclaration(From.StructDeclaration from, CodeFile file)
         => Create(from, file);
 
-    private To.TraitDeclaration Transform(From.TraitDeclaration from, CodeFile file)
+    private To.TraitDeclaration TransformTraitDeclaration(From.TraitDeclaration from, CodeFile file)
         => Create(from, file);
 
-    private To.FunctionDeclaration Transform(From.FunctionDeclaration from, CodeFile file)
+    private To.FunctionDeclaration TransformFunctionDeclaration(From.FunctionDeclaration from, CodeFile file)
         => Create(from, file);
 
-    private IFixedList<To.NamespaceMemberDeclaration> Transform(IEnumerable<From.NamespaceMemberDeclaration> from, CodeFile file)
-        => from.SelectMany(f => Transform(f, file)).ToFixedList();
+    private IFixedList<To.NamespaceMemberDeclaration> TransformNamespaceMemberDeclarations(IEnumerable<From.NamespaceMemberDeclaration> from, CodeFile file)
+        => from.SelectMany(f => TransformNamespaceMemberDeclaration(f, file)).ToFixedList();
 
-    private IFixedList<To.ClassMemberDeclaration> Transform(IEnumerable<From.ClassMemberDeclaration> from, CodeFile file)
-        => from.Select(f => Transform(f, file)).ToFixedList();
+    private IFixedList<To.ClassMemberDeclaration> TransformClassMemberDeclarations(IEnumerable<From.ClassMemberDeclaration> from, CodeFile file)
+        => from.Select(f => TransformClassMemberDeclaration(f, file)).ToFixedList();
 
-    private To.ClassMemberDeclaration Transform(From.ClassMemberDeclaration from, CodeFile file)
+    private To.ClassMemberDeclaration TransformClassMemberDeclaration(From.ClassMemberDeclaration from, CodeFile file)
         => from switch
         {
-            From.TypeDeclaration f => Transform(f, file),
+            From.TypeDeclaration f => TransformTypeDeclaration(f, file),
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private IFixedList<To.StructMemberDeclaration> Transform(IEnumerable<From.StructMemberDeclaration> from, CodeFile file)
-        => from.Select(f => Transform(f, file)).ToFixedList();
+    private IFixedList<To.StructMemberDeclaration> TransformStructMemberDeclarations(IEnumerable<From.StructMemberDeclaration> from, CodeFile file)
+        => from.Select(f => TransformStructMemberDeclaration(f, file)).ToFixedList();
 
-    private To.StructMemberDeclaration Transform(From.StructMemberDeclaration from, CodeFile file)
+    private To.StructMemberDeclaration TransformStructMemberDeclaration(From.StructMemberDeclaration from, CodeFile file)
         => from switch
         {
-            From.TypeDeclaration f => Transform(f, file),
+            From.TypeDeclaration f => TransformTypeDeclaration(f, file),
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private IFixedList<To.TraitMemberDeclaration> Transform(IEnumerable<From.TraitMemberDeclaration> from, CodeFile file)
-        => from.Select(f => Transform(f, file)).ToFixedList();
+    private IFixedList<To.TraitMemberDeclaration> TransformTraitMemberDeclarations(IEnumerable<From.TraitMemberDeclaration> from, CodeFile file)
+        => from.Select(f => TransformTraitMemberDeclaration(f, file)).ToFixedList();
 
-    private To.TraitMemberDeclaration Transform(From.TraitMemberDeclaration from, CodeFile file)
+    private To.TraitMemberDeclaration TransformTraitMemberDeclaration(From.TraitMemberDeclaration from, CodeFile file)
         => from switch
         {
-            From.TypeDeclaration f => Transform(f, file),
+            From.TypeDeclaration f => TransformTypeDeclaration(f, file),
             _ => throw ExhaustiveMatch.Failed(from),
         };
 

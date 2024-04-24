@@ -32,17 +32,17 @@ internal sealed partial class SyntaxBinder
         return new SymbolBuilderContext(diagnostics, symbolTree, testingSymbolTree);
     }
 
-    private partial Package Transform(IPackageSyntax from)
+    private partial Package TransformPackageSyntax(IPackageSyntax from)
     {
         var symbol = new PackageSymbol(from.Name);
-        return Package.Create(from, symbol, Transform(from.References),
-            Transform(from.CompilationUnits), Transform(from.TestingCompilationUnits));
+        return Package.Create(from, symbol, TransformPackageReferenceSyntaxes(from.References),
+            TransformCompilationUnitSyntaxes(from.CompilationUnits), TransformCompilationUnitSyntaxes(from.TestingCompilationUnits));
     }
 
-    private partial PackageReference Transform(IPackageReferenceSyntax from)
+    private partial PackageReference TransformPackageReferenceSyntax(IPackageReferenceSyntax from)
         => PackageReference.Create(from, from.AliasOrName, from.Package, from.IsTrusted);
 
-    private partial CompilationUnit Transform(ICompilationUnitSyntax from)
+    private partial CompilationUnit TransformCompilationUnitSyntax(ICompilationUnitSyntax from)
     {
         var usingDirectives = from.UsingDirectives.Select(Transform);
         var declarations = from.Declarations.Select(Transform);

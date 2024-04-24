@@ -26,7 +26,7 @@ internal sealed partial class TypeSymbolBuilder : ITransformPass<From.Package, S
     {
         var pass = new TypeSymbolBuilder(context);
         pass.StartRun();
-        var to = pass.Transform(from);
+        var to = pass.TransformPackage(from);
         var toContext = pass.EndRun(to);
         return (to, toContext);
     }
@@ -36,6 +36,6 @@ internal sealed partial class TypeSymbolBuilder : ITransformPass<From.Package, S
 
     private partial SymbolBuilderContext EndRun(From.Package to);
 
-    private partial From.Package Transform(From.Package from);
+    private partial From.Package TransformPackage(From.Package from);
 
 }

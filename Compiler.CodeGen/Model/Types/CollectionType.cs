@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 [Closed(
     typeof(ListType),
     typeof(SetType))]
-public abstract class CollectionType : NonVoidType
+public abstract class CollectionType : NonOptionalType
 {
     public NonVoidType ElementType { get; }
 

@@ -24,6 +24,13 @@ internal static class StringExtensions
         return value;
     }
 
+    public static string RemoveInterfacePrefix(this string value)
+    {
+        if (value.StartsWith("I") && char.IsUpper(value[1]))
+            return value[1..];
+        return value;
+    }
+
     private static readonly IFixedSet<string> Keywords = new[]
     {
         "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked",

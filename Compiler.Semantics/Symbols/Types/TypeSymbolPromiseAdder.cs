@@ -7,10 +7,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Types;
 
 internal partial class TypeSymbolPromiseAdder
 {
-    private partial To.Package Transform(From.Package from)
+    private partial To.Package TransformPackage(From.Package from)
         => Create(from, childContainingSymbol: null);
 
-    private partial To.TypeDeclaration Transform(From.TypeDeclaration from, IPromise<Symbol>? containingSymbol)
+    private partial To.TypeDeclaration TransformTypeDeclaration(From.TypeDeclaration from, IPromise<Symbol>? containingSymbol)
     {
         var typeSymbolPromise = new AcyclicPromise<UserTypeSymbol>();
         containingSymbol ??= Promise.ForValue(from.ContainingNamespace.Assigned());

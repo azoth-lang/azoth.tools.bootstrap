@@ -128,7 +128,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             this.Write("pass.");
             
             #line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.MethodName(pass)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.OperationMethodName(pass.EntryTransform)));
             
             #line default
             #line hidden
@@ -261,7 +261,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             this.Write(" ");
             
             #line 35 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.MethodName(pass)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.OperationMethodName(transform)));
             
             #line default
             #line hidden
@@ -302,7 +302,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             this.Write(" ");
             
             #line 39 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.MethodName(pass)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.OperationMethodName(transform)));
             
             #line default
             #line hidden

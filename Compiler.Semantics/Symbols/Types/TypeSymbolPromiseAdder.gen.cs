@@ -9,8 +9,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Types;
 internal sealed partial class TypeSymbolPromiseAdder
 {
     private To.Package Create(From.Package from, IPromise<Symbol>? childContainingSymbol)
-        => Create(from, Transform(from.Declarations, childContainingSymbol),
-            Transform(from.TestingDeclarations, childContainingSymbol));
+        => Create(from, TransformNamespaceMemberDeclarations(from.Declarations, childContainingSymbol),
+            TransformNamespaceMemberDeclarations(from.TestingDeclarations, childContainingSymbol));
 
     private To.TypeDeclaration Create(From.TypeDeclaration from,
         AcyclicPromise<UserTypeSymbol> symbol,
@@ -28,18 +28,18 @@ internal sealed partial class TypeSymbolPromiseAdder
         AcyclicPromise<UserTypeSymbol> symbol,
         IPromise<Symbol> containingSymbol,
         IPromise<Symbol>? childContainingSymbol)
-        => Create(from, Transform(from.Members, childContainingSymbol), symbol, containingSymbol);
+        => Create(from, TransformClassMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol);
 
     private To.TraitDeclaration Create(From.TraitDeclaration from,
         AcyclicPromise<UserTypeSymbol> symbol,
         IPromise<Symbol> containingSymbol,
         IPromise<Symbol>? childContainingSymbol)
-        => Create(from, Transform(from.Members, childContainingSymbol), symbol, containingSymbol);
+        => Create(from, TransformTraitMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol);
 
     private To.StructDeclaration Create(
         From.StructDeclaration from,
         AcyclicPromise<UserTypeSymbol> symbol,
         IPromise<Symbol> containingSymbol,
         IPromise<Symbol>? childContainingSymbol)
-        => Create(from, Transform(from.Members, childContainingSymbol), symbol, containingSymbol);
+        => Create(from, TransformStructMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol);
 }

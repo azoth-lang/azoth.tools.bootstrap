@@ -55,9 +55,17 @@ public class Rule
     public IFixedList<Property> AllProperties => allProperties.Value;
     private readonly Lazy<IFixedList<Property>> allProperties;
 
+    /// <summary>
+    /// Properties that are different in any way from the previous language, including that they
+    /// reference the equivalent rule in this language.
+    /// </summary>
     public IFixedList<Property> DifferentProperties => differentProperties.Value;
     private readonly Lazy<IFixedList<Property>> differentProperties;
 
+    /// <summary>
+    /// Properties that are modified, not just different because they reference the equivalent
+    /// rule in this language.
+    /// </summary>
     public IFixedList<Property> ModifiedProperties => modifiedProperties.Value;
     private readonly Lazy<IFixedList<Property>> modifiedProperties;
 

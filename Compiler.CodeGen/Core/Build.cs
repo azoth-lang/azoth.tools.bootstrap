@@ -26,6 +26,6 @@ internal static class Build
     {
         if (pass.FromLanguage == pass.ToLanguage || pass.ToLanguage is null)
             return Enumerable.Empty<Rule>();
-        return pass.ToLanguage.Grammar.Rules.Where(r => r.IsTerminal && r.DescendantsModified);
+        return pass.ToLanguage.Grammar.Rules.Where(r => r is { IsTerminal: true, DescendantsModified: true });
     }
 }

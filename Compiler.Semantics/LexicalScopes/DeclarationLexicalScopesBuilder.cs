@@ -9,14 +9,14 @@ internal partial class DeclarationLexicalScopesBuilder
 {
     private DeclarationLexicalScopesBuilder() { }
 
-    private partial To.Package Transform(From.Package from)
+    private partial To.Package TransformPackage(From.Package from)
     {
         var scope = new PackageReferenceScope(from.Symbol,
             from.References.ToFixedDictionary(r => r.AliasOrName, r => r.Package.SymbolTree));
         return Create(from, scope, scope);
     }
 
-    private partial To.CompilationUnit Transform(
+    private partial To.CompilationUnit TransformCompilationUnit(
         From.CompilationUnit from, PackageReferenceScope containingScope)
     {
         // TODO add info about namespace and using directives
@@ -24,7 +24,7 @@ internal partial class DeclarationLexicalScopesBuilder
         return Create(from, scope);
     }
 
-    private partial To.NamespaceDeclaration Transform(
+    private partial To.NamespaceDeclaration TransformNamespaceDeclaration(
         From.NamespaceDeclaration from,
         DeclarationLexicalScope containingScope)
     {
@@ -33,7 +33,7 @@ internal partial class DeclarationLexicalScopesBuilder
         return Create(from, containingScope, scope);
     }
 
-    private partial To.TypeDeclaration Transform(
+    private partial To.TypeDeclaration TransformTypeDeclaration(
         From.TypeDeclaration from,
         DeclarationLexicalScope containingScope)
     {

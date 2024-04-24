@@ -8,12 +8,15 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using Pluralize.NET;
 using Type = Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
 internal static class Emit
 {
+    private static readonly IPluralize Pluralizer = new Pluralizer();
+
     public static string ClosedAttribute(Rule rule, string indent = "")
     {
         var children = rule.ChildRules;
@@ -283,8 +286,15 @@ internal static class Emit
         };
     }
 
-    public static string MethodName(Pass pass)
-        => pass.To is not null ? "Transform" : "Analyze";
+    public static string OperationMethodName(Transform transform)
+    {
+        var operation = (transform.To is not null ? "Transform" : "Analyze");
+        var entity = transform.From?.Type.UnderlyingSymbol.FullName.RemoveInterfacePrefix();
+        if (transform.From?.Type is CollectionType)
+            entity = Pluralizer.Pluralize(entity);
+        return operation
+               + entity;
+    }
 
     public static string EntryParameterNames(Pass pass)
         => Arguments(pass.EntryTransform.AllParameters);
@@ -344,6 +354,8 @@ internal static class Emit
         var toType = transform.To?.Type;
         if (fromType is CollectionType fromCollectionType && toType is CollectionType toCollectionType)
             return TransformCollectionMethodBody(transform, fromCollectionType, toCollectionType);
+        if (toType?.UnderlyingSymbol is InternalSymbol { ReferencedRule: { DescendantsModified: false } })
+            return "from";
         if (fromType?.UnderlyingSymbol is InternalSymbol { ReferencedRule: { IsTerminal: false } rule })
             return TransformNonTerminalMethodBody(transform, rule);
 
@@ -367,15 +379,12 @@ internal static class Emit
         var parameters = transform.AdditionalParameters.Select(ParameterName).Prepend("f").ToFixedList();
         var parameterNames = string.Join(", ", parameters);
         return
-            $"{ParameterName(transform.From!)}.{selectMethod}(f => {MethodName(transform.Pass)}({parameterNames})).To{resultCollection}()";
+            $"{ParameterName(transform.From!)}.{selectMethod}(f => {OperationMethodName(calledTransform!)}({parameterNames})).To{resultCollection}()";
     }
 
     private static Transform? CalledTransform(Transform transform, NonVoidType fromType)
-    {
-        var calledTransform = transform.Pass.Transforms.SingleOrDefault(t => fromType == t.From?.Type);
-        calledTransform ??= transform.Pass.Transforms.FirstOrDefault(t => t.From is not null && fromType.IsSubtypeOf(t.From.Type));
-        return calledTransform;
-    }
+        => transform.Pass.Transforms.SingleOrDefault(t => fromType == t.From?.Type
+        || (t.From?.Type is OptionalType optionalType && optionalType.UnderlyingType == fromType));
 
     private static string TransformNonTerminalMethodBody(Transform transform, Rule rule)
     {
@@ -391,7 +400,8 @@ internal static class Emit
             var calledTransform = CalledTransform(transform, new SymbolType(childRule.Defines));
             if (calledTransform is not null)
             {
-                builder.Append("Transform(");
+                builder.Append(OperationMethodName(calledTransform));
+                builder.Append("(");
                 var additionalArguments = calledTransform.AdditionalParameters.Select(ParameterName);
                 builder.AppendJoin(", ", additionalArguments.Prepend("f"));
                 builder.Append(')');
