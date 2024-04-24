@@ -3,6 +3,7 @@
 ◊from WithNamespaceSymbols;
 ◊to WithDeclarationLexicalScopes;
 
+Package -> ~;
 CompilationUnit, containingScope:`PackageReferenceScope` -> ~;
 TypeDeclaration, containingScope:`DeclarationLexicalScope` -> ~;
 NamespaceDeclaration, containingScope:`DeclarationLexicalScope` -> ~;

@@ -103,12 +103,14 @@ public class Pass
 
     private IFixedList<Transform> CreateTransforms()
     {
-        var transforms = new List<Transform>(DeclaredTransforms.Prepend(EntryTransform).Distinct());
+        var transforms = new List<Transform>(DeclaredTransforms.Distinct());
 
         if (FromLanguage is not null)
         {
-            var declaredFromTypes = transforms.Select(t => t.From?.Type.ToNonOptional()).WhereNotNull().ToFixedSet();
+            var declaredFromTypes = DeclaredTransforms.Select(t => t.From?.Type.ToNonOptional()).WhereNotNull().ToFixedSet();
             var newTransforms = new Dictionary<NonOptionalType, Transform>();
+            if (!EntryTransform.IsDeclared)
+                newTransforms.Add(EntryTransform.From!.Type.ToNonOptional(), EntryTransform);
 
             AddTransformsForModifiedTerminals(declaredFromTypes, newTransforms);
 

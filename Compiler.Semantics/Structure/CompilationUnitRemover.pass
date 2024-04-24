@@ -3,6 +3,7 @@
 ◊from WithDeclarationLexicalScopes;
 ◊to WithoutCompilationUnits;
 
+Package -> ~;
 CompilationUnit -> NamespaceMemberDeclaration*;
 CompilationUnit* -> {NamespaceMemberDeclaration};
 NamespaceDeclaration, file:`CodeFile` -> {NamespaceMemberDeclaration};
