@@ -8,38 +8,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Types;
 
 internal sealed partial class TypeSymbolPromiseAdder
 {
-    private To.Package Create(From.Package from, IPromise<Symbol>? childContainingSymbol)
-        => CreatePackage(from, TransformNamespaceMemberDeclarations(from.Declarations, childContainingSymbol),
-            TransformNamespaceMemberDeclarations(from.TestingDeclarations, childContainingSymbol));
-
-    private To.TypeDeclaration Create(From.TypeDeclaration from,
+    private To.TypeDeclaration CreateTypeDeclaration(From.TypeDeclaration from,
         AcyclicPromise<UserTypeSymbol> symbol,
         IPromise<Symbol> containingSymbol,
         IPromise<Symbol>? childContainingSymbol)
         => from switch
         {
-            From.ClassDeclaration f => Create(f, symbol, containingSymbol, childContainingSymbol),
-            From.TraitDeclaration f => Create(f, symbol, containingSymbol, childContainingSymbol),
-            From.StructDeclaration f => Create(f, symbol, containingSymbol, childContainingSymbol),
+            From.ClassDeclaration f => CreateClassDeclaration(f, symbol, containingSymbol, childContainingSymbol),
+            From.TraitDeclaration f => CreateTraitDeclaration(f, symbol, containingSymbol, childContainingSymbol),
+            From.StructDeclaration f => CreateStructDeclaration(f, symbol, containingSymbol, childContainingSymbol),
             _ => throw ExhaustiveMatch.Failed(from),
         };
-
-    private To.ClassDeclaration Create(From.ClassDeclaration from,
-        AcyclicPromise<UserTypeSymbol> symbol,
-        IPromise<Symbol> containingSymbol,
-        IPromise<Symbol>? childContainingSymbol)
-        => CreateClassDeclaration(from, TransformClassMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol);
-
-    private To.TraitDeclaration Create(From.TraitDeclaration from,
-        AcyclicPromise<UserTypeSymbol> symbol,
-        IPromise<Symbol> containingSymbol,
-        IPromise<Symbol>? childContainingSymbol)
-        => CreateTraitDeclaration(from, TransformTraitMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol);
-
-    private To.StructDeclaration Create(
-        From.StructDeclaration from,
-        AcyclicPromise<UserTypeSymbol> symbol,
-        IPromise<Symbol> containingSymbol,
-        IPromise<Symbol>? childContainingSymbol)
-        => CreateStructDeclaration(from, TransformStructMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol);
 }
