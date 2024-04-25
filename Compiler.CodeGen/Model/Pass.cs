@@ -292,7 +292,7 @@ public class Pass
                     || declaredFromTypes.Any(childFromType.IsSubtypeOf))
                     continue;
                 // Child type isn't covered yet, add a transform for it
-                var childTransform = CreateTransform(childFromType, ToLanguage?.Grammar);
+                var childTransform = CreateTransform(childFromType, ToLanguage?.Grammar, forceAutoGenerate: true);
                 if (childTransform is null) continue;
 
                 newTransforms.Add(childFromType, childTransform);
@@ -308,13 +308,14 @@ public class Pass
     private Transform? CreateTransform(
         NonVoidType fromType,
         Grammar? toGrammar,
-        IEnumerable<Parameter>? additionalParameters = null)
+        IEnumerable<Parameter>? additionalParameters = null,
+        bool forceAutoGenerate = false)
     {
         var toRule = toGrammar?.RuleFor(fromType.UnderlyingSymbol);
         if (toRule is null)
             // No way to make an auto transform, assume it is somehow covered
             return null;
-        return CreateTransform(fromType, additionalParameters, toRule);
+        return CreateTransform(fromType, additionalParameters, toRule, forceAutoGenerate);
     }
 
     private Transform CreateTransform(NonVoidType fromType, IEnumerable<Parameter>? additionalParameters, Rule toRule, bool forceAutoGenerate = false)
