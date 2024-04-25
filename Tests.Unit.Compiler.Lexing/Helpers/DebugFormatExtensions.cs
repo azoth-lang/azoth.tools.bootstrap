@@ -14,7 +14,5 @@ public static class DebugFormatExtensions
     }
 
     public static string DebugFormat(this IEnumerable<PsuedoToken> tokens)
-    {
-        return string.Join(", ", tokens);
-    }
+        => string.Join(", ", tokens);
 }

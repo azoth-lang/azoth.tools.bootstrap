@@ -60,5 +60,5 @@ public sealed class Parameter : IEquatable<Parameter>
 
     public Parameter WithType(NonVoidType type) => type == Type ? this : new(type, Name);
 
-    public override string ToString() => $"{Type} {Name}";
+    public override string ToString() => $"{Name}:{Type}";
 }

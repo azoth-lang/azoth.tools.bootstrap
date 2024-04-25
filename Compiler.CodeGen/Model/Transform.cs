@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public sealed class Transform
 {
     public Pass Pass { get; }
@@ -44,4 +46,6 @@ public sealed class Transform
         AllReturnValues = To.YieldValue().Concat(AdditionalReturnValues).ToFixedList();
         AutoGenerate = autoGenerate;
     }
+
+    public override string ToString() => $"{string.Join(", ", AllParameters)} -> {string.Join(", ", AllReturnValues)}";
 }

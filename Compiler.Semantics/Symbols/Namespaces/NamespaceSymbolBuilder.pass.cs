@@ -70,18 +70,12 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private IFixedList<To.ClassMemberDeclaration> TransformClassMemberDeclarations(IEnumerable<From.ClassMemberDeclaration> from, NamespaceSymbol? containingNamespace)
-        => from.Select(f => TransformClassMemberDeclaration(f, containingNamespace)).ToFixedList();
-
     private To.StructMemberDeclaration TransformStructMemberDeclaration(From.StructMemberDeclaration from, NamespaceSymbol? containingNamespace)
         => from switch
         {
             From.TypeDeclaration f => TransformTypeDeclaration(f, containingNamespace),
             _ => throw ExhaustiveMatch.Failed(from),
         };
-
-    private IFixedList<To.StructMemberDeclaration> TransformStructMemberDeclarations(IEnumerable<From.StructMemberDeclaration> from, NamespaceSymbol? containingNamespace)
-        => from.Select(f => TransformStructMemberDeclaration(f, containingNamespace)).ToFixedList();
 
     private To.TraitMemberDeclaration TransformTraitMemberDeclaration(From.TraitMemberDeclaration from, NamespaceSymbol? containingNamespace)
         => from switch
@@ -90,8 +84,23 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
+    private IFixedList<To.ClassMemberDeclaration> TransformClassMemberDeclarations(IEnumerable<From.ClassMemberDeclaration> from, NamespaceSymbol? containingNamespace)
+        => from.Select(f => TransformClassMemberDeclaration(f, containingNamespace)).ToFixedList();
+
+    private To.ClassDeclaration TransformClassDeclaration(From.ClassDeclaration from, NamespaceSymbol? containingNamespace, NamespaceSymbol? childContainingNamespace)
+        => CreateClassDeclaration(from, containingNamespace, childContainingNamespace);
+
+    private IFixedList<To.StructMemberDeclaration> TransformStructMemberDeclarations(IEnumerable<From.StructMemberDeclaration> from, NamespaceSymbol? containingNamespace)
+        => from.Select(f => TransformStructMemberDeclaration(f, containingNamespace)).ToFixedList();
+
+    private To.StructDeclaration TransformStructDeclaration(From.StructDeclaration from, NamespaceSymbol? containingNamespace, NamespaceSymbol? childContainingNamespace)
+        => CreateStructDeclaration(from, containingNamespace, childContainingNamespace);
+
     private IFixedList<To.TraitMemberDeclaration> TransformTraitMemberDeclarations(IEnumerable<From.TraitMemberDeclaration> from, NamespaceSymbol? containingNamespace)
         => from.Select(f => TransformTraitMemberDeclaration(f, containingNamespace)).ToFixedList();
+
+    private To.TraitDeclaration TransformTraitDeclaration(From.TraitDeclaration from, NamespaceSymbol? containingNamespace, NamespaceSymbol? childContainingNamespace)
+        => CreateTraitDeclaration(from, containingNamespace, childContainingNamespace);
 
     #region Create() methods
     private To.NamespaceDeclaration CreateNamespaceDeclaration(From.NamespaceDeclaration from, NamespaceSymbol containingNamespace, NamespaceSymbol symbol, IEnumerable<To.NamespaceMemberDeclaration> declarations)
@@ -126,6 +135,15 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
 
     private To.NamespaceDeclaration CreateNamespaceDeclaration(From.NamespaceDeclaration from, NamespaceSymbol containingNamespace, NamespaceSymbol symbol, NamespaceSymbol childContainingNamespace, ISymbolTreeBuilder childTreeBuilder)
         => To.NamespaceDeclaration.Create(containingNamespace, symbol, from.Syntax, from.IsGlobalQualified, from.DeclaredNames, from.UsingDirectives, TransformNamespaceMemberDeclarations(from.Declarations, childContainingNamespace, childTreeBuilder));
+
+    private To.ClassDeclaration CreateClassDeclaration(From.ClassDeclaration from, NamespaceSymbol? containingNamespace, NamespaceSymbol? childContainingNamespace)
+        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, TransformClassMemberDeclarations(from.Members, childContainingNamespace), from.GenericParameters, from.SupertypeNames, containingNamespace);
+
+    private To.StructDeclaration CreateStructDeclaration(From.StructDeclaration from, NamespaceSymbol? containingNamespace, NamespaceSymbol? childContainingNamespace)
+        => To.StructDeclaration.Create(from.Syntax, TransformStructMemberDeclarations(from.Members, childContainingNamespace), from.GenericParameters, from.SupertypeNames, containingNamespace);
+
+    private To.TraitDeclaration CreateTraitDeclaration(From.TraitDeclaration from, NamespaceSymbol? containingNamespace, NamespaceSymbol? childContainingNamespace)
+        => To.TraitDeclaration.Create(from.Syntax, TransformTraitMemberDeclarations(from.Members, childContainingNamespace), from.GenericParameters, from.SupertypeNames, containingNamespace);
 
     #endregion
 }
