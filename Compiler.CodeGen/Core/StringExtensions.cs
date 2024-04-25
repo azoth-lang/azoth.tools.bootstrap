@@ -24,6 +24,14 @@ internal static class StringExtensions
         return value;
     }
 
+    public static string ToPascalCase(this string value)
+    {
+        if (value.Length == 0)
+            return value;
+        value = char.ToUpperInvariant(value[0]) + value[1..];
+        return value;
+    }
+
     public static string RemoveInterfacePrefix(this string value)
     {
         if (value.StartsWith("I") && char.IsUpper(value[1]))

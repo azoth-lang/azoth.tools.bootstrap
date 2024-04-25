@@ -1,5 +1,4 @@
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using ExhaustiveMatching;
 using From = Azoth.Tools.Bootstrap.Compiler.IST.Concrete;
 using To = Azoth.Tools.Bootstrap.Compiler.IST.WithNamespaceSymbols;
@@ -8,46 +7,30 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 
 internal sealed partial class NamespaceSymbolBuilder
 {
-    private To.CompilationUnit Create(
-        From.CompilationUnit from,
-        NamespaceSymbol containingSymbol,
-        ISymbolTreeBuilder treeBuilder)
-        => Create(from, TransformNamespaceMemberDeclarations(from.Declarations, containingSymbol, treeBuilder));
-
-    private To.NamespaceDeclaration Create(
-        From.NamespaceDeclaration from,
-        NamespaceSymbol containingSymbol,
-        NamespaceSymbol childContainingSymbol,
-        ISymbolTreeBuilder treeBuilder)
-    {
-        var declarations = TransformNamespaceMemberDeclarations(from.Declarations, childContainingSymbol, treeBuilder);
-        return Create(from, containingSymbol, childContainingSymbol, declarations);
-    }
-
-    private To.TypeDeclaration Create(From.TypeDeclaration from, NamespaceSymbol? containingSymbol, NamespaceSymbol? childContainingSymbol)
+    private To.TypeDeclaration CreateTypeDeclaration(From.TypeDeclaration from, NamespaceSymbol? containingSymbol, NamespaceSymbol? childContainingSymbol)
     {
         return from switch
         {
-            From.ClassDeclaration f => Create(f, containingSymbol, childContainingSymbol),
-            From.TraitDeclaration f => Create(f, containingSymbol, childContainingSymbol),
-            From.StructDeclaration f => Create(f, containingSymbol, childContainingSymbol),
+            From.ClassDeclaration f => CreateClassDeclaration(f, containingSymbol, childContainingSymbol),
+            From.TraitDeclaration f => CreateTraitDeclaration(f, containingSymbol, childContainingSymbol),
+            From.StructDeclaration f => CreateStructDeclaration(f, containingSymbol, childContainingSymbol),
             _ => throw ExhaustiveMatch.Failed(from)
         };
     }
 
-    private To.ClassDeclaration Create(
+    private To.ClassDeclaration CreateClassDeclaration(
         From.ClassDeclaration from,
         NamespaceSymbol? containingSymbol,
         NamespaceSymbol? childContainingSymbol)
         => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, TransformClassMemberDeclarations(from.Members, childContainingSymbol), from.GenericParameters, from.SupertypeNames, containingSymbol);
 
-    private To.TraitDeclaration Create(
+    private To.TraitDeclaration CreateTraitDeclaration(
         From.TraitDeclaration from,
         NamespaceSymbol? containingSymbol,
         NamespaceSymbol? childContainingSymbol)
         => To.TraitDeclaration.Create(from.Syntax, TransformTraitMemberDeclarations(from.Members, childContainingSymbol), from.GenericParameters, from.SupertypeNames, containingSymbol);
 
-    private To.StructDeclaration Create(
+    private To.StructDeclaration CreateStructDeclaration(
         From.StructDeclaration from,
         NamespaceSymbol? containingSymbol,
         NamespaceSymbol? childContainingSymbol)

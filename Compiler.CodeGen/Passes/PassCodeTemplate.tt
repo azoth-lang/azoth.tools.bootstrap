@@ -40,9 +40,19 @@ internal sealed partial class <#=pass.Name #> : ITransformPass<<#=Emit.Transform
         => <#=Emit.TransformMethodBody(transform)#>;
 
 <#  } #>
+    #region Create() methods
 <#  foreach (var rule in Build.SimpleCreateRules(pass)) { #>
-    private <#=Emit.PassTypeName(pass, rule.Defines)#> Create(<#=Emit.DifferentParameters(pass, rule)#>)
-        => <#=Emit.PassTypeName(pass, rule.Defines)#>.Create(<#=Emit.SimpleCreateParameters(rule)#>);
+    private <#=Emit.PassTypeName(pass, rule.Defines)#> Create<#=Emit.TypeName(rule.Defines)#>(<#=Emit.DifferentParameters(pass, rule)#>)
+        => <#=Emit.PassTypeName(pass, rule.Defines)#>.Create(<#=Emit.SimpleCreateArguments(rule)#>);
 
 <#  } #>
+    #endregion
+
+    #region CreateX() methods
+<#  foreach (var rule in Build.AdvancedCreateRules(pass)) { #>
+    private <#=Emit.PassTypeName(pass, rule.Defines)#> Create<#=Emit.TypeName(rule.Defines)#>(<#=Emit.AdvancedCreateParameters(pass, rule)#>)
+        => <#=Emit.AdvancedCreateMethodBody(pass, rule)#>;
+
+<#  } #>
+    #endregion
 }

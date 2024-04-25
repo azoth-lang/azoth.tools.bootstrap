@@ -306,13 +306,11 @@ internal static class Emit
         => returnValues.Any() ? "private " : "";
 
     #region StartRun()
-    public static string StartRunAccessModifier(Pass pass) => AccessModifier(StartRunReturnValues(pass));
+    public static string StartRunAccessModifier(Pass pass)
+        => AccessModifier(Build.StartRunReturnValues(pass));
 
     public static string StartRunReturnType(Pass pass)
-        => PassReturnType(pass, StartRunReturnValues(pass).ToFixedList());
-
-    private static IEnumerable<Parameter> StartRunReturnValues(Pass pass)
-        => pass.EntryTransform.AdditionalParameters;
+        => PassReturnType(pass, Build.StartRunReturnValues(pass).ToFixedList());
 
     public static string StartRunResult(Pass pass)
         => Result(pass.EntryTransform.AdditionalParameters);
@@ -320,19 +318,13 @@ internal static class Emit
 
     #region EndRun()
     public static string EndRunAccessModifier(Pass pass)
-        => EndRunReturnValues(pass).Any() ? "private " : "";
+        => Build.EndRunReturnValues(pass).Any() ? "private " : "";
 
     public static string EndRunParameters(Pass pass)
         => Parameters(pass, pass.EntryTransform.AllReturnValues);
 
     public static string EndRunReturnType(Pass pass)
-        => PassReturnType(pass, EndRunReturnValues(pass).ToFixedList());
-
-    private static IEnumerable<Parameter> EndRunReturnValues(Pass pass)
-    {
-        if (pass.ToContextParameter is not null)
-            yield return pass.ToContextParameter;
-    }
+        => PassReturnType(pass, Build.EndRunReturnValues(pass).ToFixedList());
 
     public static string EndRunArguments(Pass pass)
         => Arguments(pass.EntryTransform.AllReturnValues);
@@ -341,7 +333,7 @@ internal static class Emit
         => Result(pass.ToContextParameter.YieldValue().ToFixedList());
     #endregion
 
-    #region Transform()
+    #region TransformX()
     public static string TransformNotNullAttribute(Transform transform)
     {
         if (transform.From?.Type is not OptionalType) return "";
@@ -373,7 +365,7 @@ internal static class Emit
             SetType _ => "FixedSet",
             _ => throw ExhaustiveMatch.Failed(toType)
         };
-        Transform? calledTransform = CalledTransform(transform, fromType.ElementType);
+        Transform? calledTransform = Build.CalledTransform(transform, fromType.ElementType);
         var calledTransformReturnsCollection = calledTransform?.AllReturnValues[0].Type is CollectionType;
         var selectMethod = calledTransformReturnsCollection ? "SelectMany" : "Select";
         var parameters = transform.AdditionalParameters.Select(ParameterName).Prepend("f").ToFixedList();
@@ -381,10 +373,6 @@ internal static class Emit
         return
             $"{ParameterName(transform.From!)}.{selectMethod}(f => {OperationMethodName(calledTransform!)}({parameterNames})).To{resultCollection}()";
     }
-
-    private static Transform? CalledTransform(Transform transform, NonVoidType fromType)
-        => transform.Pass.Transforms.SingleOrDefault(t => fromType == t.From?.Type
-        || (t.From?.Type is OptionalType optionalType && optionalType.UnderlyingType == fromType));
 
     private static string TransformNonTerminalMethodBody(Transform transform, Rule rule)
     {
@@ -397,7 +385,7 @@ internal static class Emit
             builder.Append("            ");
             builder.Append(PassTypeName(pass, childRule.Defines));
             builder.Append(" f => ");
-            var calledTransform = CalledTransform(transform, new SymbolType(childRule.Defines));
+            var calledTransform = Build.CalledTransform(transform, new SymbolType(childRule.Defines));
             if (calledTransform is not null)
             {
                 builder.Append(OperationMethodName(calledTransform));
@@ -419,28 +407,29 @@ internal static class Emit
 
     private static string TransformTerminalMethodBody(Transform transform, NonVoidType? fromType)
     {
-        var body = $"Create({Arguments(transform.AllParameters)})";
+        var body = $"Create{TypeName(transform.To!.Type.UnderlyingSymbol)}({Arguments(transform.AllParameters)})";
         if (fromType is OptionalType)
             body = $"from is not null ? {body} : null";
         return body;
     }
     #endregion
 
+    #region Create()
     public static string DifferentParameters(Pass pass, Rule rule)
     {
         var extendsRule = rule.ExtendsRule!;
-        var modifiedProperties = rule.DifferentProperties;
+        var differentProperties = rule.DifferentProperties;
         var fromType = new SymbolType(extendsRule.Defines);
         var parameters = new List<Parameter> { Model.Parameter.Create(fromType, "from") };
-        parameters.AddRange(modifiedProperties.Select(p => p.ToParameter()));
+        parameters.AddRange(differentProperties.Select(p => p.Parameter));
         return Parameters(pass, parameters);
     }
 
-    private static bool CouldBeModified(Property property)
+    public static bool CouldBeModified(Property property)
         => property.Type.UnderlyingSymbol is
             InternalSymbol { ReferencedRule.DescendantsModified: true } or ExternalSymbol;
 
-    public static string SimpleCreateParameters(Rule rule)
+    public static string SimpleCreateArguments(Rule rule)
     {
         var extendsRule = rule.ExtendsRule!;
         var oldProperties = new HashSet<Property>(Property.NameAndTypeComparer);
@@ -452,4 +441,67 @@ internal static class Emit
                 : property.Name.ToCamelCase());
         return string.Join(", ", parameters);
     }
+    #endregion
+
+    #region CreateX()
+    public static string AdvancedCreateParameters(Pass pass, Rule rule)
+    {
+        var parameters = Build.AdvancedCreateParameters(pass, rule);
+        return Parameters(pass, parameters);
+    }
+
+    public static string AdvancedCreateArguments(Pass pass, Rule rule)
+    {
+        var extendsRule = rule.ExtendsRule!;
+        var oldProperties = new HashSet<Property>(Property.NameAndTypeComparer);
+        oldProperties.AddRange(extendsRule.AllProperties);
+        var arguments = new List<string>();
+        foreach (var property in rule.AllProperties)
+        {
+            if (oldProperties.Contains(property) || !CouldBeModified(property))
+                arguments.Add($"from.{property.Name}");
+            else if (rule.ModifiedProperties.Contains(property))
+                arguments.Add(property.Name.ToCamelCase());
+            else
+            {
+                var fromType = Build.FromType(property);
+                var calledTransform = Build.CalledTransform(pass, fromType);
+                var operationArguments = calledTransform!.AdditionalParameters.Select(p => p.ChildParameter.Name)
+                                                          .Prepend($"from.{property.Name}");
+                arguments.Add($"{OperationMethodName(calledTransform)}({string.Join(", ", operationArguments)})");
+            }
+        }
+        return string.Join(", ", arguments);
+    }
+
+    public static string AdvancedCreateMethodBody(Pass pass, Rule rule)
+        => rule.IsTerminal ? AdvancedCreateTerminalMethodBody(pass, rule)
+                           : AdvancedCreateNonTerminalMethodBody(pass, rule);
+
+    private static string AdvancedCreateTerminalMethodBody(Pass pass, Rule rule)
+        => $"{PassTypeName(pass, rule.Defines)}.Create({AdvancedCreateArguments(pass, rule)})";
+
+    private static string AdvancedCreateNonTerminalMethodBody(Pass pass, Rule rule)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine("from switch");
+        builder.AppendLine("        {");
+        foreach (var childRule in rule.ExtendsRule!.ChildRules)
+        {
+            builder.Append("            ");
+            builder.Append(PassTypeName(pass, childRule.Defines));
+            builder.Append(" f => Create");
+            var toRule = pass.ToLanguage?.Grammar.RuleFor(childRule.Defines.ShortName);
+            builder.Append(TypeName(toRule!.Defines));
+            builder.Append('(');
+            var additionalArguments = Build.AdvancedCreateParameters(pass, toRule).Skip(1).Select(ParameterName);
+            builder.AppendJoin(", ", additionalArguments.Prepend("f"));
+            builder.AppendLine("),");
+        }
+
+        builder.AppendLine("            _ => throw ExhaustiveMatch.Failed(from),");
+        builder.Append("        }");
+        return builder.ToString();
+    }
+    #endregion
 }

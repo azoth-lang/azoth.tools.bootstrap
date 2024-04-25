@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
@@ -26,11 +27,15 @@ public sealed class Parameter : IEquatable<Parameter>
 
     public NonVoidType Type { get; }
     public string Name { get; }
+    public bool IsChildParameter => Name.StartsWith("child", StringComparison.Ordinal);
+    public Parameter ChildParameter => childParameter.Value;
+    private readonly Lazy<Parameter> childParameter;
 
     private Parameter(NonVoidType type, string name)
     {
         Type = type;
         Name = name;
+        childParameter = new(() => IsChildParameter ? this : new(type, "child" + name.ToPascalCase()));
     }
 
     #region Equality
@@ -52,6 +57,8 @@ public sealed class Parameter : IEquatable<Parameter>
 
     public static bool operator !=(Parameter? left, Parameter? right) => !Equals(left, right);
     #endregion
+
+    public Parameter WithType(NonVoidType type) => type == Type ? this : new(type, Name);
 
     public override string ToString() => $"{Type} {Name}";
 }

@@ -45,9 +45,6 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
     private To.FunctionDeclaration TransformFunctionDeclaration(From.FunctionDeclaration from)
         => from;
 
-    private IFixedSet<To.NamespaceMemberDeclaration> TransformNamespaceMemberDeclarations(IEnumerable<From.NamespaceMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
-        => from.Select(f => TransformNamespaceMemberDeclaration(f, containingSymbol)).ToFixedSet();
-
     private To.NamespaceMemberDeclaration TransformNamespaceMemberDeclaration(From.NamespaceMemberDeclaration from, IPromise<Symbol>? containingSymbol)
         => from switch
         {
@@ -56,10 +53,20 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
+    private IFixedSet<To.NamespaceMemberDeclaration> TransformNamespaceMemberDeclarations(IEnumerable<From.NamespaceMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
+        => from.Select(f => TransformNamespaceMemberDeclaration(f, containingSymbol)).ToFixedSet();
+
+    private To.ClassMemberDeclaration TransformClassMemberDeclaration(From.ClassMemberDeclaration from, IPromise<Symbol>? containingSymbol)
+        => from switch
+        {
+            From.TypeDeclaration f => TransformTypeDeclaration(f, containingSymbol),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+
     private IFixedList<To.ClassMemberDeclaration> TransformClassMemberDeclarations(IEnumerable<From.ClassMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
         => from.Select(f => TransformClassMemberDeclaration(f, containingSymbol)).ToFixedList();
 
-    private To.ClassMemberDeclaration TransformClassMemberDeclaration(From.ClassMemberDeclaration from, IPromise<Symbol>? containingSymbol)
+    private To.StructMemberDeclaration TransformStructMemberDeclaration(From.StructMemberDeclaration from, IPromise<Symbol>? containingSymbol)
         => from switch
         {
             From.TypeDeclaration f => TransformTypeDeclaration(f, containingSymbol),
@@ -69,7 +76,7 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
     private IFixedList<To.StructMemberDeclaration> TransformStructMemberDeclarations(IEnumerable<From.StructMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
         => from.Select(f => TransformStructMemberDeclaration(f, containingSymbol)).ToFixedList();
 
-    private To.StructMemberDeclaration TransformStructMemberDeclaration(From.StructMemberDeclaration from, IPromise<Symbol>? containingSymbol)
+    private To.TraitMemberDeclaration TransformTraitMemberDeclaration(From.TraitMemberDeclaration from, IPromise<Symbol>? containingSymbol)
         => from switch
         {
             From.TypeDeclaration f => TransformTypeDeclaration(f, containingSymbol),
@@ -79,23 +86,24 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
     private IFixedList<To.TraitMemberDeclaration> TransformTraitMemberDeclarations(IEnumerable<From.TraitMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
         => from.Select(f => TransformTraitMemberDeclaration(f, containingSymbol)).ToFixedList();
 
-    private To.TraitMemberDeclaration TransformTraitMemberDeclaration(From.TraitMemberDeclaration from, IPromise<Symbol>? containingSymbol)
-        => from switch
-        {
-            From.TypeDeclaration f => TransformTypeDeclaration(f, containingSymbol),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
-    private To.Package Create(From.Package from, IEnumerable<To.NamespaceMemberDeclaration> declarations, IEnumerable<To.NamespaceMemberDeclaration> testingDeclarations)
+    #region Create() methods
+    private To.Package CreatePackage(From.Package from, IEnumerable<To.NamespaceMemberDeclaration> declarations, IEnumerable<To.NamespaceMemberDeclaration> testingDeclarations)
         => To.Package.Create(declarations, testingDeclarations, from.LexicalScope, from.Syntax, from.Symbol, from.References);
 
-    private To.ClassDeclaration Create(From.ClassDeclaration from, IEnumerable<To.ClassMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise)
+    private To.ClassDeclaration CreateClassDeclaration(From.ClassDeclaration from, IEnumerable<To.ClassMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise)
         => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, members, symbol, containingSymbolPromise, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope, from.ContainingNamespace);
 
-    private To.StructDeclaration Create(From.StructDeclaration from, IEnumerable<To.StructMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise)
+    private To.StructDeclaration CreateStructDeclaration(From.StructDeclaration from, IEnumerable<To.StructMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise)
         => To.StructDeclaration.Create(from.Syntax, members, symbol, containingSymbolPromise, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope, from.ContainingNamespace);
 
-    private To.TraitDeclaration Create(From.TraitDeclaration from, IEnumerable<To.TraitMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise)
+    private To.TraitDeclaration CreateTraitDeclaration(From.TraitDeclaration from, IEnumerable<To.TraitMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise)
         => To.TraitDeclaration.Create(from.Syntax, members, symbol, containingSymbolPromise, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope, from.ContainingNamespace);
 
+    #endregion
+
+    #region CreateX() methods
+    private To.Package CreatePackage(From.Package from, IPromise<Symbol>? childContainingSymbol)
+        => To.Package.Create(TransformNamespaceMemberDeclarations(from.Declarations, childContainingSymbol), TransformNamespaceMemberDeclarations(from.TestingDeclarations, childContainingSymbol), from.LexicalScope, from.Syntax, from.Symbol, from.References);
+
+    #endregion
 }

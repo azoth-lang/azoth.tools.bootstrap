@@ -13,7 +13,7 @@ internal partial class DeclarationLexicalScopesBuilder
     {
         var scope = new PackageReferenceScope(from.Symbol,
             from.References.ToFixedDictionary(r => r.AliasOrName, r => r.Package.SymbolTree));
-        return Create(from, scope, scope);
+        return CreatePackage(from, scope, scope);
     }
 
     private partial To.CompilationUnit TransformCompilationUnit(
@@ -21,7 +21,7 @@ internal partial class DeclarationLexicalScopesBuilder
     {
         // TODO add info about namespace and using directives
         var scope = new DeclarationScope(containingScope);
-        return Create(from, scope);
+        return CreateCompilationUnit(from, scope, childContainingScope: scope);
     }
 
     private partial To.NamespaceDeclaration TransformNamespaceDeclaration(
@@ -30,7 +30,7 @@ internal partial class DeclarationLexicalScopesBuilder
     {
         // TODO add info about namespace and using directives
         var scope = new DeclarationScope(containingScope);
-        return Create(from, containingScope, scope);
+        return CreateNamespaceDeclaration(from, containingScope: containingScope, newScope: scope, childContainingScope: scope);
     }
 
     private partial To.TypeDeclaration TransformTypeDeclaration(
@@ -39,6 +39,6 @@ internal partial class DeclarationLexicalScopesBuilder
     {
         // TODO add info about scope
         var scope = new DeclarationScope(containingScope);
-        return Create(from, containingScope, scope);
+        return CreateTypeDeclaration(from, containingScope: containingScope, newScope: scope, childContainingScope: scope);
     }
 }

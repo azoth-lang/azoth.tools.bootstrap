@@ -9,9 +9,9 @@ CompilationUnit* -> {NamespaceMemberDeclaration};
 NamespaceDeclaration, file:`CodeFile` -> {NamespaceMemberDeclaration};
 NamespaceMemberDeclaration, file:`CodeFile` -> {~};
 // Why is this needed?
-TypeDeclaration, file:`CodeFile` -> ~ = auto;
+TypeDeclaration, file:`CodeFile`, childFile:`CodeFile` -> ~ = auto;
 // TODO these shouldn't be needed given the TypeDeclaration transform
-ClassDeclaration, file:`CodeFile` -> ~ = auto;
-StructDeclaration, file:`CodeFile` -> ~ = auto;
-TraitDeclaration, file:`CodeFile` -> ~ = auto;
+ClassDeclaration, file:`CodeFile`, childFile:`CodeFile` -> ~ = auto;
+StructDeclaration, file:`CodeFile`, childFile:`CodeFile` -> ~ = auto;
+TraitDeclaration, file:`CodeFile`, childFile:`CodeFile` -> ~ = auto;
 FunctionDeclaration, file:`CodeFile` -> ~ = auto;

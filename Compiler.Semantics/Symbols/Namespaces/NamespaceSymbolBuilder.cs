@@ -23,14 +23,14 @@ internal sealed partial class NamespaceSymbolBuilder
     {
         var compilationUnits = TransformCompilationUnits(from.CompilationUnits, packageSymbol, context.SymbolTree);
         var testingCompilationUnits = TransformCompilationUnits(from.TestingCompilationUnits, packageSymbol, context.TestingSymbolTree);
-        return Create(from, compilationUnits, testingCompilationUnits);
+        return CreatePackage(from, compilationUnits, testingCompilationUnits);
     }
 
     private partial To.CompilationUnit TransformCompilationUnit(
         From.CompilationUnit from, PackageSymbol containingNamespace, ISymbolTreeBuilder treeBuilder)
     {
         var implicitNamespaceSymbol = BuildNamespaceSymbol(containingNamespace, from.ImplicitNamespaceName, treeBuilder);
-        return Create(from, implicitNamespaceSymbol, treeBuilder);
+        return CreateCompilationUnit(from, implicitNamespaceSymbol, treeBuilder);
     }
 
     private partial To.NamespaceDeclaration TransformNamespaceDeclaration(
@@ -44,7 +44,7 @@ internal sealed partial class NamespaceSymbolBuilder
         // TODO remove properties on Syntax nodes
         from.Syntax.ContainingNamespaceSymbol = containingNamespace;
         from.Syntax.Symbol.Fulfill(namespaceSymbol);
-        return Create(from, containingNamespace, namespaceSymbol, treeBuilder);
+        return CreateNamespaceDeclaration(from, containingNamespace: containingNamespace, symbol: namespaceSymbol, childContainingNamespace: namespaceSymbol, treeBuilder);
     }
 
     // TODO this should be more automatic
@@ -54,7 +54,7 @@ internal sealed partial class NamespaceSymbolBuilder
     {
         // TODO remove properties on Syntax nodes
         from.Syntax.ContainingNamespaceSymbol = containingNamespace;
-        return Create(from, containingNamespace);
+        return CreateFunctionDeclaration(from, containingNamespace);
     }
 
     private partial To.TypeDeclaration TransformTypeDeclaration(
@@ -63,7 +63,7 @@ internal sealed partial class NamespaceSymbolBuilder
     {
         // TODO remove properties on Syntax nodes
         from.Syntax.ContainingNamespaceSymbol = containingNamespace!;
-        return Create(from, containingNamespace, childContainingSymbol: null);
+        return CreateTypeDeclaration(from, containingNamespace, childContainingSymbol: null);
     }
 
     private static NamespaceSymbol BuildNamespaceSymbol(

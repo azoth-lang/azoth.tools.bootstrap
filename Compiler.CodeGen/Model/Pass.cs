@@ -134,8 +134,7 @@ public class Pass
         Dictionary<NonOptionalType, Transform> newTransforms)
     {
         var fromType = transform.From!.Type.ToNonOptional();
-        var additionalParameters = transform.AdditionalParameters;
-        if (additionalParameters.Count == 0) return;
+        if (transform.AdditionalParameters.Count == 0) return;
 
         var allFromTypes = declaredFromTypes.Concat(newTransforms.Keys).ToFixedSet();
         var parentTransformsFrom = ParentTransformsFrom(fromType, allFromTypes)
@@ -151,15 +150,15 @@ public class Pass
 
             if (newTransforms.TryGetValue(parentLookupType, out var parentTransform))
             {
+                // TODO this is really about optional, clarify to make code readable
                 bool fromTypeChanged = !parentFromType.IsSubtypeOf(parentTransform.From!.Type);
                 var parentAdditionalParameters = parentTransform.AdditionalParameters;
-                var missingParameters = additionalParameters.Except(parentAdditionalParameters)
-                                                            .Where(p => parentAdditionalParameters.All(pp => pp.Name != p.Name))
-                                                            .ToFixedList();
+                var adjustedAdditionalParameters = AdjustedAdditionalParameters(transform, parentTransform);
+                var missingAndModifiedParameters = MissingAndModifiedParameters(parentAdditionalParameters, adjustedAdditionalParameters);
 
                 // We have to re-create the transform if there are missing parameters OR
                 // if the from type has changed (e.g. from non-optional to optional).
-                if (!missingParameters.Any() && !fromTypeChanged)
+                if (!missingAndModifiedParameters.Any() && !fromTypeChanged)
                 {
                     // All parameters are already covered
                     continue;
@@ -177,13 +176,15 @@ public class Pass
                 }
                 // Need to create a new transform with the additional parameters
                 parentTransform = new Transform(this,
-                    parentFrom,
-                    parentTransform.AdditionalParameters.Concat(missingParameters),
+                    parentFrom, MergeByName(parentAdditionalParameters, missingAndModifiedParameters),
                     parentTo, parentTransform.AdditionalReturnValues,
                     parentTransform.AutoGenerate);
             }
             else
             {
+                IEnumerable<Parameter> additionalParameters = transform.AdditionalParameters;
+                if (!IsChildRule(fromType, parentFromType))
+                    additionalParameters = additionalParameters.Select(p => p.ChildParameter).MergeByName();
                 parentTransform = CreateTransform(parentFromType, toGrammar, additionalParameters);
                 if (parentTransform is null)
                     // Couldn't create transform, assume it is somehow covered
@@ -196,6 +197,53 @@ public class Pass
             // Now bubble up the additional parameters
             BubbleParametersUp(parentTransform, declaredFromTypes, newTransforms);
         }
+    }
+
+    private static IEnumerable<Parameter> MergeByName(
+        IFixedList<Parameter> parentAdditionalParameters,
+        IFixedList<Parameter> missingAndModifiedParameters)
+        => parentAdditionalParameters.Concat(missingAndModifiedParameters).MergeByName();
+
+    private static IFixedList<Parameter> AdjustedAdditionalParameters(
+        Transform transform,
+        Transform parentTransform)
+    {
+        var additionalParameters = transform.AdditionalParameters;
+        var fromType = transform.From?.Type;
+        var toType = parentTransform.From?.Type;
+        if (IsChildRule(fromType, toType))
+        {
+            // In this case, don't turn any parameters into child parameters
+            return additionalParameters.Except(parentTransform.AdditionalParameters).ToFixedList();
+        }
+
+        var toSymbol = parentTransform.To?.Type.UnderlyingSymbol as InternalSymbol;
+        var toRuleRequiredParameters = toSymbol?.ReferencedRule.AllProperties.Select(p => p.Parameter).ToFixedSet()
+                                         ?? FixedSet.Empty<Parameter>();
+        var adjustedAdditionalParameters = additionalParameters.Intersect(toRuleRequiredParameters)
+                                                               .Concat(additionalParameters
+                                                                       .Except(toRuleRequiredParameters)
+                                                                       .Select(p => p.ChildParameter)).Distinct()
+                                                               .ToFixedList();
+        return adjustedAdditionalParameters;
+    }
+
+    private static bool IsChildRule(NonVoidType? fromType, NonVoidType? toType)
+        => fromType?.UnderlyingSymbol is InternalSymbol { ReferencedRule: var rule }
+           && toType?.UnderlyingSymbol is InternalSymbol { ReferencedRule: var parentRule }
+           && (rule == parentRule || rule.AncestorRules.Contains(parentRule));
+
+    private static IFixedList<Parameter> MissingAndModifiedParameters(
+        IFixedList<Parameter> parentAdditionalParameters,
+        IFixedList<Parameter> additionalParameters)
+    {
+        var lookup = parentAdditionalParameters.ToLookup(p => p.Name);
+        var missingParameters = additionalParameters
+                                .Except(parentAdditionalParameters)
+                                .Where(p => p.Type is not OptionalType optionalType
+                                            || lookup[p.Name].All(pp => pp.Type != optionalType.UnderlyingType))
+                                .ToFixedList();
+        return missingParameters;
     }
 
     private void AddTransformsForModifiedTerminals(IFixedSet<NonOptionalType> declaredFromTypes,
@@ -214,7 +262,7 @@ public class Pass
                 || declaredFromTypes.Any(fromType.IsSubtypeOf))
                 continue;
 
-            var additionalParameters = toRule.ModifiedProperties.Select(p => p.ToParameter());
+            var additionalParameters = toRule.ModifiedProperties.Select(p => p.Parameter);
             newTransforms[fromType] = CreateTransform(fromType, additionalParameters, toRule, forceAutoGenerate: true);
         }
     }
@@ -309,8 +357,11 @@ public class Pass
                                              .OfType<CollectionType>()
                                              .Where(t => fromType.IsSubtypeOf(t.ElementType)))
                 {
-                    yield return type;
-                    yield return type.ElementType;
+                    // Only take one step up at a time so that additional parameters are bubbled up correctly
+                    if (type.ElementType == fromType)
+                        yield return type;
+                    else
+                        yield return type.ElementType;
                 }
         }
     }

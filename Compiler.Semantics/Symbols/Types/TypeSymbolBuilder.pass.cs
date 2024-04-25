@@ -38,4 +38,9 @@ internal sealed partial class TypeSymbolBuilder : ITransformPass<From.Package, S
 
     private partial From.Package TransformPackage(From.Package from);
 
+    #region Create() methods
+    #endregion
+
+    #region CreateX() methods
+    #endregion
 }
