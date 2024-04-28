@@ -423,14 +423,15 @@ internal static class Emit
     public static string SimpleCreateArguments(SimpleCreateMethod method)
     {
         var rule = method.Rule;
-        var extendsRule = rule.ExtendsRule!;
-        var oldProperties = new HashSet<Property>(Property.NameAndTypeComparer);
-        oldProperties.AddRange(extendsRule.AllProperties);
+        var parameterNames = method.AdditionalParameters.Select(ParameterName).ToFixedSet();
         var parameters = new List<string>();
         foreach (var property in rule.AllProperties)
-            parameters.Add(oldProperties.Contains(property) || !CouldBeModified(property)
-                ? $"from.{property.Name}"
-                : property.Name.ToCamelCase());
+        {
+            var parameterName = property.Name.ToCamelCase();
+            parameters.Add(parameterNames.Contains(parameterName)
+                ? parameterName : $"from.{property.Name}");
+        }
+
         return string.Join(", ", parameters);
     }
     #endregion
