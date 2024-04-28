@@ -3,8 +3,9 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
 ◊context SymbolBuilderContext;
 ◊from WithTypeDeclarationPromises;
-◊to WithTypeDeclarationPromises;
+◊to WithTypeDeclarationSymbols;
 
+Package -> ~;
 //ClassDeclaration -> ~;
 //StructDeclaration -> ~;
 // TraitDeclaration -> ~;
