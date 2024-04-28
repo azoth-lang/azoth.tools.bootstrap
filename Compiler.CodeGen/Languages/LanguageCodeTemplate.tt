@@ -40,7 +40,7 @@ public sealed partial class <#=language.Extends.Name #>
 <#      foreach(var rule in grammar.Rules.Where(ShouldEmit.ExtendsSupertype)) {#>
     public partial interface <#= Emit.TypeName(rule.Defines) #> : <#= Emit.QualifiedTypeName(rule.Defines) #>
     {
-<#          foreach (var property in rule.DeclaredProperties.Where(p => p.ReferencesRule)) { #>
+<#          foreach (var property in rule.DeclaredProperties.Where(ShouldEmit.PropertyForward)) { #>
         <#= Emit.QualifiedType(property.Type) #> <#= Emit.QualifiedTypeName(property.Rule.Defines) #>.<#=property.Name #> => <#=property.Name #>;
 <#          } #>
     }

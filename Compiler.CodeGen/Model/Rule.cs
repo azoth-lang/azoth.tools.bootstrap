@@ -29,6 +29,8 @@ public class Rule
     public IFixedSet<Rule> ChildRules => childRules.Value;
     private readonly Lazy<IFixedSet<Rule>> childRules;
     public bool IsTerminal => !ChildRules.Any();
+    public IFixedSet<Rule> DescendantRules => descendantRules.Value;
+    private readonly Lazy<IFixedSet<Rule>> descendantRules;
 
     public IFixedList<Property> DeclaredProperties { get; }
 
@@ -133,6 +135,7 @@ public class Rule
             : SupertypeRules.Prepend(ParentRule).EliminateRedundantRules().ToFixedSet());
         ancestorRules = new(() => ParentRules.Concat(ParentRules.SelectMany(p => p.AncestorRules)).ToFixedSet());
         childRules = new(() => Grammar.Rules.Where(r => r.ParentRules.Contains(this)).ToFixedSet());
+        descendantRules = new(() => ChildRules.Concat(ChildRules.SelectMany(r => r.DescendantRules)).ToFixedSet());
 
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new Property(this, p)).ToFixedList();
         inheritedProperties = new(() => ParentRules.SelectMany(r => r.AllProperties).Distinct().ToFixedList());

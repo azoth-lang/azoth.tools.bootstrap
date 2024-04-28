@@ -112,8 +112,14 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
     private To.Package CreatePackage(From.Package from, IEnumerable<To.CompilationUnit> compilationUnits, IEnumerable<To.CompilationUnit> testingCompilationUnits)
         => To.Package.Create(from.Syntax, from.Symbol, from.References, compilationUnits, testingCompilationUnits);
 
+    private To.PackageReference CreatePackageReference(From.PackageReference from)
+        => To.PackageReference.Create(from.Syntax, from.AliasOrName, from.Package, from.IsTrusted);
+
     private To.CompilationUnit CreateCompilationUnit(From.CompilationUnit from, IEnumerable<To.NamespaceMemberDeclaration> declarations)
         => To.CompilationUnit.Create(from.Syntax, from.File, from.ImplicitNamespaceName, from.UsingDirectives, declarations);
+
+    private To.UsingDirective CreateUsingDirective(From.UsingDirective from)
+        => To.UsingDirective.Create(from.Syntax, from.Name);
 
     private To.ClassDeclaration CreateClassDeclaration(From.ClassDeclaration from, IEnumerable<To.ClassMemberDeclaration> members, NamespaceSymbol? containingNamespace)
         => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, members, from.GenericParameters, from.SupertypeNames, containingNamespace);
@@ -123,6 +129,48 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
 
     private To.TraitDeclaration CreateTraitDeclaration(From.TraitDeclaration from, IEnumerable<To.TraitMemberDeclaration> members, NamespaceSymbol? containingNamespace)
         => To.TraitDeclaration.Create(from.Syntax, members, from.GenericParameters, from.SupertypeNames, containingNamespace);
+
+    private To.GenericParameter CreateGenericParameter(From.GenericParameter from)
+        => To.GenericParameter.Create(from.Syntax, from.Constraint, from.Name, from.Independence, from.Variance);
+
+    private To.UnresolvedSupertypeName CreateUnresolvedSupertypeName(From.UnresolvedSupertypeName from)
+        => To.UnresolvedSupertypeName.Create(from.Syntax, from.Name, from.TypeArguments);
+
+    private To.CapabilitySet CreateCapabilitySet(From.CapabilitySet from)
+        => To.CapabilitySet.Create(from.Syntax, from.Constraint);
+
+    private To.Capability CreateCapability(From.Capability from)
+        => To.Capability.Create(from.Syntax, from.Capability, from.Constraint);
+
+    private To.UnresolvedIdentifierTypeName CreateUnresolvedIdentifierTypeName(From.UnresolvedIdentifierTypeName from)
+        => To.UnresolvedIdentifierTypeName.Create(from.Syntax, from.Name);
+
+    private To.UnresolvedSpecialTypeName CreateUnresolvedSpecialTypeName(From.UnresolvedSpecialTypeName from)
+        => To.UnresolvedSpecialTypeName.Create(from.Syntax, from.Name);
+
+    private To.UnresolvedGenericTypeName CreateUnresolvedGenericTypeName(From.UnresolvedGenericTypeName from)
+        => To.UnresolvedGenericTypeName.Create(from.Syntax, from.Name, from.TypeArguments);
+
+    private To.UnresolvedQualifiedTypeName CreateUnresolvedQualifiedTypeName(From.UnresolvedQualifiedTypeName from)
+        => To.UnresolvedQualifiedTypeName.Create(from.Syntax, from.Context, from.QualifiedName, from.Name);
+
+    private To.UnresolvedOptionalType CreateUnresolvedOptionalType(From.UnresolvedOptionalType from)
+        => To.UnresolvedOptionalType.Create(from.Syntax, from.Referent);
+
+    private To.UnresolvedCapabilityType CreateUnresolvedCapabilityType(From.UnresolvedCapabilityType from)
+        => To.UnresolvedCapabilityType.Create(from.Syntax, from.Capability, from.Referent);
+
+    private To.UnresolvedFunctionType CreateUnresolvedFunctionType(From.UnresolvedFunctionType from)
+        => To.UnresolvedFunctionType.Create(from.Syntax, from.Parameters, from.Return);
+
+    private To.UnresolvedParameterType CreateUnresolvedParameterType(From.UnresolvedParameterType from)
+        => To.UnresolvedParameterType.Create(from.Syntax, from.IsLent, from.Referent);
+
+    private To.UnresolvedCapabilityViewpointType CreateUnresolvedCapabilityViewpointType(From.UnresolvedCapabilityViewpointType from)
+        => To.UnresolvedCapabilityViewpointType.Create(from.Syntax, from.Capability, from.Referent);
+
+    private To.UnresolvedSelfViewpointType CreateUnresolvedSelfViewpointType(From.UnresolvedSelfViewpointType from)
+        => To.UnresolvedSelfViewpointType.Create(from.Syntax, from.Referent);
 
     #endregion
 
@@ -135,6 +183,45 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
 
     private To.NamespaceDeclaration CreateNamespaceDeclaration(From.NamespaceDeclaration from, NamespaceSymbol containingNamespace, NamespaceSymbol symbol, NamespaceSymbol childContainingNamespace, ISymbolTreeBuilder childTreeBuilder)
         => To.NamespaceDeclaration.Create(containingNamespace, symbol, from.Syntax, from.IsGlobalQualified, from.DeclaredNames, from.UsingDirectives, TransformNamespaceMemberDeclarations(from.Declarations, childContainingNamespace, childTreeBuilder));
+
+    private To.TypeDeclaration CreateTypeDeclaration(From.TypeDeclaration from, NamespaceSymbol? containingNamespace, NamespaceSymbol? childContainingNamespace)
+        => from switch
+        {
+            From.ClassDeclaration f => CreateClassDeclaration(f, containingNamespace, childContainingNamespace),
+            From.StructDeclaration f => CreateStructDeclaration(f, containingNamespace, childContainingNamespace),
+            From.TraitDeclaration f => CreateTraitDeclaration(f, containingNamespace, childContainingNamespace),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+
+    private To.NamespaceMemberDeclaration CreateNamespaceMemberDeclaration(From.NamespaceMemberDeclaration from, NamespaceSymbol containingNamespace, NamespaceSymbol symbol, NamespaceSymbol childContainingNamespace, ISymbolTreeBuilder childTreeBuilder)
+        => from switch
+        {
+            From.NamespaceDeclaration f => CreateNamespaceDeclaration(f, containingNamespace, symbol, childContainingNamespace, childTreeBuilder),
+            From.TypeDeclaration f => CreateTypeDeclaration(f, containingNamespace, childContainingNamespace),
+            From.FunctionDeclaration f => CreateFunctionDeclaration(f, containingNamespace),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+
+    private To.ClassMemberDeclaration CreateClassMemberDeclaration(From.ClassMemberDeclaration from, NamespaceSymbol? containingNamespace, NamespaceSymbol? childContainingNamespace)
+        => from switch
+        {
+            From.TypeDeclaration f => CreateTypeDeclaration(f, containingNamespace, childContainingNamespace),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+
+    private To.StructMemberDeclaration CreateStructMemberDeclaration(From.StructMemberDeclaration from, NamespaceSymbol? containingNamespace, NamespaceSymbol? childContainingNamespace)
+        => from switch
+        {
+            From.TypeDeclaration f => CreateTypeDeclaration(f, containingNamespace, childContainingNamespace),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+
+    private To.TraitMemberDeclaration CreateTraitMemberDeclaration(From.TraitMemberDeclaration from, NamespaceSymbol? containingNamespace, NamespaceSymbol? childContainingNamespace)
+        => from switch
+        {
+            From.TypeDeclaration f => CreateTypeDeclaration(f, containingNamespace, childContainingNamespace),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
 
     private To.ClassDeclaration CreateClassDeclaration(From.ClassDeclaration from, NamespaceSymbol? containingNamespace, NamespaceSymbol? childContainingNamespace)
         => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, TransformClassMemberDeclarations(from.Members, childContainingNamespace), from.GenericParameters, from.SupertypeNames, containingNamespace);

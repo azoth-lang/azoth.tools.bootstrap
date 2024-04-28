@@ -25,7 +25,7 @@ public sealed partial class WithTypeDeclarationPromises
     public partial interface TypeDeclaration : NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     {
         AcyclicPromise<UserTypeSymbol> Symbol { get; }
-        IPromise<Symbol> ContainingSymbolPromise { get; }
+        IPromise<Symbol> ContainingSymbol { get; }
         DeclarationScope NewScope { get; }
         new ITypeDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
@@ -135,8 +135,8 @@ public sealed partial class WithTypeDeclarationPromises
         UnresolvedSupertypeName? BaseTypeName { get; }
         IFixedList<ClassMemberDeclaration> Members { get; }
 
-        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
-            => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), symbol, containingSymbolPromise, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope, containingNamespace);
+        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
+            => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), symbol, containingSymbol, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope, containingNamespace);
     }
 
     public partial interface StructDeclaration : TypeDeclaration
@@ -145,8 +145,8 @@ public sealed partial class WithTypeDeclarationPromises
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<StructMemberDeclaration> Members { get; }
 
-        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
-            => new StructDeclarationNode(syntax, members.ToFixedList(), symbol, containingSymbolPromise, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope, containingNamespace);
+        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
+            => new StructDeclarationNode(syntax, members.ToFixedList(), symbol, containingSymbol, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope, containingNamespace);
     }
 
     public partial interface TraitDeclaration : TypeDeclaration
@@ -155,8 +155,8 @@ public sealed partial class WithTypeDeclarationPromises
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<TraitMemberDeclaration> Members { get; }
 
-        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
-            => new TraitDeclarationNode(syntax, members.ToFixedList(), symbol, containingSymbolPromise, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope, containingNamespace);
+        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
+            => new TraitDeclarationNode(syntax, members.ToFixedList(), symbol, containingSymbol, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope, containingNamespace);
     }
 
     public partial interface GenericParameter : Code

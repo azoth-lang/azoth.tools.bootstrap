@@ -11,4 +11,4 @@
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // ---------- Type Declarations
-*TypeDeclaration = +Symbol:`AcyclicPromise<UserTypeSymbol>` +ContainingSymbolPromise:`IPromise<Symbol>`;
+*TypeDeclaration = +Symbol:`AcyclicPromise<UserTypeSymbol>` +ContainingSymbol:`IPromise<Symbol>`;

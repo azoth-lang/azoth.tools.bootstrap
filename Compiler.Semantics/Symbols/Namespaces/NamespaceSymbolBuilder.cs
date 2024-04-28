@@ -63,7 +63,7 @@ internal sealed partial class NamespaceSymbolBuilder
     {
         // TODO remove properties on Syntax nodes
         from.Syntax.ContainingNamespaceSymbol = containingNamespace!;
-        return CreateTypeDeclaration(from, containingNamespace, childContainingSymbol: null);
+        return CreateTypeDeclaration(from, containingNamespace, childContainingNamespace: null);
     }
 
     private static NamespaceSymbol BuildNamespaceSymbol(

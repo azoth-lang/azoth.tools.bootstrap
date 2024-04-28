@@ -89,7 +89,7 @@ public sealed partial class WithTypeDeclarationPromises
         public UnresolvedSupertypeName? BaseTypeName { get; }
         public IFixedList<ClassMemberDeclaration> Members { get; }
         public AcyclicPromise<UserTypeSymbol> Symbol { get; }
-        public IPromise<Symbol> ContainingSymbolPromise { get; }
+        public IPromise<Symbol> ContainingSymbol { get; }
         public DeclarationScope NewScope { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
@@ -97,14 +97,14 @@ public sealed partial class WithTypeDeclarationPromises
         public DeclarationLexicalScope ContainingScope { get; }
         public NamespaceSymbol? ContainingNamespace { get; }
 
-        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
+        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
         {
             Syntax = syntax;
             IsAbstract = isAbstract;
             BaseTypeName = baseTypeName;
             Members = members;
             Symbol = symbol;
-            ContainingSymbolPromise = containingSymbolPromise;
+            ContainingSymbol = containingSymbol;
             NewScope = newScope;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
@@ -119,7 +119,7 @@ public sealed partial class WithTypeDeclarationPromises
         public IStructDeclarationSyntax Syntax { get; }
         public IFixedList<StructMemberDeclaration> Members { get; }
         public AcyclicPromise<UserTypeSymbol> Symbol { get; }
-        public IPromise<Symbol> ContainingSymbolPromise { get; }
+        public IPromise<Symbol> ContainingSymbol { get; }
         public DeclarationScope NewScope { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
@@ -127,12 +127,12 @@ public sealed partial class WithTypeDeclarationPromises
         public DeclarationLexicalScope ContainingScope { get; }
         public NamespaceSymbol? ContainingNamespace { get; }
 
-        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
+        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
         {
             Syntax = syntax;
             Members = members;
             Symbol = symbol;
-            ContainingSymbolPromise = containingSymbolPromise;
+            ContainingSymbol = containingSymbol;
             NewScope = newScope;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
@@ -147,7 +147,7 @@ public sealed partial class WithTypeDeclarationPromises
         public ITraitDeclarationSyntax Syntax { get; }
         public IFixedList<TraitMemberDeclaration> Members { get; }
         public AcyclicPromise<UserTypeSymbol> Symbol { get; }
-        public IPromise<Symbol> ContainingSymbolPromise { get; }
+        public IPromise<Symbol> ContainingSymbol { get; }
         public DeclarationScope NewScope { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
@@ -155,12 +155,12 @@ public sealed partial class WithTypeDeclarationPromises
         public DeclarationLexicalScope ContainingScope { get; }
         public NamespaceSymbol? ContainingNamespace { get; }
 
-        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbolPromise, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
+        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
         {
             Syntax = syntax;
             Members = members;
             Symbol = symbol;
-            ContainingSymbolPromise = containingSymbolPromise;
+            ContainingSymbol = containingSymbol;
             NewScope = newScope;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;

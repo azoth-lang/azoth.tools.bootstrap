@@ -251,7 +251,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write("\r\n    {\r\n");
             
             #line 43 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-          foreach (var property in rule.DeclaredProperties.Where(p => p.ReferencesRule)) { 
+          foreach (var property in rule.DeclaredProperties.Where(ShouldEmit.PropertyForward)) { 
             
             #line default
             #line hidden

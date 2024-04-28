@@ -28,7 +28,7 @@ internal static class Build
     {
         if (pass.FromLanguage == pass.ToLanguage || pass.ToLanguage is null)
             return Enumerable.Empty<Rule>();
-        return pass.ToLanguage.Grammar.Rules.Where(r => r is { IsTerminal: true, DescendantsModified: true });
+        return pass.ToLanguage.Grammar.Rules.Where(r => r is { IsTerminal: true, ExtendsRule: not null });
     }
 
     public static IEnumerable<Rule> AdvancedCreateRules(Pass pass)
@@ -40,7 +40,8 @@ internal static class Build
                                && t.To?.Type.ToNonOptional() is SymbolType { Symbol: InternalSymbol })
                    .Select(t => (t.To?.Type.UnderlyingSymbol as InternalSymbol)?.ReferencedRule)
                    .WhereNotNull()
-                   .Where(r => DifferentChildProperties(r).Any() || AdvancedCreateChildParameters(pass, r).Any());
+                   .Where(r => DifferentChildProperties(r).Any()
+                               || AdvancedCreateChildParameters(pass, r).Any());
     }
 
     public static IEnumerable<Parameter> AdvancedCreateChildParameters(Pass pass, Rule rule)
@@ -48,7 +49,10 @@ internal static class Build
                .Where(Emit.CouldBeModified)
                .Select(p => CalledTransform(pass, FromType(p))).WhereNotNull()
                .SelectMany(t => t.AdditionalParameters)
-               .Select(p => p.ChildParameter).MergeByName();
+               .Select(p => p.ChildParameter)
+               .Concat(rule.DescendantRules.SelectMany(r => AdvancedCreateParameters(pass, r))
+                           .Where(p => p.Name != "from"))
+               .MergeByName();
 
     private static IEnumerable<Property> DifferentChildProperties(Rule rule)
         => rule.DifferentProperties.Except(rule.ModifiedProperties);
@@ -65,10 +69,10 @@ internal static class Build
         var extendsRule = rule.ExtendsRule!;
         var modifiedProperties = rule.ModifiedProperties;
         var fromType = new SymbolType(extendsRule.Defines);
-        var parameters = new List<Parameter> { Model.Parameter.Create(fromType, "from") };
+        var parameters = new List<Parameter> { Parameter.Create(fromType, "from") };
         parameters.AddRange(modifiedProperties.Select(p => p.Parameter));
         parameters.AddRange(AdvancedCreateChildParameters(pass, rule));
-        return parameters;
+        return parameters.MergeByName();
     }
 
     public static IEnumerable<Parameter> StartRunReturnValues(Pass pass)
