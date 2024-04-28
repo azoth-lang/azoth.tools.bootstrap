@@ -5,9 +5,11 @@ public abstract class TransformMethod : Method
 {
     public Pass Pass { get; }
     public abstract NonOptionalType FromCoreType { get; }
+    public bool ParametersDeclared { get; }
 
-    private protected TransformMethod(Pass pass)
+    private protected TransformMethod(Pass pass, bool parametersDeclared)
     {
         Pass = pass;
+        ParametersDeclared = parametersDeclared;
     }
 }

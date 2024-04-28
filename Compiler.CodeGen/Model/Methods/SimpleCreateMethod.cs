@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
@@ -17,7 +18,6 @@ public sealed class SimpleCreateMethod : Method
     public override IFixedList<Parameter> AdditionalParameters { get; }
     public IFixedList<Parameter> AllParameters { get; }
     public Type ReturnType { get; }
-    public override IFixedSet<Method> CallsMethods => FixedSet.Empty<Method>();
 
     public SimpleCreateMethod(Rule rule)
     {
@@ -27,4 +27,6 @@ public sealed class SimpleCreateMethod : Method
         AllParameters = AdditionalParameters.Prepend(From).ToFixedList();
         ReturnType = rule.DefinesType;
     }
+
+    public override IEnumerable<Method> GetMethodsCalled() => Enumerable.Empty<Method>();
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
@@ -18,11 +17,8 @@ public sealed class TransformCollectionMethod : TransformMethod
     public IFixedList<Parameter> AllReturnValues { get; }
     public bool AutoGenerate { get; }
 
-    public override IFixedSet<Method> CallsMethods => callsMethods.Value;
-    private readonly Lazy<IFixedSet<Method>> callsMethods;
-
     public TransformCollectionMethod(Pass pass, Transform transform, CollectionType fromType, CollectionType toType)
-    : base(pass)
+    : base(pass, true)
     {
         FromCoreType = fromType;
         From = Parameter.Create(fromType, Parameter.FromName);
@@ -32,15 +28,12 @@ public sealed class TransformCollectionMethod : TransformMethod
         AdditionalReturnValues = transform.AdditionalReturnValues;
         AllReturnValues = AdditionalReturnValues.Prepend(To).ToFixedList();
         AutoGenerate = transform.AutoGenerate;
-
-        if (AutoGenerate)
-            callsMethods = new(() => GetCallsMethods().ToFixedSet());
-        else
-            callsMethods = new(FixedSet.Empty<Method>);
     }
 
-    private IEnumerable<Method> GetCallsMethods()
+    public override IEnumerable<Method> GetMethodsCalled()
     {
+        if (AutoGenerate)
+            yield break;
         yield return Pass.TransformMethods.Single(m => m.FromCoreType == FromCoreType.ElementType);
     }
 }
