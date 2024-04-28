@@ -6,4 +6,6 @@ public abstract class Method
 {
     public abstract IFixedList<Parameter> AdditionalParameters { get; }
     public abstract IFixedSet<Method> CallsMethods { get; }
+
+    private protected Method() { }
 }

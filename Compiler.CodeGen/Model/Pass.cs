@@ -38,6 +38,7 @@ public class Pass
     public IFixedList<Transform> Transforms { get; }
 
     public IFixedList<SimpleCreateMethod> SimpleCreateMethods { get; }
+    public IFixedList<AdvancedCreateMethod> AdvancedCreateMethods { get; }
     public IFixedList<Method> Methods { get; }
 
     public Pass(PassNode syntax, LanguageLoader languageLoader)
@@ -63,7 +64,8 @@ public class Pass
         EntryTransform = DeclaredTransforms.FirstOrDefault(IsEntryTransform) ?? CreateEntryTransform();
         Transforms = CreateTransforms();
         SimpleCreateMethods = CreateSimpleCreateMethods().ToFixedList();
-        Methods = SimpleCreateMethods;
+        AdvancedCreateMethods = CreateAdvancedCreateMethods().ToFixedList();
+        Methods = SimpleCreateMethods.Concat<Method>(AdvancedCreateMethods).ToFixedList();
     }
 
     private static Language? GetOrLoadLanguageNamed(SymbolNode? name, LanguageLoader languageLoader)
@@ -384,9 +386,31 @@ public class Pass
         if (!IsLanguageTransform)
             yield break;
 
+        foreach (var rule in ToLanguage.Grammar.Rules.Where(ShouldCreate))
+            yield return new SimpleCreateMethod(rule);
+
+        yield break;
+
         // If a rule is a nonterminal, we can't take parameters for all the derived rules properties
         // If a rule doesn't extend another rule, then there is no `from` parameter
-        foreach (var rule in ToLanguage.Grammar.Rules.Where(r => r is { IsTerminal: true, ExtendsRule: not null }))
-            yield return new SimpleCreateMethod(rule);
+        static bool ShouldCreate(Rule r) => r is { IsTerminal: true, ExtendsRule: not null };
+    }
+
+    private IEnumerable<AdvancedCreateMethod> CreateAdvancedCreateMethods()
+    {
+        if (!IsLanguageTransform)
+            yield break;
+
+        foreach (var rule in ToLanguage.Grammar.Rules.Where(ShouldCreate))
+            if (rule.IsTerminal)
+                yield return new AdvancedCreateTerminalMethod(this, rule);
+            else
+                yield return new AdvancedCreateNonTerminalMethod(this, rule);
+
+        yield break;
+
+        static bool ShouldCreate(Rule r)
+            => r is { ExtendsRule: not null }
+               && (!r.IsTerminal || r.DifferentProperties.Except(r.ModifiedProperties).Any());
     }
 }
