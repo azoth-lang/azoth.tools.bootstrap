@@ -39,6 +39,7 @@ public class Pass
 
     public IFixedList<SimpleCreateMethod> SimpleCreateMethods { get; }
     public IFixedList<AdvancedCreateMethod> AdvancedCreateMethods { get; }
+    public IFixedList<TransformMethod> TransformMethods { get; }
     public IFixedList<Method> Methods { get; }
 
     public Pass(PassNode syntax, LanguageLoader languageLoader)
@@ -65,7 +66,10 @@ public class Pass
         Transforms = CreateTransforms();
         SimpleCreateMethods = CreateSimpleCreateMethods().ToFixedList();
         AdvancedCreateMethods = CreateAdvancedCreateMethods().ToFixedList();
-        Methods = SimpleCreateMethods.Concat<Method>(AdvancedCreateMethods).ToFixedList();
+        TransformMethods = CreateTransformMethods().ToFixedList();
+        Methods = SimpleCreateMethods
+                  .Concat<Method>(AdvancedCreateMethods)
+                  .Concat(TransformMethods).ToFixedList();
     }
 
     private static Language? GetOrLoadLanguageNamed(SymbolNode? name, LanguageLoader languageLoader)
@@ -412,5 +416,19 @@ public class Pass
         static bool ShouldCreate(Rule r)
             => r is { ExtendsRule: not null }
                && (!r.IsTerminal || r.DifferentProperties.Except(r.ModifiedProperties).Any());
+    }
+
+    private IEnumerable<TransformMethod> CreateTransformMethods()
+    {
+        // First create transform methods for all the declared transforms
+        foreach (var transform in DeclaredTransforms)
+        {
+            var fromType = transform.From?.Type;
+            var toType = transform.To?.Type;
+            if (fromType is CollectionType fromCollectionType && toType is CollectionType toCollectionType)
+                yield return new TransformCollectionMethod(this, transform, fromCollectionType, toCollectionType);
+        }
+
+        yield break;
     }
 }
