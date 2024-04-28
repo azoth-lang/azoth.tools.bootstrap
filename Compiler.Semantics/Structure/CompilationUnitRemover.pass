@@ -8,10 +8,6 @@ CompilationUnit -> NamespaceMemberDeclaration*;
 CompilationUnit* -> {NamespaceMemberDeclaration};
 NamespaceDeclaration, file:`CodeFile` -> {NamespaceMemberDeclaration};
 NamespaceMemberDeclaration, file:`CodeFile` -> {~};
-// Why is this needed?
+// TODO It seems like these shouldn't be needed
 TypeDeclaration, file:`CodeFile`, childFile:`CodeFile` -> ~ = auto;
-// TODO these shouldn't be needed given the TypeDeclaration transform
-ClassDeclaration, file:`CodeFile`, childFile:`CodeFile` -> ~ = auto;
-StructDeclaration, file:`CodeFile`, childFile:`CodeFile` -> ~ = auto;
-TraitDeclaration, file:`CodeFile`, childFile:`CodeFile` -> ~ = auto;
 FunctionDeclaration, file:`CodeFile` -> ~ = auto;

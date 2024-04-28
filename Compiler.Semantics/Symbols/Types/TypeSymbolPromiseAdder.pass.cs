@@ -42,14 +42,11 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
 
     private partial To.TypeDeclaration TransformTypeDeclaration(From.TypeDeclaration from, IPromise<Symbol>? containingSymbol);
 
-    private To.FunctionDeclaration TransformFunctionDeclaration(From.FunctionDeclaration from)
-        => from;
-
     private To.NamespaceMemberDeclaration TransformNamespaceMemberDeclaration(From.NamespaceMemberDeclaration from, IPromise<Symbol>? containingSymbol)
         => from switch
         {
             From.TypeDeclaration f => TransformTypeDeclaration(f, containingSymbol),
-            From.FunctionDeclaration f => TransformFunctionDeclaration(f),
+            From.FunctionDeclaration f => f,
             _ => throw ExhaustiveMatch.Failed(from),
         };
 

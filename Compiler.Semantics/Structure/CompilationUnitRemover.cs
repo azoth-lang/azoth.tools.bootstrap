@@ -20,19 +20,18 @@ internal partial class CompilationUnitRemover
     private partial IFixedList<To.NamespaceMemberDeclaration> TransformCompilationUnit(From.CompilationUnit from)
         => TransformNamespaceMemberDeclarations(from.Declarations, file: from.File);
 
+    private partial IFixedSet<To.NamespaceMemberDeclaration> TransformNamespaceDeclaration(
+        From.NamespaceDeclaration from,
+        CodeFile file)
+        => from.Declarations.SelectMany(d => TransformNamespaceMemberDeclaration(d, file)).ToFixedSet();
+
     private partial IFixedSet<To.NamespaceMemberDeclaration> TransformNamespaceMemberDeclaration(
         From.NamespaceMemberDeclaration from, CodeFile file)
         => from switch
         {
             From.NamespaceDeclaration f => TransformNamespaceDeclaration(f, file),
-            From.TypeDeclaration f => TransformTypeDeclaration(f, file).Yield().ToFixedSet(),
+            From.TypeDeclaration f => TransformTypeDeclaration(f, file, childFile: file).Yield().ToFixedSet(),
             From.FunctionDeclaration f => TransformFunctionDeclaration(f, file).Yield().ToFixedSet(),
             _ => throw ExhaustiveMatch.Failed(from),
         };
-
-    private To.TypeDeclaration TransformTypeDeclaration(From.TypeDeclaration from, CodeFile file)
-        => TransformTypeDeclaration(from, file, file);
-
-    private partial IFixedSet<To.NamespaceMemberDeclaration> TransformNamespaceDeclaration(From.NamespaceDeclaration from, CodeFile file)
-        => from.Declarations.SelectMany(d => TransformNamespaceMemberDeclaration(d, file)).ToFixedSet();
 }
