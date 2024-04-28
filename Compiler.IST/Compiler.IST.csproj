@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="&quot;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe&quot; -p &quot;$(ProjectDir)\&quot; Concrete.lang WithNamespaceSymbols.lang WithDeclarationLexicalScopes.lang WithoutCompilationUnits.lang WithTypeDeclarationPromises.lang" />
+    <Exec Command="&quot;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe&quot; -p &quot;$(ProjectDir)\&quot; Concrete.lang WithNamespaceSymbols.lang WithDeclarationLexicalScopes.lang WithoutCompilationUnits.lang WithTypeDeclarationPromises.lang WithTypeDeclarationSymbols.lang" />
   </Target>
 
   <ItemGroup>
@@ -49,6 +49,12 @@
     </Compile>
     <Compile Update="WithDeclarationLexicalScopes.nodes.cs">
       <DependentUpon>WithDeclarationLexicalScopes.lang</DependentUpon>
+    </Compile>
+    <Compile Update="WithTypeDeclarationSymbols.lang.cs">
+      <DependentUpon>WithTypeDeclarationSymbols.lang</DependentUpon>
+    </Compile>
+    <Compile Update="WithTypeDeclarationSymbols.nodes.cs">
+      <DependentUpon>WithTypeDeclarationSymbols.lang</DependentUpon>
     </Compile>
     <Compile Update="WithTypeDeclarationPromises.lang.cs">
       <DependentUpon>WithTypeDeclarationPromises.lang</DependentUpon>

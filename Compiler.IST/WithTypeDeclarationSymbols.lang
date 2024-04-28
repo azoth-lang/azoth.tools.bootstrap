@@ -1,5 +1,5 @@
-◊name WithTypeDeclarationPromises;
-◊extends WithoutCompilationUnits;
+◊name WithTypeDeclarationSymbols;
+◊extends WithTypeDeclarationPromises;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -10,8 +10,5 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-// ---------- Declarations
-*Declaration = -ContainingNamespace;
-
 // ---------- Type Declarations
-*TypeDeclaration = +Symbol:`AcyclicPromise<UserTypeSymbol>` +ContainingSymbol:`IPromise<Symbol>`;
+*TypeDeclaration = *Symbol:`UserTypeSymbol` *ContainingSymbol:`Symbol`;

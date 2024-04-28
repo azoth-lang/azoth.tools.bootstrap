@@ -16,26 +16,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 // ReSharper disable InconsistentNaming
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public sealed partial class WithTypeDeclarationPromises
+public sealed partial class WithTypeDeclarationSymbols
 {
-    [Closed(
-        typeof(NamespaceMemberDeclaration),
-        typeof(TypeMemberDeclaration))]
-    public partial interface Declaration : Code
-    {
-        DeclarationLexicalScope ContainingScope { get; }
-        new IDeclarationSyntax Syntax { get; }
-        IConcreteSyntax Code.Syntax => Syntax;
-    }
-
     [Closed(
         typeof(ClassDeclaration),
         typeof(StructDeclaration),
         typeof(TraitDeclaration))]
     public partial interface TypeDeclaration : NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     {
-        AcyclicPromise<UserTypeSymbol> Symbol { get; }
-        IPromise<Symbol> ContainingSymbol { get; }
+        UserTypeSymbol Symbol { get; }
+        Symbol ContainingSymbol { get; }
         DeclarationScope NewScope { get; }
         new ITypeDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
@@ -46,6 +36,16 @@ public sealed partial class WithTypeDeclarationPromises
         ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
         IFixedList<GenericParameter> GenericParameters { get; }
         IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
+    }
+
+    [Closed(
+        typeof(NamespaceMemberDeclaration),
+        typeof(TypeMemberDeclaration))]
+    public partial interface Declaration : Code
+    {
+        DeclarationLexicalScope ContainingScope { get; }
+        new IDeclarationSyntax Syntax { get; }
+        IConcreteSyntax Code.Syntax => Syntax;
     }
 
     public partial interface Package : IImplementationRestricted
@@ -133,7 +133,7 @@ public sealed partial class WithTypeDeclarationPromises
         UnresolvedSupertypeName? BaseTypeName { get; }
         IFixedList<ClassMemberDeclaration> Members { get; }
 
-        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
+        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, UserTypeSymbol symbol, Symbol containingSymbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
             => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), symbol, containingSymbol, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope);
     }
 
@@ -143,7 +143,7 @@ public sealed partial class WithTypeDeclarationPromises
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<StructMemberDeclaration> Members { get; }
 
-        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
+        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, UserTypeSymbol symbol, Symbol containingSymbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
             => new StructDeclarationNode(syntax, members.ToFixedList(), symbol, containingSymbol, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope);
     }
 
@@ -153,7 +153,7 @@ public sealed partial class WithTypeDeclarationPromises
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         IFixedList<TraitMemberDeclaration> Members { get; }
 
-        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
+        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, UserTypeSymbol symbol, Symbol containingSymbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
             => new TraitDeclarationNode(syntax, members.ToFixedList(), symbol, containingSymbol, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope);
     }
 
@@ -390,106 +390,106 @@ public sealed partial class WithTypeDeclarationPromises
 
 }
 
-public sealed partial class WithoutCompilationUnits
+public sealed partial class WithTypeDeclarationPromises
 {
-    public partial interface UnresolvedSupertypeName : WithTypeDeclarationPromises.UnresolvedSupertypeName
+    public partial interface UnresolvedSupertypeName : WithTypeDeclarationSymbols.UnresolvedSupertypeName
     {
-        IFixedList<WithTypeDeclarationPromises.UnresolvedType> WithTypeDeclarationPromises.UnresolvedSupertypeName.TypeArguments => TypeArguments;
+        IFixedList<WithTypeDeclarationSymbols.UnresolvedType> WithTypeDeclarationSymbols.UnresolvedSupertypeName.TypeArguments => TypeArguments;
     }
 
-    public partial interface UnresolvedTypeName : WithTypeDeclarationPromises.UnresolvedTypeName
-    {
-    }
-
-    public partial interface FunctionDeclaration : WithTypeDeclarationPromises.FunctionDeclaration
+    public partial interface UnresolvedTypeName : WithTypeDeclarationSymbols.UnresolvedTypeName
     {
     }
 
-    public partial interface PackageReference : WithTypeDeclarationPromises.PackageReference
+    public partial interface FunctionDeclaration : WithTypeDeclarationSymbols.FunctionDeclaration
     {
     }
 
-    public partial interface GenericParameter : WithTypeDeclarationPromises.GenericParameter
-    {
-        WithTypeDeclarationPromises.CapabilityConstraint WithTypeDeclarationPromises.GenericParameter.Constraint => Constraint;
-    }
-
-    public partial interface CapabilityConstraint : WithTypeDeclarationPromises.CapabilityConstraint
+    public partial interface PackageReference : WithTypeDeclarationSymbols.PackageReference
     {
     }
 
-    public partial interface CapabilitySet : WithTypeDeclarationPromises.CapabilitySet
+    public partial interface GenericParameter : WithTypeDeclarationSymbols.GenericParameter
+    {
+        WithTypeDeclarationSymbols.CapabilityConstraint WithTypeDeclarationSymbols.GenericParameter.Constraint => Constraint;
+    }
+
+    public partial interface CapabilityConstraint : WithTypeDeclarationSymbols.CapabilityConstraint
     {
     }
 
-    public partial interface Capability : WithTypeDeclarationPromises.Capability
+    public partial interface CapabilitySet : WithTypeDeclarationSymbols.CapabilitySet
     {
     }
 
-    public partial interface UnresolvedType : WithTypeDeclarationPromises.UnresolvedType
+    public partial interface Capability : WithTypeDeclarationSymbols.Capability
     {
     }
 
-    public partial interface UnresolvedStandardTypeName : WithTypeDeclarationPromises.UnresolvedStandardTypeName
+    public partial interface UnresolvedType : WithTypeDeclarationSymbols.UnresolvedType
     {
     }
 
-    public partial interface UnresolvedSimpleTypeName : WithTypeDeclarationPromises.UnresolvedSimpleTypeName
+    public partial interface UnresolvedStandardTypeName : WithTypeDeclarationSymbols.UnresolvedStandardTypeName
     {
     }
 
-    public partial interface UnresolvedIdentifierTypeName : WithTypeDeclarationPromises.UnresolvedIdentifierTypeName
+    public partial interface UnresolvedSimpleTypeName : WithTypeDeclarationSymbols.UnresolvedSimpleTypeName
     {
     }
 
-    public partial interface UnresolvedSpecialTypeName : WithTypeDeclarationPromises.UnresolvedSpecialTypeName
+    public partial interface UnresolvedIdentifierTypeName : WithTypeDeclarationSymbols.UnresolvedIdentifierTypeName
     {
     }
 
-    public partial interface UnresolvedGenericTypeName : WithTypeDeclarationPromises.UnresolvedGenericTypeName
+    public partial interface UnresolvedSpecialTypeName : WithTypeDeclarationSymbols.UnresolvedSpecialTypeName
     {
-        IFixedList<WithTypeDeclarationPromises.UnresolvedType> WithTypeDeclarationPromises.UnresolvedGenericTypeName.TypeArguments => TypeArguments;
     }
 
-    public partial interface UnresolvedQualifiedTypeName : WithTypeDeclarationPromises.UnresolvedQualifiedTypeName
+    public partial interface UnresolvedGenericTypeName : WithTypeDeclarationSymbols.UnresolvedGenericTypeName
     {
-        WithTypeDeclarationPromises.UnresolvedTypeName WithTypeDeclarationPromises.UnresolvedQualifiedTypeName.Context => Context;
-        WithTypeDeclarationPromises.UnresolvedStandardTypeName WithTypeDeclarationPromises.UnresolvedQualifiedTypeName.QualifiedName => QualifiedName;
+        IFixedList<WithTypeDeclarationSymbols.UnresolvedType> WithTypeDeclarationSymbols.UnresolvedGenericTypeName.TypeArguments => TypeArguments;
     }
 
-    public partial interface UnresolvedOptionalType : WithTypeDeclarationPromises.UnresolvedOptionalType
+    public partial interface UnresolvedQualifiedTypeName : WithTypeDeclarationSymbols.UnresolvedQualifiedTypeName
     {
-        WithTypeDeclarationPromises.UnresolvedType WithTypeDeclarationPromises.UnresolvedOptionalType.Referent => Referent;
+        WithTypeDeclarationSymbols.UnresolvedTypeName WithTypeDeclarationSymbols.UnresolvedQualifiedTypeName.Context => Context;
+        WithTypeDeclarationSymbols.UnresolvedStandardTypeName WithTypeDeclarationSymbols.UnresolvedQualifiedTypeName.QualifiedName => QualifiedName;
     }
 
-    public partial interface UnresolvedCapabilityType : WithTypeDeclarationPromises.UnresolvedCapabilityType
+    public partial interface UnresolvedOptionalType : WithTypeDeclarationSymbols.UnresolvedOptionalType
     {
-        WithTypeDeclarationPromises.Capability WithTypeDeclarationPromises.UnresolvedCapabilityType.Capability => Capability;
-        WithTypeDeclarationPromises.UnresolvedType WithTypeDeclarationPromises.UnresolvedCapabilityType.Referent => Referent;
+        WithTypeDeclarationSymbols.UnresolvedType WithTypeDeclarationSymbols.UnresolvedOptionalType.Referent => Referent;
     }
 
-    public partial interface UnresolvedFunctionType : WithTypeDeclarationPromises.UnresolvedFunctionType
+    public partial interface UnresolvedCapabilityType : WithTypeDeclarationSymbols.UnresolvedCapabilityType
     {
-        IFixedList<WithTypeDeclarationPromises.UnresolvedParameterType> WithTypeDeclarationPromises.UnresolvedFunctionType.Parameters => Parameters;
-        WithTypeDeclarationPromises.UnresolvedType WithTypeDeclarationPromises.UnresolvedFunctionType.Return => Return;
+        WithTypeDeclarationSymbols.Capability WithTypeDeclarationSymbols.UnresolvedCapabilityType.Capability => Capability;
+        WithTypeDeclarationSymbols.UnresolvedType WithTypeDeclarationSymbols.UnresolvedCapabilityType.Referent => Referent;
     }
 
-    public partial interface UnresolvedParameterType : WithTypeDeclarationPromises.UnresolvedParameterType
+    public partial interface UnresolvedFunctionType : WithTypeDeclarationSymbols.UnresolvedFunctionType
     {
-        WithTypeDeclarationPromises.UnresolvedType WithTypeDeclarationPromises.UnresolvedParameterType.Referent => Referent;
+        IFixedList<WithTypeDeclarationSymbols.UnresolvedParameterType> WithTypeDeclarationSymbols.UnresolvedFunctionType.Parameters => Parameters;
+        WithTypeDeclarationSymbols.UnresolvedType WithTypeDeclarationSymbols.UnresolvedFunctionType.Return => Return;
     }
 
-    public partial interface UnresolvedViewpointType : WithTypeDeclarationPromises.UnresolvedViewpointType
+    public partial interface UnresolvedParameterType : WithTypeDeclarationSymbols.UnresolvedParameterType
     {
-        WithTypeDeclarationPromises.UnresolvedType WithTypeDeclarationPromises.UnresolvedViewpointType.Referent => Referent;
+        WithTypeDeclarationSymbols.UnresolvedType WithTypeDeclarationSymbols.UnresolvedParameterType.Referent => Referent;
     }
 
-    public partial interface UnresolvedCapabilityViewpointType : WithTypeDeclarationPromises.UnresolvedCapabilityViewpointType
+    public partial interface UnresolvedViewpointType : WithTypeDeclarationSymbols.UnresolvedViewpointType
     {
-        WithTypeDeclarationPromises.Capability WithTypeDeclarationPromises.UnresolvedCapabilityViewpointType.Capability => Capability;
+        WithTypeDeclarationSymbols.UnresolvedType WithTypeDeclarationSymbols.UnresolvedViewpointType.Referent => Referent;
     }
 
-    public partial interface UnresolvedSelfViewpointType : WithTypeDeclarationPromises.UnresolvedSelfViewpointType
+    public partial interface UnresolvedCapabilityViewpointType : WithTypeDeclarationSymbols.UnresolvedCapabilityViewpointType
+    {
+        WithTypeDeclarationSymbols.Capability WithTypeDeclarationSymbols.UnresolvedCapabilityViewpointType.Capability => Capability;
+    }
+
+    public partial interface UnresolvedSelfViewpointType : WithTypeDeclarationSymbols.UnresolvedSelfViewpointType
     {
     }
 
