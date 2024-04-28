@@ -8,6 +8,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
 public sealed class Parameter : IEquatable<Parameter>
 {
+    public const string FromName = "from";
+    public const string ToName = "to";
+
     [return: NotNullIfNotNull(nameof(type))]
     public static Parameter? Create(NonVoidType? type, string name)
         => type is not null ? new Parameter(type, name) : null;

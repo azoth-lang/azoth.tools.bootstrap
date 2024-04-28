@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Framework;
@@ -16,6 +17,7 @@ public class Rule
 
 
     public InternalSymbol Defines { get; }
+    public SymbolType DefinesType { get; }
     public InternalSymbol? Parent { get; }
     public Rule? ParentRule => Parent?.ReferencedRule;
     public IFixedSet<Symbol> Supertypes { get; }
@@ -125,6 +127,7 @@ public class Rule
         Grammar = grammar;
         Syntax = syntax;
         Defines = Symbol.CreateInternalFromSyntax(grammar, syntax.Defines);
+        DefinesType = new SymbolType(Defines);
         Parent = Symbol.CreateInternalFromSyntax(grammar, syntax.Parent);
         Supertypes = syntax.Supertypes.Select(s => Symbol.CreateFromSyntax(grammar, s)).ToFixedSet();
         Parents = Parent is null ? Supertypes : Supertypes.Prepend(Parent).ToFixedSet();

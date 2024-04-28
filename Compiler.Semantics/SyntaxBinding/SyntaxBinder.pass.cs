@@ -45,9 +45,6 @@ internal sealed partial class SyntaxBinder : ITransformPass<IPackageSyntax, Diag
     private IFixedSet<To.CompilationUnit> TransformCompilationUnitSyntaxes(IEnumerable<ICompilationUnitSyntax> from)
         => from.Select(f => TransformCompilationUnitSyntax(f)).ToFixedSet();
 
-    #region Create() methods
-    #endregion
-
     #region CreateX() methods
     #endregion
 }

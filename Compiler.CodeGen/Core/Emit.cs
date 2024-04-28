@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
@@ -415,22 +416,13 @@ internal static class Emit
     #endregion
 
     #region Create()
-    public static string DifferentParameters(Pass pass, Rule rule)
-    {
-        var extendsRule = rule.ExtendsRule!;
-        var differentProperties = rule.DifferentProperties;
-        var fromType = new SymbolType(extendsRule.Defines);
-        var parameters = new List<Parameter> { Model.Parameter.Create(fromType, "from") };
-        parameters.AddRange(differentProperties.Select(p => p.Parameter));
-        return Parameters(pass, parameters);
-    }
-
     public static bool CouldBeModified(Property property)
         => property.Type.UnderlyingSymbol is
             InternalSymbol { ReferencedRule.DescendantsModified: true } or ExternalSymbol;
 
-    public static string SimpleCreateArguments(Rule rule)
+    public static string SimpleCreateArguments(SimpleCreateMethod method)
     {
+        var rule = method.Rule;
         var extendsRule = rule.ExtendsRule!;
         var oldProperties = new HashSet<Property>(Property.NameAndTypeComparer);
         oldProperties.AddRange(extendsRule.AllProperties);

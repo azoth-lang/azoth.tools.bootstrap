@@ -24,13 +24,6 @@ internal static class Build
                    .Distinct().OrderBy(v => v, NamespaceComparer.Instance);
     }
 
-    public static IEnumerable<Rule> SimpleCreateRules(Pass pass)
-    {
-        if (pass.FromLanguage == pass.ToLanguage || pass.ToLanguage is null)
-            return Enumerable.Empty<Rule>();
-        return pass.ToLanguage.Grammar.Rules.Where(r => r is { IsTerminal: true, ExtendsRule: not null });
-    }
-
     public static IEnumerable<Rule> AdvancedCreateRules(Pass pass)
     {
         if (pass.FromLanguage == pass.ToLanguage || pass.ToLanguage is null)

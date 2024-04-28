@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
@@ -21,6 +22,8 @@ public class Pass
     public Language? FromLanguage { get; }
     public SymbolNode? To => Syntax.To;
     public Language? ToLanguage { get; }
+    [MemberNotNullWhen(true, nameof(ToLanguage))]
+    public bool IsLanguageTransform { get; }
 
     private readonly Parameter? fromParameter;
     private readonly Parameter? toParameter;
@@ -34,6 +37,9 @@ public class Pass
     public Transform EntryTransform { get; }
     public IFixedList<Transform> Transforms { get; }
 
+    public IFixedList<SimpleCreateMethod> SimpleCreateMethods { get; }
+    public IFixedList<Method> Methods { get; }
+
     public Pass(PassNode syntax, LanguageLoader languageLoader)
     {
         Syntax = syntax;
@@ -41,6 +47,8 @@ public class Pass
         ToLanguage = GetOrLoadLanguageNamed(Syntax.To, languageLoader);
         FromContext = Symbol.CreateExternal(Syntax.FromContext);
         ToContext = Symbol.CreateExternal(Syntax.ToContext);
+        IsLanguageTransform = ToLanguage is not null && FromLanguage != ToLanguage;
+
         fromParameter = CreateFromParameter();
         FromContextParameter = CreateFromContextParameter();
         RunParameters = Parameters(fromParameter, FromContextParameter);
@@ -54,6 +62,8 @@ public class Pass
         DeclaredTransforms = Syntax.Transforms.Select(t => new Transform(this, t)).ToFixedList();
         EntryTransform = DeclaredTransforms.FirstOrDefault(IsEntryTransform) ?? CreateEntryTransform();
         Transforms = CreateTransforms();
+        SimpleCreateMethods = CreateSimpleCreateMethods().ToFixedList();
+        Methods = SimpleCreateMethods;
     }
 
     private static Language? GetOrLoadLanguageNamed(SymbolNode? name, LanguageLoader languageLoader)
@@ -147,9 +157,6 @@ public class Pass
         foreach (var parentFromType in parentTransformsFrom)
         {
             var parentLookupType = parentFromType.ToNonOptional();
-
-            if (parentLookupType is SymbolType { UnderlyingSymbol.FullName: "TypeDeclaration" })
-                Debugger.Break();
 
             // If there isn't a parent transform, create a simple one so we can then bubble up into it
             if (!newTransforms.TryGetValue(parentLookupType, out var parentTransform))
@@ -370,5 +377,16 @@ public class Pass
         if (parentSymbols.Contains(toward))
             return toward;
         return parentSymbols.FirstOrDefault(sym => ParentSymbol(sym, toward) is not null);
+    }
+
+    private IEnumerable<SimpleCreateMethod> CreateSimpleCreateMethods()
+    {
+        if (!IsLanguageTransform)
+            yield break;
+
+        // If a rule is a nonterminal, we can't take parameters for all the derived rules properties
+        // If a rule doesn't extend another rule, then there is no `from` parameter
+        foreach (var rule in ToLanguage.Grammar.Rules.Where(r => r is { IsTerminal: true, ExtendsRule: not null }))
+            yield return new SimpleCreateMethod(rule);
     }
 }
