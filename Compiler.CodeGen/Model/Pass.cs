@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -60,7 +61,7 @@ public class Pass
         ToContextParameter = CreateToContextParameter();
         RunReturnValues = Parameters(toParameter, ToContextParameter);
         PassReturnValues = Parameters(toParameter ?? Parameter.Create(Type.VoidSymbol, "to"),
-                       ToContextParameter ?? Parameter.Create(Type.VoidSymbol, "toContext"));
+            ToContextParameter ?? Parameter.Create(Type.VoidSymbol, "toContext"));
         DeclaredTransforms = Syntax.Transforms.Select(t => new Transform(this, t)).ToFixedList();
         EntryTransform = DeclaredTransforms.FirstOrDefault(IsEntryTransform) ?? CreateEntryTransform();
         Transforms = CreateTransforms();
@@ -95,6 +96,7 @@ public class Pass
         var toParameter = Parameter.Create(toType, "to");
         return toParameter;
     }
+
     private Parameter? CreateToContextParameter()
     {
         var contextType = SymbolType.Create(ToContext);
@@ -124,7 +126,9 @@ public class Pass
 
         if (FromLanguage is not null)
         {
-            var declaredFromTypes = DeclaredTransforms.Select(t => t.From?.Type.ToNonOptional()).WhereNotNull().ToFixedSet();
+            var declaredFromTypes = DeclaredTransforms
+                                    .Select(t => t.From?.Type.ToNonOptional()).WhereNotNull()
+                                    .ToFixedSet();
             var newTransforms = new Dictionary<NonOptionalType, Transform>();
             if (!EntryTransform.IsDeclared)
                 newTransforms.Add(EntryTransform.From!.Type.ToNonOptional(), EntryTransform);
@@ -147,7 +151,9 @@ public class Pass
         return transforms.ToFixedList();
     }
 
-    private void BubbleParametersUp(Transform transform, IFixedSet<NonOptionalType> declaredFromTypes,
+    private void BubbleParametersUp(
+        Transform transform,
+        IFixedSet<NonOptionalType> declaredFromTypes,
         Dictionary<NonOptionalType, Transform> newTransforms)
     {
         var fromType = transform.From!.Type.ToNonOptional();
@@ -223,9 +229,7 @@ public class Pass
         IEnumerable<Parameter> missingAndModifiedParameters)
         => parentAdditionalParameters.Concat(missingAndModifiedParameters).MergeByName();
 
-    private static IFixedList<Parameter> AdjustedAdditionalParameters(
-        Transform transform,
-        Transform parentTransform)
+    private static IFixedList<Parameter> AdjustedAdditionalParameters(Transform transform, Transform parentTransform)
     {
         var additionalParameters = transform.AdditionalParameters;
         var fromType = transform.From?.Type;
@@ -255,7 +259,8 @@ public class Pass
         return missingParameters;
     }
 
-    private void AddTransformsForModifiedTerminals(IFixedSet<NonOptionalType> declaredFromTypes,
+    private void AddTransformsForModifiedTerminals(
+        IFixedSet<NonOptionalType> declaredFromTypes,
         Dictionary<NonOptionalType, Transform> newTransforms)
     {
         if (ToLanguage is null || FromLanguage == ToLanguage)
@@ -320,11 +325,18 @@ public class Pass
             return null;
         additionalParameters ??= Enumerable.Empty<Parameter>();
         var isSimpleTransform = fromType.ToNonOptional() is SymbolType;
-        var modifiedParameters = isSimpleTransform ? toRule.ModifiedProperties.Select(p => p.Parameter) : Enumerable.Empty<Parameter>();
-        return CreateTransform(fromType, MergeByName(modifiedParameters, additionalParameters), toRule, forceAutoGenerate);
+        var modifiedParameters = isSimpleTransform
+            ? toRule.ModifiedProperties.Select(p => p.Parameter)
+            : Enumerable.Empty<Parameter>();
+        return CreateTransform(fromType, MergeByName(modifiedParameters, additionalParameters),
+            toRule, forceAutoGenerate);
     }
 
-    private Transform CreateTransform(NonVoidType fromType, IEnumerable<Parameter>? additionalParameters, Rule toRule, bool forceAutoGenerate = false)
+    private Transform CreateTransform(
+        NonVoidType fromType,
+        IEnumerable<Parameter>? additionalParameters,
+        Rule toRule,
+        bool forceAutoGenerate = false)
     {
         var fromParameter = Parameter.Create(fromType, "from");
         additionalParameters ??= Enumerable.Empty<Parameter>();
@@ -332,12 +344,14 @@ public class Pass
         var toType = fromType.WithSymbol(toSymbol);
         var toParameter = Parameter.Create(toType, "to");
         bool autoGenerate = forceAutoGenerate || fromType is CollectionType || !toRule.IsModified || !toRule.IsTerminal;
-        var transform = new Transform(this, fromParameter, additionalParameters, toParameter, FixedList.Empty<Parameter>(),
-            autoGenerate);
+        var transform = new Transform(this, fromParameter, additionalParameters, toParameter,
+            FixedList.Empty<Parameter>(), autoGenerate);
         return transform;
     }
 
-    private IEnumerable<NonVoidType> ParentTransformsFrom(NonOptionalType fromType, IFixedSet<NonOptionalType> allFromTypes)
+    private IEnumerable<NonVoidType> ParentTransformsFrom(
+        NonOptionalType fromType,
+        IFixedSet<NonOptionalType> allFromTypes)
     {
         var grammar = FromLanguage!.Grammar;
         if (fromType is SymbolType { Symbol: InternalSymbol symbol })
@@ -360,9 +374,9 @@ public class Pass
 
             if (fromType is SymbolType { Symbol: InternalSymbol fromSymbol })
                 foreach (var type in rule.AllProperties
-                                             .Select(p => p.Type)
-                                             .OfType<CollectionType>()
-                                             .Where(t => fromType.IsSubtypeOf(t.ElementType)))
+                                         .Select(p => p.Type)
+                                         .OfType<CollectionType>()
+                                         .Where(t => fromType.IsSubtypeOf(t.ElementType)))
                 {
                     // Only take one step up at a time so that additional parameters are bubbled up correctly
                     if (type.ElementType == fromType)
@@ -427,8 +441,20 @@ public class Pass
             var toType = transform.To?.Type;
             if (fromType is CollectionType fromCollectionType && toType is CollectionType toCollectionType)
                 yield return new TransformCollectionMethod(this, transform, fromCollectionType, toCollectionType);
+            else if (transform.AutoGenerate && fromType is not null && toType?.UnderlyingSymbol is InternalSymbol { ReferencedRule.DescendantsModified: false })
+                yield return new TransformIdentityMethod(this, transform, fromType, toType);
+            else if (fromType is not null)
+            {
+                var referencedRule = (fromType.UnderlyingSymbol as InternalSymbol)?.ReferencedRule;
+                var isTerminal = referencedRule?.IsTerminal;
+                yield return isTerminal switch
+                {
+                    true or null => new TransformTerminalMethod(this, transform, fromType, toType),
+                    false => new TransformNonTerminalMethod(this, transform, referencedRule!, fromType, toType),
+                };
+            }
+            else
+                throw new NotImplementedException();
         }
-
-        yield break;
     }
 }
