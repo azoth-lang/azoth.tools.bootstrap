@@ -76,12 +76,33 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
+    private IFixedList<To.NamespaceMemberDeclaration> TransformNamespaceMemberDeclarations(IEnumerable<From.NamespaceMemberDeclaration> from, DeclarationLexicalScope containingScope)
+        => from.Select(f => TransformNamespaceMemberDeclaration(f, containingScope)).ToFixedList();
+
     private To.ClassMemberDeclaration TransformClassMemberDeclaration(From.ClassMemberDeclaration from, DeclarationLexicalScope containingScope)
         => from switch
         {
             From.TypeDeclaration f => TransformTypeDeclaration(f, containingScope),
             _ => throw ExhaustiveMatch.Failed(from),
         };
+
+    private To.TypeMemberDeclaration TransformTypeMemberDeclaration(From.TypeMemberDeclaration from, DeclarationLexicalScope containingScope)
+        => from switch
+        {
+            From.ClassMemberDeclaration f => TransformClassMemberDeclaration(f, containingScope),
+            From.TraitMemberDeclaration f => TransformTraitMemberDeclaration(f, containingScope),
+            From.StructMemberDeclaration f => TransformStructMemberDeclaration(f, containingScope),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+
+    private IFixedList<To.TypeMemberDeclaration> TransformTypeMemberDeclarations(IEnumerable<From.TypeMemberDeclaration> from, DeclarationLexicalScope containingScope)
+        => from.Select(f => TransformTypeMemberDeclaration(f, containingScope)).ToFixedList();
+
+    private IFixedList<To.ClassMemberDeclaration> TransformClassMemberDeclarations(IEnumerable<From.ClassMemberDeclaration> from, DeclarationLexicalScope containingScope)
+        => from.Select(f => TransformClassMemberDeclaration(f, containingScope)).ToFixedList();
+
+    private To.ClassDeclaration TransformClassDeclaration(From.ClassDeclaration from, DeclarationScope newScope, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
+        => CreateClassDeclaration(from, newScope, containingScope, childContainingScope);
 
     private To.StructMemberDeclaration TransformStructMemberDeclaration(From.StructMemberDeclaration from, DeclarationLexicalScope containingScope)
         => from switch
@@ -90,6 +111,12 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
+    private IFixedList<To.StructMemberDeclaration> TransformStructMemberDeclarations(IEnumerable<From.StructMemberDeclaration> from, DeclarationLexicalScope containingScope)
+        => from.Select(f => TransformStructMemberDeclaration(f, containingScope)).ToFixedList();
+
+    private To.StructDeclaration TransformStructDeclaration(From.StructDeclaration from, DeclarationScope newScope, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
+        => CreateStructDeclaration(from, newScope, containingScope, childContainingScope);
+
     private To.TraitMemberDeclaration TransformTraitMemberDeclaration(From.TraitMemberDeclaration from, DeclarationLexicalScope containingScope)
         => from switch
         {
@@ -97,17 +124,14 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private IFixedList<To.UnresolvedSupertypeName> TransformUnresolvedSupertypeNames(IEnumerable<From.UnresolvedSupertypeName> from, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
-        => from.Select(f => TransformUnresolvedSupertypeName(f, containingScope, childContainingScope)).ToFixedList();
-
-    private To.ClassDeclaration TransformClassDeclaration(From.ClassDeclaration from, DeclarationScope newScope, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
-        => CreateClassDeclaration(from, newScope, containingScope, childContainingScope);
-
-    private To.StructDeclaration TransformStructDeclaration(From.StructDeclaration from, DeclarationScope newScope, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
-        => CreateStructDeclaration(from, newScope, containingScope, childContainingScope);
+    private IFixedList<To.TraitMemberDeclaration> TransformTraitMemberDeclarations(IEnumerable<From.TraitMemberDeclaration> from, DeclarationLexicalScope containingScope)
+        => from.Select(f => TransformTraitMemberDeclaration(f, containingScope)).ToFixedList();
 
     private To.TraitDeclaration TransformTraitDeclaration(From.TraitDeclaration from, DeclarationScope newScope, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
         => CreateTraitDeclaration(from, newScope, containingScope, childContainingScope);
+
+    private IFixedList<To.UnresolvedSupertypeName> TransformUnresolvedSupertypeNames(IEnumerable<From.UnresolvedSupertypeName> from, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
+        => from.Select(f => TransformUnresolvedSupertypeName(f, containingScope, childContainingScope)).ToFixedList();
 
     private To.UnresolvedStandardTypeName TransformUnresolvedStandardTypeName(From.UnresolvedStandardTypeName from, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
         => from switch
@@ -176,30 +200,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
             From.UnresolvedSpecialTypeName f => TransformUnresolvedSpecialTypeName(f, containingScope),
             _ => throw ExhaustiveMatch.Failed(from),
         };
-
-    private IFixedList<To.NamespaceMemberDeclaration> TransformNamespaceMemberDeclarations(IEnumerable<From.NamespaceMemberDeclaration> from, DeclarationLexicalScope containingScope)
-        => from.Select(f => TransformNamespaceMemberDeclaration(f, containingScope)).ToFixedList();
-
-    private To.TypeMemberDeclaration TransformTypeMemberDeclaration(From.TypeMemberDeclaration from, DeclarationLexicalScope containingScope)
-        => from switch
-        {
-            From.ClassMemberDeclaration f => TransformClassMemberDeclaration(f, containingScope),
-            From.TraitMemberDeclaration f => TransformTraitMemberDeclaration(f, containingScope),
-            From.StructMemberDeclaration f => TransformStructMemberDeclaration(f, containingScope),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
-    private IFixedList<To.ClassMemberDeclaration> TransformClassMemberDeclarations(IEnumerable<From.ClassMemberDeclaration> from, DeclarationLexicalScope containingScope)
-        => from.Select(f => TransformClassMemberDeclaration(f, containingScope)).ToFixedList();
-
-    private IFixedList<To.TypeMemberDeclaration> TransformTypeMemberDeclarations(IEnumerable<From.TypeMemberDeclaration> from, DeclarationLexicalScope containingScope)
-        => from.Select(f => TransformTypeMemberDeclaration(f, containingScope)).ToFixedList();
-
-    private IFixedList<To.StructMemberDeclaration> TransformStructMemberDeclarations(IEnumerable<From.StructMemberDeclaration> from, DeclarationLexicalScope containingScope)
-        => from.Select(f => TransformStructMemberDeclaration(f, containingScope)).ToFixedList();
-
-    private IFixedList<To.TraitMemberDeclaration> TransformTraitMemberDeclarations(IEnumerable<From.TraitMemberDeclaration> from, DeclarationLexicalScope containingScope)
-        => from.Select(f => TransformTraitMemberDeclaration(f, containingScope)).ToFixedList();
 
     #region Create() methods
     private To.Package CreatePackage(From.Package from, PackageReferenceScope lexicalScope, IEnumerable<To.CompilationUnit> compilationUnits, IEnumerable<To.CompilationUnit> testingCompilationUnits)

@@ -70,20 +70,6 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private To.StructMemberDeclaration TransformStructMemberDeclaration(From.StructMemberDeclaration from, NamespaceSymbol? containingNamespace)
-        => from switch
-        {
-            From.TypeDeclaration f => TransformTypeDeclaration(f, containingNamespace),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
-    private To.TraitMemberDeclaration TransformTraitMemberDeclaration(From.TraitMemberDeclaration from, NamespaceSymbol? containingNamespace)
-        => from switch
-        {
-            From.TypeDeclaration f => TransformTypeDeclaration(f, containingNamespace),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
     private To.TypeMemberDeclaration TransformTypeMemberDeclaration(From.TypeMemberDeclaration from, NamespaceSymbol? containingNamespace)
         => from switch
         {
@@ -93,20 +79,34 @@ internal sealed partial class NamespaceSymbolBuilder : ITransformPass<From.Packa
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private IFixedList<To.ClassMemberDeclaration> TransformClassMemberDeclarations(IEnumerable<From.ClassMemberDeclaration> from, NamespaceSymbol? containingNamespace)
-        => from.Select(f => TransformClassMemberDeclaration(f, containingNamespace)).ToFixedList();
-
     private IFixedList<To.TypeMemberDeclaration> TransformTypeMemberDeclarations(IEnumerable<From.TypeMemberDeclaration> from, NamespaceSymbol? containingNamespace)
         => from.Select(f => TransformTypeMemberDeclaration(f, containingNamespace)).ToFixedList();
 
+    private IFixedList<To.ClassMemberDeclaration> TransformClassMemberDeclarations(IEnumerable<From.ClassMemberDeclaration> from, NamespaceSymbol? containingNamespace)
+        => from.Select(f => TransformClassMemberDeclaration(f, containingNamespace)).ToFixedList();
+
     private To.ClassDeclaration TransformClassDeclaration(From.ClassDeclaration from, NamespaceSymbol? containingNamespace, NamespaceSymbol? childContainingNamespace)
         => CreateClassDeclaration(from, containingNamespace, childContainingNamespace);
+
+    private To.StructMemberDeclaration TransformStructMemberDeclaration(From.StructMemberDeclaration from, NamespaceSymbol? containingNamespace)
+        => from switch
+        {
+            From.TypeDeclaration f => TransformTypeDeclaration(f, containingNamespace),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
 
     private IFixedList<To.StructMemberDeclaration> TransformStructMemberDeclarations(IEnumerable<From.StructMemberDeclaration> from, NamespaceSymbol? containingNamespace)
         => from.Select(f => TransformStructMemberDeclaration(f, containingNamespace)).ToFixedList();
 
     private To.StructDeclaration TransformStructDeclaration(From.StructDeclaration from, NamespaceSymbol? containingNamespace, NamespaceSymbol? childContainingNamespace)
         => CreateStructDeclaration(from, containingNamespace, childContainingNamespace);
+
+    private To.TraitMemberDeclaration TransformTraitMemberDeclaration(From.TraitMemberDeclaration from, NamespaceSymbol? containingNamespace)
+        => from switch
+        {
+            From.TypeDeclaration f => TransformTypeDeclaration(f, containingNamespace),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
 
     private IFixedList<To.TraitMemberDeclaration> TransformTraitMemberDeclarations(IEnumerable<From.TraitMemberDeclaration> from, NamespaceSymbol? containingNamespace)
         => from.Select(f => TransformTraitMemberDeclaration(f, containingNamespace)).ToFixedList();

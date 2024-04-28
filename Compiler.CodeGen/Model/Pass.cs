@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
@@ -147,6 +148,9 @@ public class Pass
         {
             var parentLookupType = parentFromType.ToNonOptional();
 
+            if (parentLookupType is SymbolType { UnderlyingSymbol.FullName: "TypeDeclaration" })
+                Debugger.Break();
+
             // If there isn't a parent transform, create a simple one so we can then bubble up into it
             if (!newTransforms.TryGetValue(parentLookupType, out var parentTransform))
             {
@@ -154,7 +158,7 @@ public class Pass
                 if (toRule is null)
                     // No way to make an auto transform, assume it is somehow covered
                     continue;
-                var isSimpleTransform = parentLookupType is SymbolType;
+                var isSimpleTransform = parentLookupType is SymbolType && toRule.IsTerminal;
                 var additionalParameters = isSimpleTransform
                     ? toRule.ModifiedProperties.Select(p => p.Parameter)
                     : Enumerable.Empty<Parameter>();
