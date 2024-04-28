@@ -6,6 +6,6 @@
 ◊to WithTypeDeclarationSymbols;
 
 Package -> ~;
-//ClassDeclaration -> ~;
-//StructDeclaration -> ~;
-// TraitDeclaration -> ~;
+ClassDeclaration, typeDeclarations:`TypeLookup` -> ~;
+StructDeclaration, typeDeclarations:`TypeLookup` -> ~;
+TraitDeclaration, typeDeclarations:`TypeLookup` -> ~;

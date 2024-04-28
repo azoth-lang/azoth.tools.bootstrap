@@ -65,6 +65,7 @@ public sealed partial class WithoutCompilationUnits
         ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
         IFixedList<GenericParameter> GenericParameters { get; }
         IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
+        IFixedList<TypeMemberDeclaration> Members { get; }
     }
 
     public partial interface UnresolvedSupertypeName : Code
@@ -130,7 +131,8 @@ public sealed partial class WithoutCompilationUnits
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         bool IsAbstract { get; }
         UnresolvedSupertypeName? BaseTypeName { get; }
-        IFixedList<ClassMemberDeclaration> Members { get; }
+        new IFixedList<ClassMemberDeclaration> Members { get; }
+        IFixedList<TypeMemberDeclaration> TypeDeclaration.Members => Members;
 
         public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
             => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope, containingNamespace);
@@ -140,7 +142,8 @@ public sealed partial class WithoutCompilationUnits
     {
         new IStructDeclarationSyntax Syntax { get; }
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
-        IFixedList<StructMemberDeclaration> Members { get; }
+        new IFixedList<StructMemberDeclaration> Members { get; }
+        IFixedList<TypeMemberDeclaration> TypeDeclaration.Members => Members;
 
         public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
             => new StructDeclarationNode(syntax, members.ToFixedList(), newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope, containingNamespace);
@@ -150,7 +153,8 @@ public sealed partial class WithoutCompilationUnits
     {
         new ITraitDeclarationSyntax Syntax { get; }
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
-        IFixedList<TraitMemberDeclaration> Members { get; }
+        new IFixedList<TraitMemberDeclaration> Members { get; }
+        IFixedList<TypeMemberDeclaration> TypeDeclaration.Members => Members;
 
         public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope, NamespaceSymbol? containingNamespace)
             => new TraitDeclarationNode(syntax, members.ToFixedList(), newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope, containingNamespace);

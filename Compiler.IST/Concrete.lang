@@ -31,7 +31,7 @@ NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarati
 
 // ---------- Type Declarations
 TypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
-    = Syntax:`ITypeDeclarationSyntax` GenericParameters:GenericParameter* SupertypeNames:UnresolvedSupertypeName*;
+    = Syntax:`ITypeDeclarationSyntax` GenericParameters:GenericParameter* SupertypeNames:UnresolvedSupertypeName* Members:TypeMemberDeclaration*;
 ClassDeclaration: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:`bool` BaseTypeName:UnresolvedSupertypeName? Members:ClassMemberDeclaration*;
 StructDeclaration: TypeDeclaration = Syntax:`IStructDeclarationSyntax` Members:StructMemberDeclaration*;
 TraitDeclaration: TypeDeclaration = Syntax:`ITraitDeclarationSyntax` Members:TraitMemberDeclaration*;

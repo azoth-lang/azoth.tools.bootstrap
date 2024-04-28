@@ -50,8 +50,10 @@ internal static class Build
                .Select(p => CalledTransform(pass, FromType(p))).WhereNotNull()
                .SelectMany(t => t.AdditionalParameters)
                .Select(p => p.ChildParameter)
-               .Concat(rule.DescendantRules.SelectMany(r => AdvancedCreateParameters(pass, r))
-                           .Where(p => p.Name != "from"))
+               .Concat(rule.ChildRules
+                           .Select(r => CalledTransform(pass, new SymbolType(r.Defines)))
+                           .WhereNotNull()
+                           .SelectMany(t => t.AdditionalParameters))
                .MergeByName();
 
     private static IEnumerable<Property> DifferentChildProperties(Rule rule)

@@ -120,6 +120,7 @@ public sealed partial class Concrete
         ITypeMemberDeclarationSyntax TypeMemberDeclaration.Syntax => Syntax;
         IFixedList<GenericParameter> GenericParameters { get; }
         IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
+        IFixedList<TypeMemberDeclaration> Members { get; }
     }
 
     public partial interface ClassDeclaration : TypeDeclaration
@@ -128,7 +129,8 @@ public sealed partial class Concrete
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
         bool IsAbstract { get; }
         UnresolvedSupertypeName? BaseTypeName { get; }
-        IFixedList<ClassMemberDeclaration> Members { get; }
+        new IFixedList<ClassMemberDeclaration> Members { get; }
+        IFixedList<TypeMemberDeclaration> TypeDeclaration.Members => Members;
 
         public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames)
             => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList());
@@ -138,7 +140,8 @@ public sealed partial class Concrete
     {
         new IStructDeclarationSyntax Syntax { get; }
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
-        IFixedList<StructMemberDeclaration> Members { get; }
+        new IFixedList<StructMemberDeclaration> Members { get; }
+        IFixedList<TypeMemberDeclaration> TypeDeclaration.Members => Members;
 
         public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames)
             => new StructDeclarationNode(syntax, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList());
@@ -148,7 +151,8 @@ public sealed partial class Concrete
     {
         new ITraitDeclarationSyntax Syntax { get; }
         ITypeDeclarationSyntax TypeDeclaration.Syntax => Syntax;
-        IFixedList<TraitMemberDeclaration> Members { get; }
+        new IFixedList<TraitMemberDeclaration> Members { get; }
+        IFixedList<TypeMemberDeclaration> TypeDeclaration.Members => Members;
 
         public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames)
             => new TraitDeclarationNode(syntax, members.ToFixedList(), genericParameters.ToFixedList(), supertypeNames.ToFixedList());

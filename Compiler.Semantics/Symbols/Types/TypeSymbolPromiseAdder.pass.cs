@@ -60,6 +60,18 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
+    private To.TypeMemberDeclaration TransformTypeMemberDeclaration(From.TypeMemberDeclaration from, IPromise<Symbol>? containingSymbol)
+        => from switch
+        {
+            From.ClassMemberDeclaration f => TransformClassMemberDeclaration(f, containingSymbol),
+            From.TraitMemberDeclaration f => TransformTraitMemberDeclaration(f, containingSymbol),
+            From.StructMemberDeclaration f => TransformStructMemberDeclaration(f, containingSymbol),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+
+    private IFixedList<To.TypeMemberDeclaration> TransformTypeMemberDeclarations(IEnumerable<From.TypeMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
+        => from.Select(f => TransformTypeMemberDeclaration(f, containingSymbol)).ToFixedList();
+
     private IFixedList<To.ClassMemberDeclaration> TransformClassMemberDeclarations(IEnumerable<From.ClassMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
         => from.Select(f => TransformClassMemberDeclaration(f, containingSymbol)).ToFixedList();
 
@@ -168,40 +180,11 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private To.NamespaceMemberDeclaration CreateNamespaceMemberDeclaration(From.NamespaceMemberDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IPromise<Symbol>? childContainingSymbol)
-        => from switch
-        {
-            From.TypeDeclaration f => CreateTypeDeclaration(f, symbol, containingSymbol, childContainingSymbol),
-            From.FunctionDeclaration f => CreateFunctionDeclaration(f),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
-    private To.ClassMemberDeclaration CreateClassMemberDeclaration(From.ClassMemberDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IPromise<Symbol>? childContainingSymbol)
-        => from switch
-        {
-            From.TypeDeclaration f => CreateTypeDeclaration(f, symbol, containingSymbol, childContainingSymbol),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
     private To.ClassDeclaration CreateClassDeclaration(From.ClassDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IPromise<Symbol>? childContainingSymbol)
         => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, TransformClassMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
 
-    private To.StructMemberDeclaration CreateStructMemberDeclaration(From.StructMemberDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IPromise<Symbol>? childContainingSymbol)
-        => from switch
-        {
-            From.TypeDeclaration f => CreateTypeDeclaration(f, symbol, containingSymbol, childContainingSymbol),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
     private To.StructDeclaration CreateStructDeclaration(From.StructDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IPromise<Symbol>? childContainingSymbol)
         => To.StructDeclaration.Create(from.Syntax, TransformStructMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
-
-    private To.TraitMemberDeclaration CreateTraitMemberDeclaration(From.TraitMemberDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IPromise<Symbol>? childContainingSymbol)
-        => from switch
-        {
-            From.TypeDeclaration f => CreateTypeDeclaration(f, symbol, containingSymbol, childContainingSymbol),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
 
     private To.TraitDeclaration CreateTraitDeclaration(From.TraitDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IPromise<Symbol>? childContainingSymbol)
         => To.TraitDeclaration.Create(from.Syntax, TransformTraitMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);

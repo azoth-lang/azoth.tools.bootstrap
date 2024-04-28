@@ -180,8 +180,20 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
     private IFixedList<To.NamespaceMemberDeclaration> TransformNamespaceMemberDeclarations(IEnumerable<From.NamespaceMemberDeclaration> from, DeclarationLexicalScope containingScope)
         => from.Select(f => TransformNamespaceMemberDeclaration(f, containingScope)).ToFixedList();
 
+    private To.TypeMemberDeclaration TransformTypeMemberDeclaration(From.TypeMemberDeclaration from, DeclarationLexicalScope containingScope)
+        => from switch
+        {
+            From.ClassMemberDeclaration f => TransformClassMemberDeclaration(f, containingScope),
+            From.TraitMemberDeclaration f => TransformTraitMemberDeclaration(f, containingScope),
+            From.StructMemberDeclaration f => TransformStructMemberDeclaration(f, containingScope),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+
     private IFixedList<To.ClassMemberDeclaration> TransformClassMemberDeclarations(IEnumerable<From.ClassMemberDeclaration> from, DeclarationLexicalScope containingScope)
         => from.Select(f => TransformClassMemberDeclaration(f, containingScope)).ToFixedList();
+
+    private IFixedList<To.TypeMemberDeclaration> TransformTypeMemberDeclarations(IEnumerable<From.TypeMemberDeclaration> from, DeclarationLexicalScope containingScope)
+        => from.Select(f => TransformTypeMemberDeclaration(f, containingScope)).ToFixedList();
 
     private IFixedList<To.StructMemberDeclaration> TransformStructMemberDeclarations(IEnumerable<From.StructMemberDeclaration> from, DeclarationLexicalScope containingScope)
         => from.Select(f => TransformStructMemberDeclaration(f, containingScope)).ToFixedList();
@@ -289,36 +301,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
     private To.UnresolvedQualifiedTypeName CreateUnresolvedQualifiedTypeName(From.UnresolvedQualifiedTypeName from, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
         => To.UnresolvedQualifiedTypeName.Create(from.Syntax, TransformUnresolvedTypeName(from.Context, childContainingScope, childContainingScope), TransformUnresolvedStandardTypeName(from.QualifiedName, childContainingScope, childContainingScope), containingScope, from.Name);
 
-    private To.NamespaceMemberDeclaration CreateNamespaceMemberDeclaration(From.NamespaceMemberDeclaration from, DeclarationLexicalScope containingScope, DeclarationScope newScope, DeclarationLexicalScope childContainingScope)
-        => from switch
-        {
-            From.NamespaceDeclaration f => CreateNamespaceDeclaration(f, newScope, containingScope, childContainingScope),
-            From.FunctionDeclaration f => CreateFunctionDeclaration(f, containingScope),
-            From.TypeDeclaration f => CreateTypeDeclaration(f, newScope, containingScope, childContainingScope),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
-    private To.ClassMemberDeclaration CreateClassMemberDeclaration(From.ClassMemberDeclaration from, DeclarationLexicalScope containingScope, DeclarationScope newScope, DeclarationLexicalScope childContainingScope)
-        => from switch
-        {
-            From.TypeDeclaration f => CreateTypeDeclaration(f, newScope, containingScope, childContainingScope),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
-    private To.StructMemberDeclaration CreateStructMemberDeclaration(From.StructMemberDeclaration from, DeclarationLexicalScope containingScope, DeclarationScope newScope, DeclarationLexicalScope childContainingScope)
-        => from switch
-        {
-            From.TypeDeclaration f => CreateTypeDeclaration(f, newScope, containingScope, childContainingScope),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
-    private To.TraitMemberDeclaration CreateTraitMemberDeclaration(From.TraitMemberDeclaration from, DeclarationLexicalScope containingScope, DeclarationScope newScope, DeclarationLexicalScope childContainingScope)
-        => from switch
-        {
-            From.TypeDeclaration f => CreateTypeDeclaration(f, newScope, containingScope, childContainingScope),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
     private To.ClassDeclaration CreateClassDeclaration(From.ClassDeclaration from, DeclarationScope newScope, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
         => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, TransformUnresolvedSupertypeName(from.BaseTypeName, childContainingScope, childContainingScope), TransformClassMemberDeclarations(from.Members, childContainingScope), newScope, from.GenericParameters, TransformUnresolvedSupertypeNames(from.SupertypeNames, childContainingScope, childContainingScope), containingScope, from.ContainingNamespace);
 
@@ -327,34 +309,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
 
     private To.TraitDeclaration CreateTraitDeclaration(From.TraitDeclaration from, DeclarationScope newScope, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
         => To.TraitDeclaration.Create(from.Syntax, TransformTraitMemberDeclarations(from.Members, childContainingScope), newScope, from.GenericParameters, TransformUnresolvedSupertypeNames(from.SupertypeNames, childContainingScope, childContainingScope), containingScope, from.ContainingNamespace);
-
-    private To.UnresolvedStandardTypeName CreateUnresolvedStandardTypeName(From.UnresolvedStandardTypeName from, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
-        => from switch
-        {
-            From.UnresolvedIdentifierTypeName f => CreateUnresolvedIdentifierTypeName(f, containingScope),
-            From.UnresolvedGenericTypeName f => CreateUnresolvedGenericTypeName(f, containingScope, childContainingScope),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
-    private To.UnresolvedTypeName CreateUnresolvedTypeName(From.UnresolvedTypeName from, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
-        => from switch
-        {
-            From.UnresolvedStandardTypeName f => CreateUnresolvedStandardTypeName(f, containingScope, childContainingScope),
-            From.UnresolvedSimpleTypeName f => CreateUnresolvedSimpleTypeName(f, containingScope),
-            From.UnresolvedQualifiedTypeName f => CreateUnresolvedQualifiedTypeName(f, containingScope, childContainingScope),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
-    private To.UnresolvedType CreateUnresolvedType(From.UnresolvedType from, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
-        => from switch
-        {
-            From.UnresolvedTypeName f => CreateUnresolvedTypeName(f, containingScope, childContainingScope),
-            From.UnresolvedOptionalType f => CreateUnresolvedOptionalType(f, childContainingScope),
-            From.UnresolvedCapabilityType f => CreateUnresolvedCapabilityType(f, childContainingScope),
-            From.UnresolvedFunctionType f => CreateUnresolvedFunctionType(f, childContainingScope),
-            From.UnresolvedViewpointType f => CreateUnresolvedViewpointType(f, childContainingScope),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
 
     private To.UnresolvedOptionalType CreateUnresolvedOptionalType(From.UnresolvedOptionalType from, DeclarationLexicalScope childContainingScope)
         => To.UnresolvedOptionalType.Create(from.Syntax, TransformUnresolvedType(from.Referent, childContainingScope, childContainingScope));
@@ -381,14 +335,6 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
 
     private To.UnresolvedSelfViewpointType CreateUnresolvedSelfViewpointType(From.UnresolvedSelfViewpointType from, DeclarationLexicalScope childContainingScope)
         => To.UnresolvedSelfViewpointType.Create(from.Syntax, TransformUnresolvedType(from.Referent, childContainingScope, childContainingScope));
-
-    private To.UnresolvedSimpleTypeName CreateUnresolvedSimpleTypeName(From.UnresolvedSimpleTypeName from, DeclarationLexicalScope containingScope)
-        => from switch
-        {
-            From.UnresolvedIdentifierTypeName f => CreateUnresolvedIdentifierTypeName(f, containingScope),
-            From.UnresolvedSpecialTypeName f => CreateUnresolvedSpecialTypeName(f, containingScope),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
 
     #endregion
 }

@@ -69,6 +69,18 @@ internal sealed partial class CompilationUnitRemover : ITransformPass<From.Packa
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
+    private To.TypeMemberDeclaration TransformTypeMemberDeclaration(From.TypeMemberDeclaration from, CodeFile file, CodeFile childFile)
+        => from switch
+        {
+            From.ClassMemberDeclaration f => TransformClassMemberDeclaration(f, file, childFile),
+            From.TraitMemberDeclaration f => TransformTraitMemberDeclaration(f, file, childFile),
+            From.StructMemberDeclaration f => TransformStructMemberDeclaration(f, file, childFile),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+
+    private IFixedList<To.TypeMemberDeclaration> TransformTypeMemberDeclarations(IEnumerable<From.TypeMemberDeclaration> from, CodeFile file, CodeFile childFile)
+        => from.Select(f => TransformTypeMemberDeclaration(f, file, childFile)).ToFixedList();
+
     private IFixedList<To.ClassMemberDeclaration> TransformClassMemberDeclarations(IEnumerable<From.ClassMemberDeclaration> from, CodeFile file, CodeFile childFile)
         => from.Select(f => TransformClassMemberDeclaration(f, file, childFile)).ToFixedList();
 
@@ -174,32 +186,11 @@ internal sealed partial class CompilationUnitRemover : ITransformPass<From.Packa
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private To.ClassMemberDeclaration CreateClassMemberDeclaration(From.ClassMemberDeclaration from, CodeFile file, CodeFile childFile)
-        => from switch
-        {
-            From.TypeDeclaration f => CreateTypeDeclaration(f, file, childFile),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
     private To.ClassDeclaration CreateClassDeclaration(From.ClassDeclaration from, CodeFile file, CodeFile childFile)
         => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, TransformClassMemberDeclarations(from.Members, childFile, childFile), from.NewScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingScope, from.ContainingNamespace);
 
-    private To.StructMemberDeclaration CreateStructMemberDeclaration(From.StructMemberDeclaration from, CodeFile file, CodeFile childFile)
-        => from switch
-        {
-            From.TypeDeclaration f => CreateTypeDeclaration(f, file, childFile),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
     private To.StructDeclaration CreateStructDeclaration(From.StructDeclaration from, CodeFile file, CodeFile childFile)
         => To.StructDeclaration.Create(from.Syntax, TransformStructMemberDeclarations(from.Members, childFile, childFile), from.NewScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingScope, from.ContainingNamespace);
-
-    private To.TraitMemberDeclaration CreateTraitMemberDeclaration(From.TraitMemberDeclaration from, CodeFile file, CodeFile childFile)
-        => from switch
-        {
-            From.TypeDeclaration f => CreateTypeDeclaration(f, file, childFile),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
 
     private To.TraitDeclaration CreateTraitDeclaration(From.TraitDeclaration from, CodeFile file, CodeFile childFile)
         => To.TraitDeclaration.Create(from.Syntax, TransformTraitMemberDeclarations(from.Members, childFile, childFile), from.NewScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingScope, from.ContainingNamespace);

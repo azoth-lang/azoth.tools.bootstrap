@@ -38,64 +38,73 @@ internal sealed partial class TypeSymbolBuilder : ITransformPass<From.Package, S
 
     private partial To.Package TransformPackage(From.Package from);
 
-    private To.ClassDeclaration TransformClassDeclaration(From.ClassDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => CreateClassDeclaration(from, symbol, containingSymbol, childSymbol, childContainingSymbol);
+    private partial To.ClassDeclaration TransformClassDeclaration(From.ClassDeclaration from, TypeLookup typeDeclarations);
 
-    private To.StructDeclaration TransformStructDeclaration(From.StructDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => CreateStructDeclaration(from, symbol, containingSymbol, childSymbol, childContainingSymbol);
+    private partial To.StructDeclaration TransformStructDeclaration(From.StructDeclaration from, TypeLookup typeDeclarations);
 
-    private To.TraitDeclaration TransformTraitDeclaration(From.TraitDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => CreateTraitDeclaration(from, symbol, containingSymbol, childSymbol, childContainingSymbol);
+    private partial To.TraitDeclaration TransformTraitDeclaration(From.TraitDeclaration from, TypeLookup typeDeclarations);
 
-    private To.TypeDeclaration TransformTypeDeclaration(From.TypeDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
+    private To.TypeDeclaration TransformTypeDeclaration(From.TypeDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, TypeLookup typeDeclarations, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
         => from switch
         {
-            From.ClassDeclaration f => TransformClassDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol),
-            From.StructDeclaration f => TransformStructDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol),
-            From.TraitDeclaration f => TransformTraitDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol),
+            From.ClassDeclaration f => TransformClassDeclaration(f, typeDeclarations),
+            From.StructDeclaration f => TransformStructDeclaration(f, typeDeclarations),
+            From.TraitDeclaration f => TransformTraitDeclaration(f, typeDeclarations),
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private To.NamespaceMemberDeclaration TransformNamespaceMemberDeclaration(From.NamespaceMemberDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
+    private To.ClassMemberDeclaration TransformClassMemberDeclaration(From.ClassMemberDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, TypeLookup typeDeclarations, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
         => from switch
         {
-            From.TypeDeclaration f => TransformTypeDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol),
+            From.TypeDeclaration f => TransformTypeDeclaration(f, symbol, containingSymbol, typeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+
+    private To.TypeMemberDeclaration TransformTypeMemberDeclaration(From.TypeMemberDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, TypeLookup typeDeclarations, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
+        => from switch
+        {
+            From.ClassMemberDeclaration f => TransformClassMemberDeclaration(f, symbol, containingSymbol, typeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations),
+            From.TraitMemberDeclaration f => TransformTraitMemberDeclaration(f, symbol, containingSymbol, typeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations),
+            From.StructMemberDeclaration f => TransformStructMemberDeclaration(f, symbol, containingSymbol, typeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations),
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+
+    private IFixedList<To.TypeMemberDeclaration> TransformTypeMemberDeclarations(IEnumerable<From.TypeMemberDeclaration> from, UserTypeSymbol symbol, Symbol containingSymbol, TypeLookup typeDeclarations, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
+        => from.Select(f => TransformTypeMemberDeclaration(f, symbol, containingSymbol, typeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations)).ToFixedList();
+
+    private IFixedList<To.ClassMemberDeclaration> TransformClassMemberDeclarations(IEnumerable<From.ClassMemberDeclaration> from, UserTypeSymbol symbol, Symbol containingSymbol, TypeLookup typeDeclarations, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
+        => from.Select(f => TransformClassMemberDeclaration(f, symbol, containingSymbol, typeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations)).ToFixedList();
+
+    private To.NamespaceMemberDeclaration TransformNamespaceMemberDeclaration(From.NamespaceMemberDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, TypeLookup typeDeclarations, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
+        => from switch
+        {
+            From.TypeDeclaration f => TransformTypeDeclaration(f, symbol, containingSymbol, typeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations),
             From.FunctionDeclaration f => f,
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private IFixedSet<To.NamespaceMemberDeclaration> TransformNamespaceMemberDeclarations(IEnumerable<From.NamespaceMemberDeclaration> from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => from.Select(f => TransformNamespaceMemberDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol)).ToFixedSet();
+    private IFixedSet<To.NamespaceMemberDeclaration> TransformNamespaceMemberDeclarations(IEnumerable<From.NamespaceMemberDeclaration> from, UserTypeSymbol symbol, Symbol containingSymbol, TypeLookup typeDeclarations, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
+        => from.Select(f => TransformNamespaceMemberDeclaration(f, symbol, containingSymbol, typeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations)).ToFixedSet();
 
-    private To.ClassMemberDeclaration TransformClassMemberDeclaration(From.ClassMemberDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
+    private To.StructMemberDeclaration TransformStructMemberDeclaration(From.StructMemberDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, TypeLookup typeDeclarations, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
         => from switch
         {
-            From.TypeDeclaration f => TransformTypeDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol),
+            From.TypeDeclaration f => TransformTypeDeclaration(f, symbol, containingSymbol, typeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations),
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private IFixedList<To.ClassMemberDeclaration> TransformClassMemberDeclarations(IEnumerable<From.ClassMemberDeclaration> from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => from.Select(f => TransformClassMemberDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol)).ToFixedList();
+    private IFixedList<To.StructMemberDeclaration> TransformStructMemberDeclarations(IEnumerable<From.StructMemberDeclaration> from, UserTypeSymbol symbol, Symbol containingSymbol, TypeLookup typeDeclarations, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
+        => from.Select(f => TransformStructMemberDeclaration(f, symbol, containingSymbol, typeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations)).ToFixedList();
 
-    private To.StructMemberDeclaration TransformStructMemberDeclaration(From.StructMemberDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
+    private To.TraitMemberDeclaration TransformTraitMemberDeclaration(From.TraitMemberDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, TypeLookup typeDeclarations, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
         => from switch
         {
-            From.TypeDeclaration f => TransformTypeDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol),
+            From.TypeDeclaration f => TransformTypeDeclaration(f, symbol, containingSymbol, typeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations),
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private IFixedList<To.StructMemberDeclaration> TransformStructMemberDeclarations(IEnumerable<From.StructMemberDeclaration> from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => from.Select(f => TransformStructMemberDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol)).ToFixedList();
-
-    private To.TraitMemberDeclaration TransformTraitMemberDeclaration(From.TraitMemberDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => from switch
-        {
-            From.TypeDeclaration f => TransformTypeDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
-    private IFixedList<To.TraitMemberDeclaration> TransformTraitMemberDeclarations(IEnumerable<From.TraitMemberDeclaration> from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => from.Select(f => TransformTraitMemberDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol)).ToFixedList();
+    private IFixedList<To.TraitMemberDeclaration> TransformTraitMemberDeclarations(IEnumerable<From.TraitMemberDeclaration> from, UserTypeSymbol symbol, Symbol containingSymbol, TypeLookup typeDeclarations, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
+        => from.Select(f => TransformTraitMemberDeclaration(f, symbol, containingSymbol, typeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations)).ToFixedList();
 
     #region Create() methods
     private To.Package CreatePackage(From.Package from, IEnumerable<To.NamespaceMemberDeclaration> declarations, IEnumerable<To.NamespaceMemberDeclaration> testingDeclarations)
@@ -161,53 +170,24 @@ internal sealed partial class TypeSymbolBuilder : ITransformPass<From.Package, S
     #endregion
 
     #region CreateX() methods
-    private To.Package CreatePackage(From.Package from, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => To.Package.Create(TransformNamespaceMemberDeclarations(from.Declarations, childSymbol, childContainingSymbol, childSymbol, childContainingSymbol), TransformNamespaceMemberDeclarations(from.TestingDeclarations, childSymbol, childContainingSymbol, childSymbol, childContainingSymbol), from.LexicalScope, from.Syntax, from.Symbol, from.References);
+    private To.Package CreatePackage(From.Package from, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
+        => To.Package.Create(TransformNamespaceMemberDeclarations(from.Declarations, childSymbol, childContainingSymbol, childTypeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations), TransformNamespaceMemberDeclarations(from.TestingDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations), from.LexicalScope, from.Syntax, from.Symbol, from.References);
 
-    private To.ClassDeclaration CreateClassDeclaration(From.ClassDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, TransformClassMemberDeclarations(from.Members, childSymbol, childContainingSymbol, childSymbol, childContainingSymbol), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
+    private To.ClassDeclaration CreateClassDeclaration(From.ClassDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
+        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, TransformClassMemberDeclarations(from.Members, childSymbol, childContainingSymbol, childTypeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
 
-    private To.StructDeclaration CreateStructDeclaration(From.StructDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => To.StructDeclaration.Create(from.Syntax, TransformStructMemberDeclarations(from.Members, childSymbol, childContainingSymbol, childSymbol, childContainingSymbol), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
+    private To.StructDeclaration CreateStructDeclaration(From.StructDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
+        => To.StructDeclaration.Create(from.Syntax, TransformStructMemberDeclarations(from.Members, childSymbol, childContainingSymbol, childTypeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
 
-    private To.TraitDeclaration CreateTraitDeclaration(From.TraitDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => To.TraitDeclaration.Create(from.Syntax, TransformTraitMemberDeclarations(from.Members, childSymbol, childContainingSymbol, childSymbol, childContainingSymbol), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
+    private To.TraitDeclaration CreateTraitDeclaration(From.TraitDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
+        => To.TraitDeclaration.Create(from.Syntax, TransformTraitMemberDeclarations(from.Members, childSymbol, childContainingSymbol, childTypeDeclarations, childSymbol, childContainingSymbol, childTypeDeclarations), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
 
-    private To.TypeDeclaration CreateTypeDeclaration(From.TypeDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
+    private To.TypeDeclaration CreateTypeDeclaration(From.TypeDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol, TypeLookup childTypeDeclarations)
         => from switch
         {
-            From.ClassDeclaration f => CreateClassDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol),
-            From.StructDeclaration f => CreateStructDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol),
-            From.TraitDeclaration f => CreateTraitDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
-    private To.NamespaceMemberDeclaration CreateNamespaceMemberDeclaration(From.NamespaceMemberDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => from switch
-        {
-            From.TypeDeclaration f => CreateTypeDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol),
-            From.FunctionDeclaration f => CreateFunctionDeclaration(f),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
-    private To.ClassMemberDeclaration CreateClassMemberDeclaration(From.ClassMemberDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => from switch
-        {
-            From.TypeDeclaration f => CreateTypeDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
-    private To.StructMemberDeclaration CreateStructMemberDeclaration(From.StructMemberDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => from switch
-        {
-            From.TypeDeclaration f => CreateTypeDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
-    private To.TraitMemberDeclaration CreateTraitMemberDeclaration(From.TraitMemberDeclaration from, UserTypeSymbol symbol, Symbol containingSymbol, UserTypeSymbol childSymbol, Symbol childContainingSymbol)
-        => from switch
-        {
-            From.TypeDeclaration f => CreateTypeDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol),
+            From.ClassDeclaration f => CreateClassDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol, childTypeDeclarations),
+            From.StructDeclaration f => CreateStructDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol, childTypeDeclarations),
+            From.TraitDeclaration f => CreateTraitDeclaration(f, symbol, containingSymbol, childSymbol, childContainingSymbol, childTypeDeclarations),
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
