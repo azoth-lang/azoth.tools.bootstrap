@@ -33,6 +33,4 @@ internal sealed partial class InitialContextPass : ITransformPass<IPackageSyntax
 
     private partial Diagnostics AnalyzePackageSyntax(IPackageSyntax from);
 
-    #region CreateX() methods
-    #endregion
 }
