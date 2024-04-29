@@ -551,9 +551,11 @@ public class Pass
         Grammar toGrammar)
     {
         var fromCoreType = transform.FromCoreType;
-        foreach (var rule in fromGrammar.Rules.Where(r => !transforms.ContainsKey(r.DefinesType)))
+        foreach (var rule in fromGrammar.Rules)
         {
-            if (rule.AllProperties.Any(p => p.Type == fromCoreType))
+            // For transforms that are not already defined, define them if this type is a direct child of the rule
+            if (!transforms.ContainsKey(rule.DefinesType)
+                && rule.AllProperties.Any(p => p.Type == fromCoreType))
             {
                 var parentTransform = CreateTransformMethod(rule, toGrammar);
 
