@@ -40,7 +40,7 @@ internal static class Build
     public static IEnumerable<Parameter> AdvancedCreateChildParameters(Pass pass, Rule rule)
         => DifferentChildProperties(rule)
                .Where(Emit.CouldBeModified)
-               .Select(p => CalledTransform(pass, FromType(p))).WhereNotNull()
+               .Select(p => CalledTransform(pass, p.ComputeFromType())).WhereNotNull()
                .SelectMany(t => t.AdditionalParameters)
                .Select(p => p.ChildParameter)
                .Concat(rule.DerivedRules
@@ -76,10 +76,5 @@ internal static class Build
     public static IEnumerable<Parameter> EndRunReturnValues(Pass pass)
         => pass.ToContextParameter.YieldValue();
 
-    public static NonVoidType FromType(Property property)
-    {
-        var fromSymbol = ((InternalSymbol)property.Type.UnderlyingSymbol).ReferencedRule.ExtendsRule!.Defines;
-        var fromType = property.Type.WithSymbol(fromSymbol);
-        return fromType;
-    }
+
 }

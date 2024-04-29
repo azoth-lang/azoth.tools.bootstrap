@@ -69,5 +69,12 @@ public sealed class Property
         parameter = new(() => Parameter.Create(Type, Name.ToCamelCase()));
     }
 
+    public NonVoidType ComputeFromType()
+    {
+        var fromSymbol = ((InternalSymbol)Type.UnderlyingSymbol).ReferencedRule.ExtendsRule!.Defines;
+        var fromType = Type.WithSymbol(fromSymbol);
+        return fromType;
+    }
+
     public override string ToString() => $"{Name}:{Type}";
 }

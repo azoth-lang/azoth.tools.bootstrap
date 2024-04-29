@@ -457,7 +457,7 @@ internal static class Emit
                 arguments.Add(property.Name.ToCamelCase());
             else
             {
-                var fromType = Build.FromType(property);
+                var fromType = property.ComputeFromType();
                 var calledTransform = Build.CalledTransform(pass, fromType);
                 var operationArguments = calledTransform!.AdditionalParameters.Select(p => p.ChildParameter.Name)
                                                           .Prepend($"from.{property.Name}");
