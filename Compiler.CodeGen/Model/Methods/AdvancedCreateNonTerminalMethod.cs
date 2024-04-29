@@ -23,7 +23,5 @@ public sealed record AdvancedCreateNonTerminalMethod : AdvancedCreateMethod
     }
 
     public override IEnumerable<Method> GetMethodsCalled()
-        => Rule.DerivedRules.Select(r => !r.IsTerminal || r.DifferentChildProperties.Any()
-            ? (Method)Pass.AdvancedCreateMethods.Single(m => m.Rule == r)
-            : Pass.SimpleCreateMethods.Single(m => m.Rule == r));
+        => ToRule.DerivedRules.Select(GetCreateMethodCalled);
 }

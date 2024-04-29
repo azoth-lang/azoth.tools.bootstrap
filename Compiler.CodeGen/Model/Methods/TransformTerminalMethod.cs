@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -59,10 +60,12 @@ internal sealed record TransformTerminalMethod : TransformMethod
 
     public override IEnumerable<Method> GetMethodsCalled()
     {
-        if (!AutoGenerate)
+        if (!AutoGenerate || To is null)
             yield break;
 
-        // TODO add back
-        //yield return Pass.AdvancedCreateMethods.Single(m => m.From.Type == FromCoreType);
+        var rule = (To.Type.UnderlyingSymbol as InternalSymbol)?.ReferencedRule;
+        if (rule is null) yield break;
+
+        yield return GetCreateMethodCalled(rule);
     }
 }

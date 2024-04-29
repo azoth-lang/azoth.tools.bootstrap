@@ -422,7 +422,7 @@ internal static class Emit
 
     public static string SimpleCreateArguments(SimpleCreateMethod method)
     {
-        var rule = method.Rule;
+        var rule = method.ToRule;
         var parameterNames = method.AdditionalParameters.Select(ParameterName).ToFixedSet();
         var parameters = new List<string>();
         foreach (var property in rule.AllProperties)

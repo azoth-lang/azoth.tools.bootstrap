@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -6,12 +7,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 
 public abstract record Method
 {
+    public Pass Pass { get; }
     public NonVoidType FromType { get; }
     public abstract required IFixedList<Parameter> AdditionalParameters { get; init; }
 
-    private protected Method(NonVoidType fromType)
+    private protected Method(Pass pass, NonVoidType fromType)
     {
         FromType = fromType;
+        Pass = pass;
     }
 
     /// <summary>
@@ -21,4 +24,15 @@ public abstract record Method
     /// after this is called. So it only makes sense for the method objects as they exist at the
     /// time.</remarks>
     public abstract IEnumerable<Method> GetMethodsCalled();
+
+    /// <summary>
+    /// Get the create method that should be called for the given rule.
+    /// </summary>
+    protected Method GetCreateMethodCalled(Rule toRule)
+    {
+        Requires.That(nameof(toRule), toRule.Grammar == Pass.ToLanguage?.Grammar, "Must be in the 'To' language");
+        return !toRule.IsTerminal || toRule.DifferentChildProperties.Any()
+            ? Pass.AdvancedCreateMethods.Single(m => m.ToRule == toRule)
+            : Pass.SimpleCreateMethods.Single(m => m.ToRule == toRule);
+    }
 }

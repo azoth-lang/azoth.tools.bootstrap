@@ -410,7 +410,7 @@ public class Pass
             yield break;
 
         foreach (var rule in ToLanguage.Grammar.Rules.Where(ShouldCreate))
-            yield return new SimpleCreateMethod(rule);
+            yield return new SimpleCreateMethod(this, rule);
 
         yield break;
 

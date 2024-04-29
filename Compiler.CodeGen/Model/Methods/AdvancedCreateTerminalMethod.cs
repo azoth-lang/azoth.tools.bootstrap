@@ -12,17 +12,17 @@ public sealed record AdvancedCreateTerminalMethod : AdvancedCreateMethod
 
     [SetsRequiredMembers]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public AdvancedCreateTerminalMethod(Pass pass, Rule rule) : base(pass, rule)
+    public AdvancedCreateTerminalMethod(Pass pass, Rule toRule) : base(pass, toRule)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
-        Requires.That(nameof(rule), rule.IsTerminal, "Must be a terminal");
-        AdditionalParameters = rule.ModifiedProperties.Select(p => p.Parameter).ToFixedList();
+        Requires.That(nameof(toRule), toRule.IsTerminal, "Must be a terminal");
+        AdditionalParameters = toRule.ModifiedProperties.Select(p => p.Parameter).ToFixedList();
         AllParameters = AdditionalParameters.Prepend(From).ToFixedList();
     }
 
     public override IEnumerable<Method> GetMethodsCalled()
     {
-        yield return Pass.SimpleCreateMethods.Single(m => m.Rule == Rule);
+        yield return Pass.SimpleCreateMethods.Single(m => m.ToRule == ToRule);
         // TODO add calls to transforms
     }
 }
