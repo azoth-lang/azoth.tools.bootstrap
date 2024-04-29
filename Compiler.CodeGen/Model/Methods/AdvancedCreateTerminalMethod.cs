@@ -1,15 +1,19 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 
-public sealed class AdvancedCreateTerminalMethod : AdvancedCreateMethod
+public sealed record AdvancedCreateTerminalMethod : AdvancedCreateMethod
 {
-    public override IFixedList<Parameter> AdditionalParameters { get; }
+    public override required IFixedList<Parameter> AdditionalParameters { get; init; }
     public IFixedList<Parameter> AllParameters { get; }
 
+    [SetsRequiredMembers]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public AdvancedCreateTerminalMethod(Pass pass, Rule rule) : base(pass, rule)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
         Requires.That(nameof(rule), rule.IsTerminal, "Must be a terminal");
         AdditionalParameters = rule.ModifiedProperties.Select(p => p.Parameter).ToFixedList();

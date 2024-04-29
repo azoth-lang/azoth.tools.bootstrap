@@ -71,6 +71,11 @@ public class Pass
         Methods = SimpleCreateMethods
                   .Concat<Method>(AdvancedCreateMethods)
                   .Concat(TransformMethods).ToFixedList();
+        // Bubble and recreate methods with additional parameters
+        Methods = BubbleMethodParameters();
+        SimpleCreateMethods = Methods.OfType<SimpleCreateMethod>().ToFixedList();
+        AdvancedCreateMethods = Methods.OfType<AdvancedCreateMethod>().ToFixedList();
+        TransformMethods = Methods.OfType<TransformMethod>().ToFixedList();
     }
 
     private static Language? GetOrLoadLanguageNamed(SymbolNode? name, LanguageLoader languageLoader)
@@ -296,7 +301,7 @@ public class Pass
             if (fromType?.UnderlyingSymbol is not InternalSymbol { ReferencedRule: { IsTerminal: true } rule })
                 continue;
 
-            foreach (var childRule in rule.ChildRules)
+            foreach (var childRule in rule.DerivedRules)
             {
                 var childFromType = new SymbolType(childRule.Defines);
                 if (fromTypesCoveredByDeclaredTransforms.Contains(childFromType)
@@ -429,7 +434,7 @@ public class Pass
 
         static bool ShouldCreate(Rule r)
             => r is { ExtendsRule: not null }
-               && (!r.IsTerminal || r.DifferentProperties.Except(r.ModifiedProperties).Any());
+               && (!r.IsTerminal || r.DifferentChildProperties.Any());
     }
 
     private IEnumerable<TransformMethod> CreateTransformMethods()
@@ -439,9 +444,15 @@ public class Pass
         if (!IsLanguageTransform || FromLanguage is null)
             return transforms.Values;
 
-        var toExpand = new Queue<TransformMethod>(transforms.Values);
         var fromGrammar = FromLanguage.Grammar;
         var toGrammar = ToLanguage.Grammar;
+
+        // Collect the values to avoid modifying the dictionary while iterating
+        foreach (var baseTransform in CreateTransformsModifiedTerminals(transforms, toGrammar).ToArray())
+            transforms.Add(baseTransform.FromCoreType, baseTransform);
+
+        var toExpand = new Queue<TransformMethod>(transforms.Values);
+
         while (toExpand.TryDequeue(out var transform))
         {
             foreach (var baseTransform in CreateBaseTransforms(transform, transforms, toGrammar))
@@ -450,10 +461,16 @@ public class Pass
                 toExpand.Enqueue(baseTransform);
             }
 
-            foreach (var parentTransform in CreateParentTransforms(transform, fromGrammar, toGrammar, transforms))
+            foreach (var parentTransform in CreateParentTransforms(transform, transforms, fromGrammar, toGrammar))
             {
                 transforms[parentTransform.FromCoreType] = parentTransform;
                 toExpand.Enqueue(parentTransform);
+            }
+
+            foreach (var childTransform in CreateChildTransforms(transform, transforms, toGrammar))
+            {
+                transforms.Add(childTransform.FromCoreType, childTransform);
+                toExpand.Enqueue(childTransform);
             }
         }
 
@@ -488,6 +505,24 @@ public class Pass
         }
     }
 
+    private IEnumerable<TransformMethod> CreateTransformsModifiedTerminals(
+        IReadOnlyDictionary<NonOptionalType, TransformMethod> transforms,
+        Grammar toGrammar)
+    {
+        // Add auto transforms for all rules that are modified terminals
+        var modifiedRules = toGrammar.Rules.Where(r => r is { IsModified: true, IsTerminal: true });
+        foreach (var toRule in modifiedRules)
+        {
+            var fromRule = toRule.ExtendsRule!;
+            var fromType = new SymbolType(fromRule.Defines);
+            if (transforms.ContainsKey(fromType)) continue;
+
+            var transform = CreateTransformMethod(fromRule, toGrammar);
+            if (transform is not null)
+                yield return transform;
+        }
+    }
+
     private IEnumerable<TransformMethod> CreateBaseTransforms(
         TransformMethod transform,
         IReadOnlyDictionary<NonOptionalType, TransformMethod> transforms,
@@ -511,9 +546,9 @@ public class Pass
 
     private IEnumerable<TransformMethod> CreateParentTransforms(
         TransformMethod transform,
+        IReadOnlyDictionary<NonOptionalType, TransformMethod> transforms,
         Grammar fromGrammar,
-        Grammar toGrammar,
-        IReadOnlyDictionary<NonOptionalType, TransformMethod> transforms)
+        Grammar toGrammar)
     {
         var fromCoreType = transform.FromCoreType;
         foreach (var rule in fromGrammar.Rules.Where(r => !transforms.ContainsKey(r.DefinesType)))
@@ -537,6 +572,29 @@ public class Pass
         }
     }
 
+    private IEnumerable<TransformMethod> CreateChildTransforms(
+        TransformMethod transform,
+        IReadOnlyDictionary<NonOptionalType, TransformMethod> transforms,
+        Grammar toGrammar)
+    {
+        var fromType = transform.FromType;
+        if (fromType.UnderlyingSymbol is not InternalSymbol { ReferencedRule: { IsTerminal: false } rule })
+            yield break;
+
+        foreach (var derivedRule in rule.DerivedRules.Where(r => r.DescendantsModified))
+        {
+            var derivedFromType = derivedRule.DefinesType;
+            if (transforms.ContainsKey(derivedFromType))
+                continue;
+            // Derived type isn't covered yet, add a transform for it
+            var derivedTransform = CreateTransformMethod(derivedRule, toGrammar);
+            if (derivedTransform is null)
+                continue;
+
+            yield return derivedTransform;
+        }
+    }
+
     private TransformMethod? CreateTransformMethod(Rule fromRule, Grammar toGrammar)
     {
         var toRule = toGrammar.RuleFor(fromRule.Defines);
@@ -549,12 +607,69 @@ public class Pass
         return new TransformNonTerminalMethod(this, fromRule, fromRule.DefinesType, toRule.DefinesType);
     }
 
-    private TransformMethod? CreateTransformMethod(CollectionType fromType, Grammar toGrammar)
+    private TransformCollectionMethod? CreateTransformMethod(CollectionType fromType, Grammar toGrammar)
     {
         var toRule = toGrammar.RuleFor(fromType.UnderlyingSymbol);
         // No way to make an auto transform, assume it is somehow covered
         if (toRule is null) return null;
         var toType = fromType.WithSymbol(toRule.Defines);
         return new TransformCollectionMethod(this, fromType, toType);
+    }
+
+    private IFixedList<Method> BubbleMethodParameters()
+    {
+        var methods = Methods.ToDictionary(m => m);
+        var methodCallers = GetMethodCallers();
+
+        var toBubble = new HashSet<Method>(methodCallers.Keys);
+        while (toBubble.TryTake(out var calleeMethod))
+        {
+            var currentCalleeMethod = methods[calleeMethod];
+            if (currentCalleeMethod.AdditionalParameters.Count == 0)
+                // No parameters to bubble up
+                continue;
+            foreach (var callerMethod in methodCallers[calleeMethod])
+            {
+                var currentCallerMethod = methods[callerMethod];
+                var bubbleChildProperties = callerMethod is not AdvancedCreateMethod
+                    || calleeMethod is not SimpleCreateMethod;
+                var adjustedAdditionalParameters = AdjustedAdditionalParameters(currentCalleeMethod, currentCallerMethod, bubbleChildProperties);
+                var missingAndModifiedParameters = MissingAndModifiedParameters(currentCallerMethod.AdditionalParameters, adjustedAdditionalParameters);
+                if (!missingAndModifiedParameters.Any())
+                    // All parameters are already covered
+                    continue;
+
+                var additionalParameters = MergeByName(currentCallerMethod.AdditionalParameters, missingAndModifiedParameters).ToFixedList();
+                methods[callerMethod] = currentCallerMethod with { AdditionalParameters = additionalParameters };
+                // Caller modified, add to bubble if it is called by anything
+                if (methodCallers.ContainsKey(callerMethod))
+                    toBubble.Add(callerMethod);
+            }
+        }
+        return methods.Values.ToFixedList();
+    }
+
+    private FixedDictionary<Method, IFixedSet<Method>> GetMethodCallers()
+    {
+        return Methods.SelectMany(caller => caller.GetMethodsCalled().Select(callee => (caller, callee)))
+                      .GroupToFixedDictionary(p => p.callee, pairs => pairs.Select(p => p.caller).ToFixedSet());
+    }
+
+    private static IFixedList<Parameter> AdjustedAdditionalParameters(
+        Method method,
+        Method parentMethod,
+        bool bubbleChildProperties)
+    {
+        var additionalParameters = method.AdditionalParameters;
+        var fromType = method.FromType;
+        var toType = parentMethod.FromType;
+        if (!IsChildRule(fromType, toType))
+            // Only in this case turn parameters into child parameters
+            additionalParameters = additionalParameters.Select(p => p.ChildParameter).Distinct().ToFixedList();
+
+        if (!bubbleChildProperties)
+            additionalParameters = additionalParameters.Where(p => p.Type.UnderlyingSymbol is not InternalSymbol).ToFixedList();
+
+        return additionalParameters;
     }
 }

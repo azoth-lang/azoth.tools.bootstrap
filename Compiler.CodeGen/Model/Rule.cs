@@ -29,9 +29,9 @@ public class Rule
     private readonly Lazy<IFixedSet<Rule>> parentRules;
     public IFixedSet<Rule> AncestorRules => ancestorRules.Value;
     private readonly Lazy<IFixedSet<Rule>> ancestorRules;
-    public IFixedSet<Rule> ChildRules => childRules.Value;
-    private readonly Lazy<IFixedSet<Rule>> childRules;
-    public bool IsTerminal => !ChildRules.Any();
+    public IFixedSet<Rule> DerivedRules => derivedRules.Value;
+    private readonly Lazy<IFixedSet<Rule>> derivedRules;
+    public bool IsTerminal => !DerivedRules.Any();
     public IFixedSet<Rule> DescendantRules => descendantRules.Value;
     private readonly Lazy<IFixedSet<Rule>> descendantRules;
 
@@ -73,6 +73,12 @@ public class Rule
     /// </summary>
     public IFixedList<Property> ModifiedProperties => modifiedProperties.Value;
     private readonly Lazy<IFixedList<Property>> modifiedProperties;
+
+    /// <summary>
+    /// Properties that reference an equivalent rule in this language.
+    /// </summary>
+    public IFixedList<Property> DifferentChildProperties => differentChildProperties.Value;
+    private readonly Lazy<IFixedList<Property>> differentChildProperties;
 
     public IFixedSet<Property> AncestorProperties => ancestorProperties.Value;
     private readonly Lazy<IFixedSet<Property>> ancestorProperties;
@@ -138,8 +144,8 @@ public class Rule
         parentRules = new(() => BaseRule is null ? SupertypeRules
             : SupertypeRules.Prepend(BaseRule).EliminateRedundantRules().ToFixedSet());
         ancestorRules = new(() => BaseRules.Concat(BaseRules.SelectMany(p => p.AncestorRules)).ToFixedSet());
-        childRules = new(() => Grammar.Rules.Where(r => r.BaseRules.Contains(this)).ToFixedSet());
-        descendantRules = new(() => ChildRules.Concat(ChildRules.SelectMany(r => r.DescendantRules)).ToFixedSet());
+        derivedRules = new(() => Grammar.Rules.Where(r => r.BaseRules.Contains(this)).ToFixedSet());
+        descendantRules = new(() => DerivedRules.Concat(DerivedRules.SelectMany(r => r.DescendantRules)).ToFixedSet());
 
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new Property(this, p)).ToFixedList();
         inheritedProperties = new(() => BaseRules.SelectMany(r => r.AllProperties).Distinct().ToFixedList());
@@ -163,6 +169,7 @@ public class Rule
             : AllProperties.Where(CouldBeModified)
                            .Except(ExtendsRule.AllProperties, Property.NameAndTypeEquivalenceComparer)
                            .ToFixedList());
+        differentChildProperties = new(() => DifferentProperties.Except(ModifiedProperties).ToFixedList());
         ancestorProperties = new(() => AncestorRules.SelectMany(r => r.DeclaredProperties).ToFixedSet());
 
         extendsRule = new(() => grammar.Language.Extends?.Grammar.RuleFor(Defines.ShortName));
@@ -203,8 +210,8 @@ public class Rule
     private bool ComputeDescendantsModified()
     {
         return IsModified
-               // Note: added child rules are not a problem for the cases that matter here
-               || ChildRules.Any(r => r.TryDescendantsModified)
+               // Note: added derived rules are not a problem for the cases that matter here
+               || DerivedRules.Any(r => r.TryDescendantsModified)
                || AllProperties
                   .Select(p => p.Type.UnderlyingSymbol)
                   .OfType<InternalSymbol>()

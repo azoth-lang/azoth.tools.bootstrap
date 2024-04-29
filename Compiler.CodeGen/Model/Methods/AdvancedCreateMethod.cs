@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 [Closed(
     typeof(AdvancedCreateTerminalMethod),
     typeof(AdvancedCreateNonTerminalMethod))]
-public abstract class AdvancedCreateMethod : Method
+public abstract record AdvancedCreateMethod : Method
 {
     public Pass Pass { get; }
     public Rule Rule { get; }
@@ -19,6 +19,7 @@ public abstract class AdvancedCreateMethod : Method
     public Type ReturnType { get; }
 
     private protected AdvancedCreateMethod(Pass pass, Rule rule)
+        : base(rule.ExtendsRule!.DefinesType)
     {
         Pass = pass;
         Rule = rule;

@@ -1,13 +1,14 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 
-internal sealed class TransformTerminalMethod : TransformMethod
+internal sealed record TransformTerminalMethod : TransformMethod
 {
-    public override IFixedList<Parameter> AdditionalParameters { get; }
+    public override required IFixedList<Parameter> AdditionalParameters { get; init; }
     public IFixedList<Parameter> AllParameters { get; }
 
     public Parameter? To { get; }
@@ -15,6 +16,7 @@ internal sealed class TransformTerminalMethod : TransformMethod
     public IFixedList<Parameter> AllReturnValues { get; }
     public bool AutoGenerate { get; }
 
+    [SetsRequiredMembers]
     public TransformTerminalMethod(Pass pass, Transform transform, NonVoidType fromType, NonVoidType? toType)
         : this(pass, parametersDeclared: true,
             fromType, transform.AdditionalParameters,
@@ -23,6 +25,7 @@ internal sealed class TransformTerminalMethod : TransformMethod
     {
     }
 
+    [SetsRequiredMembers]
     public TransformTerminalMethod(Pass pass, NonVoidType fromType, NonVoidType? toType)
         : this(pass, parametersDeclared: false,
             fromType, FixedList.Empty<Parameter>(),
@@ -31,7 +34,10 @@ internal sealed class TransformTerminalMethod : TransformMethod
     {
     }
 
+    [SetsRequiredMembers]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private TransformTerminalMethod(
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         Pass pass,
         bool parametersDeclared,
         NonVoidType fromType,
@@ -53,9 +59,10 @@ internal sealed class TransformTerminalMethod : TransformMethod
 
     public override IEnumerable<Method> GetMethodsCalled()
     {
-        if (AutoGenerate)
+        if (!AutoGenerate)
             yield break;
 
-        yield return Pass.AdvancedCreateMethods.Single(m => m.From.Type == FromCoreType);
+        // TODO add back
+        //yield return Pass.AdvancedCreateMethods.Single(m => m.From.Type == FromCoreType);
     }
 }

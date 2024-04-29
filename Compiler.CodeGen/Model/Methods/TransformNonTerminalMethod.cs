@@ -1,14 +1,15 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 
-internal sealed class TransformNonTerminalMethod : TransformMethod
+internal sealed record TransformNonTerminalMethod : TransformMethod
 {
     public Rule FromReferencedRule { get; }
-    public override IFixedList<Parameter> AdditionalParameters { get; }
+    public override required IFixedList<Parameter> AdditionalParameters { get; init; }
     public IFixedList<Parameter> AllParameters { get; }
 
     public Parameter? To { get; }
@@ -16,6 +17,7 @@ internal sealed class TransformNonTerminalMethod : TransformMethod
     public IFixedList<Parameter> AllReturnValues { get; }
     public bool AutoGenerate { get; }
 
+    [SetsRequiredMembers]
     public TransformNonTerminalMethod(
         Pass pass,
         Transform transform,
@@ -29,6 +31,7 @@ internal sealed class TransformNonTerminalMethod : TransformMethod
     {
     }
 
+    [SetsRequiredMembers]
     public TransformNonTerminalMethod(Pass pass, Rule fromReferencedRule, SymbolType fromType, SymbolType toType)
         : this(pass, parametersDeclared: false, fromReferencedRule,
             fromType, FixedList.Empty<Parameter>(),
@@ -37,7 +40,10 @@ internal sealed class TransformNonTerminalMethod : TransformMethod
     {
     }
 
+    [SetsRequiredMembers]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private TransformNonTerminalMethod(
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         Pass pass,
         bool parametersDeclared,
         Rule fromReferencedRule,
@@ -61,10 +67,10 @@ internal sealed class TransformNonTerminalMethod : TransformMethod
 
     public override IEnumerable<Method> GetMethodsCalled()
     {
-        if (AutoGenerate)
+        if (!AutoGenerate)
             yield break;
 
-        foreach (var childRule in FromReferencedRule.ChildRules)
+        foreach (var childRule in FromReferencedRule.DerivedRules.Where(r => r.DescendantsModified))
             yield return Pass.TransformMethods.Single(m => m.FromCoreType == childRule.DefinesType);
     }
 }

@@ -39,7 +39,7 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
 
     private partial To.Package TransformPackage(From.Package from);
 
-    private partial To.CompilationUnit TransformCompilationUnit(From.CompilationUnit from, PackageReferenceScope containingScope);
+    private partial To.CompilationUnit TransformCompilationUnit(From.CompilationUnit from, DeclarationLexicalScope containingScope);
 
     private partial To.TypeDeclaration TransformTypeDeclaration(From.TypeDeclaration from, DeclarationLexicalScope containingScope);
 
@@ -64,7 +64,7 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
     private To.UnresolvedQualifiedTypeName TransformUnresolvedQualifiedTypeName(From.UnresolvedQualifiedTypeName from, DeclarationLexicalScope containingScope, DeclarationLexicalScope childContainingScope)
         => CreateUnresolvedQualifiedTypeName(from, containingScope, childContainingScope);
 
-    private IFixedSet<To.CompilationUnit> TransformCompilationUnits(IEnumerable<From.CompilationUnit> from, PackageReferenceScope containingScope)
+    private IFixedSet<To.CompilationUnit> TransformCompilationUnits(IEnumerable<From.CompilationUnit> from, DeclarationLexicalScope containingScope)
         => from.Select(f => TransformCompilationUnit(f, containingScope)).ToFixedSet();
 
     private To.NamespaceMemberDeclaration TransformNamespaceMemberDeclaration(From.NamespaceMemberDeclaration from, DeclarationLexicalScope containingScope)
@@ -274,7 +274,7 @@ internal sealed partial class DeclarationLexicalScopesBuilder : ITransformPass<F
     #endregion
 
     #region CreateX() methods
-    private To.Package CreatePackage(From.Package from, PackageReferenceScope lexicalScope, PackageReferenceScope childContainingScope)
+    private To.Package CreatePackage(From.Package from, PackageReferenceScope lexicalScope, DeclarationLexicalScope childContainingScope)
         => To.Package.Create(lexicalScope, from.Syntax, from.Symbol, from.References, TransformCompilationUnits(from.CompilationUnits, childContainingScope), TransformCompilationUnits(from.TestingCompilationUnits, childContainingScope));
 
     private To.CompilationUnit CreateCompilationUnit(From.CompilationUnit from, DeclarationScope lexicalScope, DeclarationLexicalScope childContainingScope)

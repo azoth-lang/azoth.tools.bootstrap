@@ -4,6 +4,6 @@
 ◊to WithDeclarationLexicalScopes;
 
 Package -> ~;
-CompilationUnit, containingScope:`PackageReferenceScope` -> ~;
+CompilationUnit, containingScope:`DeclarationLexicalScope` -> ~;
 TypeDeclaration, containingScope:`DeclarationLexicalScope` -> ~;
 NamespaceDeclaration, containingScope:`DeclarationLexicalScope` -> ~;

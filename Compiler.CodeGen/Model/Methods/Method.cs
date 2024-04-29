@@ -1,13 +1,18 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 
-public abstract class Method
+public abstract record Method
 {
-    public abstract IFixedList<Parameter> AdditionalParameters { get; }
+    public NonVoidType FromType { get; }
+    public abstract required IFixedList<Parameter> AdditionalParameters { get; init; }
 
-    private protected Method() { }
+    private protected Method(NonVoidType fromType)
+    {
+        FromType = fromType;
+    }
 
     /// <summary>
     /// Get the methods this method calls.

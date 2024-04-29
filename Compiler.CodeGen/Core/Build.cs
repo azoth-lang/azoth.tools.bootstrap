@@ -43,7 +43,7 @@ internal static class Build
                .Select(p => CalledTransform(pass, FromType(p))).WhereNotNull()
                .SelectMany(t => t.AdditionalParameters)
                .Select(p => p.ChildParameter)
-               .Concat(rule.ChildRules
+               .Concat(rule.DerivedRules
                            .Select(r => CalledTransform(pass, new SymbolType(r.Defines)))
                            .WhereNotNull()
                            .SelectMany(t => t.AdditionalParameters))

@@ -1,15 +1,19 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 
-public sealed class AdvancedCreateNonTerminalMethod : AdvancedCreateMethod
+public sealed record AdvancedCreateNonTerminalMethod : AdvancedCreateMethod
 {
-    public override IFixedList<Parameter> AdditionalParameters { get; }
+    public override required IFixedList<Parameter> AdditionalParameters { get; init; }
     public IFixedList<Parameter> AllParameters { get; }
 
+    [SetsRequiredMembers]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public AdvancedCreateNonTerminalMethod(Pass pass, Rule rule)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         : base(pass, rule)
     {
         Requires.That(nameof(rule), !rule.IsTerminal, "Must be a non-terminal");
@@ -19,5 +23,7 @@ public sealed class AdvancedCreateNonTerminalMethod : AdvancedCreateMethod
     }
 
     public override IEnumerable<Method> GetMethodsCalled()
-        => Rule.ChildRules.Select(r => Pass.AdvancedCreateMethods.Single(m => m.Rule == r));
+        => Rule.DerivedRules.Select(r => !r.IsTerminal || r.DifferentChildProperties.Any()
+            ? (Method)Pass.AdvancedCreateMethods.Single(m => m.Rule == r)
+            : Pass.SimpleCreateMethods.Single(m => m.Rule == r));
 }

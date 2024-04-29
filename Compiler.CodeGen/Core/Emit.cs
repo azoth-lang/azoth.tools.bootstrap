@@ -20,7 +20,7 @@ internal static class Emit
 
     public static string ClosedAttribute(Rule rule, string indent = "")
     {
-        var children = rule.ChildRules;
+        var children = rule.DerivedRules;
         if (!children.Any()) return "";
         var builder = new StringBuilder();
         builder.Append(indent);
@@ -381,7 +381,7 @@ internal static class Emit
         var builder = new StringBuilder();
         builder.AppendLine("from switch");
         builder.AppendLine("        {");
-        foreach (var childRule in rule.ChildRules)
+        foreach (var childRule in rule.DerivedRules)
         {
             builder.Append("            ");
             builder.Append(PassTypeName(pass, childRule.Defines));
@@ -479,7 +479,7 @@ internal static class Emit
         var builder = new StringBuilder();
         builder.AppendLine("from switch");
         builder.AppendLine("        {");
-        foreach (var childRule in rule.ExtendsRule!.ChildRules)
+        foreach (var childRule in rule.ExtendsRule!.DerivedRules)
         {
             builder.Append("            ");
             builder.Append(PassTypeName(pass, childRule.Defines));
