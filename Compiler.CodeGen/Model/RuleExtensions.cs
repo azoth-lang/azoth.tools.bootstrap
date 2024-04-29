@@ -12,7 +12,7 @@ internal static class RuleExtensions
     public static IEnumerable<Rule> EliminateRedundantRules(this IEnumerable<Rule> rules)
     {
         var ruleSet = rules.ToFixedSet();
-        var parentRules = ruleSet.SelectMany(r => r.ParentRules).ToFixedSet();
+        var parentRules = ruleSet.SelectMany(r => r.BaseRules).ToFixedSet();
         return ruleSet.Except(parentRules);
     }
 }

@@ -8,8 +8,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 internal sealed class TransformNonTerminalMethod : TransformMethod
 {
     public Rule FromReferencedRule { get; }
-    public override NonOptionalType FromCoreType { get; }
-    public Parameter From { get; }
     public override IFixedList<Parameter> AdditionalParameters { get; }
     public IFixedList<Parameter> AllParameters { get; }
 
@@ -24,19 +22,41 @@ internal sealed class TransformNonTerminalMethod : TransformMethod
         Rule fromReferencedRule,
         NonVoidType fromType,
         NonVoidType? toType)
-        : base(pass, true)
+        : this(pass, parametersDeclared: true, fromReferencedRule,
+            fromType, transform.AdditionalParameters,
+            toType, transform.AdditionalReturnValues,
+            transform.AutoGenerate)
+    {
+    }
+
+    public TransformNonTerminalMethod(Pass pass, Rule fromReferencedRule, SymbolType fromType, SymbolType toType)
+        : this(pass, parametersDeclared: false, fromReferencedRule,
+            fromType, FixedList.Empty<Parameter>(),
+            toType, FixedList.Empty<Parameter>(),
+            autoGenerate: true)
+    {
+    }
+
+    private TransformNonTerminalMethod(
+        Pass pass,
+        bool parametersDeclared,
+        Rule fromReferencedRule,
+        NonVoidType fromType,
+        IFixedList<Parameter> additionalParameters,
+        NonVoidType? toType,
+        IFixedList<Parameter> additionalReturnValues,
+        bool autoGenerate)
+        : base(pass, parametersDeclared, fromType)
     {
         FromReferencedRule = fromReferencedRule;
-        FromCoreType = fromType.ToNonOptional();
-        From = Parameter.Create(fromType, Parameter.FromName);
-        AdditionalParameters = transform.AdditionalParameters;
+        AdditionalParameters = additionalParameters;
         AllParameters = AdditionalParameters.Prepend(From).ToFixedList();
 
         To = Parameter.Create(toType, Parameter.ToName);
-        AdditionalReturnValues = transform.AdditionalReturnValues;
+        AdditionalReturnValues = additionalReturnValues;
         AllReturnValues = To.YieldValue().Concat(AdditionalReturnValues).ToFixedList();
 
-        AutoGenerate = transform.AutoGenerate;
+        AutoGenerate = autoGenerate;
     }
 
     public override IEnumerable<Method> GetMethodsCalled()

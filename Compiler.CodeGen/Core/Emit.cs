@@ -46,7 +46,7 @@ internal static class Emit
     public static string BaseTypes(Rule rule, string? root = null)
     {
         var parents = rule.Parents.OfType<ExternalSymbol>().Select(p => p.FullName)
-                          .Concat(rule.ParentRules.Select(r => TypeName(r.Defines)))
+                          .Concat(rule.BaseRules.Select(r => TypeName(r.Defines)))
                           .ToFixedList();
 
         bool anyParents = parents.Any();

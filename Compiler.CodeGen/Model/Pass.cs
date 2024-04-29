@@ -355,7 +355,7 @@ public class Pass
     {
         var grammar = FromLanguage!.Grammar;
         if (fromType is SymbolType { Symbol: InternalSymbol symbol })
-            foreach (var rule in symbol.ReferencedRule.ParentRules)
+            foreach (var rule in symbol.ReferencedRule.BaseRules)
             {
                 var parentFromType = new SymbolType(rule.Defines);
                 // Only bubble up if the parent type already exists to avoid adding transforms that
@@ -393,7 +393,7 @@ public class Pass
 
     private static Symbol? ParentSymbol(InternalSymbol from, Symbol toward)
     {
-        var parentSymbols = from.ReferencedRule.ParentRules.Select(r => r.Defines).ToFixedSet();
+        var parentSymbols = from.ReferencedRule.BaseRules.Select(r => r.Defines).ToFixedSet();
         if (parentSymbols.Contains(toward))
             return toward;
         return parentSymbols.FirstOrDefault(sym => ParentSymbol(sym, toward) is not null);
@@ -434,27 +434,127 @@ public class Pass
 
     private IEnumerable<TransformMethod> CreateTransformMethods()
     {
-        // First create transform methods for all the declared transforms
+        var transforms = CreateDeclaredTransformMethods().ToDictionary(t => t.FromCoreType);
+
+        if (!IsLanguageTransform || FromLanguage is null)
+            return transforms.Values;
+
+        var toExpand = new Queue<TransformMethod>(transforms.Values);
+        var fromGrammar = FromLanguage.Grammar;
+        var toGrammar = ToLanguage.Grammar;
+        while (toExpand.TryDequeue(out var transform))
+        {
+            foreach (var baseTransform in CreateBaseTransforms(transform, transforms, toGrammar))
+            {
+                transforms.Add(baseTransform.FromCoreType, baseTransform);
+                toExpand.Enqueue(baseTransform);
+            }
+
+            foreach (var parentTransform in CreateParentTransforms(transform, fromGrammar, toGrammar, transforms))
+            {
+                transforms[parentTransform.FromCoreType] = parentTransform;
+                toExpand.Enqueue(parentTransform);
+            }
+        }
+
+        return transforms.Values;
+    }
+
+    private IEnumerable<TransformMethod> CreateDeclaredTransformMethods()
+    {
         foreach (var transform in DeclaredTransforms)
         {
             var fromType = transform.From?.Type;
             var toType = transform.To?.Type;
             if (fromType is CollectionType fromCollectionType && toType is CollectionType toCollectionType)
                 yield return new TransformCollectionMethod(this, transform, fromCollectionType, toCollectionType);
-            else if (transform.AutoGenerate && fromType is not null && toType?.UnderlyingSymbol is InternalSymbol { ReferencedRule.DescendantsModified: false })
+            else if (transform.AutoGenerate
+                     && fromType is not null
+                     && toType?.UnderlyingSymbol is InternalSymbol { ReferencedRule.DescendantsModified: false })
                 yield return new TransformIdentityMethod(this, transform, fromType, toType);
             else if (fromType is not null)
             {
                 var referencedRule = (fromType.UnderlyingSymbol as InternalSymbol)?.ReferencedRule;
                 var isTerminal = referencedRule?.IsTerminal;
-                yield return isTerminal switch
+                TransformMethod declaredTransformMethods = isTerminal switch
                 {
                     true or null => new TransformTerminalMethod(this, transform, fromType, toType),
                     false => new TransformNonTerminalMethod(this, transform, referencedRule!, fromType, toType),
                 };
+                yield return declaredTransformMethods;
             }
             else
                 throw new NotImplementedException();
         }
+    }
+
+    private IEnumerable<TransformMethod> CreateBaseTransforms(
+        TransformMethod transform,
+        IReadOnlyDictionary<NonOptionalType, TransformMethod> transforms,
+        Grammar toGrammar)
+    {
+        if (transform.FromCoreType is not SymbolType { Symbol: InternalSymbol symbol })
+            yield break;
+
+        foreach (var baseRule in symbol.ReferencedRule.BaseRules)
+        {
+            if (transforms.ContainsKey(baseRule.DefinesType))
+                continue; // Transform already exists
+
+            var parentTransform = CreateTransformMethod(baseRule, toGrammar);
+
+            if (parentTransform is null) continue;
+
+            yield return parentTransform;
+        }
+    }
+
+    private IEnumerable<TransformMethod> CreateParentTransforms(
+        TransformMethod transform,
+        Grammar fromGrammar,
+        Grammar toGrammar,
+        IReadOnlyDictionary<NonOptionalType, TransformMethod> transforms)
+    {
+        var fromCoreType = transform.FromCoreType;
+        foreach (var rule in fromGrammar.Rules.Where(r => !transforms.ContainsKey(r.DefinesType)))
+        {
+            if (rule.AllProperties.Any(p => p.Type == fromCoreType))
+            {
+                var parentTransform = CreateTransformMethod(rule, toGrammar);
+
+                if (parentTransform is not null)
+                    yield return parentTransform;
+            }
+
+            foreach (var type in rule.AllProperties
+                                     .Select(p => p.Type).OfType<CollectionType>()
+                                     .Where(c => c.ElementType == fromCoreType))
+            {
+                var parentTransform = CreateTransformMethod(type, toGrammar);
+                if (parentTransform is not null)
+                    yield return parentTransform;
+            }
+        }
+    }
+
+    private TransformMethod? CreateTransformMethod(Rule fromRule, Grammar toGrammar)
+    {
+        var toRule = toGrammar.RuleFor(fromRule.Defines);
+        // No way to make an auto transform, assume it is somehow covered
+        if (toRule is null)
+            return null;
+        if (fromRule.IsTerminal)
+            return new TransformTerminalMethod(this, fromRule.DefinesType, toRule.DefinesType);
+
+        return new TransformNonTerminalMethod(this, fromRule, fromRule.DefinesType, toRule.DefinesType);
+    }
+
+    private TransformMethod? CreateTransformMethod(CollectionType fromType, Grammar toGrammar)
+    {
+        var toRule = toGrammar.RuleFor(fromType.UnderlyingSymbol);
+        // No way to make an auto transform, assume it is somehow covered
+        if (toRule is null) return null;
+        var toType = fromType.WithSymbol(toRule.Defines);
+        return new TransformCollectionMethod(this, fromType, toType);
     }
 }

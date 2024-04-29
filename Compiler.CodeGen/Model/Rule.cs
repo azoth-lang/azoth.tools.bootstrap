@@ -18,13 +18,14 @@ public class Rule
 
     public InternalSymbol Defines { get; }
     public SymbolType DefinesType { get; }
-    public InternalSymbol? Parent { get; }
-    public Rule? ParentRule => Parent?.ReferencedRule;
+    public InternalSymbol? Base { get; }
+    public Rule? BaseRule => Base?.ReferencedRule;
+    // TODO combine into one collection of bases
     public IFixedSet<Symbol> Supertypes { get; }
     private readonly Lazy<IFixedSet<Rule>> supertypeRules;
     public IFixedSet<Rule> SupertypeRules => supertypeRules.Value;
     public IFixedSet<Symbol> Parents { get; }
-    public IFixedSet<Rule> ParentRules => parentRules.Value;
+    public IFixedSet<Rule> BaseRules => parentRules.Value;
     private readonly Lazy<IFixedSet<Rule>> parentRules;
     public IFixedSet<Rule> AncestorRules => ancestorRules.Value;
     private readonly Lazy<IFixedSet<Rule>> ancestorRules;
@@ -128,22 +129,22 @@ public class Rule
         Syntax = syntax;
         Defines = Symbol.CreateInternalFromSyntax(grammar, syntax.Defines);
         DefinesType = new SymbolType(Defines);
-        Parent = Symbol.CreateInternalFromSyntax(grammar, syntax.Parent);
+        Base = Symbol.CreateInternalFromSyntax(grammar, syntax.Parent);
         Supertypes = syntax.Supertypes.Select(s => Symbol.CreateFromSyntax(grammar, s)).ToFixedSet();
-        Parents = Parent is null ? Supertypes : Supertypes.Prepend(Parent).ToFixedSet();
+        Parents = Base is null ? Supertypes : Supertypes.Prepend(Base).ToFixedSet();
 
         supertypeRules = new(() => Supertypes.OfType<InternalSymbol>().Select(s => s.ReferencedRule)
                                              .EliminateRedundantRules().ToFixedSet());
-        parentRules = new(() => ParentRule is null ? SupertypeRules
-            : SupertypeRules.Prepend(ParentRule).EliminateRedundantRules().ToFixedSet());
-        ancestorRules = new(() => ParentRules.Concat(ParentRules.SelectMany(p => p.AncestorRules)).ToFixedSet());
-        childRules = new(() => Grammar.Rules.Where(r => r.ParentRules.Contains(this)).ToFixedSet());
+        parentRules = new(() => BaseRule is null ? SupertypeRules
+            : SupertypeRules.Prepend(BaseRule).EliminateRedundantRules().ToFixedSet());
+        ancestorRules = new(() => BaseRules.Concat(BaseRules.SelectMany(p => p.AncestorRules)).ToFixedSet());
+        childRules = new(() => Grammar.Rules.Where(r => r.BaseRules.Contains(this)).ToFixedSet());
         descendantRules = new(() => ChildRules.Concat(ChildRules.SelectMany(r => r.DescendantRules)).ToFixedSet());
 
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new Property(this, p)).ToFixedList();
-        inheritedProperties = new(() => ParentRules.SelectMany(r => r.AllProperties).Distinct().ToFixedList());
+        inheritedProperties = new(() => BaseRules.SelectMany(r => r.AllProperties).Distinct().ToFixedList());
         supertypeProperties = new(() => SupertypeRules.SelectMany(r => r.AllProperties)
-                                                      .Except(ParentRule?.AllProperties ?? Enumerable.Empty<Property>())
+                                                      .Except(BaseRule?.AllProperties ?? Enumerable.Empty<Property>())
                                                       .Distinct().ToFixedList());
         allProperties = new(() =>
         {

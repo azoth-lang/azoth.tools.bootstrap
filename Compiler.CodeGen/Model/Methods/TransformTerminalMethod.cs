@@ -7,8 +7,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 
 internal sealed class TransformTerminalMethod : TransformMethod
 {
-    public override NonOptionalType FromCoreType { get; }
-    public Parameter From { get; }
     public override IFixedList<Parameter> AdditionalParameters { get; }
     public IFixedList<Parameter> AllParameters { get; }
 
@@ -18,18 +16,39 @@ internal sealed class TransformTerminalMethod : TransformMethod
     public bool AutoGenerate { get; }
 
     public TransformTerminalMethod(Pass pass, Transform transform, NonVoidType fromType, NonVoidType? toType)
-        : base(pass, true)
+        : this(pass, parametersDeclared: true,
+            fromType, transform.AdditionalParameters,
+            toType, transform.AdditionalReturnValues,
+            transform.AutoGenerate)
     {
-        FromCoreType = fromType.ToNonOptional();
-        From = Parameter.Create(fromType, Parameter.FromName);
-        AdditionalParameters = transform.AdditionalParameters;
+    }
+
+    public TransformTerminalMethod(Pass pass, NonVoidType fromType, NonVoidType? toType)
+        : this(pass, parametersDeclared: false,
+            fromType, FixedList.Empty<Parameter>(),
+            toType, FixedList.Empty<Parameter>(),
+            autoGenerate: false)
+    {
+    }
+
+    private TransformTerminalMethod(
+        Pass pass,
+        bool parametersDeclared,
+        NonVoidType fromType,
+        IFixedList<Parameter> additionalParameters,
+        NonVoidType? toType,
+        IFixedList<Parameter> additionalReturnValues,
+        bool autoGenerate)
+        : base(pass, parametersDeclared, fromType)
+    {
+        AdditionalParameters = additionalParameters;
         AllParameters = AdditionalParameters.Prepend(From).ToFixedList();
 
         To = Parameter.Create(toType, Parameter.ToName);
-        AdditionalReturnValues = transform.AdditionalReturnValues;
+        AdditionalReturnValues = additionalReturnValues;
         AllReturnValues = To.YieldValue().Concat(AdditionalReturnValues).ToFixedList();
 
-        AutoGenerate = transform.AutoGenerate;
+        AutoGenerate = autoGenerate;
     }
 
     public override IEnumerable<Method> GetMethodsCalled()
