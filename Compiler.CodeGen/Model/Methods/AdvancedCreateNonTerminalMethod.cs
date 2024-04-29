@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 public sealed record AdvancedCreateNonTerminalMethod : AdvancedCreateMethod
 {
     public override required IFixedList<Parameter> AdditionalParameters { get; init; }
-    public IFixedList<Parameter> AllParameters { get; }
+    public override IFixedList<Parameter> AllParameters { get; }
 
     [SetsRequiredMembers]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -23,5 +23,6 @@ public sealed record AdvancedCreateNonTerminalMethod : AdvancedCreateMethod
     }
 
     public override IEnumerable<Method> GetMethodsCalled()
+        // TODO this needs to actually be based on the from rule since that is what will be switched on
         => ToRule.DerivedRules.Select(GetCreateMethodCalled);
 }
