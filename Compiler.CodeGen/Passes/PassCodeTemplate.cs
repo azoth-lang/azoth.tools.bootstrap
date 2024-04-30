@@ -240,7 +240,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             this.Write(");\r\n\r\n");
             
             #line 34 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-  foreach (var transform in pass.Transforms.Where(t => !t.AutoGenerate)) { 
+  foreach (var transform in pass.TransformMethods.Where(t => !t.AutoGenerate)) { 
             
             #line default
             #line hidden

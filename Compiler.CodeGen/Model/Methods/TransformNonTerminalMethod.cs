@@ -11,10 +11,10 @@ internal sealed record TransformNonTerminalMethod : TransformMethod
     public Rule FromReferencedRule { get; }
     public override required IFixedList<Parameter> AdditionalParameters { get; init; }
 
-    public Parameter? To { get; }
+    public override Parameter? To { get; }
     public IFixedList<Parameter> AdditionalReturnValues { get; }
-    public IFixedList<Parameter> AllReturnValues { get; }
-    public bool AutoGenerate { get; }
+    public override IFixedList<Parameter> AllReturnValues { get; }
+    public override bool AutoGenerate { get; }
 
     [SetsRequiredMembers]
     public TransformNonTerminalMethod(

@@ -31,7 +31,7 @@ internal sealed partial class <#=pass.Name #> : ITransformPass<<#=Emit.Transform
 
     <#=Emit.EndRunAccessModifier(pass)#>partial <#=Emit.EndRunReturnType(pass)#> EndRun(<#=Emit.EndRunParameters(pass)#>);
 
-<#  foreach (var transform in pass.Transforms.Where(t => !t.AutoGenerate)) { #>
+<#  foreach (var transform in pass.TransformMethods.Where(t => !t.AutoGenerate)) { #>
     <#=Emit.AccessModifier(transform)#>partial <#=Emit.ReturnType(transform)#> <#=Emit.OperationMethodName(transform)#>(<#=Emit.Parameters(transform)#>);
 
 <#  } #>

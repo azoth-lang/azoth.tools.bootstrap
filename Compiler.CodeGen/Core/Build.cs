@@ -75,6 +75,4 @@ internal static class Build
 
     public static IEnumerable<Parameter> EndRunReturnValues(Pass pass)
         => pass.ToContextParameter.YieldValue();
-
-
 }

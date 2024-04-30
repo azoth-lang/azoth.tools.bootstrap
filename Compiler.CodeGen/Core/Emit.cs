@@ -219,6 +219,9 @@ internal static class Emit
     public static string Parameters(Transform transform)
         => Parameters(transform.Pass, transform.AllParameters);
 
+    public static string Parameters(TransformMethod transform)
+        => Parameters(transform.Pass, transform.AllParameters);
+
     public static string Arguments(IEnumerable<Parameter> parameters)
         => string.Join(", ", parameters.Select(ParameterName));
 
@@ -251,6 +254,9 @@ internal static class Emit
     }
 
     public static string ReturnType(Transform transform)
+        => PassReturnType(transform.Pass, transform.AllReturnValues);
+
+    public static string ReturnType(TransformMethod transform)
         => PassReturnType(transform.Pass, transform.AllReturnValues);
 
     public static string PassReturnType(Pass pass, IFixedList<Parameter> returnValues)
@@ -297,10 +303,18 @@ internal static class Emit
                + entity;
     }
 
+    public static string OperationMethodName(TransformMethod transform)
+    {
+        var operation = (transform.To is not null ? "Transform" : "Analyze");
+        var entity = transform.From.Type.UnderlyingSymbol.FullName.RemoveInterfacePrefix();
+        if (transform.From.Type is CollectionType) entity = Pluralizer.Pluralize(entity);
+        return operation + entity;
+    }
+
     public static string EntryParameterNames(Pass pass)
         => Arguments(pass.EntryTransform.AllParameters);
 
-    public static string AccessModifier(Transform transform)
+    public static string AccessModifier(TransformMethod transform)
         => AccessModifier(transform.AllReturnValues);
 
     private static string AccessModifier(IEnumerable<Parameter> returnValues)

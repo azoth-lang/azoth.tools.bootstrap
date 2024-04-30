@@ -13,10 +13,10 @@ public sealed record TransformIdentityMethod : TransformMethod
 {
     public override required IFixedList<Parameter> AdditionalParameters { get; init; }
 
-    public Parameter To { get; }
+    public override Parameter To { get; }
     public IFixedList<Parameter> AdditionalReturnValues { get; }
-    public IFixedList<Parameter> AllReturnValues { get; }
-    public bool AutoGenerate => true;
+    public override IFixedList<Parameter> AllReturnValues { get; }
+    public override bool AutoGenerate => true;
 
     [SetsRequiredMembers]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
