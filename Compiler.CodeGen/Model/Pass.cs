@@ -31,16 +31,15 @@ public class Pass
     public Parameter? FromContextParameter { get; }
     public Parameter? ToContextParameter { get; }
     public IFixedList<Parameter> PassReturnValues { get; }
-    public IFixedList<Transform> DeclaredTransforms { get; }
+    public IFixedList<Transform> Transforms { get; }
     public IFixedList<Parameter> RunParameters { get; }
     public IFixedList<Parameter> RunReturnValues { get; }
     public IFixedList<Parameter> PassParameters { get; }
-    public Transform EntryTransform { get; }
-    public IFixedList<Transform> Transforms { get; }
 
     public IFixedList<SimpleCreateMethod> SimpleCreateMethods { get; }
     public IFixedList<AdvancedCreateMethod> AdvancedCreateMethods { get; }
     public IFixedList<TransformMethod> TransformMethods { get; }
+    public TransformMethod EntryTransformMethod { get; }
     public IFixedList<Method> Methods { get; }
 
     public Pass(PassNode syntax, LanguageLoader languageLoader)
@@ -62,9 +61,7 @@ public class Pass
         RunReturnValues = Parameters(toParameter, ToContextParameter);
         PassReturnValues = Parameters(toParameter ?? Parameter.Create(Type.VoidSymbol, "to"),
             ToContextParameter ?? Parameter.Create(Type.VoidSymbol, "toContext"));
-        DeclaredTransforms = Syntax.Transforms.Select(t => new Transform(this, t)).ToFixedList();
-        EntryTransform = DeclaredTransforms.FirstOrDefault(IsEntryTransform) ?? CreateEntryTransform();
-        Transforms = DeclaredTransforms.Append(EntryTransform).Distinct().ToFixedList();
+        Transforms = Syntax.Transforms.Select(t => new Transform(this, t)).ToFixedList();
         SimpleCreateMethods = CreateSimpleCreateMethods().ToFixedList();
         AdvancedCreateMethods = CreateAdvancedCreateMethods().ToFixedList();
         TransformMethods = CreateTransformMethods().ToFixedList();
@@ -76,6 +73,7 @@ public class Pass
         SimpleCreateMethods = Methods.OfType<SimpleCreateMethod>().ToFixedList();
         AdvancedCreateMethods = Methods.OfType<AdvancedCreateMethod>().ToFixedList();
         TransformMethods = Methods.OfType<TransformMethod>().ToFixedList();
+        EntryTransformMethod = TransformMethods.Single(IsEntryTransform);
     }
 
     private static Language? GetOrLoadLanguageNamed(SymbolNode? name, LanguageLoader languageLoader)
@@ -84,8 +82,7 @@ public class Pass
     private Parameter? CreateFromParameter()
     {
         var fromType = SymbolType.Create(FromLanguage?.Entry ?? Symbol.CreateExternalFromSyntax(Syntax.From));
-        var fromParameter = Parameter.Create(fromType, "from");
-        return fromParameter;
+        return Parameter.Create(fromType, "from");
     }
 
     private Parameter? CreateFromContextParameter()
@@ -98,8 +95,7 @@ public class Pass
     private Parameter? CreateToParameter()
     {
         var toType = SymbolType.Create(ToLanguage?.Entry ?? Symbol.CreateExternalFromSyntax(Syntax.To));
-        var toParameter = Parameter.Create(toType, "to");
-        return toParameter;
+        return Parameter.Create(toType, "to");
     }
 
     private Parameter? CreateToContextParameter()
@@ -111,19 +107,6 @@ public class Pass
 
     private static IFixedList<Parameter> Parameters(params Parameter?[] parameters)
         => parameters.WhereNotNull().ToFixedList();
-
-    private bool IsEntryTransform(Transform transform)
-    {
-        var fromType = transform.From?.Type;
-        var toType = transform.To?.Type;
-        if (fromType is null || toType is null)
-            return true;
-        return Equals(fromType, fromParameter?.Type)
-               && Equals(toType, toParameter?.Type);
-    }
-
-    private Transform CreateEntryTransform()
-        => new(this, fromParameter, FixedList.Empty<Parameter>(), toParameter, FixedList.Empty<Parameter>(), false);
 
     private static IEnumerable<Parameter> MergeByName(
         IEnumerable<Parameter> parentAdditionalParameters,
@@ -179,7 +162,6 @@ public class Pass
 
         bool ShouldCreate(Rule r)
            => r is { ExtendsRule: not null }
-              // TODO non-terminal should be generated only if it is possible to create for each derived from rule
               && (r.DifferentChildProperties.Any() || (!r.IsTerminal && DerivedRulesShouldBeCreated(r)));
 
         bool DerivedRulesShouldBeCreated(Rule rule)
@@ -241,7 +223,7 @@ public class Pass
 
     private IEnumerable<TransformMethod> CreateDeclaredTransformMethods()
     {
-        foreach (var transform in DeclaredTransforms)
+        foreach (var transform in Transforms)
         {
             var fromType = transform.From?.Type;
             var toType = transform.To?.Type;
@@ -447,10 +429,8 @@ public class Pass
     }
 
     private FixedDictionary<Method, IFixedSet<Method>> GetMethodCallers()
-    {
-        return Methods.SelectMany(caller => caller.GetMethodsCalled().Select(callee => (caller, callee)))
-                      .GroupToFixedDictionary(p => p.callee, pairs => pairs.Select(p => p.caller).ToFixedSet());
-    }
+        => Methods.SelectMany(caller => caller.GetMethodsCalled().Select(callee => (caller, callee)))
+                  .GroupToFixedDictionary(p => p.callee, pairs => pairs.Select(p => p.caller).ToFixedSet());
 
     private static IFixedList<Parameter> AdjustedAdditionalParameters(
         Method method,
@@ -468,5 +448,13 @@ public class Pass
             additionalParameters = additionalParameters.Where(p => p.Type.UnderlyingSymbol is not InternalSymbol).ToFixedList();
 
         return additionalParameters;
+    }
+
+    private bool IsEntryTransform(TransformMethod transform)
+    {
+        var fromType = transform.From.Type;
+        var toType = transform.To?.Type;
+        if (toType is null) return true;
+        return Equals(fromType, fromParameter?.Type) && Equals(toType, toParameter?.Type);
     }
 }

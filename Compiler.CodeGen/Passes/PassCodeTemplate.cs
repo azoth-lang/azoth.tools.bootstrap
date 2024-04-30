@@ -128,7 +128,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             this.Write("pass.");
             
             #line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.OperationMethodName(pass.EntryTransform)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.OperationMethodName(pass.EntryTransformMethod)));
             
             #line default
             #line hidden

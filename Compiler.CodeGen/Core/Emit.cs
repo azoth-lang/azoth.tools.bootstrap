@@ -278,7 +278,7 @@ internal static class Emit
         => pass.FromContextParameter is not null ? ParameterName(pass.FromContextParameter) : "";
 
     public static string EntryResult(Pass pass)
-        => Result(pass.EntryTransform.AllReturnValues);
+        => Result(pass.EntryTransformMethod.AllReturnValues);
 
     private static string Result(IFixedList<Parameter> returnValues)
     {
@@ -290,16 +290,6 @@ internal static class Emit
         };
     }
 
-    public static string OperationMethodName(Transform transform)
-    {
-        var operation = (transform.To is not null ? "Transform" : "Analyze");
-        var entity = transform.From?.Type.UnderlyingSymbol.FullName.RemoveInterfacePrefix();
-        if (transform.From?.Type is CollectionType)
-            entity = Pluralizer.Pluralize(entity);
-        return operation
-               + entity;
-    }
-
     public static string OperationMethodName(TransformMethod transform)
     {
         var operation = (transform.To is not null ? "Transform" : "Analyze");
@@ -309,7 +299,7 @@ internal static class Emit
     }
 
     public static string EntryParameterNames(Pass pass)
-        => Arguments(pass.EntryTransform.AllParameters);
+        => Arguments(pass.EntryTransformMethod.AllParameters);
 
     public static string AccessModifier(TransformMethod transform)
         => AccessModifier(transform.AllReturnValues);
@@ -325,7 +315,7 @@ internal static class Emit
         => PassReturnType(pass, Build.StartRunReturnValues(pass).ToFixedList());
 
     public static string StartRunResult(Pass pass)
-        => Result(pass.EntryTransform.AdditionalParameters);
+        => Result(pass.EntryTransformMethod.AdditionalParameters);
     #endregion
 
     #region EndRun()
@@ -333,13 +323,13 @@ internal static class Emit
         => Build.EndRunReturnValues(pass).Any() ? "private " : "";
 
     public static string EndRunParameters(Pass pass)
-        => Parameters(pass, pass.EntryTransform.AllReturnValues);
+        => Parameters(pass, pass.EntryTransformMethod.AllReturnValues);
 
     public static string EndRunReturnType(Pass pass)
         => PassReturnType(pass, Build.EndRunReturnValues(pass).ToFixedList());
 
     public static string EndRunArguments(Pass pass)
-        => Arguments(pass.EntryTransform.AllReturnValues);
+        => Arguments(pass.EntryTransformMethod.AllReturnValues);
 
     public static string EndRunResult(Pass pass)
         => Result(pass.ToContextParameter.YieldValue().ToFixedList());
