@@ -24,8 +24,8 @@ public sealed partial class WithTypeDeclarationSymbols
         typeof(TraitDeclaration))]
     public partial interface TypeDeclaration : NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     {
-        UserTypeSymbol Symbol { get; }
         Symbol ContainingSymbol { get; }
+        UserTypeSymbol Symbol { get; }
         DeclarationScope NewScope { get; }
         new ITypeDeclarationSyntax Syntax { get; }
         IDeclarationSyntax Declaration.Syntax => Syntax;
@@ -135,8 +135,8 @@ public sealed partial class WithTypeDeclarationSymbols
         new IFixedList<ClassMemberDeclaration> Members { get; }
         IFixedList<TypeMemberDeclaration> TypeDeclaration.Members => Members;
 
-        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, UserTypeSymbol symbol, Symbol containingSymbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
-            => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), symbol, containingSymbol, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope);
+        public static ClassDeclaration Create(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IEnumerable<ClassMemberDeclaration> members, Symbol containingSymbol, UserTypeSymbol symbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
+            => new ClassDeclarationNode(syntax, isAbstract, baseTypeName, members.ToFixedList(), containingSymbol, symbol, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope);
     }
 
     public partial interface StructDeclaration : TypeDeclaration
@@ -146,8 +146,8 @@ public sealed partial class WithTypeDeclarationSymbols
         new IFixedList<StructMemberDeclaration> Members { get; }
         IFixedList<TypeMemberDeclaration> TypeDeclaration.Members => Members;
 
-        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, UserTypeSymbol symbol, Symbol containingSymbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
-            => new StructDeclarationNode(syntax, members.ToFixedList(), symbol, containingSymbol, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope);
+        public static StructDeclaration Create(IStructDeclarationSyntax syntax, IEnumerable<StructMemberDeclaration> members, Symbol containingSymbol, UserTypeSymbol symbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
+            => new StructDeclarationNode(syntax, members.ToFixedList(), containingSymbol, symbol, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope);
     }
 
     public partial interface TraitDeclaration : TypeDeclaration
@@ -157,8 +157,8 @@ public sealed partial class WithTypeDeclarationSymbols
         new IFixedList<TraitMemberDeclaration> Members { get; }
         IFixedList<TypeMemberDeclaration> TypeDeclaration.Members => Members;
 
-        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, UserTypeSymbol symbol, Symbol containingSymbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
-            => new TraitDeclarationNode(syntax, members.ToFixedList(), symbol, containingSymbol, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope);
+        public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, Symbol containingSymbol, UserTypeSymbol symbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
+            => new TraitDeclarationNode(syntax, members.ToFixedList(), containingSymbol, symbol, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope);
     }
 
     public partial interface GenericParameter : Code

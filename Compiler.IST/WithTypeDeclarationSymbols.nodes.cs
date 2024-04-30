@@ -88,22 +88,22 @@ public sealed partial class WithTypeDeclarationSymbols
         public bool IsAbstract { get; }
         public UnresolvedSupertypeName? BaseTypeName { get; }
         public IFixedList<ClassMemberDeclaration> Members { get; }
-        public UserTypeSymbol Symbol { get; }
         public Symbol ContainingSymbol { get; }
+        public UserTypeSymbol Symbol { get; }
         public DeclarationScope NewScope { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public CodeFile File { get; }
         public DeclarationLexicalScope ContainingScope { get; }
 
-        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, UserTypeSymbol symbol, Symbol containingSymbol, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
+        public ClassDeclarationNode(IClassDeclarationSyntax syntax, bool isAbstract, UnresolvedSupertypeName? baseTypeName, IFixedList<ClassMemberDeclaration> members, Symbol containingSymbol, UserTypeSymbol symbol, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
         {
             Syntax = syntax;
             IsAbstract = isAbstract;
             BaseTypeName = baseTypeName;
             Members = members;
-            Symbol = symbol;
             ContainingSymbol = containingSymbol;
+            Symbol = symbol;
             NewScope = newScope;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
@@ -116,20 +116,20 @@ public sealed partial class WithTypeDeclarationSymbols
     {
         public IStructDeclarationSyntax Syntax { get; }
         public IFixedList<StructMemberDeclaration> Members { get; }
-        public UserTypeSymbol Symbol { get; }
         public Symbol ContainingSymbol { get; }
+        public UserTypeSymbol Symbol { get; }
         public DeclarationScope NewScope { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public CodeFile File { get; }
         public DeclarationLexicalScope ContainingScope { get; }
 
-        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, UserTypeSymbol symbol, Symbol containingSymbol, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
+        public StructDeclarationNode(IStructDeclarationSyntax syntax, IFixedList<StructMemberDeclaration> members, Symbol containingSymbol, UserTypeSymbol symbol, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
         {
             Syntax = syntax;
             Members = members;
-            Symbol = symbol;
             ContainingSymbol = containingSymbol;
+            Symbol = symbol;
             NewScope = newScope;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
@@ -142,20 +142,20 @@ public sealed partial class WithTypeDeclarationSymbols
     {
         public ITraitDeclarationSyntax Syntax { get; }
         public IFixedList<TraitMemberDeclaration> Members { get; }
-        public UserTypeSymbol Symbol { get; }
         public Symbol ContainingSymbol { get; }
+        public UserTypeSymbol Symbol { get; }
         public DeclarationScope NewScope { get; }
         public IFixedList<GenericParameter> GenericParameters { get; }
         public IFixedList<UnresolvedSupertypeName> SupertypeNames { get; }
         public CodeFile File { get; }
         public DeclarationLexicalScope ContainingScope { get; }
 
-        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, UserTypeSymbol symbol, Symbol containingSymbol, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
+        public TraitDeclarationNode(ITraitDeclarationSyntax syntax, IFixedList<TraitMemberDeclaration> members, Symbol containingSymbol, UserTypeSymbol symbol, DeclarationScope newScope, IFixedList<GenericParameter> genericParameters, IFixedList<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
         {
             Syntax = syntax;
             Members = members;
-            Symbol = symbol;
             ContainingSymbol = containingSymbol;
+            Symbol = symbol;
             NewScope = newScope;
             GenericParameters = genericParameters;
             SupertypeNames = supertypeNames;
