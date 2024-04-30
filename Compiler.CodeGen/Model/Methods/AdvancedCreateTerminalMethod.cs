@@ -10,7 +10,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 public sealed record AdvancedCreateTerminalMethod : AdvancedCreateMethod
 {
     public override required IFixedList<Parameter> AdditionalParameters { get; init; }
-    public override IFixedList<Parameter> AllParameters { get; }
 
     [SetsRequiredMembers]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -19,7 +18,6 @@ public sealed record AdvancedCreateTerminalMethod : AdvancedCreateMethod
     {
         Requires.That(nameof(toRule), toRule.IsTerminal, "Must be a terminal");
         AdditionalParameters = toRule.ModifiedProperties.Select(p => p.Parameter).ToFixedList();
-        AllParameters = AdditionalParameters.Prepend(From).ToFixedList();
     }
 
     public override IEnumerable<Method> GetMethodsCalled()

@@ -10,7 +10,6 @@ internal sealed record TransformNonTerminalMethod : TransformMethod
 {
     public Rule FromReferencedRule { get; }
     public override required IFixedList<Parameter> AdditionalParameters { get; init; }
-    public IFixedList<Parameter> AllParameters { get; }
 
     public Parameter? To { get; }
     public IFixedList<Parameter> AdditionalReturnValues { get; }
@@ -56,7 +55,6 @@ internal sealed record TransformNonTerminalMethod : TransformMethod
     {
         FromReferencedRule = fromReferencedRule;
         AdditionalParameters = additionalParameters;
-        AllParameters = AdditionalParameters.Prepend(From).ToFixedList();
 
         To = Parameter.Create(toType, Parameter.ToName);
         AdditionalReturnValues = additionalReturnValues;

@@ -398,48 +398,89 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes
             this.Write("    #region CreateX() methods\r\n");
             
             #line 55 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-      foreach (var rule in Build.AdvancedCreateRules(pass)) { 
+      foreach (var method in pass.AdvancedCreateMethods) { 
             
             #line default
             #line hidden
-            this.Write("    private ");
+            this.Write("/*  private ");
             
             #line 56 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.PassTypeName(pass, rule.Defines)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.PassReturnType(pass, method.ReturnType)));
             
             #line default
             #line hidden
             this.Write(" Create");
             
             #line 56 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(rule.Defines)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(method.To)));
             
             #line default
             #line hidden
             this.Write("(");
             
             #line 56 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.AdvancedCreateParameters(pass, rule)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Parameters(pass, method.AllParameters)));
             
             #line default
             #line hidden
             this.Write(")\r\n        => ");
             
             #line 57 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.AdvancedCreateMethodBody(pass, rule)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.AdvancedCreateMethodBody(pass, method)));
             
             #line default
             #line hidden
-            this.Write(";\r\n\r\n");
+            this.Write("; */\r\n\r\n");
             
             #line 59 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
-            this.Write("    #endregion\r\n");
+            
+            #line 60 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+      foreach (var rule in Build.AdvancedCreateRules(pass)) { 
+            
+            #line default
+            #line hidden
+            this.Write("    private ");
             
             #line 61 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.PassTypeName(pass, rule.Defines)));
+            
+            #line default
+            #line hidden
+            this.Write(" Create");
+            
+            #line 61 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(rule.Defines)));
+            
+            #line default
+            #line hidden
+            this.Write("(");
+            
+            #line 61 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.AdvancedCreateParameters(pass, rule)));
+            
+            #line default
+            #line hidden
+            this.Write(")\r\n        => ");
+            
+            #line 62 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.AdvancedCreateMethodBody(pass, rule)));
+            
+            #line default
+            #line hidden
+            this.Write(";\r\n\r\n");
+            
+            #line 64 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
+      } 
+            
+            #line default
+            #line hidden
+            this.Write("    #endregion\r\n");
+            
+            #line 66 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Passes\PassCodeTemplate.tt"
   } 
             
             #line default

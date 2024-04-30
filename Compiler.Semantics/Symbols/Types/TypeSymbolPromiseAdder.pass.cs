@@ -168,6 +168,136 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
     #endregion
 
     #region CreateX() methods
+/*  private To.Declaration CreateDeclaration(From.Declaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol)
+        => from switch
+        {
+            From.NamespaceMemberDeclaration f => CreateNamespaceMemberDeclaration(f, symbol, containingSymbol),
+            From.TypeMemberDeclaration f => CreateTypeMemberDeclaration(f, symbol, containingSymbol),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.TypeDeclaration CreateTypeDeclaration(From.TypeDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol)
+        => from switch
+        {
+            From.ClassDeclaration f => CreateClassDeclaration(f, symbol, containingSymbol),
+            From.StructDeclaration f => CreateStructDeclaration(f, symbol, containingSymbol),
+            From.TraitDeclaration f => CreateTraitDeclaration(f, symbol, containingSymbol),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.Package CreatePackage(From.Package from)
+        => To.Package.Create(TransformNamespaceMemberDeclarations(from.Declarations, childContainingSymbol), TransformNamespaceMemberDeclarations(from.TestingDeclarations, childContainingSymbol), from.LexicalScope, from.Syntax, from.Symbol, from.References); */
+
+/*  private To.NamespaceMemberDeclaration CreateNamespaceMemberDeclaration(From.NamespaceMemberDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol)
+        => from switch
+        {
+            From.TypeDeclaration f => CreateTypeDeclaration(f, symbol, containingSymbol),
+            From.FunctionDeclaration f => CreateFunctionDeclaration(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.UnresolvedTypeName CreateUnresolvedTypeName(From.UnresolvedTypeName from)
+        => from switch
+        {
+            From.UnresolvedStandardTypeName f => CreateUnresolvedStandardTypeName(f),
+            From.UnresolvedSimpleTypeName f => CreateUnresolvedSimpleTypeName(f),
+            From.UnresolvedQualifiedTypeName f => CreateUnresolvedQualifiedTypeName(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.Code CreateCode(From.Code from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol)
+        => from switch
+        {
+            From.Declaration f => CreateDeclaration(f, symbol, containingSymbol),
+            From.UnresolvedSupertypeName f => CreateUnresolvedSupertypeName(f),
+            From.GenericParameter f => CreateGenericParameter(f),
+            From.CapabilityConstraint f => CreateCapabilityConstraint(f),
+            From.UnresolvedType f => CreateUnresolvedType(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.ClassDeclaration CreateClassDeclaration(From.ClassDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol)
+        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, TransformClassMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope); */
+
+/*  private To.StructDeclaration CreateStructDeclaration(From.StructDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol)
+        => To.StructDeclaration.Create(from.Syntax, TransformStructMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope); */
+
+/*  private To.TraitDeclaration CreateTraitDeclaration(From.TraitDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol)
+        => To.TraitDeclaration.Create(from.Syntax, TransformTraitMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope); */
+
+/*  private To.TypeMemberDeclaration CreateTypeMemberDeclaration(From.TypeMemberDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol)
+        => from switch
+        {
+            From.ClassMemberDeclaration f => CreateClassMemberDeclaration(f, symbol, containingSymbol),
+            From.TraitMemberDeclaration f => CreateTraitMemberDeclaration(f, symbol, containingSymbol),
+            From.StructMemberDeclaration f => CreateStructMemberDeclaration(f, symbol, containingSymbol),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.ClassMemberDeclaration CreateClassMemberDeclaration(From.ClassMemberDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol)
+        => from switch
+        {
+            From.TypeDeclaration f => CreateTypeDeclaration(f, symbol, containingSymbol),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.TraitMemberDeclaration CreateTraitMemberDeclaration(From.TraitMemberDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol)
+        => from switch
+        {
+            From.TypeDeclaration f => CreateTypeDeclaration(f, symbol, containingSymbol),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.StructMemberDeclaration CreateStructMemberDeclaration(From.StructMemberDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol)
+        => from switch
+        {
+            From.TypeDeclaration f => CreateTypeDeclaration(f, symbol, containingSymbol),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.CapabilityConstraint CreateCapabilityConstraint(From.CapabilityConstraint from)
+        => from switch
+        {
+            From.CapabilitySet f => CreateCapabilitySet(f),
+            From.Capability f => CreateCapability(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.UnresolvedType CreateUnresolvedType(From.UnresolvedType from)
+        => from switch
+        {
+            From.UnresolvedTypeName f => CreateUnresolvedTypeName(f),
+            From.UnresolvedOptionalType f => CreateUnresolvedOptionalType(f),
+            From.UnresolvedCapabilityType f => CreateUnresolvedCapabilityType(f),
+            From.UnresolvedFunctionType f => CreateUnresolvedFunctionType(f),
+            From.UnresolvedViewpointType f => CreateUnresolvedViewpointType(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.UnresolvedStandardTypeName CreateUnresolvedStandardTypeName(From.UnresolvedStandardTypeName from)
+        => from switch
+        {
+            From.UnresolvedIdentifierTypeName f => CreateUnresolvedIdentifierTypeName(f),
+            From.UnresolvedGenericTypeName f => CreateUnresolvedGenericTypeName(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.UnresolvedSimpleTypeName CreateUnresolvedSimpleTypeName(From.UnresolvedSimpleTypeName from)
+        => from switch
+        {
+            From.UnresolvedIdentifierTypeName f => CreateUnresolvedIdentifierTypeName(f),
+            From.UnresolvedSpecialTypeName f => CreateUnresolvedSpecialTypeName(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.UnresolvedViewpointType CreateUnresolvedViewpointType(From.UnresolvedViewpointType from)
+        => from switch
+        {
+            From.UnresolvedCapabilityViewpointType f => CreateUnresolvedCapabilityViewpointType(f),
+            From.UnresolvedSelfViewpointType f => CreateUnresolvedSelfViewpointType(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
     private To.Package CreatePackage(From.Package from, IPromise<Symbol>? childContainingSymbol)
         => To.Package.Create(TransformNamespaceMemberDeclarations(from.Declarations, childContainingSymbol), TransformNamespaceMemberDeclarations(from.TestingDeclarations, childContainingSymbol), from.LexicalScope, from.Syntax, from.Symbol, from.References);
 

@@ -10,7 +10,6 @@ public sealed record TransformCollectionMethod : TransformMethod
 {
     public override CollectionType FromCoreType => (CollectionType)FromType;
     public override required IFixedList<Parameter> AdditionalParameters { get; init; }
-    public IFixedList<Parameter> AllParameters { get; }
 
     public Parameter To { get; }
     public IFixedList<Parameter> AdditionalReturnValues { get; }
@@ -43,7 +42,6 @@ public sealed record TransformCollectionMethod : TransformMethod
         : base(pass, parametersDeclared, fromType)
     {
         AdditionalParameters = additionalParameters;
-        AllParameters = AdditionalParameters.Prepend(From).ToFixedList();
 
         To = Parameter.Create(toType, Parameter.ToName);
         AdditionalReturnValues = additionalReturnValues;

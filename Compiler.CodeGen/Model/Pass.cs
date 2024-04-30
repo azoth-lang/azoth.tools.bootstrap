@@ -424,7 +424,8 @@ public class Pass
         if (!IsLanguageTransform)
             yield break;
 
-        foreach (var rule in ToLanguage.Grammar.Rules.Where(ShouldCreate))
+        var toGrammar = ToLanguage.Grammar;
+        foreach (var rule in toGrammar.Rules.Where(ShouldCreate))
             if (rule.IsTerminal)
                 yield return new AdvancedCreateTerminalMethod(this, rule);
             else
@@ -432,9 +433,26 @@ public class Pass
 
         yield break;
 
-        static bool ShouldCreate(Rule r)
-            => r is { ExtendsRule: not null }
-               && (!r.IsTerminal || r.DifferentChildProperties.Any());
+        bool ShouldCreate(Rule r)
+           => r is { ExtendsRule: not null }
+              // TODO non-terminal should be generated only if it is possible to create for each derived from rule
+              && (r.DifferentChildProperties.Any() || (!r.IsTerminal && DerivedRulesShouldBeCreated(r)));
+
+        bool DerivedRulesShouldBeCreated(Rule rule)
+        {
+            var fromRule = rule.ExtendsRule!;
+            foreach (var derivedRule in fromRule.DerivedRules)
+            {
+                var derivedToRule = toGrammar.RuleFor(derivedRule.Defines);
+                if (derivedToRule is null)
+                    return false; // Not possible to transform derived rule
+                if (derivedToRule.IsTerminal)
+                    continue; // Terminals are covered by simple create methods
+                if (!ShouldCreate(derivedToRule))
+                    return false;
+            }
+            return true;
+        }
     }
 
     private IEnumerable<TransformMethod> CreateTransformMethods()
@@ -626,6 +644,9 @@ public class Pass
         var toBubble = new HashSet<Method>(methodCallers.Keys);
         while (toBubble.TryTake(out var calleeMethod))
         {
+            if (calleeMethod.ParametersDeclared)
+                continue; // Don't bubble up if parameters are declared with the pass
+
             var currentCalleeMethod = methods[calleeMethod];
             if (currentCalleeMethod.AdditionalParameters.Count == 0)
                 // No parameters to bubble up

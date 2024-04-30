@@ -10,7 +10,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 internal sealed record TransformTerminalMethod : TransformMethod
 {
     public override required IFixedList<Parameter> AdditionalParameters { get; init; }
-    public IFixedList<Parameter> AllParameters { get; }
 
     public Parameter? To { get; }
     public IFixedList<Parameter> AdditionalReturnValues { get; }
@@ -31,7 +30,7 @@ internal sealed record TransformTerminalMethod : TransformMethod
         : this(pass, parametersDeclared: false,
             fromType, FixedList.Empty<Parameter>(),
             toType, FixedList.Empty<Parameter>(),
-            autoGenerate: false)
+            autoGenerate: true)
     {
     }
 
@@ -49,7 +48,6 @@ internal sealed record TransformTerminalMethod : TransformMethod
         : base(pass, parametersDeclared, fromType)
     {
         AdditionalParameters = additionalParameters;
-        AllParameters = AdditionalParameters.Prepend(From).ToFixedList();
 
         To = Parameter.Create(toType, Parameter.ToName);
         AdditionalReturnValues = additionalReturnValues;

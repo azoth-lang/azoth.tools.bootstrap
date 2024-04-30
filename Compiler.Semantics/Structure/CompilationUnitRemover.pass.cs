@@ -177,6 +177,106 @@ internal sealed partial class CompilationUnitRemover : ITransformPass<From.Packa
     #endregion
 
     #region CreateX() methods
+/*  private To.TypeDeclaration CreateTypeDeclaration(From.TypeDeclaration from, CodeFile file)
+        => from switch
+        {
+            From.ClassDeclaration f => CreateClassDeclaration(f, file),
+            From.StructDeclaration f => CreateStructDeclaration(f, file),
+            From.TraitDeclaration f => CreateTraitDeclaration(f, file),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.UnresolvedTypeName CreateUnresolvedTypeName(From.UnresolvedTypeName from)
+        => from switch
+        {
+            From.UnresolvedStandardTypeName f => CreateUnresolvedStandardTypeName(f),
+            From.UnresolvedSimpleTypeName f => CreateUnresolvedSimpleTypeName(f),
+            From.UnresolvedQualifiedTypeName f => CreateUnresolvedQualifiedTypeName(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.ClassDeclaration CreateClassDeclaration(From.ClassDeclaration from, CodeFile file)
+        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, TransformClassMemberDeclarations(from.Members, childFile, childFile), from.NewScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingScope, from.ContainingNamespace); */
+
+/*  private To.StructDeclaration CreateStructDeclaration(From.StructDeclaration from, CodeFile file)
+        => To.StructDeclaration.Create(from.Syntax, TransformStructMemberDeclarations(from.Members, childFile, childFile), from.NewScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingScope, from.ContainingNamespace); */
+
+/*  private To.TraitDeclaration CreateTraitDeclaration(From.TraitDeclaration from, CodeFile file)
+        => To.TraitDeclaration.Create(from.Syntax, TransformTraitMemberDeclarations(from.Members, childFile, childFile), from.NewScope, from.GenericParameters, from.SupertypeNames, file, from.ContainingScope, from.ContainingNamespace); */
+
+/*  private To.TypeMemberDeclaration CreateTypeMemberDeclaration(From.TypeMemberDeclaration from, CodeFile file)
+        => from switch
+        {
+            From.ClassMemberDeclaration f => CreateClassMemberDeclaration(f, file),
+            From.TraitMemberDeclaration f => CreateTraitMemberDeclaration(f, file),
+            From.StructMemberDeclaration f => CreateStructMemberDeclaration(f, file),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.ClassMemberDeclaration CreateClassMemberDeclaration(From.ClassMemberDeclaration from, CodeFile file)
+        => from switch
+        {
+            From.TypeDeclaration f => CreateTypeDeclaration(f, file),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.TraitMemberDeclaration CreateTraitMemberDeclaration(From.TraitMemberDeclaration from, CodeFile file)
+        => from switch
+        {
+            From.TypeDeclaration f => CreateTypeDeclaration(f, file),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.StructMemberDeclaration CreateStructMemberDeclaration(From.StructMemberDeclaration from, CodeFile file)
+        => from switch
+        {
+            From.TypeDeclaration f => CreateTypeDeclaration(f, file),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.CapabilityConstraint CreateCapabilityConstraint(From.CapabilityConstraint from)
+        => from switch
+        {
+            From.CapabilitySet f => CreateCapabilitySet(f),
+            From.Capability f => CreateCapability(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.UnresolvedType CreateUnresolvedType(From.UnresolvedType from)
+        => from switch
+        {
+            From.UnresolvedTypeName f => CreateUnresolvedTypeName(f),
+            From.UnresolvedOptionalType f => CreateUnresolvedOptionalType(f),
+            From.UnresolvedCapabilityType f => CreateUnresolvedCapabilityType(f),
+            From.UnresolvedFunctionType f => CreateUnresolvedFunctionType(f),
+            From.UnresolvedViewpointType f => CreateUnresolvedViewpointType(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.UnresolvedStandardTypeName CreateUnresolvedStandardTypeName(From.UnresolvedStandardTypeName from)
+        => from switch
+        {
+            From.UnresolvedIdentifierTypeName f => CreateUnresolvedIdentifierTypeName(f),
+            From.UnresolvedGenericTypeName f => CreateUnresolvedGenericTypeName(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.UnresolvedSimpleTypeName CreateUnresolvedSimpleTypeName(From.UnresolvedSimpleTypeName from)
+        => from switch
+        {
+            From.UnresolvedIdentifierTypeName f => CreateUnresolvedIdentifierTypeName(f),
+            From.UnresolvedSpecialTypeName f => CreateUnresolvedSpecialTypeName(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
+/*  private To.UnresolvedViewpointType CreateUnresolvedViewpointType(From.UnresolvedViewpointType from)
+        => from switch
+        {
+            From.UnresolvedCapabilityViewpointType f => CreateUnresolvedCapabilityViewpointType(f),
+            From.UnresolvedSelfViewpointType f => CreateUnresolvedSelfViewpointType(f),
+            _ => throw ExhaustiveMatch.Failed(from),
+        }; */
+
     private To.TypeDeclaration CreateTypeDeclaration(From.TypeDeclaration from, CodeFile file, CodeFile childFile)
         => from switch
         {

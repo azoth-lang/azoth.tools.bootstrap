@@ -12,7 +12,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Methods;
 public sealed record SimpleCreateMethod : CreateMethod
 {
     public override required IFixedList<Parameter> AdditionalParameters { get; init; }
-    public IFixedList<Parameter> AllParameters { get; }
 
     [SetsRequiredMembers]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -21,7 +20,6 @@ public sealed record SimpleCreateMethod : CreateMethod
         : base(pass, toRule)
     {
         AdditionalParameters = toRule.DifferentProperties.Select(p => p.Parameter).ToFixedList();
-        AllParameters = AdditionalParameters.Prepend(From).ToFixedList();
     }
 
     public override IEnumerable<Method> GetMethodsCalled() => Enumerable.Empty<Method>();

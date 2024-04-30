@@ -479,12 +479,12 @@ internal static class Emit
         var builder = new StringBuilder();
         builder.AppendLine("from switch");
         builder.AppendLine("        {");
-        foreach (var childRule in rule.ExtendsRule!.DerivedRules)
+        foreach (var derivedRule in rule.ExtendsRule!.DerivedRules)
         {
             builder.Append("            ");
-            builder.Append(PassTypeName(pass, childRule.Defines));
+            builder.Append(PassTypeName(pass, derivedRule.Defines));
             builder.Append(" f => Create");
-            var toRule = pass.ToLanguage?.Grammar.RuleFor(childRule.Defines.ShortName);
+            var toRule = pass.ToLanguage?.Grammar.RuleFor(derivedRule.Defines);
             builder.Append(TypeName(toRule!.Defines));
             builder.Append('(');
             var additionalArguments = Build.AdvancedCreateParameters(pass, toRule).Skip(1).Select(ParameterName);
@@ -495,6 +495,65 @@ internal static class Emit
         builder.AppendLine("            _ => throw ExhaustiveMatch.Failed(from),");
         builder.Append("        }");
         return builder.ToString();
+    }
+
+
+    public static string AdvancedCreateMethodBody(Pass pass, AdvancedCreateMethod method)
+        => method switch
+        {
+            AdvancedCreateNonTerminalMethod m => AdvancedCreateNonTerminalMethodBody(pass, m),
+            AdvancedCreateTerminalMethod m => AdvancedCreateTerminalMethodBody(pass, m),
+            _ => throw ExhaustiveMatch.Failed(method)
+        };
+
+    private static string AdvancedCreateNonTerminalMethodBody(Pass pass, AdvancedCreateNonTerminalMethod method)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine("from switch");
+        builder.AppendLine("        {");
+        foreach (var createMethod in method.GetMethodsCalled().OfType<CreateMethod>())
+        {
+            builder.Append("            ");
+            builder.Append(PassTypeName(pass, createMethod.FromType.UnderlyingSymbol));
+            builder.Append(" f => Create");
+            builder.Append(TypeName(createMethod.ToRule.Defines));
+            builder.Append('(');
+            var additionalArguments = createMethod.AdditionalParameters.Select(ParameterName);
+            builder.AppendJoin(", ", additionalArguments.Prepend("f"));
+            builder.AppendLine("),");
+        }
+        builder.AppendLine("            _ => throw ExhaustiveMatch.Failed(from),");
+        builder.Append("        }");
+        return builder.ToString();
+    }
+
+    private static string AdvancedCreateTerminalMethodBody(Pass pass, AdvancedCreateTerminalMethod method)
+        => $"{PassTypeName(pass, method.To)}.Create({AdvancedCreateArguments(pass, method)})";
+
+    public static string AdvancedCreateArguments(Pass pass, AdvancedCreateTerminalMethod method)
+    {
+        var rule = method.ToRule;
+        var extendsRule = rule.ExtendsRule!;
+        var oldProperties = new HashSet<Property>(Property.NameAndTypeComparer);
+        oldProperties.AddRange(extendsRule.AllProperties);
+        var arguments = new List<string>();
+        foreach (var property in rule.AllProperties)
+        {
+            if (oldProperties.Contains(property) || !CouldBeModified(property))
+                arguments.Add($"from.{property.Name}");
+            else if (rule.ModifiedProperties.Contains(property))
+                arguments.Add(property.Name.ToCamelCase());
+            else
+            {
+                var fromType = property.ComputeFromType();
+                var calledTransform = Build.CalledTransform(pass, fromType);
+                var operationArguments = calledTransform!.AdditionalParameters.Select(p => p.ChildParameter.Name)
+                                                         .Prepend($"from.{property.Name}");
+                arguments.Add($"{OperationMethodName(calledTransform)}({string.Join(", ", operationArguments)})");
+            }
+        }
+
+        return string.Join(", ", arguments);
     }
     #endregion
 }
