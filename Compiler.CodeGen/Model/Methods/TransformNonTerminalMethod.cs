@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -11,6 +12,7 @@ internal sealed record TransformNonTerminalMethod : TransformMethod
     public Rule FromReferencedRule { get; }
     public override required IFixedList<Parameter> AdditionalParameters { get; init; }
 
+    public override NonVoidType? ToType { get; }
     public override Parameter? To { get; }
     public IFixedList<Parameter> AdditionalReturnValues { get; }
     public override IFixedList<Parameter> AllReturnValues { get; }
@@ -56,6 +58,7 @@ internal sealed record TransformNonTerminalMethod : TransformMethod
         FromReferencedRule = fromReferencedRule;
         AdditionalParameters = additionalParameters;
 
+        ToType = toType;
         To = Parameter.Create(toType, Parameter.ToName);
         AdditionalReturnValues = additionalReturnValues;
         AllReturnValues = To.YieldValue().Concat(AdditionalReturnValues).ToFixedList();
@@ -68,7 +71,21 @@ internal sealed record TransformNonTerminalMethod : TransformMethod
         if (!AutoGenerate)
             yield break;
 
-        foreach (var childRule in FromReferencedRule.DerivedRules.Where(r => r.DescendantsModified))
-            yield return Pass.TransformMethods.Single(m => m.FromCoreType == childRule.DefinesType);
+        foreach (var derivedRule in FromReferencedRule.DerivedRules)
+        {
+            var transformMethod = Pass.TransformMethods.SingleOrDefault(m => m.FromCoreType == derivedRule.DefinesType);
+            if (transformMethod is not null)
+                yield return transformMethod;
+        }
+    }
+
+    public override TransformNonTerminalMethod ToOptional()
+    {
+        if (ParametersDeclared)
+            throw new NotSupportedException("Cannot make a method with declared parameters optional.");
+        return new(Pass, ParametersDeclared, FromReferencedRule,
+            new OptionalType(FromType), AdditionalParameters,
+            new OptionalType(ToType!), AdditionalReturnValues,
+            AutoGenerate);
     }
 }

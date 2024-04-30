@@ -466,7 +466,7 @@ public class Pass
         var toGrammar = ToLanguage.Grammar;
 
         // Collect the values to avoid modifying the dictionary while iterating
-        foreach (var baseTransform in CreateTransformsModifiedTerminals(transforms, toGrammar).ToArray())
+        foreach (var baseTransform in CreateTransformsForModifiedTerminals(transforms, toGrammar).ToArray())
             transforms.Add(baseTransform.FromCoreType, baseTransform);
 
         var toExpand = new Queue<TransformMethod>(transforms.Values);
@@ -523,7 +523,7 @@ public class Pass
         }
     }
 
-    private IEnumerable<TransformMethod> CreateTransformsModifiedTerminals(
+    private IEnumerable<TransformMethod> CreateTransformsForModifiedTerminals(
         IReadOnlyDictionary<NonOptionalType, TransformMethod> transforms,
         Grammar toGrammar)
     {
@@ -535,7 +535,7 @@ public class Pass
             var fromType = new SymbolType(fromRule.Defines);
             if (transforms.ContainsKey(fromType)) continue;
 
-            var transform = CreateTransformMethod(fromRule, toGrammar);
+            var transform = CreateTransformMethod(fromRule, transforms, toGrammar);
             if (transform is not null)
                 yield return transform;
         }
@@ -554,7 +554,7 @@ public class Pass
             if (transforms.ContainsKey(baseRule.DefinesType))
                 continue; // Transform already exists
 
-            var parentTransform = CreateTransformMethod(baseRule, toGrammar);
+            var parentTransform = CreateTransformMethod(baseRule, transforms, toGrammar);
 
             if (parentTransform is null) continue;
 
@@ -571,11 +571,23 @@ public class Pass
         var fromCoreType = transform.FromCoreType;
         foreach (var rule in fromGrammar.Rules)
         {
+            // If this transform is not optional, it may need to be made optional
+            if (transform is { ParametersDeclared: false, FromType: not OptionalType }
+                && rule.AllProperties.Select(p => p.Type).OfType<OptionalType>()
+                       .Any(t => t.UnderlyingType == transform.FromType))
+            {
+                // Replace the transform with an optional one
+                yield return transform.ToOptional();
+
+                // The transform will be visited again, so stop for now
+                yield break;
+            }
+
             // For transforms that are not already defined, define them if this type is a direct child of the rule
             if (!transforms.ContainsKey(rule.DefinesType)
                 && rule.AllProperties.Any(p => p.Type == fromCoreType))
             {
-                var parentTransform = CreateTransformMethod(rule, toGrammar);
+                var parentTransform = CreateTransformMethod(rule, transforms, toGrammar);
 
                 if (parentTransform is not null)
                     yield return parentTransform;
@@ -607,7 +619,7 @@ public class Pass
             if (transforms.ContainsKey(derivedFromType))
                 continue;
             // Derived type isn't covered yet, add a transform for it
-            var derivedTransform = CreateTransformMethod(derivedRule, toGrammar);
+            var derivedTransform = CreateTransformMethod(derivedRule, transforms, toGrammar);
             if (derivedTransform is null)
                 continue;
 
@@ -615,7 +627,10 @@ public class Pass
         }
     }
 
-    private TransformMethod? CreateTransformMethod(Rule fromRule, Grammar toGrammar)
+    private TransformMethod? CreateTransformMethod(
+        Rule fromRule,
+        IReadOnlyDictionary<NonOptionalType, TransformMethod> transforms,
+        Grammar toGrammar)
     {
         var toRule = toGrammar.RuleFor(fromRule.Defines);
         // No way to make an auto transform, assume it is somehow covered
@@ -623,6 +638,21 @@ public class Pass
             return null;
         if (fromRule.IsTerminal)
             return new TransformTerminalMethod(this, fromRule.DefinesType, toRule.DefinesType);
+
+        // Rules with children that cannot be transformed prevent the transform from being created
+        foreach (var derivedRule in fromRule.DerivedRules)
+        {
+            // If there is a transform that covers the derived rule, that will be used. However, the
+            // return type must be compatible.
+            var existingTransformIncompatible = transforms.TryGetValue(derivedRule.DefinesType, out var transform)
+                                                && !(transform.ToType?.IsSubtypeOf(toRule.DefinesType) ?? false);
+
+            if (existingTransformIncompatible
+                // If the derived rule has no matching rule in the new language, or the return type
+                // is incompatible, then the transform cannot be created.
+                || (!toGrammar.RuleFor(derivedRule.Defines)?.DefinesType.IsSubtypeOf(toRule.DefinesType) ?? true))
+                return null;
+        }
 
         return new TransformNonTerminalMethod(this, fromRule, fromRule.DefinesType, toRule.DefinesType);
     }
@@ -644,15 +674,15 @@ public class Pass
         var toBubble = new HashSet<Method>(methodCallers.Keys);
         while (toBubble.TryTake(out var calleeMethod))
         {
-            if (calleeMethod.ParametersDeclared)
-                continue; // Don't bubble up if parameters are declared with the pass
-
             var currentCalleeMethod = methods[calleeMethod];
             if (currentCalleeMethod.AdditionalParameters.Count == 0)
                 // No parameters to bubble up
                 continue;
             foreach (var callerMethod in methodCallers[calleeMethod])
             {
+                if (callerMethod.ParametersDeclared)
+                    continue; // Don't bubble to this method if parameters are declared with the pass
+
                 var currentCallerMethod = methods[callerMethod];
                 var bubbleChildProperties = callerMethod is not AdvancedCreateMethod
                     || calleeMethod is not SimpleCreateMethod;

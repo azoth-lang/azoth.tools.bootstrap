@@ -27,7 +27,7 @@ internal sealed partial class NamespaceSymbolBuilder
     }
 
     private partial To.CompilationUnit TransformCompilationUnit(
-        From.CompilationUnit from, PackageSymbol containingNamespace, ISymbolTreeBuilder treeBuilder)
+        From.CompilationUnit from, NamespaceSymbol containingNamespace, ISymbolTreeBuilder treeBuilder)
     {
         var implicitNamespaceSymbol = BuildNamespaceSymbol(containingNamespace, from.ImplicitNamespaceName, treeBuilder);
         return CreateCompilationUnit(from, implicitNamespaceSymbol, treeBuilder);

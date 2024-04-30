@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -11,6 +12,7 @@ internal sealed record TransformTerminalMethod : TransformMethod
 {
     public override required IFixedList<Parameter> AdditionalParameters { get; init; }
 
+    public override NonVoidType? ToType { get; }
     public override Parameter? To { get; }
     public IFixedList<Parameter> AdditionalReturnValues { get; }
     public override IFixedList<Parameter> AllReturnValues { get; }
@@ -49,6 +51,7 @@ internal sealed record TransformTerminalMethod : TransformMethod
     {
         AdditionalParameters = additionalParameters;
 
+        ToType = toType;
         To = Parameter.Create(toType, Parameter.ToName);
         AdditionalReturnValues = additionalReturnValues;
         AllReturnValues = To.YieldValue().Concat(AdditionalReturnValues).ToFixedList();
@@ -65,5 +68,15 @@ internal sealed record TransformTerminalMethod : TransformMethod
         if (rule is null) yield break;
 
         yield return GetCreateMethodCalled(rule);
+    }
+
+    public override TransformTerminalMethod ToOptional()
+    {
+        if (ParametersDeclared)
+            throw new NotSupportedException("Cannot make a method with declared parameters optional.");
+        return new(Pass, ParametersDeclared,
+            new OptionalType(FromType), AdditionalParameters,
+            new OptionalType(ToType!), AdditionalReturnValues,
+            AutoGenerate);
     }
 }

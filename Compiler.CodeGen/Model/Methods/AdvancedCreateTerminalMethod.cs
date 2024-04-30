@@ -36,7 +36,7 @@ public sealed record AdvancedCreateTerminalMethod : AdvancedCreateMethod
                 foreach (var property in ToRule.DifferentChildProperties)
                 {
                     var fromType = property.ComputeFromType().ToNonOptional();
-                    yield return Pass.TransformMethods.Single(t => t.FromType == fromType);
+                    yield return Pass.TransformMethods.Single(t => t.FromCoreType == fromType);
                 }
                 break;
         }

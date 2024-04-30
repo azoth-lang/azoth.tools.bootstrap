@@ -8,7 +8,7 @@
 ◊to WithNamespaceSymbols;
 
 Package -> ~;
-CompilationUnit, containingNamespace:`PackageSymbol`, treeBuilder:`ISymbolTreeBuilder` -> ~;
+CompilationUnit, containingNamespace:`NamespaceSymbol`, treeBuilder:`ISymbolTreeBuilder` -> ~;
 FunctionDeclaration, containingNamespace:`NamespaceSymbol` -> ~;
 NamespaceDeclaration, containingNamespace:`NamespaceSymbol`, treeBuilder:`ISymbolTreeBuilder` -> ~;
 TypeDeclaration, containingNamespace:`NamespaceSymbol`? -> ~;

@@ -35,9 +35,14 @@ internal sealed partial class <#=pass.Name #> : ITransformPass<<#=Emit.Transform
     <#=Emit.AccessModifier(transform)#>partial <#=Emit.ReturnType(transform)#> <#=Emit.OperationMethodName(transform)#>(<#=Emit.Parameters(transform)#>);
 
 <#  } #>
-<#  foreach (var transform in pass.Transforms.Where(t => t.AutoGenerate)) { #>
+<#  foreach (var transform in pass.TransformMethods.Where(t => t.AutoGenerate)) { #>
     <#=Emit.TransformNotNullAttribute(transform)#>private <#=Emit.ReturnType(transform)#> <#=Emit.OperationMethodName(transform)#>(<#=Emit.Parameters(transform)#>)
         => <#=Emit.TransformMethodBody(transform)#>;
+
+<#  } #>
+<#  foreach (var transform in pass.Transforms.Where(t => t.AutoGenerate)) { #>
+/*  <#=Emit.TransformNotNullAttribute(transform)#>private <#=Emit.ReturnType(transform)#> <#=Emit.OperationMethodName(transform)#>(<#=Emit.Parameters(transform)#>)
+        => <#=Emit.TransformMethodBody(transform)#>; */
 
 <#  } #>
 <#  if (pass.SimpleCreateMethods.Any()) { #>
@@ -53,13 +58,13 @@ internal sealed partial class <#=pass.Name #> : ITransformPass<<#=Emit.Transform
 <#  if (pass.AdvancedCreateMethods.Any()) { #>
     #region CreateX() methods
 <#      foreach (var method in pass.AdvancedCreateMethods) { #>
-/*  private <#=Emit.PassReturnType(pass, method.ReturnType)#> Create<#=Emit.TypeName(method.To)#>(<#=Emit.Parameters(pass, method.AllParameters)#>)
-        => <#=Emit.AdvancedCreateMethodBody(pass, method)#>; */
+    private <#=Emit.PassReturnType(pass, method.ReturnType)#> Create<#=Emit.TypeName(method.To)#>(<#=Emit.Parameters(pass, method.AllParameters)#>)
+        => <#=Emit.AdvancedCreateMethodBody(pass, method)#>;
 
 <#      } #>
 <#      foreach (var rule in Build.AdvancedCreateRules(pass)) { #>
-    private <#=Emit.PassTypeName(pass, rule.Defines)#> Create<#=Emit.TypeName(rule.Defines)#>(<#=Emit.AdvancedCreateParameters(pass, rule)#>)
-        => <#=Emit.AdvancedCreateMethodBody(pass, rule)#>;
+/*  private <#=Emit.PassTypeName(pass, rule.Defines)#> Create<#=Emit.TypeName(rule.Defines)#>(<#=Emit.AdvancedCreateParameters(pass, rule)#>)
+        => <#=Emit.AdvancedCreateMethodBody(pass, rule)#>; */
 
 <#      } #>
     #endregion

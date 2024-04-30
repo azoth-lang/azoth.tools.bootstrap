@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -11,6 +12,7 @@ public sealed record TransformCollectionMethod : TransformMethod
     public override CollectionType FromCoreType => (CollectionType)FromType;
     public override required IFixedList<Parameter> AdditionalParameters { get; init; }
 
+    public override CollectionType ToType { get; }
     public override Parameter To { get; }
     public IFixedList<Parameter> AdditionalReturnValues { get; }
     public override IFixedList<Parameter> AllReturnValues { get; }
@@ -43,6 +45,7 @@ public sealed record TransformCollectionMethod : TransformMethod
     {
         AdditionalParameters = additionalParameters;
 
+        ToType = toType;
         To = Parameter.Create(toType, Parameter.ToName);
         AdditionalReturnValues = additionalReturnValues;
         AllReturnValues = AdditionalReturnValues.Prepend(To).ToFixedList();
@@ -56,4 +59,7 @@ public sealed record TransformCollectionMethod : TransformMethod
             yield break;
         yield return Pass.TransformMethods.Single(m => m.FromCoreType == FromCoreType.ElementType);
     }
+
+    public override TransformMethod ToOptional()
+        => throw new NotImplementedException($"{nameof(TransformCollectionMethod)}.{nameof(ToOptional)}()");
 }

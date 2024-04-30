@@ -17,7 +17,7 @@ public abstract class Type : IEquatable<Type>
     public static IEqualityComparer<Type> EquivalenceComparer { get; }
         = EqualityComparer<Type>.Create(AreEquivalent, t => t.GetEquivalenceHashCode());
 
-    public static VoidType Void { get; } = VoidType.Instance;
+    public static VoidType Void => VoidType.Instance;
     public static SymbolType VoidSymbol { get; } = new SymbolType(new ExternalSymbol("Void"));
 
     [return: NotNullIfNotNull(nameof(syntax))]

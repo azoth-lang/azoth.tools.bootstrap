@@ -355,6 +355,12 @@ internal static class Emit
         return "[return: NotNullIfNotNull(nameof(from))]\r\n    ";
     }
 
+    public static string TransformNotNullAttribute(TransformMethod transform)
+    {
+        if (transform.From.Type is not OptionalType) return "";
+        return "[return: NotNullIfNotNull(nameof(from))]\r\n    ";
+    }
+
     public static string TransformMethodBody(Transform transform)
     {
         var fromType = transform.From?.Type;
@@ -369,6 +375,16 @@ internal static class Emit
         return TransformTerminalMethodBody(transform, fromType);
     }
 
+    public static string TransformMethodBody(TransformMethod transform)
+        => transform switch
+        {
+            TransformCollectionMethod m => TransformCollectionMethodBody(m),
+            TransformNonTerminalMethod m => TransformNonTerminalMethodBody(m),
+            TransformTerminalMethod m => TransformTerminalMethodBody(m),
+            TransformIdentityMethod m => "from",
+            _ => throw ExhaustiveMatch.Failed(transform)
+        };
+
     private static string TransformCollectionMethodBody(
         Transform transform,
         CollectionType fromType,
@@ -382,6 +398,23 @@ internal static class Emit
         };
         Transform? calledTransform = Build.CalledTransform(transform, fromType.ElementType);
         var calledTransformReturnsCollection = calledTransform?.AllReturnValues[0].Type is CollectionType;
+        var selectMethod = calledTransformReturnsCollection ? "SelectMany" : "Select";
+        var parameters = transform.AdditionalParameters.Select(ParameterName).Prepend("f").ToFixedList();
+        var parameterNames = string.Join(", ", parameters);
+        return
+            $"{ParameterName(transform.From!)}.{selectMethod}(f => {OperationMethodName(calledTransform!)}({parameterNames})).To{resultCollection}()";
+    }
+
+    private static string TransformCollectionMethodBody(TransformCollectionMethod transform)
+    {
+        var resultCollection = transform.ToType switch
+        {
+            ListType _ => "FixedList",
+            SetType _ => "FixedSet",
+            _ => throw ExhaustiveMatch.Failed(transform.ToType)
+        };
+        var calledTransform = transform.GetMethodsCalled().OfType<TransformMethod>().Single();
+        var calledTransformReturnsCollection = calledTransform.ToType is CollectionType;
         var selectMethod = calledTransformReturnsCollection ? "SelectMany" : "Select";
         var parameters = transform.AdditionalParameters.Select(ParameterName).Prepend("f").ToFixedList();
         var parameterNames = string.Join(", ", parameters);
@@ -420,10 +453,59 @@ internal static class Emit
         return builder.ToString();
     }
 
+    private static string TransformNonTerminalMethodBody(TransformNonTerminalMethod transform)
+    {
+        var pass = transform.Pass;
+        var builder = new StringBuilder();
+        builder.AppendLine("from switch");
+        builder.AppendLine("        {");
+        var calledTransforms = transform.GetMethodsCalled().OfType<TransformMethod>().ToFixedList();
+        foreach (var calledTransform in calledTransforms)
+        {
+            builder.Append("            ");
+            builder.Append(PassTypeName(pass, calledTransform.FromType.UnderlyingSymbol));
+            builder.Append(" f => ");
+            if (calledTransform is TransformIdentityMethod)
+                builder.Append('f');
+            else
+            {
+                builder.Append(OperationMethodName(calledTransform));
+                builder.Append('(');
+                var additionalArguments = calledTransform.AdditionalParameters.Select(ParameterName);
+                builder.AppendJoin(", ", additionalArguments.Prepend("f"));
+                builder.Append(')');
+            }
+
+            builder.AppendLine(",");
+        }
+
+        var identityTransformSymbols = transform.FromReferencedRule.DerivedRules
+                                        .Select(r => r.Defines)
+                                        .Except(calledTransforms.Select(t => t.FromType.UnderlyingSymbol));
+        foreach (var symbol in identityTransformSymbols)
+        {
+            builder.Append("            ");
+            builder.Append(PassTypeName(pass, symbol));
+            builder.AppendLine(" f => f,");
+        }
+
+        builder.AppendLine("            _ => throw ExhaustiveMatch.Failed(from),");
+        builder.Append("        }");
+        return builder.ToString();
+    }
+
     private static string TransformTerminalMethodBody(Transform transform, NonVoidType? fromType)
     {
         var body = $"Create{TypeName(transform.To!.Type.UnderlyingSymbol)}({Arguments(transform.AllParameters)})";
         if (fromType is OptionalType)
+            body = $"from is not null ? {body} : null";
+        return body;
+    }
+
+    private static string TransformTerminalMethodBody(TransformTerminalMethod transform)
+    {
+        var body = $"Create{TypeName(transform.ToType!.UnderlyingSymbol)}({Arguments(transform.AllParameters)})";
+        if (transform.FromType is OptionalType)
             body = $"from is not null ? {body} : null";
         return body;
     }
@@ -542,10 +624,12 @@ internal static class Emit
     }
 
     private static string AdvancedCreateTerminalMethodBody(Pass pass, AdvancedCreateTerminalMethod method)
-        => $"{PassTypeName(pass, method.To)}.Create({AdvancedCreateArguments(pass, method)})";
+        => $"{PassTypeName(pass, method.To)}.Create({AdvancedCreateArguments(method)})";
 
-    public static string AdvancedCreateArguments(Pass pass, AdvancedCreateTerminalMethod method)
+    private static string AdvancedCreateArguments(AdvancedCreateTerminalMethod method)
     {
+        var calledTransforms = method.GetMethodsCalled().Distinct().ToFixedList()
+                                     .OfType<TransformMethod>().ToDictionary(t => t.FromType);
         var rule = method.ToRule;
         var extendsRule = rule.ExtendsRule!;
         var oldProperties = new HashSet<Property>(Property.NameAndTypeComparer);
@@ -557,14 +641,15 @@ internal static class Emit
                 arguments.Add($"from.{property.Name}");
             else if (rule.ModifiedProperties.Contains(property))
                 arguments.Add(property.Name.ToCamelCase());
-            else
+            else if (calledTransforms.TryGetValue(property.ComputeFromType(), out var calledTransform))
             {
-                var fromType = property.ComputeFromType();
-                var calledTransform = Build.CalledTransform(pass, fromType);
-                var operationArguments = calledTransform!.AdditionalParameters.Select(p => p.ChildParameter.Name)
-                                                         .Prepend($"from.{property.Name}");
+                var operationArguments = calledTransform.AdditionalParameters
+                                                                .Select(p => p.ChildParameter.Name)
+                                                                .Prepend($"from.{property.Name}");
                 arguments.Add($"{OperationMethodName(calledTransform)}({string.Join(", ", operationArguments)})");
             }
+            else
+                arguments.Add("TODO");
         }
 
         return string.Join(", ", arguments);
