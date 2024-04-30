@@ -45,10 +45,4 @@ internal sealed partial class SyntaxBinder : ITransformPass<IPackageSyntax, Diag
     private IFixedSet<To.CompilationUnit> TransformCompilationUnitSyntaxes(IEnumerable<ICompilationUnitSyntax> from)
         => from.Select(f => TransformCompilationUnitSyntax(f)).ToFixedSet();
 
-/*  private IFixedSet<To.PackageReference> TransformPackageReferenceSyntaxes(IEnumerable<IPackageReferenceSyntax> from)
-        => from.Select(f => TransformPackageReferenceSyntax(f)).ToFixedSet(); */
-
-/*  private IFixedSet<To.CompilationUnit> TransformCompilationUnitSyntaxes(IEnumerable<ICompilationUnitSyntax> from)
-        => from.Select(f => TransformCompilationUnitSyntax(f)).ToFixedSet(); */
-
 }
