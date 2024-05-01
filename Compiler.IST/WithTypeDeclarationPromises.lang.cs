@@ -49,6 +49,20 @@ public sealed partial class WithTypeDeclarationPromises
         IFixedList<TypeMemberDeclaration> Members { get; }
     }
 
+    public partial interface GenericParameter : Code
+    {
+        Promise<GenericParameterTypeSymbol> Symbol { get; }
+        new IGenericParameterSyntax Syntax { get; }
+        IConcreteSyntax Code.Syntax => Syntax;
+        CapabilityConstraint Constraint { get; }
+        IdentifierName Name { get; }
+        ParameterIndependence Independence { get; }
+        ParameterVariance Variance { get; }
+
+        public static GenericParameter Create(Promise<GenericParameterTypeSymbol> symbol, IGenericParameterSyntax syntax, CapabilityConstraint constraint, IdentifierName name, ParameterIndependence independence, ParameterVariance variance)
+            => new GenericParameterNode(symbol, syntax, constraint, name, independence, variance);
+    }
+
     public partial interface Package : IImplementationRestricted
     {
         IFixedSet<NamespaceMemberDeclaration> Declarations { get; }
@@ -117,8 +131,8 @@ public sealed partial class WithTypeDeclarationPromises
 
     [Closed(
         typeof(Declaration),
-        typeof(UnresolvedSupertypeName),
         typeof(GenericParameter),
+        typeof(UnresolvedSupertypeName),
         typeof(CapabilityConstraint),
         typeof(UnresolvedType))]
     public partial interface Code : IImplementationRestricted
@@ -159,19 +173,6 @@ public sealed partial class WithTypeDeclarationPromises
 
         public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
             => new TraitDeclarationNode(syntax, members.ToFixedList(), symbol, containingSymbol, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope);
-    }
-
-    public partial interface GenericParameter : Code
-    {
-        new IGenericParameterSyntax Syntax { get; }
-        IConcreteSyntax Code.Syntax => Syntax;
-        CapabilityConstraint Constraint { get; }
-        IdentifierName Name { get; }
-        ParameterIndependence Independence { get; }
-        ParameterVariance Variance { get; }
-
-        public static GenericParameter Create(IGenericParameterSyntax syntax, CapabilityConstraint constraint, IdentifierName name, ParameterIndependence independence, ParameterVariance variance)
-            => new GenericParameterNode(syntax, constraint, name, independence, variance);
     }
 
     [Closed(
@@ -411,11 +412,6 @@ public sealed partial class WithoutCompilationUnits
 
     public partial interface PackageReference : WithTypeDeclarationPromises.PackageReference
     {
-    }
-
-    public partial interface GenericParameter : WithTypeDeclarationPromises.GenericParameter
-    {
-        WithTypeDeclarationPromises.CapabilityConstraint WithTypeDeclarationPromises.GenericParameter.Constraint => Constraint;
     }
 
     public partial interface CapabilityConstraint : WithTypeDeclarationPromises.CapabilityConstraint

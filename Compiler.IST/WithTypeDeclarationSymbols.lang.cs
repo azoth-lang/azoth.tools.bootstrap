@@ -49,6 +49,20 @@ public sealed partial class WithTypeDeclarationSymbols
         IConcreteSyntax Code.Syntax => Syntax;
     }
 
+    public partial interface GenericParameter : Code
+    {
+        Promise<GenericParameterTypeSymbol> Symbol { get; }
+        new IGenericParameterSyntax Syntax { get; }
+        IConcreteSyntax Code.Syntax => Syntax;
+        CapabilityConstraint Constraint { get; }
+        IdentifierName Name { get; }
+        ParameterIndependence Independence { get; }
+        ParameterVariance Variance { get; }
+
+        public static GenericParameter Create(Promise<GenericParameterTypeSymbol> symbol, IGenericParameterSyntax syntax, CapabilityConstraint constraint, IdentifierName name, ParameterIndependence independence, ParameterVariance variance)
+            => new GenericParameterNode(symbol, syntax, constraint, name, independence, variance);
+    }
+
     public partial interface Package : IImplementationRestricted
     {
         IFixedSet<NamespaceMemberDeclaration> Declarations { get; }
@@ -117,8 +131,8 @@ public sealed partial class WithTypeDeclarationSymbols
 
     [Closed(
         typeof(Declaration),
-        typeof(UnresolvedSupertypeName),
         typeof(GenericParameter),
+        typeof(UnresolvedSupertypeName),
         typeof(CapabilityConstraint),
         typeof(UnresolvedType))]
     public partial interface Code : IImplementationRestricted
@@ -159,19 +173,6 @@ public sealed partial class WithTypeDeclarationSymbols
 
         public static TraitDeclaration Create(ITraitDeclarationSyntax syntax, IEnumerable<TraitMemberDeclaration> members, Symbol containingSymbol, UserTypeSymbol symbol, DeclarationScope newScope, IEnumerable<GenericParameter> genericParameters, IEnumerable<UnresolvedSupertypeName> supertypeNames, CodeFile file, DeclarationLexicalScope containingScope)
             => new TraitDeclarationNode(syntax, members.ToFixedList(), containingSymbol, symbol, newScope, genericParameters.ToFixedList(), supertypeNames.ToFixedList(), file, containingScope);
-    }
-
-    public partial interface GenericParameter : Code
-    {
-        new IGenericParameterSyntax Syntax { get; }
-        IConcreteSyntax Code.Syntax => Syntax;
-        CapabilityConstraint Constraint { get; }
-        IdentifierName Name { get; }
-        ParameterIndependence Independence { get; }
-        ParameterVariance Variance { get; }
-
-        public static GenericParameter Create(IGenericParameterSyntax syntax, CapabilityConstraint constraint, IdentifierName name, ParameterIndependence independence, ParameterVariance variance)
-            => new GenericParameterNode(syntax, constraint, name, independence, variance);
     }
 
     [Closed(
@@ -396,6 +397,11 @@ public sealed partial class WithTypeDeclarationSymbols
 
 public sealed partial class WithTypeDeclarationPromises
 {
+    public partial interface GenericParameter : WithTypeDeclarationSymbols.GenericParameter
+    {
+        WithTypeDeclarationSymbols.CapabilityConstraint WithTypeDeclarationSymbols.GenericParameter.Constraint => Constraint;
+    }
+
     public partial interface UnresolvedSupertypeName : WithTypeDeclarationSymbols.UnresolvedSupertypeName
     {
         IFixedList<WithTypeDeclarationSymbols.UnresolvedType> WithTypeDeclarationSymbols.UnresolvedSupertypeName.TypeArguments => TypeArguments;
@@ -411,11 +417,6 @@ public sealed partial class WithTypeDeclarationPromises
 
     public partial interface PackageReference : WithTypeDeclarationSymbols.PackageReference
     {
-    }
-
-    public partial interface GenericParameter : WithTypeDeclarationSymbols.GenericParameter
-    {
-        WithTypeDeclarationSymbols.CapabilityConstraint WithTypeDeclarationSymbols.GenericParameter.Constraint => Constraint;
     }
 
     public partial interface CapabilityConstraint : WithTypeDeclarationSymbols.CapabilityConstraint

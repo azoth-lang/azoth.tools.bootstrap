@@ -64,6 +64,8 @@ public class SemanticAnalyzer
 
         var packageWithTypeSymbolPromises = TypeSymbolPromiseAdder.Run(packageWithoutCompilationUnits);
 
+        //var packageWithTypeSymbols = TypeSymbolBuilder.Run(packageWithTypeSymbolPromises, context);
+
         // Build up lexical scopes down to the declaration level
         new LexicalScopesBuilder().BuildFor(packageSyntax);
 

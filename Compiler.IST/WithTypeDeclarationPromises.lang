@@ -15,3 +15,6 @@
 
 // ---------- Type Declarations
 *TypeDeclaration = +Symbol:`AcyclicPromise<UserTypeSymbol>` +ContainingSymbol:`IPromise<Symbol>`;
+
+// ---------- Type Declaration Parts
+*GenericParameter = +Symbol:`Promise<GenericParameterTypeSymbol>`;

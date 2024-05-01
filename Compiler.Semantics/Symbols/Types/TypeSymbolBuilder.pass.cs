@@ -39,20 +39,16 @@ internal sealed partial class TypeSymbolBuilder : ITransformPass<From.Package, S
 
     private partial To.Package TransformPackage(From.Package from);
 
-    private partial To.ClassDeclaration TransformClassDeclaration(From.ClassDeclaration from, TypeLookup typeDeclarations);
+    private partial To.TypeDeclaration TransformTypeDeclaration(From.TypeDeclaration from, TypeLookup typeDeclarations);
 
-    private partial To.StructDeclaration TransformStructDeclaration(From.StructDeclaration from, TypeLookup typeDeclarations);
+    private To.ClassDeclaration TransformClassDeclaration(From.ClassDeclaration from, Symbol containingSymbol, UserTypeSymbol symbol, TypeLookup childTypeDeclarations)
+        => CreateClassDeclaration(from, containingSymbol, symbol, childTypeDeclarations);
 
-    private partial To.TraitDeclaration TransformTraitDeclaration(From.TraitDeclaration from, TypeLookup typeDeclarations);
+    private To.StructDeclaration TransformStructDeclaration(From.StructDeclaration from, Symbol containingSymbol, UserTypeSymbol symbol, TypeLookup childTypeDeclarations)
+        => CreateStructDeclaration(from, containingSymbol, symbol, childTypeDeclarations);
 
-    private To.TypeDeclaration TransformTypeDeclaration(From.TypeDeclaration from, TypeLookup typeDeclarations)
-        => from switch
-        {
-            From.ClassDeclaration f => TransformClassDeclaration(f, typeDeclarations),
-            From.StructDeclaration f => TransformStructDeclaration(f, typeDeclarations),
-            From.TraitDeclaration f => TransformTraitDeclaration(f, typeDeclarations),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
+    private To.TraitDeclaration TransformTraitDeclaration(From.TraitDeclaration from, Symbol containingSymbol, UserTypeSymbol symbol, TypeLookup childTypeDeclarations)
+        => CreateTraitDeclaration(from, containingSymbol, symbol, childTypeDeclarations);
 
     private To.NamespaceMemberDeclaration TransformNamespaceMemberDeclaration(From.NamespaceMemberDeclaration from, TypeLookup typeDeclarations)
         => from switch
@@ -116,8 +112,8 @@ internal sealed partial class TypeSymbolBuilder : ITransformPass<From.Package, S
         => from switch
         {
             From.Declaration f => TransformDeclaration(f, typeDeclarations),
+            From.GenericParameter f => TransformGenericParameter(f),
             From.UnresolvedSupertypeName f => f,
-            From.GenericParameter f => f,
             From.CapabilityConstraint f => f,
             From.UnresolvedType f => f,
             _ => throw ExhaustiveMatch.Failed(from),
@@ -126,7 +122,16 @@ internal sealed partial class TypeSymbolBuilder : ITransformPass<From.Package, S
     private IFixedList<To.TypeMemberDeclaration> TransformTypeMemberDeclarations(IEnumerable<From.TypeMemberDeclaration> from, TypeLookup typeDeclarations)
         => from.Select(f => TransformTypeMemberDeclaration(f, typeDeclarations)).ToFixedList();
 
+    private To.GenericParameter TransformGenericParameter(From.GenericParameter from)
+        => CreateGenericParameter(from);
+
+    private IFixedList<To.GenericParameter> TransformGenericParameters(IEnumerable<From.GenericParameter> from)
+        => from.Select(f => TransformGenericParameter(f)).ToFixedList();
+
     #region Create() methods
+    private To.GenericParameter CreateGenericParameter(From.GenericParameter from)
+        => To.GenericParameter.Create(from.Symbol, from.Syntax, from.Constraint, from.Name, from.Independence, from.Variance);
+
     private To.Package CreatePackage(From.Package from, IEnumerable<To.NamespaceMemberDeclaration> declarations, IEnumerable<To.NamespaceMemberDeclaration> testingDeclarations)
         => To.Package.Create(declarations, testingDeclarations, from.LexicalScope, from.Syntax, from.Symbol, from.References);
 
@@ -147,9 +152,6 @@ internal sealed partial class TypeSymbolBuilder : ITransformPass<From.Package, S
 
     private To.TraitDeclaration CreateTraitDeclaration(From.TraitDeclaration from, IEnumerable<To.TraitMemberDeclaration> members, Symbol containingSymbol, UserTypeSymbol symbol)
         => To.TraitDeclaration.Create(from.Syntax, members, containingSymbol, symbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
-
-    private To.GenericParameter CreateGenericParameter(From.GenericParameter from)
-        => To.GenericParameter.Create(from.Syntax, from.Constraint, from.Name, from.Independence, from.Variance);
 
     private To.CapabilitySet CreateCapabilitySet(From.CapabilitySet from)
         => To.CapabilitySet.Create(from.Syntax, from.Constraint);
@@ -231,8 +233,8 @@ internal sealed partial class TypeSymbolBuilder : ITransformPass<From.Package, S
         => from switch
         {
             From.Declaration f => CreateDeclaration(f, containingSymbol, symbol, childTypeDeclarations),
-            From.UnresolvedSupertypeName f => CreateUnresolvedSupertypeName(f),
             From.GenericParameter f => CreateGenericParameter(f),
+            From.UnresolvedSupertypeName f => CreateUnresolvedSupertypeName(f),
             From.CapabilityConstraint f => CreateCapabilityConstraint(f),
             From.UnresolvedType f => CreateUnresolvedType(f),
             _ => throw ExhaustiveMatch.Failed(from),

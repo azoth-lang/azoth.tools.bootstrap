@@ -5,3 +5,4 @@
 
 Package -> ~;
 TypeDeclaration, containingSymbol:`IPromise<Symbol>`? -> ~;
+GenericParameter -> ~;

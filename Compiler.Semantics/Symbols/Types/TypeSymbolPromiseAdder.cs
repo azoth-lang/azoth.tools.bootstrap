@@ -17,4 +17,7 @@ internal partial class TypeSymbolPromiseAdder
         return CreateTypeDeclaration(from, symbol: typeSymbolPromise, containingSymbol: containingSymbol,
             childContainingSymbol: typeSymbolPromise);
     }
+
+    private partial To.GenericParameter TransformGenericParameter(From.GenericParameter from)
+        => CreateGenericParameter(from, symbol: new());
 }

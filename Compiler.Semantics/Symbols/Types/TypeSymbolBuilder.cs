@@ -38,44 +38,22 @@ internal partial class TypeSymbolBuilder
     {
         var typeDeclarations = CreateTypeLookup(context.SymbolTree, from.Declarations);
         var declarations = TransformNamespaceMemberDeclarations(from.Declarations, typeDeclarations);
-        var testingTypeDeclarations = CreateTypeLookup(context.TestingSymbolTree, from.Declarations.Concat(from.Declarations));
+        var testingTypeDeclarations = CreateTypeLookup(context.TestingSymbolTree, from.Declarations.Concat(from.TestingDeclarations));
         var testingDeclarations = TransformNamespaceMemberDeclarations(from.TestingDeclarations, testingTypeDeclarations);
         return CreatePackage(from, declarations, testingDeclarations);
     }
 
-    private partial To.ClassDeclaration TransformClassDeclaration(
-        From.ClassDeclaration from,
-        TypeLookup typeDeclarations)
+    private partial To.TypeDeclaration TransformTypeDeclaration(
+        From.TypeDeclaration from, TypeLookup typeDeclarations)
     {
-        BuildClassSymbol(from, typeDeclarations);
-        return CreateClassDeclaration(from,
-            containingSymbol: from.ContainingSymbol.Result, symbol: from.Symbol.Result,
-            typeDeclarations);
-    }
-
-    private partial To.StructDeclaration TransformStructDeclaration(
-        From.StructDeclaration from,
-        TypeLookup typeDeclarations)
-    {
-        BuildStructSymbol(from, typeDeclarations);
-        return CreateStructDeclaration(from,
-            containingSymbol: from.ContainingSymbol.Result, symbol: from.Symbol.Result,
-            typeDeclarations);
-    }
-
-    private partial To.TraitDeclaration TransformTraitDeclaration(
-        From.TraitDeclaration from,
-        TypeLookup typeDeclarations)
-    {
-        BuildTraitSymbol(from, typeDeclarations);
-        return CreateTraitDeclaration(from,
+        BuildTypeSymbol(from, typeDeclarations);
+        return CreateTypeDeclaration(from,
             containingSymbol: from.ContainingSymbol.Result, symbol: from.Symbol.Result,
             typeDeclarations);
     }
 
     private void BuildTypeSymbol(
         From.TypeDeclaration type,
-        ISymbolTreeBuilder symbolTree,
         TypeLookup typeDeclarations)
     {
         switch (type)
@@ -86,13 +64,11 @@ internal partial class TypeSymbolBuilder
                 BuildClassSymbol(@class, typeDeclarations);
                 break;
             case From.StructDeclaration @struct:
-                //BuildStructSymbol(@struct, typeDeclarations);
-                //break;
-                throw new NotImplementedException();
+                BuildStructSymbol(@struct, typeDeclarations);
+                break;
             case From.TraitDeclaration trait:
-                //BuildTraitSymbol(trait, typeDeclarations);
-                //break;
-                throw new NotImplementedException();
+                BuildTraitSymbol(trait, typeDeclarations);
+                break;
         }
     }
 
@@ -101,8 +77,8 @@ internal partial class TypeSymbolBuilder
         if (!@class.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
         var packageName = @class.ContainingSymbol.Result.Package!.Name;
-        var typeParameters = BuildGenericParameterTypes(@class.Syntax);
-        var genericParameterSymbols = BuildGenericParameterSymbols(@class.Syntax, typeParameters).ToFixedList();
+        var typeParameters = BuildGenericParameterTypes(@class);
+        var genericParameterSymbols = BuildGenericParameterSymbols(@class, typeParameters).ToFixedList();
 
         var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
         var classType = ObjectType.CreateClass(packageName, @class.Syntax.ContainingNamespaceName, @class.IsAbstract,
@@ -111,12 +87,17 @@ internal partial class TypeSymbolBuilder
         var classSymbol = new UserTypeSymbol(@class.Syntax.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(classSymbol);
 
+        // TODO remove properties on Syntax nodes
+        @class.Syntax.Symbol.BeginFulfilling();
+        @class.Syntax.Symbol.Fulfill(classSymbol);
+
         BuildSupertypes(@class.Syntax, superTypes, typeDeclarations);
 
         typeDeclarations.Add(classSymbol);
 
         typeDeclarations.Add(genericParameterSymbols);
-        //@class.CreateDefaultConstructor(symbolTree);
+        // TODO move to a another pass
+        @class.Syntax.CreateDefaultConstructor(typeDeclarations.SymbolTree);
         return;
 
         void AddCircularDefinitionError()
@@ -130,22 +111,27 @@ internal partial class TypeSymbolBuilder
         if (!@struct.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
         var packageName = @struct.Syntax.ContainingNamespaceSymbol.Package.Name;
-        var typeParameters = BuildGenericParameterTypes(@struct.Syntax);
-        var genericParameterSymbols = BuildGenericParameterSymbols(@struct.Syntax, typeParameters).ToFixedList();
+        var typeParameters = BuildGenericParameterTypes(@struct);
+        var genericParameterSymbols = BuildGenericParameterSymbols(@struct, typeParameters).ToFixedList();
 
         var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
         var structType = StructType.Create(packageName, @struct.Syntax.ContainingNamespaceName,
             @struct.Syntax.IsConst, @struct.Syntax.Name, typeParameters, superTypes);
 
-        var classSymbol = new UserTypeSymbol(@struct.Syntax.ContainingNamespaceSymbol, structType);
-        @struct.Symbol.Fulfill(classSymbol);
+        var structSymbol = new UserTypeSymbol(@struct.Syntax.ContainingNamespaceSymbol, structType);
+        @struct.Symbol.Fulfill(structSymbol);
+
+        // TODO remove properties on Syntax nodes
+        @struct.Syntax.Symbol.BeginFulfilling();
+        @struct.Syntax.Symbol.Fulfill(structSymbol);
 
         BuildSupertypes(@struct.Syntax, superTypes, typeDeclarations);
 
-        typeDeclarations.Add(classSymbol);
+        typeDeclarations.Add(structSymbol);
 
         typeDeclarations.Add(genericParameterSymbols);
-        //@struct.CreateDefaultInitializer(symbolTree);
+        // TODO move to a another pass
+        @struct.Syntax.CreateDefaultInitializer(typeDeclarations.SymbolTree);
         return;
 
         void AddCircularDefinitionError()
@@ -159,8 +145,8 @@ internal partial class TypeSymbolBuilder
         if (!trait.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
         var packageName = trait.Syntax.ContainingNamespaceSymbol.Package.Name;
-        var typeParameters = BuildGenericParameterTypes(trait.Syntax);
-        var genericParameterSymbols = BuildGenericParameterSymbols(trait.Syntax, typeParameters).ToFixedList();
+        var typeParameters = BuildGenericParameterTypes(trait);
+        var genericParameterSymbols = BuildGenericParameterSymbols(trait, typeParameters).ToFixedList();
 
         var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
         var traitType = ObjectType.CreateTrait(packageName, trait.Syntax.ContainingNamespaceName,
@@ -168,6 +154,10 @@ internal partial class TypeSymbolBuilder
 
         var traitSymbol = new UserTypeSymbol(trait.Syntax.ContainingNamespaceSymbol, traitType);
         trait.Symbol.Fulfill(traitSymbol);
+
+        // TODO remove properties on Syntax nodes
+        trait.Syntax.Symbol.BeginFulfilling();
+        trait.Syntax.Symbol.Fulfill(traitSymbol);
 
         BuildSupertypes(trait.Syntax, superTypes, typeDeclarations);
 
@@ -192,7 +182,7 @@ internal partial class TypeSymbolBuilder
         IEnumerable<From.NamespaceMemberDeclaration> declarations)
         => new(this, symbolTree, TypeDeclarations(declarations).ToFixedDictionary(t => (IPromise<UserTypeSymbol>)t.Symbol));
 
-    private static IFixedList<GenericParameterType> BuildGenericParameterTypes(ITypeDeclarationSyntax type)
+    private static IFixedList<GenericParameterType> BuildGenericParameterTypes(From.TypeDeclaration type)
     {
         var declaredType = new Promise<IDeclaredUserType>();
         return type.GenericParameters.Select(p => new GenericParameterType(declaredType,
@@ -200,14 +190,16 @@ internal partial class TypeSymbolBuilder
     }
 
     private static IEnumerable<GenericParameterTypeSymbol> BuildGenericParameterSymbols(
-        ITypeDeclarationSyntax typeSyntax,
+        From.TypeDeclaration typeDeclaration,
         IFixedList<GenericParameterType> genericParameterTypes)
     {
-        var typeSymbol = typeSyntax.Symbol;
-        foreach (var (syn, genericParameter) in typeSyntax.GenericParameters.EquiZip(genericParameterTypes))
+        var typeSymbol = typeDeclaration.Symbol;
+        foreach (var (genericParameter, type) in typeDeclaration.GenericParameters.EquiZip(genericParameterTypes))
         {
-            var genericParameterSymbol = new GenericParameterTypeSymbol(typeSymbol, genericParameter);
-            syn.Symbol.Fulfill(genericParameterSymbol);
+            var genericParameterSymbol = new GenericParameterTypeSymbol(typeSymbol, type);
+            genericParameter.Symbol.Fulfill(genericParameterSymbol);
+            // TODO remove properties on Syntax nodes
+            genericParameter.Syntax.Symbol.Fulfill(genericParameterSymbol);
             yield return genericParameterSymbol;
         }
     }
@@ -260,7 +252,7 @@ internal partial class TypeSymbolBuilder
     private struct TypeLookup : ITypeSymbolBuilder
     {
         private readonly TypeSymbolBuilder typeSymbolBuilder;
-        private readonly ISymbolTreeBuilder symbolTree;
+        public ISymbolTreeBuilder SymbolTree { get; }
         private readonly FixedDictionary<IPromise<UserTypeSymbol>, From.TypeDeclaration> typeDeclarations;
         public TypeLookup(
             TypeSymbolBuilder typeSymbolBuilder,
@@ -268,7 +260,7 @@ internal partial class TypeSymbolBuilder
             FixedDictionary<IPromise<UserTypeSymbol>, From.TypeDeclaration> typeDeclarations)
         {
             this.typeDeclarations = typeDeclarations;
-            this.symbolTree = symbolTree;
+            this.SymbolTree = symbolTree;
             this.typeSymbolBuilder = typeSymbolBuilder;
         }
 
@@ -279,12 +271,12 @@ internal partial class TypeSymbolBuilder
             if (promise is not IPromise<UserTypeSymbol> userTypePromise)
                 throw new InvalidOperationException($"Only {nameof(UserTypeSymbol)}s are supported");
             var typeDeclaration = typeDeclarations[userTypePromise];
-            typeSymbolBuilder.BuildTypeSymbol(typeDeclaration, symbolTree, this);
+            typeSymbolBuilder.BuildTypeSymbol(typeDeclaration, this);
             return promise.Result;
         }
 
-        public void Add(UserTypeSymbol symbol) => symbolTree.Add(symbol);
+        public void Add(UserTypeSymbol symbol) => SymbolTree.Add(symbol);
 
-        public void Add(IEnumerable<GenericParameterTypeSymbol> symbols) => symbolTree.Add(symbols);
+        public void Add(IEnumerable<GenericParameterTypeSymbol> symbols) => SymbolTree.Add(symbols);
     }
 }

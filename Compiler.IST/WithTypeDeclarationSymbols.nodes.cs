@@ -14,6 +14,26 @@ namespace Azoth.Tools.Bootstrap.Compiler.IST;
 
 public sealed partial class WithTypeDeclarationSymbols
 {
+    private sealed class GenericParameterNode : Node, GenericParameter
+    {
+        public Promise<GenericParameterTypeSymbol> Symbol { get; }
+        public IGenericParameterSyntax Syntax { get; }
+        public CapabilityConstraint Constraint { get; }
+        public IdentifierName Name { get; }
+        public ParameterIndependence Independence { get; }
+        public ParameterVariance Variance { get; }
+
+        public GenericParameterNode(Promise<GenericParameterTypeSymbol> symbol, IGenericParameterSyntax syntax, CapabilityConstraint constraint, IdentifierName name, ParameterIndependence independence, ParameterVariance variance)
+        {
+            Symbol = symbol;
+            Syntax = syntax;
+            Constraint = constraint;
+            Name = name;
+            Independence = independence;
+            Variance = variance;
+        }
+    }
+
     private sealed class PackageNode : Node, Package
     {
         public IFixedSet<NamespaceMemberDeclaration> Declarations { get; }
@@ -161,24 +181,6 @@ public sealed partial class WithTypeDeclarationSymbols
             SupertypeNames = supertypeNames;
             File = file;
             ContainingScope = containingScope;
-        }
-    }
-
-    private sealed class GenericParameterNode : Node, GenericParameter
-    {
-        public IGenericParameterSyntax Syntax { get; }
-        public CapabilityConstraint Constraint { get; }
-        public IdentifierName Name { get; }
-        public ParameterIndependence Independence { get; }
-        public ParameterVariance Variance { get; }
-
-        public GenericParameterNode(IGenericParameterSyntax syntax, CapabilityConstraint constraint, IdentifierName name, ParameterIndependence independence, ParameterVariance variance)
-        {
-            Syntax = syntax;
-            Constraint = constraint;
-            Name = name;
-            Independence = independence;
-            Variance = variance;
         }
     }
 

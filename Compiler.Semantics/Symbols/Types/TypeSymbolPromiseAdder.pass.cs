@@ -42,6 +42,8 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
 
     private partial To.TypeDeclaration TransformTypeDeclaration(From.TypeDeclaration from, IPromise<Symbol>? containingSymbol);
 
+    private partial To.GenericParameter TransformGenericParameter(From.GenericParameter from);
+
     private To.ClassDeclaration TransformClassDeclaration(From.ClassDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IPromise<Symbol>? childContainingSymbol)
         => CreateClassDeclaration(from, symbol, containingSymbol, childContainingSymbol);
 
@@ -80,6 +82,20 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
+    private To.Code TransformCode(From.Code from, IPromise<Symbol>? containingSymbol)
+        => from switch
+        {
+            From.Declaration f => TransformDeclaration(f, containingSymbol),
+            From.GenericParameter f => TransformGenericParameter(f),
+            From.UnresolvedSupertypeName f => f,
+            From.CapabilityConstraint f => f,
+            From.UnresolvedType f => f,
+            _ => throw ExhaustiveMatch.Failed(from),
+        };
+
+    private IFixedList<To.GenericParameter> TransformGenericParameters(IEnumerable<From.GenericParameter> from)
+        => from.Select(f => TransformGenericParameter(f)).ToFixedList();
+
     private To.Declaration TransformDeclaration(From.Declaration from, IPromise<Symbol>? containingSymbol)
         => from switch
         {
@@ -112,21 +128,13 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
     private IFixedList<To.StructMemberDeclaration> TransformStructMemberDeclarations(IEnumerable<From.StructMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
         => from.Select(f => TransformStructMemberDeclaration(f, containingSymbol)).ToFixedList();
 
-    private To.Code TransformCode(From.Code from, IPromise<Symbol>? containingSymbol)
-        => from switch
-        {
-            From.Declaration f => TransformDeclaration(f, containingSymbol),
-            From.UnresolvedSupertypeName f => f,
-            From.GenericParameter f => f,
-            From.CapabilityConstraint f => f,
-            From.UnresolvedType f => f,
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
     private IFixedList<To.TypeMemberDeclaration> TransformTypeMemberDeclarations(IEnumerable<From.TypeMemberDeclaration> from, IPromise<Symbol>? containingSymbol)
         => from.Select(f => TransformTypeMemberDeclaration(f, containingSymbol)).ToFixedList();
 
     #region Create() methods
+    private To.GenericParameter CreateGenericParameter(From.GenericParameter from, Promise<GenericParameterTypeSymbol> symbol)
+        => To.GenericParameter.Create(symbol, from.Syntax, from.Constraint, from.Name, from.Independence, from.Variance);
+
     private To.Package CreatePackage(From.Package from, IEnumerable<To.NamespaceMemberDeclaration> declarations, IEnumerable<To.NamespaceMemberDeclaration> testingDeclarations)
         => To.Package.Create(declarations, testingDeclarations, from.LexicalScope, from.Syntax, from.Symbol, from.References);
 
@@ -139,17 +147,14 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
     private To.PackageReference CreatePackageReference(From.PackageReference from)
         => To.PackageReference.Create(from.Syntax, from.AliasOrName, from.Package, from.IsTrusted);
 
-    private To.ClassDeclaration CreateClassDeclaration(From.ClassDeclaration from, IEnumerable<To.ClassMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol)
-        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, members, symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
+    private To.ClassDeclaration CreateClassDeclaration(From.ClassDeclaration from, IEnumerable<To.ClassMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IEnumerable<To.GenericParameter> genericParameters)
+        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, members, symbol, containingSymbol, from.NewScope, genericParameters, from.SupertypeNames, from.File, from.ContainingScope);
 
-    private To.StructDeclaration CreateStructDeclaration(From.StructDeclaration from, IEnumerable<To.StructMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol)
-        => To.StructDeclaration.Create(from.Syntax, members, symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
+    private To.StructDeclaration CreateStructDeclaration(From.StructDeclaration from, IEnumerable<To.StructMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IEnumerable<To.GenericParameter> genericParameters)
+        => To.StructDeclaration.Create(from.Syntax, members, symbol, containingSymbol, from.NewScope, genericParameters, from.SupertypeNames, from.File, from.ContainingScope);
 
-    private To.TraitDeclaration CreateTraitDeclaration(From.TraitDeclaration from, IEnumerable<To.TraitMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol)
-        => To.TraitDeclaration.Create(from.Syntax, members, symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
-
-    private To.GenericParameter CreateGenericParameter(From.GenericParameter from)
-        => To.GenericParameter.Create(from.Syntax, from.Constraint, from.Name, from.Independence, from.Variance);
+    private To.TraitDeclaration CreateTraitDeclaration(From.TraitDeclaration from, IEnumerable<To.TraitMemberDeclaration> members, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IEnumerable<To.GenericParameter> genericParameters)
+        => To.TraitDeclaration.Create(from.Syntax, members, symbol, containingSymbol, from.NewScope, genericParameters, from.SupertypeNames, from.File, from.ContainingScope);
 
     private To.CapabilitySet CreateCapabilitySet(From.CapabilitySet from)
         => To.CapabilitySet.Create(from.Syntax, from.Constraint);
@@ -227,25 +232,14 @@ internal sealed partial class TypeSymbolPromiseAdder : ITransformPass<From.Packa
             _ => throw ExhaustiveMatch.Failed(from),
         };
 
-    private To.Code CreateCode(From.Code from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IPromise<Symbol>? childContainingSymbol)
-        => from switch
-        {
-            From.Declaration f => CreateDeclaration(f, symbol, containingSymbol, childContainingSymbol),
-            From.UnresolvedSupertypeName f => CreateUnresolvedSupertypeName(f),
-            From.GenericParameter f => CreateGenericParameter(f),
-            From.CapabilityConstraint f => CreateCapabilityConstraint(f),
-            From.UnresolvedType f => CreateUnresolvedType(f),
-            _ => throw ExhaustiveMatch.Failed(from),
-        };
-
     private To.ClassDeclaration CreateClassDeclaration(From.ClassDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IPromise<Symbol>? childContainingSymbol)
-        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, TransformClassMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
+        => To.ClassDeclaration.Create(from.Syntax, from.IsAbstract, from.BaseTypeName, TransformClassMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol, from.NewScope, TransformGenericParameters(from.GenericParameters), from.SupertypeNames, from.File, from.ContainingScope);
 
     private To.StructDeclaration CreateStructDeclaration(From.StructDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IPromise<Symbol>? childContainingSymbol)
-        => To.StructDeclaration.Create(from.Syntax, TransformStructMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
+        => To.StructDeclaration.Create(from.Syntax, TransformStructMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol, from.NewScope, TransformGenericParameters(from.GenericParameters), from.SupertypeNames, from.File, from.ContainingScope);
 
     private To.TraitDeclaration CreateTraitDeclaration(From.TraitDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IPromise<Symbol>? childContainingSymbol)
-        => To.TraitDeclaration.Create(from.Syntax, TransformTraitMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol, from.NewScope, from.GenericParameters, from.SupertypeNames, from.File, from.ContainingScope);
+        => To.TraitDeclaration.Create(from.Syntax, TransformTraitMemberDeclarations(from.Members, childContainingSymbol), symbol, containingSymbol, from.NewScope, TransformGenericParameters(from.GenericParameters), from.SupertypeNames, from.File, from.ContainingScope);
 
     private To.TypeMemberDeclaration CreateTypeMemberDeclaration(From.TypeMemberDeclaration from, AcyclicPromise<UserTypeSymbol> symbol, IPromise<Symbol> containingSymbol, IPromise<Symbol>? childContainingSymbol)
         => from switch
