@@ -177,6 +177,9 @@ public class Pass
                 if (!ShouldCreate(derivedToRule))
                     return false;
             }
+            if (!rule.DescendantRules.SelectMany(r => r.ModifiedProperties)
+                     .Select(p => p.Parameter).CanMergeByName())
+                return false;
             return true;
         }
     }
