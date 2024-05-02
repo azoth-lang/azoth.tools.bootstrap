@@ -5,17 +5,12 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.AST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Contexts;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Liveness;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Startup;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Types;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.BindingMutability;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.DefiniteAssignment;
@@ -44,27 +39,8 @@ public class SemanticAnalyzer
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
     public Package Check(PackageSyntax<Package> packageSyntax)
     {
-        // TODO Plan to migrate to nanopass: work from earlier passes to later. For each, build the
-        // pass and then modify the old steps to just apply that to the CST. Once everything is
-        // done in nanopass: remove the old steps and all the properties from the CST.
-
-        // TODO eliminate the context parameter here
-        var initialContext = InitialContextPass.Run(packageSyntax, packageSyntax);
-
         // If there are errors from the lex and parse phase, don't continue on
-        initialContext.Diagnostics.ThrowIfFatalErrors();
-
-        var (package, context) = SyntaxBinder.Run(packageSyntax, initialContext);
-
-        var packageWithNamespaceSymbols = NamespaceSymbolBuilder.Run(package, context);
-
-        var packageWithScopes = DeclarationLexicalScopesBuilder.Run(packageWithNamespaceSymbols);
-
-        var packageWithoutCompilationUnits = CompilationUnitRemover.Run(packageWithScopes);
-
-        var packageWithTypeSymbolPromises = TypeSymbolPromiseAdder.Run(packageWithoutCompilationUnits);
-
-        //var packageWithTypeSymbols = TypeSymbolBuilder.Run(packageWithTypeSymbolPromises, context);
+        packageSyntax.Diagnostics.ThrowIfFatalErrors();
 
         // Build up lexical scopes down to the declaration level
         new LexicalScopesBuilder().BuildFor(packageSyntax);

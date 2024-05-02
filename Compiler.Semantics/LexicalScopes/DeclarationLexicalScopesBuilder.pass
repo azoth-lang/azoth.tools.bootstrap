@@ -1,9 +1,0 @@
-◊name DeclarationLexicalScopesBuilder;
-◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-◊from WithNamespaceSymbols;
-◊to WithDeclarationLexicalScopes;
-
-Package -> ~;
-CompilationUnit, containingScope:`DeclarationLexicalScope` -> ~;
-TypeDeclaration, containingScope:`DeclarationLexicalScope` -> ~;
-NamespaceDeclaration, containingScope:`DeclarationLexicalScope` -> ~;

@@ -1,8 +1,0 @@
-◊name TypeSymbolPromiseAdder;
-◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Types;
-◊from WithoutCompilationUnits;
-◊to WithTypeDeclarationPromises;
-
-Package -> ~;
-TypeDeclaration, containingSymbol:`IPromise<Symbol>`? -> ~;
-GenericParameter -> ~;

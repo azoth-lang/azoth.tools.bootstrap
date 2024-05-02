@@ -27,35 +27,8 @@
     <ProjectReference Include="..\Compiler.AST\Compiler.AST.csproj" />
     <ProjectReference Include="..\Compiler.CST\Compiler.CST.csproj" />
     <ProjectReference Include="..\Compiler.Core\Compiler.Core.csproj" />
-    <ProjectReference Include="..\Compiler.IST\Compiler.IST.csproj" />
     <ProjectReference Include="..\Framework\Framework.csproj" />
     <ProjectReference Include="..\Compiler.LexicalScopes\Compiler.LexicalScopes.csproj" />
     <ProjectReference Include="..\Compiler.Primitives\Compiler.Primitives.csproj" />
-  </ItemGroup>
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="&quot;$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe&quot; -p &quot;$(SolutionDir)Compiler.IST&quot; &quot;$(ProjectDir)Contexts\InitialContextPass.pass&quot; &quot;$(ProjectDir)LexicalScopes\DeclarationLexicalScopesBuilder.pass&quot; &quot;$(ProjectDir)Structure\CompilationUnitRemover.pass&quot; &quot;$(ProjectDir)Symbols\Namespaces\NamespaceSymbolBuilder.pass&quot; &quot;$(ProjectDir)Symbols\Types\TypeSymbolBuilder.pass&quot; &quot;$(ProjectDir)Symbols\Types\TypeSymbolPromiseAdder.pass&quot; &quot;$(ProjectDir)SyntaxBinding\SyntaxBinder.pass&quot;" />
-  </Target>
-  <ItemGroup>
-    <Compile Update="Contexts\InitialContextPass.pass.cs">
-      <DependentUpon>InitialContextPass.pass</DependentUpon>
-    </Compile>
-    <Compile Update="LexicalScopes\DeclarationLexicalScopesBuilder.pass.cs">
-      <DependentUpon>DeclarationLexicalScopesBuilder.pass</DependentUpon>
-    </Compile>
-    <Compile Update="Structure\CompilationUnitRemover.pass.cs">
-      <DependentUpon>CompilationUnitRemover.pass</DependentUpon>
-    </Compile>
-    <Compile Update="Symbols\Namespaces\NamespaceSymbolBuilder.pass.cs">
-      <DependentUpon>NamespaceSymbolBuilder.pass</DependentUpon>
-    </Compile>
-    <Compile Update="Symbols\Types\TypeSymbolBuilder.pass.cs">
-      <DependentUpon>TypeSymbolBuilder.pass</DependentUpon>
-    </Compile>
-    <Compile Update="Symbols\Types\TypeSymbolPromiseAdder.pass.cs">
-      <DependentUpon>TypeSymbolPromiseAdder.pass</DependentUpon>
-    </Compile>
-    <Compile Update="SyntaxBinding\SyntaxBinder.pass.cs">
-      <DependentUpon>SyntaxBinder.pass</DependentUpon>
-    </Compile>
   </ItemGroup>
 </Project>
