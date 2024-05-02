@@ -33,7 +33,7 @@ internal class ASTBuilder
         var symbolTree = packageSyntax.SymbolTree.Build();
         var testingSymbolTree = packageSyntax.TestingSymbolTree.Build();
         return new PackageBuilder(declarations, testingDeclarations, symbolTree, testingSymbolTree,
-            packageSyntax.Diagnostics, packageSyntax.References);
+            packageSyntax.Diagnostics, packageSyntax.References.Select(r => r.Package).ToFixedSet());
     }
 
     private static IFixedSet<INonMemberDeclaration> BuildNonMemberDeclarations(
@@ -124,6 +124,7 @@ internal class ASTBuilder
             ISetterMethodDeclarationSyntax syn => BuildSetter(declaringClass, syn),
             IConstructorDeclarationSyntax syn => BuildConstructor(declaringClass, syn),
             IFieldDeclarationSyntax syn => BuildField(declaringClass, syn),
+            ITypeDeclarationSyntax _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(member)
         };
     }
@@ -140,6 +141,7 @@ internal class ASTBuilder
             ISetterMethodDeclarationSyntax syn => BuildSetter(declaringStruct, syn),
             IInitializerDeclarationSyntax syn => BuildInitializer(declaringStruct, syn),
             IFieldDeclarationSyntax syn => BuildField(declaringStruct, syn),
+            ITypeDeclarationSyntax _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(member)
         };
     }
@@ -155,6 +157,7 @@ internal class ASTBuilder
             IStandardMethodDeclarationSyntax syn => BuildStandardMethod(declaringTrait, syn),
             IGetterMethodDeclarationSyntax syn => BuildGetter(declaringTrait, syn),
             ISetterMethodDeclarationSyntax syn => BuildSetter(declaringTrait, syn),
+            ITypeDeclarationSyntax _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(member)
         };
     }
@@ -167,7 +170,7 @@ internal class ASTBuilder
         var nameSpan = syn.NameSpan;
         var parameters = syn.Parameters.Select(BuildParameter).ToFixedList();
         var body = BuildBody(syn.Body);
-        return new AssociatedFunctionDeclaration(syn.File, syn.Span, declaringType, symbol, nameSpan, parameters, body);
+        return new AssociatedFunctionDeclaration(declaringType, syn.File, syn.Span, symbol, nameSpan, parameters, body);
     }
 
     private static IAbstractMethodDeclaration BuildAbstractMethod(
@@ -579,7 +582,7 @@ internal class ASTBuilder
                 throw new InvalidOperationException("Invocation expression cannot invoke a type.");
             case ConstructorSymbol _:
                 throw new InvalidOperationException("Invocation expression cannot invoke a constructor.");
-            case NamespaceOrPackageSymbol _:
+            case NamespaceSymbol _:
                 throw new InvalidOperationException("Invocation expression cannot invoke a namespace or package.");
         }
     }
@@ -711,7 +714,7 @@ internal class ASTBuilder
             FunctionSymbol symbol => BuildFunctionNameExpression(syn, symbol),
             TypeSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a type."),
             InvocableSymbol _ => throw new InvalidOperationException("Cannot build a name expression for an invocable."),
-            NamespaceOrPackageSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a namespace or package."),
+            NamespaceSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a namespace or package."),
             FieldSymbol _ => throw new UnreachableException("Field would be a different expression."),
             SelfParameterSymbol _ => throw new UnreachableException("Self parameter would be a different expression."),
             _ => throw ExhaustiveMatch.Failed(syn),

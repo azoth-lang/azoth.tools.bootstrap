@@ -2,14 +2,14 @@ namespace Azoth.Tools.Bootstrap.Lab.Build;
 
 internal class ProjectReference
 {
-    public string Name { get; }
+    public string NameOrAlias { get; }
     public Project Project { get; }
-    public bool Trusted { get; }
+    public bool IsTrusted { get; }
 
-    public ProjectReference(string name, Project project, bool trusted)
+    public ProjectReference(string nameOrAlias, Project project, bool isTrusted)
     {
-        Name = name;
+        NameOrAlias = nameOrAlias;
         Project = project;
-        Trusted = trusted;
+        IsTrusted = isTrusted;
     }
 }

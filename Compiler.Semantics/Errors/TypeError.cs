@@ -57,7 +57,7 @@ public static class TypeError
             3005, "Expression must be of type `bool`");
     }
 
-    public static Diagnostic CannotImplicitlyConvert(CodeFile file, ISyntax expression, DataType ofType, DataType toType)
+    public static Diagnostic CannotImplicitlyConvert(CodeFile file, IConcreteSyntax expression, DataType ofType, DataType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3006, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstantType().ToSourceCodeString()}` to type `{toType.ToNonConstantType().ToSourceCodeString()}`");
@@ -93,13 +93,13 @@ public static class TypeError
             3011, $"Taking the `id` of the type `{type.ToSourceCodeString()}` is not supported, because it is not a reference type");
     }
 
-    public static Diagnostic CannotExplicitlyConvert(CodeFile file, ISyntax expression, DataType ofType, DataType toType)
+    public static Diagnostic CannotExplicitlyConvert(CodeFile file, IConcreteSyntax expression, DataType ofType, DataType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3012, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstantType().ToSourceCodeString()}` to type `{toType.ToNonConstantType().ToSourceCodeString()}`");
     }
 
-    public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, ISyntax expression, Capability capability, DeclaredReferenceType type)
+    public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, IConcreteSyntax expression, Capability capability, DeclaredReferenceType type)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3013, $"Cannot use `{capability.ToSourceCodeString()}` on constant type `{type}`");
@@ -220,7 +220,7 @@ public static class TypeError
             3032, $"Empty type `{typeSyntax}` cannot be used here.");
     }
 
-    public static Diagnostic CapabilityNotCompatibleWithConstraint(CodeFile file, ISyntax typeSyntax, GenericParameter parameter, DataType arg)
+    public static Diagnostic CapabilityNotCompatibleWithConstraint(CodeFile file, IConcreteSyntax typeSyntax, GenericParameter parameter, DataType arg)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3033, $"In `{typeSyntax}` the capability of `{arg.ToSourceCodeString()}` is not compatible with the capability constraint on `{parameter}`.");

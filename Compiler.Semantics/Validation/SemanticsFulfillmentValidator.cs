@@ -15,7 +15,7 @@ public sealed class SemanticsFulfillmentValidator : SyntaxWalker
             WalkNonNull(declaration);
     }
 
-    protected override void WalkNonNull(ISyntax syntax)
+    protected override void WalkNonNull(IConcreteSyntax syntax)
     {
         switch (syntax)
         {
@@ -26,7 +26,7 @@ public sealed class SemanticsFulfillmentValidator : SyntaxWalker
         WalkChildren(syntax);
     }
 
-    private static void ValidateFulfilled(ISyntax syntax, IPromise<ISyntaxSemantics> semantics)
+    private static void ValidateFulfilled(IConcreteSyntax syntax, IPromise<ISyntaxSemantics> semantics)
     {
         if (!semantics.IsFulfilled)
             throw new Exception($"Syntax doesn't have fulfilled semantics '{syntax}'");

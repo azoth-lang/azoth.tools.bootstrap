@@ -39,7 +39,7 @@ public class EntitySymbolBuilder
         var builder = new EntitySymbolBuilder(package.Diagnostics, package.SymbolTree, package.SymbolTrees);
         builder.Build(package.EntityDeclarations);
 
-        builder = new EntitySymbolBuilder(package.Diagnostics, package.TestingSymbolTree, package.SymbolTrees);
+        builder = new EntitySymbolBuilder(package.Diagnostics, package.TestingSymbolTree, package.TestingSymbolTrees);
         builder.Build(package.TestingEntityDeclarations);
     }
 

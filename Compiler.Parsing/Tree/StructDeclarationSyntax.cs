@@ -17,6 +17,7 @@ internal class StructDeclarationSyntax : TypeDeclarationSyntax<IStructMemberDecl
 
     public StructDeclarationSyntax(
         NamespaceName containingNamespaceName,
+        ITypeDeclarationSyntax? declaringType,
         TextSpan headerSpan,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -27,7 +28,7 @@ internal class StructDeclarationSyntax : TypeDeclarationSyntax<IStructMemberDecl
         IFixedList<IGenericParameterSyntax> genericParameters,
         IFixedList<ISupertypeNameSyntax> supertypesNames,
         Func<IStructDeclarationSyntax, (IFixedList<IStructMemberDeclarationSyntax>, TextSpan)> parseMembers)
-        : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, structKind as IMoveKeywordToken,
+        : base(containingNamespaceName, declaringType, headerSpan, file, accessModifier, constModifier, structKind as IMoveKeywordToken,
             nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypesNames)
     {
         var (members, bodySpan) = parseMembers(this);

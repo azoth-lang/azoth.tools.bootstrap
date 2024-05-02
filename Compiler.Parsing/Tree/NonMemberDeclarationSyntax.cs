@@ -11,8 +11,8 @@ internal abstract class NonMemberDeclarationSyntax : DeclarationSyntax, INonMemb
 {
     public NamespaceName ContainingNamespaceName { get; }
 
-    private NamespaceOrPackageSymbol? containingNamespaceSymbol;
-    public NamespaceOrPackageSymbol ContainingNamespaceSymbol
+    private NamespaceSymbol? containingNamespaceSymbol;
+    public NamespaceSymbol ContainingNamespaceSymbol
     {
         get =>
             containingNamespaceSymbol

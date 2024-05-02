@@ -20,6 +20,7 @@ internal class ClassDeclarationSyntax : TypeDeclarationSyntax<IClassMemberDeclar
 
     public ClassDeclarationSyntax(
         NamespaceName containingNamespaceName,
+        ITypeDeclarationSyntax? declaringType,
         TextSpan headerSpan,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -32,7 +33,7 @@ internal class ClassDeclarationSyntax : TypeDeclarationSyntax<IClassMemberDeclar
         ISupertypeNameSyntax? baseTypeName,
         IFixedList<ISupertypeNameSyntax> supertypesNames,
         Func<IClassDeclarationSyntax, (IFixedList<IClassMemberDeclarationSyntax>, TextSpan)> parseMembers)
-        : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, moveModifier,
+        : base(containingNamespaceName, declaringType, headerSpan, file, accessModifier, constModifier, moveModifier,
             nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypesNames)
     {
         AbstractModifier = abstractModifier;

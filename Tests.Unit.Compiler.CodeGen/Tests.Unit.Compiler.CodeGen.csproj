@@ -4,7 +4,6 @@
     <IsPackable>false</IsPackable>
     <AssemblyName>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.CodeGen</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.CodeGen</RootNamespace>
-    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ExhaustiveMatching.Analyzer" Version="0.5.0" />

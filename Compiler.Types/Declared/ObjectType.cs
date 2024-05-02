@@ -214,7 +214,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
             && IsAbstract == objectType.IsAbstract
             && IsDeclaredConst == objectType.IsDeclaredConst
             && Name == objectType.Name
-            && GenericParameters.ItemsEquals(objectType.GenericParameters);
+            && GenericParameters.ItemsEqual(objectType.GenericParameters);
     }
 
     public bool Equals(IDeclaredUserType? other) => Equals(other as DeclaredType);

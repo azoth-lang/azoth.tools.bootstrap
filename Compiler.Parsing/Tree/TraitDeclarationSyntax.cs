@@ -14,6 +14,7 @@ internal class TraitDeclarationSyntax : TypeDeclarationSyntax<ITraitMemberDeclar
 
     public TraitDeclarationSyntax(
         NamespaceName containingNamespaceName,
+        ITypeDeclarationSyntax? declaringType,
         TextSpan headerSpan,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -24,7 +25,7 @@ internal class TraitDeclarationSyntax : TypeDeclarationSyntax<ITraitMemberDeclar
         IFixedList<IGenericParameterSyntax> genericParameters,
         IFixedList<ISupertypeNameSyntax> supertypes,
         Func<ITraitDeclarationSyntax, (IFixedList<ITraitMemberDeclarationSyntax>, TextSpan)> parseMembers)
-        : base(containingNamespaceName, headerSpan, file, accessModifier, constModifier, moveModifier,
+        : base(containingNamespaceName, declaringType, headerSpan, file, accessModifier, constModifier, moveModifier,
             nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypes)
     {
         var (members, bodySpan) = parseMembers(this);

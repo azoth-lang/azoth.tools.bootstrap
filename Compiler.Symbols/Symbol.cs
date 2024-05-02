@@ -6,7 +6,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 [Closed(
-    typeof(NamespaceOrPackageSymbol),
+    typeof(NamespaceSymbol),
     typeof(TypeSymbol),
     typeof(InvocableSymbol),
     typeof(BindingSymbol))]

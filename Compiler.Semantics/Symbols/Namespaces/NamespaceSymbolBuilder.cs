@@ -9,7 +9,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 
-public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
+public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceSymbol>
 {
     private readonly ISymbolTreeBuilder treeBuilder;
     private readonly PackageSymbol packageSymbol;
@@ -36,7 +36,7 @@ public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
             builder.Walk(compilationUnit, package.Symbol);
     }
 
-    protected override void WalkNonNull(ISyntax syntax, NamespaceOrPackageSymbol containingSymbol)
+    protected override void WalkNonNull(IConcreteSyntax syntax, NamespaceSymbol containingSymbol)
     {
         switch (syntax)
         {
@@ -64,8 +64,8 @@ public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
         }
     }
 
-    private NamespaceOrPackageSymbol BuildNamespaceSymbol(
-        NamespaceOrPackageSymbol containingSymbol,
+    private NamespaceSymbol BuildNamespaceSymbol(
+        NamespaceSymbol containingSymbol,
         NamespaceName namespaces)
     {
         foreach (var nsName in namespaces.Segments)
@@ -75,7 +75,7 @@ public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceOrPackageSymbol>
                                       .SingleOrDefault(c => c.Name == nsName);
             if (nsSymbol is null)
             {
-                nsSymbol = new NamespaceSymbol(containingSymbol, nsName);
+                nsSymbol = new LocalNamespaceSymbol(containingSymbol, nsName);
                 treeBuilder.Add(nsSymbol);
             }
 

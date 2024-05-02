@@ -64,10 +64,10 @@ public static class Intrinsic
 
     private static FixedSymbolTree DefineIntrinsicSymbols()
     {
-        var intrinsicsPackage = new PackageSymbol("intrinsics");
+        var intrinsicsPackage = new PackageSymbol("azoth.intrinsics");
         var tree = new SymbolTreeBuilder(intrinsicsPackage);
 
-        var intrinsicsNamespace = new NamespaceSymbol(intrinsicsPackage, "intrinsics");
+        var intrinsicsNamespace = new LocalNamespaceSymbol(intrinsicsPackage, "intrinsics");
 
         var azothNamespace = BuildAzothNamespace(intrinsicsPackage, tree);
 
@@ -94,14 +94,14 @@ public static class Intrinsic
         return tree.Build();
     }
 
-    private static NamespaceSymbol BuildAzothNamespace(PackageSymbol intrinsicsPackage, SymbolTreeBuilder tree)
+    private static LocalNamespaceSymbol BuildAzothNamespace(PackageSymbol intrinsicsPackage, SymbolTreeBuilder tree)
     {
-        var azothNamespace = new NamespaceSymbol(intrinsicsPackage, "azoth");
+        var azothNamespace = new LocalNamespaceSymbol(intrinsicsPackage, "azoth");
         tree.Add(azothNamespace);
         return azothNamespace;
     }
 
-    private static ObjectType BuildPromiseSymbol(NamespaceSymbol azothNamespace, SymbolTreeBuilder tree)
+    private static ObjectType BuildPromiseSymbol(LocalNamespaceSymbol azothNamespace, SymbolTreeBuilder tree)
     {
         var intrinsicsPackage = azothNamespace.Package;
         var promiseType = ObjectType.CreateClass(intrinsicsPackage.Name, azothNamespace.NamespaceName,
@@ -113,18 +113,18 @@ public static class Intrinsic
     }
 
     private static ObjectType BuildSpecializedCollectionSymbols(
-        NamespaceSymbol azothNamespace,
+        LocalNamespaceSymbol azothNamespace,
         SymbolTreeBuilder tree)
     {
-        var collectionsNamespace = new NamespaceSymbol(azothNamespace, "collections");
-        var specializedNamespace = new NamespaceSymbol(collectionsNamespace, "specialized");
+        var collectionsNamespace = new LocalNamespaceSymbol(azothNamespace, "collections");
+        var specializedNamespace = new LocalNamespaceSymbol(collectionsNamespace, "specialized");
         tree.Add(collectionsNamespace);
         tree.Add(specializedNamespace);
 
         return BuildRawHybridBoundedListSymbol(tree, specializedNamespace);
     }
 
-    private static ObjectType BuildRawHybridBoundedListSymbol(SymbolTreeBuilder tree, NamespaceSymbol @namespace)
+    private static ObjectType BuildRawHybridBoundedListSymbol(SymbolTreeBuilder tree, LocalNamespaceSymbol @namespace)
     {
         var classType = ObjectType.CreateClass(@namespace.Package.Name, @namespace.NamespaceName,
             isAbstract: false, isConst: false, "Raw_Hybrid_Bounded_List",

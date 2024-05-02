@@ -1,7 +1,6 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.AST;
-◊base 'IAbstractSyntax';
+◊root AbstractSyntax;
 ◊prefix I;
-◊list IFixedList;
 ◊using System.Numerics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
@@ -11,7 +10,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-'IAbstractSyntax' = Span:'TextSpan';
+AbstractSyntax = Span:`TextSpan`;
 
 // ---------- Special Parts
 BodyOrBlock = Statements:Statement*;
@@ -19,130 +18,130 @@ ElseClause;
 BlockOrResult: ElseClause;
 
 // ---------- Bindings
-Binding = Symbol:'BindingSymbol';
-LocalBinding: Binding = Symbol:'NamedBindingSymbol';
+Binding = Symbol:`BindingSymbol`;
+LocalBinding: Binding = Symbol:`NamedBindingSymbol`;
 
 // ---------- Declarations
 // Note: in the AST all declarations are entities because there are no namespace declarations
-Declaration = File:'CodeFile' Symbol:'Symbol' NameSpan:'TextSpan';
+Declaration = File:`CodeFile` Symbol:`Symbol` NameSpan:`TextSpan`;
 /// A declaration that could contain executable code (i.e. invocable declaration or field declaration)
 ExecutableDeclaration: Declaration;
-InvocableDeclaration: Declaration = Symbol:'InvocableSymbol' Parameters:ConstructorOrInitializerParameter*;
-ConcreteInvocableDeclaration: InvocableDeclaration, ExecutableDeclaration = Body;
-ConcreteFunctionInvocableDeclaration: ConcreteInvocableDeclaration = Symbol:'FunctionSymbol' Parameters:NamedParameter* Body;
+InvocableDeclaration: Declaration = Symbol:`InvocableSymbol` Parameters:ConstructorOrInitializerParameter*;
+ConcreteInvocableDeclaration: Declaration <: InvocableDeclaration, ExecutableDeclaration = Body;
+ConcreteFunctionInvocableDeclaration: ConcreteInvocableDeclaration = Symbol:`FunctionSymbol` Parameters:NamedParameter* Body;
 
 // ---------- Non-Member Declarations
 NonMemberDeclaration: Declaration;
-TypeDeclaration: NonMemberDeclaration = Symbol:'UserTypeSymbol' Supertypes:TypeDeclaration* Members:MemberDeclaration*;
+TypeDeclaration: NonMemberDeclaration = Symbol:`UserTypeSymbol` Supertypes:TypeDeclaration* Members:MemberDeclaration*;
 ClassOrStructDeclaration: TypeDeclaration;
-ClassDeclaration: ClassOrStructDeclaration = BaseClass:ClassDeclaration? Supertypes:TypeDeclaration* Members:ClassMemberDeclaration* DefaultConstructorSymbol:'ConstructorSymbol'?;
-StructDeclaration: ClassOrStructDeclaration = Supertypes:TypeDeclaration* DefaultInitializerSymbol:'InitializerSymbol'? Members:StructMemberDeclaration*;
+ClassDeclaration: ClassOrStructDeclaration = BaseClass:ClassDeclaration? Supertypes:TypeDeclaration* Members:ClassMemberDeclaration* DefaultConstructorSymbol:`ConstructorSymbol`?;
+StructDeclaration: ClassOrStructDeclaration = Supertypes:TypeDeclaration* DefaultInitializerSymbol:`InitializerSymbol`? Members:StructMemberDeclaration*;
 TraitDeclaration: TypeDeclaration = Supertypes:TypeDeclaration* Members:TraitMemberDeclaration*;
-FunctionDeclaration: NonMemberDeclaration, ConcreteFunctionInvocableDeclaration = Attributes:Attribute* Symbol:'FunctionSymbol' Parameters:NamedParameter* Body;
+FunctionDeclaration: NonMemberDeclaration <: ConcreteFunctionInvocableDeclaration = Attributes:Attribute* Symbol:`FunctionSymbol` Parameters:NamedParameter* Body;
 
 // ---------- Member Declarations
 // Note: by declaring the DeclaringType property type with quotes, it avoids the system assuming it must represent a child node
-MemberDeclaration: Declaration = DeclaringType:'ITypeDeclaration';
+MemberDeclaration: Declaration = DeclaringType:`ITypeDeclaration`;
 ClassMemberDeclaration: MemberDeclaration;
 StructMemberDeclaration: MemberDeclaration;
 TraitMemberDeclaration: MemberDeclaration;
-MethodDeclaration: ClassMemberDeclaration, TraitMemberDeclaration = Symbol:'MethodSymbol' SelfParameter Parameters:NamedParameter*;
+MethodDeclaration: MemberDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration = Symbol:`MethodSymbol` SelfParameter Parameters:NamedParameter*;
 AbstractMethodDeclaration: MethodDeclaration = SelfParameter Parameters:NamedParameter*;
-ConcreteMethodDeclaration: MethodDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration = Symbol:'MethodSymbol' SelfParameter Parameters:NamedParameter* Body;
+ConcreteMethodDeclaration: MethodDeclaration <: StructMemberDeclaration, ConcreteInvocableDeclaration = Symbol:`MethodSymbol` SelfParameter Parameters:NamedParameter* Body;
 StandardMethodDeclaration: ConcreteMethodDeclaration = SelfParameter Parameters:NamedParameter* Body;
 GetterMethodDeclaration: ConcreteMethodDeclaration= SelfParameter Parameters:NamedParameter* Body;
 SetterMethodDeclaration: ConcreteMethodDeclaration = SelfParameter Parameters:NamedParameter* Body;
-ConstructorDeclaration: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IClassDeclaration' Symbol:'ConstructorSymbol' SelfParameter Parameters:ConstructorOrInitializerParameter* Body;
-InitializerDeclaration: StructMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:'IStructDeclaration' Symbol:'InitializerSymbol' SelfParameter Parameters:ConstructorOrInitializerParameter* Body;
-FieldDeclaration: ClassMemberDeclaration, StructMemberDeclaration, ExecutableDeclaration, Binding = DeclaringType:'IClassOrStructDeclaration' Symbol:'FieldSymbol';
-AssociatedFunctionDeclaration: ClassMemberDeclaration, StructMemberDeclaration, TraitMemberDeclaration, ConcreteFunctionInvocableDeclaration = Symbol:'FunctionSymbol' Parameters:NamedParameter* Body;
+ConstructorDeclaration: MemberDeclaration <: ClassMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:`IClassDeclaration` Symbol:`ConstructorSymbol` SelfParameter Parameters:ConstructorOrInitializerParameter* Body;
+InitializerDeclaration: MemberDeclaration <: StructMemberDeclaration, ConcreteInvocableDeclaration = DeclaringType:`IStructDeclaration` Symbol:`InitializerSymbol` SelfParameter Parameters:ConstructorOrInitializerParameter* Body;
+FieldDeclaration: MemberDeclaration <: ClassMemberDeclaration, StructMemberDeclaration, ExecutableDeclaration, Binding = DeclaringType:`IClassOrStructDeclaration` Symbol:`FieldSymbol`;
+AssociatedFunctionDeclaration: MemberDeclaration <: ClassMemberDeclaration, StructMemberDeclaration, TraitMemberDeclaration, ConcreteFunctionInvocableDeclaration = Symbol:`FunctionSymbol` Parameters:NamedParameter* Body;
 
 // ---------- Attributes
-Attribute = ReferencedSymbol:'TypeSymbol';
+Attribute = ReferencedSymbol:`TypeSymbol`;
 
 // ---------- Parameters --------------
-Parameter = Unused:'bool';
+Parameter = Unused:`bool`;
 /// A parameter that can be declared in a constructor
 ConstructorOrInitializerParameter: Parameter;
 /// A parameter that creates a binding, i.e. a named or self parameter
-BindingParameter: Parameter, Binding;
-NamedParameter: Parameter, ConstructorOrInitializerParameter, BindingParameter, LocalBinding = Symbol:'NamedVariableSymbol' DefaultValue:Expression?;
-SelfParameter: Parameter, BindingParameter = Symbol:'SelfParameterSymbol';
-FieldParameter: Parameter, ConstructorOrInitializerParameter = ReferencedSymbol:'FieldSymbol' DefaultValue:Expression?;
+BindingParameter: Parameter <: Binding;
+NamedParameter: Parameter <: ConstructorOrInitializerParameter, BindingParameter, LocalBinding = Symbol:`NamedVariableSymbol` DefaultValue:Expression?;
+SelfParameter: Parameter <: BindingParameter = Symbol:`SelfParameterSymbol`;
+FieldParameter: Parameter <: ConstructorOrInitializerParameter = ReferencedSymbol:`FieldSymbol` DefaultValue:Expression?;
 
 // ---------- Function Parts
 Body: BodyOrBlock = Statements:BodyStatement*;
 
 // ---------- Statements
 Statement;
-ResultStatement: Statement, BlockOrResult = Expression;
+ResultStatement: Statement <: BlockOrResult = Expression;
 BodyStatement: Statement;
-VariableDeclarationStatement: BodyStatement, LocalBinding = NameSpan:'TextSpan' Symbol:'NamedVariableSymbol' Initializer:Expression? VariableIsLiveAfter:'Promise<bool>';
+VariableDeclarationStatement: BodyStatement <: LocalBinding = NameSpan:`TextSpan` Symbol:`NamedVariableSymbol` Initializer:Expression? VariableIsLiveAfter:`Promise<bool>`;
 ExpressionStatement: BodyStatement = Expression;
 
 // ---------- Patterns
 Pattern;
-BindingPattern: Pattern, LocalBinding = Symbol:'NamedVariableSymbol' VariableIsLiveAfter:'Promise<bool>';
-BindingContextPattern: Pattern = Pattern Type:'DataType';
+BindingPattern: Pattern <: LocalBinding = Symbol:`NamedVariableSymbol` VariableIsLiveAfter:`Promise<bool>`;
+BindingContextPattern: Pattern = Pattern Type:`DataType`;
 OptionalPattern: Pattern = Pattern;
 
 // ---------- Expressions
-Expression = DataType:'DataType';
+Expression = DataType:`DataType`;
 NameExpression: Expression;
 AssignableExpression: Expression;
-BlockExpression: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
-NewObjectExpression: Expression =  ReferencedSymbol:'ConstructorSymbol' Arguments:Expression*;
+BlockExpression: Expression <: BlockOrResult, BodyOrBlock = Statements:Statement*;
+NewObjectExpression: Expression = ReferencedSymbol:`ConstructorSymbol` Arguments:Expression*;
 UnsafeExpression: Expression = Expression;
 
 // ---------- Literal Expressions
 LiteralExpression: Expression;
-BoolLiteralExpression: LiteralExpression = Value:'bool';
-IntegerLiteralExpression: LiteralExpression = Value:'BigInteger';
+BoolLiteralExpression: LiteralExpression = Value:`bool`;
+IntegerLiteralExpression: LiteralExpression = Value:`BigInteger`;
 NoneLiteralExpression: LiteralExpression;
-StringLiteralExpression: LiteralExpression = Value:'string';
+StringLiteralExpression: LiteralExpression = Value:`string`;
 
 // ---------- Operator Expressions
-AssignmentExpression: Expression = LeftOperand:AssignableExpression Operator:'AssignmentOperator' RightOperand:Expression;
-BinaryOperatorExpression: Expression = LeftOperand:Expression Operator:'BinaryOperator' RightOperand:Expression;
-UnaryOperatorExpression: Expression = Fixity:'UnaryOperatorFixity' Operator:'UnaryOperator' Operand:Expression;
+AssignmentExpression: Expression = LeftOperand:AssignableExpression Operator:`AssignmentOperator` RightOperand:Expression;
+BinaryOperatorExpression: Expression = LeftOperand:Expression Operator:`BinaryOperator` RightOperand:Expression;
+UnaryOperatorExpression: Expression = Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:Expression;
 PatternMatchExpression: Expression = Referent:Expression Pattern;
 
 // ---------- Control Flow Expressions
-IfExpression: Expression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
+IfExpression: Expression <: ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
 LoopExpression: Expression = Block:BlockExpression;
 WhileExpression: Expression = Condition:Expression Block:BlockExpression;
-ForeachExpression: Expression, LocalBinding = Symbol:'NamedVariableSymbol' InExpression:Expression IterateMethod:'MethodSymbol?' NextMethod:'MethodSymbol' Block:BlockExpression VariableIsLiveAfterAssignment:'Promise<bool>';
+ForeachExpression: Expression <: LocalBinding = Symbol:`NamedVariableSymbol` InExpression:Expression IterateMethod:`MethodSymbol?` NextMethod:`MethodSymbol` Block:BlockExpression VariableIsLiveAfterAssignment:`Promise<bool>`;
 BreakExpression: Expression = Value:Expression?;
 NextExpression: Expression;
 ReturnExpression: Expression = Value:Expression?;
 
 // ---------- Implicit Conversion Expressions
-ImplicitConversionExpression: Expression = Expression DataType:'DataType';
-//ImplicitImmutabilityConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'ObjectType';
-ImplicitSimpleTypeConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'SimpleType';
-ImplicitOptionalConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'OptionalType';
-ImplicitLiftedConversionExpression: ImplicitConversionExpression = Expression ConvertToType:'OptionalType';
+ImplicitConversionExpression: Expression = Expression DataType:`DataType`;
+//ImplicitImmutabilityConversionExpression: ImplicitConversionExpression = Expression ConvertToType:`ObjectType`;
+ImplicitSimpleTypeConversionExpression: ImplicitConversionExpression = Expression ConvertToType:`SimpleType`;
+ImplicitOptionalConversionExpression: ImplicitConversionExpression = Expression ConvertToType:`OptionalType`;
+ImplicitLiftedConversionExpression: ImplicitConversionExpression = Expression ConvertToType:`OptionalType`;
 
 // ----------- Explicit Conversion Expressions
-ExplicitConversionExpression: Expression = Expression IsOptional:'bool' DataType:'DataType';
-ExplicitSimpleTypeConversionExpression: ExplicitConversionExpression = Expression ConvertToType:'SimpleType';
+ExplicitConversionExpression: Expression = Expression IsOptional:`bool` DataType:`DataType`;
+ExplicitSimpleTypeConversionExpression: ExplicitConversionExpression = Expression ConvertToType:`SimpleType`;
 
 // ---------- Invocation Expressions
 InvocationExpression: Expression = Arguments:Expression*;
-FunctionInvocationExpression: InvocationExpression = ReferencedSymbol:'FunctionSymbol' Arguments:Expression*;
-InitializerInvocationExpression: InvocationExpression = ReferencedSymbol:'InitializerSymbol' Arguments:Expression*;
-MethodInvocationExpression: InvocationExpression = Context:Expression ReferencedSymbol:'MethodSymbol' Arguments:Expression*;
+FunctionInvocationExpression: InvocationExpression = ReferencedSymbol:`FunctionSymbol` Arguments:Expression*;
+InitializerInvocationExpression: InvocationExpression = ReferencedSymbol:`InitializerSymbol` Arguments:Expression*;
+MethodInvocationExpression: InvocationExpression = Context:Expression ReferencedSymbol:`MethodSymbol` Arguments:Expression*;
 FunctionReferenceInvocationExpression: InvocationExpression = Referent:Expression Arguments:Expression*;
 
 // ---------- Variable Expressions
-VariableNameExpression: AssignableExpression, NameExpression = ReferencedSymbol:'NamedVariableSymbol' IsMove:'bool' VariableIsLiveAfter:'Promise<bool>';
-SelfExpression: Expression = ReferencedSymbol:'SelfParameterSymbol' IsImplicit:'bool';
-FieldAccessExpression: AssignableExpression = Context:Expression AccessOperator:'AccessOperator' ReferencedSymbol:'FieldSymbol';
+VariableNameExpression: NameExpression <: AssignableExpression = ReferencedSymbol:`NamedVariableSymbol` IsMove:`bool` VariableIsLiveAfter:`Promise<bool>`;
+SelfExpression: Expression = ReferencedSymbol:`SelfParameterSymbol` IsImplicit:`bool`;
+FieldAccessExpression: AssignableExpression = Context:Expression AccessOperator:`AccessOperator` ReferencedSymbol:`FieldSymbol`;
 
 // ---------- Capability Expressions
-MoveExpression: Expression = ReferencedSymbol:'BindingSymbol' Referent:Expression;
+MoveExpression: Expression = ReferencedSymbol:`BindingSymbol` Referent:Expression;
 TempMoveExpression: Expression = Referent:Expression;
-FreezeExpression: Expression = ReferencedSymbol:'BindingSymbol' Referent:Expression;
+FreezeExpression: Expression = ReferencedSymbol:`BindingSymbol` Referent:Expression;
 TempFreezeExpression: Expression = Referent:Expression;
 IdExpression: Expression = Referent:Expression;
 
@@ -153,8 +152,8 @@ RecoverIsolationExpression: RecoverExpression = Value:Expression;
 
 // ---------- Async Expressions
 AsyncBlockExpression: Expression = Block:BlockExpression;
-AsyncStartExpression: Expression = Scheduled:'bool' Expression;
+AsyncStartExpression: Expression = Scheduled:`bool` Expression;
 AwaitExpression: Expression = Expression;
 
 // ---------- Name Expressions
-FunctionNameExpression: NameExpression = ReferencedSymbol:'FunctionSymbol';
+FunctionNameExpression: NameExpression = ReferencedSymbol:`FunctionSymbol`;

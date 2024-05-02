@@ -75,6 +75,8 @@ public sealed class AcyclicPromise<T> : IPromise<T>
         }
     }
 
+    public T ResultOr(T elseValue) => IsFulfilled ? value : elseValue;
+
     // Useful for debugging
     public override string ToString()
     {

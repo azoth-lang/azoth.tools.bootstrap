@@ -14,9 +14,9 @@ internal class AssociatedFunctionDeclaration : InvocableDeclaration, IAssociated
     public IBody Body { get; }
 
     public AssociatedFunctionDeclaration(
+        ITypeDeclaration declaringType,
         CodeFile file,
         TextSpan span,
-        ITypeDeclaration declaringType,
         FunctionSymbol symbol,
         TextSpan nameSpan,
         IFixedList<INamedParameter> parameters,

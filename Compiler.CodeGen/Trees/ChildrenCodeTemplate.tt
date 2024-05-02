@@ -1,0 +1,43 @@
+<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types" #>
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Diagnostics;
+using ExhaustiveMatching;
+
+namespace <#=grammar.Namespace #>;
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public static class <#=Emit.TypeName(grammar.DefaultParent)#>Extensions
+{
+    [DebuggerStepThrough]
+    public static IEnumerable<<#=Emit.TypeName(grammar.DefaultParent)#>> Children(this <#=Emit.TypeName(grammar.DefaultParent)#> node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+<#  foreach(var rule in grammar.Rules.Where(r => r.IsTerminal)) { #>
+            case <#=Emit.TypeName(rule.Defines) #> n:
+<#      foreach(var property in rule.DeclaredProperties.Where(p => p.ReferencesRule)) { #>
+<#          if (property.Type is CollectionType) { #>
+                foreach (var child in n.<#=property.Name #>)
+                    yield return child;
+<#          } else if (property.Type is OptionalType) { #>
+                if (n.<#=property.Name #> is not null)
+                    yield return n.<#=property.Name #>;
+<#          } else { #>
+                yield return n.<#=property.Name #>;
+<#          } #>
+<#      } #>
+                yield break;
+<#  } #>
+        }
+    }
+}

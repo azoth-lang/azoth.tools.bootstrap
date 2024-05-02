@@ -29,7 +29,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
     public void BuildFor(ICompilationUnitSyntax compilationUnit, LexicalScope containingScope)
         => Walk(compilationUnit, containingScope);
 
-    protected override void WalkNonNull(ISyntax syntax, LexicalScope containingScope)
+    protected override void WalkNonNull(IConcreteSyntax syntax, LexicalScope containingScope)
     {
         // Forward calls for expressions before setting ContainingLexicalScope
         if (syntax is IExpressionSyntax exp)
