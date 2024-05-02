@@ -24,3 +24,10 @@ public sealed class ChildList<T> : IReadOnlyList<T>
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
+
+public static class ChildList
+{
+    public static ChildList<T> Create<T>(IEnumerable<T> initialValues)
+        where T : class
+        => new(initialValues);
+}
