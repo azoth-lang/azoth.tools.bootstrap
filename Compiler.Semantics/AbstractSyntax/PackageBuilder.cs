@@ -24,7 +24,7 @@ internal class PackageBuilder
         FixedSymbolTree symbolTree,
         FixedSymbolTree testingSymbolTree,
         Diagnostics diagnostics,
-        IFixedSet<Compiler.AST.Package> references)
+        IFixedSet<Package> references)
     {
         Declarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();
         TestingDeclarations = GetAllDeclarations(nonMemberTestingDeclarations).ToFixedSet();

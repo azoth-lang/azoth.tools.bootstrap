@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -11,8 +10,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 
 internal static class SyntaxBinder
 {
+    public static IPackageNode Bind(IPackageSyntax syntax)
+        => Package(syntax);
+
     #region Packages
-    public static IPackageNode Package(IPackageSyntax syntax)
+    private static IPackageNode Package(IPackageSyntax syntax)
         => new PackageNode(syntax, PackageReferences(syntax.References), CompilationUnits(syntax.CompilationUnits), CompilationUnits(syntax.TestingCompilationUnits));
 
     private static IEnumerable<IPackageReferenceNode> PackageReferences(IEnumerable<IPackageReferenceSyntax> syntax)
@@ -87,42 +89,42 @@ internal static class SyntaxBinder
 
     #region Type Member Declarations
     private static IEnumerable<IClassMemberDeclarationNode> ClassMemberDeclarations(IEnumerable<IClassMemberDeclarationSyntax> syntax)
-        => syntax.Select(ClassMemberDeclaration);
+        => syntax.Select(ClassMemberDeclaration).WhereNotNull();
 
-    private static IClassMemberDeclarationNode ClassMemberDeclaration(IClassMemberDeclarationSyntax syntax)
+    private static IClassMemberDeclarationNode? ClassMemberDeclaration(IClassMemberDeclarationSyntax syntax)
         => syntax switch
         {
             ITypeDeclarationSyntax syn => TypeDeclaration(syn),
-            IMethodDeclarationSyntax syn => throw new NotImplementedException(),
-            IConstructorDeclarationSyntax syn => throw new NotImplementedException(),
-            IFieldDeclarationSyntax syn => throw new NotImplementedException(),
-            IAssociatedFunctionDeclarationSyntax syn => throw new NotImplementedException(),
+            IMethodDeclarationSyntax syn => null,
+            IConstructorDeclarationSyntax syn => null,
+            IFieldDeclarationSyntax syn => null,
+            IAssociatedFunctionDeclarationSyntax syn => null,
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
     private static IEnumerable<IStructMemberDeclarationNode> StructMemberDeclarations(IEnumerable<IStructMemberDeclarationSyntax> syntax)
-        => syntax.Select(StructMemberDeclaration);
+        => syntax.Select(StructMemberDeclaration).WhereNotNull();
 
-    private static IStructMemberDeclarationNode StructMemberDeclaration(IStructMemberDeclarationSyntax syntax)
+    private static IStructMemberDeclarationNode? StructMemberDeclaration(IStructMemberDeclarationSyntax syntax)
         => syntax switch
         {
             ITypeDeclarationSyntax syn => TypeDeclaration(syn),
-            IConcreteMethodDeclarationSyntax syn => throw new NotImplementedException(),
-            IInitializerDeclarationSyntax syn => throw new NotImplementedException(),
-            IFieldDeclarationSyntax syn => throw new NotImplementedException(),
-            IAssociatedFunctionDeclarationSyntax syn => throw new NotImplementedException(),
+            IConcreteMethodDeclarationSyntax syn => null,
+            IInitializerDeclarationSyntax syn => null,
+            IFieldDeclarationSyntax syn => null,
+            IAssociatedFunctionDeclarationSyntax syn => null,
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
     private static IEnumerable<ITraitMemberDeclarationNode> TraitMemberDeclarations(IEnumerable<ITraitMemberDeclarationSyntax> syntax)
-        => syntax.Select(TraitMemberDeclaration);
+        => syntax.Select(TraitMemberDeclaration).WhereNotNull();
 
-    private static ITraitMemberDeclarationNode TraitMemberDeclaration(ITraitMemberDeclarationSyntax syntax)
+    private static ITraitMemberDeclarationNode? TraitMemberDeclaration(ITraitMemberDeclarationSyntax syntax)
         => syntax switch
         {
             ITypeDeclarationSyntax syn => TypeDeclaration(syn),
-            IMethodDeclarationSyntax syn => throw new NotImplementedException(),
-            IAssociatedFunctionDeclarationSyntax syn => throw new NotImplementedException(),
+            IMethodDeclarationSyntax syn => null,
+            IAssociatedFunctionDeclarationSyntax syn => null,
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
     #endregion

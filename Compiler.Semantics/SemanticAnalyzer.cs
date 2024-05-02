@@ -12,6 +12,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Liveness;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Startup;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.BindingMutability;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.DefiniteAssignment;
@@ -38,10 +39,13 @@ public class SemanticAnalyzer
     public bool SaveReachabilityGraphs { get; set; }
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-    public Compiler.AST.Package Check(PackageSyntax<Compiler.AST.Package> packageSyntax)
+    public Package Check(PackageSyntax<Package> packageSyntax)
     {
         // If there are errors from the lex and parse phase, don't continue on
         packageSyntax.Diagnostics.ThrowIfFatalErrors();
+
+        // Start of new attribute grammar based approach
+        var packageNode = SyntaxBinder.Bind(packageSyntax);
 
         NamespaceSymbolBuilder.BuildNamespaceSymbols(packageSyntax);
 
@@ -62,7 +66,7 @@ public class SemanticAnalyzer
         return packageBuilder.Build();
     }
 
-    private static PackageBuilder CheckSemantics(PackageSyntax<Compiler.AST.Package> packageSyntax)
+    private static PackageBuilder CheckSemantics(PackageSyntax<Package> packageSyntax)
     {
         DeclarationNumberAssigner.AssignIn(packageSyntax.AllEntityDeclarations);
 
