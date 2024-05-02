@@ -1,6 +1,6 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.AST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Startup;
 

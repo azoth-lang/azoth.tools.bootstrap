@@ -1,10 +1,13 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 ◊walkers_namespace Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
 ◊root SemanticNode;
+◊prefix I;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
+◊using Azoth.Tools.Bootstrap.Compiler.Types;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 SemanticNode = Syntax:`ISyntax`;
@@ -22,15 +25,39 @@ Code = Syntax:`IConcreteSyntax`;
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile` ImplicitNamespaceName:`NamespaceName`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
 
+UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
+
 // ---------- Declarations
 Declaration <: Code = Syntax:`IDeclarationSyntax`;
 
 // ---------- Namespaces
-
 NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`
     IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
 NamespaceMemberDeclaration <: Declaration;
 
-// ---------- To Categorize
-UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
+// ---------- Type Declarations
+TypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
+    = Syntax:`ITypeDeclarationSyntax` GenericParameters:GenericParameter* SupertypeNames:UnresolvedSupertypeName* Members:TypeMemberDeclaration*;
+ClassDeclaration <: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:`bool` GenericParameters:GenericParameter*
+    BaseTypeName:UnresolvedSupertypeName? SupertypeNames:UnresolvedSupertypeName* Members:ClassMemberDeclaration*;
+StructDeclaration <: TypeDeclaration = Syntax:`IStructDeclarationSyntax` GenericParameters:GenericParameter*
+    SupertypeNames:UnresolvedSupertypeName* Members:StructMemberDeclaration*;
+TraitDeclaration <: TypeDeclaration = Syntax:`ITraitDeclarationSyntax` GenericParameters:GenericParameter*
+    SupertypeNames:UnresolvedSupertypeName* Members:TraitMemberDeclaration*;
+
+// ---------- Type Declaration Parts
+GenericParameter <: Code = Syntax:`IGenericParameterSyntax` Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance`;
+UnresolvedSupertypeName <: Code = Syntax:`ISupertypeNameSyntax` Name:`TypeName`;// TypeArguments:UnresolvedType*;
+
+// ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
+TypeMemberDeclaration <: Declaration = Syntax:`ITypeMemberDeclarationSyntax`;
+ClassMemberDeclaration <: TypeMemberDeclaration = Syntax:`IClassMemberDeclarationSyntax`;
+TraitMemberDeclaration <: TypeMemberDeclaration = Syntax:`ITraitMemberDeclarationSyntax`;
+StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarationSyntax`;
+
+// ---------- Capabilities
+CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`ICapabilityConstraint`;
+CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint:`CapabilitySet`;
+// TODO have a way to make Capability hide Constraint
+Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability` Constraint:`Capability`;

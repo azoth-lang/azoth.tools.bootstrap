@@ -3,7 +3,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.AST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
@@ -102,7 +102,7 @@ public class SemanticAnalyzer
         return packageBuilder;
     }
 
-    private static void CheckDataFlow(IFixedSet<IDeclaration> declarations, FixedSymbolTree symbolTree, Diagnostics diagnostics)
+    private static void CheckDataFlow(IFixedSet<AST.IDeclaration> declarations, FixedSymbolTree symbolTree, Diagnostics diagnostics)
     {
         // From this point forward, analysis focuses on executable declarations (i.e. invocables and field initializers)
         var executableDeclarations = declarations.OfType<IExecutableDeclaration>().ToFixedSet();

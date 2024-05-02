@@ -7,20 +7,20 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class CompilationUnitNode : CodeNode, CompilationUnit
+internal sealed class CompilationUnitNode : CodeNode, ICompilationUnit
 {
     public override ICompilationUnitSyntax Syntax { get; }
 
     public CodeFile File => Syntax.File;
     public NamespaceName ImplicitNamespaceName => Syntax.ImplicitNamespaceName;
 
-    public IFixedList<UsingDirective> UsingDirectives { get; }
-    public IFixedList<NamespaceMemberDeclaration> Declarations { get; }
+    public IFixedList<IUsingDirective> UsingDirectives { get; }
+    public IFixedList<INamespaceMemberDeclaration> Declarations { get; }
 
     public CompilationUnitNode(
         ICompilationUnitSyntax syntax,
-        IEnumerable<UsingDirective> usingDirectives,
-        IEnumerable<NamespaceMemberDeclaration> declarations)
+        IEnumerable<IUsingDirective> usingDirectives,
+        IEnumerable<INamespaceMemberDeclaration> declarations)
     {
         Syntax = syntax;
         UsingDirectives = ChildList.CreateFixed(usingDirectives);

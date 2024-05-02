@@ -6,20 +6,20 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal class NamespaceDeclarationNode : CodeNode, NamespaceDeclaration
+internal class NamespaceDeclarationNode : CodeNode, INamespaceDeclaration
 {
     public override INamespaceDeclarationSyntax Syntax { get; }
-    IDeclarationSyntax Declaration.Syntax => Syntax;
+    IDeclarationSyntax IDeclaration.Syntax => Syntax;
     public bool IsGlobalQualified => Syntax.IsGlobalQualified;
     public NamespaceName DeclaredNames => Syntax.DeclaredNames;
 
-    public IFixedList<UsingDirective> UsingDirectives { get; }
-    public IFixedList<NamespaceMemberDeclaration> Declarations { get; }
+    public IFixedList<IUsingDirective> UsingDirectives { get; }
+    public IFixedList<INamespaceMemberDeclaration> Declarations { get; }
 
     public NamespaceDeclarationNode(
         INamespaceDeclarationSyntax syntax,
-        IEnumerable<UsingDirective> usingDirectives,
-        IEnumerable<NamespaceMemberDeclaration> declarations)
+        IEnumerable<IUsingDirective> usingDirectives,
+        IEnumerable<INamespaceMemberDeclaration> declarations)
     {
         Syntax = syntax;
         UsingDirectives = ChildList.CreateFixed(usingDirectives);
