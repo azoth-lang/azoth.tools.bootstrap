@@ -12,33 +12,33 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 // ReSharper disable PartialTypeWithSinglePart
 
 [Closed(
-    typeof(IPackage),
-    typeof(IPackageReference),
-    typeof(ICode),
-    typeof(INamespaceMemberDeclaration),
-    typeof(IClassDeclaration),
-    typeof(IStructDeclaration),
-    typeof(ITraitDeclaration),
-    typeof(ITypeMemberDeclaration),
-    typeof(ICapabilitySet),
-    typeof(ICapability))]
+    typeof(IPackageNode),
+    typeof(IPackageReferenceNode),
+    typeof(ICodeNode),
+    typeof(INamespaceMemberDeclarationNode),
+    typeof(IClassDeclarationNode),
+    typeof(IStructDeclarationNode),
+    typeof(ITraitDeclarationNode),
+    typeof(ITypeMemberDeclarationNode),
+    typeof(ICapabilitySetNode),
+    typeof(ICapabilityNode))]
 public partial interface ISemanticNode
 {
     ISyntax Syntax { get; }
 }
 
-public partial interface IPackage : ISemanticNode
+public partial interface IPackageNode : ISemanticNode
 {
     new IPackageSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
     IdentifierName Name { get; }
     PackageSymbol Symbol { get; }
-    IFixedSet<IPackageReference> References { get; }
-    IFixedSet<ICompilationUnit> CompilationUnits { get; }
-    IFixedSet<ICompilationUnit> TestingCompilationUnits { get; }
+    IFixedSet<IPackageReferenceNode> References { get; }
+    IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
+    IFixedSet<ICompilationUnitNode> TestingCompilationUnits { get; }
 }
 
-public partial interface IPackageReference : ISemanticNode
+public partial interface IPackageReferenceNode : ISemanticNode
 {
     new IPackageReferenceSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
@@ -48,204 +48,213 @@ public partial interface IPackageReference : ISemanticNode
 }
 
 [Closed(
-    typeof(ICompilationUnit),
-    typeof(IUsingDirective),
-    typeof(IDeclaration),
-    typeof(IGenericParameter),
-    typeof(ISupertypeName),
-    typeof(ICapabilityConstraint))]
-public partial interface ICode : ISemanticNode
+    typeof(ICompilationUnitNode),
+    typeof(IUsingDirectiveNode),
+    typeof(IDeclarationNode),
+    typeof(IGenericParameterNode),
+    typeof(ISupertypeNameNode),
+    typeof(ICapabilityConstraintNode))]
+public partial interface ICodeNode : ISemanticNode
 {
     new IConcreteSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
 }
 
-public partial interface ICompilationUnit : ICode
+public partial interface ICompilationUnitNode : ICodeNode
 {
     new ICompilationUnitSyntax Syntax { get; }
-    IConcreteSyntax ICode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
     CodeFile File { get; }
     NamespaceName ImplicitNamespaceName { get; }
-    IFixedList<IUsingDirective> UsingDirectives { get; }
-    IFixedList<INamespaceMemberDeclaration> Declarations { get; }
+    IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
+    IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
 }
 
-public partial interface IUsingDirective : ICode
+public partial interface IUsingDirectiveNode : ICodeNode
 {
     new IUsingDirectiveSyntax Syntax { get; }
-    IConcreteSyntax ICode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
     NamespaceName Name { get; }
 }
 
 [Closed(
-    typeof(INamespaceMemberDeclaration),
-    typeof(ITypeMemberDeclaration))]
-public partial interface IDeclaration : ICode
+    typeof(INamespaceMemberDeclarationNode),
+    typeof(ITypeMemberDeclarationNode))]
+public partial interface IDeclarationNode : ICodeNode
 {
     new IDeclarationSyntax Syntax { get; }
-    IConcreteSyntax ICode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
 }
 
-public partial interface INamespaceDeclaration : INamespaceMemberDeclaration
+public partial interface INamespaceDeclarationNode : INamespaceMemberDeclarationNode
 {
     new INamespaceDeclarationSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclaration.Syntax => Syntax;
-    IConcreteSyntax ICode.Syntax => Syntax;
+    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
     bool IsGlobalQualified { get; }
     NamespaceName DeclaredNames { get; }
-    IFixedList<IUsingDirective> UsingDirectives { get; }
-    IFixedList<INamespaceMemberDeclaration> Declarations { get; }
+    IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
+    IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
 }
 
 [Closed(
-    typeof(INamespaceDeclaration),
-    typeof(ITypeDeclaration))]
-public partial interface INamespaceMemberDeclaration : ISemanticNode, IDeclaration
+    typeof(INamespaceDeclarationNode),
+    typeof(ITypeDeclarationNode),
+    typeof(IFunctionDeclarationNode))]
+public partial interface INamespaceMemberDeclarationNode : ISemanticNode, IDeclarationNode
 {
 }
 
 [Closed(
-    typeof(IClassDeclaration),
-    typeof(IStructDeclaration),
-    typeof(ITraitDeclaration))]
-public partial interface ITypeDeclaration : INamespaceMemberDeclaration, IClassMemberDeclaration, ITraitMemberDeclaration, IStructMemberDeclaration
+    typeof(IClassDeclarationNode),
+    typeof(IStructDeclarationNode),
+    typeof(ITraitDeclarationNode))]
+public partial interface ITypeDeclarationNode : INamespaceMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode
 {
     new ITypeDeclarationSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclaration.Syntax => Syntax;
-    IClassMemberDeclarationSyntax IClassMemberDeclaration.Syntax => Syntax;
-    ITraitMemberDeclarationSyntax ITraitMemberDeclaration.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclaration.Syntax => Syntax;
-    IConcreteSyntax ICode.Syntax => Syntax;
-    ITypeMemberDeclarationSyntax ITypeMemberDeclaration.Syntax => Syntax;
-    IFixedList<IGenericParameter> GenericParameters { get; }
-    IFixedList<ISupertypeName> SupertypeNames { get; }
-    IFixedList<ITypeMemberDeclaration> Members { get; }
+    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
+    ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
+    IFixedList<IGenericParameterNode> GenericParameters { get; }
+    IFixedList<ISupertypeNameNode> SupertypeNames { get; }
+    IFixedList<ITypeMemberDeclarationNode> Members { get; }
 }
 
-public partial interface IClassDeclaration : ISemanticNode, ITypeDeclaration
+public partial interface IClassDeclarationNode : ISemanticNode, ITypeDeclarationNode
 {
     new IClassDeclarationSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
-    ITypeDeclarationSyntax ITypeDeclaration.Syntax => Syntax;
-    IDeclarationSyntax IDeclaration.Syntax => Syntax;
-    IClassMemberDeclarationSyntax IClassMemberDeclaration.Syntax => Syntax;
-    ITraitMemberDeclarationSyntax ITraitMemberDeclaration.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclaration.Syntax => Syntax;
+    ITypeDeclarationSyntax ITypeDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
+    ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
     bool IsAbstract { get; }
-    ISupertypeName? BaseTypeName { get; }
-    new IFixedList<IClassMemberDeclaration> Members { get; }
-    IFixedList<ITypeMemberDeclaration> ITypeDeclaration.Members => Members;
+    ISupertypeNameNode? BaseTypeName { get; }
+    new IFixedList<IClassMemberDeclarationNode> Members { get; }
+    IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 }
 
-public partial interface IStructDeclaration : ISemanticNode, ITypeDeclaration
+public partial interface IStructDeclarationNode : ISemanticNode, ITypeDeclarationNode
 {
     new IStructDeclarationSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
-    ITypeDeclarationSyntax ITypeDeclaration.Syntax => Syntax;
-    IDeclarationSyntax IDeclaration.Syntax => Syntax;
-    IClassMemberDeclarationSyntax IClassMemberDeclaration.Syntax => Syntax;
-    ITraitMemberDeclarationSyntax ITraitMemberDeclaration.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclaration.Syntax => Syntax;
-    new IFixedList<IStructMemberDeclaration> Members { get; }
-    IFixedList<ITypeMemberDeclaration> ITypeDeclaration.Members => Members;
+    ITypeDeclarationSyntax ITypeDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
+    ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
+    new IFixedList<IStructMemberDeclarationNode> Members { get; }
+    IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 }
 
-public partial interface ITraitDeclaration : ISemanticNode, ITypeDeclaration
+public partial interface ITraitDeclarationNode : ISemanticNode, ITypeDeclarationNode
 {
     new ITraitDeclarationSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
-    ITypeDeclarationSyntax ITypeDeclaration.Syntax => Syntax;
-    IDeclarationSyntax IDeclaration.Syntax => Syntax;
-    IClassMemberDeclarationSyntax IClassMemberDeclaration.Syntax => Syntax;
-    ITraitMemberDeclarationSyntax ITraitMemberDeclaration.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclaration.Syntax => Syntax;
-    new IFixedList<ITraitMemberDeclaration> Members { get; }
-    IFixedList<ITypeMemberDeclaration> ITypeDeclaration.Members => Members;
+    ITypeDeclarationSyntax ITypeDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
+    ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
+    new IFixedList<ITraitMemberDeclarationNode> Members { get; }
+    IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 }
 
-public partial interface IGenericParameter : ICode
+public partial interface IGenericParameterNode : ICodeNode
 {
     new IGenericParameterSyntax Syntax { get; }
-    IConcreteSyntax ICode.Syntax => Syntax;
-    ICapabilityConstraint Constraint { get; }
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
+    ICapabilityConstraintNode Constraint { get; }
     IdentifierName Name { get; }
     ParameterIndependence Independence { get; }
     ParameterVariance Variance { get; }
 }
 
-public partial interface ISupertypeName : ICode
+public partial interface ISupertypeNameNode : ICodeNode
 {
     new ISupertypeNameSyntax Syntax { get; }
-    IConcreteSyntax ICode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
     TypeName Name { get; }
 }
 
 [Closed(
-    typeof(IClassMemberDeclaration),
-    typeof(ITraitMemberDeclaration),
-    typeof(IStructMemberDeclaration))]
-public partial interface ITypeMemberDeclaration : ISemanticNode, IDeclaration
+    typeof(IClassMemberDeclarationNode),
+    typeof(ITraitMemberDeclarationNode),
+    typeof(IStructMemberDeclarationNode))]
+public partial interface ITypeMemberDeclarationNode : ISemanticNode, IDeclarationNode
 {
     new ITypeMemberDeclarationSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclaration.Syntax => Syntax;
-    IConcreteSyntax ICode.Syntax => Syntax;
+    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
 }
 
 [Closed(
-    typeof(ITypeDeclaration))]
-public partial interface IClassMemberDeclaration : ITypeMemberDeclaration
+    typeof(ITypeDeclarationNode))]
+public partial interface IClassMemberDeclarationNode : ITypeMemberDeclarationNode
 {
     new IClassMemberDeclarationSyntax Syntax { get; }
-    ITypeMemberDeclarationSyntax ITypeMemberDeclaration.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
 }
 
 [Closed(
-    typeof(ITypeDeclaration))]
-public partial interface ITraitMemberDeclaration : ITypeMemberDeclaration
+    typeof(ITypeDeclarationNode))]
+public partial interface ITraitMemberDeclarationNode : ITypeMemberDeclarationNode
 {
     new ITraitMemberDeclarationSyntax Syntax { get; }
-    ITypeMemberDeclarationSyntax ITypeMemberDeclaration.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
 }
 
 [Closed(
-    typeof(ITypeDeclaration))]
-public partial interface IStructMemberDeclaration : ITypeMemberDeclaration
+    typeof(ITypeDeclarationNode))]
+public partial interface IStructMemberDeclarationNode : ITypeMemberDeclarationNode
 {
     new IStructMemberDeclarationSyntax Syntax { get; }
-    ITypeMemberDeclarationSyntax ITypeMemberDeclaration.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
+}
+
+public partial interface IFunctionDeclarationNode : INamespaceMemberDeclarationNode
+{
+    new IFunctionDeclarationSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
+    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
 }
 
 [Closed(
-    typeof(ICapabilitySet),
-    typeof(ICapability))]
-public partial interface ICapabilityConstraint : ICode
+    typeof(ICapabilitySetNode),
+    typeof(ICapabilityNode))]
+public partial interface ICapabilityConstraintNode : ICodeNode
 {
     new ICapabilityConstraintSyntax Syntax { get; }
-    IConcreteSyntax ICode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
     Compiler.Types.Capabilities.ICapabilityConstraint Constraint { get; }
 }
 
-public partial interface ICapabilitySet : ISemanticNode, ICapabilityConstraint
+public partial interface ICapabilitySetNode : ISemanticNode, ICapabilityConstraintNode
 {
     new ICapabilitySetSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
-    ICapabilityConstraintSyntax ICapabilityConstraint.Syntax => Syntax;
-    IConcreteSyntax ICode.Syntax => Syntax;
+    ICapabilityConstraintSyntax ICapabilityConstraintNode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
     new CapabilitySet Constraint { get; }
-    Compiler.Types.Capabilities.ICapabilityConstraint ICapabilityConstraint.Constraint => Constraint;
+    Compiler.Types.Capabilities.ICapabilityConstraint ICapabilityConstraintNode.Constraint => Constraint;
 }
 
-public partial interface ICapability : ISemanticNode, ICapabilityConstraint
+public partial interface ICapabilityNode : ISemanticNode, ICapabilityConstraintNode
 {
     new ICapabilitySyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
-    ICapabilityConstraintSyntax ICapabilityConstraint.Syntax => Syntax;
-    IConcreteSyntax ICode.Syntax => Syntax;
+    ICapabilityConstraintSyntax ICapabilityConstraintNode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
     Capability Capability { get; }
     new Capability Constraint { get; }
-    Compiler.Types.Capabilities.ICapabilityConstraint ICapabilityConstraint.Constraint => Constraint;
+    Compiler.Types.Capabilities.ICapabilityConstraint ICapabilityConstraintNode.Constraint => Constraint;
 }
 

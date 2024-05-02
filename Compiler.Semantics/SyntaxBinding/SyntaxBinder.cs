@@ -12,43 +12,42 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 internal static class SyntaxBinder
 {
     #region Packages
-    public static IPackage Package(IPackageSyntax syntax)
+    public static IPackageNode Package(IPackageSyntax syntax)
         => new PackageNode(syntax, PackageReferences(syntax.References), CompilationUnits(syntax.CompilationUnits), CompilationUnits(syntax.TestingCompilationUnits));
 
-    public static IEnumerable<IPackageReference> PackageReferences(IEnumerable<IPackageReferenceSyntax> syntax)
+    private static IEnumerable<IPackageReferenceNode> PackageReferences(IEnumerable<IPackageReferenceSyntax> syntax)
         => syntax.Select(syn => new PackageReferenceNode(syn));
     #endregion
 
     #region Code Files
-    public static IEnumerable<ICompilationUnit> CompilationUnits(IEnumerable<ICompilationUnitSyntax> syntax)
+    private static IEnumerable<ICompilationUnitNode> CompilationUnits(IEnumerable<ICompilationUnitSyntax> syntax)
         => syntax.Select(syn => new CompilationUnitNode(syn, UsingDirectives(syn.UsingDirectives),
             NamespaceMemberDeclarations(syn.Declarations)));
 
-    public static IEnumerable<IUsingDirective> UsingDirectives(IEnumerable<IUsingDirectiveSyntax> syntax)
+    private static IEnumerable<IUsingDirectiveNode> UsingDirectives(IEnumerable<IUsingDirectiveSyntax> syntax)
         => syntax.Select(syn => new UsingDirectiveNode(syn));
     #endregion
 
     #region Namespaces
-
-    private static INamespaceDeclaration NamespaceDeclaration(INamespaceDeclarationSyntax syntax)
+    private static INamespaceDeclarationNode NamespaceDeclaration(INamespaceDeclarationSyntax syntax)
         => new NamespaceDeclarationNode(syntax, UsingDirectives(syntax.UsingDirectives),
             NamespaceMemberDeclarations(syntax.Declarations));
 
-    public static IEnumerable<INamespaceMemberDeclaration> NamespaceMemberDeclarations(IEnumerable<INonMemberDeclarationSyntax> syntax)
+    private static IEnumerable<INamespaceMemberDeclarationNode> NamespaceMemberDeclarations(IEnumerable<INonMemberDeclarationSyntax> syntax)
         => syntax.Select(NamespaceMemberDeclaration);
 
-    public static INamespaceMemberDeclaration NamespaceMemberDeclaration(INonMemberDeclarationSyntax syntax)
+    private static INamespaceMemberDeclarationNode NamespaceMemberDeclaration(INonMemberDeclarationSyntax syntax)
         => syntax switch
         {
             INamespaceDeclarationSyntax syn => NamespaceDeclaration(syn),
             ITypeDeclarationSyntax syn => TypeDeclaration(syn),
-            IFunctionDeclarationSyntax syn => throw new NotImplementedException(),
+            IFunctionDeclarationSyntax syn => FunctionDeclaration(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
     #endregion
 
     #region Type Declarations
-    private static ITypeDeclaration TypeDeclaration(ITypeDeclarationSyntax syntax)
+    private static ITypeDeclarationNode TypeDeclaration(ITypeDeclarationSyntax syntax)
         => syntax switch
         {
             IClassDeclarationSyntax syn => ClassDeclaration(syn),
@@ -57,40 +56,40 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IClassDeclaration ClassDeclaration(IClassDeclarationSyntax syntax)
+    private static IClassDeclarationNode ClassDeclaration(IClassDeclarationSyntax syntax)
         => new ClassDeclarationNode(syntax, GenericParameters(syntax.GenericParameters),
             SupertypeName(syntax.BaseTypeName), SupertypeNames(syntax.SupertypeNames),
             ClassMemberDeclarations(syntax.Members));
 
-    private static IStructDeclaration StructDeclaration(IStructDeclarationSyntax syntax)
+    private static IStructDeclarationNode StructDeclaration(IStructDeclarationSyntax syntax)
         => new StructDeclarationNode(syntax, GenericParameters(syntax.GenericParameters),
             SupertypeNames(syntax.SupertypeNames), StructMemberDeclarations(syntax.Members));
 
-    private static ITraitDeclaration TraitDeclaration(ITraitDeclarationSyntax syntax)
+    private static ITraitDeclarationNode TraitDeclaration(ITraitDeclarationSyntax syntax)
         => new TraitDeclarationNode(syntax, GenericParameters(syntax.GenericParameters),
             SupertypeNames(syntax.SupertypeNames), TraitMemberDeclarations(syntax.Members));
 
-    private static IEnumerable<ISupertypeName> SupertypeNames(IFixedList<ISupertypeNameSyntax> syntax)
+    private static IEnumerable<ISupertypeNameNode> SupertypeNames(IFixedList<ISupertypeNameSyntax> syntax)
         => syntax.Select(syn => SupertypeName(syn));
 
     [return: NotNullIfNotNull(nameof(syntax))]
-    private static ISupertypeName? SupertypeName(ISupertypeNameSyntax? syntax)
+    private static ISupertypeNameNode? SupertypeName(ISupertypeNameSyntax? syntax)
         => syntax is not null ? new SupertypeNameNode(syntax) : null;
     #endregion
 
     #region Type Declaration Parts
-    private static IEnumerable<IGenericParameter> GenericParameters(IEnumerable<IGenericParameterSyntax> syntax)
+    private static IEnumerable<IGenericParameterNode> GenericParameters(IEnumerable<IGenericParameterSyntax> syntax)
         => syntax.Select(GenericParameter);
 
-    private static IGenericParameter GenericParameter(IGenericParameterSyntax syntax)
+    private static IGenericParameterNode GenericParameter(IGenericParameterSyntax syntax)
         => new GenericParameterNode(syntax, CapabilityConstraint(syntax.Constraint));
     #endregion
 
     #region Type Member Declarations
-    private static IEnumerable<IClassMemberDeclaration> ClassMemberDeclarations(IEnumerable<IClassMemberDeclarationSyntax> syntax)
+    private static IEnumerable<IClassMemberDeclarationNode> ClassMemberDeclarations(IEnumerable<IClassMemberDeclarationSyntax> syntax)
         => syntax.Select(ClassMemberDeclaration);
 
-    private static IClassMemberDeclaration ClassMemberDeclaration(IClassMemberDeclarationSyntax syntax)
+    private static IClassMemberDeclarationNode ClassMemberDeclaration(IClassMemberDeclarationSyntax syntax)
         => syntax switch
         {
             ITypeDeclarationSyntax syn => TypeDeclaration(syn),
@@ -101,10 +100,10 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IEnumerable<IStructMemberDeclaration> StructMemberDeclarations(IEnumerable<IStructMemberDeclarationSyntax> syntax)
+    private static IEnumerable<IStructMemberDeclarationNode> StructMemberDeclarations(IEnumerable<IStructMemberDeclarationSyntax> syntax)
         => syntax.Select(StructMemberDeclaration);
 
-    private static IStructMemberDeclaration StructMemberDeclaration(IStructMemberDeclarationSyntax syntax)
+    private static IStructMemberDeclarationNode StructMemberDeclaration(IStructMemberDeclarationSyntax syntax)
         => syntax switch
         {
             ITypeDeclarationSyntax syn => TypeDeclaration(syn),
@@ -115,10 +114,10 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IEnumerable<ITraitMemberDeclaration> TraitMemberDeclarations(IEnumerable<ITraitMemberDeclarationSyntax> syntax)
+    private static IEnumerable<ITraitMemberDeclarationNode> TraitMemberDeclarations(IEnumerable<ITraitMemberDeclarationSyntax> syntax)
         => syntax.Select(TraitMemberDeclaration);
 
-    private static ITraitMemberDeclaration TraitMemberDeclaration(ITraitMemberDeclarationSyntax syntax)
+    private static ITraitMemberDeclarationNode TraitMemberDeclaration(ITraitMemberDeclarationSyntax syntax)
         => syntax switch
         {
             ITypeDeclarationSyntax syn => TypeDeclaration(syn),
@@ -128,8 +127,13 @@ internal static class SyntaxBinder
         };
     #endregion
 
+    #region Invocable Declarations
+    private static IFunctionDeclarationNode FunctionDeclaration(IFunctionDeclarationSyntax syntax)
+        => new FunctionDeclarationNode(syntax);
+    #endregion
+
     #region Capabilities
-    private static ICapabilityConstraint CapabilityConstraint(ICapabilityConstraintSyntax syntax)
+    private static ICapabilityConstraintNode CapabilityConstraint(ICapabilityConstraintSyntax syntax)
         => syntax switch
         {
             ICapabilitySetSyntax syn => CapabilitySet(syn),
@@ -137,14 +141,10 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static ICapabilityConstraint CapabilitySet(ICapabilitySetSyntax syntax)
-    {
-        throw new NotImplementedException();
-    }
+    private static ICapabilityConstraintNode CapabilitySet(ICapabilitySetSyntax syntax)
+        => new CapabilitySetNode(syntax);
 
-    private static ICapabilityConstraint Capability(ICapabilitySyntax syntax)
-    {
-        throw new NotImplementedException();
-    }
+    private static ICapabilityConstraintNode Capability(ICapabilitySyntax syntax)
+        => new CapabilityNode(syntax);
     #endregion
 }

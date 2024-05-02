@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class PackageReferenceNode : SemanticNode, IPackageReference
+internal sealed class PackageReferenceNode : SemanticNode, IPackageReferenceNode
 {
     public override IPackageReferenceSyntax Syntax { get; }
 

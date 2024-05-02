@@ -8,8 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax.Tree;
 
 internal sealed class InitializerDeclaration : InvocableDeclaration, IInitializerDeclaration
 {
-    public AST.IStructDeclaration DeclaringType { get; }
-    AST.ITypeDeclaration IMemberDeclaration.DeclaringType => DeclaringType;
+    public IStructDeclaration DeclaringType { get; }
+    ITypeDeclaration IMemberDeclaration.DeclaringType => DeclaringType;
     public new InitializerSymbol Symbol { get; }
     public ISelfParameter SelfParameter { get; }
     public IBody Body { get; }
@@ -17,7 +17,7 @@ internal sealed class InitializerDeclaration : InvocableDeclaration, IInitialize
     public InitializerDeclaration(
         CodeFile file,
         TextSpan span,
-        AST.IStructDeclaration declaringStruct,
+        IStructDeclaration declaringStruct,
         InitializerSymbol symbol,
         TextSpan nameSpan,
         ISelfParameter selfParameter,

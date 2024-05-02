@@ -8,7 +8,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class PackageNode : SemanticNode, IPackage
+internal sealed class PackageNode : SemanticNode, IPackageNode
 {
     public override IPackageSyntax Syntax { get; }
 
@@ -18,15 +18,15 @@ internal sealed class PackageNode : SemanticNode, IPackage
     public PackageSymbol Symbol
         => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolDefinitions.Package);
 
-    public IFixedSet<IPackageReference> References { get; }
-    public IFixedSet<ICompilationUnit> CompilationUnits { get; }
-    public IFixedSet<ICompilationUnit> TestingCompilationUnits { get; }
+    public IFixedSet<IPackageReferenceNode> References { get; }
+    public IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
+    public IFixedSet<ICompilationUnitNode> TestingCompilationUnits { get; }
 
     public PackageNode(
         IPackageSyntax syntax,
-        IEnumerable<IPackageReference> references,
-        IEnumerable<ICompilationUnit> compilationUnits,
-        IEnumerable<ICompilationUnit> testingCompilationUnits)
+        IEnumerable<IPackageReferenceNode> references,
+        IEnumerable<ICompilationUnitNode> compilationUnits,
+        IEnumerable<ICompilationUnitNode> testingCompilationUnits)
     {
         Syntax = syntax;
         References = FixedSet.Create(references);

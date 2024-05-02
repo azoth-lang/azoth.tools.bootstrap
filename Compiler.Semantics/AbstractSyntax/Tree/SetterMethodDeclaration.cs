@@ -11,7 +11,7 @@ internal sealed class SetterMethodDeclaration : ConcreteMethodDeclaration, ISett
     public SetterMethodDeclaration(
         CodeFile file,
         TextSpan span,
-        AST.ITypeDeclaration declaringType,
+        ITypeDeclaration declaringType,
         MethodSymbol symbol,
         TextSpan nameSpan,
         ISelfParameter selfParameter,

@@ -18,8 +18,6 @@ using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax;
 
-using AST = AST;
-
 // ReSharper disable once UnusedMember.Global
 [SuppressMessage("Performance", "CA1812: Avoid uninstantiated internal classes",
     Justification = "In Progress")]
@@ -27,7 +25,7 @@ internal class ASTBuilder
 {
     // ReSharper disable once UnusedMember.Global
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-    public PackageBuilder BuildPackage(PackageSyntax<AST.Package> packageSyntax)
+    public PackageBuilder BuildPackage(PackageSyntax<Package> packageSyntax)
     {
         var declarations = BuildNonMemberDeclarations(packageSyntax.EntityDeclarations, FixedSet.Empty<INonMemberDeclaration>());
         var testingDeclarations = BuildNonMemberDeclarations(packageSyntax.TestingEntityDeclarations, declarations);
@@ -53,7 +51,7 @@ internal class ASTBuilder
         return declarations;
     }
 
-    private static AST.INonMemberDeclaration BuildNonMemberDeclaration(
+    private static INonMemberDeclaration BuildNonMemberDeclaration(
         INonMemberEntityDeclarationSyntax entity,
         IReadOnlyDictionary<Symbol, Lazy<INonMemberDeclaration>> declarations)
     {
@@ -67,54 +65,54 @@ internal class ASTBuilder
         };
     }
 
-    private static AST.IClassDeclaration BuildClass(
+    private static IClassDeclaration BuildClass(
         IClassDeclarationSyntax syn,
         IReadOnlyDictionary<Symbol, Lazy<INonMemberDeclaration>> declarations)
     {
         var symbol = syn.Symbol.Result;
         var nameSpan = syn.NameSpan;
         var baseClassSymbol = syn.BaseTypeName?.ReferencedSymbol.Result;
-        var baseClass = baseClassSymbol is not null ? (AST.IClassDeclaration)declarations[baseClassSymbol].Value : null;
-        var supertypes = syn.SupertypeNames.Select(n => (AST.ITypeDeclaration)declarations[n.ReferencedSymbol.Result!].Value).ToFixedList();
+        var baseClass = baseClassSymbol is not null ? (IClassDeclaration)declarations[baseClassSymbol].Value : null;
+        var supertypes = syn.SupertypeNames.Select(n => (ITypeDeclaration)declarations[n.ReferencedSymbol.Result!].Value).ToFixedList();
         var defaultConstructorSymbol = syn.DefaultConstructorSymbol;
         return new ClassDeclaration(syn.File, syn.Span, symbol, nameSpan, baseClass, supertypes, defaultConstructorSymbol, BuildMembers);
 
-        IFixedList<AST.IClassMemberDeclaration> BuildMembers(AST.IClassDeclaration c)
+        IFixedList<IClassMemberDeclaration> BuildMembers(IClassDeclaration c)
             => syn.Members.Select(m => BuildClassMember(c, m)).ToFixedList();
     }
 
-    private static AST.IStructDeclaration BuildStruct(
+    private static IStructDeclaration BuildStruct(
         IStructDeclarationSyntax syn,
         IReadOnlyDictionary<Symbol, Lazy<INonMemberDeclaration>> declarations)
     {
         var symbol = syn.Symbol.Result;
         var nameSpan = syn.NameSpan;
         var supertypes = syn.SupertypeNames
-                            .Select(n => (AST.ITypeDeclaration)declarations[n.ReferencedSymbol.Result!].Value)
+                            .Select(n => (ITypeDeclaration)declarations[n.ReferencedSymbol.Result!].Value)
                             .ToFixedList();
         var defaultInitializerSymbol = syn.DefaultInitializerSymbol;
         return new StructDeclaration(syn.File, syn.Span, symbol, nameSpan, supertypes,
             defaultInitializerSymbol, BuildMembers);
 
-        IFixedList<AST.IStructMemberDeclaration> BuildMembers(AST.IStructDeclaration s)
+        IFixedList<IStructMemberDeclaration> BuildMembers(IStructDeclaration s)
             => syn.Members.Select(m => BuildStructMember(s, m)).ToFixedList();
     }
 
-    private static AST.ITraitDeclaration BuildTrait(
+    private static ITraitDeclaration BuildTrait(
         ITraitDeclarationSyntax syn,
         IReadOnlyDictionary<Symbol, Lazy<INonMemberDeclaration>> declarations)
     {
         var symbol = syn.Symbol.Result;
         var nameSpan = syn.NameSpan;
-        var supertypes = syn.SupertypeNames.Select(n => (AST.ITypeDeclaration)declarations[n.ReferencedSymbol.Result!].Value).ToFixedList();
+        var supertypes = syn.SupertypeNames.Select(n => (ITypeDeclaration)declarations[n.ReferencedSymbol.Result!].Value).ToFixedList();
         return new TraitDeclaration(syn.File, syn.Span, symbol, nameSpan, supertypes, BuildMembers);
 
-        IFixedList<AST.ITraitMemberDeclaration> BuildMembers(AST.ITraitDeclaration t)
+        IFixedList<ITraitMemberDeclaration> BuildMembers(ITraitDeclaration t)
             => syn.Members.Select(m => BuildTraitMember(t, m)).ToFixedList();
     }
 
-    private static AST.IClassMemberDeclaration BuildClassMember(
-        AST.IClassDeclaration declaringClass,
+    private static IClassMemberDeclaration BuildClassMember(
+        IClassDeclaration declaringClass,
         IClassMemberDeclarationSyntax member)
     {
         return member switch
@@ -131,8 +129,8 @@ internal class ASTBuilder
         };
     }
 
-    private static AST.IStructMemberDeclaration BuildStructMember(
-        AST.IStructDeclaration declaringStruct,
+    private static IStructMemberDeclaration BuildStructMember(
+        IStructDeclaration declaringStruct,
         IStructMemberDeclarationSyntax member)
     {
         return member switch
@@ -148,8 +146,8 @@ internal class ASTBuilder
         };
     }
 
-    private static AST.ITraitMemberDeclaration BuildTraitMember(
-        AST.ITraitDeclaration declaringTrait,
+    private static ITraitMemberDeclaration BuildTraitMember(
+        ITypeDeclaration declaringTrait,
         ITraitMemberDeclarationSyntax member)
     {
         return member switch
@@ -164,8 +162,8 @@ internal class ASTBuilder
         };
     }
 
-    private static AST.IAssociatedFunctionDeclaration BuildAssociatedFunction(
-        AST.ITypeDeclaration declaringType,
+    private static IAssociatedFunctionDeclaration BuildAssociatedFunction(
+        ITypeDeclaration declaringType,
         IAssociatedFunctionDeclarationSyntax syn)
     {
         var symbol = syn.Symbol.Result;
@@ -176,7 +174,7 @@ internal class ASTBuilder
     }
 
     private static IAbstractMethodDeclaration BuildAbstractMethod(
-        AST.ITypeDeclaration declaringType,
+        ITypeDeclaration declaringType,
         IAbstractMethodDeclarationSyntax syn)
     {
         var symbol = syn.Symbol.Result;
@@ -187,7 +185,7 @@ internal class ASTBuilder
     }
 
     private static IStandardMethodDeclaration BuildStandardMethod(
-        AST.ITypeDeclaration declaringType,
+        ITypeDeclaration declaringType,
         IStandardMethodDeclarationSyntax syn)
     {
         var symbol = syn.Symbol.Result;
@@ -199,7 +197,7 @@ internal class ASTBuilder
     }
 
     private static IGetterMethodDeclaration BuildGetter(
-        AST.ITypeDeclaration declaringType,
+        ITypeDeclaration declaringType,
         IGetterMethodDeclarationSyntax syn)
     {
         var symbol = syn.Symbol.Result;
@@ -210,8 +208,8 @@ internal class ASTBuilder
             selfParameter, body);
     }
 
-    private static AST.ISetterMethodDeclaration BuildSetter(
-        AST.ITypeDeclaration declaringType,
+    private static ISetterMethodDeclaration BuildSetter(
+        ITypeDeclaration declaringType,
         ISetterMethodDeclarationSyntax syn)
     {
         var symbol = syn.Symbol.Result;
@@ -224,7 +222,7 @@ internal class ASTBuilder
     }
 
     private static IConstructorDeclaration BuildConstructor(
-        AST.IClassDeclaration declaringClass,
+        IClassDeclaration declaringClass,
         IConstructorDeclarationSyntax syn)
     {
         var symbol = syn.Symbol.Result;
@@ -236,7 +234,7 @@ internal class ASTBuilder
     }
 
     private static IInitializerDeclaration BuildInitializer(
-        AST.IStructDeclaration declaringStruct,
+        IStructDeclaration declaringStruct,
         IInitializerDeclarationSyntax syn)
     {
         var symbol = syn.Symbol.Result;
@@ -249,7 +247,7 @@ internal class ASTBuilder
     }
 
     private static IFieldDeclaration BuildField(
-        AST.IClassOrStructDeclaration declaringType,
+        IClassOrStructDeclaration declaringType,
         IFieldDeclarationSyntax syn)
     {
         var symbol = syn.Symbol.Result;

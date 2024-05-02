@@ -5,16 +5,16 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal abstract class TypeDeclarationNode : DeclarationNode, ITypeDeclaration
+internal abstract class TypeDeclarationNode : DeclarationNode, ITypeDeclarationNode
 {
     public abstract override ITypeDeclarationSyntax Syntax { get; }
-    public IFixedList<IGenericParameter> GenericParameters { get; }
-    public IFixedList<ISupertypeName> SupertypeNames { get; }
-    public abstract IFixedList<ITypeMemberDeclaration> Members { get; }
+    public IFixedList<IGenericParameterNode> GenericParameters { get; }
+    public IFixedList<ISupertypeNameNode> SupertypeNames { get; }
+    public abstract IFixedList<ITypeMemberDeclarationNode> Members { get; }
 
     protected TypeDeclarationNode(
-        IEnumerable<IGenericParameter> genericParameters,
-        IEnumerable<ISupertypeName> supertypeNames)
+        IEnumerable<IGenericParameterNode> genericParameters,
+        IEnumerable<ISupertypeNameNode> supertypeNames)
     {
         GenericParameters = ChildList.CreateFixed(genericParameters);
         SupertypeNames = ChildList.CreateFixed(supertypeNames);

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
@@ -12,13 +13,11 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
-using AST = Azoth.Tools.Bootstrap.Compiler.AST;
-
 public class LexicalScopesBuilder
 {
     [SuppressMessage("Performance", "CA1822:Mark members as static",
         Justification = "OO")]
-    public void BuildFor(PackageSyntax<AST.Package> package)
+    public void BuildFor(PackageSyntax<Package> package)
     {
         var packagesScope = BuildPackagesScope(package);
 
@@ -99,7 +98,7 @@ public class LexicalScopesBuilder
 
         return nsSymbols.ToFixedDictionary(ns => ns.Name);
     }
-    private static PackagesScope BuildPackagesScope(PackageSyntax<AST.Package> package)
+    private static PackagesScope BuildPackagesScope(PackageSyntax<Package> package)
     {
         var packageAliases = package.References
                                     .ToDictionary(r => r.AliasOrName, r => r.Package.Symbol)

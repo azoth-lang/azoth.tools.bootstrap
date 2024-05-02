@@ -8,19 +8,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax;
 
 internal class PackageBuilder
 {
-    public IFixedSet<AST.IDeclaration> Declarations { get; }
-    public IFixedSet<AST.IDeclaration> TestingDeclarations { get; }
-    public IFixedSet<AST.INonMemberDeclaration> NonMemberDeclarations { get; }
-    public IFixedSet<AST.INonMemberDeclaration> NonMemberTestingDeclarations { get; }
+    public IFixedSet<IDeclaration> Declarations { get; }
+    public IFixedSet<IDeclaration> TestingDeclarations { get; }
+    public IFixedSet<INonMemberDeclaration> NonMemberDeclarations { get; }
+    public IFixedSet<INonMemberDeclaration> NonMemberTestingDeclarations { get; }
     public FixedSymbolTree SymbolTree { get; }
     public FixedSymbolTree TestingSymbolTree { get; }
     public Diagnostics Diagnostics { get; }
-    public IFixedSet<Compiler.AST.Package> References { get; }
+    public IFixedSet<Package> References { get; }
     public IFunctionDeclaration? EntryPoint { get; set; }
 
     public PackageBuilder(
-        IFixedSet<AST.INonMemberDeclaration> nonMemberDeclarations,
-        IFixedSet<AST.INonMemberDeclaration> nonMemberTestingDeclarations,
+        IFixedSet<INonMemberDeclaration> nonMemberDeclarations,
+        IFixedSet<INonMemberDeclaration> nonMemberTestingDeclarations,
         FixedSymbolTree symbolTree,
         FixedSymbolTree testingSymbolTree,
         Diagnostics diagnostics,
@@ -36,21 +36,21 @@ internal class PackageBuilder
         TestingSymbolTree = testingSymbolTree;
     }
 
-    private static IEnumerable<AST.IDeclaration> GetAllDeclarations(
-        IEnumerable<AST.INonMemberDeclaration> nonMemberDeclarations)
+    private static IEnumerable<IDeclaration> GetAllDeclarations(
+        IEnumerable<INonMemberDeclaration> nonMemberDeclarations)
     {
-        var declarations = new Queue<AST.IDeclaration>(nonMemberDeclarations);
+        var declarations = new Queue<IDeclaration>(nonMemberDeclarations);
         while (declarations.TryDequeue(out var declaration))
         {
             yield return declaration;
-            if (declaration is AST.ITypeDeclaration syn)
+            if (declaration is ITypeDeclaration syn)
                 declarations.EnqueueRange(syn.Members);
         }
     }
 
-    public Compiler.AST.Package Build()
+    public Package Build()
     {
-        return new Compiler.AST.Package(NonMemberDeclarations, NonMemberTestingDeclarations, SymbolTree, TestingSymbolTree,
+        return new(NonMemberDeclarations, NonMemberTestingDeclarations, SymbolTree, TestingSymbolTree,
             Diagnostics.ToFixedList(), References,
             EntryPoint);
     }

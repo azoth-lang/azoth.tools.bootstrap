@@ -8,8 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax.Tree;
 
 internal sealed class ConstructorDeclaration : InvocableDeclaration, IConstructorDeclaration
 {
-    public AST.IClassDeclaration DeclaringType { get; }
-    AST.ITypeDeclaration IMemberDeclaration.DeclaringType => DeclaringType;
+    public IClassDeclaration DeclaringType { get; }
+    ITypeDeclaration IMemberDeclaration.DeclaringType => DeclaringType;
     public new ConstructorSymbol Symbol { get; }
     public ISelfParameter SelfParameter { get; }
     public IBody Body { get; }
@@ -17,7 +17,7 @@ internal sealed class ConstructorDeclaration : InvocableDeclaration, IConstructo
     public ConstructorDeclaration(
         CodeFile file,
         TextSpan span,
-        AST.IClassDeclaration declaringClass,
+        IClassDeclaration declaringClass,
         ConstructorSymbol symbol,
         TextSpan nameSpan,
         ISelfParameter selfParameter,

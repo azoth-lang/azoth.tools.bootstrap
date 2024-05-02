@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Lexing;
@@ -27,14 +28,14 @@ public class AzothCompiler
     /// </summary>
     public bool SaveReachabilityGraphs { get; set; }
 
-    public Task<AST.Package> CompilePackageAsync(
+    public Task<Package> CompilePackageAsync(
         IdentifierName name,
         IEnumerable<ICodeFileSource> files,
         IEnumerable<ICodeFileSource> testingFileSources,
         IEnumerable<PackageReferenceAsync> references)
         => CompilePackageAsync(name, files, testingFileSources, references, TaskScheduler.Default);
 
-    public async Task<AST.Package> CompilePackageAsync(
+    public async Task<Package> CompilePackageAsync(
         IdentifierName name,
         IEnumerable<ICodeFileSource> fileSources,
         IEnumerable<ICodeFileSource> testingFileSources,
@@ -49,7 +50,7 @@ public class AzothCompiler
             references.Select(r => r.ToSyntaxAsync())).ConfigureAwait(false)).ToFixedSet();
 
         // TODO add the references to the package syntax
-        var packageSyntax = new PackageSyntax<AST.Package>(name, compilationUnits, testingCompilationUnits, referenceSyntax);
+        var packageSyntax = new PackageSyntax<Package>(name, compilationUnits, testingCompilationUnits, referenceSyntax);
 
         var analyzer = new SemanticAnalyzer()
         {
@@ -82,14 +83,14 @@ public class AzothCompiler
         }
     }
 
-    public AST.Package CompilePackage(
+    public Package CompilePackage(
         string name,
         IEnumerable<ICodeFileSource> fileSources,
         IEnumerable<ICodeFileSource> testingFileSources,
         IEnumerable<PackageReference> references)
         => CompilePackage(name, fileSources.Select(s => s.Load()), testingFileSources.Select(s => s.Load()), references);
 
-    public AST.Package CompilePackage(
+    public Package CompilePackage(
         string name,
         IEnumerable<CodeFile> files,
         IEnumerable<CodeFile> testingFiles,
@@ -100,7 +101,7 @@ public class AzothCompiler
         var compilationUnits = ParseFiles(files);
         var testingCompilationUnits = ParseFiles(testingFiles);
         var referenceSyntax = references.Select(r => r.ToSyntax()).ToFixedSet();
-        var packageSyntax = new PackageSyntax<AST.Package>(name, compilationUnits, testingCompilationUnits, referenceSyntax);
+        var packageSyntax = new PackageSyntax<Package>(name, compilationUnits, testingCompilationUnits, referenceSyntax);
 
         var analyzer = new SemanticAnalyzer()
         {

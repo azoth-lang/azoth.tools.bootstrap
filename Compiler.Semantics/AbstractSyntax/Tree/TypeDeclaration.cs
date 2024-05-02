@@ -7,13 +7,13 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax.Tree;
 
-internal abstract class TypeDeclaration<TMember> : Declaration, AST.ITypeDeclaration
-    where TMember : AST.IMemberDeclaration
+internal abstract class TypeDeclaration<TMember> : Declaration, ITypeDeclaration
+    where TMember : IMemberDeclaration
 {
     public new UserTypeSymbol Symbol { get; }
-    public IFixedList<AST.ITypeDeclaration> Supertypes { get; }
+    public IFixedList<ITypeDeclaration> Supertypes { get; }
     public abstract IFixedList<TMember> Members { get; }
-    IFixedList<AST.IMemberDeclaration> AST.ITypeDeclaration.Members => members.Value;
+    IFixedList<IMemberDeclaration> ITypeDeclaration.Members => members.Value;
     private readonly Lazy<IFixedList<IMemberDeclaration>> members;
 
     public TypeDeclaration(
@@ -21,7 +21,7 @@ internal abstract class TypeDeclaration<TMember> : Declaration, AST.ITypeDeclara
         TextSpan span,
         UserTypeSymbol symbol,
         TextSpan nameSpan,
-        IFixedList<AST.ITypeDeclaration> supertypes)
+        IFixedList<ITypeDeclaration> supertypes)
         : base(file, span, symbol, nameSpan)
     {
         Symbol = symbol;

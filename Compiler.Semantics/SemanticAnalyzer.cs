@@ -102,7 +102,7 @@ public class SemanticAnalyzer
         return packageBuilder;
     }
 
-    private static void CheckDataFlow(IFixedSet<AST.IDeclaration> declarations, FixedSymbolTree symbolTree, Diagnostics diagnostics)
+    private static void CheckDataFlow(IFixedSet<IDeclaration> declarations, FixedSymbolTree symbolTree, Diagnostics diagnostics)
     {
         // From this point forward, analysis focuses on executable declarations (i.e. invocables and field initializers)
         var executableDeclarations = declarations.OfType<IExecutableDeclaration>().ToFixedSet();

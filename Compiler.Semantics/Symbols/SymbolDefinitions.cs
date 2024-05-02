@@ -4,5 +4,5 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 internal static class SymbolDefinitions
 {
-    public static PackageSymbol Package(IPackage package) => new PackageSymbol(package.Name);
+    public static PackageSymbol Package(IPackageNode package) => new PackageSymbol(package.Name);
 }

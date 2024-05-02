@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax.Tree;
 internal class FieldDeclaration : Declaration, IFieldDeclaration
 {
     public IClassOrStructDeclaration DeclaringType { get; }
-    AST.ITypeDeclaration IMemberDeclaration.DeclaringType => DeclaringType;
+    ITypeDeclaration IMemberDeclaration.DeclaringType => DeclaringType;
     public new FieldSymbol Symbol { get; }
     BindingSymbol IBinding.Symbol => Symbol;
 

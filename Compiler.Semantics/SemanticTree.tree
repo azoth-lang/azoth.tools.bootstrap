@@ -1,7 +1,8 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 ◊walkers_namespace Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
-◊root SemanticNode;
+◊root Semantic;
 ◊prefix I;
+◊suffix Node;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -10,7 +11,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-SemanticNode = Syntax:`ISyntax`;
+Semantic = Syntax:`ISyntax`;
 
 // ---------- Packages
 Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` References:{PackageReference}
@@ -49,13 +50,16 @@ TraitDeclaration <: TypeDeclaration = Syntax:`ITraitDeclarationSyntax` GenericPa
 // ---------- Type Declaration Parts
 GenericParameter <: Code = Syntax:`IGenericParameterSyntax` Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance`;
 // TODO don't have a special type for this
-SupertypeName <: Code = Syntax:`ISupertypeNameSyntax` Name:`TypeName`;// TypeArguments:UnresolvedType*;
+SupertypeName <: Code = Syntax:`ISupertypeNameSyntax` Name:`TypeName`;// TypeArguments:Type*;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberDeclaration <: Declaration = Syntax:`ITypeMemberDeclarationSyntax`;
 ClassMemberDeclaration <: TypeMemberDeclaration = Syntax:`IClassMemberDeclarationSyntax`;
 TraitMemberDeclaration <: TypeMemberDeclaration = Syntax:`ITraitMemberDeclarationSyntax`;
 StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarationSyntax`;
+
+// ---------- Invocable Declarations
+FunctionDeclaration <: NamespaceMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;

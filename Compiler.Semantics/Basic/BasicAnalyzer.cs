@@ -1,4 +1,5 @@
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
@@ -12,8 +13,6 @@ using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
-
-using AST = Azoth.Tools.Bootstrap.Compiler.AST;
 
 /// <summary>
 /// The basic analyzer does name binding, type checking and constant folding
@@ -55,7 +54,7 @@ public class BasicAnalyzer
     }
 
     public static void Check(
-        PackageSyntax<AST.Package> package,
+        PackageSyntax<Package> package,
         UserTypeSymbol? stringSymbol,
         UserTypeSymbol? rangeSymbol)
     {

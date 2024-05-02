@@ -7,12 +7,12 @@ using MoreLinq.Extensions;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax.Tree;
 
-internal sealed class StandardMethodDeclaration : ConcreteMethodDeclaration, AST.IStandardMethodDeclaration
+internal sealed class StandardMethodDeclaration : ConcreteMethodDeclaration, IStandardMethodDeclaration
 {
     public StandardMethodDeclaration(
         CodeFile file,
         TextSpan span,
-        AST.ITypeDeclaration declaringType,
+        ITypeDeclaration declaringType,
         MethodSymbol symbol,
         TextSpan nameSpan,
         ISelfParameter selfParameter,

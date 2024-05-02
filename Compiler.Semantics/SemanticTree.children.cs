@@ -15,7 +15,7 @@ public static class ISemanticNodeExtensions
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
-            case IPackage n:
+            case IPackageNode n:
                 foreach (var child in n.References)
                     yield return child;
                 foreach (var child in n.CompilationUnits)
@@ -23,23 +23,23 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TestingCompilationUnits)
                     yield return child;
                 yield break;
-            case IPackageReference n:
+            case IPackageReferenceNode n:
                 yield break;
-            case ICompilationUnit n:
+            case ICompilationUnitNode n:
                 foreach (var child in n.UsingDirectives)
                     yield return child;
                 foreach (var child in n.Declarations)
                     yield return child;
                 yield break;
-            case IUsingDirective n:
+            case IUsingDirectiveNode n:
                 yield break;
-            case INamespaceDeclaration n:
+            case INamespaceDeclarationNode n:
                 foreach (var child in n.UsingDirectives)
                     yield return child;
                 foreach (var child in n.Declarations)
                     yield return child;
                 yield break;
-            case IClassDeclaration n:
+            case IClassDeclarationNode n:
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 if (n.BaseTypeName is not null)
@@ -49,7 +49,7 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case IStructDeclaration n:
+            case IStructDeclarationNode n:
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 foreach (var child in n.SupertypeNames)
@@ -57,7 +57,7 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case ITraitDeclaration n:
+            case ITraitDeclarationNode n:
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 foreach (var child in n.SupertypeNames)
@@ -65,14 +65,16 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case IGenericParameter n:
+            case IGenericParameterNode n:
                 yield return n.Constraint;
                 yield break;
-            case ISupertypeName n:
+            case ISupertypeNameNode n:
                 yield break;
-            case ICapabilitySet n:
+            case IFunctionDeclarationNode n:
                 yield break;
-            case ICapability n:
+            case ICapabilitySetNode n:
+                yield break;
+            case ICapabilityNode n:
                 yield break;
         }
     }

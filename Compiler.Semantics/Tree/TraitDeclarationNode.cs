@@ -5,16 +5,16 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class TraitDeclarationNode : TypeDeclarationNode, ITraitDeclaration
+internal sealed class TraitDeclarationNode : TypeDeclarationNode, ITraitDeclarationNode
 {
     public override ITraitDeclarationSyntax Syntax { get; }
-    public override IFixedList<ITraitMemberDeclaration> Members { get; }
+    public override IFixedList<ITraitMemberDeclarationNode> Members { get; }
 
     public TraitDeclarationNode(
         ITraitDeclarationSyntax syntax,
-        IEnumerable<IGenericParameter> genericParameters,
-        IEnumerable<ISupertypeName> supertypeNames,
-        IEnumerable<ITraitMemberDeclaration> members)
+        IEnumerable<IGenericParameterNode> genericParameters,
+        IEnumerable<ISupertypeNameNode> supertypeNames,
+        IEnumerable<ITraitMemberDeclarationNode> members)
         : base(genericParameters, supertypeNames)
     {
         Syntax = syntax;

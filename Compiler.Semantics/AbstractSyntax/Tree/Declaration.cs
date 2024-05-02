@@ -1,9 +1,10 @@
+using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax.Tree;
 
-internal abstract class Declaration : AbstractSyntax, AST.IDeclaration
+internal abstract class Declaration : AbstractSyntax, IDeclaration
 {
     public CodeFile File { get; }
     public Symbol Symbol { get; }

@@ -8,13 +8,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax.Tree;
 
 internal class AssociatedFunctionDeclaration : InvocableDeclaration, IAssociatedFunctionDeclaration
 {
-    public AST.ITypeDeclaration DeclaringType { get; }
+    public ITypeDeclaration DeclaringType { get; }
     public new FunctionSymbol Symbol { get; }
     public new IFixedList<INamedParameter> Parameters { get; }
     public IBody Body { get; }
 
     public AssociatedFunctionDeclaration(
-        AST.ITypeDeclaration declaringType,
+        ITypeDeclaration declaringType,
         CodeFile file,
         TextSpan span,
         FunctionSymbol symbol,

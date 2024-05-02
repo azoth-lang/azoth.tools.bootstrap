@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax.Tree;
 
 internal class AbstractMethodDeclaration : InvocableDeclaration, IAbstractMethodDeclaration
 {
-    public AST.ITypeDeclaration DeclaringType { get; }
+    public ITypeDeclaration DeclaringType { get; }
     public new MethodSymbol Symbol { get; }
     public ISelfParameter SelfParameter { get; }
     public new IFixedList<INamedParameter> Parameters { get; }
@@ -17,7 +17,7 @@ internal class AbstractMethodDeclaration : InvocableDeclaration, IAbstractMethod
     public AbstractMethodDeclaration(
         CodeFile file,
         TextSpan span,
-        AST.ITypeDeclaration declaringType,
+        ITypeDeclaration declaringType,
         MethodSymbol symbol,
         TextSpan nameSpan,
         ISelfParameter selfParameter,

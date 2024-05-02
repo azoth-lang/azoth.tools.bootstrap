@@ -10,7 +10,7 @@ internal sealed class GetterMethodDeclaration : ConcreteMethodDeclaration, IGett
     public GetterMethodDeclaration(
         CodeFile file,
         TextSpan span,
-        AST.ITypeDeclaration declaringType,
+        ITypeDeclaration declaringType,
         MethodSymbol symbol,
         TextSpan nameSpan,
         ISelfParameter selfParameter,
