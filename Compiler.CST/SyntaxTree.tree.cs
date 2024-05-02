@@ -97,6 +97,7 @@ public partial interface IBindingSyntax : IConcreteSyntax
 public partial interface ILocalBindingSyntax : IBindingSyntax
 {
     new IPromise<NamedBindingSymbol> Symbol { get; }
+    IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
 }
 
 [Closed(
@@ -126,6 +127,7 @@ public partial interface IInvocableDeclarationSyntax : IEntityDeclarationSyntax
 {
     IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
     new IPromise<InvocableSymbol> Symbol { get; }
+    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
 }
 
 [Closed(
@@ -153,6 +155,7 @@ public partial interface INamespaceDeclarationSyntax : INonMemberDeclarationSynt
     NamespaceName DeclaredNames { get; }
     NamespaceName FullName { get; }
     new Promise<NamespaceSymbol> Symbol { get; }
+    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     IFixedList<INonMemberDeclarationSyntax> Declarations { get; }
 }
@@ -163,6 +166,7 @@ public partial interface INamespaceDeclarationSyntax : INonMemberDeclarationSynt
 public partial interface INonMemberEntityDeclarationSyntax : IEntityDeclarationSyntax, INonMemberDeclarationSyntax
 {
     new TypeName Name { get; }
+    TypeName? IDeclarationSyntax.Name => Name;
 }
 
 [Closed(
@@ -175,8 +179,11 @@ public partial interface ITypeDeclarationSyntax : IConcreteSyntax, INonMemberEnt
     IMoveKeywordToken? MoveModifier { get; }
     bool IsMove { get; }
     new StandardName Name { get; }
+    TypeName INonMemberEntityDeclarationSyntax.Name => Name;
+    TypeName? IDeclarationSyntax.Name => Name;
     IFixedList<IGenericParameterSyntax> GenericParameters { get; }
     new AcyclicPromise<UserTypeSymbol> Symbol { get; }
+    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
     IFixedList<ISupertypeNameSyntax> SupertypeNames { get; }
     IFixedList<ITypeMemberDeclarationSyntax> Members { get; }
 }
@@ -195,26 +202,33 @@ public partial interface IClassDeclarationSyntax : IClassOrStructDeclarationSynt
     ISupertypeNameSyntax? BaseTypeName { get; }
     ConstructorSymbol? DefaultConstructorSymbol { get; }
     new IFixedList<IClassMemberDeclarationSyntax> Members { get; }
+    IFixedList<ITypeMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => Members;
 }
 
 public partial interface IStructDeclarationSyntax : IClassOrStructDeclarationSyntax
 {
     InitializerSymbol? DefaultInitializerSymbol { get; }
     new IFixedList<IStructMemberDeclarationSyntax> Members { get; }
+    IFixedList<ITypeMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => Members;
 }
 
 public partial interface ITraitDeclarationSyntax : ITypeDeclarationSyntax
 {
     new IFixedList<ITraitMemberDeclarationSyntax> Members { get; }
+    IFixedList<ITypeMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => Members;
 }
 
 public partial interface IFunctionDeclarationSyntax : INonMemberEntityDeclarationSyntax, IConcreteInvocableDeclarationSyntax
 {
     IFixedList<IAttributeSyntax> Attributes { get; }
     new IdentifierName Name { get; }
+    TypeName INonMemberEntityDeclarationSyntax.Name => Name;
+    TypeName? IDeclarationSyntax.Name => Name;
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
     new AcyclicPromise<FunctionSymbol> Symbol { get; }
+    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
+    IPromise<InvocableSymbol> IInvocableDeclarationSyntax.Symbol => Symbol;
 }
 
 public partial interface IGenericParameterSyntax : IConcreteSyntax
@@ -278,6 +292,7 @@ public partial interface IStructMemberDeclarationSyntax : ITypeMemberDeclaration
 public partial interface IAlwaysTypeMemberDeclarationSyntax : ITypeMemberDeclarationSyntax
 {
     new ITypeDeclarationSyntax DeclaringType { get; }
+    ITypeDeclarationSyntax? ITypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
 }
 
 [Closed(
@@ -287,10 +302,14 @@ public partial interface IMethodDeclarationSyntax : IAlwaysTypeMemberDeclaration
 {
     MethodKind Kind { get; }
     new IdentifierName Name { get; }
+    TypeName? IDeclarationSyntax.Name => Name;
     IMethodSelfParameterSyntax SelfParameter { get; }
     new IFixedList<INamedParameterSyntax> Parameters { get; }
+    IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDeclarationSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
     new AcyclicPromise<MethodSymbol> Symbol { get; }
+    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
+    IPromise<InvocableSymbol> IInvocableDeclarationSyntax.Symbol => Symbol;
 }
 
 public partial interface IAbstractMethodDeclarationSyntax : IMethodDeclarationSyntax
@@ -304,6 +323,8 @@ public partial interface IAbstractMethodDeclarationSyntax : IMethodDeclarationSy
 public partial interface IConcreteMethodDeclarationSyntax : IMethodDeclarationSyntax, IStructMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
 {
     new IFixedList<INamedParameterSyntax> Parameters { get; }
+    IFixedList<INamedParameterSyntax> IMethodDeclarationSyntax.Parameters => Parameters;
+    IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDeclarationSyntax.Parameters => Parameters;
 }
 
 public partial interface IStandardMethodDeclarationSyntax : IConcreteMethodDeclarationSyntax
@@ -322,36 +343,54 @@ public partial interface ISetterMethodDeclarationSyntax : IConcreteMethodDeclara
 public partial interface IConstructorDeclarationSyntax : IConcreteInvocableDeclarationSyntax, IClassMemberDeclarationSyntax
 {
     new IClassDeclarationSyntax DeclaringType { get; }
+    ITypeDeclarationSyntax? ITypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
     new IdentifierName? Name { get; }
+    TypeName? IDeclarationSyntax.Name => Name;
     IConstructorSelfParameterSyntax SelfParameter { get; }
     new IBlockBodySyntax Body { get; }
+    IBodySyntax IConcreteInvocableDeclarationSyntax.Body => Body;
     new AcyclicPromise<ConstructorSymbol> Symbol { get; }
+    IPromise<InvocableSymbol> IInvocableDeclarationSyntax.Symbol => Symbol;
+    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
 }
 
 public partial interface IInitializerDeclarationSyntax : IConcreteInvocableDeclarationSyntax, IStructMemberDeclarationSyntax
 {
     new IStructDeclarationSyntax DeclaringType { get; }
+    ITypeDeclarationSyntax? ITypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
     new IdentifierName? Name { get; }
+    TypeName? IDeclarationSyntax.Name => Name;
     IInitializerSelfParameterSyntax SelfParameter { get; }
     new IBlockBodySyntax Body { get; }
+    IBodySyntax IConcreteInvocableDeclarationSyntax.Body => Body;
     new AcyclicPromise<InitializerSymbol> Symbol { get; }
+    IPromise<InvocableSymbol> IInvocableDeclarationSyntax.Symbol => Symbol;
+    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
 }
 
 public partial interface IFieldDeclarationSyntax : IAlwaysTypeMemberDeclarationSyntax, IClassMemberDeclarationSyntax, IStructMemberDeclarationSyntax, IBindingSyntax
 {
     new IClassOrStructDeclarationSyntax DeclaringType { get; }
+    ITypeDeclarationSyntax IAlwaysTypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
+    ITypeDeclarationSyntax? ITypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
     new IdentifierName Name { get; }
+    TypeName? IDeclarationSyntax.Name => Name;
     ITypeSyntax Type { get; }
     new AcyclicPromise<FieldSymbol> Symbol { get; }
+    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
+    IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
     IExpressionSyntax? Initializer { get; }
 }
 
 public partial interface IAssociatedFunctionDeclarationSyntax : IAlwaysTypeMemberDeclarationSyntax, IClassMemberDeclarationSyntax, ITraitMemberDeclarationSyntax, IStructMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
 {
     new IdentifierName Name { get; }
+    TypeName? IDeclarationSyntax.Name => Name;
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
     new AcyclicPromise<FunctionSymbol> Symbol { get; }
+    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
+    IPromise<InvocableSymbol> IInvocableDeclarationSyntax.Symbol => Symbol;
 }
 
 public partial interface IAttributeSyntax : IConcreteSyntax
@@ -370,6 +409,7 @@ public partial interface ICapabilityConstraintSyntax : IConcreteSyntax
 public partial interface ICapabilitySetSyntax : ICapabilityConstraintSyntax
 {
     new CapabilitySet Constraint { get; }
+    ICapabilityConstraint ICapabilityConstraintSyntax.Constraint => Constraint;
 }
 
 public partial interface ICapabilitySyntax : ICapabilityConstraintSyntax
@@ -400,10 +440,13 @@ public partial interface INamedParameterSyntax : IConstructorOrInitializerParame
 {
     bool IsLentBinding { get; }
     new IdentifierName Name { get; }
+    IdentifierName? IParameterSyntax.Name => Name;
     Promise<int?> DeclarationNumber { get; }
     ITypeSyntax Type { get; }
     new IPromise<DataType> DataType { get; }
+    IPromise<Pseudotype> IParameterSyntax.DataType => DataType;
     new Promise<NamedVariableSymbol> Symbol { get; }
+    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
     IExpressionSyntax? DefaultValue { get; }
 }
 
@@ -421,12 +464,14 @@ public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
 {
     ICapabilitySyntax Capability { get; }
     new IPromise<DataType> DataType { get; }
+    IPromise<Pseudotype> IParameterSyntax.DataType => DataType;
 }
 
 public partial interface IInitializerSelfParameterSyntax : ISelfParameterSyntax
 {
     ICapabilitySyntax Capability { get; }
     new IPromise<DataType> DataType { get; }
+    IPromise<Pseudotype> IParameterSyntax.DataType => DataType;
 }
 
 public partial interface IMethodSelfParameterSyntax : ISelfParameterSyntax
@@ -437,6 +482,7 @@ public partial interface IMethodSelfParameterSyntax : ISelfParameterSyntax
 public partial interface IFieldParameterSyntax : IConstructorOrInitializerParameterSyntax
 {
     new IdentifierName Name { get; }
+    IdentifierName? IParameterSyntax.Name => Name;
     Promise<FieldSymbol?> ReferencedSymbol { get; }
     IExpressionSyntax? DefaultValue { get; }
 }
@@ -456,6 +502,7 @@ public partial interface IBodySyntax : IBodyOrBlockSyntax
 public partial interface IBlockBodySyntax : IBodySyntax
 {
     new IFixedList<IBodyStatementSyntax> Statements { get; }
+    IFixedList<IStatementSyntax> IBodyOrBlockSyntax.Statements => Statements;
 }
 
 public partial interface IExpressionBodySyntax : IBodySyntax
@@ -489,6 +536,7 @@ public partial interface ITypeNameSyntax : IHasContainingLexicalScope, ITypeSynt
 public partial interface IStandardTypeNameSyntax : ITypeNameSyntax
 {
     new StandardName Name { get; }
+    TypeName ITypeNameSyntax.Name => Name;
 }
 
 [Closed(
@@ -501,16 +549,20 @@ public partial interface ISimpleTypeNameSyntax : ITypeNameSyntax
 public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax, ISimpleTypeNameSyntax
 {
     new IdentifierName Name { get; }
+    StandardName IStandardTypeNameSyntax.Name => Name;
+    TypeName ITypeNameSyntax.Name => Name;
 }
 
 public partial interface ISpecialTypeNameSyntax : ISimpleTypeNameSyntax
 {
     new SpecialTypeName Name { get; }
+    TypeName ITypeNameSyntax.Name => Name;
 }
 
 public partial interface IGenericTypeNameSyntax : IStandardTypeNameSyntax
 {
     new GenericName Name { get; }
+    StandardName IStandardTypeNameSyntax.Name => Name;
     IFixedList<ITypeSyntax> TypeArguments { get; }
 }
 
@@ -593,6 +645,7 @@ public partial interface IVariableDeclarationStatementSyntax : IBodyStatementSyn
     ICapabilitySyntax? Capability { get; }
     ITypeSyntax? Type { get; }
     new Promise<NamedVariableSymbol> Symbol { get; }
+    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
     IExpressionSyntax? Initializer { get; }
 }
 
@@ -627,6 +680,7 @@ public partial interface IBindingPatternSyntax : IOptionalOrBindingPatternSyntax
     IdentifierName Name { get; }
     Promise<int?> DeclarationNumber { get; }
     new Promise<NamedVariableSymbol> Symbol { get; }
+    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
 }
 
 public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSyntax
@@ -653,6 +707,7 @@ public partial interface IExpressionSyntax : IConcreteSyntax
 public partial interface ITypedExpressionSyntax : IExpressionSyntax
 {
     new IPromise<DataType> DataType { get; }
+    IPromise<DataType?> IExpressionSyntax.DataType => DataType;
 }
 
 [Closed(
@@ -678,6 +733,7 @@ public partial interface ITypedExpressionSyntax : IExpressionSyntax
 public partial interface IDataTypedExpressionSyntax : ITypedExpressionSyntax
 {
     new Promise<DataType> DataType { get; }
+    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 [Closed(
@@ -691,6 +747,9 @@ public partial interface IAssignableExpressionSyntax : ITypedExpressionSyntax
 public partial interface IBlockExpressionSyntax : IDataTypedExpressionSyntax, IBlockOrResultSyntax, IBodyOrBlockSyntax
 {
     new Promise<DataType> DataType { get; }
+    Promise<DataType> IDataTypedExpressionSyntax.DataType => DataType;
+    IPromise<DataType?> IBlockOrResultSyntax.DataType => DataType;
+    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface INewObjectExpressionSyntax : IDataTypedExpressionSyntax
@@ -720,23 +779,27 @@ public partial interface IBoolLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     bool Value { get; }
     new Promise<BoolConstValueType> DataType { get; }
+    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface IIntegerLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     BigInteger Value { get; }
     new Promise<IntegerConstValueType> DataType { get; }
+    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface INoneLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     new Promise<OptionalType> DataType { get; }
+    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface IStringLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     string Value { get; }
     new Promise<DataType> DataType { get; }
+    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface IAssignmentExpressionSyntax : IDataTypedExpressionSyntax
@@ -805,6 +868,7 @@ public partial interface IForeachExpressionSyntax : IDataTypedExpressionSyntax, 
     Promise<MethodSymbol> NextMethod { get; }
     ITypeSyntax? Type { get; }
     new Promise<NamedVariableSymbol> Symbol { get; }
+    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
     IBlockExpressionSyntax Block { get; }
 }
 
@@ -815,6 +879,7 @@ public partial interface IForeachExpressionSyntax : IDataTypedExpressionSyntax, 
 public partial interface INeverTypedExpressionSyntax : ITypedExpressionSyntax
 {
     new Promise<NeverType> DataType { get; }
+    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface IBreakExpressionSyntax : INeverTypedExpressionSyntax
@@ -863,6 +928,7 @@ public partial interface IInvocableNameExpressionSyntax : INameExpressionSyntax
 public partial interface IVariableNameExpressionSyntax : INameExpressionSyntax
 {
     new IPromise<IVariableNameExpressionSyntaxSemantics> Semantics { get; }
+    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
 }
 
 [Closed(
@@ -883,29 +949,39 @@ public partial interface ISimpleNameExpressionSyntax : INameExpressionSyntax
 public partial interface IIdentifierNameExpressionSyntax : IInvocableNameExpressionSyntax, ISimpleNameExpressionSyntax, IStandardNameExpressionSyntax, IVariableNameExpressionSyntax, IAssignableExpressionSyntax
 {
     new IdentifierName? Name { get; }
+    StandardName? IStandardNameExpressionSyntax.Name => Name;
     new Promise<IIdentifierNameExpressionSyntaxSemantics> Semantics { get; }
+    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
+    IPromise<IVariableNameExpressionSyntaxSemantics> IVariableNameExpressionSyntax.Semantics => Semantics;
 }
 
 public partial interface ISpecialTypeNameExpressionSyntax : ISimpleNameExpressionSyntax
 {
     SpecialTypeName Name { get; }
     new Promise<SpecialTypeNameExpressionSyntaxSemantics> Semantics { get; }
+    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
     new Promise<DataType?> DataType { get; }
+    IPromise<DataType?> IExpressionSyntax.DataType => DataType;
     new Promise<TypeSymbol?> ReferencedSymbol { get; }
+    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
 }
 
 public partial interface IGenericNameExpressionSyntax : IInvocableNameExpressionSyntax, IStandardNameExpressionSyntax
 {
     new GenericName Name { get; }
+    StandardName? IStandardNameExpressionSyntax.Name => Name;
     IFixedList<ITypeSyntax> TypeArguments { get; }
     new Promise<DataType?> DataType { get; }
+    IPromise<DataType?> IExpressionSyntax.DataType => DataType;
 }
 
 public partial interface ISelfExpressionSyntax : IVariableNameExpressionSyntax, ITypedExpressionSyntax
 {
     bool IsImplicit { get; }
     new Promise<ISelfExpressionSyntaxSemantics> Semantics { get; }
+    IPromise<IVariableNameExpressionSyntaxSemantics> IVariableNameExpressionSyntax.Semantics => Semantics;
     new IPromise<SelfParameterSymbol?> ReferencedSymbol { get; }
+    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
     IPromise<Pseudotype> Pseudotype { get; }
 }
 
@@ -917,7 +993,10 @@ public partial interface IMemberAccessExpressionSyntax : IInvocableNameExpressio
     IFixedList<ITypeSyntax> TypeArguments { get; }
     TextSpan MemberNameSpan { get; }
     new Promise<IMemberAccessSyntaxSemantics> Semantics { get; }
+    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
     new IPromise<Symbol?> ReferencedSymbol { get; }
+    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
+    IPromise<Symbol?> IAssignableExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
 }
 
 public partial interface IMoveExpressionSyntax : IDataTypedExpressionSyntax

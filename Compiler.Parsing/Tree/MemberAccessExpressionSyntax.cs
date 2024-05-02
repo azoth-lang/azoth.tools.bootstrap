@@ -19,7 +19,6 @@ internal sealed class MemberAccessExpressionSyntax : NameExpressionSyntax, IMemb
     public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
     public TextSpan MemberNameSpan { get; }
     public override Promise<IMemberAccessSyntaxSemantics> Semantics { [DebuggerStepThrough] get; } = new();
-    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
     public override IPromise<DataType?> DataType { [DebuggerStepThrough] get; }
     IPromise<DataType> ITypedExpressionSyntax.DataType => DataType!;
     public override IPromise<Symbol?> ReferencedSymbol { [DebuggerStepThrough] get; }

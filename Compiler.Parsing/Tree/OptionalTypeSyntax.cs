@@ -13,8 +13,5 @@ internal class OptionalTypeSyntax : TypeSyntax, IOptionalTypeSyntax
         Referent = referent;
     }
 
-    public override string ToString()
-    {
-        return $"{Referent}?";
-    }
+    public override string ToString() => $"{Referent}?";
 }

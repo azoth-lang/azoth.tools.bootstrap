@@ -14,13 +14,8 @@ internal sealed class SelfExpressionSyntax : NameExpressionSyntax, ISelfExpressi
 {
     public bool IsImplicit { [DebuggerStepThrough] get; }
     public override Promise<ISelfExpressionSyntaxSemantics> Semantics { [DebuggerStepThrough] get; } = new();
-    IPromise<IVariableNameExpressionSyntaxSemantics> IVariableNameExpressionSyntax.Semantics => Semantics;
     public override IPromise<SelfParameterSymbol?> ReferencedSymbol { [DebuggerStepThrough] get; }
-    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
-    IPromise<SelfParameterSymbol?> INameExpressionSyntax<SelfParameterSymbol>.ReferencedSymbol
-        => ReferencedSymbol;
     public override IPromise<DataType> DataType { [DebuggerStepThrough] get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
     public IPromise<Pseudotype> Pseudotype { get; }
 
     public SelfExpressionSyntax(TextSpan span, bool isImplicit)

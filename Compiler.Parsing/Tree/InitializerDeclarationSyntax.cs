@@ -13,12 +13,10 @@ internal class InitializerDeclarationSyntax : InvocableDeclarationSyntax, IIniti
 {
     public IStructDeclarationSyntax DeclaringType { get; }
     public new IdentifierName? Name { get; }
-    ITypeDeclarationSyntax ITypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
     public IInitializerSelfParameterSyntax SelfParameter { get; }
     public new IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
     public override IFixedList<IParameterSyntax> AllParameters { get; }
     public IBlockBodySyntax Body { get; }
-    IBodySyntax IConcreteInvocableDeclarationSyntax.Body => Body;
     public new AcyclicPromise<InitializerSymbol> Symbol { get; }
 
     public InitializerDeclarationSyntax(

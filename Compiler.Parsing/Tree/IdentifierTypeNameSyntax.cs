@@ -32,8 +32,6 @@ internal sealed class IdentifierTypeNameSyntax : TypeSyntax, IIdentifierTypeName
         }
     }
     public IdentifierName Name { get; }
-    StandardName IStandardTypeNameSyntax.Name => Name;
-    TypeName ITypeNameSyntax.Name => Name;
     public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
 
     public IdentifierTypeNameSyntax(TextSpan span, string name)

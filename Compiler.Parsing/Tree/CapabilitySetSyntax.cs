@@ -14,7 +14,6 @@ internal class CapabilitySetSyntax : Syntax, ICapabilitySetSyntax
     }
 
     public CapabilitySet Constraint { get; }
-    ICapabilityConstraint ICapabilityConstraintSyntax.Constraint => Constraint;
 
     public CapabilitySetSyntax(TextSpan span, CapabilitySet capabilitySet)
         : base(span)

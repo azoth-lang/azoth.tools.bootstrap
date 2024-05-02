@@ -15,8 +15,5 @@ internal class UsingDirectiveSyntax : Syntax, IUsingDirectiveSyntax
         Name = name;
     }
 
-    public override string ToString()
-    {
-        return $"using {Name};";
-    }
+    public override string ToString() => $"using {Name};";
 }

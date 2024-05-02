@@ -14,8 +14,6 @@ internal class ForeachExpressionSyntax : DataTypedExpressionSyntax, IForeachExpr
     public IdentifierName VariableName { [DebuggerStepThrough] get; }
     public Promise<int?> DeclarationNumber { [DebuggerStepThrough] get; } = new Promise<int?>();
     public Promise<NamedVariableSymbol> Symbol { [DebuggerStepThrough] get; } = new Promise<NamedVariableSymbol>();
-    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
-    IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
 
     public ITypeSyntax? Type { [DebuggerStepThrough] get; }
     public IExpressionSyntax InExpression { [DebuggerStepThrough] get; }

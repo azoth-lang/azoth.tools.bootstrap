@@ -13,12 +13,10 @@ internal sealed class ConstructorDeclarationSyntax : InvocableDeclarationSyntax,
 {
     public IClassDeclarationSyntax DeclaringType { get; }
     public new IdentifierName? Name { get; }
-    ITypeDeclarationSyntax ITypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
     public IConstructorSelfParameterSyntax SelfParameter { get; }
     public new IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
     public override IFixedList<IParameterSyntax> AllParameters { get; }
     public IBlockBodySyntax Body { get; }
-    IBodySyntax IConcreteInvocableDeclarationSyntax.Body => Body;
     public new AcyclicPromise<ConstructorSymbol> Symbol { get; }
 
     public ConstructorDeclarationSyntax(

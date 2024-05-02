@@ -19,7 +19,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal sealed class SpecialTypeNameExpressionSyntax : NameExpressionSyntax, ISpecialTypeNameExpressionSyntax
 {
     private LexicalScope? containingLexicalScope;
-
     public LexicalScope ContainingLexicalScope
     {
         [DebuggerStepThrough]
@@ -39,7 +38,6 @@ internal sealed class SpecialTypeNameExpressionSyntax : NameExpressionSyntax, IS
     public override Promise<SpecialTypeNameExpressionSyntaxSemantics> Semantics { [DebuggerStepThrough] get; } = new();
     public override Promise<DataType?> DataType => Promise.Null<DataType>();
     public override Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
-    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
 
     public SpecialTypeNameExpressionSyntax(TextSpan span, SpecialTypeName name)
         : base(span)
