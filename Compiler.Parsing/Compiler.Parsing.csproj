@@ -3,7 +3,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Azoth.Tools.Bootstrap.Compiler.Parsing</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Compiler.Parsing</RootNamespace>
-    <LangVersion>default</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

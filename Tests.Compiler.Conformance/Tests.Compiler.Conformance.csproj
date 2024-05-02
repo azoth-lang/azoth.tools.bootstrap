@@ -4,7 +4,6 @@
     <IsPackable>false</IsPackable>
     <AssemblyName>Azoth.Tools.Bootstrap.Tests.Conformance</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Tests.Conformance</RootNamespace>
-    <LangVersion>default</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

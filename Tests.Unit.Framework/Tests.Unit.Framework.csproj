@@ -4,7 +4,6 @@
     <IsPackable>false</IsPackable>
     <AssemblyName>Azoth.Tools.Bootstrap.Tests.Unit.Framework</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Tests.Unit.Framework</RootNamespace>
-    <LangVersion>default</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

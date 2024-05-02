@@ -4,7 +4,6 @@
     <AssemblyName>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Names</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Names</RootNamespace>
     <Nullable>enable</Nullable>
-    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>

@@ -3,7 +3,6 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>Azoth.Tools.Bootstrap.Lab</RootNamespace>
-    <LangVersion>default</LangVersion>
     <Nullable>enable</Nullable>
     <AssemblyName>azlab</AssemblyName>
   </PropertyGroup>
