@@ -6,14 +6,12 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
-
-using AST = Azoth.Tools.Bootstrap.Compiler.AST;
-
 internal sealed class Package : Node
 {
-    public PackageSyntax<AST.Package> Syntax { get; }
+    public IPackageSyntax Syntax { get; }
+    ISyntax Node.Syntax => Syntax;
 
-    public IdentifierName Name => Syntax.Symbol.Name;
+    public IdentifierName Name => Syntax.Name;
 
     private ValueAttribute<PackageSymbol> symbol;
     public PackageSymbol Symbol
@@ -31,7 +29,7 @@ internal sealed class Package : Node
     public IReadOnlyList<CompilationUnit> TestingCompilationUnits { get; }
 
     public Package(
-        PackageSyntax<AST.Package> syntax,
+        IPackageSyntax syntax,
         IEnumerable<CompilationUnit> compilationUnits,
         IEnumerable<CompilationUnit> testingCompilationUnits)
     {

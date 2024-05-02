@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
-public interface IPackageSyntax
+public interface IPackageSyntax : ISyntax
 {
     IdentifierName Name { get; }
     IFixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
