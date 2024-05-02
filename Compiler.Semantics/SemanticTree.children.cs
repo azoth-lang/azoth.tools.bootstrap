@@ -28,6 +28,14 @@ public static class SemanticNodeExtensions
             case CompilationUnit n:
                 foreach (var child in n.UsingDirectives)
                     yield return child;
+                foreach (var child in n.Declarations)
+                    yield return child;
+                yield break;
+            case NamespaceDeclaration n:
+                foreach (var child in n.UsingDirectives)
+                    yield return child;
+                foreach (var child in n.Declarations)
+                    yield return child;
                 yield break;
             case UsingDirective n:
                 yield break;

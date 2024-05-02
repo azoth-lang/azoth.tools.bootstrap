@@ -20,12 +20,17 @@ PackageReference = Syntax:`IPackageReferenceSyntax`
 Code = Syntax:`IConcreteSyntax`;
 
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile` ImplicitNamespaceName:`NamespaceName`
-    UsingDirectives:UsingDirective* ;//Declarations:NamespaceMemberDeclaration*;
-
-
+    UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
 
 // ---------- Declarations
+Declaration <: Code = Syntax:`IDeclarationSyntax`;
 
+// ---------- Namespaces
+
+NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`
+    IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
+    UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
+NamespaceMemberDeclaration <: Declaration;
 
 // ---------- To Categorize
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;

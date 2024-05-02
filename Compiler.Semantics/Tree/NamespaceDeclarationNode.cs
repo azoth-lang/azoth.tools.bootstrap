@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -7,18 +6,18 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class CompilationUnitNode : CodeNode, CompilationUnit
+internal class NamespaceDeclarationNode : CodeNode, NamespaceDeclaration
 {
-    public override ICompilationUnitSyntax Syntax { get; }
-
-    public CodeFile File => Syntax.File;
-    public NamespaceName ImplicitNamespaceName => Syntax.ImplicitNamespaceName;
+    public override INamespaceDeclarationSyntax Syntax { get; }
+    IDeclarationSyntax Declaration.Syntax => Syntax;
+    public bool IsGlobalQualified => Syntax.IsGlobalQualified;
+    public NamespaceName DeclaredNames => Syntax.DeclaredNames;
 
     public IFixedList<UsingDirective> UsingDirectives { get; }
     public IFixedList<NamespaceMemberDeclaration> Declarations { get; }
 
-    public CompilationUnitNode(
-        ICompilationUnitSyntax syntax,
+    public NamespaceDeclarationNode(
+        INamespaceDeclarationSyntax syntax,
         IEnumerable<UsingDirective> usingDirectives,
         IEnumerable<NamespaceMemberDeclaration> declarations)
     {

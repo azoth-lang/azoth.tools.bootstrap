@@ -12,7 +12,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 [Closed(
     typeof(Package),
     typeof(PackageReference),
-    typeof(Code))]
+    typeof(Code),
+    typeof(NamespaceMemberDeclaration))]
 public partial interface SemanticNode
 {
     ISyntax Syntax { get; }
@@ -38,6 +39,7 @@ public partial interface PackageReference : SemanticNode
 
 [Closed(
     typeof(CompilationUnit),
+    typeof(Declaration),
     typeof(UsingDirective))]
 public partial interface Code : SemanticNode
 {
@@ -50,6 +52,29 @@ public partial interface CompilationUnit : Code
     CodeFile File { get; }
     NamespaceName ImplicitNamespaceName { get; }
     IFixedList<UsingDirective> UsingDirectives { get; }
+    IFixedList<NamespaceMemberDeclaration> Declarations { get; }
+}
+
+[Closed(
+    typeof(NamespaceMemberDeclaration))]
+public partial interface Declaration : Code
+{
+    new IDeclarationSyntax Syntax { get; }
+}
+
+public partial interface NamespaceDeclaration : NamespaceMemberDeclaration
+{
+    new INamespaceDeclarationSyntax Syntax { get; }
+    bool IsGlobalQualified { get; }
+    NamespaceName DeclaredNames { get; }
+    IFixedList<UsingDirective> UsingDirectives { get; }
+    IFixedList<NamespaceMemberDeclaration> Declarations { get; }
+}
+
+[Closed(
+    typeof(NamespaceDeclaration))]
+public partial interface NamespaceMemberDeclaration : SemanticNode, Declaration
+{
 }
 
 public partial interface UsingDirective : Code
