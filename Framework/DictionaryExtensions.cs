@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Azoth.Tools.Bootstrap.Framework.Functions;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
@@ -28,4 +29,10 @@ public static class DictionaryExtensions
         Func<TSource, TKey> keySelector)
         where TKey : notnull
         => new(source.ToDictionary(keySelector));
+
+    public static Dictionary<TSource, TValue> ToDictionaryWithValue<TSource, TValue>(
+        this IEnumerable<TSource> source,
+        Func<TSource, TValue> valueSelector)
+        where TSource : notnull
+        => source.ToDictionary(Identity, valueSelector);
 }

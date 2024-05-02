@@ -8,7 +8,6 @@ using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Lab.Config;
 using ExhaustiveMatching;
@@ -179,13 +178,13 @@ internal class ProjectSet : IEnumerable<Project>
         var sourcePaths = Directory.EnumerateFiles(sourceDir, "*.az", SearchOption.AllDirectories);
         var testSourcePaths = Directory.EnumerateFiles(sourceDir, "*.azt", SearchOption.AllDirectories);
         // Wait for the references, unfortunately, this requires an ugly loop.
-        var referenceTasks = project.References.ToDictionary(r => r.Name, r => projectBuilds[r.Project]);
-        var references = new Dictionary<IdentifierName, Package>();
-        foreach (var referenceTask in referenceTasks)
+        var referenceTasks = project.References.ToDictionaryWithValue(r => projectBuilds[r.Project]);
+        var references = new HashSet<PackageReference>();
+        foreach (var (reference, packageTask) in referenceTasks)
         {
-            var package = await referenceTask.Value.ConfigureAwait(false);
+            var package = await packageTask.ConfigureAwait(false);
             if (package is not null)
-                references.Add(referenceTask.Key, package);
+                references.Add(new PackageReference(reference.NameOrAlias, package, reference.IsTrusted));
         }
 
         lock (consoleLock)
@@ -196,7 +195,7 @@ internal class ProjectSet : IEnumerable<Project>
         var testCodeFiles = LoadCode(testSourcePaths, isTest: true);
         try
         {
-            var package = compiler.CompilePackage(project.Name, codeFiles, testCodeFiles, references.ToFixedDictionary());
+            var package = compiler.CompilePackage(project.Name, codeFiles, testCodeFiles, references);
             // TODO switch to the async version of the compiler
             //var codeFiles = sourcePaths.Select(p => new CodePath(p)).ToList();
             //var references = project.References.ToDictionary(r => r.Name, r => projectBuilds[r.Project]);

@@ -264,10 +264,7 @@ public partial interface IAttribute : IAbstractSyntax
 
 [Closed(
     typeof(IConstructorOrInitializerParameter),
-    typeof(IBindingParameter),
-    typeof(INamedParameter),
-    typeof(ISelfParameter),
-    typeof(IFieldParameter))]
+    typeof(IBindingParameter))]
 public partial interface IParameter : IAbstractSyntax
 {
     bool Unused { get; }
@@ -287,18 +284,18 @@ public partial interface IBindingParameter : IParameter, IBinding
 {
 }
 
-public partial interface INamedParameter : IParameter, IConstructorOrInitializerParameter, IBindingParameter, ILocalBinding
+public partial interface INamedParameter : IConstructorOrInitializerParameter, IBindingParameter, ILocalBinding
 {
     new NamedVariableSymbol Symbol { get; }
     IExpression? DefaultValue { get; }
 }
 
-public partial interface ISelfParameter : IParameter, IBindingParameter
+public partial interface ISelfParameter : IBindingParameter
 {
     new SelfParameterSymbol Symbol { get; }
 }
 
-public partial interface IFieldParameter : IParameter, IConstructorOrInitializerParameter
+public partial interface IFieldParameter : IConstructorOrInitializerParameter
 {
     FieldSymbol ReferencedSymbol { get; }
     IExpression? DefaultValue { get; }
@@ -596,7 +593,7 @@ public partial interface IFunctionReferenceInvocationExpression : IInvocationExp
     IExpression Referent { get; }
 }
 
-public partial interface IVariableNameExpression : IAssignableExpression, INameExpression
+public partial interface IVariableNameExpression : INameExpression, IAssignableExpression
 {
     NamedVariableSymbol ReferencedSymbol { get; }
     bool IsMove { get; }

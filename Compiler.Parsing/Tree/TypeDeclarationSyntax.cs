@@ -12,8 +12,9 @@ using Azoth.Tools.Bootstrap.Framework;
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyntax, ITypeDeclarationSyntax
-    where TMember : IMemberDeclarationSyntax
+    where TMember : ITypeMemberDeclarationSyntax
 {
+    public ITypeDeclarationSyntax? DeclaringType { get; }
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
     public bool IsConst { [DebuggerStepThrough] get; }
@@ -25,11 +26,12 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
     public new AcyclicPromise<UserTypeSymbol> Symbol { [DebuggerStepThrough] get; }
     public IFixedList<ISupertypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public abstract IFixedList<TMember> Members { [DebuggerStepThrough] get; }
-    IFixedList<IMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => members.Value;
-    private readonly Lazy<IFixedList<IMemberDeclarationSyntax>> members;
+    IFixedList<ITypeMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => members.Value;
+    private readonly Lazy<IFixedList<ITypeMemberDeclarationSyntax>> members;
 
     protected TypeDeclarationSyntax(
         NamespaceName containingNamespaceName,
+        ITypeDeclarationSyntax? declaringType,
         TextSpan headerSpan,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -41,6 +43,7 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
         IFixedList<ISupertypeNameSyntax> supertypeNames)
         : base(containingNamespaceName, headerSpan, file, name, nameSpan, new AcyclicPromise<UserTypeSymbol>())
     {
+        DeclaringType = declaringType;
         AccessModifier = accessModifier;
         ConstModifier = constModifier;
         IsConst = ConstModifier is not null;
@@ -51,6 +54,6 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
         SupertypeNames = supertypeNames;
         Symbol = (AcyclicPromise<UserTypeSymbol>)base.Symbol;
         // TODO not sure why SafeCast doesn't work here
-        members = new(() => Members.Cast<IMemberDeclarationSyntax>().ToFixedList());
+        members = new(() => Members.Cast<ITypeMemberDeclarationSyntax>().ToFixedList());
     }
 }

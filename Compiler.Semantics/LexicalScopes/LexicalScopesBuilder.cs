@@ -54,7 +54,7 @@ public class LexicalScopesBuilder
     {
         // Namespaces in the package need to be created even if they are empty
         var packageNamespaces = packageSymbolTree.Symbols
-                                                 .OfType<NamespaceSymbol>()
+                                                 .OfType<LocalNamespaceSymbol>()
                                                  .Select(NonMemberSymbol.ForPackageNamespace);
 
         var packageNonMemberEntitySymbols = packageEntityDeclarations
@@ -65,7 +65,7 @@ public class LexicalScopesBuilder
         var referencedSymbols = referencedSymbolTrees
                                        .SelectMany(t => t.Symbols)
                                        .Concat(Intrinsic.SymbolTree.Symbols)
-                                       .Where(s => s.ContainingSymbol is NamespaceOrPackageSymbol)
+                                       .Where(s => s.ContainingSymbol is NamespaceSymbol)
                                        .Select(NonMemberSymbol.ForExternalSymbol);
         return primitiveEntitySymbols
                .Concat(packageNamespaces)
@@ -101,7 +101,7 @@ public class LexicalScopesBuilder
     private static PackagesScope BuildPackagesScope(PackageSyntax<Package> package)
     {
         var packageAliases = package.References
-                                    .ToDictionary(p => p.Key, p => p.Value.Symbol)
+                                    .ToDictionary(r => r.AliasOrName, r => r.Package.Symbol)
                                     .ToFixedDictionary();
         return new PackagesScope(package.Symbol, packageAliases);
     }

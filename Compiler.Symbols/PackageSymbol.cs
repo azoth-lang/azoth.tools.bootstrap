@@ -4,12 +4,12 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 /// <summary>
-/// A symbol for a package.
+/// A symbol for a package. This is also used as the symbol for the global namespace.
 /// </summary>
 /// <remarks>
 /// A package alias has no effect on the symbol. It is still the same package.
 /// </remarks>
-public class PackageSymbol : NamespaceOrPackageSymbol
+public class PackageSymbol : NamespaceSymbol
 {
     public override PackageSymbol Package => this;
     public override Symbol? ContainingSymbol => null;
@@ -22,8 +22,8 @@ public class PackageSymbol : NamespaceOrPackageSymbol
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is PackageSymbol otherNamespace
-               && Name == otherNamespace.Name;
+        return other is PackageSymbol otherPackageSymbol
+               && Name == otherPackageSymbol.Name;
     }
 
     public override int GetHashCode() => HashCode.Combine(Name);

@@ -1693,9 +1693,9 @@ public class BasicBodyAnalyzer
             var functionSymbols = symbols.Cast<FunctionSymbol>().ToFixedSet();
             return expression.Semantics.Fulfill(new FunctionGroupNameSyntax(functionSymbols));
         }
-        if (symbols.All(s => s is NamespaceSymbol))
+        if (symbols.All(s => s is LocalNamespaceSymbol))
         {
-            var namespaceSymbols = symbols.Cast<NamespaceSymbol>().ToFixedSet();
+            var namespaceSymbols = symbols.Cast<LocalNamespaceSymbol>().ToFixedSet();
             return expression.Semantics.Fulfill(new NamespaceNameSyntax(namespaceSymbols));
         }
 
@@ -1706,7 +1706,7 @@ public class BasicBodyAnalyzer
                 throw ExhaustiveMatch.Failed(symbol);
             case TypeSymbol sym:
                 return expression.Semantics.Fulfill(new TypeNameSyntax(sym));
-            case NamespaceSymbol _:
+            case LocalNamespaceSymbol _:
             case FunctionSymbol _:
             case SelfParameterSymbol _:
             case ConstructorSymbol _:
@@ -1793,9 +1793,9 @@ public class BasicBodyAnalyzer
                         var functionSymbols = namespaceMemberSymbols.Cast<FunctionSymbol>().ToFixedSet();
                         return expression.Semantics.Fulfill(new FunctionGroupNameSyntax(functionSymbols));
                     }
-                    if (namespaceMemberSymbols.All(s => s is NamespaceSymbol))
+                    if (namespaceMemberSymbols.All(s => s is LocalNamespaceSymbol))
                     {
-                        var namespaceSymbols = namespaceMemberSymbols.Cast<NamespaceSymbol>().ToFixedSet();
+                        var namespaceSymbols = namespaceMemberSymbols.Cast<LocalNamespaceSymbol>().ToFixedSet();
                         return expression.Semantics.Fulfill(new NamespaceNameSyntax(namespaceSymbols));
                     }
                     if (namespaceMemberSymbols.Count > 1)
@@ -1819,7 +1819,7 @@ public class BasicBodyAnalyzer
                         case NamedVariableSymbol _:
                         case EmptyTypeSymbol _:
                         case PrimitiveTypeSymbol _:
-                        case NamespaceOrPackageSymbol _: // NamespaceSymbol covered above
+                        case NamespaceSymbol _: // NamespaceSymbol covered above
                         case FunctionSymbol _: // Covered above
                         case ConstructorSymbol _:
                             throw new UnreachableException();
@@ -1889,7 +1889,7 @@ public class BasicBodyAnalyzer
             case NamedVariableSymbol _:
             case EmptyTypeSymbol _:
             case PrimitiveTypeSymbol _:
-            case NamespaceOrPackageSymbol _:
+            case NamespaceSymbol _:
             case FunctionSymbol _:
             case ConstructorSymbol _:
                 throw new UnreachableException();

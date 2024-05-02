@@ -15,7 +15,7 @@ public abstract class SymbolTestFixture
 {
     private int unique;
 
-    protected NamespaceSymbol Namespace(string? name = null, NamespaceOrPackageSymbol? ns = null)
+    protected LocalNamespaceSymbol Namespace(string? name = null, NamespaceSymbol? ns = null)
         => new(ns ?? Package(), Name(name) ?? DefaultName("namespace"));
 
     protected PackageSymbol Package(string? name = null)
@@ -38,7 +38,7 @@ public abstract class SymbolTestFixture
 
     protected FunctionSymbol Func(
         string? name = null,
-        NamespaceOrPackageSymbol? ns = null,
+        NamespaceSymbol? ns = null,
         IFixedList<Parameter>? @params = null,
         Return? @return = null)
     {
@@ -51,7 +51,7 @@ public abstract class SymbolTestFixture
     protected static FunctionSymbol Func(
         FunctionSymbol mother,
         string? name = null,
-        NamespaceOrPackageSymbol? ns = null,
+        NamespaceSymbol? ns = null,
         IFixedList<Parameter>? @params = null,
         Return? @return = null)
     {
@@ -121,7 +121,7 @@ public abstract class SymbolTestFixture
     }
 
     protected UserTypeSymbol Type(
-        NamespaceOrPackageSymbol? ns = null,
+        NamespaceSymbol? ns = null,
         ObjectType? dataType = null)
     {
         return new UserTypeSymbol(

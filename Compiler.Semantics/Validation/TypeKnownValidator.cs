@@ -16,7 +16,7 @@ public class TypeKnownValidator : SyntaxWalker<bool>
             WalkNonNull(declaration, true);
     }
 
-    protected override void WalkNonNull(ISyntax syntax, bool expressionTypeMustBeKnown)
+    protected override void WalkNonNull(IConcreteSyntax syntax, bool expressionTypeMustBeKnown)
     {
         switch (syntax)
         {

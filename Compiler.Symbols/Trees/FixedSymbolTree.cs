@@ -12,7 +12,7 @@ public class FixedSymbolTree : ISymbolTree
 {
     public PackageSymbol Package { get; }
     private readonly FixedDictionary<Symbol, IFixedSet<Symbol>> symbolChildren;
-    public IEnumerable<Symbol> Symbols => symbolChildren.Keys;
+    public IEnumerable<Symbol> Symbols => symbolChildren.Keys.Prepend(Package);
 
     public FixedSymbolTree(PackageSymbol package, FixedDictionary<Symbol, IFixedSet<Symbol>> symbolChildren)
     {

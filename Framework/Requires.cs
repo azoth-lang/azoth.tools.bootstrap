@@ -36,6 +36,13 @@ public static class Requires
     }
 
     [DebuggerHidden]
+    public static void NotNullOrEmpty(string parameter, string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            throw new ArgumentException("Value cannot be null or empty", parameter);
+    }
+
+    [DebuggerHidden]
     public static void That(string parameter, bool condition, string message)
     {
         if (!condition)

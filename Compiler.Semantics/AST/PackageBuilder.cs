@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -16,7 +15,7 @@ internal class PackageBuilder
     public FixedSymbolTree SymbolTree { get; }
     public FixedSymbolTree TestingSymbolTree { get; }
     public Diagnostics Diagnostics { get; }
-    public FixedDictionary<IdentifierName, Package> References { get; }
+    public IFixedSet<Package> References { get; }
     public IFunctionDeclaration? EntryPoint { get; set; }
 
     public PackageBuilder(
@@ -25,7 +24,7 @@ internal class PackageBuilder
         FixedSymbolTree symbolTree,
         FixedSymbolTree testingSymbolTree,
         Diagnostics diagnostics,
-        FixedDictionary<IdentifierName, Package> references)
+        IFixedSet<Package> references)
     {
         Declarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();
         TestingDeclarations = GetAllDeclarations(nonMemberTestingDeclarations).ToFixedSet();
@@ -52,7 +51,7 @@ internal class PackageBuilder
     public Package Build()
     {
         return new Package(NonMemberDeclarations, NonMemberTestingDeclarations, SymbolTree, TestingSymbolTree,
-            Diagnostics.ToFixedList(), References.Values.ToFixedSet(),
+            Diagnostics.ToFixedList(), References,
             EntryPoint);
     }
 }

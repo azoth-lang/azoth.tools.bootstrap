@@ -10,11 +10,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 public sealed class NamespaceNameSyntax : SyntaxSemantics, IIdentifierNameExpressionSyntaxSemantics,
     IMemberAccessSyntaxSemantics
 {
-    public new IFixedSet<NamespaceSymbol> Symbols { get; }
+    public new IFixedSet<LocalNamespaceSymbol> Symbols { get; }
     IPromise<Symbol?> IMemberAccessSyntaxSemantics.Symbol => Promise.Null<Symbol>();
     IPromise<Symbol?> IIdentifierNameExpressionSyntaxSemantics.Symbol => Promise.Null<Symbol>();
 
-    public NamespaceNameSyntax(IFixedSet<NamespaceSymbol> symbols) : base(symbols)
+    public NamespaceNameSyntax(IFixedSet<LocalNamespaceSymbol> symbols) : base(symbols)
     {
         Symbols = symbols;
     }

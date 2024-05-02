@@ -7,5 +7,5 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 /// </summary>
 public partial interface INonMemberDeclarationSyntax
 {
-    NamespaceOrPackageSymbol ContainingNamespaceSymbol { get; set; }
+    NamespaceSymbol ContainingNamespaceSymbol { get; set; }
 }

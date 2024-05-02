@@ -11,7 +11,6 @@ using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Tests.Conformance.Helpers;
 using MoreLinq;
@@ -58,17 +57,17 @@ public partial class ConformanceTests
             SaveLivenessAnalysis = true,
             SaveReachabilityGraphs = true,
         };
-        var references = new Dictionary<IdentifierName, Package>();
+        var references = new List<PackageReference>();
 
         // Reference Standard Library
         var supportPackage = CompileSupportPackage(compiler);
-        references.Add(TestsSupportPackage.Name, supportPackage);
+        references.Add(new PackageReference(TestsSupportPackage.Name, supportPackage, true));
 
         try
         {
             // Analyze
             var package = compiler.CompilePackage("testPackage", codeFile.Yield(),
-                Enumerable.Empty<CodeFile>(), references.ToFixedDictionary());
+                Enumerable.Empty<CodeFile>(), references);
 
             // Check for compiler errors
             Assert.NotNull(package.Diagnostics);
@@ -118,7 +117,7 @@ public partial class ConformanceTests
             var rootNamespace = FixedList.Empty<string>();
             var codeFiles = sourcePaths.Select(p => LoadCode(p, sourceDir, rootNamespace)).ToList();
             var package = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles,
-                Enumerable.Empty<CodeFile>(), FixedDictionary<IdentifierName, Package>.Empty);
+                Enumerable.Empty<CodeFile>(), Enumerable.Empty<PackageReference>());
             if (package.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
                 ReportSupportCompilationErrors(package.Diagnostics);
             return package;

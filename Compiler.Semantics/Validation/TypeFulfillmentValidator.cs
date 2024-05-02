@@ -20,7 +20,7 @@ public class TypeFulfillmentValidator : SyntaxWalker
             WalkNonNull(declaration);
     }
 
-    protected override void WalkNonNull(ISyntax syntax)
+    protected override void WalkNonNull(IConcreteSyntax syntax)
     {
         switch (syntax)
         {
@@ -52,37 +52,37 @@ public class TypeFulfillmentValidator : SyntaxWalker
         WalkChildren(syntax);
     }
 
-    private static void ValidateFulfilled(ISyntax syntax, IPromise<DataType?> type)
+    private static void ValidateFulfilled(IConcreteSyntax syntax, IPromise<DataType?> type)
     {
         if (!type.IsFulfilled)
             throw new Exception($"Syntax doesn't have a fulfilled type '{syntax}'");
     }
 
-    private static void ValidateAssigned(ISyntax syntax, DataType? type)
+    private static void ValidateAssigned(IConcreteSyntax syntax, DataType? type)
     {
         if (type is null)
             throw new Exception($"Syntax has no type '{syntax}'");
     }
 
-    private static void ValidateAssigned(ISyntax syntax, IPromise<DataType?> type)
+    private static void ValidateAssigned(IConcreteSyntax syntax, IPromise<DataType?> type)
     {
         ValidateFulfilled(syntax, type);
         ValidateAssigned(syntax, type.Result);
     }
 
-    private static void ValidateFulfilled(ISyntax syntax, IPromise<Pseudotype?> type)
+    private static void ValidateFulfilled(IConcreteSyntax syntax, IPromise<Pseudotype?> type)
     {
         if (!type.IsFulfilled)
             throw new Exception($"Syntax doesn't have a fulfilled pseudotype '{syntax}'");
     }
 
-    private static void ValidateAssigned(ISyntax syntax, Pseudotype? type)
+    private static void ValidateAssigned(IConcreteSyntax syntax, Pseudotype? type)
     {
         if (type is null)
             throw new Exception($"Syntax has no pseudotype '{syntax}'");
     }
 
-    private static void ValidateAssigned(ISyntax syntax, IPromise<Pseudotype?> type)
+    private static void ValidateAssigned(IConcreteSyntax syntax, IPromise<Pseudotype?> type)
     {
         ValidateFulfilled(syntax, type);
         ValidateAssigned(syntax, type.Result);

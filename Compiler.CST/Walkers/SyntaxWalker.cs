@@ -6,23 +6,23 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
 public abstract class SyntaxWalker<T>
 {
     [DebuggerHidden]
-    protected void Walk(ISyntax? syntax, T arg)
+    protected void Walk(IConcreteSyntax? syntax, T arg)
     {
         if (syntax is null) return;
         WalkNonNull(syntax, arg);
     }
 
-    protected abstract void WalkNonNull(ISyntax syntax, T arg);
+    protected abstract void WalkNonNull(IConcreteSyntax syntax, T arg);
 
     [DebuggerHidden]
-    protected void WalkChildren(ISyntax syntax, T arg)
+    protected void WalkChildren(IConcreteSyntax syntax, T arg)
     {
         foreach (var child in syntax.Children())
             WalkNonNull(child, arg);
     }
 
     [DebuggerHidden]
-    protected void WalkChildrenInReverse(ISyntax syntax, T arg)
+    protected void WalkChildrenInReverse(IConcreteSyntax syntax, T arg)
     {
         foreach (var child in syntax.Children().Reverse())
             WalkNonNull(child, arg);
@@ -32,23 +32,23 @@ public abstract class SyntaxWalker<T>
 public abstract class SyntaxWalker
 {
     [DebuggerHidden]
-    protected void Walk(ISyntax? syntax)
+    protected void Walk(IConcreteSyntax? syntax)
     {
         if (syntax is null) return;
         WalkNonNull(syntax);
     }
 
-    protected abstract void WalkNonNull(ISyntax syntax);
+    protected abstract void WalkNonNull(IConcreteSyntax syntax);
 
     [DebuggerHidden]
-    protected void WalkChildren(ISyntax syntax)
+    protected void WalkChildren(IConcreteSyntax syntax)
     {
         foreach (var child in syntax.Children())
             WalkNonNull(child);
     }
 
     [DebuggerHidden]
-    protected void WalkChildrenInReverse(ISyntax syntax)
+    protected void WalkChildrenInReverse(IConcreteSyntax syntax)
     {
         foreach (var child in syntax.Children().Reverse())
             WalkNonNull(child);

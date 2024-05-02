@@ -12,7 +12,7 @@ public class FixedListTests
         var l1 = new[] { "foo", "bar", "baz" }.ToFixedList();
         var l2 = new[] { "foo", "bar", "baz" }.ToFixedList();
 
-        Assert.True(l1.ItemsEquals(l2));
+        Assert.True(l1.ItemsEqual(l2));
     }
 
     [Fact]

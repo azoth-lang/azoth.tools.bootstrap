@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal abstract class MemberDeclarationSyntax : DeclarationSyntax, IMemberDeclarationSyntax
+internal abstract class MemberDeclarationSyntax : DeclarationSyntax, ITypeMemberDeclarationSyntax
 {
     public ITypeDeclarationSyntax DeclaringType { get; }
     public IAccessModifierToken? AccessModifier { get; }

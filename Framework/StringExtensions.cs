@@ -92,6 +92,9 @@ public static partial class StringExtensions
         return unescaped.ToString();
     }
 
+    /// <summary>
+    /// If the string is null or empty, returns an empty list. Otherwise, splits the string by the given separators.
+    /// </summary>
     public static IFixedList<string> SplitOrEmpty(this string value, params char[] separators)
     {
         if (string.IsNullOrEmpty(value))

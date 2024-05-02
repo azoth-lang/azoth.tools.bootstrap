@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-internal abstract class Syntax : ISyntax
+internal abstract class Syntax : IConcreteSyntax
 {
     public TextSpan Span { get; protected set; }
 

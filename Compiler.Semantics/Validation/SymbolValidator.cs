@@ -26,7 +26,7 @@ public class SymbolValidator : SyntaxWalker
             WalkNonNull(declaration);
     }
 
-    protected override void WalkNonNull(ISyntax syntax)
+    protected override void WalkNonNull(IConcreteSyntax syntax)
     {
         switch (syntax)
         {
@@ -97,7 +97,7 @@ public class SymbolValidator : SyntaxWalker
         WalkChildren(syntax);
     }
 
-    private void ValidateSymbol(ISyntax syntax, IPromise<Symbol?> promise)
+    private void ValidateSymbol(IConcreteSyntax syntax, IPromise<Symbol?> promise)
     {
         if (!promise.IsFulfilled)
             throw new Exception($"Syntax doesn't have a symbol '{syntax}'");
@@ -109,7 +109,7 @@ public class SymbolValidator : SyntaxWalker
             throw new Exception($"Symbol isn't in the symbol tree '{promise.Result}'");
     }
 
-    private static void ValidateReferencedSymbol(ISyntax syntax, IPromise<Symbol?> promise, bool optional = false)
+    private static void ValidateReferencedSymbol(IConcreteSyntax syntax, IPromise<Symbol?> promise, bool optional = false)
     {
         if (!promise.IsFulfilled)
             throw new Exception($"Syntax doesn't have a referenced symbol '{syntax}'");

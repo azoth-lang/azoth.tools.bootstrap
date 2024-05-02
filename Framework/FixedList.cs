@@ -21,11 +21,11 @@ public static class FixedList
     public static IFixedList<T> Create<T>(params T[] items)
         => new Of<T>(items);
 
-    public static bool ItemsEquals<T>(this IFixedList<T> first, IFixedList<T>? second)
+    public static bool ItemsEqual<T>(this IFixedList<T> first, IFixedList<T>? second)
         where T : IEquatable<T>
-        => first.ItemsEquals(second, EqualityComparer<T>.Default);
+        => first.ItemsEqual(second, EqualityComparer<T>.Default);
 
-    public static bool ItemsEquals<T>(this IFixedList<T> first, IFixedList<T>? second, IEqualityComparer<T> comparer)
+    public static bool ItemsEqual<T>(this IFixedList<T> first, IFixedList<T>? second, IEqualityComparer<T> comparer)
     {
         if (ReferenceEquals(first, second)) return true;
         if (first.Count != second?.Count) return false;
