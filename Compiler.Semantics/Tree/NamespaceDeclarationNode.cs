@@ -9,7 +9,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal class NamespaceDeclarationNode : CodeNode, INamespaceDeclaration
 {
     public override INamespaceDeclarationSyntax Syntax { get; }
-    IDeclarationSyntax IDeclaration.Syntax => Syntax;
     public bool IsGlobalQualified => Syntax.IsGlobalQualified;
     public NamespaceName DeclaredNames => Syntax.DeclaredNames;
 

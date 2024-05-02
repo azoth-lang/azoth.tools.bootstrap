@@ -68,7 +68,7 @@ public static class ISemanticNodeExtensions
             case IGenericParameter n:
                 yield return n.Constraint;
                 yield break;
-            case IUnresolvedSupertypeName n:
+            case ISupertypeName n:
                 yield break;
             case ICapabilitySet n:
                 yield break;

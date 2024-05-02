@@ -52,7 +52,7 @@ public partial interface IPackageReference : ISemanticNode
     typeof(IUsingDirective),
     typeof(IDeclaration),
     typeof(IGenericParameter),
-    typeof(IUnresolvedSupertypeName),
+    typeof(ISupertypeName),
     typeof(ICapabilityConstraint))]
 public partial interface ICode : ISemanticNode
 {
@@ -120,7 +120,7 @@ public partial interface ITypeDeclaration : INamespaceMemberDeclaration, IClassM
     IConcreteSyntax ICode.Syntax => Syntax;
     ITypeMemberDeclarationSyntax ITypeMemberDeclaration.Syntax => Syntax;
     IFixedList<IGenericParameter> GenericParameters { get; }
-    IFixedList<IUnresolvedSupertypeName> SupertypeNames { get; }
+    IFixedList<ISupertypeName> SupertypeNames { get; }
     IFixedList<ITypeMemberDeclaration> Members { get; }
 }
 
@@ -134,7 +134,7 @@ public partial interface IClassDeclaration : ISemanticNode, ITypeDeclaration
     ITraitMemberDeclarationSyntax ITraitMemberDeclaration.Syntax => Syntax;
     IStructMemberDeclarationSyntax IStructMemberDeclaration.Syntax => Syntax;
     bool IsAbstract { get; }
-    IUnresolvedSupertypeName? BaseTypeName { get; }
+    ISupertypeName? BaseTypeName { get; }
     new IFixedList<IClassMemberDeclaration> Members { get; }
     IFixedList<ITypeMemberDeclaration> ITypeDeclaration.Members => Members;
 }
@@ -175,7 +175,7 @@ public partial interface IGenericParameter : ICode
     ParameterVariance Variance { get; }
 }
 
-public partial interface IUnresolvedSupertypeName : ICode
+public partial interface ISupertypeName : ICode
 {
     new ISupertypeNameSyntax Syntax { get; }
     IConcreteSyntax ICode.Syntax => Syntax;
