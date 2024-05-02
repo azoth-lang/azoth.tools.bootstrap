@@ -57,7 +57,7 @@ TraitMemberDeclaration <: TypeMemberDeclaration = Syntax:`ITraitMemberDeclaratio
 StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarationSyntax`;
 
 // ---------- Capabilities
-CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`ICapabilityConstraint`;
+CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;
 CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint:`CapabilitySet`;
 // TODO have a way to make Capability hide Constraint
 Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability` Constraint:`Capability`;
