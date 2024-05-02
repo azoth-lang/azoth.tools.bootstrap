@@ -32,7 +32,6 @@ internal sealed class SpecialTypeNameSyntax : TypeSyntax, ISpecialTypeNameSyntax
         }
     }
     public SpecialTypeName Name { get; }
-    TypeName ITypeNameSyntax.Name => Name;
     public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
 
     public SpecialTypeNameSyntax(TextSpan span, SpecialTypeName name)

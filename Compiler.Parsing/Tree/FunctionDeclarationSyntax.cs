@@ -13,7 +13,6 @@ internal sealed class FunctionDeclarationSyntax : InvocableNonMemberEntityDeclar
 {
     public IFixedList<IAttributeSyntax> Attributes { get; }
     public new IdentifierName Name { get; }
-    TypeName INonMemberEntityDeclarationSyntax.Name => Name;
     public new IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public override IFixedList<IParameterSyntax> AllParameters => Parameters;
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }

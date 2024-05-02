@@ -20,7 +20,7 @@ public sealed partial class <#=language.Name #>
     {
 <#      foreach (var property in rule.DeclaredProperties.Where(ShouldEmit.Property)) { #>
         <#=Emit.PropertyIsNew(property) #><#=Emit.Type(property.Type) #> <#=property.Name #> { get; }
-<#          foreach (var baseProperty in rule.InheritedPropertiesNamed(property).Concat(rule.InheritedPropertiesWithoutMostSpecificImplementationNamed(property)).Where(p => p.IsDeclared)) { #>
+<#          foreach (var baseProperty in Build.BaseProperties(rule, property)) { #>
         <#=Emit.Type(baseProperty.Type) #> <#= Emit.TypeName(baseProperty.Rule.Defines) #>.<#=baseProperty.Name #> => <#=property.Name #>;
 <#          } #>
 <#      } #>

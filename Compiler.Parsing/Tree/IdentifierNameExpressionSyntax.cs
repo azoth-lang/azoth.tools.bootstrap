@@ -11,7 +11,6 @@ using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
@@ -37,14 +36,10 @@ internal sealed class IdentifierNameExpressionSyntax : NameExpressionSyntax, IId
     }
     // A null name means this syntax was generated as an assumed missing name and the name is unknown
     public IdentifierName? Name { get; }
-    StandardName? IStandardNameExpressionSyntax.Name => Name;
     public override Promise<IIdentifierNameExpressionSyntaxSemantics> Semantics { get; } = new();
-    IPromise<IVariableNameExpressionSyntaxSemantics> IVariableNameExpressionSyntax.Semantics => Semantics;
     public override IPromise<DataType?> DataType { get; }
     IPromise<DataType> ITypedExpressionSyntax.DataType => DataType!;
     public override IPromise<Symbol?> ReferencedSymbol { get; }
-    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
-    IPromise<Symbol?> IAssignableExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
 
     public IdentifierNameExpressionSyntax(TextSpan span, IdentifierName? name)
         : base(span)

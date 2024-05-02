@@ -14,8 +14,6 @@ internal class NamedParameterSyntax : ParameterSyntax, INamedParameterSyntax
     public new IdentifierName Name { get; }
     public Promise<int?> DeclarationNumber { get; } = new Promise<int?>();
     public Promise<NamedVariableSymbol> Symbol { get; } = new Promise<NamedVariableSymbol>();
-    IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
-    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
     public ITypeSyntax Type { get; }
     public override IPromise<DataType> DataType { get; }
     public IExpressionSyntax? DefaultValue { get; }

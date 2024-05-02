@@ -30,8 +30,6 @@ internal sealed class GenericTypeNameSyntax : TypeSyntax, IGenericTypeNameSyntax
         }
     }
     public GenericName Name { get; }
-    StandardName IStandardTypeNameSyntax.Name => Name;
-    TypeName ITypeNameSyntax.Name => Name;
     public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
     public IFixedList<ITypeSyntax> TypeArguments { get; }
 

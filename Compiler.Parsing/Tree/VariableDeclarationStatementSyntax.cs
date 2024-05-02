@@ -13,8 +13,6 @@ internal class VariableDeclarationStatementSyntax : StatementSyntax, IVariableDe
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public Promise<int?> DeclarationNumber { [DebuggerStepThrough] get; } = new Promise<int?>();
     public Promise<NamedVariableSymbol> Symbol { [DebuggerStepThrough] get; } = new Promise<NamedVariableSymbol>();
-    IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
-    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public ITypeSyntax? Type { [DebuggerStepThrough] get; }
     public ICapabilitySyntax? Capability { [DebuggerStepThrough] get; }

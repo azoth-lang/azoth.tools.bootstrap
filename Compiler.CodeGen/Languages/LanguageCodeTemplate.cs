@@ -120,7 +120,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Languages
             this.Write(" { get; }\r\n");
             
             #line 23 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Languages\LanguageCodeTemplate.tt"
-          foreach (var baseProperty in rule.InheritedPropertiesNamed(property).Concat(rule.InheritedPropertiesWithoutMostSpecificImplementationNamed(property)).Where(p => p.IsDeclared)) { 
+          foreach (var baseProperty in Build.BaseProperties(rule, property)) { 
             
             #line default
             #line hidden

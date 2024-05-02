@@ -14,7 +14,6 @@ internal class FieldDeclarationSyntax : MemberDeclarationSyntax, IFieldDeclarati
     public bool IsMutableBinding { get; }
     public new IdentifierName Name { get; }
     public new AcyclicPromise<FieldSymbol> Symbol { [DebuggerStepThrough] get; }
-    IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
     public ITypeSyntax Type { get; }
     public IExpressionSyntax? Initializer { [DebuggerStepThrough] get; }
 
