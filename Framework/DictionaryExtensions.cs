@@ -30,14 +30,6 @@ public static class DictionaryExtensions
         where TKey : notnull
         => new(source.ToDictionary(keySelector));
 
-
-    public static FixedDictionary<TKey, TValue> GroupToFixedDictionary<TSource, TKey, TValue>(
-        this IEnumerable<TSource> source,
-        Func<TSource, TKey> keySelector,
-        Func<IEnumerable<TSource>, TValue> valueSelector)
-        where TKey : notnull
-        => new(source.GroupBy(keySelector).ToDictionary(g => g.Key, g => valueSelector(g)));
-
     public static Dictionary<TSource, TValue> ToDictionaryWithValue<TSource, TValue>(
         this IEnumerable<TSource> source,
         Func<TSource, TValue> valueSelector)

@@ -11,6 +11,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Liveness;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Startup;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.BindingMutability;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.DefiniteAssignment;
@@ -41,6 +42,8 @@ public class SemanticAnalyzer
     {
         // If there are errors from the lex and parse phase, don't continue on
         packageSyntax.Diagnostics.ThrowIfFatalErrors();
+
+        NamespaceSymbolBuilder.BuildNamespaceSymbols(packageSyntax);
 
         // Build up lexical scopes down to the declaration level
         new LexicalScopesBuilder().BuildFor(packageSyntax);
