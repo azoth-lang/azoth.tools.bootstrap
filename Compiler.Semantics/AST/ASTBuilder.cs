@@ -18,6 +18,8 @@ using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AST;
 
+using AST = Azoth.Tools.Bootstrap.Compiler.AST;
+
 // ReSharper disable once UnusedMember.Global
 [SuppressMessage("Performance", "CA1812: Avoid uninstantiated internal classes",
     Justification = "In Progress")]
@@ -25,7 +27,7 @@ internal class ASTBuilder
 {
     // ReSharper disable once UnusedMember.Global
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-    public PackageBuilder BuildPackage(PackageSyntax<Package> packageSyntax)
+    public PackageBuilder BuildPackage(PackageSyntax<AST.Package> packageSyntax)
     {
         var declarations = BuildNonMemberDeclarations(packageSyntax.EntityDeclarations, FixedSet.Empty<INonMemberDeclaration>());
         var testingDeclarations = BuildNonMemberDeclarations(packageSyntax.TestingEntityDeclarations, declarations);

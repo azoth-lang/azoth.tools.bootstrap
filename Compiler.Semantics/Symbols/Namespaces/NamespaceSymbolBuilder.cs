@@ -1,5 +1,4 @@
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -8,6 +7,8 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
+
+using AST = Azoth.Tools.Bootstrap.Compiler.AST;
 
 public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceSymbol>
 {
@@ -20,14 +21,14 @@ public class NamespaceSymbolBuilder : SyntaxWalker<NamespaceSymbol>
         this.packageSymbol = packageSymbol;
     }
 
-    public static void BuildNamespaceSymbols(PackageSyntax<Package> package)
+    public static void BuildNamespaceSymbols(PackageSyntax<AST.Package> package)
     {
         BuildNamespaceSymbols(package, package.SymbolTree, package.CompilationUnits);
         BuildNamespaceSymbols(package, package.TestingSymbolTree, package.TestingCompilationUnits);
     }
 
     private static void BuildNamespaceSymbols(
-        PackageSyntax<Package> package,
+        PackageSyntax<AST.Package> package,
         ISymbolTreeBuilder treeBuilder,
         IFixedSet<ICompilationUnitSyntax> compilationUnits)
     {

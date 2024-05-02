@@ -2,8 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-// ReSharper disable once InconsistentNaming
-public interface Node
+public abstract class TreeNode : SemanticNode
 {
-    public ISyntax Syntax { get; }
+    public abstract ISyntax Syntax { get; }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -21,6 +20,8 @@ using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 
+using AST = Azoth.Tools.Bootstrap.Compiler.AST;
+
 public class EntitySymbolBuilder
 {
     private readonly Diagnostics diagnostics;
@@ -34,7 +35,7 @@ public class EntitySymbolBuilder
         this.symbolTrees = symbolTrees;
     }
 
-    public static void BuildFor(PackageSyntax<Package> package)
+    public static void BuildFor(PackageSyntax<AST.Package> package)
     {
         var builder = new EntitySymbolBuilder(package.Diagnostics, package.SymbolTree, package.SymbolTrees);
         builder.Build(package.EntityDeclarations);

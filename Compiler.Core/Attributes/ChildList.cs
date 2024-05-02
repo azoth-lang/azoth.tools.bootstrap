@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
@@ -27,7 +28,17 @@ public sealed class ChildList<T> : IReadOnlyList<T>
 
 public static class ChildList
 {
+    /// <summary>
+    /// Create a list of potentially rewritable children.
+    /// </summary>
     public static ChildList<T> Create<T>(IEnumerable<T> initialValues)
         where T : class
         => new(initialValues);
+
+    /// <summary>
+    /// Create a list of children that does not support rewriting.
+    /// </summary>
+    public static IFixedList<T> CreateFixed<T>(IEnumerable<T> initialValues)
+        where T : class
+        => FixedList.Create(initialValues);
 }

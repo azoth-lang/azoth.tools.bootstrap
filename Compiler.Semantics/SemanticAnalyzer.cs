@@ -38,7 +38,7 @@ public class SemanticAnalyzer
     public bool SaveReachabilityGraphs { get; set; }
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-    public Package Check(PackageSyntax<Package> packageSyntax)
+    public Compiler.AST.Package Check(PackageSyntax<Compiler.AST.Package> packageSyntax)
     {
         // If there are errors from the lex and parse phase, don't continue on
         packageSyntax.Diagnostics.ThrowIfFatalErrors();
@@ -62,7 +62,7 @@ public class SemanticAnalyzer
         return packageBuilder.Build();
     }
 
-    private static PackageBuilder CheckSemantics(PackageSyntax<Package> packageSyntax)
+    private static PackageBuilder CheckSemantics(PackageSyntax<Compiler.AST.Package> packageSyntax)
     {
         DeclarationNumberAssigner.AssignIn(packageSyntax.AllEntityDeclarations);
 

@@ -1,0 +1,31 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
+◊walkers_namespace Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
+◊root SemanticNode;
+◊using Azoth.Tools.Bootstrap.Compiler.Core;
+◊using Azoth.Tools.Bootstrap.Compiler.CST;
+◊using Azoth.Tools.Bootstrap.Compiler.Names;
+◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
+◊using Azoth.Tools.Bootstrap.Framework;
+
+SemanticNode = Syntax:`ISyntax`;
+
+// ---------- Packages
+Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` References:{PackageReference}
+    CompilationUnits:{CompilationUnit} TestingCompilationUnits:{CompilationUnit};
+
+PackageReference = Syntax:`IPackageReferenceSyntax`
+    AliasOrName:`IdentifierName` Package:`IPackageSymbols` IsTrusted:`bool`;
+
+// ---------- Code Files
+Code = Syntax:`IConcreteSyntax`;
+
+CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile` ImplicitNamespaceName:`NamespaceName`
+    UsingDirectives:UsingDirective* ;//Declarations:NamespaceMemberDeclaration*;
+
+
+
+// ---------- Declarations
+
+
+// ---------- To Categorize
+UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;

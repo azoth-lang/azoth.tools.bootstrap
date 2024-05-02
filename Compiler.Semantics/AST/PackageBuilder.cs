@@ -15,7 +15,7 @@ internal class PackageBuilder
     public FixedSymbolTree SymbolTree { get; }
     public FixedSymbolTree TestingSymbolTree { get; }
     public Diagnostics Diagnostics { get; }
-    public IFixedSet<Package> References { get; }
+    public IFixedSet<Compiler.AST.Package> References { get; }
     public IFunctionDeclaration? EntryPoint { get; set; }
 
     public PackageBuilder(
@@ -24,7 +24,7 @@ internal class PackageBuilder
         FixedSymbolTree symbolTree,
         FixedSymbolTree testingSymbolTree,
         Diagnostics diagnostics,
-        IFixedSet<Package> references)
+        IFixedSet<Compiler.AST.Package> references)
     {
         Declarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();
         TestingDeclarations = GetAllDeclarations(nonMemberTestingDeclarations).ToFixedSet();
@@ -48,9 +48,9 @@ internal class PackageBuilder
         }
     }
 
-    public Package Build()
+    public Compiler.AST.Package Build()
     {
-        return new Package(NonMemberDeclarations, NonMemberTestingDeclarations, SymbolTree, TestingSymbolTree,
+        return new Compiler.AST.Package(NonMemberDeclarations, NonMemberTestingDeclarations, SymbolTree, TestingSymbolTree,
             Diagnostics.ToFixedList(), References,
             EntryPoint);
     }

@@ -4,6 +4,7 @@
     <AssemblyName>Azoth.Tools.Bootstrap.Compiler.Semantics</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Compiler.Semantics</RootNamespace>
     <Nullable>enable</Nullable>
+    <DisableFastUpToDateCheck>True</DisableFastUpToDateCheck>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -29,5 +30,16 @@
     <ProjectReference Include="..\Framework\Framework.csproj" />
     <ProjectReference Include="..\Compiler.LexicalScopes\Compiler.LexicalScopes.csproj" />
     <ProjectReference Include="..\Compiler.Primitives\Compiler.Primitives.csproj" />
+  </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SemanticTree.tree&quot;" />
+  </Target>
+  <ItemGroup>
+    <Compile Update="SemanticTree.tree.cs">
+      <DependentUpon>SemanticTree.tree</DependentUpon>
+    </Compile>
+    <Compile Update="SemanticTree.children.cs">
+      <DependentUpon>SemanticTree.tree</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

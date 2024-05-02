@@ -4,14 +4,13 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class Package : Node
+internal sealed class PackageNode : TreeNode, Package
 {
-    public IPackageSyntax Syntax { get; }
-
-    ISyntax Node.Syntax => Syntax;
+    public override IPackageSyntax Syntax { get; }
 
     public IdentifierName Name => Syntax.Name;
 
@@ -19,19 +18,19 @@ internal sealed class Package : Node
     public PackageSymbol Symbol
         => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolDefinitions.Package);
 
-    public IReadOnlyList<PackageReference> PackageReferences { get; }
-    public IReadOnlyList<CompilationUnit> CompilationUnits { get; }
-    public IReadOnlyList<CompilationUnit> TestingCompilationUnits { get; }
+    public IFixedSet<PackageReference> References { get; }
+    public IFixedSet<CompilationUnit> CompilationUnits { get; }
+    public IFixedSet<CompilationUnit> TestingCompilationUnits { get; }
 
-    public Package(
+    public PackageNode(
         IPackageSyntax syntax,
-        IEnumerable<PackageReference> packageReferences,
+        IEnumerable<PackageReference> references,
         IEnumerable<CompilationUnit> compilationUnits,
         IEnumerable<CompilationUnit> testingCompilationUnits)
     {
         Syntax = syntax;
-        PackageReferences = ChildList.Create(packageReferences);
-        CompilationUnits = ChildList.Create(compilationUnits);
-        TestingCompilationUnits = ChildList.Create(testingCompilationUnits);
+        References = FixedSet.Create(references);
+        CompilationUnits = FixedSet.Create(compilationUnits);
+        TestingCompilationUnits = FixedSet.Create(testingCompilationUnits);
     }
 }

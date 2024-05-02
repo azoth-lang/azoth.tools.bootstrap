@@ -8,11 +8,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 internal static class SyntaxBinder
 {
     public static Package Package(IPackageSyntax package)
-        => new Package(package, PackageReferences(package.References), CompilationUnits(package.CompilationUnits), CompilationUnits(package.TestingCompilationUnits));
+        => new PackageNode(package, PackageReferences(package.References), CompilationUnits(package.CompilationUnits), CompilationUnits(package.TestingCompilationUnits));
 
     public static IEnumerable<PackageReference> PackageReferences(IEnumerable<IPackageReferenceSyntax> packageReferences)
-        => packageReferences.Select(pr => new PackageReference(pr));
+        => packageReferences.Select(pr => new PackageReferenceNode(pr));
 
     public static IEnumerable<CompilationUnit> CompilationUnits(IEnumerable<ICompilationUnitSyntax> compilationUnits)
-        => compilationUnits.Select(cu => new CompilationUnit(cu));
+        => compilationUnits.Select(cu => new CompilationUnitNode(cu, UsingDirectives(cu.UsingDirectives)));
+
+    public static IEnumerable<UsingDirective> UsingDirectives(IEnumerable<IUsingDirectiveSyntax> usingDirectives)
+        => usingDirectives.Select(ud => new UsingDirectiveNode(ud));
 }
