@@ -16,7 +16,7 @@ internal abstract class TypeDeclarationNode : DeclarationNode, ITypeDeclarationN
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<ISupertypeNameNode> supertypeNames)
     {
-        GenericParameters = ChildList.CreateFixed(genericParameters);
-        SupertypeNames = ChildList.CreateFixed(supertypeNames);
+        GenericParameters = ChildList.CreateFixed(this, genericParameters);
+        SupertypeNames = ChildList.CreateFixed(this, supertypeNames);
     }
 }

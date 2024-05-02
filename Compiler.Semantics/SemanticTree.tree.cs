@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -12,19 +13,33 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 // ReSharper disable PartialTypeWithSinglePart
 
 [Closed(
+    typeof(IChildNode),
     typeof(IPackageNode),
-    typeof(IPackageReferenceNode),
-    typeof(ICodeNode),
-    typeof(INamespaceMemberDeclarationNode),
+    typeof(ICompilationUnitNode),
+    typeof(IUsingDirectiveNode),
+    typeof(IDeclarationNode),
+    typeof(INamespaceDeclarationNode),
     typeof(IClassDeclarationNode),
     typeof(IStructDeclarationNode),
     typeof(ITraitDeclarationNode),
-    typeof(ITypeMemberDeclarationNode),
-    typeof(ICapabilitySetNode),
-    typeof(ICapabilityNode))]
+    typeof(IGenericParameterNode),
+    typeof(ISupertypeNameNode),
+    typeof(IClassMemberDeclarationNode),
+    typeof(ITraitMemberDeclarationNode),
+    typeof(IStructMemberDeclarationNode),
+    typeof(IFunctionDeclarationNode),
+    typeof(ICapabilityConstraintNode))]
 public partial interface ISemanticNode
 {
     ISyntax Syntax { get; }
+}
+
+[Closed(
+    typeof(IPackageReferenceNode),
+    typeof(ICodeNode))]
+public partial interface IChildNode : IChild<ISemanticNode>, ISemanticNode
+{
+    ISemanticNode Parent { get; }
 }
 
 public partial interface IPackageNode : ISemanticNode
@@ -38,7 +53,7 @@ public partial interface IPackageNode : ISemanticNode
     IFixedSet<ICompilationUnitNode> TestingCompilationUnits { get; }
 }
 
-public partial interface IPackageReferenceNode : ISemanticNode
+public partial interface IPackageReferenceNode : IChildNode
 {
     new IPackageReferenceSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
@@ -54,15 +69,16 @@ public partial interface IPackageReferenceNode : ISemanticNode
     typeof(IGenericParameterNode),
     typeof(ISupertypeNameNode),
     typeof(ICapabilityConstraintNode))]
-public partial interface ICodeNode : ISemanticNode
+public partial interface ICodeNode : IChildNode
 {
     new IConcreteSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
 }
 
-public partial interface ICompilationUnitNode : ICodeNode
+public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
 {
     new ICompilationUnitSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     CodeFile File { get; }
     NamespaceName ImplicitNamespaceName { get; }
@@ -70,9 +86,10 @@ public partial interface ICompilationUnitNode : ICodeNode
     IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
 }
 
-public partial interface IUsingDirectiveNode : ICodeNode
+public partial interface IUsingDirectiveNode : ISemanticNode, ICodeNode
 {
     new IUsingDirectiveSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     NamespaceName Name { get; }
 }
@@ -80,14 +97,15 @@ public partial interface IUsingDirectiveNode : ICodeNode
 [Closed(
     typeof(INamespaceMemberDeclarationNode),
     typeof(ITypeMemberDeclarationNode))]
-public partial interface IDeclarationNode : ICodeNode
+public partial interface IDeclarationNode : ISemanticNode, ICodeNode
 {
     new IDeclarationSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     NamespaceSymbol? ContainingNamespace { get; }
 }
 
-public partial interface INamespaceDeclarationNode : INamespaceMemberDeclarationNode
+public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
 {
     new INamespaceDeclarationSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
@@ -106,7 +124,7 @@ public partial interface INamespaceDeclarationNode : INamespaceMemberDeclaration
     typeof(INamespaceDeclarationNode),
     typeof(ITypeDeclarationNode),
     typeof(IFunctionDeclarationNode))]
-public partial interface INamespaceMemberDeclarationNode : ISemanticNode, IDeclarationNode
+public partial interface INamespaceMemberDeclarationNode : IDeclarationNode
 {
 }
 
@@ -117,11 +135,11 @@ public partial interface INamespaceMemberDeclarationNode : ISemanticNode, IDecla
 public partial interface ITypeDeclarationNode : INamespaceMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode
 {
     new ITypeDeclarationSyntax Syntax { get; }
-    ISyntax ISemanticNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
     IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
     ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
     IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
+    ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
     IFixedList<IGenericParameterNode> GenericParameters { get; }
@@ -170,9 +188,10 @@ public partial interface ITraitDeclarationNode : ISemanticNode, ITypeDeclaration
     IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 }
 
-public partial interface IGenericParameterNode : ICodeNode
+public partial interface IGenericParameterNode : ISemanticNode, ICodeNode
 {
     new IGenericParameterSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     ICapabilityConstraintNode Constraint { get; }
     IdentifierName Name { get; }
@@ -180,9 +199,10 @@ public partial interface IGenericParameterNode : ICodeNode
     ParameterVariance Variance { get; }
 }
 
-public partial interface ISupertypeNameNode : ICodeNode
+public partial interface ISupertypeNameNode : ISemanticNode, ICodeNode
 {
     new ISupertypeNameSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     TypeName Name { get; }
 }
@@ -191,39 +211,43 @@ public partial interface ISupertypeNameNode : ICodeNode
     typeof(IClassMemberDeclarationNode),
     typeof(ITraitMemberDeclarationNode),
     typeof(IStructMemberDeclarationNode))]
-public partial interface ITypeMemberDeclarationNode : ISemanticNode, IDeclarationNode
+public partial interface ITypeMemberDeclarationNode : IDeclarationNode
 {
     new ITypeMemberDeclarationSyntax Syntax { get; }
-    ISyntax ISemanticNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
-    IConcreteSyntax ICodeNode.Syntax => Syntax;
 }
 
 [Closed(
     typeof(ITypeDeclarationNode))]
-public partial interface IClassMemberDeclarationNode : ITypeMemberDeclarationNode
+public partial interface IClassMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
 {
     new IClassMemberDeclarationSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
     ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
 }
 
 [Closed(
     typeof(ITypeDeclarationNode))]
-public partial interface ITraitMemberDeclarationNode : ITypeMemberDeclarationNode
+public partial interface ITraitMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
 {
     new ITraitMemberDeclarationSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
     ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
 }
 
 [Closed(
     typeof(ITypeDeclarationNode))]
-public partial interface IStructMemberDeclarationNode : ITypeMemberDeclarationNode
+public partial interface IStructMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
 {
     new IStructMemberDeclarationSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
     ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
 }
 
-public partial interface IFunctionDeclarationNode : INamespaceMemberDeclarationNode
+public partial interface IFunctionDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
 {
     new IFunctionDeclarationSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
@@ -236,29 +260,26 @@ public partial interface IFunctionDeclarationNode : INamespaceMemberDeclarationN
 [Closed(
     typeof(ICapabilitySetNode),
     typeof(ICapabilityNode))]
-public partial interface ICapabilityConstraintNode : ICodeNode
+public partial interface ICapabilityConstraintNode : ISemanticNode, ICodeNode
 {
     new ICapabilityConstraintSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     Compiler.Types.Capabilities.ICapabilityConstraint Constraint { get; }
 }
 
-public partial interface ICapabilitySetNode : ISemanticNode, ICapabilityConstraintNode
+public partial interface ICapabilitySetNode : ICapabilityConstraintNode
 {
     new ICapabilitySetSyntax Syntax { get; }
-    ISyntax ISemanticNode.Syntax => Syntax;
     ICapabilityConstraintSyntax ICapabilityConstraintNode.Syntax => Syntax;
-    IConcreteSyntax ICodeNode.Syntax => Syntax;
     new CapabilitySet Constraint { get; }
     Compiler.Types.Capabilities.ICapabilityConstraint ICapabilityConstraintNode.Constraint => Constraint;
 }
 
-public partial interface ICapabilityNode : ISemanticNode, ICapabilityConstraintNode
+public partial interface ICapabilityNode : ICapabilityConstraintNode
 {
     new ICapabilitySyntax Syntax { get; }
-    ISyntax ISemanticNode.Syntax => Syntax;
     ICapabilityConstraintSyntax ICapabilityConstraintNode.Syntax => Syntax;
-    IConcreteSyntax ICodeNode.Syntax => Syntax;
     Capability Capability { get; }
     new Capability Constraint { get; }
     Compiler.Types.Capabilities.ICapabilityConstraint ICapabilityConstraintNode.Constraint => Constraint;

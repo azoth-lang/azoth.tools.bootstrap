@@ -4,6 +4,7 @@
 ◊prefix I;
 ◊suffix Node;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -12,16 +13,17 @@
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 Semantic = Syntax:`ISyntax`;
+Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode`; // Parent type quoted so that is is not treated as a child node
 
 // ---------- Packages
 Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` References:{PackageReference}
     CompilationUnits:{CompilationUnit} TestingCompilationUnits:{CompilationUnit};
 
-PackageReference = Syntax:`IPackageReferenceSyntax`
+PackageReference <: Child = Syntax:`IPackageReferenceSyntax`
     AliasOrName:`IdentifierName` Package:`IPackageSymbols` IsTrusted:`bool`;
 
 // ---------- Code Files
-Code = Syntax:`IConcreteSyntax`;
+Code <: Child = Syntax:`IConcreteSyntax`;
 
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile` ImplicitNamespaceName:`NamespaceName`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;

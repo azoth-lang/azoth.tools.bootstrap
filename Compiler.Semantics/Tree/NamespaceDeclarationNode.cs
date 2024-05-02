@@ -30,7 +30,7 @@ internal class NamespaceDeclarationNode : CodeNode, INamespaceDeclarationNode
         IEnumerable<INamespaceMemberDeclarationNode> declarations)
     {
         Syntax = syntax;
-        UsingDirectives = ChildList.CreateFixed(usingDirectives);
-        Declarations = ChildList.CreateFixed(declarations);
+        UsingDirectives = ChildList.CreateFixed(this, usingDirectives);
+        Declarations = ChildList.CreateFixed(this, declarations);
     }
 }

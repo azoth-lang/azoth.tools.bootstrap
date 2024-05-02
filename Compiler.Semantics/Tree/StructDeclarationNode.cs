@@ -18,6 +18,6 @@ internal sealed class StructDeclarationNode : TypeDeclarationNode, IStructDeclar
         : base(genericParameters, supertypeNames)
     {
         Syntax = syntax;
-        Members = ChildList.CreateFixed(members);
+        Members = ChildList.CreateFixed(this, members);
     }
 }

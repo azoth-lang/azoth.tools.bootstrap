@@ -9,7 +9,8 @@ internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarat
 {
     public override IClassDeclarationSyntax Syntax { get; }
     public bool IsAbstract => Syntax.AbstractModifier is not null;
-    public ISupertypeNameNode? BaseTypeName { get; }
+    private Child<ISupertypeNameNode>? baseTypeName;
+    public ISupertypeNameNode? BaseTypeName => baseTypeName?.Value;
     public override IFixedList<IClassMemberDeclarationNode> Members { get; }
 
     public ClassDeclarationNode(
@@ -21,7 +22,7 @@ internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarat
         : base(genericParameters, supertypeNames)
     {
         Syntax = syntax;
-        BaseTypeName = baseTypeName;
-        Members = ChildList.CreateFixed(members);
+        this.baseTypeName = Child.Create(this, baseTypeName);
+        Members = ChildList.CreateFixed(this, members);
     }
 }

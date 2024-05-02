@@ -10,7 +10,7 @@ public sealed class ChildList<T> : IReadOnlyList<T>
 {
     private readonly IReadOnlyList<Child<T>> children;
 
-    public ChildList(IEnumerable<T> initialValues)
+    internal ChildList(IEnumerable<T> initialValues)
     {
         // Don't use `AsReadOnly` because FixedList<T> is already a wrapper. Use `ToArray` to
         // avoid allocating any more memory than necessary.
@@ -31,14 +31,23 @@ public static class ChildList
     /// <summary>
     /// Create a list of potentially rewritable children.
     /// </summary>
-    public static ChildList<T> Create<T>(IEnumerable<T> initialValues)
-        where T : class
-        => new(initialValues);
+    public static ChildList<TChild> Create<TParent, TChild>(TParent parent, IEnumerable<TChild> initialValues)
+        where TChild : class, IChild<TParent>
+    {
+        var children = new ChildList<TChild>(initialValues);
+        foreach (var child in children) child.AttachParent(parent);
+        return children;
+    }
 
     /// <summary>
     /// Create a list of children that does not support rewriting.
     /// </summary>
-    public static IFixedList<T> CreateFixed<T>(IEnumerable<T> initialValues)
-        where T : class
-        => FixedList.Create(initialValues);
+    public static IFixedList<TChild> CreateFixed<TParent, TChild>(TParent parent, IEnumerable<TChild> initialValues)
+        where TChild : class, IChild<TParent>
+    {
+        var children = FixedList.Create(initialValues);
+        foreach (var child in children)
+            child.AttachParent(parent);
+        return children;
+    }
 }
