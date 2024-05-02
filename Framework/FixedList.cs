@@ -49,8 +49,9 @@ public static class FixedList
         [DebuggerStepThrough]
         internal Of(IEnumerable<T> items)
         {
-            // Don't use `AsReadOnly` because FixedList<T> is already a wrapper
-            this.items = items.ToList();
+            // Don't use `AsReadOnly` because FixedList<T> is already a wrapper. Use `ToArray` to
+            // avoid allocating any more memory than necessary.
+            this.items = items.ToArray();
         }
 
         [DebuggerStepThrough]
