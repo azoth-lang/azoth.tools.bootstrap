@@ -29,12 +29,13 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile` Implic
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
 // ---------- Declarations
-Declaration <: Code = Syntax:`IDeclarationSyntax`;
+Declaration <: Code = Syntax:`IDeclarationSyntax` ContainingNamespace:`NamespaceSymbol`?;
 
 // ---------- Namespaces
 NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`
     IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
-    UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
+    UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*
+    ContainingNamespace:`NamespaceSymbol` Symbol:`NamespaceSymbol`;
 NamespaceMemberDeclaration <: Declaration;
 
 // ---------- Type Declarations
@@ -59,7 +60,8 @@ TraitMemberDeclaration <: TypeMemberDeclaration = Syntax:`ITraitMemberDeclaratio
 StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarationSyntax`;
 
 // ---------- Invocable Declarations
-FunctionDeclaration <: NamespaceMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`;
+FunctionDeclaration <: NamespaceMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`
+    ContainingNamespace:`NamespaceSymbol`;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;

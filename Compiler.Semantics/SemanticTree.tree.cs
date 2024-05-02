@@ -84,6 +84,7 @@ public partial interface IDeclarationNode : ICodeNode
 {
     new IDeclarationSyntax Syntax { get; }
     IConcreteSyntax ICodeNode.Syntax => Syntax;
+    NamespaceSymbol? ContainingNamespace { get; }
 }
 
 public partial interface INamespaceDeclarationNode : INamespaceMemberDeclarationNode
@@ -96,6 +97,9 @@ public partial interface INamespaceDeclarationNode : INamespaceMemberDeclaration
     NamespaceName DeclaredNames { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
+    new NamespaceSymbol ContainingNamespace { get; }
+    NamespaceSymbol? IDeclarationNode.ContainingNamespace => ContainingNamespace;
+    NamespaceSymbol Symbol { get; }
 }
 
 [Closed(
@@ -225,6 +229,8 @@ public partial interface IFunctionDeclarationNode : INamespaceMemberDeclarationN
     ISyntax ISemanticNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
+    new NamespaceSymbol ContainingNamespace { get; }
+    NamespaceSymbol? IDeclarationNode.ContainingNamespace => ContainingNamespace;
 }
 
 [Closed(
