@@ -35,10 +35,6 @@ public static class EnumerableExtensions
         => values as IFixedList<T> ?? FixedList.Create(values);
 
     [DebuggerStepThrough]
-    public static IFixedList<T> CastToFixedList<T>(this IEnumerable values)
-        => values as IFixedList<T> ?? FixedList.Create(values.Cast<T>());
-
-    [DebuggerStepThrough]
     public static IFixedSet<T> ToFixedSet<T>(this IEnumerable<T> values)
         => values as IFixedSet<T> ?? FixedSet.Create(values);
 
