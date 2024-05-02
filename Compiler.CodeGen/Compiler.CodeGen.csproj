@@ -38,11 +38,6 @@
       <LastGenOutput>LanguageCodeTemplate.cs</LastGenOutput>
       <Generator>TextTemplatingFilePreprocessor</Generator>
     </None>
-    <None Update="Passes\PassCodeTemplate.tt">
-      <CustomToolNamespace>Azoth.Tools.Bootstrap.Compiler.CodeGen.Passes</CustomToolNamespace>
-      <LastGenOutput>PassCodeTemplate.cs</LastGenOutput>
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-    </None>
     <None Update="Trees\TreeCodeTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TreeCodeTemplate.cs</LastGenOutput>
@@ -65,11 +60,6 @@
     </Compile>
     <Compile Update="Languages\LanguageCodeTemplate.cs">
       <DependentUpon>LanguageCodeTemplate.tt</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Passes\PassCodeTemplate.cs">
-      <DependentUpon>PassCodeTemplate.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>

@@ -124,9 +124,6 @@ internal static class Parsing
     public static PropertyNode ParseProperty(string property)
         => ParseBinding(property, null, (name, type) => new PropertyNode(name, type));
 
-    public static ParameterNode ParseParameter(string property, string? defaultName)
-        => ParseBinding(property, defaultName, (name, type) => new ParameterNode(name.ToCamelCase(), type));
-
     private static T ParseBinding<T>(string property, string? defaultName, Func<string, TypeNode, T> create)
     {
         var isOptional = property.EndsWith('?');

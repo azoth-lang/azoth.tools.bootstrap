@@ -25,8 +25,4 @@ public static class ShouldEmit
 
     public static bool PropertyForward(Property property)
         => property.ReferencesRule;
-
-    public static bool RunExplicitImplementation(Pass pass)
-        => pass.From is null || pass.FromContext is null
-        || pass.To is null || pass.ToContext is null;
 }
