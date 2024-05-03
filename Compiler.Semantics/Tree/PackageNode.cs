@@ -42,7 +42,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public IFixedSet<IPackageMemberDeclarationNode> TestingDeclarations
         => testingDeclarations.TryGetValue(out var value)
             ? value
-            : testingDeclarations.GetValue(this, DeclarationsAttribute.PackageDeclarations);
+            : testingDeclarations.GetValue(this, DeclarationsAttribute.PackageTestingDeclarations);
 
     public PackageNode(
         IPackageSyntax syntax,
