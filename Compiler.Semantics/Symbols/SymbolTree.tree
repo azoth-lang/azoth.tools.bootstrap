@@ -1,0 +1,39 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+◊root <default>;
+◊prefix I;
+◊suffix SymbolNode;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+◊using Azoth.Tools.Bootstrap.Compiler.Names;
+◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
+◊using Azoth.Tools.Bootstrap.Framework;
+
+<default> = Symbol:`Symbol`;
+// Parent and Package type quoted so that is is not treated as a child node
+Child <: `IChild<ISymbolNode>` = Parent:`ISymbolNode` Package:`IPackageSymbolNode`; 
+
+// ---------- Packages
+Package = AliasOrName:`IdentifierName` Name:`IdentifierName` Symbol:`PackageSymbol`
+    GlobalNamespace:Namespace TestingGlobalNamespace:Namespace;
+
+// ---------- Declarations
+Declaration <: Child;
+
+// ---------- Namespaces
+Namespace <: NamespaceMember = Symbol:`NamespaceSymbol`;
+NamespaceMember <: Declaration;
+
+// ---------- Type Declarations
+Type <: NamespaceMember, ClassMember, TraitMember, StructMember
+    = Members:TypeMember*;
+Class <: Type = Members:ClassMember*;
+Struct <: Type = Members:StructMember*;
+Trait <: Type = Members:TraitMember*;
+
+// ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
+TypeMember <: Declaration;
+ClassMember <: TypeMember;
+TraitMember <: TypeMember;
+StructMember <: TypeMember;
+
+// ---------- Invocable Declarations
+Function <: NamespaceMember;

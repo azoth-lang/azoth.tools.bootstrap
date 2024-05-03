@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -48,7 +49,9 @@ public partial interface IPackageNode : ISemanticNode
     ISyntax ISemanticNode.Syntax => Syntax;
     IdentifierName Name { get; }
     PackageSymbol Symbol { get; }
+    IPackageSymbolNode SymbolNode { get; }
     IFixedSet<IPackageReferenceNode> References { get; }
+    FixedDictionary<IdentifierName,IPackageSymbolNode> SymbolNodes { get; }
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     IFixedSet<ICompilationUnitNode> TestingCompilationUnits { get; }
 }
@@ -57,6 +60,7 @@ public partial interface IPackageReferenceNode : IChildNode
 {
     new IPackageReferenceSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
+    IPackageSymbolNode SymbolNode { get; }
     IdentifierName AliasOrName { get; }
     IPackageSymbols Package { get; }
     bool IsTrusted { get; }

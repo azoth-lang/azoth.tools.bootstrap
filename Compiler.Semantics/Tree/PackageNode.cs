@@ -18,6 +18,16 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public PackageSymbol Symbol
         => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolAttribute.Package);
 
+    private ValueAttribute<IPackageSymbolNode> symbolNode;
+    public IPackageSymbolNode SymbolNode
+        => symbolNode.TryGetValue(out var value) ? value
+            : symbolNode.GetValue(this, SymbolNodeAttribute.PackageSymbolNode);
+
+    private ValueAttribute<FixedDictionary<IdentifierName, IPackageSymbolNode>> symbolNodes;
+    public FixedDictionary<IdentifierName, IPackageSymbolNode> SymbolNodes
+        => symbolNodes.TryGetValue(out var value) ? value
+            : symbolNodes.GetValue(this, SymbolNodeAttribute.PackageSymbolNodes);
+
     public IFixedSet<IPackageReferenceNode> References { get; }
     public IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     public IFixedSet<ICompilationUnitNode> TestingCompilationUnits { get; }

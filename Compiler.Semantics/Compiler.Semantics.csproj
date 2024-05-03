@@ -32,7 +32,7 @@
     <ProjectReference Include="..\Compiler.Primitives\Compiler.Primitives.csproj" />
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SemanticTree.tree&quot;" />
+    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)Symbols\SymbolTree.tree&quot; &quot;$(ProjectDir)SemanticTree.tree&quot;" />
   </Target>
   <ItemGroup>
     <Compile Update="SemanticTree.tree.cs">
@@ -40,6 +40,12 @@
     </Compile>
     <Compile Update="SemanticTree.children.cs">
       <DependentUpon>SemanticTree.tree</DependentUpon>
+    </Compile>
+    <Compile Update="Symbols\SymbolTree.tree.cs">
+      <DependentUpon>SymbolTree.tree</DependentUpon>
+    </Compile>
+    <Compile Update="Symbols\SymbolTree.children.cs">
+      <DependentUpon>SymbolTree.tree</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

@@ -61,6 +61,8 @@ internal static class Parsing
     public static SymbolNode? ParseSymbol(string? symbol)
     {
         if (symbol is null) return null;
+        if (symbol == "<default>")
+            return new SymbolNode("", false);
         if (symbol.StartsWith('`') && symbol.EndsWith('`'))
             return new SymbolNode(symbol[1..^1], true);
         return new SymbolNode(symbol, symbol == "void");

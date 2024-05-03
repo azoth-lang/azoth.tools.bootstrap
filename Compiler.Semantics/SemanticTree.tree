@@ -1,5 +1,4 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
-◊walkers_namespace Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
 ◊root Semantic;
 ◊prefix I;
 ◊suffix Node;
@@ -7,6 +6,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -16,10 +16,11 @@ Semantic = Syntax:`ISyntax`;
 Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode`; // Parent type quoted so that is is not treated as a child node
 
 // ---------- Packages
-Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` References:{PackageReference}
+Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` SymbolNode:`IPackageSymbolNode`
+    References:{PackageReference} SymbolNodes:`FixedDictionary<IdentifierName,IPackageSymbolNode>`
     CompilationUnits:{CompilationUnit} TestingCompilationUnits:{CompilationUnit};
 
-PackageReference <: Child = Syntax:`IPackageReferenceSyntax`
+PackageReference <: Child = Syntax:`IPackageReferenceSyntax` SymbolNode:`IPackageSymbolNode`
     AliasOrName:`IdentifierName` Package:`IPackageSymbols` IsTrusted:`bool`;
 
 // ---------- Code Files

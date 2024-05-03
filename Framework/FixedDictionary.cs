@@ -22,6 +22,12 @@ public class FixedDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
     }
 
     [DebuggerStepThrough]
+    public FixedDictionary(IEnumerable<KeyValuePair<TKey, TValue>> items)
+    {
+        this.items = new ReadOnlyDictionary<TKey, TValue>(new Dictionary<TKey, TValue>(items));
+    }
+
+    [DebuggerStepThrough]
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         => items.GetEnumerator();
 

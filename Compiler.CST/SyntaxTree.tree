@@ -1,5 +1,4 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.CST;
-◊walkers_namespace Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
 ◊root Concrete;
 ◊prefix I;
 ◊suffix Syntax;
