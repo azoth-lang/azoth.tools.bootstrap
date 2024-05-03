@@ -26,6 +26,7 @@ public partial interface IChildSymbolNode : IChild<ISymbolNode>, ISymbolNode
 {
     ISymbolNode Parent { get; }
     IPackageSymbolNode Package { get; }
+    INamespaceSymbolNode GlobalNamespace { get; }
 }
 
 public partial interface IPackageSymbolNode : ISymbolNode
@@ -43,10 +44,13 @@ public partial interface IPackageSymbolNode : ISymbolNode
     typeof(ITypeMemberSymbolNode))]
 public partial interface IDeclarationSymbolNode : IChildSymbolNode
 {
+    StandardName Name { get; }
 }
 
 public partial interface INamespaceSymbolNode : INamespaceMemberSymbolNode
 {
+    new IdentifierName Name { get; }
+    StandardName IDeclarationSymbolNode.Name => Name;
     new NamespaceSymbol Symbol { get; }
     Symbol ISymbolNode.Symbol => Symbol;
     IFixedList<INamespaceMemberSymbolNode> Members { get; }

@@ -8,18 +8,18 @@
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 <default> = Symbol:`Symbol`;
-// Parent and Package type quoted so that is is not treated as a child node
-Child <: `IChild<ISymbolNode>` = Parent:`ISymbolNode` Package:`IPackageSymbolNode`; 
+// Parent, Package, and GlobalNamespace type quoted so that is is not treated as a child node
+Child <: `IChild<ISymbolNode>` = Parent:`ISymbolNode` Package:`IPackageSymbolNode` GlobalNamespace:`INamespaceSymbolNode`; 
 
 // ---------- Packages
 Package = AliasOrName:`IdentifierName` Name:`IdentifierName` Symbol:`PackageSymbol`
     GlobalNamespace:Namespace TestingGlobalNamespace:Namespace;
 
 // ---------- Declarations
-Declaration <: Child;
+Declaration <: Child = Name:`StandardName`;
 
 // ---------- Namespaces
-Namespace <: NamespaceMember = Symbol:`NamespaceSymbol` Members:NamespaceMember*;
+Namespace <: NamespaceMember = Name:`IdentifierName` Symbol:`NamespaceSymbol` Members:NamespaceMember*;
 NamespaceMember <: Declaration;
 TypeOrFunction <: NamespaceMember;
 

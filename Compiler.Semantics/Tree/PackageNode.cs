@@ -21,7 +21,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     private ValueAttribute<IPackageSymbolNode> symbolNode;
     public IPackageSymbolNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttribute.PackageSymbolNode);
+            : symbolNode.GetValue(this, SymbolNodeAttribute.Package);
 
     private ValueAttribute<FixedDictionary<IdentifierName, IPackageSymbolNode>> symbolNodes;
     public FixedDictionary<IdentifierName, IPackageSymbolNode> SymbolNodes
@@ -39,8 +39,18 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
         IEnumerable<ICompilationUnitNode> testingCompilationUnits)
     {
         Syntax = syntax;
-        References = FixedSet.Create(references);
-        CompilationUnits = FixedSet.Create(compilationUnits);
-        TestingCompilationUnits = FixedSet.Create(testingCompilationUnits);
+        References = ChildList.CreateFixedSet(this, references);
+        CompilationUnits = ChildList.CreateFixedSet(this, compilationUnits);
+        TestingCompilationUnits = ChildList.CreateFixedSet(this, testingCompilationUnits);
+    }
+
+    internal override IPackageNode InheritedPackage(IChildNode caller, IChildNode child) => this;
+    internal override ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
+    {
+        if (CompilationUnits.Contains(caller))
+            return SymbolNode.GlobalNamespace;
+        if (TestingCompilationUnits.Contains(caller))
+            return SymbolNode.TestingGlobalNamespace;
+        return base.InheritedContainingSymbolNode(caller, child);
     }
 }

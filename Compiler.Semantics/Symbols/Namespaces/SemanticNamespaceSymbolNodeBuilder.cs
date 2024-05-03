@@ -22,18 +22,18 @@ internal class SemanticNamespaceSymbolNodeBuilder
 
     public NamespaceSymbol AddNamespace(NamespaceSymbol containingNamespace, NamespaceName ns)
     {
-        var parent = containingNamespace;
+        var current = containingNamespace;
         foreach (var name in ns.Segments)
         {
-            var lookup = childNamespaces.GetOrAdd(parent, _ => new());
-            parent = lookup.GetOrAdd(name, n => new LocalNamespaceSymbol(parent, n));
+            var lookup = childNamespaces.GetOrAdd(current, _ => new());
+            current = lookup.GetOrAdd(name, n => new LocalNamespaceSymbol(current, n));
             // Make sure childMembers contains and entry to the namespace
-            if (!childMembers.ContainsKey(parent))
-                childMembers.Add(parent, new());
+            if (!childMembers.ContainsKey(current))
+                childMembers.Add(current, new());
         }
         // Make childNamespaces contains an entry to the final namespace
-        childNamespaces.GetOrAdd(parent, _ => new());
-        return parent;
+        childNamespaces.GetOrAdd(current, _ => new());
+        return current;
     }
 
     public void Add(NamespaceSymbol namespaceSymbol, ITypeOrFunctionSymbolNode symbolNode)

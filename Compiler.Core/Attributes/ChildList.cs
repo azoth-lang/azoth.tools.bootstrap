@@ -50,4 +50,16 @@ public static class ChildList
             child.AttachParent(parent);
         return children;
     }
+
+    /// <summary>
+    /// Create a set of children that does not support rewriting.
+    /// </summary>
+    public static IFixedSet<TChild> CreateFixedSet<TParent, TChild>(TParent parent, IEnumerable<TChild> initialValues)
+        where TChild : class, IChild<TParent>
+    {
+        var children = FixedSet.Create(initialValues);
+        foreach (var child in children)
+            child.AttachParent(parent);
+        return children;
+    }
 }

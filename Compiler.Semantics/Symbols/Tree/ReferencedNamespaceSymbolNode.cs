@@ -1,18 +1,23 @@
+using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
+using DotNet.Collections.Generic;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal class ReferencedNamespaceSymbolNode : ReferencedChildSymbolNode, INamespaceSymbolNode
+internal class ReferencedNamespaceSymbolNode : ReferencedDeclarationSymbolNode, INamespaceSymbolNode
 {
     public override NamespaceSymbol Symbol { get; }
+    public override IdentifierName Name => Symbol.Name;
 
     private ValueAttribute<IFixedList<INamespaceMemberSymbolNode>> members;
     public IFixedList<INamespaceMemberSymbolNode> Members
         => members.TryGetValue(out var value) ? value
             : members.GetValue(this, GetMembers);
+    private MultiMapHashSet<StandardName, INamespaceMemberSymbolNode>? membersByName;
 
     public ReferencedNamespaceSymbolNode(NamespaceSymbol symbol)
     {
@@ -20,5 +25,12 @@ internal class ReferencedNamespaceSymbolNode : ReferencedChildSymbolNode, INames
     }
 
     private IFixedList<INamespaceMemberSymbolNode> GetMembers(INamespaceSymbolNode _)
-        => base.GetMembers().Cast<INamespaceMemberSymbolNode>().ToFixedList();
+        => GetMembers().Cast<INamespaceMemberSymbolNode>().ToFixedList();
+
+
+    internal override INamespaceSymbolNode InheritedGlobalNamespace(IChildSymbolNode caller, IChildSymbolNode child)
+        => Symbol.NamespaceName == NamespaceName.Global ? this : base.InheritedGlobalNamespace(caller, child);
+
+    public IEnumerable<INamespaceMemberSymbolNode> MembersNamed(IdentifierName named)
+        => Members.MembersNamed(ref membersByName, named);
 }

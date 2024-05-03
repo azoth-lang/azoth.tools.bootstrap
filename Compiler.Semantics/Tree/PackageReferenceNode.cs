@@ -11,13 +11,13 @@ internal sealed class PackageReferenceNode : ChildNode, IPackageReferenceNode
     public override IPackageReferenceSyntax Syntax { get; }
 
     public IdentifierName AliasOrName => Syntax.AliasOrName;
-    public IPackageSymbols Package => Syntax.Package;
+    public IPackageSymbols PackageSymbols => Syntax.Package;
     public bool IsTrusted => Syntax.IsTrusted;
 
     private ValueAttribute<IPackageSymbolNode> symbolNode;
     public IPackageSymbolNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttribute.PackageReferenceSymbolNode);
+            : symbolNode.GetValue(this, SymbolNodeAttribute.PackageReference);
 
     public PackageReferenceNode(IPackageReferenceSyntax syntax)
     {

@@ -13,7 +13,8 @@
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 Semantic = Syntax:`ISyntax`;
-Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode`; // Parent type quoted so that is is not treated as a child node
+// Parent and Package type quoted so that is is not treated as a child node
+Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPackageNode`;
 
 // ---------- Packages
 Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` SymbolNode:`IPackageSymbolNode`
@@ -21,29 +22,33 @@ Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` S
     CompilationUnits:{CompilationUnit} TestingCompilationUnits:{CompilationUnit};
 
 PackageReference <: Child = Syntax:`IPackageReferenceSyntax` SymbolNode:`IPackageSymbolNode`
-    AliasOrName:`IdentifierName` Package:`IPackageSymbols` IsTrusted:`bool`;
+    AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
 
 // ---------- Code Files
 Code <: Child = Syntax:`IConcreteSyntax`;
 
-CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile` ImplicitNamespaceName:`NamespaceName`
+CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile`
+    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol`
+    ImplicitNamespaceName:`NamespaceName` ImplicitNamespaceSymbolNode:`INamespaceSymbolNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
 
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
 // ---------- Declarations
-Declaration <: Code = Syntax:`IDeclarationSyntax` ContainingSymbol:`Symbol`;
+Declaration <: Code = Syntax:`IDeclarationSyntax` ContainingSymbolNode:`ISymbolNode` ContainingSymbol:`Symbol`;
 
 // ---------- Namespaces
 NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`
     IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*
-    ContainingSymbol:`NamespaceSymbol` Symbol:`NamespaceSymbol`;
+    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol`
+    SymbolNode:`INamespaceSymbolNode` Symbol:`NamespaceSymbol`;
 NamespaceMemberDeclaration <: Declaration;
 
 // ---------- Type Declarations
 TypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
-    = Syntax:`ITypeDeclarationSyntax` GenericParameters:GenericParameter* SupertypeNames:SupertypeName* Members:TypeMemberDeclaration*;
+    = Syntax:`ITypeDeclarationSyntax` Name:`StandardName` SymbolNode:`ITypeSymbolNode`
+    GenericParameters:GenericParameter* SupertypeNames:SupertypeName* Members:TypeMemberDeclaration*;
 ClassDeclaration <: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:`bool` GenericParameters:GenericParameter*
     BaseTypeName:SupertypeName? SupertypeNames:SupertypeName* Members:ClassMemberDeclaration*;
 StructDeclaration <: TypeDeclaration = Syntax:`IStructDeclarationSyntax` GenericParameters:GenericParameter*
@@ -64,7 +69,7 @@ StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarat
 
 // ---------- Invocable Declarations
 FunctionDeclaration <: NamespaceMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`
-    ContainingSymbol:`NamespaceSymbol`;
+    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol` Name:`StandardName`;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;

@@ -18,7 +18,7 @@ internal class ReferencedPackageSymbolNode : ReferencedSymbolNode, IPackageSymbo
 
     public ReferencedPackageSymbolNode(IPackageReferenceNode node)
     {
-        var symbols = node.Package;
+        var symbols = node.PackageSymbols;
         Symbol = symbols.PackageSymbol;
         AliasOrName = node.AliasOrName;
         symbolTree = symbols.SymbolTree;

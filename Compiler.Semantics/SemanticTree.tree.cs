@@ -41,6 +41,7 @@ public partial interface ISemanticNode
 public partial interface IChildNode : IChild<ISemanticNode>, ISemanticNode
 {
     ISemanticNode Parent { get; }
+    IPackageNode Package { get; }
 }
 
 public partial interface IPackageNode : ISemanticNode
@@ -62,7 +63,7 @@ public partial interface IPackageReferenceNode : IChildNode
     ISyntax ISemanticNode.Syntax => Syntax;
     IPackageSymbolNode SymbolNode { get; }
     IdentifierName AliasOrName { get; }
-    IPackageSymbols Package { get; }
+    IPackageSymbols PackageSymbols { get; }
     bool IsTrusted { get; }
 }
 
@@ -85,7 +86,11 @@ public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
     ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     CodeFile File { get; }
+    INamespaceSymbolNode ContainingSymbolNode { get; }
+    NamespaceSymbol ContainingSymbol { get; }
     NamespaceName ImplicitNamespaceName { get; }
+    INamespaceSymbolNode ImplicitNamespaceSymbolNode { get; }
+    NamespaceSymbol ImplicitNamespaceSymbol { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
 }
@@ -106,6 +111,7 @@ public partial interface IDeclarationNode : ISemanticNode, ICodeNode
     new IDeclarationSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
+    ISymbolNode ContainingSymbolNode { get; }
     Symbol ContainingSymbol { get; }
 }
 
@@ -119,8 +125,11 @@ public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMe
     NamespaceName DeclaredNames { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
+    new INamespaceSymbolNode ContainingSymbolNode { get; }
+    ISymbolNode IDeclarationNode.ContainingSymbolNode => ContainingSymbolNode;
     new NamespaceSymbol ContainingSymbol { get; }
     Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
+    INamespaceSymbolNode SymbolNode { get; }
     NamespaceSymbol Symbol { get; }
 }
 
@@ -146,6 +155,8 @@ public partial interface ITypeDeclarationNode : INamespaceMemberDeclarationNode,
     ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
+    StandardName Name { get; }
+    ITypeSymbolNode SymbolNode { get; }
     IFixedList<IGenericParameterNode> GenericParameters { get; }
     IFixedList<ISupertypeNameNode> SupertypeNames { get; }
     IFixedList<ITypeMemberDeclarationNode> Members { get; }
@@ -257,8 +268,11 @@ public partial interface IFunctionDeclarationNode : ISemanticNode, INamespaceMem
     ISyntax ISemanticNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
+    new INamespaceSymbolNode ContainingSymbolNode { get; }
+    ISymbolNode IDeclarationNode.ContainingSymbolNode => ContainingSymbolNode;
     new NamespaceSymbol ContainingSymbol { get; }
     Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
+    StandardName Name { get; }
 }
 
 [Closed(

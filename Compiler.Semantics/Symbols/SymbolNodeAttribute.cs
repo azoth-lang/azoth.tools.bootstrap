@@ -12,12 +12,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 internal static class SymbolNodeAttribute
 {
-    public static IPackageSymbolNode PackageSymbolNode(IPackageNode node)
+    public static IPackageSymbolNode Package(IPackageNode node)
         => new SemanticPackageSymbolNode(node,
-            CompilationUnitsSymbolNode(node.Symbol, node.CompilationUnits),
-            CompilationUnitsSymbolNode(node.Symbol, node.TestingCompilationUnits));
+            BuildForCompilationUnits(node.Symbol, node.CompilationUnits),
+            BuildForCompilationUnits(node.Symbol, node.TestingCompilationUnits));
 
-    private static INamespaceSymbolNode CompilationUnitsSymbolNode(
+    private static INamespaceSymbolNode BuildForCompilationUnits(
         PackageSymbol packageSymbol,
         IEnumerable<ICompilationUnitNode> nodes)
     {
@@ -37,10 +37,10 @@ internal static class SymbolNodeAttribute
                     BuildNamespace(containingNamespace, n.DeclaredNames, n.Declarations);
                     break;
                 case ITypeDeclarationNode n:
-                    builder.Add(namespaceSymbol, TypeSymbolNode(n));
+                    builder.Add(namespaceSymbol, BuildForType(n));
                     break;
                 case IFunctionDeclarationNode n:
-                    builder.Add(namespaceSymbol, FunctionSymbolNode(n));
+                    builder.Add(namespaceSymbol, BuildForFunction(n));
                     break;
             }
         }
@@ -49,18 +49,12 @@ internal static class SymbolNodeAttribute
             IEnumerable<INamespaceMemberDeclarationNode> declarations)
         {
             var namespaceSymbol = builder.AddNamespace(containingNamespace, name);
-
-            foreach (var declaration in declarations) Build(namespaceSymbol, declaration);
+            foreach (var declaration in declarations)
+                Build(namespaceSymbol, declaration);
         }
     }
 
-    public static IPackageSymbolNode PackageReferenceSymbolNode(IPackageReferenceNode node)
-        => new ReferencedPackageSymbolNode(node);
-
-    public static FixedDictionary<IdentifierName, IPackageSymbolNode> PackageSymbolNodes(IPackageNode node)
-        => node.References.Select(r => r.SymbolNode).Append(node.SymbolNode).ToFixedDictionary(n => n.AliasOrName);
-
-    private static ITypeSymbolNode TypeSymbolNode(ITypeDeclarationNode node)
+    private static ITypeSymbolNode BuildForType(ITypeDeclarationNode node)
         => node switch
         {
             IClassDeclarationNode n => new SemanticClassSymbolNode(n),
@@ -69,10 +63,45 @@ internal static class SymbolNodeAttribute
             _ => throw new NotImplementedException(),
         };
 
-    private static IFunctionSymbolNode FunctionSymbolNode(IFunctionDeclarationNode node)
+    private static IFunctionSymbolNode BuildForFunction(IFunctionDeclarationNode node)
         => new SemanticFunctionSymbolNode(node);
 
-    public static IChildSymbolNode SymbolNode(Symbol symbol)
+    public static INamespaceSymbolNode CompilationUnit(ICompilationUnitNode node)
+        => FindNamespace(node.ContainingSymbolNode, node.ImplicitNamespaceName);
+
+    private static INamespaceSymbolNode FindNamespace(INamespaceSymbolNode containingSymbolNode, NamespaceName ns)
+    {
+        var current = containingSymbolNode;
+        foreach (var name in ns.Segments)
+            current = current.MembersNamed(name).OfType<INamespaceSymbolNode>().Single();
+        return current;
+    }
+
+    public static INamespaceSymbolNode CompilationUnitInherited(ICompilationUnitNode node)
+        => node.ImplicitNamespaceSymbolNode;
+
+    public static IPackageSymbolNode PackageReference(IPackageReferenceNode node)
+        => new ReferencedPackageSymbolNode(node);
+
+    public static FixedDictionary<IdentifierName, IPackageSymbolNode> PackageSymbolNodes(IPackageNode node)
+        => node.References.Select(r => r.SymbolNode).Append(node.SymbolNode).ToFixedDictionary(n => n.AliasOrName);
+
+    public static INamespaceSymbolNode NamespaceDeclarationContainingSymbolNode(INamespaceDeclarationNode node, INamespaceSymbolNode inheritedSymbolNode)
+        => node.IsGlobalQualified ? inheritedSymbolNode.GlobalNamespace : inheritedSymbolNode;
+
+    public static INamespaceSymbolNode NamespaceDeclaration(INamespaceDeclarationNode node)
+        => FindNamespace(node.ContainingSymbolNode, node.DeclaredNames);
+
+    public static INamespaceSymbolNode NamespaceDeclarationInherited(INamespaceDeclarationNode node)
+        => node.SymbolNode;
+
+    public static ITypeSymbolNode TypeDeclaration(ITypeDeclarationNode node)
+        => throw new NotImplementedException();
+
+    public static ITypeSymbolNode TypeDeclarationInherited(ITypeDeclarationNode node)
+        => node.SymbolNode;
+
+    public static IChildSymbolNode Symbol(Symbol symbol)
         => symbol switch
         {
             NamespaceSymbol ns => new ReferencedNamespaceSymbolNode(ns),

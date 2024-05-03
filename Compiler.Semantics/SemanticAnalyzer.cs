@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -38,7 +37,6 @@ public class SemanticAnalyzer
     /// </summary>
     public bool SaveReachabilityGraphs { get; set; }
 
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
     public Package Check(PackageSyntax<Package> packageSyntax)
     {
         // If there are errors from the lex and parse phase, don't continue on
@@ -47,7 +45,8 @@ public class SemanticAnalyzer
         // Start of new attribute grammar based approach
         var packageNode = SyntaxBinder.Bind(packageSyntax);
 
-        ForceEvaluation(packageNode);
+        // Since the tree is lazy evaluated, walk it and force evaluation of many attributes to catch bugs
+        SemanticTreeValidator.Validate(packageNode);
 
         NamespaceSymbolBuilder.BuildNamespaceSymbols(packageSyntax);
 
@@ -66,15 +65,6 @@ public class SemanticAnalyzer
         packageBuilder.Diagnostics.ThrowIfFatalErrors();
 
         return packageBuilder.Build();
-    }
-
-    /// <summary>
-    /// While still under development, force evaluation of attributes on the semantic tree to reveal
-    /// and bugs that would be hidden by lazy evaluation.
-    /// </summary>
-    private void ForceEvaluation(IPackageNode package)
-    {
-        _ = package.SymbolNodes;
     }
 
     private static PackageBuilder CheckSemantics(PackageSyntax<Package> packageSyntax)

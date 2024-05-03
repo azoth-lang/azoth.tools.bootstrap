@@ -6,12 +6,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
 internal sealed class SemanticStructSymbolNode : SemanticTypeSymbolNode, IStructSymbolNode
 {
-    private readonly IStructDeclarationNode node;
+    protected override IStructDeclarationNode Node { get; }
     public override UserTypeSymbol Symbol => throw new NotImplementedException();
     public override IFixedList<IStructMemberSymbolNode> Members => throw new NotImplementedException();
 
     public SemanticStructSymbolNode(IStructDeclarationNode node)
     {
-        this.node = node;
+        Node = node;
     }
 }

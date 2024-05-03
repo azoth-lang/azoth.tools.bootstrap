@@ -14,18 +14,21 @@ internal class NamespaceDeclarationNode : CodeNode, INamespaceDeclarationNode
     public bool IsGlobalQualified => Syntax.IsGlobalQualified;
     public NamespaceName DeclaredNames => Syntax.DeclaredNames;
 
-    private ValueAttribute<NamespaceSymbol> inheritedContainingNamespace;
+    private ValueAttribute<INamespaceSymbolNode> containingSymbolNode;
+    public INamespaceSymbolNode ContainingSymbolNode
+        => containingSymbolNode.TryGetValue(out var value) ? value
+            : containingSymbolNode.GetValue(this, node
+                => SymbolNodeAttribute.NamespaceDeclarationContainingSymbolNode(node,
+                    (INamespaceSymbolNode)Parent.InheritedContainingSymbolNode(this, this)));
+    public NamespaceSymbol ContainingSymbol => ContainingSymbolNode.Symbol;
+    private ValueAttribute<INamespaceSymbolNode> inheritedContainingSymbolNode;
 
-    public override Symbol InheritedContainingSymbol(IChildNode caller, IChildNode child)
-        => inheritedContainingNamespace.TryGetValue(out var value)
-            ? value
-            : inheritedContainingNamespace.GetValue(this, ContainingSymbolAttribute.NamespaceDeclarationInherited);
+    private ValueAttribute<INamespaceSymbolNode> symbolNode;
+    public INamespaceSymbolNode SymbolNode
+        => symbolNode.TryGetValue(out var value) ? value
+            : symbolNode.GetValue(this, SymbolNodeAttribute.NamespaceDeclaration);
 
-    public NamespaceSymbol ContainingSymbol => (NamespaceSymbol)Parent.InheritedContainingSymbol(this, this);
-
-    private ValueAttribute<NamespaceSymbol> symbol;
-    public NamespaceSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolAttribute.NamespaceDeclaration);
+    public NamespaceSymbol Symbol => SymbolNode.Symbol;
 
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
@@ -39,4 +42,9 @@ internal class NamespaceDeclarationNode : CodeNode, INamespaceDeclarationNode
         UsingDirectives = ChildList.CreateFixed(this, usingDirectives);
         Declarations = ChildList.CreateFixed(this, declarations);
     }
+
+    internal override ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
+        => inheritedContainingSymbolNode.TryGetValue(out var value) ? value
+            : inheritedContainingSymbolNode.GetValue(this, SymbolNodeAttribute.NamespaceDeclarationInherited);
+
 }

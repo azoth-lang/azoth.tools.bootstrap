@@ -13,6 +13,7 @@ internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChild
     ISymbolNode IChildSymbolNode.Parent => Parent;
 
     public IPackageSymbolNode Package => Parent.InheritedPackage(this, this);
+    public INamespaceSymbolNode GlobalNamespace => Parent.InheritedGlobalNamespace(this, this);
 
     public void AttachParent(ISymbolNode newParent)
     {
@@ -27,11 +28,14 @@ internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChild
         => base.InheritedPackage(this, child);
 
     internal override ISymbolTree InheritedSymbolTree(IChildSymbolNode caller, IChildSymbolNode child)
-        => base.InheritedSymbolTree(caller, child);
+        => base.InheritedSymbolTree(this, child);
+
+    internal override INamespaceSymbolNode InheritedGlobalNamespace(IChildSymbolNode caller, IChildSymbolNode child)
+        => Parent.InheritedGlobalNamespace(this, child);
 
     protected IEnumerable<IChildSymbolNode> GetMembers()
     {
         var symbolTree = Parent.InheritedSymbolTree(this, this);
-        return symbolTree.GetChildrenOf(Symbol).Select(SymbolNodeAttribute.SymbolNode);
+        return symbolTree.GetChildrenOf(Symbol).Select(SymbolNodeAttribute.Symbol);
     }
 }

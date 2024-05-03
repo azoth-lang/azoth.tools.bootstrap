@@ -10,6 +10,7 @@ internal abstract class SemanticChildSymbolNode : SemanticSymbolNode, IChildSymb
     ISymbolNode IChildSymbolNode.Parent => Parent;
 
     public IPackageSymbolNode Package => Parent.InheritedPackage(this, this);
+    public INamespaceSymbolNode GlobalNamespace => Parent.InheritedGlobalNamespace(this, this);
 
     public void AttachParent(ISymbolNode newParent)
     {
@@ -19,6 +20,9 @@ internal abstract class SemanticChildSymbolNode : SemanticSymbolNode, IChildSymb
         if (oldParent is not null) throw new InvalidOperationException("Parent is already set.");
     }
 
-    public override IPackageSymbolNode InheritedPackage(IChildSymbolNode caller, IChildSymbolNode child)
+    internal override IPackageSymbolNode InheritedPackage(IChildSymbolNode caller, IChildSymbolNode child)
         => Parent.InheritedPackage(this, child);
+
+    internal override INamespaceSymbolNode InheritedGlobalNamespace(IChildSymbolNode caller, IChildSymbolNode child)
+        => Parent.InheritedGlobalNamespace(this, child);
 }

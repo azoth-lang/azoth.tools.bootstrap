@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -10,7 +10,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected SemanticNode Parent => parent ?? throw new InvalidOperationException("Parent is not set.");
     ISemanticNode IChildNode.Parent => Parent;
 
-    public override Symbol InheritedContainingSymbol(IChildNode caller, IChildNode child) => Parent.InheritedContainingSymbol(caller, child);
+    public IPackageNode Package => Parent.InheritedPackage(this, this);
 
     public void AttachParent(ISemanticNode newParent)
     {
@@ -20,4 +20,10 @@ internal abstract class ChildNode : SemanticNode, IChildNode
         if (oldParent is not null)
             throw new InvalidOperationException("Parent is already set.");
     }
+
+    internal override ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
+        => Parent.InheritedContainingSymbolNode(this, child);
+
+    internal override IPackageNode InheritedPackage(IChildNode caller, IChildNode child)
+        => Parent.InheritedPackage(this, child);
 }
