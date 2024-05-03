@@ -19,12 +19,13 @@ Package = AliasOrName:`IdentifierName` Name:`IdentifierName` Symbol:`PackageSymb
 Declaration <: Child;
 
 // ---------- Namespaces
-Namespace <: NamespaceMember = Symbol:`NamespaceSymbol`;
+Namespace <: NamespaceMember = Symbol:`NamespaceSymbol` Members:NamespaceMember*;
 NamespaceMember <: Declaration;
+TypeOrFunction <: NamespaceMember;
 
 // ---------- Type Declarations
-Type <: NamespaceMember, ClassMember, TraitMember, StructMember
-    = Members:TypeMember*;
+Type <: TypeOrFunction, ClassMember, TraitMember, StructMember
+    = Symbol:`UserTypeSymbol` Members:TypeMember*;
 Class <: Type = Members:ClassMember*;
 Struct <: Type = Members:StructMember*;
 Trait <: Type = Members:TraitMember*;
@@ -36,4 +37,4 @@ TraitMember <: TypeMember;
 StructMember <: TypeMember;
 
 // ---------- Invocable Declarations
-Function <: NamespaceMember;
+Function <: TypeOrFunction = Symbol:`FunctionSymbol`;

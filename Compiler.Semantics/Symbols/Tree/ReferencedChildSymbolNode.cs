@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
@@ -26,4 +28,10 @@ internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChild
 
     internal override ISymbolTree InheritedSymbolTree(IChildSymbolNode caller, IChildSymbolNode child)
         => base.InheritedSymbolTree(caller, child);
+
+    protected IEnumerable<IChildSymbolNode> GetMembers()
+    {
+        var symbolTree = Parent.InheritedSymbolTree(this, this);
+        return symbolTree.GetChildrenOf(Symbol).Select(SymbolNodeAttribute.SymbolNode);
+    }
 }

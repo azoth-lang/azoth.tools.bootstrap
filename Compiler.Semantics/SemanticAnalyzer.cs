@@ -47,6 +47,8 @@ public class SemanticAnalyzer
         // Start of new attribute grammar based approach
         var packageNode = SyntaxBinder.Bind(packageSyntax);
 
+        ForceEvaluation(packageNode);
+
         NamespaceSymbolBuilder.BuildNamespaceSymbols(packageSyntax);
 
         // Build up lexical scopes down to the declaration level
@@ -64,6 +66,15 @@ public class SemanticAnalyzer
         packageBuilder.Diagnostics.ThrowIfFatalErrors();
 
         return packageBuilder.Build();
+    }
+
+    /// <summary>
+    /// While still under development, force evaluation of attributes on the semantic tree to reveal
+    /// and bugs that would be hidden by lazy evaluation.
+    /// </summary>
+    private void ForceEvaluation(IPackageNode package)
+    {
+        _ = package.SymbolNodes;
     }
 
     private static PackageBuilder CheckSemantics(PackageSyntax<Package> packageSyntax)

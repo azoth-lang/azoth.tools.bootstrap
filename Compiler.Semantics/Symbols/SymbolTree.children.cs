@@ -20,6 +20,8 @@ public static class ISymbolNodeExtensions
                 yield return n.TestingGlobalNamespace;
                 yield break;
             case INamespaceSymbolNode n:
+                foreach (var child in n.Members)
+                    yield return child;
                 yield break;
             case IClassSymbolNode n:
                 foreach (var child in n.Members)

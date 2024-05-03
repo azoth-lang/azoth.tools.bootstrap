@@ -15,12 +15,13 @@ internal class NamespaceDeclarationNode : CodeNode, INamespaceDeclarationNode
     public NamespaceName DeclaredNames => Syntax.DeclaredNames;
 
     private ValueAttribute<NamespaceSymbol> inheritedContainingNamespace;
-    public override NamespaceSymbol InheritedContainingNamespace
+
+    public override Symbol InheritedContainingSymbol(IChildNode caller, IChildNode child)
         => inheritedContainingNamespace.TryGetValue(out var value)
             ? value
-            : inheritedContainingNamespace.GetValue(this, ContainingNamespaceAttribute.NamespaceDeclarationInherited);
+            : inheritedContainingNamespace.GetValue(this, ContainingSymbolAttribute.NamespaceDeclarationInherited);
 
-    public NamespaceSymbol ContainingNamespace => Parent.InheritedContainingNamespace!;
+    public NamespaceSymbol ContainingSymbol => (NamespaceSymbol)Parent.InheritedContainingSymbol(this, this);
 
     private ValueAttribute<NamespaceSymbol> symbol;
     public NamespaceSymbol Symbol

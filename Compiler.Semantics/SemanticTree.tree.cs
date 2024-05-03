@@ -106,7 +106,7 @@ public partial interface IDeclarationNode : ISemanticNode, ICodeNode
     new IDeclarationSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
-    NamespaceSymbol? ContainingNamespace { get; }
+    Symbol ContainingSymbol { get; }
 }
 
 public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
@@ -119,8 +119,8 @@ public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMe
     NamespaceName DeclaredNames { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
-    new NamespaceSymbol ContainingNamespace { get; }
-    NamespaceSymbol? IDeclarationNode.ContainingNamespace => ContainingNamespace;
+    new NamespaceSymbol ContainingSymbol { get; }
+    Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
     NamespaceSymbol Symbol { get; }
 }
 
@@ -257,8 +257,8 @@ public partial interface IFunctionDeclarationNode : ISemanticNode, INamespaceMem
     ISyntax ISemanticNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
-    new NamespaceSymbol ContainingNamespace { get; }
-    NamespaceSymbol? IDeclarationNode.ContainingNamespace => ContainingNamespace;
+    new NamespaceSymbol ContainingSymbol { get; }
+    Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
 }
 
 [Closed(

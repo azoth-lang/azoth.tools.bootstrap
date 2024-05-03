@@ -7,5 +7,5 @@ internal abstract class DeclarationNode : ChildNode, IDeclarationNode
 {
     public abstract override IDeclarationSyntax Syntax { get; }
 
-    public NamespaceSymbol? ContainingNamespace => Parent.InheritedContainingNamespace;
+    public Symbol ContainingSymbol => Parent.InheritedContainingSymbol(this, this);
 }

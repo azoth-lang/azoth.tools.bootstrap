@@ -7,7 +7,7 @@ internal sealed class FunctionDeclarationNode : CodeNode, IFunctionDeclarationNo
 {
     public override IFunctionDeclarationSyntax Syntax { get; }
 
-    public NamespaceSymbol ContainingNamespace => Parent.InheritedContainingNamespace!;
+    public NamespaceSymbol ContainingSymbol => (NamespaceSymbol)Parent.InheritedContainingSymbol(this, this)!;
 
     public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax)
     {

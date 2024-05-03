@@ -10,8 +10,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected SemanticNode Parent => parent ?? throw new InvalidOperationException("Parent is not set.");
     ISemanticNode IChildNode.Parent => Parent;
 
-    public override NamespaceSymbol? InheritedContainingNamespace
-        => Parent.InheritedContainingNamespace;
+    public override Symbol InheritedContainingSymbol(IChildNode caller, IChildNode child) => Parent.InheritedContainingSymbol(caller, child);
 
     public void AttachParent(ISemanticNode newParent)
     {

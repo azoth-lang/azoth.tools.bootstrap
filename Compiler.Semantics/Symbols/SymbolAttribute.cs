@@ -9,7 +9,7 @@ internal static class SymbolAttribute
 
     public static NamespaceSymbol NamespaceDeclaration(INamespaceDeclarationNode node)
     {
-        var containingSymbol = node.ContainingNamespace;
+        var containingSymbol = node.ContainingSymbol;
         foreach (var nsName in node.DeclaredNames.Segments)
         {
             throw new NotImplementedException();

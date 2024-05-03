@@ -11,10 +11,10 @@ internal abstract class TypeDeclarationNode : DeclarationNode, ITypeDeclarationN
 {
     public abstract override ITypeDeclarationSyntax Syntax { get; }
 
-    private ValueAttribute<NamespaceSymbol?> inheritedContainingNamespace;
-    public override NamespaceSymbol? InheritedContainingNamespace
-        => inheritedContainingNamespace.TryGetValue(out var value) ? value
-            : inheritedContainingNamespace.GetValue(this, ContainingNamespaceAttribute.TypeDeclarationInherited);
+    private ValueAttribute<Symbol> inheritedContainingSymbol;
+    public override Symbol InheritedContainingSymbol(IChildNode caller, IChildNode child)
+        => inheritedContainingSymbol.TryGetValue(out var value) ? value
+            : inheritedContainingSymbol.GetValue(this, ContainingSymbolAttribute.TypeDeclarationInherited);
 
     public IFixedList<IGenericParameterNode> GenericParameters { get; }
     public IFixedList<ISupertypeNameNode> SupertypeNames { get; }
