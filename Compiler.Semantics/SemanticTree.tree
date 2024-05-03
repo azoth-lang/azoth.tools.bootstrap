@@ -13,16 +13,20 @@
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 Semantic = Syntax:`ISyntax`;
-// Parent and Package type quoted so that is is not treated as a child node
+// Parent and Package types quoted so that is is not treated as a child node
 Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPackageNode`;
 
 // ---------- Packages
+// Declarations and TestingDeclarations types quoted so that is is not treated as a child node
 Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` SymbolNode:`IPackageSymbolNode`
     References:{PackageReference} SymbolNodes:`FixedDictionary<IdentifierName,IPackageSymbolNode>`
-    CompilationUnits:{CompilationUnit} TestingCompilationUnits:{CompilationUnit};
+    CompilationUnits:{CompilationUnit} TestingCompilationUnits:{CompilationUnit}
+    Declarations:`IFixedSet<IPackageMemberDeclarationNode>` TestingDeclarations:`IFixedSet<IPackageMemberDeclarationNode>`;
 
 PackageReference <: Child = Syntax:`IPackageReferenceSyntax` SymbolNode:`IPackageSymbolNode`
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
+
+PackageMemberDeclaration <: NamespaceMemberDeclaration;
 
 // ---------- Code Files
 Code <: Child = Syntax:`IConcreteSyntax`;
@@ -46,7 +50,7 @@ NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarati
 NamespaceMemberDeclaration <: Declaration;
 
 // ---------- Type Declarations
-TypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
+TypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     = Syntax:`ITypeDeclarationSyntax` Name:`StandardName` SymbolNode:`ITypeSymbolNode`
     GenericParameters:GenericParameter* SupertypeNames:SupertypeName* Members:TypeMemberDeclaration*;
 ClassDeclaration <: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:`bool` GenericParameters:GenericParameter*
@@ -68,7 +72,7 @@ TraitMemberDeclaration <: TypeMemberDeclaration = Syntax:`ITraitMemberDeclaratio
 StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarationSyntax`;
 
 // ---------- Invocable Declarations
-FunctionDeclaration <: NamespaceMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`
+FunctionDeclaration <: PackageMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`
     ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol` Name:`StandardName`;
 
 // ---------- Capabilities

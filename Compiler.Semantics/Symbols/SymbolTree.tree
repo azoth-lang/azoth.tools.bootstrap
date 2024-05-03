@@ -15,16 +15,17 @@ Child <: `IChild<ISymbolNode>` = Parent:`ISymbolNode` Package:`IPackageSymbolNod
 Package = AliasOrName:`IdentifierName` Name:`IdentifierName` Symbol:`PackageSymbol`
     GlobalNamespace:Namespace TestingGlobalNamespace:Namespace;
 
+PackageMember <: NamespaceMember;
+
 // ---------- Declarations
 Declaration <: Child = Name:`StandardName`;
 
 // ---------- Namespaces
 Namespace <: NamespaceMember = Name:`IdentifierName` Symbol:`NamespaceSymbol` Members:NamespaceMember*;
 NamespaceMember <: Declaration;
-TypeOrFunction <: NamespaceMember;
 
 // ---------- Type Declarations
-Type <: TypeOrFunction, ClassMember, TraitMember, StructMember
+Type <: PackageMember, ClassMember, TraitMember, StructMember
     = Symbol:`UserTypeSymbol` Members:TypeMember*;
 Class <: Type = Members:ClassMember*;
 Struct <: Type = Members:StructMember*;
@@ -37,4 +38,4 @@ TraitMember <: TypeMember;
 StructMember <: TypeMember;
 
 // ---------- Invocable Declarations
-Function <: TypeOrFunction = Symbol:`FunctionSymbol`;
+Function <: PackageMember = Symbol:`FunctionSymbol`;

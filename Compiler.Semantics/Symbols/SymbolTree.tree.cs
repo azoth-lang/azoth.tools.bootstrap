@@ -40,6 +40,13 @@ public partial interface IPackageSymbolNode : ISymbolNode
 }
 
 [Closed(
+    typeof(ITypeSymbolNode),
+    typeof(IFunctionSymbolNode))]
+public partial interface IPackageMemberSymbolNode : INamespaceMemberSymbolNode
+{
+}
+
+[Closed(
     typeof(INamespaceMemberSymbolNode),
     typeof(ITypeMemberSymbolNode))]
 public partial interface IDeclarationSymbolNode : IChildSymbolNode
@@ -57,16 +64,9 @@ public partial interface INamespaceSymbolNode : INamespaceMemberSymbolNode
 }
 
 [Closed(
-    typeof(INamespaceSymbolNode),
-    typeof(ITypeOrFunctionSymbolNode))]
+    typeof(IPackageMemberSymbolNode),
+    typeof(INamespaceSymbolNode))]
 public partial interface INamespaceMemberSymbolNode : ISymbolNode, IDeclarationSymbolNode
-{
-}
-
-[Closed(
-    typeof(ITypeSymbolNode),
-    typeof(IFunctionSymbolNode))]
-public partial interface ITypeOrFunctionSymbolNode : INamespaceMemberSymbolNode
 {
 }
 
@@ -74,7 +74,7 @@ public partial interface ITypeOrFunctionSymbolNode : INamespaceMemberSymbolNode
     typeof(IClassSymbolNode),
     typeof(IStructSymbolNode),
     typeof(ITraitSymbolNode))]
-public partial interface ITypeSymbolNode : ISymbolNode, ITypeOrFunctionSymbolNode, IClassMemberSymbolNode, ITraitMemberSymbolNode, IStructMemberSymbolNode
+public partial interface ITypeSymbolNode : ISymbolNode, IPackageMemberSymbolNode, IClassMemberSymbolNode, ITraitMemberSymbolNode, IStructMemberSymbolNode
 {
     new UserTypeSymbol Symbol { get; }
     Symbol ISymbolNode.Symbol => Symbol;
@@ -125,7 +125,7 @@ public partial interface IStructMemberSymbolNode : ITypeMemberSymbolNode
 {
 }
 
-public partial interface IFunctionSymbolNode : ISymbolNode, ITypeOrFunctionSymbolNode
+public partial interface IFunctionSymbolNode : ISymbolNode, IPackageMemberSymbolNode
 {
     new FunctionSymbol Symbol { get; }
     Symbol ISymbolNode.Symbol => Symbol;

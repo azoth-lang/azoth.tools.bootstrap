@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
@@ -31,6 +32,17 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public IFixedSet<IPackageReferenceNode> References { get; }
     public IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     public IFixedSet<ICompilationUnitNode> TestingCompilationUnits { get; }
+
+    private ValueAttribute<IFixedSet<IPackageMemberDeclarationNode>> declarations;
+    public IFixedSet<IPackageMemberDeclarationNode> Declarations
+        => declarations.TryGetValue(out var value) ? value
+            : declarations.GetValue(this, DeclarationsAttribute.PackageDeclarations);
+
+    private ValueAttribute<IFixedSet<IPackageMemberDeclarationNode>> testingDeclarations;
+    public IFixedSet<IPackageMemberDeclarationNode> TestingDeclarations
+        => testingDeclarations.TryGetValue(out var value)
+            ? value
+            : testingDeclarations.GetValue(this, DeclarationsAttribute.PackageDeclarations);
 
     public PackageNode(
         IPackageSyntax syntax,

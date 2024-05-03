@@ -16,6 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 [Closed(
     typeof(IChildNode),
     typeof(IPackageNode),
+    typeof(IPackageMemberDeclarationNode),
     typeof(ICompilationUnitNode),
     typeof(IUsingDirectiveNode),
     typeof(IDeclarationNode),
@@ -28,7 +29,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IClassMemberDeclarationNode),
     typeof(ITraitMemberDeclarationNode),
     typeof(IStructMemberDeclarationNode),
-    typeof(IFunctionDeclarationNode),
     typeof(ICapabilityConstraintNode))]
 public partial interface ISemanticNode
 {
@@ -55,6 +55,8 @@ public partial interface IPackageNode : ISemanticNode
     FixedDictionary<IdentifierName,IPackageSymbolNode> SymbolNodes { get; }
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     IFixedSet<ICompilationUnitNode> TestingCompilationUnits { get; }
+    IFixedSet<IPackageMemberDeclarationNode> Declarations { get; }
+    IFixedSet<IPackageMemberDeclarationNode> TestingDeclarations { get; }
 }
 
 public partial interface IPackageReferenceNode : IChildNode
@@ -65,6 +67,13 @@ public partial interface IPackageReferenceNode : IChildNode
     IdentifierName AliasOrName { get; }
     IPackageSymbols PackageSymbols { get; }
     bool IsTrusted { get; }
+}
+
+[Closed(
+    typeof(ITypeDeclarationNode),
+    typeof(IFunctionDeclarationNode))]
+public partial interface IPackageMemberDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
+{
 }
 
 [Closed(
@@ -134,9 +143,8 @@ public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMe
 }
 
 [Closed(
-    typeof(INamespaceDeclarationNode),
-    typeof(ITypeDeclarationNode),
-    typeof(IFunctionDeclarationNode))]
+    typeof(IPackageMemberDeclarationNode),
+    typeof(INamespaceDeclarationNode))]
 public partial interface INamespaceMemberDeclarationNode : IDeclarationNode
 {
 }
@@ -145,14 +153,14 @@ public partial interface INamespaceMemberDeclarationNode : IDeclarationNode
     typeof(IClassDeclarationNode),
     typeof(IStructDeclarationNode),
     typeof(ITraitDeclarationNode))]
-public partial interface ITypeDeclarationNode : INamespaceMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode
+public partial interface ITypeDeclarationNode : IPackageMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode
 {
     new ITypeDeclarationSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
     IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
     ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
     IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
-    ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
     StandardName Name { get; }
@@ -262,7 +270,7 @@ public partial interface IStructMemberDeclarationNode : ISemanticNode, ITypeMemb
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
 }
 
-public partial interface IFunctionDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
+public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNode
 {
     new IFunctionDeclarationSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
