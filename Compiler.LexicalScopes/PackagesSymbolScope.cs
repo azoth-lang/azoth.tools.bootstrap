@@ -7,13 +7,13 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 
-public class PackagesScope : LexicalScope
+public class PackagesSymbolScope : SymbolScope
 {
-    internal override PackagesScope ContainingPackagesScope => this;
+    internal override PackagesSymbolScope ContainingPackagesScope => this;
     public PackageSymbol CurrentPackage { get; }
     private readonly FixedDictionary<IdentifierName, PackageSymbol> packageAliases;
 
-    public PackagesScope(PackageSymbol currentPackage, FixedDictionary<IdentifierName, PackageSymbol> packageAliases)
+    public PackagesSymbolScope(PackageSymbol currentPackage, FixedDictionary<IdentifierName, PackageSymbol> packageAliases)
     {
         CurrentPackage = currentPackage;
         this.packageAliases = packageAliases;

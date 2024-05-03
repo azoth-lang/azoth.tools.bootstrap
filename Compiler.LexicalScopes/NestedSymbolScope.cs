@@ -6,34 +6,34 @@ using SymbolDictionary = Azoth.Tools.Bootstrap.Framework.FixedDictionary<Azoth.T
 
 namespace Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 
-public class NestedScope : LexicalScope
+public class NestedSymbolScope : SymbolScope
 {
-    internal override PackagesScope ContainingPackagesScope { get; }
-    private readonly LexicalScope containingScope;
+    internal override PackagesSymbolScope ContainingPackagesScope { get; }
+    private readonly SymbolScope containingScope;
     private readonly bool isGlobalScope;
     private readonly SymbolDictionary symbolsInScope;
     private readonly SymbolDictionary symbolsInNestedScopes;
 
-    public static NestedScope Create(
-        LexicalScope containingScope,
+    public static NestedSymbolScope Create(
+        SymbolScope containingScope,
         SymbolDictionary symbolsInScope,
         SymbolDictionary? symbolsInNestedScopes = null)
     {
-        return new NestedScope(containingScope, false, symbolsInScope,
+        return new NestedSymbolScope(containingScope, false, symbolsInScope,
             symbolsInNestedScopes ?? SymbolDictionary.Empty);
     }
 
-    public static NestedScope CreateGlobal(
-        LexicalScope containingScope,
+    public static NestedSymbolScope CreateGlobal(
+        SymbolScope containingScope,
         SymbolDictionary symbolsInScope,
         SymbolDictionary? symbolsInNestedScopes)
     {
-        return new NestedScope(containingScope, true, symbolsInScope,
+        return new NestedSymbolScope(containingScope, true, symbolsInScope,
             symbolsInNestedScopes ?? SymbolDictionary.Empty);
     }
 
-    private NestedScope(
-        LexicalScope containingScope,
+    private NestedSymbolScope(
+        SymbolScope containingScope,
         bool isGlobalScope,
         SymbolDictionary symbolsInScope,
         SymbolDictionary symbolsInNestedScopes)

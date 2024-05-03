@@ -18,8 +18,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 /// </summary>
 internal sealed class SpecialTypeNameExpressionSyntax : NameExpressionSyntax, ISpecialTypeNameExpressionSyntax
 {
-    private LexicalScope? containingLexicalScope;
-    public LexicalScope ContainingLexicalScope
+    private SymbolScope? containingLexicalScope;
+    public SymbolScope ContainingLexicalScope
     {
         [DebuggerStepThrough]
         get =>

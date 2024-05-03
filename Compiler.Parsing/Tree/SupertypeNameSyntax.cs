@@ -15,8 +15,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class SupertypeNameSyntax : Syntax, ISupertypeNameSyntax
 {
-    private LexicalScope? containingLexicalScope;
-    public LexicalScope ContainingLexicalScope
+    private SymbolScope? containingLexicalScope;
+    public SymbolScope ContainingLexicalScope
     {
         [DebuggerStepThrough]
         get => containingLexicalScope

@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
-internal class Namespace
+internal class NamespaceSymbolScope
 {
     public NamespaceName Name { get; }
     public FixedDictionary<TypeName, IFixedSet<IPromise<Symbol>>> Symbols { get; }
@@ -13,7 +13,7 @@ internal class Namespace
     public FixedDictionary<TypeName, IFixedSet<IPromise<Symbol>>> SymbolsInPackage { get; }
     public FixedDictionary<TypeName, IFixedSet<IPromise<Symbol>>> NestedSymbolsInPackage { get; }
 
-    public Namespace(
+    public NamespaceSymbolScope(
         NamespaceName name,
         FixedDictionary<TypeName, IFixedSet<IPromise<Symbol>>> symbols,
         FixedDictionary<TypeName, IFixedSet<IPromise<Symbol>>> nestedSymbols,

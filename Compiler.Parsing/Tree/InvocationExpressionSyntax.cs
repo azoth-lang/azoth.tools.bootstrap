@@ -16,8 +16,8 @@ internal class InvocationExpressionSyntax : DataTypedExpressionSyntax, IInvocati
     public IFixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
     public Promise<Symbol?> ReferencedSymbol { get; } = new Promise<Symbol?>();
 
-    private LexicalScope? containingLexicalScope;
-    public LexicalScope ContainingLexicalScope
+    private SymbolScope? containingLexicalScope;
+    public SymbolScope ContainingLexicalScope
     {
         [DebuggerStepThrough]
         get =>

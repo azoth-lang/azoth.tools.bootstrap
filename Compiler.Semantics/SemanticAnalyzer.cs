@@ -51,7 +51,7 @@ public class SemanticAnalyzer
         NamespaceSymbolBuilder.BuildNamespaceSymbols(packageSyntax);
 
         // Build up lexical scopes down to the declaration level
-        new LexicalScopesBuilder().BuildFor(packageSyntax);
+        new SymbolScopesBuilder().BuildFor(packageSyntax);
 
         // Check the semantics of the package
         var packageBuilder = CheckSemantics(packageSyntax);

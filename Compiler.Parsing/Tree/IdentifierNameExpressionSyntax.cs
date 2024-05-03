@@ -19,8 +19,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 /// </summary>
 internal sealed class IdentifierNameExpressionSyntax : NameExpressionSyntax, IIdentifierNameExpressionSyntax
 {
-    private LexicalScope? containingLexicalScope;
-    public LexicalScope ContainingLexicalScope
+    private SymbolScope? containingLexicalScope;
+    public SymbolScope ContainingLexicalScope
     {
         [DebuggerStepThrough]
         get =>

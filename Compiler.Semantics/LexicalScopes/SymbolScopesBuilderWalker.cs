@@ -13,23 +13,23 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
-internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
+internal class SymbolScopesBuilderWalker : SyntaxWalker<SymbolScope>
 {
-    private readonly NestedScope globalScope;
-    private readonly FixedDictionary<NamespaceName, Namespace> namespaces;
+    private readonly NestedSymbolScope globalScope;
+    private readonly FixedDictionary<NamespaceName, NamespaceSymbolScope> namespaces;
 
-    public LexicalScopesBuilderWalker(
-        NestedScope globalScope,
-        FixedDictionary<NamespaceName, Namespace> namespaces)
+    public SymbolScopesBuilderWalker(
+        NestedSymbolScope globalScope,
+        FixedDictionary<NamespaceName, NamespaceSymbolScope> namespaces)
     {
         this.globalScope = globalScope;
         this.namespaces = namespaces;
     }
 
-    public void BuildFor(ICompilationUnitSyntax compilationUnit, LexicalScope containingScope)
+    public void BuildFor(ICompilationUnitSyntax compilationUnit, SymbolScope containingScope)
         => Walk(compilationUnit, containingScope);
 
-    protected override void WalkNonNull(IConcreteSyntax syntax, LexicalScope containingScope)
+    protected override void WalkNonNull(IConcreteSyntax syntax, SymbolScope containingScope)
     {
         // Forward calls for expressions before setting ContainingLexicalScope
         if (syntax is IExpressionSyntax exp)
@@ -111,7 +111,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         WalkChildren(syntax, containingScope);
     }
 
-    private void WalkNonNull(IBodyOrBlockSyntax bodyOrBlock, LexicalScope containingScope)
+    private void WalkNonNull(IBodyOrBlockSyntax bodyOrBlock, SymbolScope containingScope)
     {
         foreach (var statement in bodyOrBlock.Statements)
         {
@@ -123,7 +123,7 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         }
     }
 
-    private ConditionalLexicalScopes Walk(IExpressionSyntax? syntax, LexicalScope containingScope)
+    private ConditionalSymbolScopes Walk(IExpressionSyntax? syntax, SymbolScope containingScope)
     {
         if (syntax is IHasContainingLexicalScope hasContainingLexicalScope)
             hasContainingLexicalScope.ContainingLexicalScope = containingScope;
@@ -241,10 +241,10 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
                 break;
         }
 
-        return ConditionalLexicalScopes.Unconditional(containingScope);
+        return ConditionalSymbolScopes.Unconditional(containingScope);
     }
 
-    private ConditionalLexicalScopes WalkNonNull(IPatternSyntax syntax, LexicalScope containingScope)
+    private ConditionalSymbolScopes WalkNonNull(IPatternSyntax syntax, SymbolScope containingScope)
     {
         switch (syntax)
         {
@@ -258,16 +258,16 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
             }
             case IBindingPatternSyntax pat:
                 var trueScope = BuildVariableScope(containingScope, pat.Name, pat.Symbol);
-                return new ConditionalLexicalScopes(trueScope, containingScope);
+                return new ConditionalSymbolScopes(trueScope, containingScope);
             case IOptionalPatternSyntax pat:
                 return WalkNonNull(pat.Pattern, containingScope);
         }
     }
 
-    private LexicalScope BuildNamespaceScopes(
+    private SymbolScope BuildNamespaceScopes(
         NamespaceName containingNamespaceName,
         NamespaceName declaredNamespaceNames,
-        LexicalScope containingScope)
+        SymbolScope containingScope)
     {
         foreach (var name in declaredNamespaceNames.NamespaceNames())
         {
@@ -280,15 +280,15 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         return containingScope;
     }
 
-    private NestedScope BuildNamespaceScope(NamespaceName nsName, LexicalScope containingScope)
+    private NestedSymbolScope BuildNamespaceScope(NamespaceName nsName, SymbolScope containingScope)
     {
         var ns = namespaces[nsName];
-        return NestedScope.Create(containingScope, ns.SymbolsInPackage, ns.NestedSymbolsInPackage);
+        return NestedSymbolScope.Create(containingScope, ns.SymbolsInPackage, ns.NestedSymbolsInPackage);
     }
 
-    private LexicalScope BuildUsingDirectivesScope(
+    private SymbolScope BuildUsingDirectivesScope(
         IFixedList<IUsingDirectiveSyntax> usingDirectives,
-        LexicalScope containingScope)
+        SymbolScope containingScope)
     {
         if (!usingDirectives.Any()) return containingScope;
 
@@ -311,41 +311,41 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         }
 
         var symbolsInScope = importedSymbols.ToFixedDictionary(e => e.Key, e => e.Value.ToFixedSet());
-        return NestedScope.Create(containingScope, symbolsInScope);
+        return NestedSymbolScope.Create(containingScope, symbolsInScope);
     }
 
-    private static NestedScope BuildTypeParameterScope(
+    private static NestedSymbolScope BuildTypeParameterScope(
         ITypeDeclarationSyntax typeSyntax,
-        LexicalScope containingScope)
+        SymbolScope containingScope)
     {
         var symbols = typeSyntax.GenericParameters.ToFixedDictionary(p => (TypeName)p.Name,
                 p => FixedSet.Create<IPromise<Symbol>>(p.Symbol));
 
-        return NestedScope.Create(containingScope, symbols);
+        return NestedSymbolScope.Create(containingScope, symbols);
     }
 
-    private static NestedScope BuildTypeBodyScope(ITypeDeclarationSyntax typeSyntax, LexicalScope containingScope)
+    private static NestedSymbolScope BuildTypeBodyScope(ITypeDeclarationSyntax typeSyntax, SymbolScope containingScope)
     {
         // Only "static" names are in scope. Other names must use `self.`
         var symbols = typeSyntax.Members.OfType<IAssociatedFunctionDeclarationSyntax>()
                                 .GroupBy(m => m.Name, m => m.Symbol).ToDictionary(e => (TypeName)e.Key,
                                     e => e.ToFixedSet<IPromise<Symbol>>());
 
-        return NestedScope.Create(containingScope, symbols.ToFixedDictionary());
+        return NestedSymbolScope.Create(containingScope, symbols.ToFixedDictionary());
     }
 
-    private static NestedScope BuildBodyScope(
+    private static NestedSymbolScope BuildBodyScope(
         IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
-        LexicalScope containingScope)
+        SymbolScope containingScope)
     {
         var symbols = parameters.OfType<INamedParameterSyntax>()
                                 .GroupBy(p => p.Name, p => p.Symbol)
                                 .ToFixedDictionary(e => (TypeName)e.Key, e => e.ToFixedSet<IPromise<Symbol>>());
-        return NestedScope.Create(containingScope, symbols);
+        return NestedSymbolScope.Create(containingScope, symbols);
     }
 
-    private static NestedScope BuildVariableScope(
-        LexicalScope containingScope,
+    private static NestedSymbolScope BuildVariableScope(
+        SymbolScope containingScope,
         IdentifierName name,
         IPromise<NamedVariableSymbol> symbol)
     {
@@ -353,6 +353,6 @@ internal class LexicalScopesBuilderWalker : SyntaxWalker<LexicalScope>
         {
             { name, symbol.Yield().ToFixedSet<IPromise<Symbol>>() }
         }.ToFixedDictionary();
-        return NestedScope.Create(containingScope, symbols);
+        return NestedSymbolScope.Create(containingScope, symbols);
     }
 }

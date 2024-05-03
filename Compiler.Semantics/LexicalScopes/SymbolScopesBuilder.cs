@@ -13,7 +13,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
-public class LexicalScopesBuilder
+public class SymbolScopesBuilder
 {
     [SuppressMessage("Performance", "CA1822:Mark members as static",
         Justification = "OO")]
@@ -35,13 +35,13 @@ public class LexicalScopesBuilder
 
     private static void BuildFor(
         IFixedSet<ICompilationUnitSyntax> compilationUnits,
-        PackagesScope packagesScope,
+        PackagesSymbolScope packagesScope,
         IFixedList<NonMemberSymbol> declarationSymbols)
     {
         var namespaces = BuildNamespaces(declarationSymbols);
         var globalScope = BuildGlobalScope(packagesScope, namespaces[NamespaceName.Global]);
 
-        var builder = new LexicalScopesBuilderWalker(globalScope, namespaces);
+        var builder = new SymbolScopesBuilderWalker(globalScope, namespaces);
         foreach (var compilationUnit in compilationUnits)
             builder.BuildFor(compilationUnit, globalScope);
     }
@@ -77,18 +77,18 @@ public class LexicalScopesBuilder
     private static IEnumerable<NonMemberSymbol> GetPrimitiveEntitySymbols()
         => Primitive.SymbolTree.Symbols.Where(s => s.ContainingSymbol is null).Select(NonMemberSymbol.ForExternalSymbol);
 
-    private static FixedDictionary<NamespaceName, Namespace> BuildNamespaces(
+    private static FixedDictionary<NamespaceName, NamespaceSymbolScope> BuildNamespaces(
         IFixedList<NonMemberSymbol> declarationSymbols)
     {
         // Use RequiredNamespace so that namespaces in the package will be created even if they are empty
         var namespaces = declarationSymbols.SelectMany(s => s.RequiredNamespace.NamespaceNames()).Distinct();
-        var nsSymbols = new List<Namespace>();
+        var nsSymbols = new List<NamespaceSymbolScope>();
         foreach (var ns in namespaces)
         {
             var symbols = declarationSymbols.Where(s => s.ContainingNamespace == ns).ToList();
             var nestedSymbols = declarationSymbols.Where(s => s.ContainingNamespace.IsNestedIn(ns)).ToList();
 
-            nsSymbols.Add(new Namespace(
+            nsSymbols.Add(new NamespaceSymbolScope(
                 ns,
                 ToDictionary(symbols),
                 ToDictionary(nestedSymbols),
@@ -98,19 +98,19 @@ public class LexicalScopesBuilder
 
         return nsSymbols.ToFixedDictionary(ns => ns.Name);
     }
-    private static PackagesScope BuildPackagesScope(PackageSyntax<Package> package)
+    private static PackagesSymbolScope BuildPackagesScope(PackageSyntax<Package> package)
     {
         var packageAliases = package.References
                                     .ToDictionary(r => r.AliasOrName, r => r.Package.Symbol)
                                     .ToFixedDictionary();
-        return new PackagesScope(package.Symbol, packageAliases);
+        return new PackagesSymbolScope(package.Symbol, packageAliases);
     }
 
-    private static NestedScope BuildGlobalScope(
-        PackagesScope packagesScope,
-        Namespace globalNamespace)
+    private static NestedSymbolScope BuildGlobalScope(
+        PackagesSymbolScope packagesScope,
+        NamespaceSymbolScope globalNamespace)
     {
-        var allPackagesGlobalScope = NestedScope.CreateGlobal(packagesScope, globalNamespace.Symbols, globalNamespace.NestedSymbols);
+        var allPackagesGlobalScope = NestedSymbolScope.CreateGlobal(packagesScope, globalNamespace.Symbols, globalNamespace.NestedSymbols);
 
         return allPackagesGlobalScope;
     }

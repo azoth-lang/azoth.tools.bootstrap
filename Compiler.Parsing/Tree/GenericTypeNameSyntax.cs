@@ -14,8 +14,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal sealed class GenericTypeNameSyntax : TypeSyntax, IGenericTypeNameSyntax
 {
-    private LexicalScope? containingLexicalScope;
-    public LexicalScope ContainingLexicalScope
+    private SymbolScope? containingLexicalScope;
+    public SymbolScope ContainingLexicalScope
     {
         [DebuggerStepThrough]
         get =>

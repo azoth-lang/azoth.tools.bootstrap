@@ -8,9 +8,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 /// <summary>
 /// Lookup things by name in lexical scopes
 /// </summary>
-public abstract class LexicalScope
+public abstract class SymbolScope
 {
-    internal abstract PackagesScope ContainingPackagesScope { get; }
+    internal abstract PackagesSymbolScope ContainingPackagesScope { get; }
 
     public abstract IEnumerable<IPromise<Symbol>> Lookup(TypeName name, bool includeNested = true);
 }
