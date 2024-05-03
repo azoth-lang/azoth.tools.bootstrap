@@ -32,7 +32,7 @@ PackageMemberDeclaration <: NamespaceMemberDeclaration = File:`CodeFile`;
 Code <: Child = Syntax:`IConcreteSyntax`;
 
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile`
-    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol`
+    ContainingSymbolNode:`IFacetSymbolNode` ContainingSymbol:`NamespaceSymbol`
     ImplicitNamespaceName:`NamespaceName` ImplicitNamespaceSymbolNode:`INamespaceSymbolNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*;
 

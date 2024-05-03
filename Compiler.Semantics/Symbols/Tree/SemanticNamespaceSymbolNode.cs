@@ -20,9 +20,6 @@ internal sealed class SemanticNamespaceSymbolNode : SemanticDeclarationSymbolNod
         Members = ChildList.CreateFixed(this, members);
     }
 
-    internal override INamespaceSymbolNode InheritedGlobalNamespace(IChildSymbolNode caller, IChildSymbolNode child)
-        => Symbol.NamespaceName == NamespaceName.Global ? this : base.InheritedGlobalNamespace(caller, child);
-
     public IEnumerable<INamespaceMemberSymbolNode> MembersNamed(IdentifierName named)
         => Members.MembersNamed(ref membersByName, named);
 }

@@ -22,7 +22,7 @@ internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarat
         : base(genericParameters, supertypeNames)
     {
         Syntax = syntax;
-        this.baseTypeName = Child.Create(this, baseTypeName);
+        this.baseTypeName = Child.CreateOptional(this, baseTypeName);
         Members = ChildList.CreateFixed(this, members);
     }
 }

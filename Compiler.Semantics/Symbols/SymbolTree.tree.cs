@@ -21,22 +21,22 @@ public partial interface ISymbolNode
 }
 
 [Closed(
+    typeof(IFacetSymbolNode),
     typeof(IDeclarationSymbolNode))]
 public partial interface IChildSymbolNode : IChild<ISymbolNode>, ISymbolNode
 {
     ISymbolNode Parent { get; }
     IPackageSymbolNode Package { get; }
-    INamespaceSymbolNode GlobalNamespace { get; }
 }
 
 public partial interface IPackageSymbolNode : ISymbolNode
 {
-    IdentifierName AliasOrName { get; }
+    IdentifierName? AliasOrName { get; }
     IdentifierName Name { get; }
     new PackageSymbol Symbol { get; }
     Symbol ISymbolNode.Symbol => Symbol;
-    INamespaceSymbolNode GlobalNamespace { get; }
-    INamespaceSymbolNode TestingGlobalNamespace { get; }
+    IFacetSymbolNode MainFacet { get; }
+    IFacetSymbolNode TestingFacet { get; }
 }
 
 [Closed(
@@ -46,12 +46,22 @@ public partial interface IPackageMemberSymbolNode : INamespaceMemberSymbolNode
 {
 }
 
+public partial interface IFacetSymbolNode : IChildSymbolNode
+{
+    IdentifierName? PackageAliasOrName { get; }
+    IdentifierName PackageName { get; }
+    new PackageSymbol Symbol { get; }
+    Symbol ISymbolNode.Symbol => Symbol;
+    INamespaceSymbolNode GlobalNamespace { get; }
+}
+
 [Closed(
     typeof(INamespaceMemberSymbolNode),
     typeof(ITypeMemberSymbolNode))]
 public partial interface IDeclarationSymbolNode : IChildSymbolNode
 {
     StandardName Name { get; }
+    IFacetSymbolNode Facet { get; }
 }
 
 public partial interface INamespaceSymbolNode : INamespaceMemberSymbolNode

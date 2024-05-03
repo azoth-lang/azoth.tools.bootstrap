@@ -9,27 +9,32 @@
 
 <default> = Symbol:`Symbol`;
 // Parent, Package, and GlobalNamespace type quoted so that is is not treated as a child node
-Child <: `IChild<ISymbolNode>` = Parent:`ISymbolNode` Package:`IPackageSymbolNode` GlobalNamespace:`INamespaceSymbolNode`; 
+Child <: `IChild<ISymbolNode>` = Parent:`ISymbolNode` Package:`IPackageSymbolNode`; 
 
 // ---------- Packages
-Package = AliasOrName:`IdentifierName` Name:`IdentifierName` Symbol:`PackageSymbol`
-    GlobalNamespace:Namespace TestingGlobalNamespace:Namespace;
+Package = AliasOrName:`IdentifierName`? Name:`IdentifierName` Symbol:`PackageSymbol`
+    MainFacet:Facet TestingFacet:Facet;
 
 PackageMember <: NamespaceMember;
 
+// ---------- Facets
+/// Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
+Facet <: Child = PackageAliasOrName:`IdentifierName`? PackageName:`IdentifierName` Symbol:`PackageSymbol`
+    GlobalNamespace:Namespace;
+
 // ---------- Declarations
-Declaration <: Child = Name:`StandardName`;
+Declaration <: Child = Name:`StandardName` Facet;
 
 // ---------- Namespaces
-Namespace <: NamespaceMember = Name:`IdentifierName` Symbol:`NamespaceSymbol` Members:NamespaceMember*;
+Namespace <: NamespaceMember = Facet Name:`IdentifierName` Symbol:`NamespaceSymbol` Members:NamespaceMember*;
 NamespaceMember <: Declaration;
 
 // ---------- Type Declarations
 Type <: PackageMember, ClassMember, TraitMember, StructMember
     = Symbol:`UserTypeSymbol` Members:TypeMember*;
-Class <: Type = Members:ClassMember*;
-Struct <: Type = Members:StructMember*;
-Trait <: Type = Members:TraitMember*;
+Class <: Type = Facet Members:ClassMember*;
+Struct <: Type = Facet Members:StructMember*;
+Trait <: Type = Facet Members:TraitMember*;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMember <: Declaration;
@@ -38,4 +43,4 @@ TraitMember <: TypeMember;
 StructMember <: TypeMember;
 
 // ---------- Invocable Declarations
-Function <: PackageMember = Symbol:`FunctionSymbol`;
+Function <: PackageMember = Facet Symbol:`FunctionSymbol`;

@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -6,21 +7,22 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 internal sealed class SemanticPackageSymbolNode : SemanticSymbolNode, IPackageSymbolNode
 {
     private IPackageNode Node { get; }
-    // TODO this should be the special name "package"
-    public IdentifierName AliasOrName => Symbol.Name;
+    public IdentifierName? AliasOrName => null;
     public override PackageSymbol Symbol => Node.Symbol;
     public IdentifierName Name => Symbol.Name;
-
-    public INamespaceSymbolNode GlobalNamespace { get; }
-    public INamespaceSymbolNode TestingGlobalNamespace { get; }
+    public IFacetSymbolNode MainFacet { get; }
+    public IFacetSymbolNode TestingFacet { get; }
 
     public SemanticPackageSymbolNode(
         IPackageNode node,
-        INamespaceSymbolNode globalNamespace,
-        INamespaceSymbolNode testingGlobalNamespace)
+        IFacetSymbolNode mainFacet,
+        IFacetSymbolNode testingFacet)
     {
         Node = node;
-        GlobalNamespace = globalNamespace;
-        TestingGlobalNamespace = testingGlobalNamespace;
+        MainFacet = Child.Attach(this, mainFacet);
+        TestingFacet = Child.Attach(this, testingFacet);
     }
+
+    internal override IPackageSymbolNode InheritedPackage(IChildSymbolNode caller, IChildSymbolNode child)
+        => this;
 }

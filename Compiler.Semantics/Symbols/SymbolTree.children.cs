@@ -16,26 +16,34 @@ public static class ISymbolNodeExtensions
             default:
                 throw ExhaustiveMatch.Failed(node);
             case IPackageSymbolNode n:
+                yield return n.MainFacet;
+                yield return n.TestingFacet;
+                yield break;
+            case IFacetSymbolNode n:
                 yield return n.GlobalNamespace;
-                yield return n.TestingGlobalNamespace;
                 yield break;
             case INamespaceSymbolNode n:
+                yield return n.Facet;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case IClassSymbolNode n:
+                yield return n.Facet;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case IStructSymbolNode n:
+                yield return n.Facet;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case ITraitSymbolNode n:
+                yield return n.Facet;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case IFunctionSymbolNode n:
+                yield return n.Facet;
                 yield break;
         }
     }

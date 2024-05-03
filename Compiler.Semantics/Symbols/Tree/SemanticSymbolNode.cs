@@ -12,7 +12,7 @@ internal abstract class SemanticSymbolNode : ISymbolNode
         => throw new NotImplementedException(
             $"{nameof(InheritedPackage)} not implemented for child node type {child.GetType().GetFriendlyName()}.");
 
-    internal virtual INamespaceSymbolNode InheritedGlobalNamespace(IChildSymbolNode caller, IChildSymbolNode child)
+    internal virtual IFacetSymbolNode InheritedFacet(IChildSymbolNode caller, IChildSymbolNode child)
         => throw new NotImplementedException(
-            $"{nameof(InheritedGlobalNamespace)} not implemented for child node type {child.GetType().GetFriendlyName()}.");
+            $"{nameof(InheritedFacet)} not implemented for child node type {child.GetType().GetFriendlyName()}.");
 }

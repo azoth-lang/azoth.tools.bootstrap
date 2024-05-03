@@ -10,7 +10,6 @@ internal abstract class SemanticChildSymbolNode : SemanticSymbolNode, IChildSymb
     ISymbolNode IChildSymbolNode.Parent => Parent;
 
     public IPackageSymbolNode Package => Parent.InheritedPackage(this, this);
-    public INamespaceSymbolNode GlobalNamespace => Parent.InheritedGlobalNamespace(this, this);
 
     public void AttachParent(ISymbolNode newParent)
     {
@@ -23,6 +22,6 @@ internal abstract class SemanticChildSymbolNode : SemanticSymbolNode, IChildSymb
     internal override IPackageSymbolNode InheritedPackage(IChildSymbolNode caller, IChildSymbolNode child)
         => Parent.InheritedPackage(this, child);
 
-    internal override INamespaceSymbolNode InheritedGlobalNamespace(IChildSymbolNode caller, IChildSymbolNode child)
-        => Parent.InheritedGlobalNamespace(this, child);
+    internal override IFacetSymbolNode InheritedFacet(IChildSymbolNode caller, IChildSymbolNode child)
+        => Parent.InheritedFacet(this, child);
 }

@@ -9,11 +9,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChildSymbolNode
 {
     private ReferencedSymbolNode? parent;
-    protected ReferencedSymbolNode Parent => parent ?? throw new InvalidOperationException("Parent is not set.");
+    protected virtual ReferencedSymbolNode Parent => parent ?? throw new InvalidOperationException("Parent is not set.");
     ISymbolNode IChildSymbolNode.Parent => Parent;
 
     public IPackageSymbolNode Package => Parent.InheritedPackage(this, this);
-    public INamespaceSymbolNode GlobalNamespace => Parent.InheritedGlobalNamespace(this, this);
 
     public void AttachParent(ISymbolNode newParent)
     {
@@ -30,8 +29,8 @@ internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChild
     internal override ISymbolTree InheritedSymbolTree(IChildSymbolNode caller, IChildSymbolNode child)
         => base.InheritedSymbolTree(this, child);
 
-    internal override INamespaceSymbolNode InheritedGlobalNamespace(IChildSymbolNode caller, IChildSymbolNode child)
-        => Parent.InheritedGlobalNamespace(this, child);
+    internal override IFacetSymbolNode InheritedFacet(IChildSymbolNode caller, IChildSymbolNode child)
+        => Parent.InheritedFacet(this, child);
 
     protected IEnumerable<IChildSymbolNode> GetMembers()
     {

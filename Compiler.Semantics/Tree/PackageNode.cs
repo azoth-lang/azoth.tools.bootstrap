@@ -60,9 +60,9 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     internal override ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
     {
         if (CompilationUnits.Contains(caller))
-            return SymbolNode.GlobalNamespace;
+            return SymbolNode.MainFacet;
         if (TestingCompilationUnits.Contains(caller))
-            return SymbolNode.TestingGlobalNamespace;
+            return SymbolNode.TestingFacet;
         return base.InheritedContainingSymbolNode(caller, child);
     }
 }

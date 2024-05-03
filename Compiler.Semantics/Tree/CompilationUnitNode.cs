@@ -16,7 +16,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
 
     public CodeFile File => Syntax.File;
 
-    public INamespaceSymbolNode ContainingSymbolNode => (INamespaceSymbolNode)Parent.InheritedContainingSymbolNode(this, this);
+    public IFacetSymbolNode ContainingSymbolNode => (IFacetSymbolNode)Parent.InheritedContainingSymbolNode(this, this);
     public NamespaceSymbol ContainingSymbol => ContainingSymbolNode.Symbol;
     public NamespaceName ImplicitNamespaceName => Syntax.ImplicitNamespaceName;
 

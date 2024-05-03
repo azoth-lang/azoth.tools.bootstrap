@@ -17,14 +17,14 @@ internal static class SymbolNodeAttribute
             BuildForCompilationUnits(node.Symbol, node.CompilationUnits),
             BuildForCompilationUnits(node.Symbol, node.TestingCompilationUnits));
 
-    private static INamespaceSymbolNode BuildForCompilationUnits(
+    private static IFacetSymbolNode BuildForCompilationUnits(
         PackageSymbol packageSymbol,
         IEnumerable<ICompilationUnitNode> nodes)
     {
         var builder = new SemanticNamespaceSymbolNodeBuilder(packageSymbol);
         foreach (var node in nodes)
             BuildNamespace(packageSymbol, node.ImplicitNamespaceName, node.Declarations);
-        return builder.Build();
+        return new SemanticFacetSymbolNode(builder.Build());
 
         void Build(NamespaceSymbol namespaceSymbol, INamespaceMemberDeclarationNode declaration)
         {
@@ -67,7 +67,7 @@ internal static class SymbolNodeAttribute
         => new SemanticFunctionSymbolNode(node);
 
     public static INamespaceSymbolNode CompilationUnit(ICompilationUnitNode node)
-        => FindNamespace(node.ContainingSymbolNode, node.ImplicitNamespaceName);
+        => FindNamespace(node.ContainingSymbolNode.GlobalNamespace, node.ImplicitNamespaceName);
 
     private static INamespaceSymbolNode FindNamespace(INamespaceSymbolNode containingSymbolNode, NamespaceName ns)
     {
@@ -84,10 +84,10 @@ internal static class SymbolNodeAttribute
         => new ReferencedPackageSymbolNode(node);
 
     public static FixedDictionary<IdentifierName, IPackageSymbolNode> PackageSymbolNodes(IPackageNode node)
-        => node.References.Select(r => r.SymbolNode).Append(node.SymbolNode).ToFixedDictionary(n => n.AliasOrName);
+        => node.References.Select(r => r.SymbolNode).Append(node.SymbolNode).ToFixedDictionary(n => n.AliasOrName ?? node.Symbol.Name);
 
     public static INamespaceSymbolNode NamespaceDeclarationContainingSymbolNode(INamespaceDeclarationNode node, INamespaceSymbolNode inheritedSymbolNode)
-        => node.IsGlobalQualified ? inheritedSymbolNode.GlobalNamespace : inheritedSymbolNode;
+        => node.IsGlobalQualified ? inheritedSymbolNode.Facet.GlobalNamespace : inheritedSymbolNode;
 
     public static INamespaceSymbolNode NamespaceDeclaration(INamespaceDeclarationNode node)
         => FindNamespace(node.ContainingSymbolNode, node.DeclaredNames);

@@ -27,10 +27,6 @@ internal class ReferencedNamespaceSymbolNode : ReferencedDeclarationSymbolNode, 
     private IFixedList<INamespaceMemberSymbolNode> GetMembers(INamespaceSymbolNode _)
         => GetMembers().Cast<INamespaceMemberSymbolNode>().ToFixedList();
 
-
-    internal override INamespaceSymbolNode InheritedGlobalNamespace(IChildSymbolNode caller, IChildSymbolNode child)
-        => Symbol.NamespaceName == NamespaceName.Global ? this : base.InheritedGlobalNamespace(caller, child);
-
     public IEnumerable<INamespaceMemberSymbolNode> MembersNamed(IdentifierName named)
         => Members.MembersNamed(ref membersByName, named);
 }
