@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core;
 
-/// A CodeFile represents the combination of CodeText and CodePath
+/// A CodeFile represents the combination of CodeText and CodeReference
 public class CodeFile
 {
     /// Source code files are encoded with UTF-8 without a BOM. C# UTF-8 include
