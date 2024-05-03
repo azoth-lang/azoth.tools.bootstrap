@@ -26,7 +26,7 @@ Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` S
 PackageReference <: Child = Syntax:`IPackageReferenceSyntax` SymbolNode:`IPackageSymbolNode`
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
 
-PackageMemberDeclaration <: NamespaceMemberDeclaration;
+PackageMemberDeclaration <: NamespaceMemberDeclaration = File:`CodeFile`;
 
 // ---------- Code Files
 Code <: Child = Syntax:`IConcreteSyntax`;

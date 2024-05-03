@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -26,4 +27,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     internal override IPackageNode InheritedPackage(IChildNode caller, IChildNode child)
         => Parent.InheritedPackage(this, child);
+
+    internal override CodeFile InheritedFile(IChildNode caller, IChildNode child)
+        => Parent.InheritedFile(this, child);
 }

@@ -74,6 +74,7 @@ public partial interface IPackageReferenceNode : IChildNode
     typeof(IFunctionDeclarationNode))]
 public partial interface IPackageMemberDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
 {
+    CodeFile File { get; }
 }
 
 [Closed(

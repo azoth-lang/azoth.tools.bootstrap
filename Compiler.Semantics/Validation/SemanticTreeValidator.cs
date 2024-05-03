@@ -14,6 +14,18 @@ internal class SemanticTreeValidator
             case INamespaceDeclarationNode n:
                 _ = n.Symbol;
                 break;
+            case IClassDeclarationNode n:
+                _ = n.File;
+                break;
+            case IStructDeclarationNode n:
+                _ = n.File;
+                break;
+            case ITraitDeclarationNode n:
+                _ = n.File;
+                break;
+            case IFunctionDeclarationNode n:
+                _ = n.File;
+                break;
         }
 
         foreach (var child in node.Children())

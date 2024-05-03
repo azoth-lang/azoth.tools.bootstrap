@@ -9,6 +9,6 @@ internal abstract class DeclarationNode : ChildNode, IDeclarationNode
 {
     public abstract StandardName Name { get; }
     public abstract override IDeclarationSyntax Syntax { get; }
-    public ISymbolNode ContainingSymbolNode => Parent.InheritedContainingSymbolNode(this, this);
-    public Symbol ContainingSymbol => ContainingSymbolNode.Symbol;
+    public virtual ISymbolNode ContainingSymbolNode => Parent.InheritedContainingSymbolNode(this, this);
+    public virtual Symbol ContainingSymbol => ContainingSymbolNode.Symbol;
 }

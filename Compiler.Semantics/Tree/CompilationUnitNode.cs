@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
@@ -41,4 +42,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     internal override INamespaceSymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
         => inheritedContainingSymbolNode.TryGetValue(out var value) ? value
             : inheritedContainingSymbolNode.GetValue(this, SymbolNodeAttribute.CompilationUnitInherited);
+
+    internal override CodeFile InheritedFile(IChildNode caller, IChildNode child)
+        => FileAttribute.CompilationUnitInherited(this);
 }

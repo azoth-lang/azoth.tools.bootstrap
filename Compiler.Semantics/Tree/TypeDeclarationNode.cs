@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal abstract class TypeDeclarationNode : DeclarationNode, ITypeDeclarationNode
+internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITypeDeclarationNode
 {
     public abstract override ITypeDeclarationSyntax Syntax { get; }
     public override StandardName Name => Syntax.Name;
