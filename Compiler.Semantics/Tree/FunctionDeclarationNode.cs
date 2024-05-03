@@ -1,4 +1,3 @@
-using System;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -8,7 +7,7 @@ internal sealed class FunctionDeclarationNode : CodeNode, IFunctionDeclarationNo
 {
     public override IFunctionDeclarationSyntax Syntax { get; }
 
-    public NamespaceSymbol ContainingNamespace => throw new NotImplementedException();
+    public NamespaceSymbol ContainingNamespace => Parent.InheritedContainingNamespace!;
 
     public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax)
     {

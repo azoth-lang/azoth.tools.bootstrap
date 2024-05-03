@@ -3,9 +3,9 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
-internal static class SymbolDefinitions
+internal static class SymbolAttribute
 {
-    public static PackageSymbol Package(IPackageNode package) => new PackageSymbol(package.Name);
+    public static PackageSymbol Package(IPackageNode node) => new PackageSymbol(node.Name);
 
     public static NamespaceSymbol NamespaceDeclaration(INamespaceDeclarationNode node)
     {

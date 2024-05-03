@@ -16,7 +16,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
 
     private ValueAttribute<PackageSymbol> symbol;
     public PackageSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolDefinitions.Package);
+        => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolAttribute.Package);
 
     public IFixedSet<IPackageReferenceNode> References { get; }
     public IFixedSet<ICompilationUnitNode> CompilationUnits { get; }

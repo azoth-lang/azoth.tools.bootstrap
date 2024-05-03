@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -15,11 +14,17 @@ internal class NamespaceDeclarationNode : CodeNode, INamespaceDeclarationNode
     public bool IsGlobalQualified => Syntax.IsGlobalQualified;
     public NamespaceName DeclaredNames => Syntax.DeclaredNames;
 
-    public NamespaceSymbol ContainingNamespace => throw new NotImplementedException();
+    private ValueAttribute<NamespaceSymbol> inheritedContainingNamespace;
+    public override NamespaceSymbol InheritedContainingNamespace
+        => inheritedContainingNamespace.TryGetValue(out var value)
+            ? value
+            : inheritedContainingNamespace.GetValue(this, ContainingNamespaceAttribute.NamespaceDeclarationInherited);
+
+    public NamespaceSymbol ContainingNamespace => Parent.InheritedContainingNamespace!;
 
     private ValueAttribute<NamespaceSymbol> symbol;
     public NamespaceSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolDefinitions.NamespaceDeclaration);
+        => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolAttribute.NamespaceDeclaration);
 
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }

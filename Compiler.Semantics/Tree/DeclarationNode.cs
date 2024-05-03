@@ -1,4 +1,3 @@
-using System;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -8,5 +7,5 @@ internal abstract class DeclarationNode : ChildNode, IDeclarationNode
 {
     public abstract override IDeclarationSyntax Syntax { get; }
 
-    public NamespaceSymbol? ContainingNamespace => throw new NotImplementedException();
+    public NamespaceSymbol? ContainingNamespace => Parent.InheritedContainingNamespace;
 }
