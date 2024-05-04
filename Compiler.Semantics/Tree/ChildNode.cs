@@ -36,5 +36,5 @@ internal abstract class ChildNode : SemanticNode, IChildNode
         => Parent.InheritedLexicalScope(this, child);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
-        => Parent.InheritedLexicalScope(this, child);
+        => Parent.InheritedContainingLexicalScope(this, child);
 }

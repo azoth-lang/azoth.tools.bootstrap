@@ -4,6 +4,11 @@ internal class SemanticTreeValidator
 {
     public static void Validate(ISemanticNode node)
     {
+        if (node is IDeclarationNode d)
+        {
+            _ = d.ContainingLexicalScope;
+        }
+
         switch (node)
         {
             case IPackageNode n:

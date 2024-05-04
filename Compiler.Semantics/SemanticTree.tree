@@ -45,7 +45,8 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile`
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
 // ---------- Declarations
-Declaration <: Code = Syntax:`IDeclarationSyntax` ContainingSymbolNode:`ISymbolNode` ContainingSymbol:`Symbol`;
+Declaration <: Code = Syntax:`IDeclarationSyntax` ContainingSymbolNode:`ISymbolNode` ContainingSymbol:`Symbol`
+    ContainingLexicalScope:`LexicalScope`;
 
 // ---------- Namespaces
 NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`

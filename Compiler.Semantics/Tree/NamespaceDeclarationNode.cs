@@ -8,19 +8,19 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal class NamespaceDeclarationNode : CodeNode, INamespaceDeclarationNode
+internal class NamespaceDeclarationNode : DeclarationNode, INamespaceDeclarationNode
 {
     public override INamespaceDeclarationSyntax Syntax { get; }
     public bool IsGlobalQualified => Syntax.IsGlobalQualified;
     public NamespaceName DeclaredNames => Syntax.DeclaredNames;
 
     private ValueAttribute<INamespaceSymbolNode> containingSymbolNode;
-    public INamespaceSymbolNode ContainingSymbolNode
+    public override INamespaceSymbolNode ContainingSymbolNode
         => containingSymbolNode.TryGetValue(out var value) ? value
             : containingSymbolNode.GetValue(this, node
                 => SymbolNodeAttribute.NamespaceDeclarationContainingSymbolNode(node,
                     (INamespaceSymbolNode)Parent.InheritedContainingSymbolNode(this, this)));
-    public NamespaceSymbol ContainingSymbol => ContainingSymbolNode.Symbol;
+    public override NamespaceSymbol ContainingSymbol => ContainingSymbolNode.Symbol;
     private ValueAttribute<INamespaceSymbolNode> inheritedContainingSymbolNode;
 
     private ValueAttribute<INamespaceSymbolNode> symbolNode;

@@ -138,6 +138,7 @@ public partial interface IDeclarationNode : ISemanticNode, ICodeNode
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     ISymbolNode ContainingSymbolNode { get; }
     Symbol ContainingSymbol { get; }
+    LexicalScope ContainingLexicalScope { get; }
 }
 
 public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
