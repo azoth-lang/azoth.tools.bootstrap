@@ -22,10 +22,6 @@ public static class ISymbolNodeExtensions
             case IPackageFacetSymbolNode n:
                 yield return n.GlobalNamespace;
                 yield break;
-            case IDeclarationWithMembersSymbolNode n:
-                foreach (var child in n.Members)
-                    yield return child;
-                yield break;
             case INamespaceSymbolNode n:
                 foreach (var child in n.Members)
                     yield return child;

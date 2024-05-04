@@ -27,11 +27,11 @@ Declaration <: Child = Name:`StandardName` Facet:`IPackageFacetSymbolNode`;
 DeclarationWithMembers <: Declaration = Members:Declaration*;
 
 // ---------- Namespaces
-Namespace <: NamespaceMember = Name:`IdentifierName` Symbol:`NamespaceSymbol` Members:NamespaceMember*;
+Namespace <: DeclarationWithMembers, NamespaceMember = Name:`IdentifierName` Symbol:`NamespaceSymbol` Members:NamespaceMember*;
 NamespaceMember <: Declaration;
 
 // ---------- Type Declarations
-Type <: PackageMember, ClassMember, TraitMember, StructMember
+Type <: DeclarationWithMembers, PackageMember, ClassMember, TraitMember, StructMember
     = Symbol:`UserTypeSymbol` Members:TypeMember*;
 Class <: Type = Members:ClassMember*;
 Struct <: Type = Members:StructMember*;

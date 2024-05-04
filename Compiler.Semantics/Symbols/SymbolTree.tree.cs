@@ -13,7 +13,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
     typeof(IPackageSymbolNode),
     typeof(IDeclarationWithMembersSymbolNode),
     typeof(INamespaceMemberSymbolNode),
-    typeof(ITypeSymbolNode),
+    typeof(IClassSymbolNode),
+    typeof(IStructSymbolNode),
+    typeof(ITraitSymbolNode),
     typeof(ITypeMemberSymbolNode),
     typeof(IFunctionSymbolNode))]
 public partial interface ISymbolNode
@@ -66,18 +68,22 @@ public partial interface IDeclarationSymbolNode : IChildSymbolNode
     IPackageFacetSymbolNode Facet { get; }
 }
 
+[Closed(
+    typeof(INamespaceSymbolNode),
+    typeof(ITypeSymbolNode))]
 public partial interface IDeclarationWithMembersSymbolNode : ISymbolNode, IDeclarationSymbolNode
 {
     IFixedList<IDeclarationSymbolNode> Members { get; }
 }
 
-public partial interface INamespaceSymbolNode : INamespaceMemberSymbolNode
+public partial interface INamespaceSymbolNode : IDeclarationWithMembersSymbolNode, INamespaceMemberSymbolNode
 {
     new IdentifierName Name { get; }
     StandardName IDeclarationSymbolNode.Name => Name;
     new NamespaceSymbol Symbol { get; }
     Symbol ISymbolNode.Symbol => Symbol;
-    IFixedList<INamespaceMemberSymbolNode> Members { get; }
+    new IFixedList<INamespaceMemberSymbolNode> Members { get; }
+    IFixedList<IDeclarationSymbolNode> IDeclarationWithMembersSymbolNode.Members => Members;
 }
 
 [Closed(
@@ -91,26 +97,27 @@ public partial interface INamespaceMemberSymbolNode : ISymbolNode, IDeclarationS
     typeof(IClassSymbolNode),
     typeof(IStructSymbolNode),
     typeof(ITraitSymbolNode))]
-public partial interface ITypeSymbolNode : ISymbolNode, IPackageMemberSymbolNode, IClassMemberSymbolNode, ITraitMemberSymbolNode, IStructMemberSymbolNode
+public partial interface ITypeSymbolNode : IDeclarationWithMembersSymbolNode, IPackageMemberSymbolNode, IClassMemberSymbolNode, ITraitMemberSymbolNode, IStructMemberSymbolNode
 {
     new UserTypeSymbol Symbol { get; }
     Symbol ISymbolNode.Symbol => Symbol;
-    IFixedList<ITypeMemberSymbolNode> Members { get; }
+    new IFixedList<ITypeMemberSymbolNode> Members { get; }
+    IFixedList<IDeclarationSymbolNode> IDeclarationWithMembersSymbolNode.Members => Members;
 }
 
-public partial interface IClassSymbolNode : ITypeSymbolNode
+public partial interface IClassSymbolNode : ISymbolNode, ITypeSymbolNode
 {
     new IFixedList<IClassMemberSymbolNode> Members { get; }
     IFixedList<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
 }
 
-public partial interface IStructSymbolNode : ITypeSymbolNode
+public partial interface IStructSymbolNode : ISymbolNode, ITypeSymbolNode
 {
     new IFixedList<IStructMemberSymbolNode> Members { get; }
     IFixedList<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
 }
 
-public partial interface ITraitSymbolNode : ITypeSymbolNode
+public partial interface ITraitSymbolNode : ISymbolNode, ITypeSymbolNode
 {
     new IFixedList<ITraitMemberSymbolNode> Members { get; }
     IFixedList<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
