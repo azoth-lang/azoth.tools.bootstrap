@@ -11,6 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 [Closed(
     typeof(IChildSymbolNode),
     typeof(IPackageSymbolNode),
+    typeof(IDeclarationWithMembersSymbolNode),
     typeof(INamespaceMemberSymbolNode),
     typeof(ITypeSymbolNode),
     typeof(ITypeMemberSymbolNode),
@@ -56,12 +57,18 @@ public partial interface IPackageFacetSymbolNode : IChildSymbolNode
 }
 
 [Closed(
+    typeof(IDeclarationWithMembersSymbolNode),
     typeof(INamespaceMemberSymbolNode),
     typeof(ITypeMemberSymbolNode))]
 public partial interface IDeclarationSymbolNode : IChildSymbolNode
 {
     StandardName Name { get; }
     IPackageFacetSymbolNode Facet { get; }
+}
+
+public partial interface IDeclarationWithMembersSymbolNode : ISymbolNode, IDeclarationSymbolNode
+{
+    IFixedList<IDeclarationSymbolNode> Members { get; }
 }
 
 public partial interface INamespaceSymbolNode : INamespaceMemberSymbolNode

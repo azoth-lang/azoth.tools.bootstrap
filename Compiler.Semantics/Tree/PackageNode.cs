@@ -34,10 +34,10 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public IPackageFacetNode MainFacet { get; }
     public IPackageFacetNode TestingFacet { get; }
 
-    private ValueAttribute<PackageNameScope> lexicalScope;
-    public PackageNameScope LexicalScope
-        => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopeAttributes.Package);
+    private ValueAttribute<PackageNameScope> packageNameScope;
+    public PackageNameScope PackageNameScope
+        => packageNameScope.TryGetValue(out var value) ? value
+            : packageNameScope.GetValue(this, LexicalScopeAttributes.Package);
 
     public PackageNode(
         IPackageSyntax syntax,

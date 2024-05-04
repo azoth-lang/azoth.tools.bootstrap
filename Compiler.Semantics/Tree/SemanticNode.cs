@@ -11,19 +11,28 @@ internal abstract class SemanticNode : ISemanticNode
 {
     public abstract ISyntax Syntax { get; }
 
+    private static string InheritFailedMessage(string attribute, IChildNode caller, IChildNode child)
+        => $"{attribute} not implemented for child node type {child.GetType().GetFriendlyName()} "
+           + $"when accessed through caller {caller.GetType().GetFriendlyName()}.";
+
     internal virtual ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(
-            $"{nameof(InheritedContainingSymbolNode)} not implemented for child node type {child.GetType().GetFriendlyName()}.");
+            InheritFailedMessage(nameof(InheritedContainingSymbolNode), caller, child));
+
 
     internal virtual IPackageNode InheritedPackage(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(
-            $"{nameof(InheritedPackage)} not implemented for child node type {child.GetType().GetFriendlyName()}.");
+            InheritFailedMessage(nameof(InheritedPackage), caller, child));
 
     internal virtual CodeFile InheritedFile(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(
-            $"{nameof(InheritedFile)} not implemented for child node type {child.GetType().GetFriendlyName()}.");
+            InheritFailedMessage(nameof(InheritedFile), caller, child));
 
     internal virtual LexicalScope InheritedLexicalScope(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(
-            $"{nameof(InheritedLexicalScope)} not implemented for child node type {child.GetType().GetFriendlyName()}.");
+            InheritFailedMessage(nameof(InheritedLexicalScope), caller, child));
+
+    internal virtual LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
+        => throw new NotImplementedException(
+            InheritFailedMessage(nameof(InheritedContainingLexicalScope), caller, child));
 }

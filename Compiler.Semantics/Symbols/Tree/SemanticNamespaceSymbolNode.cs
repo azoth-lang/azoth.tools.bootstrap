@@ -20,6 +20,6 @@ internal sealed class SemanticNamespaceSymbolNode : SemanticDeclarationSymbolNod
         Members = ChildList.CreateFixed(this, members);
     }
 
-    public IEnumerable<INamespaceMemberSymbolNode> MembersNamed(IdentifierName named)
+    public override IEnumerable<INamespaceMemberSymbolNode> MembersNamed(IdentifierName named)
         => Members.MembersNamed(ref membersByName, named);
 }

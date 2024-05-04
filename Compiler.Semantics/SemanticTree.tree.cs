@@ -57,7 +57,7 @@ public partial interface IPackageNode : ISemanticNode
     FixedDictionary<IdentifierName,IPackageSymbolNode> SymbolNodes { get; }
     IPackageFacetNode MainFacet { get; }
     IPackageFacetNode TestingFacet { get; }
-    PackageNameScope LexicalScope { get; }
+    PackageNameScope PackageNameScope { get; }
 }
 
 public partial interface IPackageReferenceNode : IChildNode
@@ -116,6 +116,8 @@ public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
     NamespaceSymbol ImplicitNamespaceSymbol { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
+    LexicalScope ContainingLexicalScope { get; }
+    LexicalScope LexicalScope { get; }
 }
 
 public partial interface IUsingDirectiveNode : ISemanticNode, ICodeNode

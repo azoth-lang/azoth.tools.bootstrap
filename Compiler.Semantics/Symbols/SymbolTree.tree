@@ -23,18 +23,19 @@ PackageFacet <: Child = PackageAliasOrName:`IdentifierName`? PackageName:`Identi
     GlobalNamespace:Namespace;
 
 // ---------- Declarations
-Declaration <: Child = Name:`StandardName` Facet:PackageFacet;
+Declaration <: Child = Name:`StandardName` Facet:`IPackageFacetSymbolNode`;
+DeclarationWithMembers <: Declaration = Members:Declaration*;
 
 // ---------- Namespaces
-Namespace <: NamespaceMember = Facet:PackageFacet Name:`IdentifierName` Symbol:`NamespaceSymbol` Members:NamespaceMember*;
+Namespace <: NamespaceMember = Name:`IdentifierName` Symbol:`NamespaceSymbol` Members:NamespaceMember*;
 NamespaceMember <: Declaration;
 
 // ---------- Type Declarations
 Type <: PackageMember, ClassMember, TraitMember, StructMember
     = Symbol:`UserTypeSymbol` Members:TypeMember*;
-Class <: Type = Facet:PackageFacet Members:ClassMember*;
-Struct <: Type = Facet:PackageFacet Members:StructMember*;
-Trait <: Type = Facet:PackageFacet Members:TraitMember*;
+Class <: Type = Members:ClassMember*;
+Struct <: Type = Members:StructMember*;
+Trait <: Type = Members:TraitMember*;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMember <: Declaration;
@@ -43,4 +44,4 @@ TraitMember <: TypeMember;
 StructMember <: TypeMember;
 
 // ---------- Invocable Declarations
-Function <: PackageMember = Facet:PackageFacet Symbol:`FunctionSymbol`;
+Function <: PackageMember = Symbol:`FunctionSymbol`;

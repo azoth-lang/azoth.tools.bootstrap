@@ -8,11 +8,10 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 
-public sealed class PackageNameScope : LexicalScope
+public sealed class PackageNameScope
 {
     private readonly FixedDictionary<IdentifierName, IFixedSet<IPackageFacetSymbolNode>> facetLookup;
     public PackageSymbol CurrentPackage { get; set; }
-    public override PackageNameScope PackageNames => this;
 
     public PackageNameScope(PackageSymbol currentPackage, IEnumerable<IPackageFacetSymbolNode> facets)
     {
@@ -20,9 +19,6 @@ public sealed class PackageNameScope : LexicalScope
                             .ToFixedDictionary(g => g.Key, g => g.ToFixedSet());
         CurrentPackage = currentPackage;
     }
-
-    public override IEnumerable<ISymbolNode> Lookup(TypeName name, bool includeNested = true)
-        => Enumerable.Empty<ISymbolNode>();
 
     /// <summary>
     /// Lookup a package by name or <see langword="null"/> for the current package.

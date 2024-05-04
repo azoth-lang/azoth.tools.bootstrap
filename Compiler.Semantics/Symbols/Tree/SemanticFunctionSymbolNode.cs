@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -14,4 +16,7 @@ internal sealed class SemanticFunctionSymbolNode : SemanticDeclarationSymbolNode
     {
         Node = node;
     }
+
+    public override IEnumerable<IDeclarationSymbolNode> MembersNamed(IdentifierName named)
+        => Enumerable.Empty<IDeclarationSymbolNode>();
 }

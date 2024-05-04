@@ -40,4 +40,7 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
 
     internal override ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
         => SymbolNode;
+
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
+        => LexicalScope;
 }

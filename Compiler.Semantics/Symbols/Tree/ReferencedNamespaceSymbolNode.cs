@@ -27,6 +27,6 @@ internal class ReferencedNamespaceSymbolNode : ReferencedDeclarationSymbolNode, 
     private IFixedList<INamespaceMemberSymbolNode> GetMembers(INamespaceSymbolNode _)
         => GetMembers().Cast<INamespaceMemberSymbolNode>().ToFixedList();
 
-    public IEnumerable<INamespaceMemberSymbolNode> MembersNamed(IdentifierName named)
+    public override IEnumerable<INamespaceMemberSymbolNode> MembersNamed(IdentifierName named)
         => Members.MembersNamed(ref membersByName, named);
 }

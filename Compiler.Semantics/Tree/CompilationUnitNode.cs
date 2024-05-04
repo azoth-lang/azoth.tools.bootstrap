@@ -3,6 +3,8 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -28,6 +30,11 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     private ValueAttribute<INamespaceSymbolNode> inheritedContainingSymbolNode;
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
+    public LexicalScope ContainingLexicalScope => Parent.InheritedContainingLexicalScope(this, this);
+    private ValueAttribute<LexicalScope> lexicalScope;
+    public LexicalScope LexicalScope
+        => lexicalScope.TryGetValue(out var value) ? value
+            : lexicalScope.GetValue(this, LexicalScopeAttributes.CompilationUnit);
 
     public CompilationUnitNode(
         ICompilationUnitSyntax syntax,
@@ -45,4 +52,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
 
     internal override CodeFile InheritedFile(IChildNode caller, IChildNode child)
         => FileAttribute.CompilationUnitInherited(this);
+
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
+        => LexicalScope;
 }
