@@ -8,8 +8,9 @@ internal class SemanticTreeValidator
         {
             case IPackageNode n:
                 _ = n.SymbolNodes;
+                break;
+            case IPackageFacetNode n:
                 _ = n.Declarations;
-                _ = n.TestingDeclarations;
                 break;
             case INamespaceDeclarationNode n:
                 _ = n.Symbol;

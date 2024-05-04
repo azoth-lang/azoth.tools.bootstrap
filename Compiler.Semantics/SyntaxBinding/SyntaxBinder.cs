@@ -15,7 +15,12 @@ internal static class SyntaxBinder
 
     #region Packages
     private static IPackageNode Package(IPackageSyntax syntax)
-        => new PackageNode(syntax, PackageReferences(syntax.References), CompilationUnits(syntax.CompilationUnits), CompilationUnits(syntax.TestingCompilationUnits));
+        => new PackageNode(syntax, PackageReferences(syntax.References),
+            PackageFacet(syntax, syntax.CompilationUnits),
+            PackageFacet(syntax, syntax.TestingCompilationUnits));
+
+    private static IPackageFacetNode PackageFacet(IPackageSyntax syntax, IFixedSet<ICompilationUnitSyntax> compilationUnits)
+        => new PackageFacetNode(syntax, CompilationUnits(compilationUnits));
 
     private static IEnumerable<IPackageReferenceNode> PackageReferences(IEnumerable<IPackageReferenceSyntax> syntax)
         => syntax.Select(syn => new PackageReferenceNode(syn));

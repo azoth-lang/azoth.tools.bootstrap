@@ -18,12 +18,14 @@ public static class ISemanticNodeExtensions
             case IPackageNode n:
                 foreach (var child in n.References)
                     yield return child;
-                foreach (var child in n.CompilationUnits)
-                    yield return child;
-                foreach (var child in n.TestingCompilationUnits)
-                    yield return child;
+                yield return n.MainFacet;
+                yield return n.TestingFacet;
                 yield break;
             case IPackageReferenceNode n:
+                yield break;
+            case IPackageFacetNode n:
+                foreach (var child in n.CompilationUnits)
+                    yield return child;
                 yield break;
             case ICompilationUnitNode n:
                 foreach (var child in n.UsingDirectives)

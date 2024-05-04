@@ -20,11 +20,14 @@ Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPackageNode`
 // Declarations and TestingDeclarations types quoted so that is is not treated as a child node
 Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` SymbolNode:`IPackageSymbolNode`
     References:{PackageReference} SymbolNodes:`FixedDictionary<IdentifierName,IPackageSymbolNode>`
-    CompilationUnits:{CompilationUnit} TestingCompilationUnits:{CompilationUnit}
-    Declarations:`IFixedSet<IPackageMemberDeclarationNode>` TestingDeclarations:`IFixedSet<IPackageMemberDeclarationNode>`;
+    MainFacet:PackageFacet TestingFacet:PackageFacet;
 
 PackageReference <: Child = Syntax:`IPackageReferenceSyntax` SymbolNode:`IPackageSymbolNode`
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
+
+PackageFacet <: Child = Syntax:`IPackageSyntax` PackageName:`IdentifierName`
+    PackageSymbol:`PackageSymbol` SymbolNode:`IPackageFacetSymbolNode`
+    CompilationUnits:{CompilationUnit} Declarations:`IFixedSet<IPackageMemberDeclarationNode>`;
 
 PackageMemberDeclaration <: NamespaceMemberDeclaration = File:`CodeFile`;
 

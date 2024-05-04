@@ -37,6 +37,7 @@ public partial interface ISemanticNode
 
 [Closed(
     typeof(IPackageReferenceNode),
+    typeof(IPackageFacetNode),
     typeof(ICodeNode))]
 public partial interface IChildNode : IChild<ISemanticNode>, ISemanticNode
 {
@@ -53,10 +54,8 @@ public partial interface IPackageNode : ISemanticNode
     IPackageSymbolNode SymbolNode { get; }
     IFixedSet<IPackageReferenceNode> References { get; }
     FixedDictionary<IdentifierName,IPackageSymbolNode> SymbolNodes { get; }
-    IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
-    IFixedSet<ICompilationUnitNode> TestingCompilationUnits { get; }
-    IFixedSet<IPackageMemberDeclarationNode> Declarations { get; }
-    IFixedSet<IPackageMemberDeclarationNode> TestingDeclarations { get; }
+    IPackageFacetNode MainFacet { get; }
+    IPackageFacetNode TestingFacet { get; }
 }
 
 public partial interface IPackageReferenceNode : IChildNode
@@ -67,6 +66,17 @@ public partial interface IPackageReferenceNode : IChildNode
     IdentifierName AliasOrName { get; }
     IPackageSymbols PackageSymbols { get; }
     bool IsTrusted { get; }
+}
+
+public partial interface IPackageFacetNode : IChildNode
+{
+    new IPackageSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
+    IdentifierName PackageName { get; }
+    PackageSymbol PackageSymbol { get; }
+    IPackageFacetSymbolNode SymbolNode { get; }
+    IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
+    IFixedSet<IPackageMemberDeclarationNode> Declarations { get; }
 }
 
 [Closed(

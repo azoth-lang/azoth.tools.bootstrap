@@ -13,17 +13,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 internal static class SymbolNodeAttribute
 {
     public static IPackageSymbolNode Package(IPackageNode node)
-        => new SemanticPackageSymbolNode(node,
-            BuildForCompilationUnits(node.Symbol, node.CompilationUnits),
-            BuildForCompilationUnits(node.Symbol, node.TestingCompilationUnits));
+        => new SemanticPackageSymbolNode(node, node.MainFacet.SymbolNode, node.TestingFacet.SymbolNode);
 
-    private static IPackageFacetSymbolNode BuildForCompilationUnits(
-        PackageSymbol packageSymbol,
-        IEnumerable<ICompilationUnitNode> nodes)
+    public static IPackageFacetSymbolNode PackageFacet(IPackageFacetNode node)
     {
+        var packageSymbol = node.PackageSymbol;
         var builder = new SemanticNamespaceSymbolNodeBuilder(packageSymbol);
-        foreach (var node in nodes)
-            BuildNamespace(packageSymbol, node.ImplicitNamespaceName, node.Declarations);
+        foreach (var cu in node.CompilationUnits)
+            BuildNamespace(packageSymbol, cu.ImplicitNamespaceName, cu.Declarations);
         return new SemanticPackageFacetSymbolNode(builder.Build());
 
         void Build(NamespaceSymbol namespaceSymbol, INamespaceMemberDeclarationNode declaration)
