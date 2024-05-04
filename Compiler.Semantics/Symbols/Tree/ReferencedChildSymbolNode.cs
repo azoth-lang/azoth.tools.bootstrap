@@ -24,10 +24,10 @@ internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChild
     }
 
     internal override IPackageSymbolNode InheritedPackage(IChildSymbolNode caller, IChildSymbolNode child)
-        => base.InheritedPackage(this, child);
+        => Parent.InheritedPackage(this, child);
 
     internal override ISymbolTree InheritedSymbolTree(IChildSymbolNode caller, IChildSymbolNode child)
-        => base.InheritedSymbolTree(this, child);
+        => Parent.InheritedSymbolTree(this, child);
 
     internal override IPackageFacetSymbolNode InheritedFacet(IChildSymbolNode caller, IChildSymbolNode child)
         => Parent.InheritedFacet(this, child);

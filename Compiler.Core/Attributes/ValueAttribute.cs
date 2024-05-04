@@ -42,6 +42,26 @@ public struct ValueAttribute<T>
         }
     }
 
+    public T GetValue(Func<T> compute)
+    {
+        var oldState = InterlockedCompareExchange(ref state, AttributeState.InProgress, AttributeState.Pending);
+        switch (oldState)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(oldState);
+            case AttributeState.Pending:
+                // We have acquired the right to compute the value
+                value = compute();
+                state = AttributeState.Fulfilled;
+                return value!;
+            case AttributeState.InProgress:
+                throw new InvalidOperationException("Cyclic dependency detected.");
+
+            case AttributeState.Fulfilled:
+                return value!;
+        }
+    }
+
     private static AttributeState InterlockedCompareExchange(ref AttributeState location, AttributeState value, AttributeState comparand)
     {
         var result = Interlocked.CompareExchange(ref Unsafe.As<AttributeState, int>(ref location), (int)value, (int)comparand);

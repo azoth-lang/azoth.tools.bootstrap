@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -11,6 +12,7 @@ internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IF
     public StandardName Name => Syntax.Name;
     public override INamespaceSymbolNode ContainingSymbolNode => (INamespaceSymbolNode)base.ContainingSymbolNode;
     public override NamespaceSymbol ContainingSymbol => (NamespaceSymbol)base.ContainingSymbol;
+    public override NamespaceScope ContainingLexicalScope => (NamespaceScope)base.ContainingLexicalScope;
 
     public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax)
     {

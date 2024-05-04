@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
@@ -40,4 +41,9 @@ public static class Child
         initialValue.AttachParent(parent);
         return new Child<TChild>(initialValue);
     }
+
+    public static string InheritFailedMessage<TChild>(string attribute, TChild caller, TChild child)
+        where TChild : IChild
+        => $"{attribute} not implemented for child node type {child.GetType().GetFriendlyName()} "
+           + $"when accessed through caller {caller.GetType().GetFriendlyName()}.";
 }

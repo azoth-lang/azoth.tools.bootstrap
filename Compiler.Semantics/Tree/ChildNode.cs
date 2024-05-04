@@ -32,9 +32,13 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     internal override CodeFile InheritedFile(IChildNode caller, IChildNode child)
         => Parent.InheritedFile(this, child);
 
-    internal override LexicalScope InheritedLexicalScope(IChildNode caller, IChildNode child)
-        => Parent.InheritedLexicalScope(this, child);
+    internal override PackageNameScope InheritedPackageNameScope(IChildNode caller, IChildNode child)
+        => Parent.InheritedPackageNameScope(this, child);
+
+    protected PackageNameScope InheritedPackageNameScope() => Parent.InheritedPackageNameScope(this, this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
         => Parent.InheritedContainingLexicalScope(this, child);
+
+    protected LexicalScope InheritedContainingLexicalScope() => Parent.InheritedContainingLexicalScope(this, this);
 }

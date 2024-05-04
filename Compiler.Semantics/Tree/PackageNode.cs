@@ -34,11 +34,6 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public IPackageFacetNode MainFacet { get; }
     public IPackageFacetNode TestingFacet { get; }
 
-    private ValueAttribute<PackageNameScope> packageNameScope;
-    public PackageNameScope PackageNameScope
-        => packageNameScope.TryGetValue(out var value) ? value
-            : packageNameScope.GetValue(this, LexicalScopeAttributes.Package);
-
     public PackageNode(
         IPackageSyntax syntax,
         IEnumerable<IPackageReferenceNode> references,
@@ -53,13 +48,13 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
 
     internal override IPackageNode InheritedPackage(IChildNode caller, IChildNode child) => this;
 
-    internal override LexicalScope InheritedLexicalScope(IChildNode caller, IChildNode child)
+    internal override PackageNameScope InheritedPackageNameScope(IChildNode caller, IChildNode child)
     {
         // We are assuming these will be cached in the child nodes
         if (child == MainFacet)
             return LexicalScopeAttributes.PackageInheritedMainFacet(this);
         if (child == TestingFacet)
             return LexicalScopeAttributes.PackageInheritedTestingFacet(this);
-        return base.InheritedLexicalScope(caller, child);
+        return base.InheritedPackageNameScope(caller, child);
     }
 }

@@ -12,7 +12,7 @@ internal abstract class DeclarationNode : ChildNode, IDeclarationNode
     public virtual ISymbolNode ContainingSymbolNode => Parent.InheritedContainingSymbolNode(this, this);
     public virtual Symbol ContainingSymbol => ContainingSymbolNode.Symbol;
     private ValueAttribute<LexicalScope> containingLexicalScope;
-    public LexicalScope ContainingLexicalScope
+    public virtual LexicalScope ContainingLexicalScope
         => containingLexicalScope.TryGetValue(out var value) ? value
-            : containingLexicalScope.GetValue(this, _ => Parent.InheritedContainingLexicalScope(this, this));
+            : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
 }

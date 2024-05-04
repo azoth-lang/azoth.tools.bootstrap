@@ -13,11 +13,10 @@ internal class SemanticTreeValidator
         {
             case IPackageNode n:
                 _ = n.SymbolNodes;
-                _ = n.PackageNameScope;
                 break;
             case IPackageFacetNode n:
                 _ = n.Declarations;
-                _ = n.LexicalScope;
+                _ = n.PackageNameScope;
                 break;
             case ICompilationUnitNode n:
                 _ = n.ContainingLexicalScope;

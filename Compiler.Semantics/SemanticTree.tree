@@ -21,14 +21,14 @@ Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPackageNode`
 // Declarations and TestingDeclarations types quoted so that is is not treated as a child node
 Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` SymbolNode:`IPackageSymbolNode`
     References:{PackageReference} SymbolNodes:`FixedDictionary<IdentifierName,IPackageSymbolNode>`
-    MainFacet:PackageFacet TestingFacet:PackageFacet PackageNameScope:`PackageNameScope`;
+    MainFacet:PackageFacet TestingFacet:PackageFacet;
 
 PackageReference <: Child = Syntax:`IPackageReferenceSyntax` SymbolNode:`IPackageSymbolNode`
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
 
 PackageFacet <: Child = Syntax:`IPackageSyntax` PackageName:`IdentifierName`
     PackageSymbol:`PackageSymbol` SymbolNode:`IPackageFacetSymbolNode`
-    LexicalScope:`LexicalScope`
+    PackageNameScope:`PackageNameScope`
     CompilationUnits:{CompilationUnit} Declarations:`IFixedSet<IPackageMemberDeclarationNode>`;
 
 PackageMemberDeclaration <: NamespaceMemberDeclaration = File:`CodeFile`;
@@ -40,7 +40,7 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile`
     ContainingSymbolNode:`IPackageFacetSymbolNode` ContainingSymbol:`NamespaceSymbol`
     ImplicitNamespaceName:`NamespaceName` ImplicitNamespaceSymbolNode:`INamespaceSymbolNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*
-    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
+    ContainingLexicalScope:`NamespaceScope` LexicalScope:`NamespaceScope`;
 
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
@@ -53,7 +53,8 @@ NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarati
     IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*
     ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol`
-    SymbolNode:`INamespaceSymbolNode` Symbol:`NamespaceSymbol`;
+    SymbolNode:`INamespaceSymbolNode` Symbol:`NamespaceSymbol`
+    ContainingLexicalScope:`NamespaceScope`;
 NamespaceMemberDeclaration <: Declaration;
 
 // ---------- Type Declarations
@@ -80,7 +81,8 @@ StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarat
 
 // ---------- Invocable Declarations
 FunctionDeclaration <: PackageMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`
-    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol` Name:`StandardName`;
+    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol` Name:`StandardName`
+    ContainingLexicalScope:`NamespaceScope`;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;

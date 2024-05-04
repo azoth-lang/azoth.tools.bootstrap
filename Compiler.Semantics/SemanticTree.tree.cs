@@ -57,7 +57,6 @@ public partial interface IPackageNode : ISemanticNode
     FixedDictionary<IdentifierName,IPackageSymbolNode> SymbolNodes { get; }
     IPackageFacetNode MainFacet { get; }
     IPackageFacetNode TestingFacet { get; }
-    PackageNameScope PackageNameScope { get; }
 }
 
 public partial interface IPackageReferenceNode : IChildNode
@@ -77,7 +76,7 @@ public partial interface IPackageFacetNode : IChildNode
     IdentifierName PackageName { get; }
     PackageSymbol PackageSymbol { get; }
     IPackageFacetSymbolNode SymbolNode { get; }
-    LexicalScope LexicalScope { get; }
+    PackageNameScope PackageNameScope { get; }
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     IFixedSet<IPackageMemberDeclarationNode> Declarations { get; }
 }
@@ -116,8 +115,8 @@ public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
     NamespaceSymbol ImplicitNamespaceSymbol { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
-    LexicalScope ContainingLexicalScope { get; }
-    LexicalScope LexicalScope { get; }
+    NamespaceScope ContainingLexicalScope { get; }
+    NamespaceScope LexicalScope { get; }
 }
 
 public partial interface IUsingDirectiveNode : ISemanticNode, ICodeNode
@@ -157,6 +156,8 @@ public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMe
     Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
     INamespaceSymbolNode SymbolNode { get; }
     NamespaceSymbol Symbol { get; }
+    new NamespaceScope ContainingLexicalScope { get; }
+    LexicalScope IDeclarationNode.ContainingLexicalScope => ContainingLexicalScope;
 }
 
 [Closed(
@@ -298,6 +299,8 @@ public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNod
     new NamespaceSymbol ContainingSymbol { get; }
     Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
     StandardName Name { get; }
+    new NamespaceScope ContainingLexicalScope { get; }
+    LexicalScope IDeclarationNode.ContainingLexicalScope => ContainingLexicalScope;
 }
 
 [Closed(
