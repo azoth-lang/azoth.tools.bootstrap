@@ -29,7 +29,7 @@ internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChild
     internal override ISymbolTree InheritedSymbolTree(IChildSymbolNode caller, IChildSymbolNode child)
         => base.InheritedSymbolTree(this, child);
 
-    internal override IFacetSymbolNode InheritedFacet(IChildSymbolNode caller, IChildSymbolNode child)
+    internal override IPackageFacetSymbolNode InheritedFacet(IChildSymbolNode caller, IChildSymbolNode child)
         => Parent.InheritedFacet(this, child);
 
     protected IEnumerable<IChildSymbolNode> GetMembers()

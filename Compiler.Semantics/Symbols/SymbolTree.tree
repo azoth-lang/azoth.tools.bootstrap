@@ -13,28 +13,28 @@ Child <: `IChild<ISymbolNode>` = Parent:`ISymbolNode` Package:`IPackageSymbolNod
 
 // ---------- Packages
 Package = AliasOrName:`IdentifierName`? Name:`IdentifierName` Symbol:`PackageSymbol`
-    MainFacet:Facet TestingFacet:Facet;
+    MainFacet:PackageFacet TestingFacet:PackageFacet;
 
 PackageMember <: NamespaceMember;
 
 // ---------- Facets
 /// Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
-Facet <: Child = PackageAliasOrName:`IdentifierName`? PackageName:`IdentifierName` Symbol:`PackageSymbol`
+PackageFacet <: Child = PackageAliasOrName:`IdentifierName`? PackageName:`IdentifierName` Symbol:`PackageSymbol`
     GlobalNamespace:Namespace;
 
 // ---------- Declarations
-Declaration <: Child = Name:`StandardName` Facet;
+Declaration <: Child = Name:`StandardName` Facet:PackageFacet;
 
 // ---------- Namespaces
-Namespace <: NamespaceMember = Facet Name:`IdentifierName` Symbol:`NamespaceSymbol` Members:NamespaceMember*;
+Namespace <: NamespaceMember = Facet:PackageFacet Name:`IdentifierName` Symbol:`NamespaceSymbol` Members:NamespaceMember*;
 NamespaceMember <: Declaration;
 
 // ---------- Type Declarations
 Type <: PackageMember, ClassMember, TraitMember, StructMember
     = Symbol:`UserTypeSymbol` Members:TypeMember*;
-Class <: Type = Facet Members:ClassMember*;
-Struct <: Type = Facet Members:StructMember*;
-Trait <: Type = Facet Members:TraitMember*;
+Class <: Type = Facet:PackageFacet Members:ClassMember*;
+Struct <: Type = Facet:PackageFacet Members:StructMember*;
+Trait <: Type = Facet:PackageFacet Members:TraitMember*;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMember <: Declaration;
@@ -43,4 +43,4 @@ TraitMember <: TypeMember;
 StructMember <: TypeMember;
 
 // ---------- Invocable Declarations
-Function <: PackageMember = Facet Symbol:`FunctionSymbol`;
+Function <: PackageMember = Facet:PackageFacet Symbol:`FunctionSymbol`;

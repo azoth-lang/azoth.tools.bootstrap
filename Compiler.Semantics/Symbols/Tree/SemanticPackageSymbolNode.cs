@@ -10,13 +10,13 @@ internal sealed class SemanticPackageSymbolNode : SemanticSymbolNode, IPackageSy
     public IdentifierName? AliasOrName => null;
     public override PackageSymbol Symbol => Node.Symbol;
     public IdentifierName Name => Symbol.Name;
-    public IFacetSymbolNode MainFacet { get; }
-    public IFacetSymbolNode TestingFacet { get; }
+    public IPackageFacetSymbolNode MainFacet { get; }
+    public IPackageFacetSymbolNode TestingFacet { get; }
 
     public SemanticPackageSymbolNode(
         IPackageNode node,
-        IFacetSymbolNode mainFacet,
-        IFacetSymbolNode testingFacet)
+        IPackageFacetSymbolNode mainFacet,
+        IPackageFacetSymbolNode testingFacet)
     {
         Node = node;
         MainFacet = Child.Attach(this, mainFacet);

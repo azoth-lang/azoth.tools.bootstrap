@@ -17,14 +17,14 @@ internal static class SymbolNodeAttribute
             BuildForCompilationUnits(node.Symbol, node.CompilationUnits),
             BuildForCompilationUnits(node.Symbol, node.TestingCompilationUnits));
 
-    private static IFacetSymbolNode BuildForCompilationUnits(
+    private static IPackageFacetSymbolNode BuildForCompilationUnits(
         PackageSymbol packageSymbol,
         IEnumerable<ICompilationUnitNode> nodes)
     {
         var builder = new SemanticNamespaceSymbolNodeBuilder(packageSymbol);
         foreach (var node in nodes)
             BuildNamespace(packageSymbol, node.ImplicitNamespaceName, node.Declarations);
-        return new SemanticFacetSymbolNode(builder.Build());
+        return new SemanticPackageFacetSymbolNode(builder.Build());
 
         void Build(NamespaceSymbol namespaceSymbol, INamespaceMemberDeclarationNode declaration)
         {

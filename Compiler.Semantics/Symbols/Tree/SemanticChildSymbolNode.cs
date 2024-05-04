@@ -22,6 +22,6 @@ internal abstract class SemanticChildSymbolNode : SemanticSymbolNode, IChildSymb
     internal override IPackageSymbolNode InheritedPackage(IChildSymbolNode caller, IChildSymbolNode child)
         => Parent.InheritedPackage(this, child);
 
-    internal override IFacetSymbolNode InheritedFacet(IChildSymbolNode caller, IChildSymbolNode child)
+    internal override IPackageFacetSymbolNode InheritedFacet(IChildSymbolNode caller, IChildSymbolNode child)
         => Parent.InheritedFacet(this, child);
 }

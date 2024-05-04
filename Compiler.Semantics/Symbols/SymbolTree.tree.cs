@@ -21,7 +21,7 @@ public partial interface ISymbolNode
 }
 
 [Closed(
-    typeof(IFacetSymbolNode),
+    typeof(IPackageFacetSymbolNode),
     typeof(IDeclarationSymbolNode))]
 public partial interface IChildSymbolNode : IChild<ISymbolNode>, ISymbolNode
 {
@@ -35,8 +35,8 @@ public partial interface IPackageSymbolNode : ISymbolNode
     IdentifierName Name { get; }
     new PackageSymbol Symbol { get; }
     Symbol ISymbolNode.Symbol => Symbol;
-    IFacetSymbolNode MainFacet { get; }
-    IFacetSymbolNode TestingFacet { get; }
+    IPackageFacetSymbolNode MainFacet { get; }
+    IPackageFacetSymbolNode TestingFacet { get; }
 }
 
 [Closed(
@@ -46,7 +46,7 @@ public partial interface IPackageMemberSymbolNode : INamespaceMemberSymbolNode
 {
 }
 
-public partial interface IFacetSymbolNode : IChildSymbolNode
+public partial interface IPackageFacetSymbolNode : IChildSymbolNode
 {
     IdentifierName? PackageAliasOrName { get; }
     IdentifierName PackageName { get; }
@@ -61,7 +61,7 @@ public partial interface IFacetSymbolNode : IChildSymbolNode
 public partial interface IDeclarationSymbolNode : IChildSymbolNode
 {
     StandardName Name { get; }
-    IFacetSymbolNode Facet { get; }
+    IPackageFacetSymbolNode Facet { get; }
 }
 
 public partial interface INamespaceSymbolNode : INamespaceMemberSymbolNode

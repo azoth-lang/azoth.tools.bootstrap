@@ -10,16 +10,16 @@ internal class ReferencedPackageSymbolNode : ReferencedSymbolNode, IPackageSymbo
     public IdentifierName AliasOrName { get; }
     public IdentifierName Name => Symbol.Name;
 
-    public IFacetSymbolNode MainFacet { get; }
-    public IFacetSymbolNode TestingFacet { get; }
+    public IPackageFacetSymbolNode MainFacet { get; }
+    public IPackageFacetSymbolNode TestingFacet { get; }
 
     public ReferencedPackageSymbolNode(IPackageReferenceNode node)
     {
         var symbols = node.PackageSymbols;
         Symbol = symbols.PackageSymbol;
         AliasOrName = node.AliasOrName;
-        MainFacet = Child.Attach(this, new ReferencedFacetSymbolNode(symbols.SymbolTree));
-        TestingFacet = Child.Attach(this, new ReferencedFacetSymbolNode(symbols.TestingSymbolTree));
+        MainFacet = Child.Attach(this, new ReferencedPackageFacetSymbolNode(symbols.SymbolTree));
+        TestingFacet = Child.Attach(this, new ReferencedPackageFacetSymbolNode(symbols.TestingSymbolTree));
     }
 
     internal override IPackageSymbolNode InheritedPackage(IChildSymbolNode caller, IChildSymbolNode child)

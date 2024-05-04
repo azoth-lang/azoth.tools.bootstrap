@@ -19,7 +19,7 @@ public static class ISymbolNodeExtensions
                 yield return n.MainFacet;
                 yield return n.TestingFacet;
                 yield break;
-            case IFacetSymbolNode n:
+            case IPackageFacetSymbolNode n:
                 yield return n.GlobalNamespace;
                 yield break;
             case INamespaceSymbolNode n:

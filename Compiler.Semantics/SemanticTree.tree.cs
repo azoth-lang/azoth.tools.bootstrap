@@ -96,7 +96,7 @@ public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
     ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     CodeFile File { get; }
-    IFacetSymbolNode ContainingSymbolNode { get; }
+    IPackageFacetSymbolNode ContainingSymbolNode { get; }
     NamespaceSymbol ContainingSymbol { get; }
     NamespaceName ImplicitNamespaceName { get; }
     INamespaceSymbolNode ImplicitNamespaceSymbolNode { get; }
