@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
@@ -32,6 +34,11 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public IPackageFacetNode MainFacet { get; }
     public IPackageFacetNode TestingFacet { get; }
 
+    private ValueAttribute<PackageNameScope> lexicalScope;
+    public PackageNameScope LexicalScope
+        => lexicalScope.TryGetValue(out var value) ? value
+            : lexicalScope.GetValue(this, LexicalScopeAttributes.Package);
+
     public PackageNode(
         IPackageSyntax syntax,
         IEnumerable<IPackageReferenceNode> references,
@@ -45,4 +52,14 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     }
 
     internal override IPackageNode InheritedPackage(IChildNode caller, IChildNode child) => this;
+
+    internal override LexicalScope InheritedLexicalScope(IChildNode caller, IChildNode child)
+    {
+        // We are assuming these will be cached in the child nodes
+        if (child == MainFacet)
+            return LexicalScopeAttributes.PackageInheritedMainFacet(this);
+        if (child == TestingFacet)
+            return LexicalScopeAttributes.PackageInheritedTestingFacet(this);
+        return base.InheritedLexicalScope(caller, child);
+    }
 }

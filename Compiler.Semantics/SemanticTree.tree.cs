@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -56,6 +57,7 @@ public partial interface IPackageNode : ISemanticNode
     FixedDictionary<IdentifierName,IPackageSymbolNode> SymbolNodes { get; }
     IPackageFacetNode MainFacet { get; }
     IPackageFacetNode TestingFacet { get; }
+    PackageNameScope LexicalScope { get; }
 }
 
 public partial interface IPackageReferenceNode : IChildNode
@@ -75,6 +77,7 @@ public partial interface IPackageFacetNode : IChildNode
     IdentifierName PackageName { get; }
     PackageSymbol PackageSymbol { get; }
     IPackageFacetSymbolNode SymbolNode { get; }
+    LexicalScope LexicalScope { get; }
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     IFixedSet<IPackageMemberDeclarationNode> Declarations { get; }
 }

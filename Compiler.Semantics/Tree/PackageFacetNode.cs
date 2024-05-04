@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -25,6 +26,11 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
         => declarations.TryGetValue(out var value)
             ? value
             : declarations.GetValue(this, DeclarationsAttribute.PackageFacet);
+
+    private ValueAttribute<LexicalScope> lexicalScope;
+    public LexicalScope LexicalScope
+        => lexicalScope.TryGetValue(out var value) ? value
+            : lexicalScope.GetValue(this, _ => Parent.InheritedLexicalScope(this, this));
 
     public PackageFacetNode(IPackageSyntax syntax, IEnumerable<ICompilationUnitNode> compilationUnits)
     {

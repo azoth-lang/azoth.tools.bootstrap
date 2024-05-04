@@ -6,6 +6,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -20,13 +21,14 @@ Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPackageNode`
 // Declarations and TestingDeclarations types quoted so that is is not treated as a child node
 Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` SymbolNode:`IPackageSymbolNode`
     References:{PackageReference} SymbolNodes:`FixedDictionary<IdentifierName,IPackageSymbolNode>`
-    MainFacet:PackageFacet TestingFacet:PackageFacet;
+    MainFacet:PackageFacet TestingFacet:PackageFacet LexicalScope:`PackageNameScope`;
 
 PackageReference <: Child = Syntax:`IPackageReferenceSyntax` SymbolNode:`IPackageSymbolNode`
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
 
 PackageFacet <: Child = Syntax:`IPackageSyntax` PackageName:`IdentifierName`
     PackageSymbol:`PackageSymbol` SymbolNode:`IPackageFacetSymbolNode`
+    LexicalScope:`LexicalScope`
     CompilationUnits:{CompilationUnit} Declarations:`IFixedSet<IPackageMemberDeclarationNode>`;
 
 PackageMemberDeclaration <: NamespaceMemberDeclaration = File:`CodeFile`;
