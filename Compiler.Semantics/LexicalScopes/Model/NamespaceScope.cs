@@ -54,8 +54,8 @@ public sealed class NamespaceScope : LexicalScope
         return childScope;
     }
 
-    public override IEnumerable<ISymbolNode> Lookup(TypeName name) => Lookup(name, true);
+    public override IEnumerable<ISymbolNode> Lookup(StandardName name) => Lookup(name, true);
 
-    public IEnumerable<ISymbolNode> Lookup(TypeName name, bool includeNested)
+    public IEnumerable<ISymbolNode> Lookup(StandardName name, bool includeNested)
         => throw new System.NotImplementedException();
 }

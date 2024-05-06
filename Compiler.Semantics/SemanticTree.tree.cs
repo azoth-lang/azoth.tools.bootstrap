@@ -360,6 +360,7 @@ public partial interface ITypeNameNode : ITypeNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     TypeName Name { get; }
     LexicalScope ContainingLexicalScope { get; }
+    TypeSymbol ReferencedSymbol { get; }
 }
 
 [Closed(

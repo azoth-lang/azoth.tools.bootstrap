@@ -46,6 +46,9 @@ internal class SemanticTreeValidator
             case IFunctionDeclarationNode n:
                 _ = n.File;
                 break;
+            case ISpecialTypeNameNode n:
+                _ = n.ReferencedSymbol;
+                break;
         }
 
         foreach (var child in node.Children())
