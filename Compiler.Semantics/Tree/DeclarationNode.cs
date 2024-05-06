@@ -15,4 +15,5 @@ internal abstract class DeclarationNode : ChildNode, IDeclarationNode
     public virtual LexicalScope ContainingLexicalScope
         => containingLexicalScope.TryGetValue(out var value) ? value
             : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
+    public abstract LexicalScope LexicalScope { get; }
 }

@@ -138,6 +138,7 @@ public partial interface IDeclarationNode : ISemanticNode, ICodeNode
     ISymbolNode ContainingSymbolNode { get; }
     Symbol ContainingSymbol { get; }
     LexicalScope ContainingLexicalScope { get; }
+    LexicalScope LexicalScope { get; }
 }
 
 public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode

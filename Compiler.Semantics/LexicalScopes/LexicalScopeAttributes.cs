@@ -47,4 +47,13 @@ internal static class LexicalScopeAttributes
 
         return new UsingDirectivesScope(containingScope, namespaceScopes);
     }
+
+    public static LexicalScope NamespaceDeclaration(NamespaceDeclarationNode arg)
+        => throw new System.NotImplementedException();
+
+    public static LexicalScope TypeDeclaration(TypeDeclarationNode node)
+        => throw new System.NotImplementedException();
+
+    public static LexicalScope FunctionDeclaration(FunctionDeclarationNode node)
+        => throw new System.NotImplementedException();
 }
