@@ -76,12 +76,12 @@ internal static class SyntaxBinder
         => new TraitDeclarationNode(syntax, GenericParameters(syntax.GenericParameters),
             SupertypeNames(syntax.SupertypeNames), TraitMemberDeclarations(syntax.Members));
 
-    private static IEnumerable<ISupertypeNameNode> SupertypeNames(IFixedList<ISupertypeNameSyntax> syntax)
+    private static IEnumerable<ISupertypeNameNode> SupertypeNames(IEnumerable<ISupertypeNameSyntax> syntax)
         => syntax.Select(syn => SupertypeName(syn));
 
     [return: NotNullIfNotNull(nameof(syntax))]
     private static ISupertypeNameNode? SupertypeName(ISupertypeNameSyntax? syntax)
-        => syntax is not null ? new SupertypeNameNode(syntax) : null;
+        => syntax is not null ? new SupertypeNameNode(syntax, Types(syntax.TypeArguments)) : null;
     #endregion
 
     #region Type Declaration Parts
@@ -148,10 +148,75 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static ICapabilityConstraintNode CapabilitySet(ICapabilitySetSyntax syntax)
+    private static ICapabilitySetNode CapabilitySet(ICapabilitySetSyntax syntax)
         => new CapabilitySetNode(syntax);
 
-    private static ICapabilityConstraintNode Capability(ICapabilitySyntax syntax)
+    private static ICapabilityNode Capability(ICapabilitySyntax syntax)
         => new CapabilityNode(syntax);
+    #endregion
+
+    #region Types
+    private static IEnumerable<ITypeNode> Types(IFixedList<ITypeSyntax> syntax)
+        => syntax.Select(Type);
+
+    private static ITypeNode Type(ITypeSyntax syntax)
+        => syntax switch
+        {
+            ITypeNameSyntax syn => TypeName(syn),
+            IOptionalTypeSyntax syn => OptionalType(syn),
+            ICapabilityTypeSyntax syn => CapabilityType(syn),
+            IFunctionTypeSyntax syn => FunctionType(syn),
+            IViewpointTypeSyntax syn => ViewpointType(syn),
+            _ => throw ExhaustiveMatch.Failed(syntax)
+        };
+
+    private static ITypeNameNode TypeName(ITypeNameSyntax syntax)
+        => syntax switch
+        {
+            IStandardTypeNameSyntax syn => StandardTypeName(syn),
+            ISimpleTypeNameSyntax syn => SimpleTypeName(syn),
+            IQualifiedTypeNameSyntax syn => QualifiedTypeName(syn),
+            _ => throw ExhaustiveMatch.Failed(syntax)
+        };
+
+    private static IStandardTypeNameNode StandardTypeName(IStandardTypeNameSyntax syntax)
+        => syntax switch
+        {
+            IIdentifierTypeNameSyntax syn => IdentifierTypeName(syn),
+            IGenericTypeNameSyntax syn => GenericTypeName(syn),
+            _ => throw ExhaustiveMatch.Failed(syntax)
+        };
+
+    private static IIdentifierTypeNameNode IdentifierTypeName(IIdentifierTypeNameSyntax syntax)
+        => new IdentifierTypeNameNode(syntax);
+
+    private static IGenericTypeNameNode GenericTypeName(IGenericTypeNameSyntax syntax)
+        => new GenericTypeNameNode(syntax, Types(syntax.TypeArguments));
+
+    private static ISimpleTypeNameNode SimpleTypeName(ISimpleTypeNameSyntax syntax)
+        => syntax switch
+        {
+            IIdentifierTypeNameSyntax syn => IdentifierTypeName(syn),
+            ISpecialTypeNameSyntax syn => SpecialTypeName(syn),
+            _ => throw ExhaustiveMatch.Failed(syntax)
+        };
+
+    private static ISpecialTypeNameNode SpecialTypeName(ISpecialTypeNameSyntax syntax)
+        => new SpecialTypeNameNode(syntax);
+
+    private static IQualifiedTypeNameNode QualifiedTypeName(IQualifiedTypeNameSyntax syntax)
+        => throw new System.NotImplementedException();
+
+    private static IOptionalTypeNode OptionalType(IOptionalTypeSyntax syntax)
+        => new OptionalTypeNode(syntax, Type(syntax.Referent));
+
+    private static ICapabilityTypeNode CapabilityType(ICapabilityTypeSyntax syntax)
+        => new CapabilityTypeNode(syntax, Capability(syntax.Capability), Type(syntax.Referent));
+
+    private static IFunctionTypeNode FunctionType(IFunctionTypeSyntax syntax)
+        => throw new System.NotImplementedException();
+
+    private static IViewpointTypeNode ViewpointType(IViewpointTypeSyntax syntax)
+        => throw new System.NotImplementedException();
     #endregion
 }

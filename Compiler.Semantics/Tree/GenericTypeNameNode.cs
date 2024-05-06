@@ -6,13 +6,13 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class SupertypeNameNode : CodeNode, ISupertypeNameNode
+internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
 {
-    public override ISupertypeNameSyntax Syntax { get; }
-    public TypeName Name => Syntax.Name;
+    public override IGenericTypeNameSyntax Syntax { get; }
+    public override GenericName Name => Syntax.Name;
     public IFixedList<ITypeNode> TypeArguments { get; }
 
-    public SupertypeNameNode(ISupertypeNameSyntax syntax, IEnumerable<ITypeNode> typeArguments)
+    public GenericTypeNameNode(IGenericTypeNameSyntax syntax, IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
         TypeArguments = ChildList.CreateFixed(this, typeArguments);

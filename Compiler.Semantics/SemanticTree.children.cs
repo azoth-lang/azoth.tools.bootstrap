@@ -71,12 +71,48 @@ public static class ISemanticNodeExtensions
                 yield return n.Constraint;
                 yield break;
             case ISupertypeNameNode n:
+                foreach (var child in n.TypeArguments)
+                    yield return child;
                 yield break;
             case IFunctionDeclarationNode n:
                 yield break;
             case ICapabilitySetNode n:
                 yield break;
             case ICapabilityNode n:
+                yield break;
+            case IIdentifierTypeNameNode n:
+                yield break;
+            case ISpecialTypeNameNode n:
+                yield break;
+            case IGenericTypeNameNode n:
+                foreach (var child in n.TypeArguments)
+                    yield return child;
+                yield break;
+            case IQualifiedTypeNameNode n:
+                yield return n.Context;
+                yield return n.QualifiedName;
+                yield break;
+            case IOptionalTypeNode n:
+                yield return n.Referent;
+                yield break;
+            case ICapabilityTypeNode n:
+                yield return n.Capability;
+                yield return n.Referent;
+                yield break;
+            case IFunctionTypeNode n:
+                foreach (var child in n.Parameters)
+                    yield return child;
+                yield return n.Return;
+                yield break;
+            case IParameterTypeNode n:
+                yield return n.Referent;
+                yield break;
+            case ICapabilityViewpointTypeNode n:
+                yield return n.Capability;
+                yield return n.Referent;
+                yield break;
+            case ISelfViewpointTypeNode n:
+                yield return n.Referent;
                 yield break;
         }
     }

@@ -30,7 +30,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IClassMemberDeclarationNode),
     typeof(ITraitMemberDeclarationNode),
     typeof(IStructMemberDeclarationNode),
-    typeof(ICapabilityConstraintNode))]
+    typeof(ICapabilityConstraintNode),
+    typeof(ITypeNode),
+    typeof(IStandardTypeNameNode),
+    typeof(ISimpleTypeNameNode),
+    typeof(IQualifiedTypeNameNode),
+    typeof(IParameterTypeNode),
+    typeof(ICapabilityViewpointTypeNode),
+    typeof(ISelfViewpointTypeNode))]
 public partial interface ISemanticNode
 {
     ISyntax Syntax { get; }
@@ -95,7 +102,8 @@ public partial interface IPackageMemberDeclarationNode : ISemanticNode, INamespa
     typeof(IDeclarationNode),
     typeof(IGenericParameterNode),
     typeof(ISupertypeNameNode),
-    typeof(ICapabilityConstraintNode))]
+    typeof(ICapabilityConstraintNode),
+    typeof(ITypeNode))]
 public partial interface ICodeNode : IChildNode
 {
     new IConcreteSyntax Syntax { get; }
@@ -245,6 +253,7 @@ public partial interface ISupertypeNameNode : ISemanticNode, ICodeNode
     ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     TypeName Name { get; }
+    IFixedList<ITypeNode> TypeArguments { get; }
 }
 
 [Closed(
@@ -326,5 +335,150 @@ public partial interface ICapabilityNode : ICapabilityConstraintNode
     Capability Capability { get; }
     new Capability Constraint { get; }
     Compiler.Types.Capabilities.ICapabilityConstraint ICapabilityConstraintNode.Constraint => Constraint;
+}
+
+[Closed(
+    typeof(ITypeNameNode),
+    typeof(IOptionalTypeNode),
+    typeof(ICapabilityTypeNode),
+    typeof(IFunctionTypeNode),
+    typeof(IViewpointTypeNode))]
+public partial interface ITypeNode : ISemanticNode, ICodeNode
+{
+    new ITypeSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
+}
+
+[Closed(
+    typeof(IStandardTypeNameNode),
+    typeof(ISimpleTypeNameNode),
+    typeof(IQualifiedTypeNameNode))]
+public partial interface ITypeNameNode : ITypeNode
+{
+    new ITypeNameSyntax Syntax { get; }
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    TypeName Name { get; }
+}
+
+[Closed(
+    typeof(IIdentifierTypeNameNode),
+    typeof(IGenericTypeNameNode))]
+public partial interface IStandardTypeNameNode : ISemanticNode, ITypeNameNode
+{
+    new IStandardTypeNameSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
+    ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    new StandardName Name { get; }
+    TypeName ITypeNameNode.Name => Name;
+}
+
+[Closed(
+    typeof(IIdentifierTypeNameNode),
+    typeof(ISpecialTypeNameNode))]
+public partial interface ISimpleTypeNameNode : ISemanticNode, ITypeNameNode
+{
+    new ISimpleTypeNameSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
+    ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+}
+
+public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpleTypeNameNode
+{
+    new IIdentifierTypeNameSyntax Syntax { get; }
+    IStandardTypeNameSyntax IStandardTypeNameNode.Syntax => Syntax;
+    ISimpleTypeNameSyntax ISimpleTypeNameNode.Syntax => Syntax;
+    ISyntax ISemanticNode.Syntax => Syntax;
+    ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
+    new IdentifierName Name { get; }
+    StandardName IStandardTypeNameNode.Name => Name;
+    TypeName ITypeNameNode.Name => Name;
+}
+
+public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
+{
+    new ISpecialTypeNameSyntax Syntax { get; }
+    ISimpleTypeNameSyntax ISimpleTypeNameNode.Syntax => Syntax;
+    new SpecialTypeName Name { get; }
+    TypeName ITypeNameNode.Name => Name;
+}
+
+public partial interface IGenericTypeNameNode : IStandardTypeNameNode
+{
+    new IGenericTypeNameSyntax Syntax { get; }
+    IStandardTypeNameSyntax IStandardTypeNameNode.Syntax => Syntax;
+    new GenericName Name { get; }
+    StandardName IStandardTypeNameNode.Name => Name;
+    IFixedList<ITypeNode> TypeArguments { get; }
+}
+
+public partial interface IQualifiedTypeNameNode : ISemanticNode, ITypeNameNode
+{
+    new IQualifiedTypeNameSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
+    ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    ITypeNameNode Context { get; }
+    IStandardTypeNameNode QualifiedName { get; }
+}
+
+public partial interface IOptionalTypeNode : ITypeNode
+{
+    new IOptionalTypeSyntax Syntax { get; }
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    ITypeNode Referent { get; }
+}
+
+public partial interface ICapabilityTypeNode : ITypeNode
+{
+    new ICapabilityTypeSyntax Syntax { get; }
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    ICapabilityNode Capability { get; }
+    ITypeNode Referent { get; }
+}
+
+public partial interface IFunctionTypeNode : ITypeNode
+{
+    new IFunctionTypeSyntax Syntax { get; }
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    IFixedList<IParameterTypeNode> Parameters { get; }
+    ITypeNode Return { get; }
+}
+
+public partial interface IParameterTypeNode : ISemanticNode
+{
+    new IParameterTypeSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
+    bool IsLent { get; }
+    ITypeNode Referent { get; }
+}
+
+[Closed(
+    typeof(ICapabilityViewpointTypeNode),
+    typeof(ISelfViewpointTypeNode))]
+public partial interface IViewpointTypeNode : ITypeNode
+{
+    new IViewpointTypeSyntax Syntax { get; }
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    ITypeNode Referent { get; }
+}
+
+public partial interface ICapabilityViewpointTypeNode : ISemanticNode, IViewpointTypeNode
+{
+    new ICapabilityViewpointTypeSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
+    IViewpointTypeSyntax IViewpointTypeNode.Syntax => Syntax;
+    ITypeSyntax ITypeNode.Syntax => Syntax;
+    ICapabilityNode Capability { get; }
+}
+
+public partial interface ISelfViewpointTypeNode : ISemanticNode, IViewpointTypeNode
+{
+    new ISelfViewpointTypeSyntax Syntax { get; }
+    ISyntax ISemanticNode.Syntax => Syntax;
+    IViewpointTypeSyntax IViewpointTypeNode.Syntax => Syntax;
+    ITypeSyntax ITypeNode.Syntax => Syntax;
 }
 

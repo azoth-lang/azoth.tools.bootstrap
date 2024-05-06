@@ -46,6 +46,8 @@ internal static class LexicalScopeAttributes
         if (!usingDirectives.Any()) return containingScope;
 
         var globalScope = containingScope.PackageNames.UsingGlobalScope;
+        // TODO put a NamespaceScope attribute on the using directive node for this
+        // TODO report an error if the using directive refers to a namespace that doesn't exist
         var namespaceScopes = usingDirectives.Select(d => GetNamespaceScope(globalScope, d.Name));
 
         return new UsingDirectivesScope(containingScope, namespaceScopes);

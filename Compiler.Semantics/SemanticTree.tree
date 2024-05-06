@@ -70,7 +70,7 @@ TraitDeclaration <: TypeDeclaration = Syntax:`ITraitDeclarationSyntax` GenericPa
 // ---------- Type Declaration Parts
 GenericParameter <: Code = Syntax:`IGenericParameterSyntax` Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance`;
 // TODO don't have a special type for this
-SupertypeName <: Code = Syntax:`ISupertypeNameSyntax` Name:`TypeName`;// TypeArguments:Type*;
+SupertypeName <: Code = Syntax:`ISupertypeNameSyntax` Name:`TypeName` TypeArguments:Type*;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberDeclaration <: Declaration = Syntax:`ITypeMemberDeclarationSyntax`;
@@ -87,3 +87,20 @@ CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`
 CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint:`CapabilitySet`;
 // TODO have a way to make Capability hide Constraint
 Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability` Constraint:`Capability`;
+
+// ---------- Types
+Type <: Code = Syntax:`ITypeSyntax`;
+TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName`;
+StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` Name:`StandardName`;
+SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
+IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax` Name:`IdentifierName`;
+SpecialTypeName <: SimpleTypeName = Syntax:`ISpecialTypeNameSyntax` Name:`SpecialTypeName`;
+GenericTypeName <: StandardTypeName = Syntax:`IGenericTypeNameSyntax` Name:`GenericName` TypeArguments:Type*;
+QualifiedTypeName <: TypeName = Syntax:`IQualifiedTypeNameSyntax` Context:TypeName QualifiedName:StandardTypeName;
+OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;
+CapabilityType <: Type = Syntax:`ICapabilityTypeSyntax` Capability Referent:Type;
+FunctionType <: Type = Syntax:`IFunctionTypeSyntax` Parameters:ParameterType* Return:Type;
+ParameterType = Syntax:`IParameterTypeSyntax` IsLent:`bool` Referent:Type;
+ViewpointType <: Type = Syntax:`IViewpointTypeSyntax` Referent:Type;
+CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSyntax` Capability Referent:Type;
+SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type;
