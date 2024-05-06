@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 /// <summary>
 /// A scope created by a collection of using directives.
 /// </summary>
-internal class UsingDirectivesScope : LexicalScope
+public class UsingDirectivesScope : LexicalScope
 {
     private readonly NamespaceScope parent;
     private readonly IFixedSet<NamespaceScope> usingScopes;
@@ -22,7 +22,14 @@ internal class UsingDirectivesScope : LexicalScope
     }
 
     public override NamespaceScope? CreateChildNamespaceScope(IdentifierName namespaceName)
-        => throw new System.NotImplementedException();
+    {
+        // We don't bother to cache these as it is very unlikely that two namespaces with the same
+        // name will be created in the same lexical scope.
+
+        var childScope = parent.CreateChildNamespaceScope(namespaceName);
+        if (childScope is null) return null;
+        return new NamespaceScope(this, childScope);
+    }
 
     public override IEnumerable<ISymbolNode> Lookup(TypeName name)
         => usingScopes.SelectMany(s => s.Lookup(name, includeNested: false))
