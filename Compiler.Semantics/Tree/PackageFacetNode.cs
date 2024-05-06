@@ -42,5 +42,5 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
         => SymbolNode;
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
-        => PackageNameScope.ReferencedGlobalScope;
+        => PackageNameScope.PackageGlobalScope;
 }

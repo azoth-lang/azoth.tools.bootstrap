@@ -40,7 +40,7 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile`
     ContainingSymbolNode:`IPackageFacetSymbolNode` ContainingSymbol:`NamespaceSymbol`
     ImplicitNamespaceName:`NamespaceName` ImplicitNamespaceSymbolNode:`INamespaceSymbolNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*
-    ContainingLexicalScope:`NamespaceScope` LexicalScope:`NamespaceScope`;
+    ContainingLexicalScope:`NamespaceScope` LexicalScope:`LexicalScope`;
 
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 

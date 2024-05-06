@@ -125,4 +125,21 @@ public static class EnumerableExtensions
         if (!enumerator.MoveNext()) return value;
         return default;
     }
+
+    public static IEnumerable<T> FallbackIfEmpty<T>(this IEnumerable<T> source, Func<IEnumerable<T>> fallback)
+    {
+        using var e = source.GetEnumerator();
+        if (e.MoveNext())
+        {
+            do
+            {
+                yield return e.Current;
+            } while (e.MoveNext());
+
+            yield break;
+        }
+
+        foreach (var item in fallback())
+            yield return item;
+    }
 }

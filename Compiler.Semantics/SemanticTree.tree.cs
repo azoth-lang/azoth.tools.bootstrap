@@ -116,7 +116,7 @@ public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
     NamespaceScope ContainingLexicalScope { get; }
-    NamespaceScope LexicalScope { get; }
+    LexicalScope LexicalScope { get; }
 }
 
 public partial interface IUsingDirectiveNode : ISemanticNode, ICodeNode

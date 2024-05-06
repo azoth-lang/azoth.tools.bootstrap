@@ -9,18 +9,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 public sealed class NamespaceScope : LexicalScope
 {
     private readonly NamespaceScope? parent;
-    private readonly IFixedSet<INamespaceSymbolNode> namespaceDeclarations;
     public override PackageNameScope PackageNames { get; }
-    /// <summary>
-    /// Whether names in nested namespaces should be included in the lookup.
-    /// </summary>
-    public bool IncludeNested { get; }
+    private readonly IFixedSet<INamespaceSymbolNode> namespaceDeclarations;
     private readonly Dictionary<IdentifierName, NamespaceScope> childScopes = new();
 
-    public NamespaceScope(PackageNameScope parent, IEnumerable<INamespaceSymbolNode> namespaceDeclarations, bool includeNested)
+    public NamespaceScope(PackageNameScope parent, IEnumerable<INamespaceSymbolNode> namespaceDeclarations)
     {
         PackageNames = parent;
-        IncludeNested = includeNested;
         this.namespaceDeclarations = namespaceDeclarations.ToFixedSet();
     }
 
@@ -28,7 +23,6 @@ public sealed class NamespaceScope : LexicalScope
     {
         this.parent = parent;
         PackageNames = parent.PackageNames;
-        IncludeNested = parent.IncludeNested;
         this.namespaceDeclarations = namespaceDeclarations.ToFixedSet();
     }
 
@@ -44,5 +38,8 @@ public sealed class NamespaceScope : LexicalScope
         return childScope;
     }
 
-    public override IEnumerable<ISymbolNode> Lookup(TypeName name) => throw new System.NotImplementedException();
+    public override IEnumerable<ISymbolNode> Lookup(TypeName name) => Lookup(name, true);
+
+    public IEnumerable<ISymbolNode> Lookup(TypeName name, bool includeNested)
+        => throw new System.NotImplementedException();
 }

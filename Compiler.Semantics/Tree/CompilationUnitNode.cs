@@ -31,8 +31,8 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
     public NamespaceScope ContainingLexicalScope => (NamespaceScope)Parent.InheritedContainingLexicalScope(this, this);
-    private ValueAttribute<NamespaceScope> lexicalScope;
-    public NamespaceScope LexicalScope
+    private ValueAttribute<LexicalScope> lexicalScope;
+    public LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
             : lexicalScope.GetValue(this, LexicalScopeAttributes.CompilationUnit);
 

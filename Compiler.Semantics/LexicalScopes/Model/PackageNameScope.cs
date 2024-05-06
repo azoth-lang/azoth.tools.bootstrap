@@ -10,31 +10,33 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 public sealed class PackageNameScope
 {
     /// <summary>
-    /// The global scope that spans all referenced packages (excluding the current package). Does
-    /// not search nested namespaces.
+    /// The global scope that spans all packages (current and referenced).
     /// </summary>
     /// <remarks>This is the root scope used for using directives.</remarks>
-    public NamespaceScope ReferencedGlobalScope { get; }
+    public NamespaceScope UsingGlobalScope { get; }
 
     /// <summary>
     /// The global scope for this package.
     /// </summary>
     /// <remarks>This scope first searches the current scope, but then its parent searches the global
     /// scope of all referenced packages.</remarks>
-    public NamespaceScope GlobalScope { get; }
+    public NamespaceScope PackageGlobalScope { get; }
 
     private readonly FixedDictionary<IdentifierName, NamespaceScope> referencedGlobalScopes;
 
     public PackageNameScope(IEnumerable<IPackageFacetSymbolNode> packageFacets, IEnumerable<IPackageFacetSymbolNode> referencedFacets)
     {
+        var packageGlobalNamespaces = packageFacets.Select(f => f.GlobalNamespace).ToFixedSet();
         var referencedGlobalNamespaces = referencedFacets.Select(f => f.GlobalNamespace).ToFixedSet();
-        ReferencedGlobalScope = new NamespaceScope(this, referencedGlobalNamespaces, includeNested: false);
+
+        UsingGlobalScope = new NamespaceScope(this, packageGlobalNamespaces.Concat(referencedGlobalNamespaces));
+
         // That parent scope is like the ReferencedGlobalScope, but includes nested namespaces.
-        var parent = new NamespaceScope(this, referencedGlobalNamespaces, includeNested: true);
-        GlobalScope = new NamespaceScope(parent, packageFacets.Select(f => f.GlobalNamespace));
+        var parent = new NamespaceScope(this, referencedGlobalNamespaces);
+        PackageGlobalScope = new NamespaceScope(parent, packageGlobalNamespaces);
 
         referencedGlobalScopes = referencedGlobalNamespaces.GroupBy(ns => ns.Package.Name)
-            .ToFixedDictionary(g => g.Key, g => new NamespaceScope(this, g, includeNested: false));
+            .ToFixedDictionary(g => g.Key, g => new NamespaceScope(this, g));
     }
 
     /// <summary>
