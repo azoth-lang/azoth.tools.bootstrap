@@ -10,7 +10,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 public abstract class LexicalScope
 {
     public abstract PackageNameScope PackageNames { get; }
-    public abstract IEnumerable<ISymbolNode> Lookup(TypeName name);
 
     private protected LexicalScope() { }
+
+    public abstract NamespaceScope? CreateChildNamespaceScope(IdentifierName namespaceName);
+
+    public abstract IEnumerable<ISymbolNode> Lookup(TypeName name);
 }

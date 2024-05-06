@@ -14,7 +14,6 @@ internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IF
     public StandardName Name => Syntax.Name;
     public override INamespaceSymbolNode ContainingSymbolNode => (INamespaceSymbolNode)base.ContainingSymbolNode;
     public override NamespaceSymbol ContainingSymbol => (NamespaceSymbol)base.ContainingSymbol;
-    public override NamespaceScope ContainingLexicalScope => (NamespaceScope)base.ContainingLexicalScope;
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value

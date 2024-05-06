@@ -23,7 +23,6 @@ internal class NamespaceDeclarationNode : DeclarationNode, INamespaceDeclaration
                 => SymbolNodeAttribute.NamespaceDeclarationContainingSymbolNode(node,
                     (INamespaceSymbolNode)Parent.InheritedContainingSymbolNode(this, this)));
     public override NamespaceSymbol ContainingSymbol => ContainingSymbolNode.Symbol;
-    private ValueAttribute<INamespaceSymbolNode> inheritedContainingSymbolNode;
 
     private ValueAttribute<INamespaceSymbolNode> symbolNode;
     public INamespaceSymbolNode SymbolNode
@@ -34,7 +33,6 @@ internal class NamespaceDeclarationNode : DeclarationNode, INamespaceDeclaration
 
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
-    public override NamespaceScope ContainingLexicalScope => (NamespaceScope)base.ContainingLexicalScope;
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
@@ -51,6 +49,8 @@ internal class NamespaceDeclarationNode : DeclarationNode, INamespaceDeclaration
     }
 
     internal override ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
-        => inheritedContainingSymbolNode.TryGetValue(out var value) ? value
-            : inheritedContainingSymbolNode.GetValue(this, SymbolNodeAttribute.NamespaceDeclarationInherited);
+        => SymbolNodeAttribute.NamespaceDeclarationInherited(this);
+
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
+        => LexicalScope;
 }

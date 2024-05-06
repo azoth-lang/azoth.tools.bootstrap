@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace Azoth.Tools.Bootstrap.Framework;
@@ -43,7 +44,7 @@ public static class Requires
     }
 
     [DebuggerHidden]
-    public static void That(string parameter, bool condition, string message)
+    public static void That(string parameter, [DoesNotReturnIf(false)] bool condition, string message)
     {
         if (!condition)
             throw new ArgumentException(message, parameter);

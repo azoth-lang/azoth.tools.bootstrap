@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -101,7 +102,21 @@ internal static class SymbolNodeAttribute
     public static IChildSymbolNode Symbol(Symbol symbol)
         => symbol switch
         {
-            NamespaceSymbol ns => new ReferencedNamespaceSymbolNode(ns),
+            NamespaceSymbol sym => new ReferencedNamespaceSymbolNode(sym),
+            UserTypeSymbol sym => UserTypeSymbol(sym),
+            FunctionSymbol sym => new ReferencedFunctionSymbolNode(sym),
             _ => throw new NotImplementedException(),
+        };
+
+    private static ReferencedTypeNode UserTypeSymbol(UserTypeSymbol symbol)
+        => symbol.DeclaresType switch
+        {
+            StructType t => new ReferencedStructSymbolNode(symbol),
+            ObjectType t => t.IsClass switch
+            {
+                true => new ReferencedClassSymbolNode(symbol),
+                false => new ReferencedTraitSymbolNode(symbol),
+            },
+            _ => throw ExhaustiveMatch.Failed(symbol.DeclaresType),
         };
 }

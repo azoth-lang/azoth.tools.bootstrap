@@ -24,6 +24,8 @@ internal class SemanticTreeValidator
                 break;
             case INamespaceDeclarationNode n:
                 _ = n.Symbol;
+                _ = n.ContainingLexicalScope;
+                _ = n.LexicalScope;
                 break;
             case IClassDeclarationNode n:
                 _ = n.File;

@@ -21,6 +21,9 @@ internal class UsingDirectivesScope : LexicalScope
         this.usingScopes = usingScopes.ToFixedSet();
     }
 
+    public override NamespaceScope? CreateChildNamespaceScope(IdentifierName namespaceName)
+        => throw new System.NotImplementedException();
+
     public override IEnumerable<ISymbolNode> Lookup(TypeName name)
         => usingScopes.SelectMany(s => s.Lookup(name, includeNested: false))
                       .FallbackIfEmpty(() => parent.Lookup(name));

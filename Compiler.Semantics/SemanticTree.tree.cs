@@ -157,8 +157,6 @@ public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMe
     Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
     INamespaceSymbolNode SymbolNode { get; }
     NamespaceSymbol Symbol { get; }
-    new NamespaceScope ContainingLexicalScope { get; }
-    LexicalScope IDeclarationNode.ContainingLexicalScope => ContainingLexicalScope;
 }
 
 [Closed(
@@ -300,8 +298,6 @@ public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNod
     new NamespaceSymbol ContainingSymbol { get; }
     Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
     StandardName Name { get; }
-    new NamespaceScope ContainingLexicalScope { get; }
-    LexicalScope IDeclarationNode.ContainingLexicalScope => ContainingLexicalScope;
 }
 
 [Closed(

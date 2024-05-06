@@ -26,7 +26,7 @@ public sealed class NamespaceScope : LexicalScope
         this.namespaceDeclarations = namespaceDeclarations.ToFixedSet();
     }
 
-    public NamespaceScope? GetChildScope(IdentifierName namespaceName)
+    public override NamespaceScope? CreateChildNamespaceScope(IdentifierName namespaceName)
     {
         if (childScopes.TryGetValue(namespaceName, out var childScope)) return childScope;
 
