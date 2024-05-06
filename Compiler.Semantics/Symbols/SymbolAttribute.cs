@@ -7,6 +7,12 @@ internal static class SymbolAttribute
 {
     public static PackageSymbol Package(IPackageNode node) => new PackageSymbol(node.Name);
 
+    public static TypeSymbol IdentifierTypeName(IIdentifierTypeNameNode node)
+        => node.ReferencedSymbolNode.Symbol;
+
+    public static TypeSymbol GenericTypeName(IGenericTypeNameNode node)
+        => node.ReferencedSymbolNode.Symbol;
+
     public static TypeSymbol SpecialTypeName(ISpecialTypeNameNode node)
         => Primitive.SymbolTree.LookupSymbol(node.Name);
 }

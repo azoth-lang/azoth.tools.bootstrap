@@ -99,6 +99,13 @@ internal static class SymbolNodeAttribute
     public static ITypeSymbolNode TypeDeclarationInherited(ITypeDeclarationNode node)
         => node.SymbolNode;
 
+    public static ITypeSymbolNode StandardTypeName(IStandardTypeNameNode node)
+    {
+        var symbolNodes = node.ContainingLexicalScope.Lookup(node.Name);
+        throw new NotImplementedException();
+    }
+
+    #region Construct for Symbols
     public static IChildSymbolNode Symbol(Symbol symbol)
         => symbol switch
         {
@@ -119,4 +126,5 @@ internal static class SymbolNodeAttribute
             },
             _ => throw ExhaustiveMatch.Failed(symbol.DeclaresType),
         };
+    #endregion
 }

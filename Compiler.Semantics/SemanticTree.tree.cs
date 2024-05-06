@@ -374,6 +374,7 @@ public partial interface IStandardTypeNameNode : ISemanticNode, ITypeNameNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     new StandardName Name { get; }
     TypeName ITypeNameNode.Name => Name;
+    ITypeSymbolNode ReferencedSymbolNode { get; }
 }
 
 [Closed(
