@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -12,6 +13,6 @@ internal sealed class CapabilityTypeNode : TypeNode, ICapabilityTypeNode
     {
         Syntax = syntax;
         Capability = capability;
-        Referent = referent;
+        Referent = Child.Attach(this, referent);
     }
 }

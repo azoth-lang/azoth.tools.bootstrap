@@ -90,7 +90,7 @@ Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capa
 
 // ---------- Types
 Type <: Code = Syntax:`ITypeSyntax`;
-TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName`;
+TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName` ContainingLexicalScope:`LexicalScope`;
 StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` Name:`StandardName`;
 SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
 IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax` Name:`IdentifierName`;

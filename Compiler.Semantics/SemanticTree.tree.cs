@@ -359,6 +359,7 @@ public partial interface ITypeNameNode : ITypeNode
     new ITypeNameSyntax Syntax { get; }
     ITypeSyntax ITypeNode.Syntax => Syntax;
     TypeName Name { get; }
+    LexicalScope ContainingLexicalScope { get; }
 }
 
 [Closed(
