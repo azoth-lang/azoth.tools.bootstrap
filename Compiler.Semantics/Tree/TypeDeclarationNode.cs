@@ -13,12 +13,7 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
 {
     public abstract override ITypeDeclarationSyntax Syntax { get; }
     public StandardName Name => Syntax.Name;
-
-    private ValueAttribute<ITypeSymbolNode> inheritedContainingSymbolNode;
-    private ValueAttribute<ITypeSymbolNode> symbolNode;
-    public ITypeSymbolNode SymbolNode
-        => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttribute.TypeDeclaration);
+    public abstract ITypeSymbolNode SymbolNode { get; }
     public IFixedList<IGenericParameterNode> GenericParameters { get; }
     public IFixedList<ISupertypeNameNode> SupertypeNames { get; }
     public abstract IFixedList<ITypeMemberDeclarationNode> Members { get; }
@@ -37,6 +32,5 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
     }
 
     internal override ITypeSymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
-        => inheritedContainingSymbolNode.TryGetValue(out var value) ? value
-            : inheritedContainingSymbolNode.GetValue(this, SymbolNodeAttribute.TypeDeclarationInherited);
+        => SymbolNodeAttribute.TypeDeclarationInherited(this);
 }

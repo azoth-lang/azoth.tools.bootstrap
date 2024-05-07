@@ -207,6 +207,8 @@ public partial interface IClassDeclarationNode : ISemanticNode, ITypeDeclaration
     IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
     bool IsAbstract { get; }
     ISupertypeNameNode? BaseTypeName { get; }
+    new IClassSymbolNode SymbolNode { get; }
+    ITypeSymbolNode ITypeDeclarationNode.SymbolNode => SymbolNode;
     new IFixedList<IClassMemberDeclarationNode> Members { get; }
     IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 }
@@ -220,6 +222,8 @@ public partial interface IStructDeclarationNode : ISemanticNode, ITypeDeclaratio
     IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
     ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
     IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
+    new IStructSymbolNode SymbolNode { get; }
+    ITypeSymbolNode ITypeDeclarationNode.SymbolNode => SymbolNode;
     new IFixedList<IStructMemberDeclarationNode> Members { get; }
     IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 }
@@ -233,6 +237,8 @@ public partial interface ITraitDeclarationNode : ISemanticNode, ITypeDeclaration
     IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
     ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
     IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
+    new ITraitSymbolNode SymbolNode { get; }
+    ITypeSymbolNode ITypeDeclarationNode.SymbolNode => SymbolNode;
     new IFixedList<ITraitMemberDeclarationNode> Members { get; }
     IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 }

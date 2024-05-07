@@ -38,7 +38,7 @@ internal static class SymbolNodeAttribute
                     BuildNamespace(containingNamespace, n.DeclaredNames, n.Declarations);
                     break;
                 case ITypeDeclarationNode n:
-                    builder.Add(namespaceSymbol, BuildForType(n));
+                    builder.Add(namespaceSymbol, n.SymbolNode);
                     break;
                 case IFunctionDeclarationNode n:
                     builder.Add(namespaceSymbol, BuildForFunction(n));
@@ -54,15 +54,6 @@ internal static class SymbolNodeAttribute
                 Build(namespaceSymbol, declaration);
         }
     }
-
-    private static ITypeSymbolNode BuildForType(ITypeDeclarationNode node)
-        => node switch
-        {
-            IClassDeclarationNode n => new SemanticClassSymbolNode(n),
-            IStructDeclarationNode n => new SemanticStructSymbolNode(n),
-            ITraitDeclarationNode n => new SemanticTraitSymbolNode(n),
-            _ => throw new NotImplementedException(),
-        };
 
     private static IFunctionSymbolNode BuildForFunction(IFunctionDeclarationNode node)
         => new SemanticFunctionSymbolNode(node);
@@ -96,11 +87,17 @@ internal static class SymbolNodeAttribute
     public static INamespaceSymbolNode NamespaceDeclarationInherited(INamespaceDeclarationNode node)
         => node.SymbolNode;
 
-    public static ITypeSymbolNode TypeDeclaration(ITypeDeclarationNode node)
-        => throw new NotImplementedException();
-
     public static ITypeSymbolNode TypeDeclarationInherited(ITypeDeclarationNode node)
         => node.SymbolNode;
+
+    public static IClassSymbolNode ClassDeclaration(IClassDeclarationNode node)
+        => new SemanticClassSymbolNode(node);
+
+    public static IStructSymbolNode StructDeclaration(IStructDeclarationNode node)
+        => new SemanticStructSymbolNode(node);
+
+    public static ITraitSymbolNode TraitDeclaration(ITraitDeclarationNode node)
+        => new SemanticTraitSymbolNode(node);
 
     public static ITypeSymbolNode? StandardTypeName(IStandardTypeNameNode node)
         => LookupSymbolNodes(node).TrySingle();
@@ -140,7 +137,7 @@ internal static class SymbolNodeAttribute
     private static ReferencedTypeNode UserTypeSymbol(UserTypeSymbol symbol)
         => symbol.DeclaresType switch
         {
-            StructType t => new ReferencedStructSymbolNode(symbol),
+            StructType _ => new ReferencedStructSymbolNode(symbol),
             ObjectType t => t.IsClass switch
             {
                 true => new ReferencedClassSymbolNode(symbol),

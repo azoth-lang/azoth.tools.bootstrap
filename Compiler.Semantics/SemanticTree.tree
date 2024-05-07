@@ -62,11 +62,11 @@ TypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMember
     = Syntax:`ITypeDeclarationSyntax` Name:`StandardName` SymbolNode:`ITypeSymbolNode`
     GenericParameters:GenericParameter* SupertypeNames:SupertypeName* Members:TypeMemberDeclaration*;
 ClassDeclaration <: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:`bool` GenericParameters:GenericParameter*
-    BaseTypeName:SupertypeName? SupertypeNames:SupertypeName* Members:ClassMemberDeclaration*;
+    BaseTypeName:SupertypeName? SupertypeNames:SupertypeName* SymbolNode:`IClassSymbolNode` Members:ClassMemberDeclaration*;
 StructDeclaration <: TypeDeclaration = Syntax:`IStructDeclarationSyntax` GenericParameters:GenericParameter*
-    SupertypeNames:SupertypeName* Members:StructMemberDeclaration*;
+    SupertypeNames:SupertypeName* SymbolNode:`IStructSymbolNode` Members:StructMemberDeclaration*;
 TraitDeclaration <: TypeDeclaration = Syntax:`ITraitDeclarationSyntax` GenericParameters:GenericParameter*
-    SupertypeNames:SupertypeName* Members:TraitMemberDeclaration*;
+    SupertypeNames:SupertypeName* SymbolNode:`ITraitSymbolNode` Members:TraitMemberDeclaration*;
 
 // ---------- Type Declaration Parts
 GenericParameter <: Code = Syntax:`IGenericParameterSyntax` Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance`;
