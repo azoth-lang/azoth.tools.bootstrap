@@ -122,16 +122,27 @@ internal static class SymbolNodeAttributes
         => node.ContainingLexicalScope.Lookup(node.Name).OfType<ITypeSymbolNode>().ToFixedSet();
 
     #region Construct for Symbols
-    public static IChildSymbolNode Symbol(Symbol symbol)
+    public static IDeclarationSymbolNode Symbol(Symbol symbol)
         => symbol switch
         {
             NamespaceSymbol sym => new ReferencedNamespaceSymbolNode(sym),
-            UserTypeSymbol sym => UserTypeSymbol(sym),
-            FunctionSymbol sym => new ReferencedFunctionSymbolNode(sym),
-            _ => throw new NotImplementedException(),
+            TypeSymbol sym => TypeSymbol(sym),
+            InvocableSymbol sym => InvocableSymbol(sym),
+            BindingSymbol sym => throw new NotImplementedException(),
+            _ => throw ExhaustiveMatch.Failed(symbol),
         };
 
-    private static ReferencedTypeNode UserTypeSymbol(UserTypeSymbol symbol)
+    private static ITypeSymbolNode TypeSymbol(TypeSymbol symbol)
+        => symbol switch
+        {
+            UserTypeSymbol sym => UserTypeSymbol(sym),
+            GenericParameterTypeSymbol sym => throw new NotImplementedException(),
+            EmptyTypeSymbol _ => throw new NotSupportedException("Symbol node for empty type not supported. Primitives not name bound through symbol nodes."),
+            PrimitiveTypeSymbol _ => throw new NotSupportedException("Symbol node for primitive type not supported. Primitives not name bound through symbol nodes."),
+            _ => throw ExhaustiveMatch.Failed(symbol),
+        };
+
+    private static ITypeSymbolNode UserTypeSymbol(UserTypeSymbol symbol)
         => symbol.DeclaresType switch
         {
             StructType _ => new ReferencedStructSymbolNode(symbol),
@@ -142,5 +153,15 @@ internal static class SymbolNodeAttributes
             },
             _ => throw ExhaustiveMatch.Failed(symbol.DeclaresType),
         };
+
+    private static IFunctionSymbolNode InvocableSymbol(InvocableSymbol symbol)
+        => symbol switch
+        {
+            FunctionSymbol sym => FunctionSymbol(sym),
+            _ => throw new NotImplementedException(),
+        };
+
+    private static IFunctionSymbolNode FunctionSymbol(FunctionSymbol sym)
+        => new ReferencedFunctionSymbolNode(sym);
     #endregion
 }
