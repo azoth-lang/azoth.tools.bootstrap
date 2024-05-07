@@ -17,7 +17,7 @@ internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarat
     public override IClassSymbolNode SymbolNode
         => symbolNode.TryGetValue(out var value)
             ? value
-            : symbolNode.GetValue(this, SymbolNodeAttribute.ClassDeclaration);
+            : symbolNode.GetValue(this, SymbolNodeAttributes.ClassDeclaration);
     public override IFixedList<IClassMemberDeclarationNode> Members { get; }
 
     public ClassDeclarationNode(

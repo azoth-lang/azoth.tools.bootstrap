@@ -18,7 +18,7 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
     private ValueAttribute<ITypeSymbolNode?> referencedSymbolNode;
     public ITypeSymbolNode? ReferencedSymbolNode
         => referencedSymbolNode.TryGetValue(out var value) ? value
-            : referencedSymbolNode.GetValue(this, SymbolNodeAttribute.StandardTypeName);
+            : referencedSymbolNode.GetValue(this, SymbolNodeAttributes.StandardTypeName);
 
     public GenericTypeNameNode(IGenericTypeNameSyntax syntax, IEnumerable<ITypeNode> typeArguments)
     {
@@ -28,7 +28,7 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        SymbolNodeAttribute.StandardTypeNameContributeDiagnostics(this, diagnostics);
+        SymbolNodeAttributes.StandardTypeNameContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

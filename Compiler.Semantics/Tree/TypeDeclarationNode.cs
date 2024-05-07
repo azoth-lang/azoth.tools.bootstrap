@@ -32,5 +32,5 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
     }
 
     internal override ITypeSymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
-        => SymbolNodeAttribute.TypeDeclarationInherited(this);
+        => SymbolNodeAttributes.TypeDeclarationInherited(this);
 }

@@ -22,7 +22,7 @@ internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IF
     private ValueAttribute<IFunctionSymbolNode> symbolNode;
     public override IFunctionSymbolNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttribute.FunctionDeclaration);
+            : symbolNode.GetValue(this, SymbolNodeAttributes.FunctionDeclaration);
 
     public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax)
     {

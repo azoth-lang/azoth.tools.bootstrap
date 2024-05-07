@@ -38,6 +38,6 @@ internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChild
     protected IEnumerable<IChildSymbolNode> GetMembers()
     {
         var symbolTree = Parent.InheritedSymbolTree(this, this);
-        return symbolTree.GetChildrenOf(Symbol).Select(SymbolNodeAttribute.Symbol);
+        return symbolTree.GetChildrenOf(Symbol).Select(SymbolNodeAttributes.Symbol);
     }
 }

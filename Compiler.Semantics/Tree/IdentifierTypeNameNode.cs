@@ -13,7 +13,7 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
     private ValueAttribute<ITypeSymbolNode?> referencedSymbolNode;
     public ITypeSymbolNode? ReferencedSymbolNode
         => referencedSymbolNode.TryGetValue(out var value) ? value
-            : referencedSymbolNode.GetValue(this, SymbolNodeAttribute.StandardTypeName);
+            : referencedSymbolNode.GetValue(this, SymbolNodeAttributes.StandardTypeName);
     public override TypeSymbol? ReferencedSymbol
         => SymbolAttribute.IdentifierTypeName(this);
 

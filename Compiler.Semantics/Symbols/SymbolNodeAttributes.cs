@@ -14,7 +14,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
-internal static class SymbolNodeAttribute
+internal static class SymbolNodeAttributes
 {
     public static IPackageSymbolNode Package(IPackageNode node)
         => new SemanticPackageSymbolNode(node, node.MainFacet.SymbolNode, node.TestingFacet.SymbolNode);

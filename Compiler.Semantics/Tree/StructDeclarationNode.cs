@@ -14,7 +14,7 @@ internal sealed class StructDeclarationNode : TypeDeclarationNode, IStructDeclar
     public override IStructSymbolNode SymbolNode
         => symbolNode.TryGetValue(out var value)
             ? value
-            : symbolNode.GetValue(this, SymbolNodeAttribute.StructDeclaration);
+            : symbolNode.GetValue(this, SymbolNodeAttributes.StructDeclaration);
     public override IFixedList<IStructMemberDeclarationNode> Members { get; }
 
     public StructDeclarationNode(

@@ -25,12 +25,12 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     private ValueAttribute<IPackageSymbolNode> symbolNode;
     public IPackageSymbolNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttribute.Package);
+            : symbolNode.GetValue(this, SymbolNodeAttributes.Package);
 
     private ValueAttribute<FixedDictionary<IdentifierName, IPackageSymbolNode>> symbolNodes;
     public FixedDictionary<IdentifierName, IPackageSymbolNode> SymbolNodes
         => symbolNodes.TryGetValue(out var value) ? value
-            : symbolNodes.GetValue(this, SymbolNodeAttribute.PackageSymbolNodes);
+            : symbolNodes.GetValue(this, SymbolNodeAttributes.PackageSymbolNodes);
 
     private ValueAttribute<IFixedList<Diagnostic>> diagnostics;
     public IFixedList<Diagnostic> Diagnostics
