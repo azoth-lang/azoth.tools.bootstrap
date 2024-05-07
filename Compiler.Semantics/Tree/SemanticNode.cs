@@ -32,9 +32,9 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedContainingLexicalScope), caller, child));
 
-    protected virtual void CollectionDiagnostics(Diagnostics diagnostics)
+    protected virtual void CollectDiagnostics(Diagnostics diagnostics)
     {
         foreach (var child in this.Children().Cast<SemanticNode>())
-            child.CollectionDiagnostics(diagnostics);
+            child.CollectDiagnostics(diagnostics);
     }
 }

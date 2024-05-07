@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal abstract class DeclarationNode : ChildNode, IDeclarationNode
+internal abstract class DeclarationNode : CodeNode, IDeclarationNode
 {
     public abstract override IDeclarationSyntax Syntax { get; }
     public virtual ISymbolNode ContainingSymbolNode => Parent.InheritedContainingSymbolNode(this, this);

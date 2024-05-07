@@ -31,12 +31,12 @@ PackageFacet <: Child = Syntax:`IPackageSyntax` PackageName:`IdentifierName`
     PackageNameScope:`PackageNameScope`
     CompilationUnits:{CompilationUnit} Declarations:`IFixedSet<IPackageMemberDeclarationNode>`;
 
-PackageMemberDeclaration <: NamespaceMemberDeclaration = File:`CodeFile`;
+PackageMemberDeclaration <: NamespaceMemberDeclaration;
 
 // ---------- Code Files
-Code <: Child = Syntax:`IConcreteSyntax`;
+Code <: Child = Syntax:`IConcreteSyntax` File:`CodeFile`;
 
-CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile`
+CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
     ContainingSymbolNode:`IPackageFacetSymbolNode` ContainingSymbol:`NamespaceSymbol`
     ImplicitNamespaceName:`NamespaceName` ImplicitNamespaceSymbolNode:`INamespaceSymbolNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*

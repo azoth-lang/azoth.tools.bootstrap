@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -100,24 +103,29 @@ internal static class SymbolNodeAttribute
         => node.SymbolNode;
 
     public static ITypeSymbolNode? StandardTypeName(IStandardTypeNameNode node)
+        => LookupSymbolNodes(node).TrySingle();
+
+    public static void StandardTypeNameContributeDiagnostics(IStandardTypeNameNode node, Diagnostics diagnostics)
     {
-        var symbolNodes = node.ContainingLexicalScope.Lookup(node.Name).OfType<ITypeSymbolNode>().ToFixedSet();
+        if (node.ReferencedSymbolNode is not null)
+            return;
+        var symbolNodes = LookupSymbolNodes(node);
         switch (symbolNodes.Count)
         {
             case 0:
-                //diagnostics.Add(NameBindingError.CouldNotBindName(file, typeName.Span));
-                //typeName.ReferencedSymbol.Fulfill(null);
-                //typeName.NamedType = DataType.Unknown;
-                return null;
+                diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
+                break;
             case 1:
-                return symbolNodes.Single();
+                // If there is only one match, then ReferencedSymbol is not null
+                throw new UnreachableException();
             default:
-                //diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
-                //typeName.ReferencedSymbol.Fulfill(null);
-                //typeName.NamedType = DataType.Unknown;
-                return null;
+                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.Span));
+                break;
         }
     }
+
+    private static IFixedSet<ITypeSymbolNode> LookupSymbolNodes(IStandardTypeNameNode node)
+        => node.ContainingLexicalScope.Lookup(node.Name).OfType<ITypeSymbolNode>().ToFixedSet();
 
     #region Construct for Symbols
     public static IChildSymbolNode Symbol(Symbol symbol)

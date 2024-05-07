@@ -94,7 +94,6 @@ public partial interface IPackageFacetNode : IChildNode
     typeof(IFunctionDeclarationNode))]
 public partial interface IPackageMemberDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
 {
-    CodeFile File { get; }
 }
 
 [Closed(
@@ -109,6 +108,7 @@ public partial interface ICodeNode : IChildNode
 {
     new IConcreteSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
+    CodeFile File { get; }
 }
 
 public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
@@ -116,7 +116,6 @@ public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
     new ICompilationUnitSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
-    CodeFile File { get; }
     IPackageFacetSymbolNode ContainingSymbolNode { get; }
     NamespaceSymbol ContainingSymbol { get; }
     NamespaceName ImplicitNamespaceName { get; }

@@ -16,7 +16,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
 {
     public override ICompilationUnitSyntax Syntax { get; }
 
-    public CodeFile File => Syntax.File;
+    public override CodeFile File => Syntax.File;
 
     public IPackageFacetSymbolNode ContainingSymbolNode => (IPackageFacetSymbolNode)Parent.InheritedContainingSymbolNode(this, this);
     public NamespaceSymbol ContainingSymbol => ContainingSymbolNode.Symbol;
@@ -63,13 +63,13 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     private IFixedList<Diagnostic> GetDiagnostics()
     {
         var diagnostics = new Diagnostics();
-        CollectionDiagnostics(diagnostics);
+        CollectDiagnostics(diagnostics);
         return diagnostics.Build();
     }
 
-    protected override void CollectionDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
         DiagnosticsAttribute.CompilationUnitSyntaxDiagnostics(this, diagnostics);
-        base.CollectionDiagnostics(diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

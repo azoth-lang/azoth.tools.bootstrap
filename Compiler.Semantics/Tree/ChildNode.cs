@@ -34,6 +34,9 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     internal override CodeFile InheritedFile(IChildNode caller, IChildNode child)
         => Parent.InheritedFile(this, child);
 
+    protected CodeFile InheritedFile()
+        => Parent.InheritedFile(this, this);
+
     internal override PackageNameScope InheritedPackageNameScope(IChildNode caller, IChildNode child)
         => Parent.InheritedPackageNameScope(this, child);
 
