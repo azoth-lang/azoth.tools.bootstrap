@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
@@ -9,7 +10,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal abstract class ChildNode : SemanticNode, IChildNode
 {
     private SemanticNode? parent;
-    protected SemanticNode Parent => parent ?? throw new InvalidOperationException("Parent is not set.");
+    protected SemanticNode Parent
+        => parent ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
     ISemanticNode IChildNode.Parent => Parent;
 
     public IPackageNode Package => Parent.InheritedPackage(this, this);

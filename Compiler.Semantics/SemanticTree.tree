@@ -90,11 +90,11 @@ Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capa
 
 // ---------- Types
 Type <: Code = Syntax:`ITypeSyntax`;
-TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName` ContainingLexicalScope:`LexicalScope` ReferencedSymbol:`TypeSymbol`;
-StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` Name:`StandardName` ReferencedSymbolNode:`ITypeSymbolNode` ReferencedSymbol:`TypeSymbol`;
+TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName` ContainingLexicalScope:`LexicalScope` ReferencedSymbol:`TypeSymbol`?;
+StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` Name:`StandardName` ReferencedSymbolNode:`ITypeSymbolNode`?;
 SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
 IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax` Name:`IdentifierName`;
-SpecialTypeName <: SimpleTypeName = Syntax:`ISpecialTypeNameSyntax` Name:`SpecialTypeName`;
+SpecialTypeName <: SimpleTypeName = Syntax:`ISpecialTypeNameSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol`;
 GenericTypeName <: StandardTypeName = Syntax:`IGenericTypeNameSyntax` Name:`GenericName` TypeArguments:Type*;
 QualifiedTypeName <: TypeName = Syntax:`IQualifiedTypeNameSyntax` Context:TypeName QualifiedName:StandardTypeName;
 OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;

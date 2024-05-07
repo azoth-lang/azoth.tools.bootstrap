@@ -10,7 +10,7 @@ internal static class SymbolNode
     public static IEnumerable<T> MembersNamed<T>(
         this IEnumerable<T> members,
         ref MultiMapHashSet<StandardName, T>? membersByName,
-        IdentifierName named)
+        StandardName named)
         where T : IDeclarationSymbolNode
     {
         membersByName ??= new(members.GroupBy(m => m.Name).ToDictionary(g => g.Key, g => g.ToHashSet()));

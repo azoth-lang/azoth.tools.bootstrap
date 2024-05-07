@@ -14,6 +14,6 @@ internal abstract class SemanticTypeSymbolNode : SemanticDeclarationSymbolNode, 
     public abstract IFixedList<ITypeMemberSymbolNode> Members { get; }
     private MultiMapHashSet<StandardName, ITypeMemberSymbolNode>? membersByName;
 
-    public override IEnumerable<ITypeMemberSymbolNode> MembersNamed(IdentifierName named)
+    public override IEnumerable<ITypeMemberSymbolNode> MembersNamed(StandardName named)
         => Members.MembersNamed(ref membersByName, named);
 }

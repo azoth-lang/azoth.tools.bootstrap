@@ -3,6 +3,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
+using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 
@@ -54,8 +55,16 @@ public sealed class NamespaceScope : LexicalScope
         return childScope;
     }
 
-    public override IEnumerable<ISymbolNode> Lookup(StandardName name) => Lookup(name, true);
+    public override IEnumerable<ISymbolNode> Lookup(StandardName name)
+    {
+        var symbolNodes = namespaceDeclarations
+            .SelectMany(ns => ns.MembersNamed(name)).SafeCast<ISymbolNode>()
+            .FallbackIfEmpty(namespaceDeclarations.SelectMany(ns => ns.NestedMembersNamed(name)));
+        if (parent is not null)
+            symbolNodes = symbolNodes.FallbackIfEmpty(() => parent.Lookup(name));
+        return symbolNodes;
+    }
 
-    public IEnumerable<ISymbolNode> Lookup(StandardName name, bool includeNested)
-        => throw new System.NotImplementedException();
+    public IEnumerable<ISymbolNode> LookupInNamespaceOnly(StandardName name)
+        => namespaceDeclarations.SelectMany(ns => ns.MembersNamed(name));
 }

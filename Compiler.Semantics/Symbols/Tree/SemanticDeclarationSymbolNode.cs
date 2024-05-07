@@ -7,5 +7,5 @@ internal abstract class SemanticDeclarationSymbolNode : SemanticChildSymbolNode,
 {
     public abstract StandardName Name { get; }
     public IPackageFacetSymbolNode Facet => Parent.InheritedFacet(this, this);
-    public abstract IEnumerable<IDeclarationSymbolNode> MembersNamed(IdentifierName named);
+    public abstract IEnumerable<IDeclarationSymbolNode> MembersNamed(StandardName named);
 }

@@ -71,6 +71,7 @@ public partial interface INamespaceSymbolNode : INamespaceMemberSymbolNode
     new NamespaceSymbol Symbol { get; }
     Symbol ISymbolNode.Symbol => Symbol;
     IFixedList<INamespaceMemberSymbolNode> Members { get; }
+    IFixedList<INamespaceMemberSymbolNode> NestedMembers { get; }
 }
 
 [Closed(

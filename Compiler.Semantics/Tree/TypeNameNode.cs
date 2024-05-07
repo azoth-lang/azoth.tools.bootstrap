@@ -15,5 +15,5 @@ internal abstract class TypeNameNode : TypeNode, ITypeNameNode
         => containingLexicalScope.TryGetValue(out var value) ? value
             : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
 
-    public abstract TypeSymbol ReferencedSymbol { get; }
+    public abstract TypeSymbol? ReferencedSymbol { get; }
 }

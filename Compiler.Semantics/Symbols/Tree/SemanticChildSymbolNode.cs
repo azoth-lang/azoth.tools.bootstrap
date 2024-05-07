@@ -1,12 +1,14 @@
 using System;
 using System.Threading;
+using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
 internal abstract class SemanticChildSymbolNode : SemanticSymbolNode, IChildSymbolNode
 {
     private SemanticSymbolNode? parent;
-    protected SemanticSymbolNode Parent => parent ?? throw new InvalidOperationException("Parent is not set.");
+    protected SemanticSymbolNode Parent
+        => parent ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
     ISymbolNode IChildSymbolNode.Parent => Parent;
 
     public IPackageSymbolNode Package => Parent.InheritedPackage(this, this);

@@ -360,7 +360,7 @@ public partial interface ITypeNameNode : ITypeNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     TypeName Name { get; }
     LexicalScope ContainingLexicalScope { get; }
-    TypeSymbol ReferencedSymbol { get; }
+    TypeSymbol? ReferencedSymbol { get; }
 }
 
 [Closed(
@@ -374,7 +374,7 @@ public partial interface IStandardTypeNameNode : ISemanticNode, ITypeNameNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     new StandardName Name { get; }
     TypeName ITypeNameNode.Name => Name;
-    ITypeSymbolNode ReferencedSymbolNode { get; }
+    ITypeSymbolNode? ReferencedSymbolNode { get; }
 }
 
 [Closed(
@@ -406,6 +406,8 @@ public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
     ISimpleTypeNameSyntax ISimpleTypeNameNode.Syntax => Syntax;
     new SpecialTypeName Name { get; }
     TypeName ITypeNameNode.Name => Name;
+    new TypeSymbol ReferencedSymbol { get; }
+    TypeSymbol? ITypeNameNode.ReferencedSymbol => ReferencedSymbol;
 }
 
 public partial interface IGenericTypeNameNode : IStandardTypeNameNode

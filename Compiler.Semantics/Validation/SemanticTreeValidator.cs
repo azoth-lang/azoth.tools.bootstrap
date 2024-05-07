@@ -46,6 +46,12 @@ internal class SemanticTreeValidator
             case IFunctionDeclarationNode n:
                 _ = n.File;
                 break;
+            case IIdentifierTypeNameNode n:
+                _ = n.ReferencedSymbolNode;
+                break;
+            case IGenericTypeNameNode n:
+                _ = n.ReferencedSymbolNode;
+                break;
             case ISpecialTypeNameNode n:
                 _ = n.ReferencedSymbol;
                 break;

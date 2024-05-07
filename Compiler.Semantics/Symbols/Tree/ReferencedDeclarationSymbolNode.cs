@@ -7,5 +7,5 @@ internal abstract class ReferencedDeclarationSymbolNode : ReferencedChildSymbolN
 {
     public IPackageFacetSymbolNode Facet => Parent.InheritedFacet(this, this);
     public virtual StandardName Name => (StandardName)Symbol.Name!;
-    public abstract IEnumerable<IDeclarationSymbolNode> MembersNamed(IdentifierName named);
+    public abstract IEnumerable<IDeclarationSymbolNode> MembersNamed(StandardName named);
 }

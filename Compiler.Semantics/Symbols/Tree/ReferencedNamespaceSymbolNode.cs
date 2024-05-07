@@ -11,22 +11,35 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 internal class ReferencedNamespaceSymbolNode : ReferencedDeclarationSymbolNode, INamespaceSymbolNode
 {
     public override NamespaceSymbol Symbol { get; }
+
     public override IdentifierName Name => Symbol.Name;
 
     private ValueAttribute<IFixedList<INamespaceMemberSymbolNode>> members;
     public IFixedList<INamespaceMemberSymbolNode> Members
-        => members.TryGetValue(out var value) ? value
-            : members.GetValue(this, GetMembers);
+        => members.TryGetValue(out var value) ? value : members.GetValue(GetMembers);
     private MultiMapHashSet<StandardName, INamespaceMemberSymbolNode>? membersByName;
+
+    private ValueAttribute<IFixedList<INamespaceMemberSymbolNode>> nestedMembers;
+    public IFixedList<INamespaceMemberSymbolNode> NestedMembers
+        => nestedMembers.TryGetValue(out var value) ? value : nestedMembers.GetValue(GetNestedMembers);
+    private MultiMapHashSet<StandardName, INamespaceMemberSymbolNode>? nestedMembersByName;
 
     public ReferencedNamespaceSymbolNode(NamespaceSymbol symbol)
     {
         Symbol = symbol;
     }
 
-    private IFixedList<INamespaceMemberSymbolNode> GetMembers(INamespaceSymbolNode _)
-        => GetMembers().Cast<INamespaceMemberSymbolNode>().ToFixedList();
+    private new IFixedList<INamespaceMemberSymbolNode> GetMembers()
+        => ChildList.CreateFixed(this, base.GetMembers().Cast<INamespaceMemberSymbolNode>());
 
-    public override IEnumerable<INamespaceMemberSymbolNode> MembersNamed(IdentifierName named)
+    private IFixedList<INamespaceMemberSymbolNode> GetNestedMembers()
+        => Members.OfType<INamespaceSymbolNode>()
+                  .SelectMany(ns => ns.Members.Concat(ns.NestedMembers)).ToFixedList();
+
+    public override IEnumerable<INamespaceMemberSymbolNode> MembersNamed(StandardName named)
         => Members.MembersNamed(ref membersByName, named);
+
+    public IEnumerable<INamespaceMemberSymbolNode> NestedMembersNamed(StandardName named)
+        => NestedMembers.MembersNamed(ref nestedMembersByName, named);
+
 }

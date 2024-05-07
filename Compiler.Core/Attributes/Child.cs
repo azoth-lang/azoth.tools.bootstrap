@@ -46,4 +46,7 @@ public static class Child
         where TChild : IChild
         => $"{attribute} not implemented for child node type {child.GetType().GetFriendlyName()} "
            + $"when accessed through caller {caller.GetType().GetFriendlyName()}.";
+
+    public static string ParentMissingMessage(IChild child)
+        => $"Parent of {child.GetType().GetFriendlyName()} is not set.";
 }

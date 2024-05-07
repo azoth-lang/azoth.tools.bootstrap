@@ -14,6 +14,6 @@ internal sealed class ReferencedFunctionSymbolNode : ReferencedDeclarationSymbol
         Symbol = symbol;
     }
 
-    public override IEnumerable<IDeclarationSymbolNode> MembersNamed(IdentifierName named)
+    public override IEnumerable<IDeclarationSymbolNode> MembersNamed(StandardName named)
         => Enumerable.Empty<IDeclarationSymbolNode>();
 }

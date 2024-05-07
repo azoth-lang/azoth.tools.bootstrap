@@ -25,6 +25,8 @@ public static class ISymbolNodeExtensions
             case INamespaceSymbolNode n:
                 foreach (var child in n.Members)
                     yield return child;
+                foreach (var child in n.NestedMembers)
+                    yield return child;
                 yield break;
             case IClassSymbolNode n:
                 foreach (var child in n.Members)

@@ -99,10 +99,24 @@ internal static class SymbolNodeAttribute
     public static ITypeSymbolNode TypeDeclarationInherited(ITypeDeclarationNode node)
         => node.SymbolNode;
 
-    public static ITypeSymbolNode StandardTypeName(IStandardTypeNameNode node)
+    public static ITypeSymbolNode? StandardTypeName(IStandardTypeNameNode node)
     {
-        var symbolNodes = node.ContainingLexicalScope.Lookup(node.Name);
-        throw new NotImplementedException();
+        var symbolNodes = node.ContainingLexicalScope.Lookup(node.Name).OfType<ITypeSymbolNode>().ToFixedSet();
+        switch (symbolNodes.Count)
+        {
+            case 0:
+                //diagnostics.Add(NameBindingError.CouldNotBindName(file, typeName.Span));
+                //typeName.ReferencedSymbol.Fulfill(null);
+                //typeName.NamedType = DataType.Unknown;
+                return null;
+            case 1:
+                return symbolNodes.Single();
+            default:
+                //diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
+                //typeName.ReferencedSymbol.Fulfill(null);
+                //typeName.NamedType = DataType.Unknown;
+                return null;
+        }
     }
 
     #region Construct for Symbols

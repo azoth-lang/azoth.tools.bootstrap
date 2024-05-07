@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
@@ -9,7 +10,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChildSymbolNode
 {
     private ReferencedSymbolNode? parent;
-    protected virtual ReferencedSymbolNode Parent => parent ?? throw new InvalidOperationException("Parent is not set.");
+    protected virtual ReferencedSymbolNode Parent
+        => parent ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
+
     ISymbolNode IChildSymbolNode.Parent => Parent;
 
     public IPackageSymbolNode Package => Parent.InheritedPackage(this, this);

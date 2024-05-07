@@ -26,7 +26,8 @@ PackageFacet <: Child = PackageAliasOrName:`IdentifierName`? PackageName:`Identi
 Declaration <: Child = Name:`StandardName` Facet:`IPackageFacetSymbolNode`;
 
 // ---------- Namespaces
-Namespace <: NamespaceMember = Name:`IdentifierName` Symbol:`NamespaceSymbol` Members:NamespaceMember*;
+Namespace <: NamespaceMember = Name:`IdentifierName` Symbol:`NamespaceSymbol`
+    Members:NamespaceMember* NestedMembers:NamespaceMember*;
 NamespaceMember <: Declaration;
 
 // ---------- Type Declarations

@@ -15,6 +15,6 @@ internal abstract class ReferencedTypeNode : ReferencedDeclarationSymbolNode, IT
         Symbol = symbol;
     }
 
-    public override IEnumerable<IDeclarationSymbolNode> MembersNamed(IdentifierName named)
+    public override IEnumerable<IDeclarationSymbolNode> MembersNamed(StandardName named)
         => throw new System.NotImplementedException();
 }

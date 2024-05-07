@@ -5,12 +5,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 public partial interface IDeclarationSymbolNode
 {
-    IEnumerable<IDeclarationSymbolNode> MembersNamed(IdentifierName named);
+    IEnumerable<IDeclarationSymbolNode> MembersNamed(StandardName named);
 }
 
 public partial interface INamespaceSymbolNode
 {
-    new IEnumerable<INamespaceMemberSymbolNode> MembersNamed(IdentifierName named);
-    IEnumerable<IDeclarationSymbolNode> IDeclarationSymbolNode.MembersNamed(IdentifierName named)
+    new IEnumerable<INamespaceMemberSymbolNode> MembersNamed(StandardName named);
+    IEnumerable<IDeclarationSymbolNode> IDeclarationSymbolNode.MembersNamed(StandardName named)
         => MembersNamed(named);
+
+    IEnumerable<INamespaceMemberSymbolNode> NestedMembersNamed(StandardName named);
 }

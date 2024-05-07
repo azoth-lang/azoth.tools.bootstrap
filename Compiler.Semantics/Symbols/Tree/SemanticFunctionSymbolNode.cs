@@ -17,6 +17,6 @@ internal sealed class SemanticFunctionSymbolNode : SemanticDeclarationSymbolNode
         Node = node;
     }
 
-    public override IEnumerable<IDeclarationSymbolNode> MembersNamed(IdentifierName named)
+    public override IEnumerable<IDeclarationSymbolNode> MembersNamed(StandardName named)
         => Enumerable.Empty<IDeclarationSymbolNode>();
 }
