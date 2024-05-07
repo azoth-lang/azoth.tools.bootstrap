@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
@@ -7,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -195,11 +197,13 @@ public partial interface ITypeDeclarationNode : IPackageMemberDeclarationNode, I
     IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
+    bool IsConst { get; }
     StandardName Name { get; }
     new ITypeSymbolNode SymbolNode { get; }
     IPackageMemberSymbolNode IPackageMemberDeclarationNode.SymbolNode => SymbolNode;
     IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
     INamespaceMemberSymbolNode INamespaceMemberDeclarationNode.SymbolNode => SymbolNode;
+    UserTypeSymbol Symbol { get; }
     IFixedList<IGenericParameterNode> GenericParameters { get; }
     IFixedList<ISupertypeNameNode> SupertypeNames { get; }
     IFixedList<ITypeMemberDeclarationNode> Members { get; }
@@ -218,6 +222,7 @@ public partial interface IClassDeclarationNode : ISemanticNode, ITypeDeclaration
     ISupertypeNameNode? BaseTypeName { get; }
     new IClassSymbolNode SymbolNode { get; }
     ITypeSymbolNode ITypeDeclarationNode.SymbolNode => SymbolNode;
+    ObjectType Type { get; }
     new IFixedList<IClassMemberDeclarationNode> Members { get; }
     IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 }
@@ -261,6 +266,9 @@ public partial interface IGenericParameterNode : ISemanticNode, ICodeNode
     IdentifierName Name { get; }
     ParameterIndependence Independence { get; }
     ParameterVariance Variance { get; }
+    Promise<IDeclaredUserType> ContainingDeclaredType { get; }
+    GenericParameterType Type { get; }
+    GenericParameterTypeSymbol Symbol { get; }
 }
 
 public partial interface ISupertypeNameNode : ISemanticNode, ICodeNode

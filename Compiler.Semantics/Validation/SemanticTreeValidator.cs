@@ -36,6 +36,7 @@ internal class SemanticTreeValidator
                 break;
             case IClassDeclarationNode n:
                 _ = n.File;
+                _ = n.Type;
                 break;
             case IStructDeclarationNode n:
                 _ = n.File;
