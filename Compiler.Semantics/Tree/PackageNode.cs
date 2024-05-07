@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
@@ -29,6 +31,11 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public FixedDictionary<IdentifierName, IPackageSymbolNode> SymbolNodes
         => symbolNodes.TryGetValue(out var value) ? value
             : symbolNodes.GetValue(this, SymbolNodeAttribute.PackageSymbolNodes);
+
+    private ValueAttribute<IFixedList<Diagnostic>> diagnostics;
+    public IFixedList<Diagnostic> Diagnostics
+        => diagnostics.TryGetValue(out var value) ? value
+            : diagnostics.GetValue(this, DiagnosticsAttribute.Package);
 
     public IFixedSet<IPackageReferenceNode> References { get; }
     public IPackageFacetNode MainFacet { get; }

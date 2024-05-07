@@ -42,11 +42,7 @@ public class SemanticAnalyzer
         // If there are errors from the lex and parse phase, don't continue on
         packageSyntax.Diagnostics.ThrowIfFatalErrors();
 
-        // Start of new attribute grammar based approach
-        var packageNode = SyntaxBinder.Bind(packageSyntax);
-
-        // Since the tree is lazy evaluated, walk it and force evaluation of many attributes to catch bugs
-        SemanticTreeValidator.Validate(packageNode);
+        BuildSemanticTreeAndValidate(packageSyntax);
 
         NamespaceSymbolBuilder.BuildNamespaceSymbols(packageSyntax);
 
@@ -65,6 +61,18 @@ public class SemanticAnalyzer
         packageBuilder.Diagnostics.ThrowIfFatalErrors();
 
         return packageBuilder.Build();
+    }
+
+    private static void BuildSemanticTreeAndValidate(PackageSyntax<Package> packageSyntax)
+    {
+        // Start of new attribute grammar based approach
+        var packageNode = SyntaxBinder.Bind(packageSyntax);
+
+        // Since the tree is lazy evaluated, walk it and force evaluation of many attributes to catch bugs
+        SemanticTreeValidator.Validate(packageNode);
+
+        // If the semantic tree reports any fatal errors, don't continue on
+        packageNode.Diagnostics.ThrowIfFatalErrors();
     }
 
     private static PackageBuilder CheckSemantics(PackageSyntax<Package> packageSyntax)

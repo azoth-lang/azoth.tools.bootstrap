@@ -64,6 +64,7 @@ public partial interface IPackageNode : ISemanticNode
     FixedDictionary<IdentifierName,IPackageSymbolNode> SymbolNodes { get; }
     IPackageFacetNode MainFacet { get; }
     IPackageFacetNode TestingFacet { get; }
+    IFixedList<Diagnostic> Diagnostics { get; }
 }
 
 public partial interface IPackageReferenceNode : IChildNode
@@ -125,6 +126,7 @@ public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
     IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
     NamespaceScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
+    IFixedList<Diagnostic> Diagnostics { get; }
 }
 
 public partial interface IUsingDirectiveNode : ISemanticNode, ICodeNode

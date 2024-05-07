@@ -36,6 +36,10 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
         => lexicalScope.TryGetValue(out var value) ? value
             : lexicalScope.GetValue(this, LexicalScopeAttributes.CompilationUnit);
 
+    private ValueAttribute<IFixedList<Diagnostic>> diagnostics;
+    public IFixedList<Diagnostic> Diagnostics
+        => diagnostics.TryGetValue(out var value) ? value : diagnostics.GetValue(GetDiagnostics);
+
     public CompilationUnitNode(
         ICompilationUnitSyntax syntax,
         IEnumerable<IUsingDirectiveNode> usingDirectives,
@@ -55,4 +59,17 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
         => LexicalScope;
+
+    private IFixedList<Diagnostic> GetDiagnostics()
+    {
+        var diagnostics = new Diagnostics();
+        CollectionDiagnostics(diagnostics);
+        return diagnostics.Build();
+    }
+
+    protected override void CollectionDiagnostics(Diagnostics diagnostics)
+    {
+        DiagnosticsAttribute.CompilationUnitSyntaxDiagnostics(this, diagnostics);
+        base.CollectionDiagnostics(diagnostics);
+    }
 }

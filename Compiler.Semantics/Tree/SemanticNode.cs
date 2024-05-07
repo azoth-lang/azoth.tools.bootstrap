@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -30,4 +31,10 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedContainingLexicalScope), caller, child));
+
+    protected virtual void CollectionDiagnostics(Diagnostics diagnostics)
+    {
+        foreach (var child in this.Children().Cast<SemanticNode>())
+            child.CollectionDiagnostics(diagnostics);
+    }
 }

@@ -21,7 +21,7 @@ Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPackageNode`
 // Declarations and TestingDeclarations types quoted so that is is not treated as a child node
 Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` SymbolNode:`IPackageSymbolNode`
     References:{PackageReference} SymbolNodes:`FixedDictionary<IdentifierName,IPackageSymbolNode>`
-    MainFacet:PackageFacet TestingFacet:PackageFacet;
+    MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`Diagnostic`*;
 
 PackageReference <: Child = Syntax:`IPackageReferenceSyntax` SymbolNode:`IPackageSymbolNode`
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
@@ -40,7 +40,8 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` File:`CodeFile`
     ContainingSymbolNode:`IPackageFacetSymbolNode` ContainingSymbol:`NamespaceSymbol`
     ImplicitNamespaceName:`NamespaceName` ImplicitNamespaceSymbolNode:`INamespaceSymbolNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*
-    ContainingLexicalScope:`NamespaceScope` LexicalScope:`LexicalScope`;
+    ContainingLexicalScope:`NamespaceScope` LexicalScope:`LexicalScope`
+    Diagnostics:`Diagnostic`*;
 
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 

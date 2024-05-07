@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core;
 
 [DebuggerDisplay("Count = {items.Count}")]
 [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
-public class Diagnostics : IEnumerable<Diagnostic>
+public class Diagnostics : IReadOnlyCollection<Diagnostic>
 {
     private readonly List<Diagnostic> items = new List<Diagnostic>();
 
@@ -31,13 +31,16 @@ public class Diagnostics : IEnumerable<Diagnostic>
         return items.ToFixedList();
     }
 
-    public void ThrowIfFatalErrors()
+    public IEnumerator<Diagnostic> GetEnumerator() => items.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)items).GetEnumerator();
+}
+
+public static class DiagnosticsExtensions
+{
+    public static void ThrowIfFatalErrors(this IReadOnlyCollection<Diagnostic> items)
     {
         if (items.Any(i => i.IsFatal))
             throw new FatalCompilationErrorException(items.ToFixedList());
     }
-
-    public IEnumerator<Diagnostic> GetEnumerator() => items.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)items).GetEnumerator();
 }
