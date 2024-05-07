@@ -31,7 +31,7 @@ PackageFacet <: Child = Syntax:`IPackageSyntax` PackageName:`IdentifierName`
     PackageNameScope:`PackageNameScope`
     CompilationUnits:{CompilationUnit} Declarations:`IFixedSet<IPackageMemberDeclarationNode>`;
 
-PackageMemberDeclaration <: NamespaceMemberDeclaration;
+PackageMemberDeclaration <: NamespaceMemberDeclaration = SymbolNode:`IPackageMemberSymbolNode`;
 
 // ---------- Code Files
 Code <: Child = Syntax:`IConcreteSyntax` File:`CodeFile`;
@@ -47,7 +47,7 @@ UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
 // ---------- Declarations
 Declaration <: Code = Syntax:`IDeclarationSyntax` ContainingSymbolNode:`ISymbolNode` ContainingSymbol:`Symbol`
-    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
+    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope` SymbolNode:`IDeclarationSymbolNode`;
 
 // ---------- Namespaces
 NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`
@@ -55,7 +55,7 @@ NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarati
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*
     ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol`
     SymbolNode:`INamespaceSymbolNode` Symbol:`NamespaceSymbol`;
-NamespaceMemberDeclaration <: Declaration;
+NamespaceMemberDeclaration <: Declaration = SymbolNode:`INamespaceMemberSymbolNode`;
 
 // ---------- Type Declarations
 TypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
@@ -81,7 +81,8 @@ StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarat
 
 // ---------- Invocable Declarations
 FunctionDeclaration <: PackageMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`
-    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol` Name:`StandardName`;
+    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol` Name:`StandardName`
+    SymbolNode:`IFunctionSymbolNode`;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;

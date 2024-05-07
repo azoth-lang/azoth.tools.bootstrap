@@ -27,7 +27,7 @@ internal static class SymbolNodeAttribute
             BuildNamespace(packageSymbol, cu.ImplicitNamespaceName, cu.Declarations);
         return new SemanticPackageFacetSymbolNode(builder.Build());
 
-        void Build(NamespaceSymbol namespaceSymbol, INamespaceMemberDeclarationNode declaration)
+        void BuildMember(NamespaceSymbol namespaceSymbol, INamespaceMemberDeclarationNode declaration)
         {
             switch (declaration)
             {
@@ -37,11 +37,8 @@ internal static class SymbolNodeAttribute
                     var containingNamespace = n.IsGlobalQualified ? packageSymbol : namespaceSymbol;
                     BuildNamespace(containingNamespace, n.DeclaredNames, n.Declarations);
                     break;
-                case ITypeDeclarationNode n:
+                case IPackageMemberDeclarationNode n:
                     builder.Add(namespaceSymbol, n.SymbolNode);
-                    break;
-                case IFunctionDeclarationNode n:
-                    builder.Add(namespaceSymbol, BuildForFunction(n));
                     break;
             }
         }
@@ -51,12 +48,9 @@ internal static class SymbolNodeAttribute
         {
             var namespaceSymbol = builder.AddNamespace(containingNamespace, name);
             foreach (var declaration in declarations)
-                Build(namespaceSymbol, declaration);
+                BuildMember(namespaceSymbol, declaration);
         }
     }
-
-    private static IFunctionSymbolNode BuildForFunction(IFunctionDeclarationNode node)
-        => new SemanticFunctionSymbolNode(node);
 
     public static INamespaceSymbolNode CompilationUnit(ICompilationUnitNode node)
         => FindNamespace(node.ContainingSymbolNode.GlobalNamespace, node.ImplicitNamespaceName);
@@ -98,6 +92,9 @@ internal static class SymbolNodeAttribute
 
     public static ITraitSymbolNode TraitDeclaration(ITraitDeclarationNode node)
         => new SemanticTraitSymbolNode(node);
+
+    public static IFunctionSymbolNode FunctionDeclaration(IFunctionDeclarationNode node)
+        => new SemanticFunctionSymbolNode(node);
 
     public static ITypeSymbolNode? StandardTypeName(IStandardTypeNameNode node)
         => LookupSymbolNodes(node).TrySingle();

@@ -25,7 +25,7 @@ internal class NamespaceDeclarationNode : DeclarationNode, INamespaceDeclaration
     public override NamespaceSymbol ContainingSymbol => ContainingSymbolNode.Symbol;
 
     private ValueAttribute<INamespaceSymbolNode> symbolNode;
-    public INamespaceSymbolNode SymbolNode
+    public override INamespaceSymbolNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttribute.NamespaceDeclaration);
 

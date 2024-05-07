@@ -16,4 +16,5 @@ internal abstract class DeclarationNode : CodeNode, IDeclarationNode
         => containingLexicalScope.TryGetValue(out var value) ? value
             : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
     public abstract LexicalScope LexicalScope { get; }
+    public abstract IDeclarationSymbolNode SymbolNode { get; }
 }

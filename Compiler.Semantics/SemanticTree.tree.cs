@@ -94,6 +94,8 @@ public partial interface IPackageFacetNode : IChildNode
     typeof(IFunctionDeclarationNode))]
 public partial interface IPackageMemberDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
 {
+    new IPackageMemberSymbolNode SymbolNode { get; }
+    INamespaceMemberSymbolNode INamespaceMemberDeclarationNode.SymbolNode => SymbolNode;
 }
 
 [Closed(
@@ -148,6 +150,7 @@ public partial interface IDeclarationNode : ISemanticNode, ICodeNode
     Symbol ContainingSymbol { get; }
     LexicalScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
+    IDeclarationSymbolNode SymbolNode { get; }
 }
 
 public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
@@ -164,7 +167,8 @@ public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMe
     ISymbolNode IDeclarationNode.ContainingSymbolNode => ContainingSymbolNode;
     new NamespaceSymbol ContainingSymbol { get; }
     Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
-    INamespaceSymbolNode SymbolNode { get; }
+    new INamespaceSymbolNode SymbolNode { get; }
+    INamespaceMemberSymbolNode INamespaceMemberDeclarationNode.SymbolNode => SymbolNode;
     NamespaceSymbol Symbol { get; }
 }
 
@@ -173,6 +177,8 @@ public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMe
     typeof(INamespaceDeclarationNode))]
 public partial interface INamespaceMemberDeclarationNode : IDeclarationNode
 {
+    new INamespaceMemberSymbolNode SymbolNode { get; }
+    IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
 }
 
 [Closed(
@@ -190,7 +196,10 @@ public partial interface ITypeDeclarationNode : IPackageMemberDeclarationNode, I
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
     StandardName Name { get; }
-    ITypeSymbolNode SymbolNode { get; }
+    new ITypeSymbolNode SymbolNode { get; }
+    IPackageMemberSymbolNode IPackageMemberDeclarationNode.SymbolNode => SymbolNode;
+    IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
+    INamespaceMemberSymbolNode INamespaceMemberDeclarationNode.SymbolNode => SymbolNode;
     IFixedList<IGenericParameterNode> GenericParameters { get; }
     IFixedList<ISupertypeNameNode> SupertypeNames { get; }
     IFixedList<ITypeMemberDeclarationNode> Members { get; }
@@ -314,6 +323,8 @@ public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNod
     new NamespaceSymbol ContainingSymbol { get; }
     Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
     StandardName Name { get; }
+    new IFunctionSymbolNode SymbolNode { get; }
+    IPackageMemberSymbolNode IPackageMemberDeclarationNode.SymbolNode => SymbolNode;
 }
 
 [Closed(

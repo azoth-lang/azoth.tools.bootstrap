@@ -19,6 +19,11 @@ internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IF
         => lexicalScope.TryGetValue(out var value) ? value
             : lexicalScope.GetValue(this, LexicalScopeAttributes.FunctionDeclaration);
 
+    private ValueAttribute<IFunctionSymbolNode> symbolNode;
+    public override IFunctionSymbolNode SymbolNode
+        => symbolNode.TryGetValue(out var value) ? value
+            : symbolNode.GetValue(this, SymbolNodeAttribute.FunctionDeclaration);
+
     public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax)
     {
         Syntax = syntax;

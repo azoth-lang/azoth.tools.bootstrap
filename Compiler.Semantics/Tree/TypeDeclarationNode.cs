@@ -13,7 +13,7 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
 {
     public abstract override ITypeDeclarationSyntax Syntax { get; }
     public StandardName Name => Syntax.Name;
-    public abstract ITypeSymbolNode SymbolNode { get; }
+    public abstract override ITypeSymbolNode SymbolNode { get; }
     public IFixedList<IGenericParameterNode> GenericParameters { get; }
     public IFixedList<ISupertypeNameNode> SupertypeNames { get; }
     public abstract IFixedList<ITypeMemberDeclarationNode> Members { get; }
