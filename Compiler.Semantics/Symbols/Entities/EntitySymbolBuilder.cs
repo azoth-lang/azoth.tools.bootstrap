@@ -208,11 +208,12 @@ public class EntitySymbolBuilder
 
         var packageName = @class.ContainingNamespaceSymbol.Package.Name;
         var typeParameters = BuildGenericParameterTypes(@class);
-        var genericParameterSymbols = BuildGenericParameterSymbols(@class, typeParameters).ToFixedList();
 
         var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
         var classType = ObjectType.CreateClass(packageName, @class.ContainingNamespaceName,
             @class.IsAbstract, @class.IsConst, @class.Name, typeParameters, superTypes);
+
+        var genericParameterSymbols = BuildGenericParameterSymbols(@class, typeParameters).ToFixedList();
 
         var classSymbol = new UserTypeSymbol(@class.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(classSymbol);
@@ -237,11 +238,12 @@ public class EntitySymbolBuilder
 
         var packageName = @struct.ContainingNamespaceSymbol.Package.Name;
         var typeParameters = BuildGenericParameterTypes(@struct);
-        var genericParameterSymbols = BuildGenericParameterSymbols(@struct, typeParameters).ToFixedList();
 
         var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
         var structType = StructType.Create(packageName, @struct.ContainingNamespaceName,
             @struct.IsConst, @struct.Name, typeParameters, superTypes);
+
+        var genericParameterSymbols = BuildGenericParameterSymbols(@struct, typeParameters).ToFixedList();
 
         var classSymbol = new UserTypeSymbol(@struct.ContainingNamespaceSymbol, structType);
         @struct.Symbol.Fulfill(classSymbol);
@@ -266,11 +268,12 @@ public class EntitySymbolBuilder
 
         var packageName = trait.ContainingNamespaceSymbol.Package.Name;
         var typeParameters = BuildGenericParameterTypes(trait);
-        var genericParameterSymbols = BuildGenericParameterSymbols(trait, typeParameters).ToFixedList();
 
         var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
         var traitType = ObjectType.CreateTrait(packageName, trait.ContainingNamespaceName,
             trait.IsConst, trait.Name, typeParameters, superTypes);
+
+        var genericParameterSymbols = BuildGenericParameterSymbols(trait, typeParameters).ToFixedList();
 
         var traitSymbol = new UserTypeSymbol(trait.ContainingNamespaceSymbol, traitType);
         trait.Symbol.Fulfill(traitSymbol);
