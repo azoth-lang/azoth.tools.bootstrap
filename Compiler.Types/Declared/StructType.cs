@@ -23,12 +23,12 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         bool isConst,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
-        Lazy<IFixedSet<BareReferenceType>> superTypes)
+        Lazy<IFixedSet<BareReferenceType>> supertypes)
     {
         Requires.That(nameof(genericParameters), name.GenericParameterCount == genericParameters.Count,
             "Count must match name count");
         return new(containingPackage, containingNamespace, isConst, name,
-            genericParameters, superTypes);
+            genericParameters, supertypes);
     }
 
     private StructType(

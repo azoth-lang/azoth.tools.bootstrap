@@ -17,14 +17,18 @@ internal static class TypeDeclarationsAspect
         var genericParameters = GetGenericParameters(node);
 
         // TODO properly handle super types
-        var superTypes = new Lazy<IFixedSet<BareReferenceType>>(FixedSet.Empty<BareReferenceType>());
+        var supertypes = new Lazy<IFixedSet<BareReferenceType>>(FixedSet.Empty<BareReferenceType>());
 
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
 
         var classType = ObjectType.CreateClass(packageName, containingNamespaceName, node.IsAbstract, node.IsConst,
-            node.Name, genericParameters, superTypes);
+            node.Name, genericParameters, supertypes);
         return classType;
     }
+
+    public static IFixedSet<BareReferenceType> ClassDeclaration_Supertypes(IClassDeclarationNode node)
+        // TODO properly handle super types
+        => FixedSet.Empty<BareReferenceType>();
 
     public static StructType StructDeclaration_DeclaredType(IStructDeclarationNode node)
     {
@@ -32,10 +36,10 @@ internal static class TypeDeclarationsAspect
         var genericParameters = GetGenericParameters(node);
 
         // TODO properly handle super types
-        var superTypes = new Lazy<IFixedSet<BareReferenceType>>(FixedSet.Empty<BareReferenceType>());
+        var supertypes = new Lazy<IFixedSet<BareReferenceType>>(FixedSet.Empty<BareReferenceType>());
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
         var structType = StructType.Create(packageName, containingNamespaceName, node.IsConst, node.Name,
-            genericParameters, superTypes);
+            genericParameters, supertypes);
 
         return structType;
     }
@@ -46,10 +50,10 @@ internal static class TypeDeclarationsAspect
         var genericParameters = GetGenericParameters(node);
 
         // TODO properly handle super types
-        var superTypes = new Lazy<IFixedSet<BareReferenceType>>(FixedSet.Empty<BareReferenceType>());
+        var supertypes = new Lazy<IFixedSet<BareReferenceType>>(FixedSet.Empty<BareReferenceType>());
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
         var traitType = ObjectType.CreateTrait(packageName, containingNamespaceName, node.IsConst, node.Name,
-            genericParameters, superTypes);
+            genericParameters, supertypes);
 
         return traitType;
     }
