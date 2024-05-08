@@ -1,23 +1,21 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 public sealed class GenericParameterTypeSymbol : TypeSymbol
 {
-    private readonly IPromise<UserTypeSymbol> containingSymbol;
     public override PackageSymbol Package => ContainingSymbol.Package ?? throw new ArgumentNullException();
-    public override UserTypeSymbol ContainingSymbol => containingSymbol.Result;
-    public override UserTypeSymbol ContextTypeSymbol => containingSymbol.Result;
+    public override UserTypeSymbol ContainingSymbol { get; }
+    public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public GenericParameterType DeclaresType { get; }
 
     public GenericParameterTypeSymbol(
-        IPromise<UserTypeSymbol> containingSymbol,
+        UserTypeSymbol containingSymbol,
         GenericParameterType declaresType)
         : base(declaresType.Name)
     {
-        this.containingSymbol = containingSymbol;
+        ContainingSymbol = containingSymbol;
         DeclaresType = declaresType;
     }
 
@@ -36,7 +34,7 @@ public sealed class GenericParameterTypeSymbol : TypeSymbol
 
     public override string ToILString()
     {
-        var containSymbolString = containingSymbol.IsFulfilled ? ContainingSymbol.ToILString() : containingSymbol.ToString();
+        var containSymbolString = ContainingSymbol.ToILString();
         return $"{containSymbolString}.{Name}";
     }
 }

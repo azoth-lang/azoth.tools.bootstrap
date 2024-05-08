@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -12,8 +11,7 @@ internal static class SymbolAttribute
         => new(node.ContainingSymbol, node.DeclaredType);
 
     public static GenericParameterTypeSymbol GenericParameter(IGenericParameterNode node)
-        // TODO deal with cycle that was handled by promise
-        => new GenericParameterTypeSymbol(Promise.ForValue(((ITypeDeclarationNode)node.Parent).Symbol), node.DeclaredType);
+        => new GenericParameterTypeSymbol(node.ContainingSymbol, node.DeclaredType);
 
     public static TypeSymbol? IdentifierTypeName(IIdentifierTypeNameNode node)
         => node.ReferencedSymbolNode?.Symbol;

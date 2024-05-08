@@ -273,6 +273,8 @@ public partial interface IGenericParameterNode : ISemanticNode, ICodeNode
     GenericParameter Parameter { get; }
     IDeclaredUserType ContainingDeclaredType { get; }
     GenericParameterType DeclaredType { get; }
+    ITypeSymbolNode ContainingSymbolNode { get; }
+    UserTypeSymbol ContainingSymbol { get; }
     GenericParameterTypeSymbol Symbol { get; }
 }
 

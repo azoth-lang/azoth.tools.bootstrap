@@ -18,7 +18,8 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
 
     public override CodeFile File => Syntax.File;
 
-    public IPackageFacetSymbolNode ContainingSymbolNode => (IPackageFacetSymbolNode)Parent.InheritedContainingSymbolNode(this, this);
+    public IPackageFacetSymbolNode ContainingSymbolNode
+        => (IPackageFacetSymbolNode)Parent.InheritedContainingSymbolNode(this, this);
     public NamespaceSymbol ContainingSymbol => ContainingSymbolNode.Symbol;
     public NamespaceName ImplicitNamespaceName => Syntax.ImplicitNamespaceName;
 

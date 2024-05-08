@@ -213,10 +213,11 @@ public class EntitySymbolBuilder
         var classType = ObjectType.CreateClass(packageName, @class.ContainingNamespaceName,
             @class.IsAbstract, @class.IsConst, @class.Name, genericParameters, superTypes);
 
-        var genericParameterSymbols = BuildGenericParameterSymbols(@class, classType.GenericParameterTypes).ToFixedList();
-
         var classSymbol = new UserTypeSymbol(@class.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(classSymbol);
+
+        var genericParameterSymbols
+            = BuildGenericParameterSymbols(@class, classType.GenericParameterTypes).ToFixedList();
 
         BuildSupertypes(@class, superTypes, typeDeclarations);
 
@@ -243,10 +244,11 @@ public class EntitySymbolBuilder
         var structType = StructType.Create(packageName, @struct.ContainingNamespaceName,
             @struct.IsConst, @struct.Name, genericParameters, superTypes);
 
-        var genericParameterSymbols = BuildGenericParameterSymbols(@struct, structType.GenericParameterTypes).ToFixedList();
-
         var classSymbol = new UserTypeSymbol(@struct.ContainingNamespaceSymbol, structType);
         @struct.Symbol.Fulfill(classSymbol);
+
+        var genericParameterSymbols
+            = BuildGenericParameterSymbols(@struct, structType.GenericParameterTypes).ToFixedList();
 
         BuildSupertypes(@struct, superTypes, typeDeclarations);
 
@@ -273,10 +275,11 @@ public class EntitySymbolBuilder
         var traitType = ObjectType.CreateTrait(packageName, trait.ContainingNamespaceName,
             trait.IsConst, trait.Name, genericParameters, superTypes);
 
-        var genericParameterSymbols = BuildGenericParameterSymbols(trait, traitType.GenericParameterTypes).ToFixedList();
-
         var traitSymbol = new UserTypeSymbol(trait.ContainingNamespaceSymbol, traitType);
         trait.Symbol.Fulfill(traitSymbol);
+
+        var genericParameterSymbols
+            = BuildGenericParameterSymbols(trait, traitType.GenericParameterTypes).ToFixedList();
 
         BuildSupertypes(trait, superTypes, typeDeclarations);
 
@@ -299,7 +302,7 @@ public class EntitySymbolBuilder
         ITypeDeclarationSyntax typeSyntax,
         IFixedList<GenericParameterType> genericParameterTypes)
     {
-        var typeSymbol = typeSyntax.Symbol;
+        var typeSymbol = typeSyntax.Symbol.Result;
         foreach (var (syn, genericParameter) in typeSyntax.GenericParameters.EquiZip(genericParameterTypes))
         {
             var genericParameterSymbol = new GenericParameterTypeSymbol(typeSymbol, genericParameter);

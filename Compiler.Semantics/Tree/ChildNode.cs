@@ -29,6 +29,9 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     internal override ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
         => Parent.InheritedContainingSymbolNode(this, child);
 
+    protected ISymbolNode InheritedContainingSymbolNode()
+        => Parent.InheritedContainingSymbolNode(this, this);
+
     internal override IPackageNode InheritedPackage(IChildNode caller, IChildNode child)
         => Parent.InheritedPackage(this, child);
 

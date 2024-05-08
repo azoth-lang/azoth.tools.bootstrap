@@ -21,20 +21,23 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
         => parameter.TryGetValue(out var value) ? value
             : parameter.GetValue(this, ParameterAttributes.GenericParameter);
 
+    private ValueAttribute<IDeclaredUserType> containingDeclaredType;
+    public IDeclaredUserType ContainingDeclaredType
+        => containingDeclaredType.TryGetValue(out var value) ? value
+            : containingDeclaredType.GetValue(InheritedContainingDeclaredType);
+
     private ValueAttribute<GenericParameterType> declaredType;
     public GenericParameterType DeclaredType
         => declaredType.TryGetValue(out var value) ? value
             : declaredType.GetValue(this, DeclaredTypeAttribute.GenericParameter);
 
+    public ITypeSymbolNode ContainingSymbolNode => (ITypeSymbolNode)InheritedContainingSymbolNode();
+    public UserTypeSymbol ContainingSymbol => ContainingSymbolNode.Symbol;
+
     private ValueAttribute<GenericParameterTypeSymbol> symbol;
     public GenericParameterTypeSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAttribute.GenericParameter);
-
-    private ValueAttribute<IDeclaredUserType> containingDeclaredType;
-    public IDeclaredUserType ContainingDeclaredType
-        => containingDeclaredType.TryGetValue(out var value) ? value
-            : containingDeclaredType.GetValue(InheritedContainingDeclaredType);
 
     public GenericParameterNode(IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint)
     {

@@ -81,7 +81,7 @@ TraitDeclaration <: TypeDeclaration = Syntax:`ITraitDeclarationSyntax` GenericPa
 GenericParameter <: Code = Syntax:`IGenericParameterSyntax`
     Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance`
     Parameter:`GenericParameter` ContainingDeclaredType:`IDeclaredUserType` DeclaredType:`GenericParameterType`
-    Symbol:`GenericParameterTypeSymbol`;
+    ContainingSymbolNode:`ITypeSymbolNode` ContainingSymbol:`UserTypeSymbol` Symbol:`GenericParameterTypeSymbol`;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberDeclaration <: Declaration = Syntax:`ITypeMemberDeclarationSyntax`;
