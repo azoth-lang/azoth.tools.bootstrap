@@ -26,7 +26,7 @@ internal class StructDeclarationSyntax : TypeDeclarationSyntax<IStructMemberDecl
         TextSpan nameSpan,
         string name,
         IFixedList<IGenericParameterSyntax> genericParameters,
-        IFixedList<ISupertypeNameSyntax> supertypesNames,
+        IFixedList<IStandardTypeNameSyntax> supertypesNames,
         Func<IStructDeclarationSyntax, (IFixedList<IStructMemberDeclarationSyntax>, TextSpan)> parseMembers)
         : base(containingNamespaceName, declaringType, headerSpan, file, accessModifier, constModifier, structKind as IMoveKeywordToken,
             nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypesNames)

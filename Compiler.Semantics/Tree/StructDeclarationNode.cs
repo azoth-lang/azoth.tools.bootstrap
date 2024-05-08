@@ -20,7 +20,7 @@ internal sealed class StructDeclarationNode : TypeDeclarationNode, IStructDeclar
     public StructDeclarationNode(
         IStructDeclarationSyntax syntax,
         IEnumerable<IGenericParameterNode> genericParameters,
-        IEnumerable<ISupertypeNameNode> supertypeNames,
+        IEnumerable<IStandardTypeNameNode> supertypeNames,
         IEnumerable<IStructMemberDeclarationNode> members)
         : base(genericParameters, supertypeNames)
     {

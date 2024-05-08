@@ -53,10 +53,6 @@ public class TypeKnownValidator : SyntaxWalker<bool>
                 WalkChildren(type, true);
                 type.NamedType.Known();
                 return;
-            case ISupertypeNameSyntax syn:
-                WalkChildren(syn, true);
-                syn.NamedType.Known();
-                return;
             case IVariableDeclarationStatementSyntax variableDeclaration:
                 WalkChildren(variableDeclaration, true);
                 variableDeclaration.Symbol.Result.Type.Known();

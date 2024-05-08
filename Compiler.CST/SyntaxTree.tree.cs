@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -27,7 +28,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(IDeclarationSyntax),
     typeof(ITypeDeclarationSyntax),
     typeof(IGenericParameterSyntax),
-    typeof(ISupertypeNameSyntax),
     typeof(IAttributeSyntax),
     typeof(ICapabilityConstraintSyntax),
     typeof(IParameterSyntax),
@@ -184,7 +184,7 @@ public partial interface ITypeDeclarationSyntax : IConcreteSyntax, INonMemberEnt
     IFixedList<IGenericParameterSyntax> GenericParameters { get; }
     new AcyclicPromise<UserTypeSymbol> Symbol { get; }
     IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
-    IFixedList<ISupertypeNameSyntax> SupertypeNames { get; }
+    IFixedList<IStandardTypeNameSyntax> SupertypeNames { get; }
     IFixedList<ITypeMemberDeclarationSyntax> Members { get; }
 }
 
@@ -199,7 +199,7 @@ public partial interface IClassDeclarationSyntax : IClassOrStructDeclarationSynt
 {
     IAbstractKeywordToken? AbstractModifier { get; }
     bool IsAbstract { get; }
-    ISupertypeNameSyntax? BaseTypeName { get; }
+    IStandardTypeNameSyntax? BaseTypeName { get; }
     ConstructorSymbol? DefaultConstructorSymbol { get; }
     new IFixedList<IClassMemberDeclarationSyntax> Members { get; }
     IFixedList<ITypeMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => Members;
@@ -238,13 +238,6 @@ public partial interface IGenericParameterSyntax : IConcreteSyntax
     ParameterIndependence Independence { get; }
     ParameterVariance Variance { get; }
     Promise<GenericParameterTypeSymbol> Symbol { get; }
-}
-
-public partial interface ISupertypeNameSyntax : IHasContainingLexicalScope, IConcreteSyntax
-{
-    TypeName Name { get; }
-    IFixedList<ITypeSyntax> TypeArguments { get; }
-    Promise<UserTypeSymbol?> ReferencedSymbol { get; }
 }
 
 [Closed(
@@ -537,6 +530,7 @@ public partial interface IStandardTypeNameSyntax : ITypeNameSyntax
 {
     new StandardName Name { get; }
     TypeName ITypeNameSyntax.Name => Name;
+    BareReferenceType? NamedBareType { get; }
 }
 
 [Closed(

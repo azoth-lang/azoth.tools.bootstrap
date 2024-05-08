@@ -65,7 +65,7 @@ internal static class SyntaxBinder
 
     private static IClassDeclarationNode ClassDeclaration(IClassDeclarationSyntax syntax)
         => new ClassDeclarationNode(syntax, GenericParameters(syntax.GenericParameters),
-            SupertypeName(syntax.BaseTypeName), SupertypeNames(syntax.SupertypeNames),
+            StandardTypeName(syntax.BaseTypeName), SupertypeNames(syntax.SupertypeNames),
             ClassMemberDeclarations(syntax.Members));
 
     private static IStructDeclarationNode StructDeclaration(IStructDeclarationSyntax syntax)
@@ -76,12 +76,10 @@ internal static class SyntaxBinder
         => new TraitDeclarationNode(syntax, GenericParameters(syntax.GenericParameters),
             SupertypeNames(syntax.SupertypeNames), TraitMemberDeclarations(syntax.Members));
 
-    private static IEnumerable<ISupertypeNameNode> SupertypeNames(IEnumerable<ISupertypeNameSyntax> syntax)
-        => syntax.Select(syn => SupertypeName(syn));
+    private static IEnumerable<IStandardTypeNameNode> SupertypeNames(IEnumerable<IStandardTypeNameSyntax> syntax)
+        => syntax.Select(syn => StandardTypeName(syn));
 
-    [return: NotNullIfNotNull(nameof(syntax))]
-    private static ISupertypeNameNode? SupertypeName(ISupertypeNameSyntax? syntax)
-        => syntax is not null ? new SupertypeNameNode(syntax, Types(syntax.TypeArguments)) : null;
+
     #endregion
 
     #region Type Declaration Parts
@@ -179,9 +177,11 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IStandardTypeNameNode StandardTypeName(IStandardTypeNameSyntax syntax)
+    [return: NotNullIfNotNull(nameof(syntax))]
+    private static IStandardTypeNameNode? StandardTypeName(IStandardTypeNameSyntax? syntax)
         => syntax switch
         {
+            null => null,
             IIdentifierTypeNameSyntax syn => IdentifierTypeName(syn),
             IGenericTypeNameSyntax syn => GenericTypeName(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)

@@ -67,10 +67,6 @@ public static class IConcreteSyntaxExtensions
             case IGenericParameterSyntax n:
                 yield return n.Constraint;
                 yield break;
-            case ISupertypeNameSyntax n:
-                foreach (var child in n.TypeArguments)
-                    yield return child;
-                yield break;
             case IAbstractMethodDeclarationSyntax n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)

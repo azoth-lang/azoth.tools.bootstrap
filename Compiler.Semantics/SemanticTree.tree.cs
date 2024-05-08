@@ -28,7 +28,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IStructDeclarationNode),
     typeof(ITraitDeclarationNode),
     typeof(IGenericParameterNode),
-    typeof(ISupertypeNameNode),
     typeof(IClassMemberDeclarationNode),
     typeof(ITraitMemberDeclarationNode),
     typeof(IStructMemberDeclarationNode),
@@ -105,7 +104,6 @@ public partial interface IPackageMemberDeclarationNode : ISemanticNode, INamespa
     typeof(IUsingDirectiveNode),
     typeof(IDeclarationNode),
     typeof(IGenericParameterNode),
-    typeof(ISupertypeNameNode),
     typeof(ICapabilityConstraintNode),
     typeof(ITypeNode))]
 public partial interface ICodeNode : IChildNode
@@ -205,7 +203,7 @@ public partial interface ITypeDeclarationNode : IPackageMemberDeclarationNode, I
     INamespaceMemberSymbolNode INamespaceMemberDeclarationNode.SymbolNode => SymbolNode;
     UserTypeSymbol Symbol { get; }
     IFixedList<IGenericParameterNode> GenericParameters { get; }
-    IFixedList<ISupertypeNameNode> SupertypeNames { get; }
+    IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
     IFixedList<ITypeMemberDeclarationNode> Members { get; }
 }
 
@@ -219,7 +217,7 @@ public partial interface IClassDeclarationNode : ISemanticNode, ITypeDeclaration
     ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
     IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
     bool IsAbstract { get; }
-    ISupertypeNameNode? BaseTypeName { get; }
+    IStandardTypeNameNode? BaseTypeName { get; }
     new IClassSymbolNode SymbolNode { get; }
     ITypeSymbolNode ITypeDeclarationNode.SymbolNode => SymbolNode;
     ObjectType Type { get; }
@@ -269,15 +267,6 @@ public partial interface IGenericParameterNode : ISemanticNode, ICodeNode
     Promise<IDeclaredUserType> ContainingDeclaredType { get; }
     GenericParameterType Type { get; }
     GenericParameterTypeSymbol Symbol { get; }
-}
-
-public partial interface ISupertypeNameNode : ISemanticNode, ICodeNode
-{
-    new ISupertypeNameSyntax Syntax { get; }
-    ISyntax ISemanticNode.Syntax => Syntax;
-    IConcreteSyntax ICodeNode.Syntax => Syntax;
-    TypeName Name { get; }
-    IFixedList<ITypeNode> TypeArguments { get; }
 }
 
 [Closed(

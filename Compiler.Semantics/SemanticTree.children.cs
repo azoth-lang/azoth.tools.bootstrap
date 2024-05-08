@@ -70,10 +70,6 @@ public static class ISemanticNodeExtensions
             case IGenericParameterNode n:
                 yield return n.Constraint;
                 yield break;
-            case ISupertypeNameNode n:
-                foreach (var child in n.TypeArguments)
-                    yield return child;
-                yield break;
             case IFunctionDeclarationNode n:
                 yield break;
             case ICapabilitySetNode n:

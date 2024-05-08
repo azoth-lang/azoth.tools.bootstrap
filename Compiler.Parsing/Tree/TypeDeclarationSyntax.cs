@@ -24,7 +24,7 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
     TypeName INonMemberEntityDeclarationSyntax.Name => Name;
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
     public new AcyclicPromise<UserTypeSymbol> Symbol { [DebuggerStepThrough] get; }
-    public IFixedList<ISupertypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
+    public IFixedList<IStandardTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public abstract IFixedList<TMember> Members { [DebuggerStepThrough] get; }
     IFixedList<ITypeMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => members.Value;
     private readonly Lazy<IFixedList<ITypeMemberDeclarationSyntax>> members;
@@ -40,7 +40,7 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
         TextSpan nameSpan,
         StandardName name,
         IFixedList<IGenericParameterSyntax> genericParameters,
-        IFixedList<ISupertypeNameSyntax> supertypeNames)
+        IFixedList<IStandardTypeNameSyntax> supertypeNames)
         : base(containingNamespaceName, headerSpan, file, name, nameSpan, new AcyclicPromise<UserTypeSymbol>())
     {
         DeclaringType = declaringType;

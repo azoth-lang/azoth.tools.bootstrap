@@ -20,7 +20,7 @@ internal sealed class TraitDeclarationNode : TypeDeclarationNode, ITraitDeclarat
     public TraitDeclarationNode(
         ITraitDeclarationSyntax syntax,
         IEnumerable<IGenericParameterNode> genericParameters,
-        IEnumerable<ISupertypeNameNode> supertypeNames,
+        IEnumerable<IStandardTypeNameNode> supertypeNames,
         IEnumerable<ITraitMemberDeclarationNode> members)
         : base(genericParameters, supertypeNames)
     {

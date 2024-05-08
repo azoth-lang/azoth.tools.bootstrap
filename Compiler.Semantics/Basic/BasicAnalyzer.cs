@@ -152,7 +152,7 @@ public class BasicAnalyzer
 
     private void CheckSupertypesAreOutputSafe(
         ITypeDeclarationSyntax typeDeclaration,
-        IFixedList<ISupertypeNameSyntax> allSuperTypes)
+        IFixedList<IStandardTypeNameSyntax> allSuperTypes)
     {
         var declaresType = typeDeclaration.Symbol.Result.DeclaresType;
         // TODO nested classes and traits need to be checked if nested inside of generic types
@@ -161,7 +161,7 @@ public class BasicAnalyzer
         var nonwritableSelf = declaresType.IsDeclaredConst ? true : (bool?)null;
         foreach (var typeNameSyntax in allSuperTypes)
         {
-            var type = typeNameSyntax.NamedType.Result;
+            var type = typeNameSyntax.NamedBareType;
             if (type is not null && !type.IsSupertypeOutputSafe(nonwritableSelf))
                 diagnostics.Add(TypeError.SupertypeMustBeOutputSafe(typeDeclaration.File, typeNameSyntax));
         }
@@ -176,11 +176,11 @@ public class BasicAnalyzer
 
         if (typeDeclaration is IClassDeclarationSyntax { BaseTypeName: var baseTypeNameSyntax })
             if (baseTypeNameSyntax is not null
-                && (!baseTypeNameSyntax.NamedType.Result?.SupertypeMaintainsIndependence(exact: true) ?? false))
+                && (!baseTypeNameSyntax.NamedBareType?.SupertypeMaintainsIndependence(exact: true) ?? false))
                 diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(typeDeclaration.File, baseTypeNameSyntax));
 
         foreach (var typeNameSyntax in typeDeclaration.SupertypeNames)
-            if (!typeNameSyntax.NamedType.Result?.SupertypeMaintainsIndependence(exact: false) ?? false)
+            if (!typeNameSyntax.NamedBareType?.SupertypeMaintainsIndependence(exact: false) ?? false)
                 diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(typeDeclaration.File, typeNameSyntax));
     }
 

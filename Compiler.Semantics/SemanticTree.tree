@@ -63,22 +63,20 @@ NamespaceMemberDeclaration <: Declaration = SymbolNode:`INamespaceMemberSymbolNo
 TypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     = Syntax:`ITypeDeclarationSyntax` IsConst:`bool` Name:`StandardName`
     SymbolNode:`ITypeSymbolNode` Symbol:`UserTypeSymbol`
-    GenericParameters:GenericParameter* SupertypeNames:SupertypeName* Members:TypeMemberDeclaration*;
+    GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TypeMemberDeclaration*;
 ClassDeclaration <: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:`bool` GenericParameters:GenericParameter*
-    BaseTypeName:SupertypeName? SupertypeNames:SupertypeName* SymbolNode:`IClassSymbolNode`
+    BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* SymbolNode:`IClassSymbolNode`
     Type:`ObjectType`
     Members:ClassMemberDeclaration*;
 StructDeclaration <: TypeDeclaration = Syntax:`IStructDeclarationSyntax` GenericParameters:GenericParameter*
-    SupertypeNames:SupertypeName* SymbolNode:`IStructSymbolNode` Members:StructMemberDeclaration*;
+    SupertypeNames:StandardTypeName* SymbolNode:`IStructSymbolNode` Members:StructMemberDeclaration*;
 TraitDeclaration <: TypeDeclaration = Syntax:`ITraitDeclarationSyntax` GenericParameters:GenericParameter*
-    SupertypeNames:SupertypeName* SymbolNode:`ITraitSymbolNode` Members:TraitMemberDeclaration*;
+    SupertypeNames:StandardTypeName* SymbolNode:`ITraitSymbolNode` Members:TraitMemberDeclaration*;
 
 // ---------- Type Declaration Parts
 GenericParameter <: Code = Syntax:`IGenericParameterSyntax`
     Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance`
     ContainingDeclaredType:`Promise<IDeclaredUserType>` Type:`GenericParameterType` Symbol:`GenericParameterTypeSymbol`;
-// TODO don't have a special type for this
-SupertypeName <: Code = Syntax:`ISupertypeNameSyntax` Name:`TypeName` TypeArguments:Type*;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberDeclaration <: Declaration = Syntax:`ITypeMemberDeclarationSyntax`;

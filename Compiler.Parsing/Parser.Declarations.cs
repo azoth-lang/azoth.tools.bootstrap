@@ -66,20 +66,10 @@ public partial class Parser
         return new ModifierParser(modifierTokens);
     }
 
-    private IFixedList<ISupertypeNameSyntax> ParseSupertypes()
+    private IFixedList<IStandardTypeNameSyntax> ParseSupertypes()
         => Tokens.Accept<ILessThanColonToken>()
-            ? AcceptManySeparated<ISupertypeNameSyntax, ICommaToken>(ParseSupertypeName)
-            : FixedList.Empty<ISupertypeNameSyntax>();
-
-    private ISupertypeNameSyntax ParseSupertypeName()
-    {
-        var identifier = Tokens.RequiredToken<IIdentifierToken>();
-        var name = identifier.Value;
-        var optionalGenerics = AcceptGenericTypeArguments();
-        var span = TextSpan.Covering(identifier.Span, optionalGenerics?.Span);
-        var typeArguments = optionalGenerics?.Arguments ?? FixedList.Empty<ITypeSyntax>();
-        return new SupertypeNameSyntax(span, name, typeArguments);
-    }
+            ? ParseStandardTypeNames()
+            : FixedList.Empty<IStandardTypeNameSyntax>();
 
     #region Parse Namespaces
     internal NamespaceDeclarationSyntax ParseNamespaceDeclaration(ModifierParser modifiers)
@@ -199,8 +189,8 @@ public partial class Parser
         var name = identifier.Value;
         var generic = AcceptGenericParameters();
         var genericParameters = generic?.Parameters ?? FixedList.Empty<IGenericParameterSyntax>();
-        ISupertypeNameSyntax? baseClass = null;
-        if (Tokens.Accept<IColonToken>()) baseClass = ParseSupertypeName();
+        IStandardTypeNameSyntax? baseClass = null;
+        if (Tokens.Accept<IColonToken>()) baseClass = ParseStandardTypeName();
         var superTypes = ParseSupertypes();
         var headerSpan = TextSpan.Covering(classKeywordSpan, identifier.Span, generic?.Span, baseClass?.Span,
             TextSpan.Covering(superTypes.Select(st => st.Span)));

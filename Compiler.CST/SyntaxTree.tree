@@ -12,6 +12,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Tokens;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -45,16 +46,15 @@ NamespaceDeclaration: NonMemberDeclaration = IsGlobalQualified:`bool` DeclaredNa
 // ---------- Non-Member Entity Declarations
 NonMemberEntityDeclaration: EntityDeclaration <: NonMemberDeclaration = Name:`TypeName`;
 TypeDeclaration <: NonMemberEntityDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
-    = ConstModifier:`IConstKeywordToken`? IsConst:`bool` MoveModifier:`IMoveKeywordToken`? IsMove:`bool` Name:`StandardName` GenericParameters:GenericParameter* Symbol:`AcyclicPromise<UserTypeSymbol>` SupertypeNames:SupertypeName* Members:TypeMemberDeclaration*;
+    = ConstModifier:`IConstKeywordToken`? IsConst:`bool` MoveModifier:`IMoveKeywordToken`? IsMove:`bool` Name:`StandardName` GenericParameters:GenericParameter* Symbol:`AcyclicPromise<UserTypeSymbol>` SupertypeNames:StandardTypeName* Members:TypeMemberDeclaration*;
 ClassOrStructDeclaration: TypeDeclaration;
-ClassDeclaration: ClassOrStructDeclaration = AbstractModifier:`IAbstractKeywordToken`? IsAbstract:`bool` GenericParameters:GenericParameter* BaseTypeName:SupertypeName? SupertypeNames:SupertypeName* DefaultConstructorSymbol:`ConstructorSymbol`? Members:ClassMemberDeclaration*;
-StructDeclaration: ClassOrStructDeclaration = GenericParameters:GenericParameter* SupertypeNames:SupertypeName* DefaultInitializerSymbol:`InitializerSymbol`? Members:StructMemberDeclaration*;
-TraitDeclaration: TypeDeclaration = GenericParameters:GenericParameter* SupertypeNames:SupertypeName* Members:TraitMemberDeclaration*;
+ClassDeclaration: ClassOrStructDeclaration = AbstractModifier:`IAbstractKeywordToken`? IsAbstract:`bool` GenericParameters:GenericParameter* BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* DefaultConstructorSymbol:`ConstructorSymbol`? Members:ClassMemberDeclaration*;
+StructDeclaration: ClassOrStructDeclaration = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* DefaultInitializerSymbol:`InitializerSymbol`? Members:StructMemberDeclaration*;
+TraitDeclaration: TypeDeclaration = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TraitMemberDeclaration*;
 FunctionDeclaration: NonMemberEntityDeclaration <: ConcreteInvocableDeclaration = Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return? Body Symbol:`AcyclicPromise<FunctionSymbol>`;
 
 // ---------- Non-Member Entity Declaration Parts
 GenericParameter = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance` Symbol:`Promise<GenericParameterTypeSymbol>`;
-SupertypeName: Concrete <: `IHasContainingLexicalScope` = Name:`TypeName` TypeArguments:Type* ReferencedSymbol:`Promise<UserTypeSymbol?>`;
 
 // ---------- Member Declarations Categories
 // Note: by declaring the DeclaringType property type with quotes, it avoids the system assuming it must represent a child syntax node
@@ -110,7 +110,7 @@ ExpressionBody: Body = ResultStatement Statements:Statement*;
 // ---------- Types
 Type;
 TypeName: Type <: `IHasContainingLexicalScope` = Name:`TypeName` ReferencedSymbol:`Promise<TypeSymbol?>`;
-StandardTypeName: TypeName = Name:`StandardName`;
+StandardTypeName: TypeName = Name:`StandardName` NamedBareType:`BareReferenceType`?;
 SimpleTypeName: TypeName;
 IdentifierTypeName: TypeName <: StandardTypeName, SimpleTypeName = Name:`IdentifierName`;
 SpecialTypeName: SimpleTypeName = Name:`SpecialTypeName`;

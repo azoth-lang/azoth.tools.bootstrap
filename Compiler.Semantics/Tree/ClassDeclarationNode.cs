@@ -12,8 +12,8 @@ internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarat
 {
     public override IClassDeclarationSyntax Syntax { get; }
     public bool IsAbstract => Syntax.AbstractModifier is not null;
-    private Child<ISupertypeNameNode>? baseTypeName;
-    public ISupertypeNameNode? BaseTypeName => baseTypeName?.Value;
+    private Child<IStandardTypeNameNode>? baseTypeName;
+    public IStandardTypeNameNode? BaseTypeName => baseTypeName?.Value;
 
     private ValueAttribute<IClassSymbolNode> symbolNode;
     public override IClassSymbolNode SymbolNode
@@ -30,8 +30,8 @@ internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarat
     public ClassDeclarationNode(
         IClassDeclarationSyntax syntax,
         IEnumerable<IGenericParameterNode> genericParameters,
-        ISupertypeNameNode? baseTypeName,
-        IEnumerable<ISupertypeNameNode> supertypeNames,
+        IStandardTypeNameNode? baseTypeName,
+        IEnumerable<IStandardTypeNameNode> supertypeNames,
         IEnumerable<IClassMemberDeclarationNode> members)
         : base(genericParameters, supertypeNames)
     {

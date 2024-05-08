@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -214,26 +215,35 @@ public class TypeResolver
     public BareType? EvaluateConstructableBareType(ITypeNameSyntax typeSyntax)
         => EvaluateBareType(typeSyntax, isAttribute: false);
 
-    public BareReferenceType? Evaluate(ISupertypeNameSyntax typeSyntax)
+    public BareReferenceType? EvaluateSupertype(IStandardTypeNameSyntax typeSyntax)
     {
-        var symbols = typeSyntax.LookupInContainingScope().Select(EnsureBuilt).ToFixedList();
-        var typeArguments = Evaluate(typeSyntax.TypeArguments, mustBeConstructable: false);
-        switch (symbols.Count)
+        return typeSyntax switch
         {
-            case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindName(file, typeSyntax.Span));
-                typeSyntax.ReferencedSymbol.Fulfill(null);
-                return typeSyntax.NamedType.Fulfill(null);
-            case 1:
-                var symbol = symbols.Single();
-                typeSyntax.ReferencedSymbol.Fulfill(symbol);
-                var declaredObjectType = symbol.DeclaresType;
-                var type = CheckTypeArgumentsAreConstructable(declaredObjectType.With(typeArguments), typeSyntax) as BareReferenceType;
-                return typeSyntax.NamedType.Fulfill(type);
-            default:
-                diagnostics.Add(NameBindingError.AmbiguousName(file, typeSyntax.Span));
-                typeSyntax.ReferencedSymbol.Fulfill(null);
-                return typeSyntax.NamedType.Fulfill(null);
+            IIdentifierTypeNameSyntax syn
+                => (BareReferenceType?)ResolveType(syn, isAttribute: false, FixedList.Empty<DataType>(), CreateType),
+            IGenericTypeNameSyntax syn
+                => (BareReferenceType?)ResolveType(syn, isAttribute: false, Evaluate(syn.TypeArguments, mustBeConstructable: false), CreateType),
+            _ => throw ExhaustiveMatch.Failed(typeSyntax)
+        };
+
+        BareReferenceType? CreateType(TypeSymbol symbol, IFixedList<DataType> typeArguments)
+        {
+            switch (symbol)
+            {
+                default:
+                    throw ExhaustiveMatch.Failed(symbol);
+                case PrimitiveTypeSymbol sym:
+                    throw new UnreachableException();
+                case UserTypeSymbol sym:
+                    var declaredObjectType = sym.DeclaresType;
+                    return CheckTypeArgumentsAreConstructable(declaredObjectType.With(typeArguments), typeSyntax) as BareReferenceType;
+                case GenericParameterTypeSymbol _:
+                    diagnostics.Add(TypeError.TypeParameterCannotBeUsedHere(file, typeSyntax));
+                    return null;
+                case EmptyTypeSymbol _:
+                    diagnostics.Add(TypeError.EmptyTypeCannotBeUsedHere(file, typeSyntax));
+                    return null;
+            }
         }
     }
 

@@ -8,6 +8,6 @@ public partial interface IClassDeclarationSyntax
 {
     void CreateDefaultConstructor(ISymbolTreeBuilder symbolTree);
 
-    IEnumerable<ISupertypeNameSyntax> AllSupertypeNames
+    IEnumerable<IStandardTypeNameSyntax> AllSupertypeNames
         => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
 }

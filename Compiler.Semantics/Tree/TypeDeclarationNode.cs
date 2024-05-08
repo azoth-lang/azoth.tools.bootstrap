@@ -21,7 +21,7 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
     public abstract override ITypeSymbolNode SymbolNode { get; }
     public UserTypeSymbol Symbol => SymbolNode.Symbol;
     public IFixedList<IGenericParameterNode> GenericParameters { get; }
-    public IFixedList<ISupertypeNameNode> SupertypeNames { get; }
+    public IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
     public abstract IFixedList<ITypeMemberDeclarationNode> Members { get; }
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
@@ -32,7 +32,7 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
 
     protected TypeDeclarationNode(
         IEnumerable<IGenericParameterNode> genericParameters,
-        IEnumerable<ISupertypeNameNode> supertypeNames)
+        IEnumerable<IStandardTypeNameNode> supertypeNames)
     {
         GenericParameters = ChildList.CreateFixed(this, genericParameters);
         SupertypeNames = ChildList.CreateFixed(this, supertypeNames);

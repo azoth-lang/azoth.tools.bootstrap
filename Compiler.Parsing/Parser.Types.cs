@@ -120,11 +120,14 @@ public partial class Parser
             IPrimitiveTypeToken _ => ParsePrimitiveType(),
             IOpenParenToken _ => ParseFunctionType(),
             // otherwise we want a type name
-            _ => ParseTypeName()
+            _ => ParseStandardTypeName()
         };
     }
 
-    private ITypeNameSyntax ParseTypeName()
+    private IFixedList<IStandardTypeNameSyntax> ParseStandardTypeNames()
+        => AcceptManySeparated<IStandardTypeNameSyntax, ICommaToken>(ParseStandardTypeName);
+
+    private IStandardTypeNameSyntax ParseStandardTypeName()
     {
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
@@ -135,9 +138,6 @@ public partial class Parser
 
         return new IdentifierTypeNameSyntax(identifier.Span, name);
     }
-
-    private IFixedList<ITypeNameSyntax> ParseTypeNames()
-        => AcceptManySeparated<ITypeNameSyntax, ICommaToken>(ParseTypeName);
 
     private (IFixedList<ITypeSyntax> Arguments, TextSpan Span)? AcceptGenericTypeArguments()
     {

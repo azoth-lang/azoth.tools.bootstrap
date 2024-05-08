@@ -23,7 +23,7 @@ internal class TraitDeclarationSyntax : TypeDeclarationSyntax<ITraitMemberDeclar
         TextSpan nameSpan,
         string name,
         IFixedList<IGenericParameterSyntax> genericParameters,
-        IFixedList<ISupertypeNameSyntax> supertypes,
+        IFixedList<IStandardTypeNameSyntax> supertypes,
         Func<ITraitDeclarationSyntax, (IFixedList<ITraitMemberDeclarationSyntax>, TextSpan)> parseMembers)
         : base(containingNamespaceName, declaringType, headerSpan, file, accessModifier, constModifier, moveModifier,
             nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypes)
