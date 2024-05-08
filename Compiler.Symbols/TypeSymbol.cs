@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -18,4 +19,6 @@ public abstract class TypeSymbol : Symbol
     {
         Name = name;
     }
+
+    public virtual DeclaredType? GetDeclaredType() => null;
 }

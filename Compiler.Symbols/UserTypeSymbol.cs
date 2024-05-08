@@ -27,6 +27,8 @@ public sealed class UserTypeSymbol : TypeSymbol
         DeclaresType = declaresType;
     }
 
+    public override DeclaredType GetDeclaredType() => DeclaresType.AsDeclaredType();
+
     #region Equals
     public override bool Equals(Symbol? other)
     {

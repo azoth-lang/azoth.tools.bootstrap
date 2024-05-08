@@ -122,8 +122,8 @@ public class TypeResolver
             {
                 PrimitiveTypeSymbol sym => sym.DeclaresType.WithRead(typeArguments),
                 UserTypeSymbol sym => sym.DeclaresType.WithRead(typeArguments),
-                GenericParameterTypeSymbol sym => sym.DeclaresType,
-                EmptyTypeSymbol sym => sym.DeclaresType,
+                GenericParameterTypeSymbol sym => sym.Type,
+                EmptyTypeSymbol sym => sym.Type,
                 _ => throw ExhaustiveMatch.Failed(symbol)
             };
         }
@@ -188,10 +188,10 @@ public class TypeResolver
                     return declaredObjectType.With(capability, typeArguments);
                 case GenericParameterTypeSymbol sym:
                     diagnostics.Add(TypeError.CapabilityAppliedToTypeParameter(file, typeSyntax));
-                    return sym.DeclaresType;
+                    return sym.Type;
                 case EmptyTypeSymbol sym:
                     diagnostics.Add(TypeError.CapabilityAppliedToEmptyType(file, typeSyntax));
-                    return sym.DeclaresType;
+                    return sym.Type;
             }
         }
     }

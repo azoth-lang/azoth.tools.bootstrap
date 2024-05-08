@@ -8,15 +8,15 @@ public sealed class GenericParameterTypeSymbol : TypeSymbol
     public override PackageSymbol Package => ContainingSymbol.Package ?? throw new ArgumentNullException();
     public override UserTypeSymbol ContainingSymbol { get; }
     public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
-    public GenericParameterType DeclaresType { get; }
+    public GenericParameterType Type { get; }
 
     public GenericParameterTypeSymbol(
         UserTypeSymbol containingSymbol,
-        GenericParameterType declaresType)
-        : base(declaresType.Name)
+        GenericParameterType type)
+        : base(type.Name)
     {
         ContainingSymbol = containingSymbol;
-        DeclaresType = declaresType;
+        Type = type;
     }
 
     #region Equals

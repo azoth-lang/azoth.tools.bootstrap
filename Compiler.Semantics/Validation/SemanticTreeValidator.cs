@@ -15,6 +15,11 @@ internal class SemanticTreeValidator
                 break;
         }
 
+        if (node is ITypeNode tn)
+        {
+            _ = tn.Type;
+        }
+
         // Validate Concrete Node Attributes
         switch (node)
         {

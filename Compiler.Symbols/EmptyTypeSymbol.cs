@@ -10,13 +10,13 @@ public sealed class EmptyTypeSymbol : TypeSymbol
     public override Symbol? ContainingSymbol => null;
     public override TypeSymbol? ContextTypeSymbol => null;
     public override SpecialTypeName Name { get; }
-    public EmptyType DeclaresType { get; }
+    public EmptyType Type { get; }
 
-    public EmptyTypeSymbol(EmptyType declaresType)
-        : base(declaresType.Name)
+    public EmptyTypeSymbol(EmptyType type)
+        : base(type.Name)
     {
-        Name = declaresType.Name;
-        DeclaresType = declaresType;
+        Name = type.Name;
+        Type = type;
     }
 
     public override bool Equals(Symbol? other)
@@ -25,10 +25,10 @@ public sealed class EmptyTypeSymbol : TypeSymbol
         if (ReferenceEquals(this, other)) return true;
         return other is EmptyTypeSymbol otherType
                && Name == otherType.Name
-               && DeclaresType == otherType.DeclaresType;
+               && Type == otherType.Type;
     }
 
-    public override int GetHashCode() => HashCode.Combine(Name, DeclaresType);
+    public override int GetHashCode() => HashCode.Combine(Name, Type);
 
     public override string ToILString() => Name.ToString();
 }

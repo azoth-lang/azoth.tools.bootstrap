@@ -26,6 +26,9 @@ public sealed class PrimitiveTypeSymbol : TypeSymbol
         DeclaresType = declaresType;
     }
 
+    public override DeclaredType GetDeclaredType() => DeclaresType;
+
+    #region Equality
     public override bool Equals(Symbol? other)
     {
         if (other is null) return false;
@@ -36,6 +39,7 @@ public sealed class PrimitiveTypeSymbol : TypeSymbol
     }
 
     public override int GetHashCode() => HashCode.Combine(Name, DeclaresType);
+    #endregion
 
     public override string ToILString() => Name.ToString();
 }
