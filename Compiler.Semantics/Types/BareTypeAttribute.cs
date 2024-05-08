@@ -15,13 +15,15 @@ internal static class BareTypeAttribute
 
     private static BareType? BuildBareType(TypeSymbol? symbol, IFixedList<DataType> typeArguments)
     {
-        // Empty and generic parameter types don't have a declared or bare type
+        // Empty and generic parameter types don't have a declared or bare type. Note: the number
+        // of arguments will match the type because name binding will only pick a matching type.
         var declaredType = symbol?.GetDeclaredType();
         return declaredType is not null ? BuildBareType(declaredType, typeArguments) : null;
     }
 
-    private static BareType? BuildBareType(DeclaredType type, IFixedList<DataType> typeArguments)
-        => type.GenericParameters.Count == typeArguments.Count ? type.With(typeArguments) : null;
+    private static BareType BuildBareType(DeclaredType type, IFixedList<DataType> typeArguments)
+        // The number of arguments will match the type because name binding will only pick a matching type
+        => type.With(typeArguments);
 
     public static BareType? GenericTypeName(IGenericTypeNameNode node)
         => BuildBareType(node.ReferencedSymbol, node.TypeArguments.Select(t => t.Type).ToFixedList());
