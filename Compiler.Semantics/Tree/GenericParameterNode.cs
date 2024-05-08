@@ -18,15 +18,23 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     public ParameterVariance Variance => Syntax.Variance;
     private ValueAttribute<GenericParameter> parameter;
     public GenericParameter Parameter
-        => parameter.TryGetValue(out var value) ? value : parameter.GetValue(this, ParameterAttributes.GenericParameter);
+        => parameter.TryGetValue(out var value) ? value
+            : parameter.GetValue(this, ParameterAttributes.GenericParameter);
 
-    private ValueAttribute<GenericParameterType> type;
-    public GenericParameterType Type
-        => type.TryGetValue(out var value) ? value : type.GetValue(this, TypeAttributes.GenericParameter);
+    private ValueAttribute<GenericParameterType> declaredType;
+    public GenericParameterType DeclaredType
+        => declaredType.TryGetValue(out var value) ? value
+            : declaredType.GetValue(this, DeclaredTypeAttribute.GenericParameter);
 
     private ValueAttribute<GenericParameterTypeSymbol> symbol;
     public GenericParameterTypeSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolAttribute.GenericParameter);
+        => symbol.TryGetValue(out var value) ? value
+            : symbol.GetValue(this, SymbolAttribute.GenericParameter);
+
+    private ValueAttribute<IDeclaredUserType> containingDeclaredType;
+    public IDeclaredUserType ContainingDeclaredType
+        => containingDeclaredType.TryGetValue(out var value) ? value
+            : containingDeclaredType.GetValue(InheritedContainingDeclaredType);
 
     public GenericParameterNode(IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint)
     {

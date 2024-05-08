@@ -10,7 +10,7 @@ internal abstract class SemanticTypeSymbolNode : SemanticDeclarationSymbolNode, 
 {
     protected abstract ITypeDeclarationNode Node { get; }
     public override StandardName Name => Node.Name;
-    public abstract override UserTypeSymbol Symbol { get; }
+    public override UserTypeSymbol Symbol => Node.Symbol;
     public abstract IFixedList<ITypeMemberSymbolNode> Members { get; }
     private MultiMapHashSet<StandardName, ITypeMemberSymbolNode>? membersByName;
 

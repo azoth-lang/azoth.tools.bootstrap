@@ -21,10 +21,10 @@ internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarat
             ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.ClassDeclaration);
 
-    private ValueAttribute<ObjectType> type;
-    public ObjectType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeAttributes.Class);
+    private ValueAttribute<ObjectType> declaredType;
+    public override ObjectType DeclaredType
+        => declaredType.TryGetValue(out var value) ? value
+            : declaredType.GetValue(this, DeclaredTypeAttribute.Class);
     public override IFixedList<IClassMemberDeclarationNode> Members { get; }
 
     public ClassDeclarationNode(

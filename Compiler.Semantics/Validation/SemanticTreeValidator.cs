@@ -36,13 +36,24 @@ internal class SemanticTreeValidator
                 break;
             case IClassDeclarationNode n:
                 _ = n.File;
-                _ = n.Type;
+                _ = n.DeclaredType;
+                _ = n.Symbol;
                 break;
             case IStructDeclarationNode n:
                 _ = n.File;
+                _ = n.DeclaredType;
+                _ = n.Symbol;
                 break;
             case ITraitDeclarationNode n:
                 _ = n.File;
+                _ = n.DeclaredType;
+                _ = n.Symbol;
+                break;
+            case IGenericParameterNode n:
+                _ = n.Parameter;
+                _ = n.ContainingDeclaredType;
+                _ = n.DeclaredType;
+                _ = n.Symbol;
                 break;
             case IFunctionDeclarationNode n:
                 _ = n.File;

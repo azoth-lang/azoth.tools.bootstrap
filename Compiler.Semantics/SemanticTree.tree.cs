@@ -197,6 +197,7 @@ public partial interface ITypeDeclarationNode : IPackageMemberDeclarationNode, I
     ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
     bool IsConst { get; }
     StandardName Name { get; }
+    IDeclaredUserType DeclaredType { get; }
     new ITypeSymbolNode SymbolNode { get; }
     IPackageMemberSymbolNode IPackageMemberDeclarationNode.SymbolNode => SymbolNode;
     IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
@@ -220,7 +221,8 @@ public partial interface IClassDeclarationNode : ISemanticNode, ITypeDeclaration
     IStandardTypeNameNode? BaseTypeName { get; }
     new IClassSymbolNode SymbolNode { get; }
     ITypeSymbolNode ITypeDeclarationNode.SymbolNode => SymbolNode;
-    ObjectType Type { get; }
+    new ObjectType DeclaredType { get; }
+    IDeclaredUserType ITypeDeclarationNode.DeclaredType => DeclaredType;
     new IFixedList<IClassMemberDeclarationNode> Members { get; }
     IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 }
@@ -236,6 +238,8 @@ public partial interface IStructDeclarationNode : ISemanticNode, ITypeDeclaratio
     IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
     new IStructSymbolNode SymbolNode { get; }
     ITypeSymbolNode ITypeDeclarationNode.SymbolNode => SymbolNode;
+    new StructType DeclaredType { get; }
+    IDeclaredUserType ITypeDeclarationNode.DeclaredType => DeclaredType;
     new IFixedList<IStructMemberDeclarationNode> Members { get; }
     IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 }
@@ -251,6 +255,8 @@ public partial interface ITraitDeclarationNode : ISemanticNode, ITypeDeclaration
     IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
     new ITraitSymbolNode SymbolNode { get; }
     ITypeSymbolNode ITypeDeclarationNode.SymbolNode => SymbolNode;
+    new ObjectType DeclaredType { get; }
+    IDeclaredUserType ITypeDeclarationNode.DeclaredType => DeclaredType;
     new IFixedList<ITraitMemberDeclarationNode> Members { get; }
     IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 }
@@ -265,7 +271,8 @@ public partial interface IGenericParameterNode : ISemanticNode, ICodeNode
     ParameterIndependence Independence { get; }
     ParameterVariance Variance { get; }
     GenericParameter Parameter { get; }
-    GenericParameterType Type { get; }
+    IDeclaredUserType ContainingDeclaredType { get; }
+    GenericParameterType DeclaredType { get; }
     GenericParameterTypeSymbol Symbol { get; }
 }
 

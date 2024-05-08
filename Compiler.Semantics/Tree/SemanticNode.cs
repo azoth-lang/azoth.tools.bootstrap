@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -31,6 +32,10 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedContainingLexicalScope), caller, child));
+
+    internal virtual IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
+        => throw new NotImplementedException(
+            Child.InheritFailedMessage(nameof(InheritedContainingDeclaredType), caller, child));
 
     protected virtual void CollectDiagnostics(Diagnostics diagnostics)
     {

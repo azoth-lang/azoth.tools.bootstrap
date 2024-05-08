@@ -5,7 +5,9 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -15,8 +17,12 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
     public abstract override ITypeDeclarationSyntax Syntax { get; }
     public bool IsConst => Syntax.IsConst;
     public StandardName Name => Syntax.Name;
+    public abstract IDeclaredUserType DeclaredType { get; }
     public abstract override ITypeSymbolNode SymbolNode { get; }
-    public UserTypeSymbol Symbol => SymbolNode.Symbol;
+    private ValueAttribute<UserTypeSymbol> symbol;
+    public UserTypeSymbol Symbol
+        => symbol.TryGetValue(out var value) ? value
+            : symbol.GetValue(this, SymbolAttribute.TypeDeclaration);
     public IFixedList<IGenericParameterNode> GenericParameters { get; }
     public IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
     public abstract IFixedList<ITypeMemberDeclarationNode> Members { get; }
@@ -36,4 +42,7 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
 
     internal override ITypeSymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
         => SymbolNodeAttributes.TypeDeclarationInherited(this);
+
+    internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
+        => ContainingDeclaredTypeAttribute.TypeDeclarationInherited(this);
 }
