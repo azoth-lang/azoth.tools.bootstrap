@@ -21,8 +21,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public abstract class DataType : Pseudotype, IEquatable<DataType>
 {
     #region Standard Types
-    public static readonly UnknownType Unknown = UnknownType.Instance;
-    public static readonly Promise<UnknownType> PromiseOfUnknown = Promise.ForValue(Unknown);
+    public static readonly DataType Unknown = UnknownType.Instance;
+    public static readonly Promise<UnknownType> PromiseOfUnknown = Promise.ForValue(UnknownType.Instance);
     public static readonly VoidType Void = VoidType.Instance;
     public static readonly NeverType Never = NeverType.Instance;
     public static readonly Promise<NeverType> PromiseOfNever = Promise.ForValue(Never);

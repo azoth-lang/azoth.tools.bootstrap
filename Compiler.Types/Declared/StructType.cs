@@ -60,6 +60,8 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     public override IFixedSet<BareReferenceType> Supertypes => supertypes.Result;
     public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
 
+    DeclaredType IDeclaredUserType.AsDeclaredType() => this;
+
     /// <summary>
     /// Make a version of this type for use as the default initializer parameter.
     /// </summary>

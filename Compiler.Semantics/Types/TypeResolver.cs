@@ -338,7 +338,7 @@ public class TypeResolver
                 var symbol = symbols.Single();
                 typeName.ReferencedSymbol.Fulfill(symbol);
                 var bareType = createType(symbol, typeArguments);
-                typeName.NamedType = (DataType?)bareType?.With(Capability.Identity) ?? DataType.Unknown;
+                typeName.NamedType = bareType?.With(Capability.Identity) ?? DataType.Unknown;
                 return bareType;
             default:
                 diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));

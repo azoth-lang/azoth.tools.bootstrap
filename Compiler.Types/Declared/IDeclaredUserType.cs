@@ -27,6 +27,8 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
     bool IsGeneric { get; }
     IFixedSet<BareReferenceType> Supertypes { get; }
 
+    DeclaredType AsDeclaredType();
+
     BareType With(IFixedList<DataType> typeArguments);
     CapabilityType With(Capability capability, IFixedList<DataType> typeArguments);
     CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<DataType> typeArguments);

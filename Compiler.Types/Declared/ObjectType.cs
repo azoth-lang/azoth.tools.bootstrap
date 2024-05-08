@@ -125,6 +125,8 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     public override IFixedSet<BareReferenceType> Supertypes => supertypes.Result;
     public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
 
+    DeclaredType IDeclaredUserType.AsDeclaredType() => this;
+
     /// <summary>
     /// Make a version of this type for use as the default constructor parameter.
     /// </summary>
@@ -180,13 +182,6 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
 
     public CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
-
-    /// <summary>
-    /// Make a version of this type that is the default read reference capability for the type. That
-    /// is either read-only or constant.
-    /// </summary>
-    public override ReferenceType<ObjectType> WithRead(IFixedList<DataType> typeArguments)
-        => With(IsDeclaredConst ? Capability.Constant : Capability.Read, typeArguments);
 
     /// <summary>
     /// Make a version of this type that is the default mutate reference capability for the type.

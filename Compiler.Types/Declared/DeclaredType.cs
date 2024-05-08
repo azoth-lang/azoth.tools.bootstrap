@@ -69,8 +69,8 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     /// Make a version of this type that is the default read reference capability for the type. That
     /// is either read-only or constant.
     /// </summary>
-    public virtual CapabilityType WithRead(IFixedList<DataType> typeArguments)
-        => With(IsDeclaredConst ? Capability.Constant : Capability.Read, typeArguments);
+    public CapabilityType WithRead(IFixedList<DataType> typeArguments)
+        => With(typeArguments).WithRead();
 
     #region Equality
     public abstract bool Equals(DeclaredType? other);

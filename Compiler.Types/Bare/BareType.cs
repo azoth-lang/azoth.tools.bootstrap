@@ -119,6 +119,13 @@ public abstract class BareType : IEquatable<BareType>
     public CapabilityTypeConstraint With(CapabilitySet capability)
         => new(capability, this);
 
+    /// <summary>
+    /// Make a version of this type that is the default read reference capability for the type. That
+    /// is either read-only or constant.
+    /// </summary>
+    public CapabilityType WithRead()
+        => With(IsDeclaredConst ? Capability.Constant : Capability.Read);
+
     #region Equality
     public sealed override bool Equals(object? obj)
     {

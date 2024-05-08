@@ -25,15 +25,6 @@ internal static class DeclaredTypeAttribute
         return classType;
     }
 
-    private static NamespaceName GetContainingNamespaceName(ITypeMemberDeclarationNode node)
-    {
-        // TODO correctly deal with containing namespace
-        var containingSymbol = node.ContainingSymbol;
-        while (containingSymbol is not NamespaceSymbol) containingSymbol = containingSymbol.ContainingSymbol!;
-        var containingNamespaceName = ((NamespaceSymbol)containingSymbol).NamespaceName;
-        return containingNamespaceName;
-    }
-
     public static StructType Struct(IStructDeclarationNode node)
     {
         var packageName = node.Package.Name;
@@ -58,6 +49,15 @@ internal static class DeclaredTypeAttribute
             genericParameters, superTypes);
 
         return traitType;
+    }
+
+    private static NamespaceName GetContainingNamespaceName(ITypeMemberDeclarationNode node)
+    {
+        // TODO correctly deal with containing namespace
+        var containingSymbol = node.ContainingSymbol;
+        while (containingSymbol is not NamespaceSymbol) containingSymbol = containingSymbol.ContainingSymbol!;
+        var containingNamespaceName = ((NamespaceSymbol)containingSymbol).NamespaceName;
+        return containingNamespaceName;
     }
 
     private static IFixedList<GenericParameter> GetGenericParameters(ITypeDeclarationNode node)

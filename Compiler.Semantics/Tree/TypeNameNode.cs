@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -15,5 +16,6 @@ internal abstract class TypeNameNode : TypeNode, ITypeNameNode
         => containingLexicalScope.TryGetValue(out var value) ? value
             : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
 
+    public abstract BareType? BareType { get; }
     public abstract TypeSymbol? ReferencedSymbol { get; }
 }

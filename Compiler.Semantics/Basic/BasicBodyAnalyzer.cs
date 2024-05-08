@@ -568,7 +568,7 @@ public class BasicBodyAnalyzer
                 if (stringSymbol is null)
                     diagnostics.Add(TypeError.NotImplemented(file, exp.Span, "Could not find string type for string literal."));
                 exp.DataType.Fulfill(stringSymbol?.DeclaresType.With(Capability.Constant, FixedList.Empty<DataType>())
-                                     ?? (DataType)DataType.Unknown);
+                                     ?? DataType.Unknown);
                 return new ExpressionResult(exp);
             case IBoolLiteralExpressionSyntax exp:
                 exp.DataType.Fulfill(exp.Value ? DataType.True : DataType.False);
@@ -2181,7 +2181,7 @@ public class BasicBodyAnalyzer
         AddImplicitConversionIfNeeded(leftOperand, DataType.Int, flow);
         AddImplicitConversionIfNeeded(rightOperand, DataType.Int, flow);
         return rangeSymbol?.DeclaresType.With(Capability.Constant, FixedList.Empty<DataType>())
-               ?? (DataType)DataType.Unknown;
+               ?? DataType.Unknown;
     }
 
     private static bool ExplicitConversionTypesAreCompatible(IExpressionSyntax expression, bool safeOnly, DataType convertToType)

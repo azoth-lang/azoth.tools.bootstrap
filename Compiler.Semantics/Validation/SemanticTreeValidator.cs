@@ -60,12 +60,18 @@ internal class SemanticTreeValidator
                 break;
             case IIdentifierTypeNameNode n:
                 _ = n.ReferencedSymbolNode;
+                _ = n.BareType;
+                _ = n.Type;
                 break;
             case IGenericTypeNameNode n:
                 _ = n.ReferencedSymbolNode;
+                _ = n.BareType;
+                _ = n.Type;
                 break;
             case ISpecialTypeNameNode n:
                 _ = n.ReferencedSymbol;
+                _ = n.BareType;
+                _ = n.Type;
                 break;
         }
 

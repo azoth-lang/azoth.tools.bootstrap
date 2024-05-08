@@ -1,12 +1,12 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
@@ -372,6 +372,7 @@ public partial interface ITypeNode : ISemanticNode, ICodeNode
     new ITypeSyntax Syntax { get; }
     ISyntax ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
+    DataType Type { get; }
 }
 
 [Closed(
@@ -385,6 +386,7 @@ public partial interface ITypeNameNode : ITypeNode
     TypeName Name { get; }
     LexicalScope ContainingLexicalScope { get; }
     TypeSymbol? ReferencedSymbol { get; }
+    BareType? BareType { get; }
 }
 
 [Closed(
@@ -432,6 +434,8 @@ public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
     TypeName ITypeNameNode.Name => Name;
     new TypeSymbol ReferencedSymbol { get; }
     TypeSymbol? ITypeNameNode.ReferencedSymbol => ReferencedSymbol;
+    new BareType BareType { get; }
+    BareType? ITypeNameNode.BareType => BareType;
 }
 
 public partial interface IGenericTypeNameNode : IStandardTypeNameNode
