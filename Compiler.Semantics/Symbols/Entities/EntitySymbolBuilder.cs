@@ -322,18 +322,7 @@ public class EntitySymbolBuilder
         yield return BareType.Any;
 
         var resolver = new TypeResolver(syn.File, diagnostics, selfType: null, typeDeclarations);
-        if (syn is IClassDeclarationSyntax { BaseTypeName: not null and var baseTypeName })
-        {
-            var superType = resolver.EvaluateSupertype(baseTypeName);
-            if (superType is not null)
-            {
-                yield return superType;
-                foreach (var inheritedType in superType.Supertypes)
-                    yield return inheritedType;
-            }
-        }
-
-        foreach (var supertype in syn.SupertypeNames)
+        foreach (var supertype in syn.AllSupertypeNames)
         {
             var superType = resolver.EvaluateSupertype(supertype);
             if (superType is not null)
