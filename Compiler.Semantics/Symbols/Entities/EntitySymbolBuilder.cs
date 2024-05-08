@@ -316,15 +316,10 @@ public class EntitySymbolBuilder
         AcyclicPromise<IFixedSet<BareReferenceType>> supertypes,
         TypeSymbolBuilder typeDeclarations)
     {
-        if (!supertypes.TryBeginFulfilling(AddCircularDefinitionError)) return;
+        // No one else will fulfill the promise, so we can safely begin fulfilling it here
+        supertypes.BeginFulfilling();
 
         supertypes.Fulfill(EvaluateSupertypes(syn, typeDeclarations).ToFixedSet());
-        return;
-
-        void AddCircularDefinitionError()
-        {
-            diagnostics.Add(OtherSemanticError.CircularDefinition(syn.File, syn.NameSpan, syn));
-        }
     }
 
     private IEnumerable<BareReferenceType> EvaluateSupertypes(
