@@ -2,10 +2,8 @@ using System;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -50,10 +48,4 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected LexicalScope InheritedContainingLexicalScope()
         => Parent.InheritedContainingLexicalScope(this, this);
-
-    internal override Promise<IDeclaredUserType> InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
-        => Parent.InheritedContainingDeclaredType(this, child);
-
-    protected Promise<IDeclaredUserType> InheritedContainingDeclaredType()
-        => Parent.InheritedContainingDeclaredType(this, this);
 }

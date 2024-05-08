@@ -264,7 +264,7 @@ public partial interface IGenericParameterNode : ISemanticNode, ICodeNode
     IdentifierName Name { get; }
     ParameterIndependence Independence { get; }
     ParameterVariance Variance { get; }
-    Promise<IDeclaredUserType> ContainingDeclaredType { get; }
+    GenericParameter Parameter { get; }
     GenericParameterType Type { get; }
     GenericParameterTypeSymbol Symbol { get; }
 }

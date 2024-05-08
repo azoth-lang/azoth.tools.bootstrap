@@ -1,5 +1,4 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
@@ -17,7 +16,10 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     public IdentifierName Name => Syntax.Name;
     public ParameterIndependence Independence => Syntax.Independence;
     public ParameterVariance Variance => Syntax.Variance;
-    public Promise<IDeclaredUserType> ContainingDeclaredType => InheritedContainingDeclaredType();
+    private ValueAttribute<GenericParameter> parameter;
+    public GenericParameter Parameter
+        => parameter.TryGetValue(out var value) ? value : parameter.GetValue(this, ParameterAttributes.GenericParameter);
+
     private ValueAttribute<GenericParameterType> type;
     public GenericParameterType Type
         => type.TryGetValue(out var value) ? value : type.GetValue(this, TypeAttributes.GenericParameter);

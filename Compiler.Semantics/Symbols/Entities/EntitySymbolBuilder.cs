@@ -207,13 +207,13 @@ public class EntitySymbolBuilder
         if (!@class.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
         var packageName = @class.ContainingNamespaceSymbol.Package.Name;
-        var typeParameters = BuildGenericParameterTypes(@class);
+        var genericParameters = BuildGenericParameters(@class);
 
         var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
         var classType = ObjectType.CreateClass(packageName, @class.ContainingNamespaceName,
-            @class.IsAbstract, @class.IsConst, @class.Name, typeParameters, superTypes);
+            @class.IsAbstract, @class.IsConst, @class.Name, genericParameters, superTypes);
 
-        var genericParameterSymbols = BuildGenericParameterSymbols(@class, typeParameters).ToFixedList();
+        var genericParameterSymbols = BuildGenericParameterSymbols(@class, classType.GenericParameterTypes).ToFixedList();
 
         var classSymbol = new UserTypeSymbol(@class.ContainingNamespaceSymbol, classType);
         @class.Symbol.Fulfill(classSymbol);
@@ -237,13 +237,13 @@ public class EntitySymbolBuilder
         if (!@struct.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
         var packageName = @struct.ContainingNamespaceSymbol.Package.Name;
-        var typeParameters = BuildGenericParameterTypes(@struct);
+        var genericParameters = BuildGenericParameters(@struct);
 
         var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
         var structType = StructType.Create(packageName, @struct.ContainingNamespaceName,
-            @struct.IsConst, @struct.Name, typeParameters, superTypes);
+            @struct.IsConst, @struct.Name, genericParameters, superTypes);
 
-        var genericParameterSymbols = BuildGenericParameterSymbols(@struct, typeParameters).ToFixedList();
+        var genericParameterSymbols = BuildGenericParameterSymbols(@struct, structType.GenericParameterTypes).ToFixedList();
 
         var classSymbol = new UserTypeSymbol(@struct.ContainingNamespaceSymbol, structType);
         @struct.Symbol.Fulfill(classSymbol);
@@ -267,13 +267,13 @@ public class EntitySymbolBuilder
         if (!trait.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
 
         var packageName = trait.ContainingNamespaceSymbol.Package.Name;
-        var typeParameters = BuildGenericParameterTypes(trait);
+        var genericParameters = BuildGenericParameters(trait);
 
         var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
         var traitType = ObjectType.CreateTrait(packageName, trait.ContainingNamespaceName,
-            trait.IsConst, trait.Name, typeParameters, superTypes);
+            trait.IsConst, trait.Name, genericParameters, superTypes);
 
-        var genericParameterSymbols = BuildGenericParameterSymbols(trait, typeParameters).ToFixedList();
+        var genericParameterSymbols = BuildGenericParameterSymbols(trait, traitType.GenericParameterTypes).ToFixedList();
 
         var traitSymbol = new UserTypeSymbol(trait.ContainingNamespaceSymbol, traitType);
         trait.Symbol.Fulfill(traitSymbol);
@@ -291,13 +291,9 @@ public class EntitySymbolBuilder
         }
     }
 
-    private static IFixedList<GenericParameterType> BuildGenericParameterTypes(ITypeDeclarationSyntax type)
-    {
-        var declaredType = new Promise<IDeclaredUserType>();
-        return type.GenericParameters
-                   .Select(p => new GenericParameterType(declaredType, new GenericParameter(p.Constraint.Constraint, p.Name, p.Independence, p.Variance)))
-                   .ToFixedList();
-    }
+    private static IFixedList<GenericParameter> BuildGenericParameters(ITypeDeclarationSyntax type)
+        => type.GenericParameters.Select(p =>
+            new GenericParameter(p.Constraint.Constraint, p.Name, p.Independence, p.Variance)).ToFixedList();
 
     private static IEnumerable<GenericParameterTypeSymbol> BuildGenericParameterSymbols(
         ITypeDeclarationSyntax typeSyntax,

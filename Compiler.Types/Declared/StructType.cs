@@ -23,13 +23,13 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         NamespaceName containingNamespace,
         bool isConst,
         StandardName name,
-        IFixedList<GenericParameterType> genericParametersTypes,
+        IFixedList<GenericParameter> genericParameters,
         IPromise<IFixedSet<BareReferenceType>> superTypes)
     {
-        Requires.That(nameof(genericParametersTypes), name.GenericParameterCount == genericParametersTypes.Count,
+        Requires.That(nameof(genericParameters), name.GenericParameterCount == genericParameters.Count,
             "Count must match name count");
         return new(containingPackage, containingNamespace, isConst, name,
-            genericParametersTypes, superTypes);
+            genericParameters, superTypes);
     }
 
     private StructType(
@@ -37,18 +37,15 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         NamespaceName containingNamespace,
         bool isConstType,
         StandardName name,
-        IFixedList<GenericParameterType> genericParametersTypes,
+        IFixedList<GenericParameter> genericParameters,
         IPromise<IFixedSet<BareReferenceType>> supertypes)
-        : base(isConstType, genericParametersTypes)
+        : base(isConstType, genericParameters)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
         Name = name;
         this.supertypes = supertypes;
-        // Fulfill the declaring type promise so the parameters are associated to this type
-        var declaringTypePromise = genericParametersTypes.Select(t => t.DeclaringTypePromise)
-                                                         .Distinct().SingleOrDefault();
-        declaringTypePromise?.Fulfill(this);
+        GenericParameterTypes = genericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList();
     }
 
     public override IdentifierName ContainingPackage { get; }
@@ -61,6 +58,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
 
     private readonly IPromise<IFixedSet<BareReferenceType>> supertypes;
     public override IFixedSet<BareReferenceType> Supertypes => supertypes.Result;
+    public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
 
     /// <summary>
     /// Make a version of this type for use as the default initializer parameter.

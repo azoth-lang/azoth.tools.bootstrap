@@ -46,19 +46,19 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public IFixedList<GenericParameter> GenericParameters { get; }
     public bool HasIndependentGenericParameters { get; }
     public bool AllowsVariance { get; }
-    public IFixedList<GenericParameterType> GenericParameterTypes { get; }
+    public virtual IFixedList<GenericParameterType> GenericParameterTypes
+        => FixedList.Empty<GenericParameterType>();
     public bool IsGeneric => GenericParameters.Any();
     public abstract IFixedSet<BareReferenceType> Supertypes { get; }
 
     private protected DeclaredType(
         bool isDeclaredConst,
-        IFixedList<GenericParameterType> genericParametersTypes)
+        IFixedList<GenericParameter> genericParameters)
     {
         IsDeclaredConst = isDeclaredConst;
-        GenericParameters = genericParametersTypes.Select(t => t.Parameter).ToFixedList();
+        GenericParameters = genericParameters;
         HasIndependentGenericParameters = GenericParameters.Any(p => p.HasIndependence);
         AllowsVariance = GenericParameters.Any(p => p.Variance != ParameterVariance.Invariant);
-        GenericParameterTypes = genericParametersTypes;
     }
 
     public abstract BareType With(IFixedList<DataType> typeArguments);
