@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -24,7 +23,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         bool isConst,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
-        IPromise<IFixedSet<BareReferenceType>> superTypes)
+        Lazy<IFixedSet<BareReferenceType>> superTypes)
     {
         Requires.That(nameof(genericParameters), name.GenericParameterCount == genericParameters.Count,
             "Count must match name count");
@@ -38,7 +37,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         bool isConstType,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
-        IPromise<IFixedSet<BareReferenceType>> supertypes)
+        Lazy<IFixedSet<BareReferenceType>> supertypes)
         : base(isConstType, genericParameters)
     {
         ContainingPackage = containingPackage;
@@ -56,8 +55,8 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
 
     public override StandardName Name { get; }
 
-    private readonly IPromise<IFixedSet<BareReferenceType>> supertypes;
-    public override IFixedSet<BareReferenceType> Supertypes => supertypes.Result;
+    private readonly Lazy<IFixedSet<BareReferenceType>> supertypes;
+    public override IFixedSet<BareReferenceType> Supertypes => supertypes.Value;
     public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
 
     DeclaredType IDeclaredUserType.AsDeclaredType() => this;

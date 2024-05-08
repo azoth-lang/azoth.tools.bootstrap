@@ -209,7 +209,7 @@ public class EntitySymbolBuilder
         var packageName = @class.ContainingNamespaceSymbol.Package.Name;
         var genericParameters = BuildGenericParameters(@class);
 
-        var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
+        var superTypes = new Lazy<IFixedSet<BareReferenceType>>(() => BuildSupertypes(@class, typeDeclarations));
         var classType = ObjectType.CreateClass(packageName, @class.ContainingNamespaceName,
             @class.IsAbstract, @class.IsConst, @class.Name, genericParameters, superTypes);
 
@@ -219,7 +219,7 @@ public class EntitySymbolBuilder
         var genericParameterSymbols
             = BuildGenericParameterSymbols(@class, classType.GenericParameterTypes).ToFixedList();
 
-        BuildSupertypes(@class, superTypes, typeDeclarations);
+        _ = superTypes.Value; // Force lazy evaluation
 
         symbolTree.Add(classSymbol);
 
@@ -240,7 +240,7 @@ public class EntitySymbolBuilder
         var packageName = @struct.ContainingNamespaceSymbol.Package.Name;
         var genericParameters = BuildGenericParameters(@struct);
 
-        var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
+        var superTypes = new Lazy<IFixedSet<BareReferenceType>>(() => BuildSupertypes(@struct, typeDeclarations));
         var structType = StructType.Create(packageName, @struct.ContainingNamespaceName,
             @struct.IsConst, @struct.Name, genericParameters, superTypes);
 
@@ -250,7 +250,7 @@ public class EntitySymbolBuilder
         var genericParameterSymbols
             = BuildGenericParameterSymbols(@struct, structType.GenericParameterTypes).ToFixedList();
 
-        BuildSupertypes(@struct, superTypes, typeDeclarations);
+        _ = superTypes.Value; // Force lazy evaluation
 
         symbolTree.Add(classSymbol);
 
@@ -271,7 +271,7 @@ public class EntitySymbolBuilder
         var packageName = trait.ContainingNamespaceSymbol.Package.Name;
         var genericParameters = BuildGenericParameters(trait);
 
-        var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
+        var superTypes = new Lazy<IFixedSet<BareReferenceType>>(() => BuildSupertypes(trait, typeDeclarations));
         var traitType = ObjectType.CreateTrait(packageName, trait.ContainingNamespaceName,
             trait.IsConst, trait.Name, genericParameters, superTypes);
 
@@ -281,7 +281,7 @@ public class EntitySymbolBuilder
         var genericParameterSymbols
             = BuildGenericParameterSymbols(trait, traitType.GenericParameterTypes).ToFixedList();
 
-        BuildSupertypes(trait, superTypes, typeDeclarations);
+        _ = superTypes.Value; // Force lazy evaluation
 
         symbolTree.Add(traitSymbol);
 
@@ -311,16 +311,8 @@ public class EntitySymbolBuilder
         }
     }
 
-    private void BuildSupertypes(
-        ITypeDeclarationSyntax syn,
-        AcyclicPromise<IFixedSet<BareReferenceType>> supertypes,
-        TypeSymbolBuilder typeDeclarations)
-    {
-        // No one else will fulfill the promise, so we can safely begin fulfilling it here
-        supertypes.BeginFulfilling();
-
-        supertypes.Fulfill(EvaluateSupertypes(syn, typeDeclarations).ToFixedSet());
-    }
+    private IFixedSet<BareReferenceType> BuildSupertypes(ITypeDeclarationSyntax syn, TypeSymbolBuilder typeDeclarations)
+        => EvaluateSupertypes(syn, typeDeclarations).ToFixedSet();
 
     private IEnumerable<BareReferenceType> EvaluateSupertypes(
         ITypeDeclarationSyntax syn,

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -16,7 +17,8 @@ internal static class DeclaredTypeAttribute
         var packageName = node.Package.Name;
         var genericParameters = GetGenericParameters(node);
 
-        var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
+        // TODO properly handle super types
+        var superTypes = new Lazy<IFixedSet<BareReferenceType>>(FixedSet.Empty<BareReferenceType>());
 
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
 
@@ -30,7 +32,8 @@ internal static class DeclaredTypeAttribute
         var packageName = node.Package.Name;
         var genericParameters = GetGenericParameters(node);
 
-        var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
+        // TODO properly handle super types
+        var superTypes = new Lazy<IFixedSet<BareReferenceType>>(FixedSet.Empty<BareReferenceType>());
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
         var structType = StructType.Create(packageName, containingNamespaceName, node.IsConst, node.Name,
             genericParameters, superTypes);
@@ -43,7 +46,8 @@ internal static class DeclaredTypeAttribute
         var packageName = node.Package.Name;
         var genericParameters = GetGenericParameters(node);
 
-        var superTypes = new AcyclicPromise<IFixedSet<BareReferenceType>>();
+        // TODO properly handle super types
+        var superTypes = new Lazy<IFixedSet<BareReferenceType>>(FixedSet.Empty<BareReferenceType>());
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
         var traitType = ObjectType.CreateTrait(packageName, containingNamespaceName, node.IsConst, node.Name,
             genericParameters, superTypes);
