@@ -21,7 +21,7 @@ internal sealed class TraitDeclarationNode : TypeDeclarationNode, ITraitDeclarat
     private ValueAttribute<ObjectType> declaredType;
     public override ObjectType DeclaredType
         => declaredType.TryGetValue(out var value) ? value
-            : declaredType.GetValue(this, DeclaredTypeAttribute.TraitDeclaration_DeclaredType);
+            : declaredType.GetValue(this, TypeDeclarationsAspect.TraitDeclaration_DeclaredType);
 
     public override IFixedList<ITraitMemberDeclarationNode> Members { get; }
 

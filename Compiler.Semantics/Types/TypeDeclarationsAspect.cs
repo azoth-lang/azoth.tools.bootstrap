@@ -9,7 +9,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
-internal static class DeclaredTypeAttribute
+internal static class TypeDeclarationsAspect
 {
     public static ObjectType ClassDeclaration_DeclaredType(IClassDeclarationNode node)
     {

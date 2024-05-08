@@ -24,7 +24,7 @@ internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarat
     private ValueAttribute<ObjectType> declaredType;
     public override ObjectType DeclaredType
         => declaredType.TryGetValue(out var value) ? value
-            : declaredType.GetValue(this, DeclaredTypeAttribute.ClassDeclaration_DeclaredType);
+            : declaredType.GetValue(this, TypeDeclarationsAspect.ClassDeclaration_DeclaredType);
     public override IFixedList<IClassMemberDeclarationNode> Members { get; }
 
     public ClassDeclarationNode(

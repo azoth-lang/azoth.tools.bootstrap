@@ -21,7 +21,7 @@ internal sealed class StructDeclarationNode : TypeDeclarationNode, IStructDeclar
     private ValueAttribute<StructType> declaredType;
     public override StructType DeclaredType
         => declaredType.TryGetValue(out var value) ? value
-            : declaredType.GetValue(this, DeclaredTypeAttribute.StructDeclaration_DeclaredType);
+            : declaredType.GetValue(this, TypeDeclarationsAspect.StructDeclaration_DeclaredType);
 
     public override IFixedList<IStructMemberDeclarationNode> Members { get; }
 
