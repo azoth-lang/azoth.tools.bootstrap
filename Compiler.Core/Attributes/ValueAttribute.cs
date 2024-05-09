@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -10,12 +9,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 public struct ValueAttribute<T>
 {
     private T? value;
-    private volatile AttributeState state; // Starts in Pending
+    // Declared as a uint to ensure Interlocked can be used on it (without any possible overhead)
+    private volatile uint state; // Starts in Pending
 
-    public bool TryGetValue(out T value)
+    public readonly bool TryGetValue(out T value)
     {
         // Volatile read ensures the value read cannot be moved before it
-        if (state == AttributeState.Fulfilled)
+        if (state == (uint)AttributeState.Fulfilled)
         {
             value = this.value!;
             return true;
@@ -28,7 +28,7 @@ public struct ValueAttribute<T>
     public T GetValue<TNode>(TNode node, Func<TNode, T> compute)
     {
 #pragma warning disable CS0420 // A reference to a volatile field will not be treated as volatile
-        var oldState = InterlockedCompareExchange(ref state, AttributeState.InProgress, AttributeState.Pending);
+        var oldState = (AttributeState)Interlocked.CompareExchange(ref state, (uint)AttributeState.InProgress, (uint)AttributeState.Pending);
 #pragma warning restore CS0420 // A reference to a volatile field will not be treated as volatile
         switch (oldState)
         {
@@ -38,7 +38,7 @@ public struct ValueAttribute<T>
                 // We have acquired the right to compute the value
                 value = compute(node);
                 // Volatile write ensures the value write cannot be moved after it
-                state = AttributeState.Fulfilled;
+                state = (byte)AttributeState.Fulfilled;
                 return value!;
             case AttributeState.InProgress:
                 throw new InvalidOperationException(CycleMessage());
@@ -51,7 +51,7 @@ public struct ValueAttribute<T>
     public T GetValue(Func<T> compute)
     {
 #pragma warning disable CS0420 // A reference to a volatile field will not be treated as volatile
-        var oldState = InterlockedCompareExchange(ref state, AttributeState.InProgress, AttributeState.Pending);
+        var oldState = (AttributeState)Interlocked.CompareExchange(ref state, (uint)AttributeState.InProgress, (uint)AttributeState.Pending);
 #pragma warning restore CS0420 // A reference to a volatile field will not be treated as volatile
         switch (oldState)
         {
@@ -61,7 +61,7 @@ public struct ValueAttribute<T>
                 // We have acquired the right to compute the value
                 value = compute();
                 // Volatile write ensures the value write cannot be moved after it
-                state = AttributeState.Fulfilled;
+                state = (byte)AttributeState.Fulfilled;
                 return value!;
             case AttributeState.InProgress:
                 throw new InvalidOperationException(CycleMessage());
@@ -69,12 +69,6 @@ public struct ValueAttribute<T>
             case AttributeState.Fulfilled:
                 return value!;
         }
-    }
-
-    private static AttributeState InterlockedCompareExchange(ref AttributeState location, AttributeState value, AttributeState comparand)
-    {
-        var result = Interlocked.CompareExchange(ref Unsafe.As<AttributeState, int>(ref location), (int)value, (int)comparand);
-        return (AttributeState)result;
     }
 
     private static string CycleMessage()
