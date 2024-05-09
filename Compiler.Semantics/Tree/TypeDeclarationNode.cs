@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -7,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -25,6 +27,7 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
             : symbol.GetValue(this, SymbolAttribute.TypeDeclaration);
     public IFixedList<IGenericParameterNode> GenericParameters { get; }
     public IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
+    public abstract CompilerResult<IFixedSet<BareReferenceType>> Supertypes { get; }
     public abstract IFixedList<ITypeMemberDeclarationNode> Members { get; }
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
@@ -45,4 +48,10 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
 
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
         => ContainingDeclaredTypeAttribute.TypeDeclarationInherited(this);
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        TypeDeclarationsAspect.TypeDeclaration_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
+    }
 }

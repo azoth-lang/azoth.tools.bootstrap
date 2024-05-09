@@ -63,7 +63,8 @@ NamespaceMemberDeclaration <: Declaration = SymbolNode:`INamespaceMemberSymbolNo
 TypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     = Syntax:`ITypeDeclarationSyntax` IsConst:`bool` Name:`StandardName`
     DeclaredType:`IDeclaredUserType` SymbolNode:`ITypeSymbolNode` Symbol:`UserTypeSymbol`
-    GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TypeMemberDeclaration*;
+    GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Supertypes:`CompilerResult<IFixedSet<BareReferenceType>>`
+    Members:TypeMemberDeclaration*;
 ClassDeclaration <: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:`bool` GenericParameters:GenericParameter*
     BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* SymbolNode:`IClassSymbolNode`
     DeclaredType:`ObjectType`

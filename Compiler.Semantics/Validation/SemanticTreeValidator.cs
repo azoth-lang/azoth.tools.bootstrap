@@ -5,19 +5,30 @@ internal class SemanticTreeValidator
     public static void Validate(ISemanticNode node)
     {
         // Validate Abstract Node Attributes
-        switch (node)
+        if (node is IDeclarationNode decl)
         {
-            case IDeclarationNode d:
-                _ = d.ContainingLexicalScope;
-                break;
-            case ITypeNameNode t:
-                _ = t.ContainingLexicalScope;
-                break;
+            _ = decl.ContainingLexicalScope;
         }
 
-        if (node is ITypeNode tn)
+        if (node is ITypeDeclarationNode typeDecl)
         {
-            _ = tn.Type;
+            _ = typeDecl.DeclaredType;
+            _ = typeDecl.Supertypes;
+        }
+        if (node is ITypeNameNode typeName)
+        {
+            _ = typeName.ContainingLexicalScope;
+            _ = typeName.ReferencedSymbol;
+            _ = typeName.BareType;
+            _ = typeName.Type;
+        }
+        if (node is IStandardTypeNameNode standardTypeName)
+        {
+            _ = standardTypeName.ReferencedSymbolNode;
+        }
+        if (node is ITypeNode type)
+        {
+            _ = type.Type;
         }
 
         // Validate Concrete Node Attributes
@@ -62,21 +73,6 @@ internal class SemanticTreeValidator
                 break;
             case IFunctionDeclarationNode n:
                 _ = n.File;
-                break;
-            case IIdentifierTypeNameNode n:
-                _ = n.ReferencedSymbolNode;
-                _ = n.BareType;
-                _ = n.Type;
-                break;
-            case IGenericTypeNameNode n:
-                _ = n.ReferencedSymbolNode;
-                _ = n.BareType;
-                _ = n.Type;
-                break;
-            case ISpecialTypeNameNode n:
-                _ = n.ReferencedSymbol;
-                _ = n.BareType;
-                _ = n.Type;
                 break;
         }
 

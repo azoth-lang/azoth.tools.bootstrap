@@ -116,4 +116,10 @@ public static class OtherSemanticError
         return new(file, inExpression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6018, $"`foreach` cannot operate on value of type `{type.ToILString()}` because its iterator does not have a `next()` method.");
     }
+
+    public static Diagnostic CircularDefinitionInSupertype(CodeFile file, IStandardTypeNameSyntax supertypeName)
+    {
+        return new(file, supertypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            6019, $"Circular definition found when trying to evaluate supertype `{supertypeName}`.");
+    }
 }

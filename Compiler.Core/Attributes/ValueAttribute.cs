@@ -1,7 +1,5 @@
 using System;
-using System.Diagnostics;
 using System.Threading;
-using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -35,13 +33,22 @@ public struct ValueAttribute<T>
             default:
                 throw ExhaustiveMatch.Failed(oldState);
             case AttributeState.Pending:
-                // We have acquired the right to compute the value
-                value = compute(node);
-                // Volatile write ensures the value write cannot be moved after it
-                state = (byte)AttributeState.Fulfilled;
-                return value!;
+                try
+                {
+                    // We have acquired the right to compute the value
+                    value = compute(node);
+                    // Volatile write ensures the value write cannot be moved after it
+                    state = (byte)AttributeState.Fulfilled;
+                    return value!;
+                }
+                catch
+                {
+                    // Return the attribute to the pending state so it will be recomputed
+                    state = (byte)AttributeState.Pending;
+                    throw;
+                }
             case AttributeState.InProgress:
-                throw new InvalidOperationException(CycleMessage());
+                throw new AttributeCycleException();
 
             case AttributeState.Fulfilled:
                 return value!;
@@ -58,26 +65,25 @@ public struct ValueAttribute<T>
             default:
                 throw ExhaustiveMatch.Failed(oldState);
             case AttributeState.Pending:
-                // We have acquired the right to compute the value
-                value = compute();
-                // Volatile write ensures the value write cannot be moved after it
-                state = (byte)AttributeState.Fulfilled;
-                return value!;
+                try
+                {
+                    // We have acquired the right to compute the value
+                    value = compute();
+                    // Volatile write ensures the value write cannot be moved after it
+                    state = (byte)AttributeState.Fulfilled;
+                    return value!;
+                }
+                catch
+                {
+                    // Return the attribute to the pending state so it will be recomputed
+                    state = (byte)AttributeState.Pending;
+                    throw;
+                }
             case AttributeState.InProgress:
-                throw new InvalidOperationException(CycleMessage());
+                throw new AttributeCycleException();
 
             case AttributeState.Fulfilled:
                 return value!;
         }
-    }
-
-    private static string CycleMessage()
-    {
-        var trace = new StackTrace(2, true);
-        var callerFrame = trace.GetFrame(0);
-        var callerMethod = callerFrame?.GetMethod();
-        var typeName = callerMethod?.DeclaringType?.GetFriendlyName();
-        var memberName = callerMethod?.GetProperty()?.Name ?? callerMethod?.Name;
-        return $"Cyclic dependency detected while computing `{typeName}.{memberName}`.";
     }
 }

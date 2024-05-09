@@ -205,6 +205,7 @@ public partial interface ITypeDeclarationNode : IPackageMemberDeclarationNode, I
     UserTypeSymbol Symbol { get; }
     IFixedList<IGenericParameterNode> GenericParameters { get; }
     IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
+    CompilerResult<IFixedSet<BareReferenceType>> Supertypes { get; }
     IFixedList<ITypeMemberDeclarationNode> Members { get; }
 }
 

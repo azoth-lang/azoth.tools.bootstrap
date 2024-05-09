@@ -201,6 +201,8 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
             && IsDeclaredConst == objectType.IsDeclaredConst
             && Name == objectType.Name
             && GenericParameters.ItemsEqual(objectType.GenericParameters);
+        // Supertypes and GenericParameterTypes are not considered because they are derived. Also,
+        // that prevents infinite recursion.
     }
 
     public bool Equals(IDeclaredUserType? other) => Equals(other as DeclaredType);
