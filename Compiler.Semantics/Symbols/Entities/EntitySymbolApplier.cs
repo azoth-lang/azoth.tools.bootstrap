@@ -22,7 +22,7 @@ internal class EntitySymbolApplier
 
     private static void Apply(IPackageFacetNode node)
     {
-        foreach (var n in node.Declarations.OfType<IClassDeclarationNode>())
+        foreach (var n in node.Declarations.OfType<ITypeDeclarationNode>())
         {
             var syntax = n.Syntax;
             syntax.Symbol.BeginFulfilling();

@@ -11,7 +11,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -48,7 +47,7 @@ public class EntitySymbolBuilder
         // Process all types first because they may be referenced by functions etc.
         var typeDeclarations = new TypeSymbolBuilder(this, entities.OfType<ITypeDeclarationSyntax>());
         foreach (var type in typeDeclarations)
-            BuildTypeSymbol(type, typeDeclarations);
+            BuildTypeSymbol(type);
 
         // Now resolve all other symbols (type declarations will already have symbols and won't be processed again)
         foreach (var entity in entities)
@@ -184,7 +183,7 @@ public class EntitySymbolBuilder
         BuildParameterSymbols(symbol, file, function.Parameters, parameterTypes);
     }
 
-    private void BuildTypeSymbol(ITypeDeclarationSyntax type, TypeSymbolBuilder typeDeclarations)
+    private void BuildTypeSymbol(ITypeDeclarationSyntax type)
     {
         switch (type)
         {
@@ -194,10 +193,10 @@ public class EntitySymbolBuilder
                 BuildClassSymbol(@class);
                 break;
             case IStructDeclarationSyntax @struct:
-                BuildStructSymbol(@struct, typeDeclarations);
+                BuildStructSymbol(@struct);
                 break;
             case ITraitDeclarationSyntax trait:
-                BuildTraitSymbol(trait, typeDeclarations);
+                BuildTraitSymbol(trait);
                 break;
         }
     }
@@ -214,105 +213,26 @@ public class EntitySymbolBuilder
         @class.CreateDefaultConstructor(symbolTree);
     }
 
-    private void BuildStructSymbol(IStructDeclarationSyntax @struct, TypeSymbolBuilder typeDeclarations)
+    private void BuildStructSymbol(IStructDeclarationSyntax @struct)
     {
-        if (!@struct.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
+        // Struct symbol already built by EntitySymbolApplier
+        var structSymbol = @struct.Symbol.Result;
+        symbolTree.Add(structSymbol);
 
-        var packageName = @struct.ContainingNamespaceSymbol.Package.Name;
-        var genericParameters = BuildGenericParameters(@struct);
+        // Generic parameter symbols already built by EntitySymbolApplier
+        symbolTree.Add(@struct.GenericParameters.Select(p => p.Symbol.Result));
 
-        var superTypes = new Lazy<IFixedSet<BareReferenceType>>(() => BuildSupertypes(@struct, typeDeclarations));
-        var structType = StructType.Create(packageName, @struct.ContainingNamespaceName,
-            @struct.IsConst, @struct.Name, genericParameters, superTypes);
-
-        var classSymbol = new UserTypeSymbol(@struct.ContainingNamespaceSymbol, structType);
-        @struct.Symbol.Fulfill(classSymbol);
-
-        var genericParameterSymbols
-            = BuildGenericParameterSymbols(@struct, structType.GenericParameterTypes).ToFixedList();
-
-        _ = superTypes.Value; // Force lazy evaluation
-
-        symbolTree.Add(classSymbol);
-
-        symbolTree.Add(genericParameterSymbols);
         @struct.CreateDefaultInitializer(symbolTree);
-        return;
-
-        void AddCircularDefinitionError()
-        {
-            diagnostics.Add(OtherSemanticError.CircularDefinition(@struct.File, @struct.NameSpan, @struct));
-        }
     }
 
-    private void BuildTraitSymbol(ITraitDeclarationSyntax trait, TypeSymbolBuilder typeDeclarations)
+    private void BuildTraitSymbol(ITraitDeclarationSyntax trait)
     {
-        if (!trait.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
-
-        var packageName = trait.ContainingNamespaceSymbol.Package.Name;
-        var genericParameters = BuildGenericParameters(trait);
-
-        var superTypes = new Lazy<IFixedSet<BareReferenceType>>(() => BuildSupertypes(trait, typeDeclarations));
-        var traitType = ObjectType.CreateTrait(packageName, trait.ContainingNamespaceName,
-            trait.IsConst, trait.Name, genericParameters, superTypes);
-
-        var traitSymbol = new UserTypeSymbol(trait.ContainingNamespaceSymbol, traitType);
-        trait.Symbol.Fulfill(traitSymbol);
-
-        var genericParameterSymbols
-            = BuildGenericParameterSymbols(trait, traitType.GenericParameterTypes).ToFixedList();
-
-        _ = superTypes.Value; // Force lazy evaluation
-
+        // Trait symbol already built by EntitySymbolApplier
+        var traitSymbol = trait.Symbol.Result;
         symbolTree.Add(traitSymbol);
 
-        symbolTree.Add(genericParameterSymbols);
-        return;
-
-        void AddCircularDefinitionError()
-        {
-            diagnostics.Add(OtherSemanticError.CircularDefinition(trait.File, trait.NameSpan, trait));
-        }
-    }
-
-    private static IFixedList<GenericParameter> BuildGenericParameters(ITypeDeclarationSyntax type)
-        => type.GenericParameters.Select(p =>
-            new GenericParameter(p.Constraint.Constraint, p.Name, p.Independence, p.Variance)).ToFixedList();
-
-    private static IEnumerable<GenericParameterTypeSymbol> BuildGenericParameterSymbols(
-        ITypeDeclarationSyntax typeSyntax,
-        IFixedList<GenericParameterType> genericParameterTypes)
-    {
-        var typeSymbol = typeSyntax.Symbol.Result;
-        foreach (var (syn, genericParameter) in typeSyntax.GenericParameters.EquiZip(genericParameterTypes))
-        {
-            var genericParameterSymbol = new GenericParameterTypeSymbol(typeSymbol, genericParameter);
-            syn.Symbol.Fulfill(genericParameterSymbol);
-            yield return genericParameterSymbol;
-        }
-    }
-
-    private IFixedSet<BareReferenceType> BuildSupertypes(ITypeDeclarationSyntax syn, TypeSymbolBuilder typeDeclarations)
-        => EvaluateSupertypes(syn, typeDeclarations).ToFixedSet();
-
-    private IEnumerable<BareReferenceType> EvaluateSupertypes(
-        ITypeDeclarationSyntax syn,
-        TypeSymbolBuilder typeDeclarations)
-    {
-        // Everything has `Any` as a supertype
-        yield return BareType.Any;
-
-        var resolver = new TypeResolver(syn.File, diagnostics, selfType: null, typeDeclarations);
-        foreach (var supertype in syn.AllSupertypeNames)
-        {
-            var superType = resolver.EvaluateSupertype(supertype);
-            if (superType is not null)
-            {
-                yield return superType;
-                foreach (var inheritedType in superType.Supertypes)
-                    yield return inheritedType;
-            }
-        }
+        // Generic parameter symbols already built by EntitySymbolApplier
+        symbolTree.Add(trait.GenericParameters.Select(p => p.Symbol.Result));
     }
 
     private static IFixedList<Parameter> ResolveParameterTypes(
@@ -483,7 +403,7 @@ public class EntitySymbolBuilder
         {
             if (promise.IsFulfilled) return promise.Result;
             var typeDeclaration = typeDeclarations[promise];
-            symbolBuilder.BuildTypeSymbol(typeDeclaration, this);
+            symbolBuilder.BuildTypeSymbol(typeDeclaration);
             return promise.Result;
         }
 
