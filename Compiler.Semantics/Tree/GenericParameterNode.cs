@@ -19,7 +19,7 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     private ValueAttribute<GenericParameter> parameter;
     public GenericParameter Parameter
         => parameter.TryGetValue(out var value) ? value
-            : parameter.GetValue(this, ParameterAttributes.GenericParameter);
+            : parameter.GetValue(this, TypeDeclarationsAspect.GenericParameter_Parameter);
 
     private ValueAttribute<IDeclaredUserType> containingDeclaredType;
     public IDeclaredUserType ContainingDeclaredType

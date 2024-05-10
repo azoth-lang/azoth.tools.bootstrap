@@ -61,6 +61,12 @@ internal static class TypeDeclarationsAspect
         // Use PublicationOnly so that initialization cycles are detected and thrown by the attributes
         => new(() => node.Supertypes.Value, LazyThreadSafetyMode.PublicationOnly);
 
+    public static GenericParameter GenericParameter_Parameter(IGenericParameterNode node)
+        => new GenericParameter(node.Constraint.Constraint, node.Name, node.Independence, node.Variance);
+
+    public static GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
+        => node.ContainingDeclaredType.GenericParameterTypes.Single(t => t.Parameter == node.Parameter);
+
     public static CompilerResult<IFixedSet<BareReferenceType>> TypeDeclaration_Supertypes(ITypeDeclarationNode node)
     {
         // Avoid creating the diagnostic list unless needed since typically there are no diagnostics
@@ -126,7 +132,4 @@ internal static class TypeDeclarationsAspect
                         arg.Parameter, arg.Argument);
         }
     }
-
-    public static GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
-        => node.ContainingDeclaredType.GenericParameterTypes.Single(t => t.Parameter == node.Parameter);
 }
