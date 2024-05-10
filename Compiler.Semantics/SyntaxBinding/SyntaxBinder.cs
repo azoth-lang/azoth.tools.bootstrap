@@ -134,7 +134,7 @@ internal static class SyntaxBinder
 
     #region Invocable Declarations
     private static IFunctionDeclarationNode FunctionDeclaration(IFunctionDeclarationSyntax syntax)
-        => new FunctionDeclarationNode(syntax);
+        => new FunctionDeclarationNode(syntax, NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
     #endregion
 
     #region Capabilities
@@ -153,13 +153,23 @@ internal static class SyntaxBinder
         => new CapabilityNode(syntax);
     #endregion
 
+    #region Parameters
+    private static IEnumerable<INamedParameterNode> NamedParameters(IEnumerable<INamedParameterSyntax> syntax)
+        => syntax.Select(NamedParameter);
+
+    private static INamedParameterNode NamedParameter(INamedParameterSyntax syntax)
+        => new NamedParameterNode(syntax, Type(syntax.Type));
+    #endregion
+
     #region Types
     private static IEnumerable<ITypeNode> Types(IFixedList<ITypeSyntax> syntax)
-        => syntax.Select(Type);
+        => syntax.Select(syn => Type(syn));
 
-    private static ITypeNode Type(ITypeSyntax syntax)
+    [return: NotNullIfNotNull(nameof(syntax))]
+    private static ITypeNode? Type(ITypeSyntax? syntax)
         => syntax switch
         {
+            null => null,
             ITypeNameSyntax syn => TypeName(syn),
             IOptionalTypeSyntax syn => OptionalType(syn),
             ICapabilityTypeSyntax syn => CapabilityType(syn),
@@ -214,7 +224,13 @@ internal static class SyntaxBinder
         => new CapabilityTypeNode(syntax, Capability(syntax.Capability), Type(syntax.Referent));
 
     private static IFunctionTypeNode FunctionType(IFunctionTypeSyntax syntax)
-        => throw new System.NotImplementedException();
+        => new FunctionTypeNode(syntax, ParameterTypes(syntax.Parameters), Type(syntax.Return.Referent));
+
+    private static IEnumerable<IParameterTypeNode> ParameterTypes(IEnumerable<IParameterTypeSyntax> syntax)
+        => syntax.Select(ParameterType);
+
+    private static IParameterTypeNode ParameterType(IParameterTypeSyntax syntax)
+        => new ParameterTypeNode(syntax, Type(syntax.Referent));
 
     private static IViewpointTypeNode ViewpointType(IViewpointTypeSyntax syntax)
         => throw new System.NotImplementedException();

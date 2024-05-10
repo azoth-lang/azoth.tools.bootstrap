@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
@@ -10,11 +11,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class FunctionType : NonEmptyType
 {
-    public FunctionType(IFixedList<Parameter> parameters, Return @return)
+    public FunctionType(IEnumerable<Parameter> parameters, Return @return)
     {
-        Parameters = parameters;
+        Parameters = parameters.ToFixedList();
         Return = @return;
-        IsFullyKnown = parameters.All(p => p.IsFullyKnown) && @return.IsFullyKnown;
+        IsFullyKnown = Parameters.All(p => p.IsFullyKnown) && @return.IsFullyKnown;
     }
 
     public IFixedList<Parameter> Parameters { get; }

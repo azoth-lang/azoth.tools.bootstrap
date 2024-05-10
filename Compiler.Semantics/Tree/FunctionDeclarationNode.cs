@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -5,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -23,9 +25,16 @@ internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IF
     public override IFunctionSymbolNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.FunctionDeclaration);
+    public IFixedList<INamedParameterNode> Parameters { get; }
+    public ITypeNode? Return { get; }
 
-    public FunctionDeclarationNode(IFunctionDeclarationSyntax syntax)
+    public FunctionDeclarationNode(
+        IFunctionDeclarationSyntax syntax,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode? @return)
     {
         Syntax = syntax;
+        Parameters = ChildList.CreateFixed(this, parameters);
+        Return = Child.Attach(this, @return);
     }
 }

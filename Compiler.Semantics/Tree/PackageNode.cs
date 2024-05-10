@@ -38,6 +38,10 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
             : diagnostics.GetValue(this, DiagnosticsAttribute.Package);
 
     public IFixedSet<IPackageReferenceNode> References { get; }
+    private ValueAttribute<IPackageReferenceNode> intrinsicsReference;
+    public IPackageReferenceNode IntrinsicsReference
+        => intrinsicsReference.TryGetValue(out var value) ? value
+            : intrinsicsReference.GetValue(this, IntrinsicsReferenceAttribute.Package);
     public IPackageFacetNode MainFacet { get; }
     public IPackageFacetNode TestingFacet { get; }
 

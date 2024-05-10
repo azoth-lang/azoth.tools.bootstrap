@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -28,7 +27,6 @@ internal static class BareTypeAttribute
     public static BareType? GenericTypeName(IGenericTypeNameNode node)
         => BuildBareType(node.ReferencedSymbol, node.TypeArguments.Select(t => t.Type).ToFixedList());
 
-    public static BareType SpecialTypeName(ISpecialTypeNameNode node)
-        => BuildBareType(node.ReferencedSymbol, FixedList.Empty<DataType>())
-            ?? throw new UnreachableException();
+    public static BareType? SpecialTypeName(ISpecialTypeNameNode node)
+        => BuildBareType(node.ReferencedSymbol, FixedList.Empty<DataType>());
 }

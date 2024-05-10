@@ -18,7 +18,7 @@ public sealed class PrimitiveSymbolTree : ISymbolTree
     private readonly FixedDictionary<Symbol, IFixedSet<Symbol>> symbolChildren;
     public IEnumerable<Symbol> Symbols => symbolChildren.Keys;
     private readonly FixedDictionary<DeclaredType, PrimitiveTypeSymbol> primitiveSymbolTypeLookup;
-    private readonly FixedDictionary<SpecialTypeName, PrimitiveTypeSymbol> primitiveSymbolNameLookup;
+    private readonly FixedDictionary<TypeName, TypeSymbol> symbolNameLookup;
     private readonly PrimitiveTypeSymbol anyTypeSymbol;
 
     public PrimitiveSymbolTree(FixedDictionary<Symbol, IFixedSet<Symbol>> symbolChildren)
@@ -28,7 +28,7 @@ public sealed class PrimitiveSymbolTree : ISymbolTree
         var primitiveSymbols = GlobalSymbols.OfType<PrimitiveTypeSymbol>().ToFixedSet();
         primitiveSymbolTypeLookup = primitiveSymbols.ToFixedDictionary(s => s.DeclaresType);
         anyTypeSymbol = primitiveSymbolTypeLookup[DeclaredType.Any];
-        primitiveSymbolNameLookup = primitiveSymbols.ToFixedDictionary(s => s.Name);
+        symbolNameLookup = GlobalSymbols.OfType<TypeSymbol>().ToFixedDictionary(s => s.Name!);
     }
 
     public bool Contains(Symbol symbol) => symbolChildren.ContainsKey(symbol);
@@ -42,9 +42,10 @@ public sealed class PrimitiveSymbolTree : ISymbolTree
             ? children : FixedSet.Empty<Symbol>();
     }
 
-    public PrimitiveTypeSymbol LookupSymbolForType(SimpleType type) => primitiveSymbolTypeLookup[type];
+    public PrimitiveTypeSymbol LookupSymbolForType(SimpleType type)
+        => primitiveSymbolTypeLookup[type];
 
     public PrimitiveTypeSymbol LookupSymbolForType(AnyType _) => anyTypeSymbol;
 
-    public PrimitiveTypeSymbol LookupSymbol(SpecialTypeName name) => primitiveSymbolNameLookup[name];
+    public TypeSymbol LookupSymbol(SpecialTypeName name) => symbolNameLookup[name];
 }

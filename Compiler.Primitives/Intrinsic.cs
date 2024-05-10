@@ -16,6 +16,8 @@ public static class Intrinsic
 {
     public static readonly FixedSymbolTree SymbolTree = DefineIntrinsicSymbols();
 
+    public static readonly PackageSymbol Package = SymbolTree.Package;
+
     public static readonly UserTypeSymbol Promise = Find<UserTypeSymbol>("Promise");
 
     public static readonly IDeclaredUserType PromiseType = Promise.DeclaresType;
@@ -64,7 +66,7 @@ public static class Intrinsic
 
     private static FixedSymbolTree DefineIntrinsicSymbols()
     {
-        var intrinsicsPackage = new PackageSymbol("azoth.intrinsics");
+        var intrinsicsPackage = new PackageSymbol("azoth.compiler.intrinsics");
         var tree = new SymbolTreeBuilder(intrinsicsPackage);
 
         var intrinsicsNamespace = new LocalNamespaceSymbol(intrinsicsPackage, "intrinsics");

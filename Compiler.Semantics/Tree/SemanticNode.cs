@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class SemanticNode : ISemanticNode
 {
-    public abstract ISyntax Syntax { get; }
+    public abstract ISyntax? Syntax { get; }
 
     internal virtual ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(

@@ -18,10 +18,11 @@ public struct Child<T>
 
 public static class Child
 {
-    public static TChild Attach<TParent, TChild>(TParent parent, TChild child)
+    [return: NotNullIfNotNull(nameof(child))]
+    public static TChild? Attach<TParent, TChild>(TParent parent, TChild? child)
         where TChild : class, IChild<TParent>
     {
-        child.AttachParent(parent);
+        child?.AttachParent(parent);
         return child;
     }
 

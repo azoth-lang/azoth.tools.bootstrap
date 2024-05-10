@@ -13,19 +13,22 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-Semantic = Syntax:`ISyntax`;
+Semantic = Syntax:`ISyntax`?;
 // Parent and Package types quoted so that is is not treated as a child node
 Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPackageNode`;
 
 // ---------- Packages
 // Declarations and TestingDeclarations types quoted so that is is not treated as a child node
 Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` SymbolNode:`IPackageSymbolNode`
-    References:{PackageReference} SymbolNodes:`FixedDictionary<IdentifierName,IPackageSymbolNode>`
+    References:{PackageReference} IntrinsicsReference:`IPackageReferenceNode`
+    SymbolNodes:`FixedDictionary<IdentifierName,IPackageSymbolNode>`
     MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`Diagnostic`*;
 
-PackageReference <: Child = Syntax:`IPackageReferenceSyntax` SymbolNode:`IPackageSymbolNode`
+PackageReference <: Child = Syntax:`IPackageReferenceSyntax`? SymbolNode:`IPackageSymbolNode`
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
 
 PackageFacet <: Child = Syntax:`IPackageSyntax` PackageName:`IdentifierName`
@@ -95,13 +98,24 @@ StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarat
 // ---------- Invocable Declarations
 FunctionDeclaration <: PackageMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`
     ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol` Name:`StandardName`
-    SymbolNode:`IFunctionSymbolNode`;
+    SymbolNode:`IFunctionSymbolNode` Parameters:NamedParameter* Return:Type?;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;
 CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint:`CapabilitySet`;
 // TODO have a way to make Capability hide Constraint
 Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability` Constraint:`Capability`;
+
+// ---------- Parameters
+Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Type:`Pseudotype` Unused:`bool`;
+/// A non-self parameter that can be declared in a constructor
+ConstructorOrInitializerParameter: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`;
+NamedParameter: ConstructorOrInitializerParameter = Syntax:`INamedParameterSyntax` IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`? TypeNode:Type Type:`DataType`;
+SelfParameter: Parameter = IsLentBinding:`bool`;
+ConstructorSelfParameter: SelfParameter = IsLentBinding:`bool` Capability Type:`DataType`;
+InitializerSelfParameter: SelfParameter = IsLentBinding:`bool` Capability Type:`DataType`;
+MethodSelfParameter: SelfParameter = IsLentBinding:`bool` Capability:CapabilityConstraint;
+FieldParameter: ConstructorOrInitializerParameter = Name:`IdentifierName`;
 
 // ---------- Types
 Type <: Code = Syntax:`ITypeSyntax` Type:`DataType`;
@@ -111,13 +125,13 @@ StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` Name:`StandardNa
 SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
 IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax` Name:`IdentifierName`;
 SpecialTypeName <: SimpleTypeName = Syntax:`ISpecialTypeNameSyntax` Name:`SpecialTypeName`
-    ReferencedSymbol:`TypeSymbol` BareType:`BareType`;
+    ReferencedSymbol:`TypeSymbol`;
 GenericTypeName <: StandardTypeName = Syntax:`IGenericTypeNameSyntax` Name:`GenericName` TypeArguments:Type*;
 QualifiedTypeName <: TypeName = Syntax:`IQualifiedTypeNameSyntax` Context:TypeName QualifiedName:StandardTypeName;
 OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;
 CapabilityType <: Type = Syntax:`ICapabilityTypeSyntax` Capability Referent:Type;
 FunctionType <: Type = Syntax:`IFunctionTypeSyntax` Parameters:ParameterType* Return:Type;
-ParameterType = Syntax:`IParameterTypeSyntax` IsLent:`bool` Referent:Type;
+ParameterType <: Code = Syntax:`IParameterTypeSyntax` IsLent:`bool` Referent:Type Parameter:`Parameter`;
 ViewpointType <: Type = Syntax:`IViewpointTypeSyntax` Referent:Type;
 CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSyntax` Capability Referent:Type;
 SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type;
