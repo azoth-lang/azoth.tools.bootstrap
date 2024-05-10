@@ -25,9 +25,6 @@ internal static class TypeDeclarationsAspect
             node.Name, GetGenericParameters(node), LazySupertypes(node));
     }
 
-    public static CompilerResult<IFixedSet<BareReferenceType>> ClassDeclaration_Supertypes(IClassDeclarationNode node)
-        => BuildSupertypes(node, node.BaseTypeName.YieldValue().Concat(node.SupertypeNames));
-
     public static StructType StructDeclaration_DeclaredType(IStructDeclarationNode node)
     {
         var genericParameters = GetGenericParameters(node);
@@ -38,9 +35,6 @@ internal static class TypeDeclarationsAspect
             genericParameters, LazySupertypes(node));
     }
 
-    public static CompilerResult<IFixedSet<BareReferenceType>> StructDeclaration_Supertypes(IStructDeclarationNode node)
-        => BuildSupertypes(node, node.SupertypeNames);
-
     public static ObjectType TraitDeclaration_DeclaredType(ITraitDeclarationNode node)
     {
         var genericParameters = GetGenericParameters(node);
@@ -50,9 +44,6 @@ internal static class TypeDeclarationsAspect
             node.IsConst, node.Name,
             genericParameters, LazySupertypes(node));
     }
-
-    public static CompilerResult<IFixedSet<BareReferenceType>> TraitDeclaration_Supertypes(ITraitDeclarationNode node)
-        => BuildSupertypes(node, node.SupertypeNames);
 
     private static NamespaceName GetContainingNamespaceName(ITypeMemberDeclarationNode node)
     {
@@ -70,9 +61,7 @@ internal static class TypeDeclarationsAspect
         // Use PublicationOnly so that initialization cycles are detected and thrown by the attributes
         => new(() => node.Supertypes.Value, LazyThreadSafetyMode.PublicationOnly);
 
-    private static CompilerResult<IFixedSet<BareReferenceType>> BuildSupertypes(
-        ITypeDeclarationNode typeNode,
-        IEnumerable<IStandardTypeNameNode> supertypeNames)
+    public static CompilerResult<IFixedSet<BareReferenceType>> TypeDeclaration_Supertypes(ITypeDeclarationNode node)
     {
         // Avoid creating the diagnostic list unless needed since typically there are no diagnostics
         List<Diagnostic>? diagnostics = null;
@@ -85,7 +74,7 @@ internal static class TypeDeclarationsAspect
 
             // Handled by supertype because that is the only syntax we have to apply the compiler
             // errors to. (Could possibly use type arguments in the future.)
-            foreach (var supertypeName in supertypeNames)
+            foreach (var supertypeName in node.AllSupertypeNames)
             {
                 if (supertypeName.BareType is not BareReferenceType bareSupertype)
                     // A diagnostic will be generated elsewhere for this case
@@ -98,7 +87,7 @@ internal static class TypeDeclarationsAspect
                 }
                 catch (AttributeCycleException)
                 {
-                    AddDiagnostic(OtherSemanticError.CircularDefinitionInSupertype(typeNode.File, supertypeName.Syntax));
+                    AddDiagnostic(OtherSemanticError.CircularDefinitionInSupertype(node.File, supertypeName.Syntax));
                     continue;
                 }
 

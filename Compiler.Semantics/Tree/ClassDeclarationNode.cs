@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -27,10 +25,7 @@ internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarat
     public override ObjectType DeclaredType
         => declaredType.TryGetValue(out var value) ? value
             : declaredType.GetValue(this, TypeDeclarationsAspect.ClassDeclaration_DeclaredType);
-    private ValueAttribute<CompilerResult<IFixedSet<BareReferenceType>>> supertypes;
-    public override CompilerResult<IFixedSet<BareReferenceType>> Supertypes
-        => supertypes.TryGetValue(out var value) ? value
-            : supertypes.GetValue(this, TypeDeclarationsAspect.ClassDeclaration_Supertypes);
+
     public override IFixedList<IClassMemberDeclarationNode> Members { get; }
 
     public ClassDeclarationNode(

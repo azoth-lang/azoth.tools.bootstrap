@@ -32,7 +32,11 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
         => supertypesLexicalScope.TryGetValue(out var value) ? value
             : supertypesLexicalScope.GetValue(this, LexicalScopeAttributes.TypeDeclaration_SupertypesLexicalScope);
     public IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
-    public abstract CompilerResult<IFixedSet<BareReferenceType>> Supertypes { get; }
+    private ValueAttribute<CompilerResult<IFixedSet<BareReferenceType>>> supertypes;
+    public CompilerResult<IFixedSet<BareReferenceType>> Supertypes
+        => supertypes.TryGetValue(out var value)
+            ? value
+            : supertypes.GetValue(this, TypeDeclarationsAspect.TypeDeclaration_Supertypes);
     public abstract IFixedList<ITypeMemberDeclarationNode> Members { get; }
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
