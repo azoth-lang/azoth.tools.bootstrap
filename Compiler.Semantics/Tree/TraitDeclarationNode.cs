@@ -16,8 +16,7 @@ internal sealed class TraitDeclarationNode : TypeDeclarationNode, ITraitDeclarat
 
     private ValueAttribute<ITraitDeclarationSymbolNode> symbolNode;
     public override ITraitDeclarationSymbolNode SymbolNode
-        => symbolNode.TryGetValue(out var value)
-            ? value
+        => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.TraitDeclaration);
 
     private ValueAttribute<ObjectType> declaredType;
