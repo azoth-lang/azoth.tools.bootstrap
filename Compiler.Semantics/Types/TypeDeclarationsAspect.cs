@@ -117,7 +117,26 @@ internal static class TypeDeclarationsAspect
     }
 
     public static void TypeDeclaration_ContributeDiagnostics(ITypeDeclarationNode node, Diagnostics diagnostics)
-        => diagnostics.Add(node.Supertypes.Diagnostics);
+    {
+        diagnostics.Add(node.Supertypes.Diagnostics);
+
+        diagnostics.Add(CheckTypeArgumentsAreConstructable(node));
+    }
+
+    private static IEnumerable<Diagnostic> CheckTypeArgumentsAreConstructable(ITypeDeclarationNode node)
+    {
+        foreach (IStandardTypeNameNode supertypeName in node.SupertypeNames)
+        {
+            var bareType = supertypeName.BareType;
+            if (bareType is null)
+                continue;
+
+            foreach (GenericParameterArgument arg in bareType.GenericParameterArguments)
+                if (!arg.IsConstructable())
+                    yield return TypeError.CapabilityNotCompatibleWithConstraint(node.File, supertypeName.Syntax,
+                        arg.Parameter, arg.Argument);
+        }
+    }
 
     public static GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
         => node.ContainingDeclaredType.GenericParameterTypes.Single(t => t.Parameter == node.Parameter);

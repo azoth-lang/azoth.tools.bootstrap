@@ -63,7 +63,8 @@ NamespaceMemberDeclaration <: Declaration = SymbolNode:`INamespaceMemberSymbolNo
 TypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     = Syntax:`ITypeDeclarationSyntax` IsConst:`bool` Name:`StandardName`
     DeclaredType:`IDeclaredUserType` SymbolNode:`ITypeDeclarationSymbolNode` Symbol:`UserTypeSymbol`
-    GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Supertypes:`CompilerResult<IFixedSet<BareReferenceType>>`
+    GenericParameters:GenericParameter* SupertypesLexicalScope:`LexicalScope`
+    SupertypeNames:StandardTypeName* Supertypes:`CompilerResult<IFixedSet<BareReferenceType>>`
     Members:TypeMemberDeclaration*;
 ClassDeclaration <: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:`bool` GenericParameters:GenericParameter*
     BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* SymbolNode:`IClassDeclarationSymbolNode`
@@ -82,7 +83,8 @@ TraitDeclaration <: TypeDeclaration = Syntax:`ITraitDeclarationSyntax` GenericPa
 GenericParameter <: Code = Syntax:`IGenericParameterSyntax`
     Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance`
     Parameter:`GenericParameter` ContainingDeclaredType:`IDeclaredUserType` DeclaredType:`GenericParameterType`
-    ContainingSymbolNode:`ITypeDeclarationSymbolNode` ContainingSymbol:`UserTypeSymbol` Symbol:`GenericParameterTypeSymbol`;
+    ContainingSymbolNode:`ITypeDeclarationSymbolNode` ContainingSymbol:`UserTypeSymbol`
+    SymbolNode:`IGenericParameterSymbolNode` Symbol:`GenericParameterTypeSymbol`;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberDeclaration <: Declaration = Syntax:`ITypeMemberDeclarationSyntax`;

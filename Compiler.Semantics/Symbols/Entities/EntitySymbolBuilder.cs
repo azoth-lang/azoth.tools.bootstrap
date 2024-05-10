@@ -191,7 +191,7 @@ public class EntitySymbolBuilder
             default:
                 throw ExhaustiveMatch.Failed(type);
             case IClassDeclarationSyntax @class:
-                BuildClassSymbol(@class, typeDeclarations);
+                BuildClassSymbol(@class);
                 break;
             case IStructDeclarationSyntax @struct:
                 BuildStructSymbol(@struct, typeDeclarations);
@@ -202,35 +202,16 @@ public class EntitySymbolBuilder
         }
     }
 
-    private void BuildClassSymbol(IClassDeclarationSyntax @class, TypeSymbolBuilder typeDeclarations)
+    private void BuildClassSymbol(IClassDeclarationSyntax @class)
     {
-        if (!@class.Symbol.TryBeginFulfilling(AddCircularDefinitionError)) return;
-
-        var packageName = @class.ContainingNamespaceSymbol.Package.Name;
-        var genericParameters = BuildGenericParameters(@class);
-
-        var superTypes = new Lazy<IFixedSet<BareReferenceType>>(() => BuildSupertypes(@class, typeDeclarations));
-        var classType = ObjectType.CreateClass(packageName, @class.ContainingNamespaceName,
-            @class.IsAbstract, @class.IsConst, @class.Name, genericParameters, superTypes);
-
-        var classSymbol = new UserTypeSymbol(@class.ContainingNamespaceSymbol, classType);
-        @class.Symbol.Fulfill(classSymbol);
-
-        var genericParameterSymbols
-            = BuildGenericParameterSymbols(@class, classType.GenericParameterTypes).ToFixedList();
-
-        _ = superTypes.Value; // Force lazy evaluation
-
+        // Class symbol already built by EntitySymbolApplier
+        var classSymbol = @class.Symbol.Result;
         symbolTree.Add(classSymbol);
 
-        symbolTree.Add(genericParameterSymbols);
-        @class.CreateDefaultConstructor(symbolTree);
-        return;
+        // Generic parameter symbols already built by EntitySymbolApplier
+        symbolTree.Add(@class.GenericParameters.Select(p => p.Symbol.Result));
 
-        void AddCircularDefinitionError()
-        {
-            diagnostics.Add(OtherSemanticError.CircularDefinition(@class.File, @class.NameSpan, @class));
-        }
+        @class.CreateDefaultConstructor(symbolTree);
     }
 
     private void BuildStructSymbol(IStructDeclarationSyntax @struct, TypeSymbolBuilder typeDeclarations)

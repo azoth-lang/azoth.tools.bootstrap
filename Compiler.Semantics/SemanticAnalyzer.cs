@@ -42,7 +42,7 @@ public class SemanticAnalyzer
         // If there are errors from the lex and parse phase, don't continue on
         packageSyntax.Diagnostics.ThrowIfFatalErrors();
 
-        BuildSemanticTreeAndValidate(packageSyntax);
+        var packageNode = BuildSemanticTreeAndValidate(packageSyntax);
 
         NamespaceSymbolBuilder.BuildNamespaceSymbols(packageSyntax);
 
@@ -50,7 +50,7 @@ public class SemanticAnalyzer
         new SymbolScopesBuilder().BuildFor(packageSyntax);
 
         // Check the semantics of the package
-        var packageBuilder = CheckSemantics(packageSyntax);
+        var packageBuilder = CheckSemantics(packageSyntax, packageNode);
 
         // If there are errors from the semantics phase, don't continue on
         packageBuilder.Diagnostics.ThrowIfFatalErrors();
@@ -63,7 +63,7 @@ public class SemanticAnalyzer
         return packageBuilder.Build();
     }
 
-    private static void BuildSemanticTreeAndValidate(PackageSyntax<Package> packageSyntax)
+    private static IPackageNode BuildSemanticTreeAndValidate(PackageSyntax<Package> packageSyntax)
     {
         // Start of new attribute grammar based approach
         var packageNode = SyntaxBinder.Bind(packageSyntax);
@@ -72,14 +72,18 @@ public class SemanticAnalyzer
         SemanticTreeValidator.Validate(packageNode);
 
         // If the semantic tree reports any fatal errors, don't continue on
-        packageNode.Diagnostics.ThrowIfFatalErrors();
+        // TODO add back once old semantic checks are removed
+        //packageNode.Diagnostics.ThrowIfFatalErrors();
+
+        return packageNode;
     }
 
-    private static PackageBuilder CheckSemantics(PackageSyntax<Package> packageSyntax)
+    private static PackageBuilder CheckSemantics(PackageSyntax<Package> packageSyntax, IPackageNode packageNode)
     {
         DeclarationNumberAssigner.AssignIn(packageSyntax.AllEntityDeclarations);
 
         // Resolve symbols for the entities
+        EntitySymbolApplier.Apply(packageNode);
         EntitySymbolBuilder.BuildFor(packageSyntax);
 
         var globalObjectTypeSymbols = packageSyntax.SymbolTrees.GlobalSymbols.OfType<UserTypeSymbol>().ToFixedList();
@@ -95,6 +99,8 @@ public class SemanticAnalyzer
         BasicAnalyzer.Check(packageSyntax, stringSymbol, rangeSymbol);
 
         // If there are errors from the basic analysis phase, don't continue on
+        // The syntax diagnostics are already included in the packageSyntax.Diagnostics
+        packageSyntax.Diagnostics.Add(packageNode.Diagnostics.Except(packageSyntax.Diagnostics));
         packageSyntax.Diagnostics.ThrowIfFatalErrors();
 
 #if DEBUG

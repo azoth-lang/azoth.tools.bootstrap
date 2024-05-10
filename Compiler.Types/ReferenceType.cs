@@ -100,7 +100,7 @@ public abstract class ReferenceType : CapabilityType
         if (ReferenceEquals(this, other)) return true;
         return other is ReferenceType otherType
                && Capability == otherType.Capability
-               && BareType == otherType.BareType;
+               && BareType.Equals(otherType.BareType);
     }
 
     public override int GetHashCode()

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -26,6 +27,10 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAttribute.TypeDeclaration);
     public IFixedList<IGenericParameterNode> GenericParameters { get; }
+    private ValueAttribute<LexicalScope> supertypesLexicalScope;
+    public LexicalScope SupertypesLexicalScope
+        => supertypesLexicalScope.TryGetValue(out var value) ? value
+            : supertypesLexicalScope.GetValue(this, LexicalScopeAttributes.TypeDeclaration_SupertypesLexicalScope);
     public IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
     public abstract CompilerResult<IFixedSet<BareReferenceType>> Supertypes { get; }
     public abstract IFixedList<ITypeMemberDeclarationNode> Members { get; }
@@ -43,11 +48,18 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
         SupertypeNames = ChildList.CreateFixed(this, supertypeNames);
     }
 
-    internal override ITypeSymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
+    internal override ITypeDeclarationSymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
         => SymbolNodeAttributes.TypeDeclarationInherited(this);
 
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
         => ContainingDeclaredTypeAttribute.TypeDeclarationInherited(this);
+
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
+    {
+        if (((ITypeDeclarationNode)this).AllSupertypeNames.Contains(caller))
+            return LexicalScopeAttributes.TypeDeclaration_InheritedLexicalScope_Supertypes(this);
+        return LexicalScopeAttributes.TypeDeclaration_InheritedLexicalScope(this);
+    }
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {

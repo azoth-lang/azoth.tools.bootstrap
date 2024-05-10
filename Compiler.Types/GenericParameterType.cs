@@ -44,8 +44,8 @@ public sealed class GenericParameterType : NonEmptyType
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is GenericParameterType otherType
-            && DeclaringType == otherType.DeclaringType
-            && Parameter == otherType.Parameter;
+            && DeclaringType.Equals(otherType.DeclaringType) // Must use Equals because they are interface types
+            && Parameter.Equals(otherType.Parameter);
     }
 
     public override int GetHashCode()

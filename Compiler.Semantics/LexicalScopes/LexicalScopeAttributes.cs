@@ -56,8 +56,22 @@ internal static class LexicalScopeAttributes
     public static LexicalScope NamespaceDeclaration(INamespaceDeclarationNode node)
         => BuildNamespaceScope(node.ContainingLexicalScope, node.DeclaredNames, node.UsingDirectives);
 
-    public static LexicalScope TypeDeclaration(TypeDeclarationNode node)
+    public static LexicalScope TypeDeclaration_SupertypesLexicalScope(ITypeDeclarationNode node)
+    {
+        if (node.GenericParameters.Any())
+            return new BasicScope(node.ContainingLexicalScope, node.GenericParameters.Select(p => p.SymbolNode));
+
+        return node.ContainingLexicalScope;
+    }
+
+    public static LexicalScope TypeDeclaration(ITypeDeclarationNode node)
         => throw new System.NotImplementedException();
+
+    public static LexicalScope TypeDeclaration_InheritedLexicalScope_Supertypes(ITypeDeclarationNode node)
+        => node.SupertypesLexicalScope;
+
+    public static LexicalScope TypeDeclaration_InheritedLexicalScope(TypeDeclarationNode node)
+        => node.LexicalScope;
 
     public static LexicalScope FunctionDeclaration(FunctionDeclarationNode node)
         => throw new System.NotImplementedException();

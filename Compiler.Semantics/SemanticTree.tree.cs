@@ -204,6 +204,7 @@ public partial interface ITypeDeclarationNode : IPackageMemberDeclarationNode, I
     INamespaceMemberSymbolNode INamespaceMemberDeclarationNode.SymbolNode => SymbolNode;
     UserTypeSymbol Symbol { get; }
     IFixedList<IGenericParameterNode> GenericParameters { get; }
+    LexicalScope SupertypesLexicalScope { get; }
     IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
     CompilerResult<IFixedSet<BareReferenceType>> Supertypes { get; }
     IFixedList<ITypeMemberDeclarationNode> Members { get; }
@@ -276,6 +277,7 @@ public partial interface IGenericParameterNode : ISemanticNode, ICodeNode
     GenericParameterType DeclaredType { get; }
     ITypeDeclarationSymbolNode ContainingSymbolNode { get; }
     UserTypeSymbol ContainingSymbol { get; }
+    IGenericParameterSymbolNode SymbolNode { get; }
     GenericParameterTypeSymbol Symbol { get; }
 }
 
