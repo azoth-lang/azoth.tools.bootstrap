@@ -20,7 +20,7 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
     public bool IsConst => Syntax.IsConst;
     public StandardName Name => Syntax.Name;
     public abstract IDeclaredUserType DeclaredType { get; }
-    public abstract override ITypeSymbolNode SymbolNode { get; }
+    public abstract override ITypeDeclarationSymbolNode SymbolNode { get; }
     private ValueAttribute<UserTypeSymbol> symbol;
     public UserTypeSymbol Symbol
         => symbol.TryGetValue(out var value) ? value

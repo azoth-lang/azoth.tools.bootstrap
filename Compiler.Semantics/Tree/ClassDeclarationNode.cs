@@ -17,8 +17,8 @@ internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarat
     private Child<IStandardTypeNameNode>? baseTypeName;
     public IStandardTypeNameNode? BaseTypeName => baseTypeName?.Value;
 
-    private ValueAttribute<IClassSymbolNode> symbolNode;
-    public override IClassSymbolNode SymbolNode
+    private ValueAttribute<IClassDeclarationSymbolNode> symbolNode;
+    public override IClassDeclarationSymbolNode SymbolNode
         => symbolNode.TryGetValue(out var value)
             ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.ClassDeclaration);

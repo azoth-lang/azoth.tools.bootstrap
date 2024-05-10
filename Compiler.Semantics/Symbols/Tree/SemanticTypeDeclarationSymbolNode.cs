@@ -6,7 +6,7 @@ using DotNet.Collections.Generic;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal abstract class SemanticTypeSymbolNode : SemanticDeclarationSymbolNode, ITypeSymbolNode
+internal abstract class SemanticTypeDeclarationSymbolNode : SemanticDeclarationSymbolNode, ITypeDeclarationSymbolNode
 {
     protected abstract ITypeDeclarationNode Node { get; }
     public override StandardName Name => Node.Name;

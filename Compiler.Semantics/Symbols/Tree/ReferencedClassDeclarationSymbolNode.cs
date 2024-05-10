@@ -5,12 +5,12 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class ReferencedClassSymbolNode : ReferencedTypeNode, IClassSymbolNode
+internal sealed class ReferencedClassDeclarationSymbolNode : ReferencedTypeDeclarationNode, IClassDeclarationSymbolNode
 {
     public override IFixedList<IClassMemberSymbolNode> Members
         => throw new NotImplementedException();
 
-    internal ReferencedClassSymbolNode(UserTypeSymbol symbol)
+    internal ReferencedClassDeclarationSymbolNode(UserTypeSymbol symbol)
         : base(symbol)
     {
         Requires.That(nameof(symbol), symbol.DeclaresType is ObjectType { IsClass: true }, "Symbol must be for an class type.");

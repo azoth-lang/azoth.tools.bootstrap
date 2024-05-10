@@ -31,7 +31,7 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
         => declaredType.TryGetValue(out var value) ? value
             : declaredType.GetValue(this, TypeDeclarationsAspect.GenericParameter_DeclaredType);
 
-    public ITypeSymbolNode ContainingSymbolNode => (ITypeSymbolNode)InheritedContainingSymbolNode();
+    public ITypeDeclarationSymbolNode ContainingSymbolNode => (ITypeDeclarationSymbolNode)InheritedContainingSymbolNode();
     public UserTypeSymbol ContainingSymbol => ContainingSymbolNode.Symbol;
 
     private ValueAttribute<GenericParameterTypeSymbol> symbol;

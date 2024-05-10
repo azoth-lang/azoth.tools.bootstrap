@@ -9,7 +9,9 @@
 
 <default> = Symbol:`Symbol`;
 // Parent, Package, and GlobalNamespace type quoted so that is is not treated as a child node
-Child <: `IChild<ISymbolNode>` = Parent:`ISymbolNode` Package:`IPackageSymbolNode`; 
+Child <: `IChild<ISymbolNode>` = Parent:`ISymbolNode` Package:`IPackageSymbolNode`;
+
+Named <: Child = Name:`StandardName`;
 
 // ---------- Packages
 Package = AliasOrName:`IdentifierName`? Name:`IdentifierName` Symbol:`PackageSymbol`
@@ -30,12 +32,15 @@ Namespace <: NamespaceMember = Name:`IdentifierName` Symbol:`NamespaceSymbol`
     Members:NamespaceMember* NestedMembers:NamespaceMember*;
 NamespaceMember <: Declaration;
 
+// ---------- Type Declaration Parts
+GenericParameter <: Type = Name:`IdentifierName`;
+
 // ---------- Type Declarations
-Type <: PackageMember, ClassMember, TraitMember, StructMember
+TypeDeclaration <: PackageMember, ClassMember, TraitMember, StructMember, Type
     = Symbol:`UserTypeSymbol` Members:TypeMember*;
-Class <: Type = Members:ClassMember*;
-Struct <: Type = Members:StructMember*;
-Trait <: Type = Members:TraitMember*;
+ClassDeclaration <: TypeDeclaration = Members:ClassMember*;
+StructDeclaration <: TypeDeclaration = Members:StructMember*;
+TraitDeclaration <: TypeDeclaration = Members:TraitMember*;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMember <: Declaration;
@@ -45,3 +50,6 @@ StructMember <: TypeMember;
 
 // ---------- Invocable Declarations
 Function <: PackageMember = Symbol:`FunctionSymbol`;
+
+// ---------- Can be Referenced by Type Name
+Type <: Named = Symbol:`TypeSymbol`;

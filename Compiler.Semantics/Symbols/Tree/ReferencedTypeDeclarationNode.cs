@@ -5,12 +5,12 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal abstract class ReferencedTypeNode : ReferencedDeclarationSymbolNode, ITypeSymbolNode
+internal abstract class ReferencedTypeDeclarationNode : ReferencedDeclarationSymbolNode, ITypeDeclarationSymbolNode
 {
     public override UserTypeSymbol Symbol { get; }
     public abstract IFixedList<ITypeMemberSymbolNode> Members { get; }
 
-    private protected ReferencedTypeNode(UserTypeSymbol symbol)
+    private protected ReferencedTypeDeclarationNode(UserTypeSymbol symbol)
     {
         Symbol = symbol;
     }
