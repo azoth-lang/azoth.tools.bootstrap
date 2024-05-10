@@ -19,6 +19,9 @@ public sealed class EmptyTypeSymbol : TypeSymbol
         Type = type;
     }
 
+    public override DataType GetDataType() => Type;
+
+    #region Equality
     public override bool Equals(Symbol? other)
     {
         if (other is null) return false;
@@ -29,6 +32,7 @@ public sealed class EmptyTypeSymbol : TypeSymbol
     }
 
     public override int GetHashCode() => HashCode.Combine(Name, Type);
+    #endregion
 
     public override string ToILString() => Name.ToString();
 }

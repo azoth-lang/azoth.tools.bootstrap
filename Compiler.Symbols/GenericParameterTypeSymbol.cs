@@ -10,6 +10,8 @@ public sealed class GenericParameterTypeSymbol : TypeSymbol
     public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public GenericParameterType Type { get; }
 
+    public override DataType GetDataType() => Type;
+
     public GenericParameterTypeSymbol(
         UserTypeSymbol containingSymbol,
         GenericParameterType type)

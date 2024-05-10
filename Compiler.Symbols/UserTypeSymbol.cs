@@ -37,7 +37,7 @@ public sealed class UserTypeSymbol : TypeSymbol
         return other is UserTypeSymbol otherType
                && ContainingSymbol == otherType.ContainingSymbol
                && Name == otherType.Name
-               && DeclaresType == otherType.DeclaresType;
+               && DeclaresType.Equals(otherType.DeclaresType); // Must use Equals because they are interface types
     }
 
     public override int GetHashCode()

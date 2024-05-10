@@ -69,6 +69,6 @@ internal class ClassDeclarationSyntax : TypeDeclarationSyntax<IClassMemberDeclar
         if (IsConst) modifiers += "const ";
         if (IsMove) modifiers += "move ";
         var generics = GenericParameters.Any() ? $"[{string.Join(", ", GenericParameters)}]" : "";
-        return $"{modifiers}class {Name}{generics} {{ … }}";
+        return $"{modifiers}class {Name.ToBareString()}{generics} {{ … }}";
     }
 }

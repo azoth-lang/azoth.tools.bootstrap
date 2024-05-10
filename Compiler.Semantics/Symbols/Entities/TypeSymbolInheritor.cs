@@ -41,6 +41,9 @@ internal class TypeSymbolInheritor
 
         var typeSymbol = typeDeclaration.Symbol.Result;
 
+        // Set processed early so that if there is a cycle, we don't infinitely recurse
+        processed[typeDeclaration] = true;
+
         if (typeDeclaration is IClassDeclarationSyntax { BaseTypeName: not null and var baseTypeName })
             AddInheritedSymbols(typeSymbol, baseTypeName);
 
@@ -48,8 +51,6 @@ internal class TypeSymbolInheritor
             AddInheritedSymbols(typeSymbol, superTypeName);
 
         AddInheritedSymbols(typeSymbol, Primitive.Any);
-
-        processed[typeDeclaration] = true;
     }
 
     private void AddInheritedSymbols(UserTypeSymbol typeSymbol, IStandardTypeNameSyntax supertypeName)

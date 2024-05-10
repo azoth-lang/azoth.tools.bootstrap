@@ -41,6 +41,6 @@ internal class TraitDeclarationSyntax : TypeDeclarationSyntax<ITraitMemberDeclar
         if (IsConst) modifiers += "const ";
         if (IsMove) modifiers += "move ";
         var generics = GenericParameters.Any() ? $"[{string.Join(", ", GenericParameters)}]" : "";
-        return $"{modifiers}trait {Name}{generics} {{ … }}";
+        return $"{modifiers}trait {Name.ToBareString()}{generics} {{ … }}";
     }
 }
