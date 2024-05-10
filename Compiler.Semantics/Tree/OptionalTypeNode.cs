@@ -12,7 +12,7 @@ internal sealed class OptionalTypeNode : TypeNode, IOptionalTypeNode
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeAttribute.OptionalType);
+            : type.GetValue(this, TypeExpressionsAspect.OptionalType);
 
     public OptionalTypeNode(IOptionalTypeSyntax syntax, ITypeNode referent)
     {

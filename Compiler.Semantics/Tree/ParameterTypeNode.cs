@@ -13,7 +13,7 @@ internal sealed class ParameterTypeNode : CodeNode, IParameterTypeNode
     private ValueAttribute<Parameter> parameter;
     public Parameter Parameter
         => parameter.TryGetValue(out var value) ? value
-            : parameter.GetValue(this, TypeAttribute.ParameterType);
+            : parameter.GetValue(this, TypeExpressionsAspect.ParameterType);
 
     public ParameterTypeNode(IParameterTypeSyntax syntax, ITypeNode referent)
     {

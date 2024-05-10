@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
-internal static class TypeAttribute
+internal static class TypeExpressionsAspect
 {
     // TODO combine these into just TypeName
     public static DataType IdentifierTypeName(IIdentifierTypeNameNode node)

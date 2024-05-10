@@ -29,7 +29,7 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeAttribute.GenericTypeName);
+            : type.GetValue(this, TypeExpressionsAspect.GenericTypeName);
 
     public GenericTypeNameNode(IGenericTypeNameSyntax syntax, IEnumerable<ITypeNode> typeArguments)
     {

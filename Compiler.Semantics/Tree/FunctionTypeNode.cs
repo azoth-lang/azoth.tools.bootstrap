@@ -15,7 +15,7 @@ internal sealed class FunctionTypeNode : TypeNode, IFunctionTypeNode
     private ValueAttribute<DataType> type;
     public override DataType Type
     => type.TryGetValue(out var value) ? value
-        : type.GetValue(this, TypeAttribute.FunctionType);
+        : type.GetValue(this, TypeExpressionsAspect.FunctionType);
 
     public FunctionTypeNode(
         IFunctionTypeSyntax syntax,
