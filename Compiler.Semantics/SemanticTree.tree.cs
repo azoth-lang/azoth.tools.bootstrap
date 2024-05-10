@@ -337,11 +337,13 @@ public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNod
     ISymbolNode IDeclarationNode.ContainingSymbolNode => ContainingSymbolNode;
     new NamespaceSymbol ContainingSymbol { get; }
     Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
-    StandardName Name { get; }
+    IdentifierName Name { get; }
     new IFunctionSymbolNode SymbolNode { get; }
     IPackageMemberSymbolNode IPackageMemberDeclarationNode.SymbolNode => SymbolNode;
+    FunctionSymbol Symbol { get; }
     IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
+    FunctionType Type { get; }
 }
 
 [Closed(
@@ -381,7 +383,7 @@ public partial interface IParameterNode : ISemanticNode, ICodeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     IdentifierName? Name { get; }
-    Pseudotype Type { get; }
+    Parameter Type { get; }
     bool Unused { get; }
 }
 
@@ -404,8 +406,6 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     IdentifierName? IParameterNode.Name => Name;
     int? DeclarationNumber { get; }
     ITypeNode TypeNode { get; }
-    new DataType Type { get; }
-    Pseudotype IParameterNode.Type => Type;
 }
 
 [Closed(
@@ -420,15 +420,11 @@ public partial interface ISelfParameterNode : IParameterNode
 public partial interface IConstructorSelfParameterNode : ISelfParameterNode
 {
     ICapabilityNode Capability { get; }
-    new DataType Type { get; }
-    Pseudotype IParameterNode.Type => Type;
 }
 
 public partial interface IInitializerSelfParameterNode : ISelfParameterNode
 {
     ICapabilityNode Capability { get; }
-    new DataType Type { get; }
-    Pseudotype IParameterNode.Type => Type;
 }
 
 public partial interface IMethodSelfParameterNode : ISelfParameterNode

@@ -73,6 +73,8 @@ internal class SemanticTreeValidator
                 break;
             case IFunctionDeclarationNode n:
                 _ = n.File;
+                _ = n.Type;
+                _ = n.Symbol;
                 break;
         }
 

@@ -97,8 +97,9 @@ StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarat
 
 // ---------- Invocable Declarations
 FunctionDeclaration <: PackageMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`
-    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol` Name:`StandardName`
-    SymbolNode:`IFunctionSymbolNode` Parameters:NamedParameter* Return:Type?;
+    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol` Name:`IdentifierName`
+    SymbolNode:`IFunctionSymbolNode` Symbol:`FunctionSymbol` Parameters:NamedParameter* Return:Type?
+    Type:`FunctionType`;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;
@@ -107,13 +108,13 @@ CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint
 Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability` Constraint:`Capability`;
 
 // ---------- Parameters
-Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Type:`Pseudotype` Unused:`bool`;
+Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Type:`Parameter` Unused:`bool`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`;
-NamedParameter: ConstructorOrInitializerParameter = Syntax:`INamedParameterSyntax` IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`? TypeNode:Type Type:`DataType`;
+NamedParameter: ConstructorOrInitializerParameter = Syntax:`INamedParameterSyntax` IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`? TypeNode:Type;
 SelfParameter: Parameter = IsLentBinding:`bool`;
-ConstructorSelfParameter: SelfParameter = IsLentBinding:`bool` Capability Type:`DataType`;
-InitializerSelfParameter: SelfParameter = IsLentBinding:`bool` Capability Type:`DataType`;
+ConstructorSelfParameter: SelfParameter = IsLentBinding:`bool` Capability;
+InitializerSelfParameter: SelfParameter = IsLentBinding:`bool` Capability;
 MethodSelfParameter: SelfParameter = IsLentBinding:`bool` Capability:CapabilityConstraint;
 FieldParameter: ConstructorOrInitializerParameter = Name:`IdentifierName`;
 

@@ -21,4 +21,7 @@ internal static class SymbolAttribute
 
     public static TypeSymbol SpecialTypeName(ISpecialTypeNameNode node)
         => Primitive.SymbolTree.LookupSymbol(node.Name);
+
+    public static FunctionSymbol FunctionDeclaration(IFunctionDeclarationNode node)
+        => new(node.ContainingSymbol, node.Name, node.Type);
 }

@@ -5,7 +5,9 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -13,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IFunctionDeclarationNode
 {
     public override IFunctionDeclarationSyntax Syntax { get; }
-    public StandardName Name => Syntax.Name;
+    public IdentifierName Name => Syntax.Name;
     public override INamespaceSymbolNode ContainingSymbolNode => (INamespaceSymbolNode)base.ContainingSymbolNode;
     public override NamespaceSymbol ContainingSymbol => (NamespaceSymbol)base.ContainingSymbol;
     private ValueAttribute<LexicalScope> lexicalScope;
@@ -25,8 +27,16 @@ internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IF
     public override IFunctionSymbolNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.FunctionDeclaration);
+    private ValueAttribute<FunctionSymbol> symbol;
+    public FunctionSymbol Symbol
+        => symbol.TryGetValue(out var value) ? value
+            : symbol.GetValue(this, SymbolAttribute.FunctionDeclaration);
     public IFixedList<INamedParameterNode> Parameters { get; }
     public ITypeNode? Return { get; }
+    private ValueAttribute<FunctionType> type;
+    public FunctionType Type
+        => type.TryGetValue(out var value) ? value
+            : type.GetValue(this, InvocableDeclarationsAspect.FunctionDeclaration_Type);
 
     public FunctionDeclarationNode(
         IFunctionDeclarationSyntax syntax,
