@@ -36,11 +36,11 @@ NamespaceMember <: Declaration;
 GenericParameter <: Type = Name:`IdentifierName`;
 
 // ---------- Type Declarations
-TypeDeclaration <: PackageMember, ClassMember, TraitMember, StructMember, Type
+UserType <: PackageMember, ClassMember, TraitMember, StructMember, Type
     = Symbol:`UserTypeSymbol` Members:TypeMember*;
-ClassDeclaration <: TypeDeclaration = Members:ClassMember*;
-StructDeclaration <: TypeDeclaration = Members:StructMember*;
-TraitDeclaration <: TypeDeclaration = Members:TraitMember*;
+Class <: UserType = Members:ClassMember*;
+Struct <: UserType = Members:StructMember*;
+Trait <: UserType = Members:TraitMember*;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMember <: Declaration;

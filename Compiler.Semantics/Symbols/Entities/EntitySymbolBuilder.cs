@@ -203,11 +203,11 @@ public class EntitySymbolBuilder
 
     private void BuildClassSymbol(IClassDeclarationSyntax @class)
     {
-        // Class symbol already built by EntitySymbolApplier
+        // Class symbol already set by EntitySymbolApplier
         var classSymbol = @class.Symbol.Result;
         symbolTree.Add(classSymbol);
 
-        // Generic parameter symbols already built by EntitySymbolApplier
+        // Generic parameter symbols already set by EntitySymbolApplier
         symbolTree.Add(@class.GenericParameters.Select(p => p.Symbol.Result));
 
         @class.CreateDefaultConstructor(symbolTree);
@@ -215,11 +215,11 @@ public class EntitySymbolBuilder
 
     private void BuildStructSymbol(IStructDeclarationSyntax @struct)
     {
-        // Struct symbol already built by EntitySymbolApplier
+        // Struct symbol already set by EntitySymbolApplier
         var structSymbol = @struct.Symbol.Result;
         symbolTree.Add(structSymbol);
 
-        // Generic parameter symbols already built by EntitySymbolApplier
+        // Generic parameter symbols already set by EntitySymbolApplier
         symbolTree.Add(@struct.GenericParameters.Select(p => p.Symbol.Result));
 
         @struct.CreateDefaultInitializer(symbolTree);
@@ -227,11 +227,11 @@ public class EntitySymbolBuilder
 
     private void BuildTraitSymbol(ITraitDeclarationSyntax trait)
     {
-        // Trait symbol already built by EntitySymbolApplier
+        // Trait symbol already set by EntitySymbolApplier
         var traitSymbol = trait.Symbol.Result;
         symbolTree.Add(traitSymbol);
 
-        // Generic parameter symbols already built by EntitySymbolApplier
+        // Generic parameter symbols already set by EntitySymbolApplier
         symbolTree.Add(trait.GenericParameters.Select(p => p.Symbol.Result));
     }
 

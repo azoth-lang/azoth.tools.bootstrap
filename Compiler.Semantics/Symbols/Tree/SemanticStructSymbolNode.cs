@@ -3,13 +3,13 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class SemanticStructDeclarationSymbolNode : SemanticTypeDeclarationSymbolNode, IStructDeclarationSymbolNode
+internal sealed class SemanticStructSymbolNode : SemanticUserTypeSymbolNode, IStructSymbolNode
 {
     protected override IStructDeclarationNode Node { get; }
     public override IFixedList<IStructMemberSymbolNode> Members
         => throw new NotImplementedException();
 
-    public SemanticStructDeclarationSymbolNode(IStructDeclarationNode node)
+    public SemanticStructSymbolNode(IStructDeclarationNode node)
     {
         Node = node;
     }

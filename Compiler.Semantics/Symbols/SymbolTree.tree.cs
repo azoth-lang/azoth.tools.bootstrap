@@ -12,9 +12,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
     typeof(IChildSymbolNode),
     typeof(IPackageSymbolNode),
     typeof(INamespaceMemberSymbolNode),
-    typeof(IClassDeclarationSymbolNode),
-    typeof(IStructDeclarationSymbolNode),
-    typeof(ITraitDeclarationSymbolNode),
+    typeof(IClassSymbolNode),
+    typeof(IStructSymbolNode),
+    typeof(ITraitSymbolNode),
     typeof(ITypeMemberSymbolNode),
     typeof(IFunctionSymbolNode),
     typeof(ITypeSymbolNode))]
@@ -51,7 +51,7 @@ public partial interface IPackageSymbolNode : ISymbolNode
 }
 
 [Closed(
-    typeof(ITypeDeclarationSymbolNode),
+    typeof(IUserTypeSymbolNode),
     typeof(IFunctionSymbolNode))]
 public partial interface IPackageMemberSymbolNode : INamespaceMemberSymbolNode
 {
@@ -99,10 +99,10 @@ public partial interface IGenericParameterSymbolNode : ITypeSymbolNode
 }
 
 [Closed(
-    typeof(IClassDeclarationSymbolNode),
-    typeof(IStructDeclarationSymbolNode),
-    typeof(ITraitDeclarationSymbolNode))]
-public partial interface ITypeDeclarationSymbolNode : IPackageMemberSymbolNode, IClassMemberSymbolNode, ITraitMemberSymbolNode, IStructMemberSymbolNode, ITypeSymbolNode
+    typeof(IClassSymbolNode),
+    typeof(IStructSymbolNode),
+    typeof(ITraitSymbolNode))]
+public partial interface IUserTypeSymbolNode : IPackageMemberSymbolNode, IClassMemberSymbolNode, ITraitMemberSymbolNode, IStructMemberSymbolNode, ITypeSymbolNode
 {
     new UserTypeSymbol Symbol { get; }
     Symbol ISymbolNode.Symbol => Symbol;
@@ -110,22 +110,22 @@ public partial interface ITypeDeclarationSymbolNode : IPackageMemberSymbolNode, 
     IFixedList<ITypeMemberSymbolNode> Members { get; }
 }
 
-public partial interface IClassDeclarationSymbolNode : ISymbolNode, ITypeDeclarationSymbolNode
+public partial interface IClassSymbolNode : ISymbolNode, IUserTypeSymbolNode
 {
     new IFixedList<IClassMemberSymbolNode> Members { get; }
-    IFixedList<ITypeMemberSymbolNode> ITypeDeclarationSymbolNode.Members => Members;
+    IFixedList<ITypeMemberSymbolNode> IUserTypeSymbolNode.Members => Members;
 }
 
-public partial interface IStructDeclarationSymbolNode : ISymbolNode, ITypeDeclarationSymbolNode
+public partial interface IStructSymbolNode : ISymbolNode, IUserTypeSymbolNode
 {
     new IFixedList<IStructMemberSymbolNode> Members { get; }
-    IFixedList<ITypeMemberSymbolNode> ITypeDeclarationSymbolNode.Members => Members;
+    IFixedList<ITypeMemberSymbolNode> IUserTypeSymbolNode.Members => Members;
 }
 
-public partial interface ITraitDeclarationSymbolNode : ISymbolNode, ITypeDeclarationSymbolNode
+public partial interface ITraitSymbolNode : ISymbolNode, IUserTypeSymbolNode
 {
     new IFixedList<ITraitMemberSymbolNode> Members { get; }
-    IFixedList<ITypeMemberSymbolNode> ITypeDeclarationSymbolNode.Members => Members;
+    IFixedList<ITypeMemberSymbolNode> IUserTypeSymbolNode.Members => Members;
 }
 
 [Closed(
@@ -137,19 +137,19 @@ public partial interface ITypeMemberSymbolNode : ISymbolNode, IDeclarationSymbol
 }
 
 [Closed(
-    typeof(ITypeDeclarationSymbolNode))]
+    typeof(IUserTypeSymbolNode))]
 public partial interface IClassMemberSymbolNode : ITypeMemberSymbolNode
 {
 }
 
 [Closed(
-    typeof(ITypeDeclarationSymbolNode))]
+    typeof(IUserTypeSymbolNode))]
 public partial interface ITraitMemberSymbolNode : ITypeMemberSymbolNode
 {
 }
 
 [Closed(
-    typeof(ITypeDeclarationSymbolNode))]
+    typeof(IUserTypeSymbolNode))]
 public partial interface IStructMemberSymbolNode : ITypeMemberSymbolNode
 {
 }
@@ -162,7 +162,7 @@ public partial interface IFunctionSymbolNode : ISymbolNode, IPackageMemberSymbol
 
 [Closed(
     typeof(IGenericParameterSymbolNode),
-    typeof(ITypeDeclarationSymbolNode))]
+    typeof(IUserTypeSymbolNode))]
 public partial interface ITypeSymbolNode : ISymbolNode, INamedSymbolNode
 {
     new TypeSymbol Symbol { get; }

@@ -82,17 +82,17 @@ internal static class SymbolNodeAttributes
     public static INamespaceSymbolNode NamespaceDeclarationInherited(INamespaceDeclarationNode node)
         => node.SymbolNode;
 
-    public static ITypeDeclarationSymbolNode TypeDeclarationInherited(ITypeDeclarationNode node)
+    public static IUserTypeSymbolNode TypeDeclarationInherited(ITypeDeclarationNode node)
         => node.SymbolNode;
 
-    public static IClassDeclarationSymbolNode ClassDeclaration(IClassDeclarationNode node)
-        => new SemanticClassDeclarationSymbolNode(node);
+    public static IClassSymbolNode ClassDeclaration(IClassDeclarationNode node)
+        => new SemanticClassSymbolNode(node);
 
-    public static IStructDeclarationSymbolNode StructDeclaration(IStructDeclarationNode node)
-        => new SemanticStructDeclarationSymbolNode(node);
+    public static IStructSymbolNode StructDeclaration(IStructDeclarationNode node)
+        => new SemanticStructSymbolNode(node);
 
-    public static ITraitDeclarationSymbolNode TraitDeclaration(ITraitDeclarationNode node)
-        => new SemanticTraitDeclarationSymbolNode(node);
+    public static ITraitSymbolNode TraitDeclaration(ITraitDeclarationNode node)
+        => new SemanticTraitSymbolNode(node);
 
     public static IGenericParameterSymbolNode GenericParameter(GenericParameterNode node)
         => new SemanticGenericParameterSymbolNode(node);
@@ -136,7 +136,7 @@ internal static class SymbolNodeAttributes
             _ => throw ExhaustiveMatch.Failed(symbol),
         };
 
-    private static ITypeDeclarationSymbolNode TypeSymbol(TypeSymbol symbol)
+    private static IUserTypeSymbolNode TypeSymbol(TypeSymbol symbol)
         => symbol switch
         {
             UserTypeSymbol sym => UserTypeSymbol(sym),
@@ -146,14 +146,14 @@ internal static class SymbolNodeAttributes
             _ => throw ExhaustiveMatch.Failed(symbol),
         };
 
-    private static ITypeDeclarationSymbolNode UserTypeSymbol(UserTypeSymbol symbol)
+    private static IUserTypeSymbolNode UserTypeSymbol(UserTypeSymbol symbol)
         => symbol.DeclaresType switch
         {
-            StructType _ => new ReferencedStructDeclarationSymbolNode(symbol),
+            StructType _ => new ReferencedStructSymbolNode(symbol),
             ObjectType t => t.IsClass switch
             {
-                true => new ReferencedClassDeclarationSymbolNode(symbol),
-                false => new ReferencedTraitDeclarationSymbolNode(symbol),
+                true => new ReferencedClassSymbolNode(symbol),
+                false => new ReferencedTraitSymbolNode(symbol),
             },
             _ => throw ExhaustiveMatch.Failed(symbol.DeclaresType),
         };

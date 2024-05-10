@@ -5,12 +5,12 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class ReferencedTraitDeclarationSymbolNode : ReferencedTypeDeclarationNode, ITraitDeclarationSymbolNode
+internal sealed class ReferencedTraitSymbolNode : ReferencedUserTypeSymbolNode, ITraitSymbolNode
 {
     public override IFixedList<ITraitMemberSymbolNode> Members
         => throw new NotImplementedException();
 
-    internal ReferencedTraitDeclarationSymbolNode(UserTypeSymbol symbol)
+    internal ReferencedTraitSymbolNode(UserTypeSymbol symbol)
         : base(symbol)
     {
         Requires.That(nameof(symbol), symbol.DeclaresType is ObjectType { IsClass: false },

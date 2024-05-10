@@ -30,15 +30,15 @@ public static class ISymbolNodeExtensions
                 yield break;
             case IGenericParameterSymbolNode n:
                 yield break;
-            case IClassDeclarationSymbolNode n:
+            case IClassSymbolNode n:
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case IStructDeclarationSymbolNode n:
+            case IStructSymbolNode n:
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case ITraitDeclarationSymbolNode n:
+            case ITraitSymbolNode n:
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;

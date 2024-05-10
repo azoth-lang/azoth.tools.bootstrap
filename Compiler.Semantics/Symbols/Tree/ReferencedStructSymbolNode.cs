@@ -5,12 +5,12 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class ReferencedStructDeclarationSymbolNode : ReferencedTypeDeclarationNode, IStructDeclarationSymbolNode
+internal sealed class ReferencedStructSymbolNode : ReferencedUserTypeSymbolNode, IStructSymbolNode
 {
     public override IFixedList<IStructMemberSymbolNode> Members
         => throw new NotImplementedException();
 
-    internal ReferencedStructDeclarationSymbolNode(UserTypeSymbol symbol)
+    internal ReferencedStructSymbolNode(UserTypeSymbol symbol)
         : base(symbol)
     {
         Requires.That(nameof(symbol), symbol.DeclaresType is StructType, "Symbol must be for a struct type.");
