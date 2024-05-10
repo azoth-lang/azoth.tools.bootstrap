@@ -23,7 +23,7 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
     public abstract IDeclaredUserType DeclaredType { get; }
     public abstract override IUserTypeSymbolNode SymbolNode { get; }
     private ValueAttribute<UserTypeSymbol> symbol;
-    public UserTypeSymbol Symbol
+    public override UserTypeSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAttribute.TypeDeclaration);
     public IFixedList<IGenericParameterNode> GenericParameters { get; }

@@ -28,7 +28,7 @@ internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IF
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.FunctionDeclaration);
     private ValueAttribute<FunctionSymbol> symbol;
-    public FunctionSymbol Symbol
+    public override FunctionSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAttribute.FunctionDeclaration);
     public IFixedList<INamedParameterNode> Parameters { get; }

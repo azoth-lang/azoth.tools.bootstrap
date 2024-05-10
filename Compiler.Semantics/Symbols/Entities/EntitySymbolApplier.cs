@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using MoreLinq;
@@ -16,40 +15,78 @@ internal class EntitySymbolApplier
 {
     public static void Apply(IPackageNode package)
     {
-        Apply(package.MainFacet);
-        Apply(package.TestingFacet);
+        PackageFacet(package.MainFacet);
+        PackageFacet(package.TestingFacet);
     }
 
-    private static void Apply(IPackageFacetNode node)
-    {
-        foreach (var n in node.Declarations.OfType<ITypeDeclarationNode>())
-        {
-            var syntax = n.Syntax;
-            syntax.Symbol.BeginFulfilling();
-            syntax.Symbol.Fulfill(n.Symbol);
-            Apply(n.GenericParameters);
-            Apply(n.AllSupertypeNames);
-        }
-    }
+    private static void PackageFacet(IPackageFacetNode node)
+        // TODO go through CompilationUnit so namespace symbols can be applied
+        => node.Declarations.ForEach(Declaration);
 
-    private static void Apply(IFixedList<IGenericParameterNode> nodes)
-        => nodes.ForEach(Apply);
-
-    private static void Apply(IGenericParameterNode node)
-        => node.Syntax.Symbol.Fulfill(node.Symbol);
-
-    private static void Apply(IEnumerable<IStandardTypeNameNode> nodes)
-        => nodes.ForEach(StandardTypeName);
-
-    private static void Types(IFixedList<ITypeNode> nodes)
-        => nodes.ForEach(Type);
-
-    private static void Type(ITypeNode node)
+    private static void Declaration(IDeclarationNode node)
     {
         switch (node)
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
+            case ITypeDeclarationNode n:
+                TypeDeclaration(n);
+                break;
+            case IFunctionDeclarationNode n:
+                FunctionDeclaration(n);
+                break;
+            case INamespaceDeclarationNode n:
+                NamespaceDeclaration(n);
+                break;
+        }
+    }
+
+    private static void TypeDeclaration(ITypeDeclarationNode node)
+    {
+        var syntax = node.Syntax;
+        syntax.Symbol.BeginFulfilling();
+        syntax.Symbol.Fulfill(node.Symbol);
+        GenericParameters(node.GenericParameters);
+        StandardTypeNames(node.AllSupertypeNames);
+    }
+
+    private static void GenericParameters(IFixedList<IGenericParameterNode> nodes)
+        => nodes.ForEach(GenericParameter);
+
+    private static void GenericParameter(IGenericParameterNode node)
+        => node.Syntax.Symbol.Fulfill(node.Symbol);
+
+    private static void FunctionDeclaration(IFunctionDeclarationNode node)
+    {
+        var syntax = node.Syntax;
+        syntax.Symbol.BeginFulfilling();
+        syntax.Symbol.Fulfill(node.Symbol);
+        NamedParameters(node.Parameters);
+        Type(node.Return);
+    }
+
+    private static void NamedParameters(IEnumerable<INamedParameterNode> nodes)
+        => nodes.ForEach(NamedParameter);
+
+    private static void NamedParameter(INamedParameterNode node) => Type(node.TypeNode);
+
+    private static void NamespaceDeclaration(INamespaceDeclarationNode node)
+        => node.Syntax.Symbol.Fulfill(node.Symbol);
+
+    private static void StandardTypeNames(IEnumerable<IStandardTypeNameNode> nodes)
+        => nodes.ForEach(StandardTypeName);
+
+    private static void Types(IFixedList<ITypeNode> nodes)
+        => nodes.ForEach(Type);
+
+    private static void Type(ITypeNode? node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case null:
+                break;
             case ITypeNameNode n:
                 TypeName(n);
                 break;
@@ -59,7 +96,9 @@ internal class EntitySymbolApplier
             case ICapabilityTypeNode n:
                 CapabilityType(n);
                 break;
-            case IFunctionTypeNode _:
+            case IFunctionTypeNode n:
+                FunctionType(n);
+                break;
             case IViewpointTypeNode _:
                 throw new NotImplementedException();
         }
@@ -142,4 +181,17 @@ internal class EntitySymbolApplier
         node.Syntax.NamedType = node.Type;
         Type(node.Referent);
     }
+
+    private static void FunctionType(IFunctionTypeNode node)
+    {
+        node.Syntax.NamedType = node.Type;
+        ParameterTypes(node.Parameters);
+        Type(node.Return);
+    }
+
+    private static void ParameterTypes(IEnumerable<IParameterTypeNode> nodes)
+        => nodes.ForEach(ParameterType);
+
+    private static void ParameterType(IParameterTypeNode node)
+        => Type(node.Referent);
 }

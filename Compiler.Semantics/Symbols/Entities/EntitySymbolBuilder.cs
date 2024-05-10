@@ -171,16 +171,13 @@ public class EntitySymbolBuilder
 
     private void BuildFunctionSymbol(IFunctionDeclarationSyntax function)
     {
-        function.Symbol.BeginFulfilling();
-        var file = function.File;
-        var resolver = new TypeResolver(file, diagnostics, selfType: null);
-        var parameterTypes = ResolveParameterTypes(resolver, function.Parameters);
-        var returnType = ResolveReturnType(resolver, function.Return);
-        var type = new FunctionType(parameterTypes, returnType);
-        var symbol = new FunctionSymbol(function.ContainingNamespaceSymbol, function.Name, type);
-        function.Symbol.Fulfill(symbol);
+        // Function symbol already set by EntitySymbolApplier
+        var symbol = function.Symbol.Result;
         symbolTree.Add(symbol);
-        BuildParameterSymbols(symbol, file, function.Parameters, parameterTypes);
+
+        // EntitySymbolApplier doesn't cover parameters because they are not metadata symbols
+        var parameterTypes = symbol.Type.Parameters.Select(p => p.Type);
+        BuildParameterSymbols(symbol, function.File, function.Parameters, parameterTypes);
     }
 
     private void BuildTypeSymbol(ITypeDeclarationSyntax type)
