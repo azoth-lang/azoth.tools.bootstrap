@@ -18,31 +18,30 @@ internal static class TypeDeclarationsAspect
 {
     public static ObjectType ClassDeclaration_DeclaredType(IClassDeclarationNode node)
     {
+        // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
 
         return ObjectType.CreateClass(node.Package.Name, containingNamespaceName,
-            node.IsAbstract, node.IsConst,
-            node.Name, GetGenericParameters(node), LazySupertypes(node));
+            node.IsAbstract, node.IsConst, node.Name,
+            GetGenericParameters(node), LazySupertypes(node));
     }
 
     public static StructType StructDeclaration_DeclaredType(IStructDeclarationNode node)
     {
-        var genericParameters = GetGenericParameters(node);
-
+        // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
         return StructType.Create(node.Package.Name, containingNamespaceName,
             node.IsConst, node.Name,
-            genericParameters, LazySupertypes(node));
+            GetGenericParameters(node), LazySupertypes(node));
     }
 
     public static ObjectType TraitDeclaration_DeclaredType(ITraitDeclarationNode node)
     {
-        var genericParameters = GetGenericParameters(node);
-
+        // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
         return ObjectType.CreateTrait(node.Package.Name, containingNamespaceName,
             node.IsConst, node.Name,
-            genericParameters, LazySupertypes(node));
+            GetGenericParameters(node), LazySupertypes(node));
     }
 
     private static NamespaceName GetContainingNamespaceName(ITypeMemberDeclarationNode node)

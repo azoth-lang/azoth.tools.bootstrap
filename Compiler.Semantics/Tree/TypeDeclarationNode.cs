@@ -56,7 +56,7 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
         => SymbolNodeAttributes.TypeDeclarationInherited(this);
 
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
-        => ContainingDeclaredTypeAttribute.TypeDeclarationInherited(this);
+        => ContainingDeclaredTypeAttribute.TypeDeclaration_InheritedContainingDeclaredType(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
     {
