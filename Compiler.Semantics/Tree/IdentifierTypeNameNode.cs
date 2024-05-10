@@ -27,7 +27,7 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.IdentifierTypeName);
+            : type.GetValue(this, TypeExpressionsAspect.IdentifierTypeName_Type);
 
     public IdentifierTypeNameNode(IIdentifierTypeNameSyntax syntax)
     {
