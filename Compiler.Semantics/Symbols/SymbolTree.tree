@@ -32,8 +32,8 @@ Namespace <: NamespaceMember = Name:`IdentifierName` Symbol:`NamespaceSymbol`
     Members:NamespaceMember* NestedMembers:NamespaceMember*;
 NamespaceMember <: Declaration;
 
-// ---------- Type Declaration Parts
-GenericParameter <: Type = Name:`IdentifierName`;
+// ---------- Function Declaration
+Function <: PackageMember = Symbol:`FunctionSymbol`;
 
 // ---------- Type Declarations
 UserType <: PackageMember, ClassMember, TraitMember, StructMember, Type
@@ -42,14 +42,14 @@ Class <: UserType = Members:ClassMember*;
 Struct <: UserType = Members:StructMember*;
 Trait <: UserType = Members:TraitMember*;
 
+// ---------- Type Declaration Parts
+GenericParameter <: Type = Name:`IdentifierName`;
+
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMember <: Declaration;
 ClassMember <: TypeMember;
 TraitMember <: TypeMember;
 StructMember <: TypeMember;
-
-// ---------- Invocable Declarations
-Function <: PackageMember = Symbol:`FunctionSymbol`;
 
 // ---------- Can be Referenced by Type Name
 Type <: Named = Symbol:`TypeSymbol`;

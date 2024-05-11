@@ -12,11 +12,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
     typeof(IChildSymbolNode),
     typeof(IPackageSymbolNode),
     typeof(INamespaceMemberSymbolNode),
+    typeof(IFunctionSymbolNode),
     typeof(IClassSymbolNode),
     typeof(IStructSymbolNode),
     typeof(ITraitSymbolNode),
     typeof(ITypeMemberSymbolNode),
-    typeof(IFunctionSymbolNode),
     typeof(ITypeSymbolNode))]
 public partial interface ISymbolNode
 {
@@ -51,8 +51,8 @@ public partial interface IPackageSymbolNode : ISymbolNode
 }
 
 [Closed(
-    typeof(IUserTypeSymbolNode),
-    typeof(IFunctionSymbolNode))]
+    typeof(IFunctionSymbolNode),
+    typeof(IUserTypeSymbolNode))]
 public partial interface IPackageMemberSymbolNode : INamespaceMemberSymbolNode
 {
 }
@@ -92,10 +92,10 @@ public partial interface INamespaceMemberSymbolNode : ISymbolNode, IDeclarationS
 {
 }
 
-public partial interface IGenericParameterSymbolNode : ITypeSymbolNode
+public partial interface IFunctionSymbolNode : ISymbolNode, IPackageMemberSymbolNode
 {
-    new IdentifierName Name { get; }
-    StandardName INamedSymbolNode.Name => Name;
+    new FunctionSymbol Symbol { get; }
+    Symbol ISymbolNode.Symbol => Symbol;
 }
 
 [Closed(
@@ -128,6 +128,12 @@ public partial interface ITraitSymbolNode : ISymbolNode, IUserTypeSymbolNode
     IFixedList<ITypeMemberSymbolNode> IUserTypeSymbolNode.Members => Members;
 }
 
+public partial interface IGenericParameterSymbolNode : ITypeSymbolNode
+{
+    new IdentifierName Name { get; }
+    StandardName INamedSymbolNode.Name => Name;
+}
+
 [Closed(
     typeof(IClassMemberSymbolNode),
     typeof(ITraitMemberSymbolNode),
@@ -154,15 +160,9 @@ public partial interface IStructMemberSymbolNode : ITypeMemberSymbolNode
 {
 }
 
-public partial interface IFunctionSymbolNode : ISymbolNode, IPackageMemberSymbolNode
-{
-    new FunctionSymbol Symbol { get; }
-    Symbol ISymbolNode.Symbol => Symbol;
-}
-
 [Closed(
-    typeof(IGenericParameterSymbolNode),
-    typeof(IUserTypeSymbolNode))]
+    typeof(IUserTypeSymbolNode),
+    typeof(IGenericParameterSymbolNode))]
 public partial interface ITypeSymbolNode : ISymbolNode, INamedSymbolNode
 {
     new TypeSymbol Symbol { get; }

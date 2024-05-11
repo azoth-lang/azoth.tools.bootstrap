@@ -95,8 +95,8 @@ public partial interface IPackageFacetNode : IChildNode
 }
 
 [Closed(
-    typeof(ITypeDeclarationNode),
-    typeof(IFunctionDeclarationNode))]
+    typeof(IFunctionDeclarationNode),
+    typeof(ITypeDeclarationNode))]
 public partial interface IPackageMemberDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
 {
     new IPackageMemberSymbolNode SymbolNode { get; }
@@ -185,6 +185,25 @@ public partial interface INamespaceMemberDeclarationNode : IDeclarationNode
 {
     new INamespaceMemberSymbolNode SymbolNode { get; }
     IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
+}
+
+public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNode
+{
+    new IFunctionDeclarationSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
+    new INamespaceSymbolNode ContainingSymbolNode { get; }
+    ISymbolNode IDeclarationNode.ContainingSymbolNode => ContainingSymbolNode;
+    new NamespaceSymbol ContainingSymbol { get; }
+    Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
+    IdentifierName Name { get; }
+    new IFunctionSymbolNode SymbolNode { get; }
+    IPackageMemberSymbolNode IPackageMemberDeclarationNode.SymbolNode => SymbolNode;
+    FunctionSymbol Symbol { get; }
+    IFixedList<INamedParameterNode> Parameters { get; }
+    ITypeNode? Return { get; }
+    FunctionType Type { get; }
 }
 
 [Closed(
@@ -325,25 +344,6 @@ public partial interface IStructMemberDeclarationNode : ISemanticNode, ITypeMemb
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
-}
-
-public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNode
-{
-    new IFunctionDeclarationSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
-    IConcreteSyntax ICodeNode.Syntax => Syntax;
-    new INamespaceSymbolNode ContainingSymbolNode { get; }
-    ISymbolNode IDeclarationNode.ContainingSymbolNode => ContainingSymbolNode;
-    new NamespaceSymbol ContainingSymbol { get; }
-    Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
-    IdentifierName Name { get; }
-    new IFunctionSymbolNode SymbolNode { get; }
-    IPackageMemberSymbolNode IPackageMemberDeclarationNode.SymbolNode => SymbolNode;
-    FunctionSymbol Symbol { get; }
-    IFixedList<INamedParameterNode> Parameters { get; }
-    ITypeNode? Return { get; }
-    FunctionType Type { get; }
 }
 
 [Closed(

@@ -41,6 +41,12 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.Declarations)
                     yield return child;
                 yield break;
+            case IFunctionDeclarationNode n:
+                foreach (var child in n.Parameters)
+                    yield return child;
+                if (n.Return is not null)
+                    yield return n.Return;
+                yield break;
             case IClassDeclarationNode n:
                 foreach (var child in n.GenericParameters)
                     yield return child;
@@ -69,12 +75,6 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IGenericParameterNode n:
                 yield return n.Constraint;
-                yield break;
-            case IFunctionDeclarationNode n:
-                foreach (var child in n.Parameters)
-                    yield return child;
-                if (n.Return is not null)
-                    yield return n.Return;
                 yield break;
             case ICapabilitySetNode n:
                 yield break;

@@ -53,6 +53,11 @@ internal static class SyntaxBinder
         };
     #endregion
 
+    #region Function Declaration
+    private static IFunctionDeclarationNode FunctionDeclaration(IFunctionDeclarationSyntax syntax)
+        => new FunctionDeclarationNode(syntax, NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
+    #endregion
+
     #region Type Declarations
     private static ITypeDeclarationNode TypeDeclaration(ITypeDeclarationSyntax syntax)
         => syntax switch
@@ -78,8 +83,6 @@ internal static class SyntaxBinder
 
     private static IEnumerable<IStandardTypeNameNode> SupertypeNames(IEnumerable<IStandardTypeNameSyntax> syntax)
         => syntax.Select(syn => StandardTypeName(syn));
-
-
     #endregion
 
     #region Type Declaration Parts
@@ -130,11 +133,6 @@ internal static class SyntaxBinder
             IAssociatedFunctionDeclarationSyntax syn => null,
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
-    #endregion
-
-    #region Invocable Declarations
-    private static IFunctionDeclarationNode FunctionDeclaration(IFunctionDeclarationSyntax syntax)
-        => new FunctionDeclarationNode(syntax, NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
     #endregion
 
     #region Capabilities

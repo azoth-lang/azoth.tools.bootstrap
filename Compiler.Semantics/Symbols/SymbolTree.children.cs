@@ -28,7 +28,7 @@ public static class ISymbolNodeExtensions
                 foreach (var child in n.NestedMembers)
                     yield return child;
                 yield break;
-            case IGenericParameterSymbolNode n:
+            case IFunctionSymbolNode n:
                 yield break;
             case IClassSymbolNode n:
                 foreach (var child in n.Members)
@@ -42,7 +42,7 @@ public static class ISymbolNodeExtensions
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case IFunctionSymbolNode n:
+            case IGenericParameterSymbolNode n:
                 yield break;
         }
     }

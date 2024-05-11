@@ -63,6 +63,12 @@ NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarati
     SymbolNode:`INamespaceSymbolNode` Symbol:`NamespaceSymbol`;
 NamespaceMemberDeclaration <: Declaration = SymbolNode:`INamespaceMemberSymbolNode`;
 
+// ---------- Function Declaration
+FunctionDeclaration <: PackageMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`
+    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol` Name:`IdentifierName`
+    SymbolNode:`IFunctionSymbolNode` Symbol:`FunctionSymbol` Parameters:NamedParameter* Return:Type?
+    Type:`FunctionType`;
+
 // ---------- Type Declarations
 TypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     = Syntax:`ITypeDeclarationSyntax` IsConst:`bool` Name:`StandardName`
@@ -95,12 +101,6 @@ TypeMemberDeclaration <: Declaration = Syntax:`ITypeMemberDeclarationSyntax`;
 ClassMemberDeclaration <: TypeMemberDeclaration = Syntax:`IClassMemberDeclarationSyntax`;
 TraitMemberDeclaration <: TypeMemberDeclaration = Syntax:`ITraitMemberDeclarationSyntax`;
 StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarationSyntax`;
-
-// ---------- Invocable Declarations
-FunctionDeclaration <: PackageMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`
-    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol` Name:`IdentifierName`
-    SymbolNode:`IFunctionSymbolNode` Symbol:`FunctionSymbol` Parameters:NamedParameter* Return:Type?
-    Type:`FunctionType`;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;
