@@ -78,7 +78,7 @@ public class TypeResolver
             case IOptionalTypeSyntax syn:
             {
                 var referent = Evaluate(syn.Referent, mustBeConstructable);
-                return syn.NamedType = new OptionalType(referent);
+                return syn.NamedType = OptionalType.Create(referent);
             }
             case IFunctionTypeSyntax syn:
             {

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
@@ -26,7 +27,8 @@ public static partial class TypeOperations
         {
             null => null,
             UnknownType or NeverType or VoidType => type,
-            _ => new OptionalType(type),
+            Type t => new OptionalType(t),
+            _ => throw new UnreachableException(),
         };
 
     internal static INumericType? AsNumericType(this NonEmptyType type)

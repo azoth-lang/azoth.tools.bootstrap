@@ -14,6 +14,6 @@ public sealed class OptionalConversion : ChainedConversion
     public override DataType Apply(DataType type)
     {
         type = PriorConversion.Apply(type);
-        return new OptionalType(type);
+        return OptionalType.Create(type);
     }
 }

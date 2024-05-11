@@ -73,7 +73,7 @@ internal sealed class TypeReplacements
             {
                 var replacementType = ReplaceTypeParametersIn(optionalType.Referent);
                 if (!ReferenceEquals(optionalType.Referent, replacementType))
-                    return new OptionalType(replacementType);
+                    return OptionalType.Create(replacementType);
                 break;
             }
             case GenericParameterType genericParameterType:

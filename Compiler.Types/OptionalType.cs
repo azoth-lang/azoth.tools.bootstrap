@@ -1,4 +1,5 @@
 using System;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -12,7 +13,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class OptionalType : NonEmptyType
 {
-    public DataType Referent { get; }
+    public static DataType Create(DataType referent)
+        => referent switch
+        {
+            Type t => new OptionalType(t),
+            UnknownType _ => DataType.Unknown,
+            _ => throw ExhaustiveMatch.Failed(referent),
+        };
+
+    public Type Referent { get; }
 
     public override bool AllowsVariance => true;
 
@@ -22,7 +31,7 @@ public sealed class OptionalType : NonEmptyType
 
     private bool ReferentRequiresParens => Referent is FunctionType or ViewpointType;
 
-    public OptionalType(DataType referent)
+    public OptionalType(Type referent)
     {
         if (referent is VoidType)
             throw new ArgumentException("Cannot create `void?` type", nameof(referent));
