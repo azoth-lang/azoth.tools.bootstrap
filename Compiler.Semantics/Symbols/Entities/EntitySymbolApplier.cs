@@ -20,8 +20,13 @@ internal class EntitySymbolApplier
     }
 
     private static void PackageFacet(IPackageFacetNode node)
-        // TODO go through CompilationUnit so namespace symbols can be applied
-        => node.Declarations.ForEach(Declaration);
+        => node.CompilationUnits.ForEach(CompilationUnit);
+
+    private static void CompilationUnit(ICompilationUnitNode node)
+        => Declarations(node.Declarations);
+
+    private static void Declarations(IEnumerable<IDeclarationNode> nodes)
+        => nodes.ForEach(Declaration);
 
     private static void Declaration(IDeclarationNode node)
     {
@@ -71,7 +76,10 @@ internal class EntitySymbolApplier
     private static void NamedParameter(INamedParameterNode node) => Type(node.TypeNode);
 
     private static void NamespaceDeclaration(INamespaceDeclarationNode node)
-        => node.Syntax.Symbol.Fulfill(node.Symbol);
+    {
+        node.Syntax.Symbol.Fulfill(node.Symbol);
+        Declarations(node.Declarations);
+    }
 
     private static void StandardTypeNames(IEnumerable<IStandardTypeNameNode> nodes)
         => nodes.ForEach(StandardTypeName);

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using ExhaustiveMatching;
 
@@ -10,6 +11,7 @@ public struct ValueAttribute<T>
     // Declared as a uint to ensure Interlocked can be used on it (without any possible overhead)
     private volatile uint state; // Starts in Pending
 
+    [DebuggerStepThrough]
     public readonly bool TryGetValue(out T value)
     {
         // Volatile read ensures the value read cannot be moved before it
@@ -23,6 +25,7 @@ public struct ValueAttribute<T>
         return false;
     }
 
+    [DebuggerStepThrough]
     public T GetValue<TNode>(TNode node, Func<TNode, T> compute)
     {
 #pragma warning disable CS0420 // A reference to a volatile field will not be treated as volatile
@@ -55,6 +58,7 @@ public struct ValueAttribute<T>
         }
     }
 
+    [DebuggerStepThrough]
     public T GetValue(Func<T> compute)
     {
 #pragma warning disable CS0420 // A reference to a volatile field will not be treated as volatile

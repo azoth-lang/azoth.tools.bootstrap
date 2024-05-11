@@ -44,7 +44,11 @@ public class SemanticAnalyzer
 
         var packageNode = BuildSemanticTreeAndValidate(packageSyntax);
 
-        NamespaceSymbolBuilder.BuildNamespaceSymbols(packageSyntax);
+        // Apply symbols from the semantic tree to the old syntax tree approach
+        EntitySymbolApplier.Apply(packageNode);
+
+        // Load namespace symbols applied to the old syntax tree approach into the symbol trees
+        NamespaceSymbolCollector.Collect(packageNode, packageSyntax.SymbolTree, packageSyntax.TestingSymbolTree);
 
         // Build up lexical scopes down to the declaration level
         new SymbolScopesBuilder().BuildFor(packageSyntax);
@@ -83,7 +87,6 @@ public class SemanticAnalyzer
         DeclarationNumberAssigner.AssignIn(packageSyntax.AllEntityDeclarations);
 
         // Resolve symbols for the entities
-        EntitySymbolApplier.Apply(packageNode);
         EntitySymbolBuilder.BuildFor(packageSyntax);
 
         var globalObjectTypeSymbols = packageSyntax.SymbolTrees.GlobalSymbols.OfType<UserTypeSymbol>().ToFixedList();

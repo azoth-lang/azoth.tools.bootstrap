@@ -140,9 +140,12 @@ internal static class SymbolNodeAttributes
         => symbol switch
         {
             UserTypeSymbol sym => UserTypeSymbol(sym),
+            // These will be needed because the generic parameter type could be used in a type expression
             GenericParameterTypeSymbol sym => throw new NotImplementedException(),
-            EmptyTypeSymbol _ => throw new NotSupportedException("Symbol node for empty type not supported. Primitives not name bound through symbol nodes."),
-            PrimitiveTypeSymbol _ => throw new NotSupportedException("Symbol node for primitive type not supported. Primitives not name bound through symbol nodes."),
+            EmptyTypeSymbol _
+                => throw new NotSupportedException("Symbol node for empty type not supported. Primitives not name bound through symbol nodes."),
+            PrimitiveTypeSymbol _
+                => throw new NotSupportedException("Symbol node for primitive type not supported. Primitives not name bound through symbol nodes."),
             _ => throw ExhaustiveMatch.Failed(symbol),
         };
 
