@@ -14,8 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// unresolved types like <see cref="UnknownType"/> or types containing unknown parts.
 /// </summary>
 [Closed(
-    typeof(NonEmptyType),
-    typeof(EmptyType),
+    typeof(Type),
     typeof(UnknownType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class DataType : Pseudotype, IEquatable<DataType>

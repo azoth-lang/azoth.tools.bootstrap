@@ -16,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(FunctionType),
     typeof(OptionalType),
     typeof(ConstValueType))]
-public abstract class NonEmptyType : DataType
+public abstract class NonEmptyType : Type
 {
     private protected NonEmptyType() { }
 

@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 [Closed(
     typeof(VoidType),
     typeof(NeverType))]
-public abstract class EmptyType : DataType
+public abstract class EmptyType : Type
 {
     public SpecialTypeName Name { get; }
 
