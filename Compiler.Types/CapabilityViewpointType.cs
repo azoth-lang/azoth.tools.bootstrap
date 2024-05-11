@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public sealed class CapabilityViewpointType : ViewpointType
 {
-    public static DataType Create(Capability capability, GenericParameterType referent)
+    public static Type Create(Capability capability, GenericParameterType referent)
     {
         if (capability == Capability.Mutable || capability == Capability.InitMutable)
             return referent;

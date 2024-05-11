@@ -73,7 +73,7 @@ public abstract class ReferenceType : CapabilityType
     /// the constructor.</remarks>
     public override ReferenceType WithoutWrite() => With(Capability.WithoutWrite());
 
-    public override DataType AccessedVia(ICapabilityConstraint capability)
+    public override Type AccessedVia(ICapabilityConstraint capability)
     {
         switch (capability)
         {

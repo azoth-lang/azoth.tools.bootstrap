@@ -26,7 +26,7 @@ public sealed class GenericParameterType : NonEmptyType
         Parameter = parameter;
     }
 
-    public override DataType AccessedVia(ICapabilityConstraint capability)
+    public override Type AccessedVia(ICapabilityConstraint capability)
     {
         // Independent type parameters are not affected by the capability
         if (Parameter.HasIndependence) return this;
