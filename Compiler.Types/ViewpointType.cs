@@ -8,7 +8,7 @@ public abstract class ViewpointType : NonEmptyType
 {
     public abstract ICapabilityConstraint Capability { get; }
 
-    public abstract DataType Referent { get; }
+    public abstract Type Referent { get; }
 
     public override bool IsFullyKnown => Referent.IsFullyKnown;
 

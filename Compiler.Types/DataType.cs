@@ -19,6 +19,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class DataType : Pseudotype, IEquatable<DataType>
 {
+    // TODO move these to `Type`
     #region Standard Types
     public static readonly DataType Unknown = UnknownType.Instance;
     public static readonly Promise<UnknownType> PromiseOfUnknown = Promise.ForValue(UnknownType.Instance);
