@@ -43,6 +43,12 @@ internal class EntitySymbolApplier
             case INamespaceDeclarationNode n:
                 NamespaceDeclaration(n);
                 break;
+            case IMethodDeclarationNode _:
+            case IConstructorDeclarationNode _:
+            case IInitializerDeclarationNode _:
+            case IFieldDeclarationNode _:
+            case IAssociatedFunctionDeclarationNode _:
+                throw new NotImplementedException();
         }
     }
 

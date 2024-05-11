@@ -57,7 +57,7 @@ TraitDeclaration: TypeDeclaration = GenericParameters:GenericParameter* Supertyp
 // ---------- Type Declaration Parts
 GenericParameter = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance` Symbol:`Promise<GenericParameterTypeSymbol>`;
 
-// ---------- Member Declarations Categories
+// ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 // Note: by declaring the DeclaringType property type with quotes, it avoids the system assuming it must represent a child syntax node
 TypeMemberDeclaration: EntityDeclaration = DeclaringType:`ITypeDeclarationSyntax`?;
 ClassMemberDeclaration: TypeMemberDeclaration;

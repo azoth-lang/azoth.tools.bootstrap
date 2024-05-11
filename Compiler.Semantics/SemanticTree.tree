@@ -21,6 +21,9 @@ Semantic = Syntax:`ISyntax`?;
 // Parent and Package types quoted so that is is not treated as a child node
 Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPackageNode`;
 
+// ---------- Special Parts
+BodyOrBlock;
+
 // ---------- Packages
 // Declarations and TestingDeclarations types quoted so that is is not treated as a child node
 Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` SymbolNode:`IPackageSymbolNode`
@@ -54,6 +57,8 @@ UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 Declaration <: Code = Syntax:`IDeclarationSyntax` ContainingSymbolNode:`ISymbolNode` ContainingSymbol:`Symbol`
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
     SymbolNode:`IDeclarationSymbolNode`;
+InvocableDeclaration <: Declaration = Parameters:ConstructorOrInitializerParameter*;
+ConcreteInvocableDeclaration <: InvocableDeclaration = Parameters:ConstructorOrInitializerParameter* Body;
 
 // ---------- Namespace Declarations
 NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`
@@ -101,6 +106,25 @@ TypeMemberDeclaration <: Declaration = Syntax:`ITypeMemberDeclarationSyntax`;
 ClassMemberDeclaration <: TypeMemberDeclaration = Syntax:`IClassMemberDeclarationSyntax`;
 TraitMemberDeclaration <: TypeMemberDeclaration = Syntax:`ITraitMemberDeclarationSyntax`;
 StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarationSyntax`;
+AlwaysTypeMemberDeclaration <: TypeMemberDeclaration = DeclaringType:`ITypeMemberDeclarationNode`;
+
+// ---------- Member Declarations
+MethodDeclaration <: AlwaysTypeMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration
+    = Kind:`MethodKind` Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
+AbstractMethodDeclaration <: MethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
+ConcreteMethodDeclaration <: MethodDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration
+    = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
+StandardMethodDeclaration <: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
+GetterMethodDeclaration <: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type Body;
+SetterMethodDeclaration <: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
+ConstructorDeclaration <: ConcreteInvocableDeclaration, ClassMemberDeclaration
+    = DeclaringType:`IClassDeclarationNode` Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
+InitializerDeclaration <: ConcreteInvocableDeclaration, StructMemberDeclaration
+    = DeclaringType:`IStructDeclarationNode` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
+FieldDeclaration <: AlwaysTypeMemberDeclaration, ClassMemberDeclaration, StructMemberDeclaration
+    = Name:`IdentifierName` Type;
+AssociatedFunctionDeclaration <: AlwaysTypeMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration
+    = Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;
@@ -118,6 +142,11 @@ ConstructorSelfParameter: SelfParameter = IsLentBinding:`bool` Capability;
 InitializerSelfParameter: SelfParameter = IsLentBinding:`bool` Capability;
 MethodSelfParameter: SelfParameter = IsLentBinding:`bool` Capability:CapabilityConstraint;
 FieldParameter: ConstructorOrInitializerParameter = Name:`IdentifierName`;
+
+// ---------- Function Parts
+Body: BodyOrBlock;
+BlockBody: Body;
+ExpressionBody: Body;
 
 // ---------- Types
 Type <: Code = Syntax:`ITypeSyntax` Type:`DataType`;

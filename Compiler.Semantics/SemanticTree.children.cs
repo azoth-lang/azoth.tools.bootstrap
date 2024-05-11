@@ -76,6 +76,58 @@ public static class ISemanticNodeExtensions
             case IGenericParameterNode n:
                 yield return n.Constraint;
                 yield break;
+            case IAbstractMethodDeclarationNode n:
+                yield return n.SelfParameter;
+                foreach (var child in n.Parameters)
+                    yield return child;
+                if (n.Return is not null)
+                    yield return n.Return;
+                yield break;
+            case IStandardMethodDeclarationNode n:
+                yield return n.SelfParameter;
+                foreach (var child in n.Parameters)
+                    yield return child;
+                if (n.Return is not null)
+                    yield return n.Return;
+                yield return n.Body;
+                yield break;
+            case IGetterMethodDeclarationNode n:
+                yield return n.SelfParameter;
+                foreach (var child in n.Parameters)
+                    yield return child;
+                yield return n.Return;
+                yield return n.Body;
+                yield break;
+            case ISetterMethodDeclarationNode n:
+                yield return n.SelfParameter;
+                foreach (var child in n.Parameters)
+                    yield return child;
+                if (n.Return is not null)
+                    yield return n.Return;
+                yield return n.Body;
+                yield break;
+            case IConstructorDeclarationNode n:
+                yield return n.SelfParameter;
+                foreach (var child in n.Parameters)
+                    yield return child;
+                yield return n.Body;
+                yield break;
+            case IInitializerDeclarationNode n:
+                yield return n.SelfParameter;
+                foreach (var child in n.Parameters)
+                    yield return child;
+                yield return n.Body;
+                yield break;
+            case IFieldDeclarationNode n:
+                yield return n.Type;
+                yield break;
+            case IAssociatedFunctionDeclarationNode n:
+                foreach (var child in n.Parameters)
+                    yield return child;
+                if (n.Return is not null)
+                    yield return n.Return;
+                yield return n.Body;
+                yield break;
             case ICapabilitySetNode n:
                 yield break;
             case ICapabilityNode n:
@@ -93,6 +145,10 @@ public static class ISemanticNodeExtensions
                 yield return n.Capability;
                 yield break;
             case IFieldParameterNode n:
+                yield break;
+            case IBlockBodyNode n:
+                yield break;
+            case IExpressionBodyNode n:
                 yield break;
             case IIdentifierTypeNameNode n:
                 yield break;

@@ -20,11 +20,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
 [Closed(
     typeof(IChildNode),
+    typeof(IBodyOrBlockNode),
     typeof(IPackageNode),
     typeof(IPackageMemberDeclarationNode),
     typeof(ICompilationUnitNode),
     typeof(IUsingDirectiveNode),
     typeof(IDeclarationNode),
+    typeof(IConcreteInvocableDeclarationNode),
     typeof(INamespaceDeclarationNode),
     typeof(IClassDeclarationNode),
     typeof(IStructDeclarationNode),
@@ -33,6 +35,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IClassMemberDeclarationNode),
     typeof(ITraitMemberDeclarationNode),
     typeof(IStructMemberDeclarationNode),
+    typeof(IAlwaysTypeMemberDeclarationNode),
+    typeof(IAbstractMethodDeclarationNode),
+    typeof(IStandardMethodDeclarationNode),
+    typeof(IGetterMethodDeclarationNode),
+    typeof(ISetterMethodDeclarationNode),
     typeof(ICapabilityConstraintNode),
     typeof(IParameterNode),
     typeof(ITypeNode),
@@ -55,6 +62,12 @@ public partial interface IChildNode : IChild<ISemanticNode>, ISemanticNode
 {
     ISemanticNode Parent { get; }
     IPackageNode Package { get; }
+}
+
+[Closed(
+    typeof(IBodyNode))]
+public partial interface IBodyOrBlockNode : ISemanticNode
+{
 }
 
 public partial interface IPackageNode : ISemanticNode
@@ -145,6 +158,7 @@ public partial interface IUsingDirectiveNode : ISemanticNode, ICodeNode
 }
 
 [Closed(
+    typeof(IInvocableDeclarationNode),
     typeof(INamespaceMemberDeclarationNode),
     typeof(ITypeMemberDeclarationNode))]
 public partial interface IDeclarationNode : ISemanticNode, ICodeNode
@@ -157,6 +171,24 @@ public partial interface IDeclarationNode : ISemanticNode, ICodeNode
     LexicalScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
     IDeclarationSymbolNode SymbolNode { get; }
+}
+
+[Closed(
+    typeof(IConcreteInvocableDeclarationNode),
+    typeof(IMethodDeclarationNode))]
+public partial interface IInvocableDeclarationNode : IDeclarationNode
+{
+    IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
+}
+
+[Closed(
+    typeof(IConcreteMethodDeclarationNode),
+    typeof(IConstructorDeclarationNode),
+    typeof(IInitializerDeclarationNode),
+    typeof(IAssociatedFunctionDeclarationNode))]
+public partial interface IConcreteInvocableDeclarationNode : ISemanticNode, IInvocableDeclarationNode
+{
+    IBodyNode Body { get; }
 }
 
 public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
@@ -309,7 +341,8 @@ public partial interface IGenericParameterNode : ISemanticNode, ICodeNode
 [Closed(
     typeof(IClassMemberDeclarationNode),
     typeof(ITraitMemberDeclarationNode),
-    typeof(IStructMemberDeclarationNode))]
+    typeof(IStructMemberDeclarationNode),
+    typeof(IAlwaysTypeMemberDeclarationNode))]
 public partial interface ITypeMemberDeclarationNode : IDeclarationNode
 {
     new ITypeMemberDeclarationSyntax Syntax { get; }
@@ -317,7 +350,11 @@ public partial interface ITypeMemberDeclarationNode : IDeclarationNode
 }
 
 [Closed(
-    typeof(ITypeDeclarationNode))]
+    typeof(ITypeDeclarationNode),
+    typeof(IMethodDeclarationNode),
+    typeof(IConstructorDeclarationNode),
+    typeof(IFieldDeclarationNode),
+    typeof(IAssociatedFunctionDeclarationNode))]
 public partial interface IClassMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
 {
     new IClassMemberDeclarationSyntax Syntax { get; }
@@ -327,7 +364,9 @@ public partial interface IClassMemberDeclarationNode : ISemanticNode, ITypeMembe
 }
 
 [Closed(
-    typeof(ITypeDeclarationNode))]
+    typeof(ITypeDeclarationNode),
+    typeof(IMethodDeclarationNode),
+    typeof(IAssociatedFunctionDeclarationNode))]
 public partial interface ITraitMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
 {
     new ITraitMemberDeclarationSyntax Syntax { get; }
@@ -337,13 +376,98 @@ public partial interface ITraitMemberDeclarationNode : ISemanticNode, ITypeMembe
 }
 
 [Closed(
-    typeof(ITypeDeclarationNode))]
+    typeof(ITypeDeclarationNode),
+    typeof(IConcreteMethodDeclarationNode),
+    typeof(IInitializerDeclarationNode),
+    typeof(IFieldDeclarationNode),
+    typeof(IAssociatedFunctionDeclarationNode))]
 public partial interface IStructMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
 {
     new IStructMemberDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+}
+
+[Closed(
+    typeof(IMethodDeclarationNode),
+    typeof(IFieldDeclarationNode),
+    typeof(IAssociatedFunctionDeclarationNode))]
+public partial interface IAlwaysTypeMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
+{
+    ITypeMemberDeclarationNode DeclaringType { get; }
+}
+
+[Closed(
+    typeof(IAbstractMethodDeclarationNode),
+    typeof(IConcreteMethodDeclarationNode))]
+public partial interface IMethodDeclarationNode : IAlwaysTypeMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IInvocableDeclarationNode
+{
+    MethodKind Kind { get; }
+    IdentifierName Name { get; }
+    IMethodSelfParameterNode SelfParameter { get; }
+    new IFixedList<INamedParameterNode> Parameters { get; }
+    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDeclarationNode.Parameters => Parameters;
+    ITypeNode? Return { get; }
+}
+
+public partial interface IAbstractMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
+{
+}
+
+[Closed(
+    typeof(IStandardMethodDeclarationNode),
+    typeof(IGetterMethodDeclarationNode),
+    typeof(ISetterMethodDeclarationNode))]
+public partial interface IConcreteMethodDeclarationNode : IMethodDeclarationNode, IStructMemberDeclarationNode, IConcreteInvocableDeclarationNode
+{
+    new IFixedList<INamedParameterNode> Parameters { get; }
+    IFixedList<INamedParameterNode> IMethodDeclarationNode.Parameters => Parameters;
+    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDeclarationNode.Parameters => Parameters;
+}
+
+public partial interface IStandardMethodDeclarationNode : ISemanticNode, IConcreteMethodDeclarationNode
+{
+}
+
+public partial interface IGetterMethodDeclarationNode : ISemanticNode, IConcreteMethodDeclarationNode
+{
+    new ITypeNode Return { get; }
+}
+
+public partial interface ISetterMethodDeclarationNode : ISemanticNode, IConcreteMethodDeclarationNode
+{
+}
+
+public partial interface IConstructorDeclarationNode : IConcreteInvocableDeclarationNode, IClassMemberDeclarationNode
+{
+    IClassDeclarationNode DeclaringType { get; }
+    IdentifierName? Name { get; }
+    IConstructorSelfParameterNode SelfParameter { get; }
+    new IBlockBodyNode Body { get; }
+    IBodyNode IConcreteInvocableDeclarationNode.Body => Body;
+}
+
+public partial interface IInitializerDeclarationNode : IConcreteInvocableDeclarationNode, IStructMemberDeclarationNode
+{
+    IStructDeclarationNode DeclaringType { get; }
+    IdentifierName? Name { get; }
+    IInitializerSelfParameterNode SelfParameter { get; }
+    new IBlockBodyNode Body { get; }
+    IBodyNode IConcreteInvocableDeclarationNode.Body => Body;
+}
+
+public partial interface IFieldDeclarationNode : IAlwaysTypeMemberDeclarationNode, IClassMemberDeclarationNode, IStructMemberDeclarationNode
+{
+    IdentifierName Name { get; }
+    ITypeNode Type { get; }
+}
+
+public partial interface IAssociatedFunctionDeclarationNode : IAlwaysTypeMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, IConcreteInvocableDeclarationNode
+{
+    IdentifierName Name { get; }
+    new IFixedList<INamedParameterNode> Parameters { get; }
+    ITypeNode? Return { get; }
 }
 
 [Closed(
@@ -436,6 +560,21 @@ public partial interface IFieldParameterNode : IConstructorOrInitializerParamete
 {
     new IdentifierName Name { get; }
     IdentifierName? IParameterNode.Name => Name;
+}
+
+[Closed(
+    typeof(IBlockBodyNode),
+    typeof(IExpressionBodyNode))]
+public partial interface IBodyNode : IBodyOrBlockNode
+{
+}
+
+public partial interface IBlockBodyNode : IBodyNode
+{
+}
+
+public partial interface IExpressionBodyNode : IBodyNode
+{
 }
 
 [Closed(
