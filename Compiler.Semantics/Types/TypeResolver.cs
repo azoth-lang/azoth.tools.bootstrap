@@ -104,7 +104,7 @@ public class TypeResolver
                     return syn.NamedType = CapabilityViewpointType.Create(capability, genericParameterType);
 
                 if (selfType is CapabilityTypeConstraint { Capability: var capabilityConstraint })
-                    return syn.NamedType = new SelfViewpointType(capabilityConstraint, referentType);
+                    return syn.NamedType = SelfViewpointType.Create(capabilityConstraint, referentType);
 
                 if (selfType is not (ReferenceType or CapabilityTypeConstraint))
                     diagnostics.Add(TypeError.SelfViewpointNotAvailable(file, syn));

@@ -1,15 +1,24 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public sealed class SelfViewpointType : ViewpointType
 {
+    public static DataType Create(CapabilitySet capability, DataType referent)
+        => referent switch
+        {
+            Type t => new SelfViewpointType(capability, t),
+            UnknownType _ => Unknown,
+            _ => throw ExhaustiveMatch.Failed(referent),
+        };
+
     public override CapabilitySet Capability { get; }
 
-    public override DataType Referent { get; }
+    public override Type Referent { get; }
 
-    public SelfViewpointType(CapabilitySet capability, DataType referent)
+    public SelfViewpointType(CapabilitySet capability, Type referent)
     {
         Capability = capability;
         Referent = referent;

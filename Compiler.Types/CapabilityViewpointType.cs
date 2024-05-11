@@ -7,7 +7,7 @@ public sealed class CapabilityViewpointType : ViewpointType
 {
     public static DataType Create(Capability capability, GenericParameterType referent)
     {
-        if (capability == Capabilities.Capability.Mutable || capability == Capabilities.Capability.InitMutable)
+        if (capability == Capability.Mutable || capability == Capability.InitMutable)
             return referent;
         return new CapabilityViewpointType(capability, referent);
     }

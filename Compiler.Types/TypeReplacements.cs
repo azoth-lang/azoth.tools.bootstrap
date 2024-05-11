@@ -102,7 +102,7 @@ internal sealed class TypeReplacements
             {
                 var replacementType = ReplaceTypeParametersIn(selfViewpointType.Referent);
                 if (!ReferenceEquals(selfViewpointType.Referent, replacementType))
-                    return new SelfViewpointType(selfViewpointType.Capability, replacementType);
+                    return SelfViewpointType.Create(selfViewpointType.Capability, replacementType);
                 break;
             }
             case EmptyType _:
