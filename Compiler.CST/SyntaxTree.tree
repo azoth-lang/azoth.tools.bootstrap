@@ -38,12 +38,14 @@ EntityDeclaration: Declaration = AccessModifier:`IAccessModifierToken`?;
 InvocableDeclaration: EntityDeclaration = Parameters:ConstructorOrInitializerParameter* Symbol:`IPromise<InvocableSymbol>`;
 ConcreteInvocableDeclaration: InvocableDeclaration = Parameters:ConstructorOrInitializerParameter* Body;
 
-// ---------- Non-Member Declarations
+// ---------- Namespace Declarations
 NonMemberDeclaration: Declaration = ContainingNamespaceName:`NamespaceName`;
-// TODO if a compound namespace declaration was actually mutiple declarations, it would simplify other things
 NamespaceDeclaration: NonMemberDeclaration = IsGlobalQualified:`bool` DeclaredNames:`NamespaceName` FullName:`NamespaceName` Symbol:`Promise<NamespaceSymbol>` UsingDirectives:UsingDirective* Declarations:NonMemberDeclaration*;
 
-// ---------- Non-Member Entity Declarations
+// ---------- Function Declaration
+FunctionDeclaration: NonMemberEntityDeclaration <: ConcreteInvocableDeclaration = Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return? Body Symbol:`AcyclicPromise<FunctionSymbol>`;
+
+// ---------- Type Declarations
 NonMemberEntityDeclaration: EntityDeclaration <: NonMemberDeclaration = Name:`TypeName`;
 TypeDeclaration <: NonMemberEntityDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     = ConstModifier:`IConstKeywordToken`? IsConst:`bool` MoveModifier:`IMoveKeywordToken`? IsMove:`bool` Name:`StandardName` GenericParameters:GenericParameter* Symbol:`AcyclicPromise<UserTypeSymbol>` SupertypeNames:StandardTypeName* Members:TypeMemberDeclaration*;
@@ -51,9 +53,8 @@ ClassOrStructDeclaration: TypeDeclaration;
 ClassDeclaration: ClassOrStructDeclaration = AbstractModifier:`IAbstractKeywordToken`? IsAbstract:`bool` GenericParameters:GenericParameter* BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* DefaultConstructorSymbol:`ConstructorSymbol`? Members:ClassMemberDeclaration*;
 StructDeclaration: ClassOrStructDeclaration = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* DefaultInitializerSymbol:`InitializerSymbol`? Members:StructMemberDeclaration*;
 TraitDeclaration: TypeDeclaration = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TraitMemberDeclaration*;
-FunctionDeclaration: NonMemberEntityDeclaration <: ConcreteInvocableDeclaration = Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return? Body Symbol:`AcyclicPromise<FunctionSymbol>`;
 
-// ---------- Non-Member Entity Declaration Parts
+// ---------- Type Declaration Parts
 GenericParameter = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance` Symbol:`Promise<GenericParameterTypeSymbol>`;
 
 // ---------- Member Declarations Categories

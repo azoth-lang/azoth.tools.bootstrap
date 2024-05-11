@@ -29,6 +29,15 @@ public static class IConcreteSyntaxExtensions
                 foreach (var child in n.Declarations)
                     yield return child;
                 yield break;
+            case IFunctionDeclarationSyntax n:
+                foreach (var child in n.Attributes)
+                    yield return child;
+                foreach (var child in n.Parameters)
+                    yield return child;
+                if (n.Return is not null)
+                    yield return n.Return;
+                yield return n.Body;
+                yield break;
             case IClassDeclarationSyntax n:
                 foreach (var child in n.GenericParameters)
                     yield return child;
@@ -54,15 +63,6 @@ public static class IConcreteSyntaxExtensions
                     yield return child;
                 foreach (var child in n.Members)
                     yield return child;
-                yield break;
-            case IFunctionDeclarationSyntax n:
-                foreach (var child in n.Attributes)
-                    yield return child;
-                foreach (var child in n.Parameters)
-                    yield return child;
-                if (n.Return is not null)
-                    yield return n.Return;
-                yield return n.Body;
                 yield break;
             case IGenericParameterSyntax n:
                 yield return n.Constraint;

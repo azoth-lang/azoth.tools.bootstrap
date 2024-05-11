@@ -160,9 +160,22 @@ public partial interface INamespaceDeclarationSyntax : INonMemberDeclarationSynt
     IFixedList<INonMemberDeclarationSyntax> Declarations { get; }
 }
 
+public partial interface IFunctionDeclarationSyntax : INonMemberEntityDeclarationSyntax, IConcreteInvocableDeclarationSyntax
+{
+    IFixedList<IAttributeSyntax> Attributes { get; }
+    new IdentifierName Name { get; }
+    TypeName INonMemberEntityDeclarationSyntax.Name => Name;
+    TypeName? IDeclarationSyntax.Name => Name;
+    new IFixedList<INamedParameterSyntax> Parameters { get; }
+    IReturnSyntax? Return { get; }
+    new AcyclicPromise<FunctionSymbol> Symbol { get; }
+    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
+    IPromise<InvocableSymbol> IInvocableDeclarationSyntax.Symbol => Symbol;
+}
+
 [Closed(
-    typeof(ITypeDeclarationSyntax),
-    typeof(IFunctionDeclarationSyntax))]
+    typeof(IFunctionDeclarationSyntax),
+    typeof(ITypeDeclarationSyntax))]
 public partial interface INonMemberEntityDeclarationSyntax : IEntityDeclarationSyntax, INonMemberDeclarationSyntax
 {
     new TypeName Name { get; }
@@ -216,19 +229,6 @@ public partial interface ITraitDeclarationSyntax : ITypeDeclarationSyntax
 {
     new IFixedList<ITraitMemberDeclarationSyntax> Members { get; }
     IFixedList<ITypeMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => Members;
-}
-
-public partial interface IFunctionDeclarationSyntax : INonMemberEntityDeclarationSyntax, IConcreteInvocableDeclarationSyntax
-{
-    IFixedList<IAttributeSyntax> Attributes { get; }
-    new IdentifierName Name { get; }
-    TypeName INonMemberEntityDeclarationSyntax.Name => Name;
-    TypeName? IDeclarationSyntax.Name => Name;
-    new IFixedList<INamedParameterSyntax> Parameters { get; }
-    IReturnSyntax? Return { get; }
-    new AcyclicPromise<FunctionSymbol> Symbol { get; }
-    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
-    IPromise<InvocableSymbol> IInvocableDeclarationSyntax.Symbol => Symbol;
 }
 
 public partial interface IGenericParameterSyntax : IConcreteSyntax

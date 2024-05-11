@@ -55,7 +55,7 @@ Declaration <: Code = Syntax:`IDeclarationSyntax` ContainingSymbolNode:`ISymbolN
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
     SymbolNode:`IDeclarationSymbolNode`;
 
-// ---------- Namespaces
+// ---------- Namespace Declarations
 NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`
     IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
     UsingDirectives:UsingDirective* Declarations:NamespaceMemberDeclaration*

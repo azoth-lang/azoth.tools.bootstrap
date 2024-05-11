@@ -35,7 +35,7 @@ internal static class SyntaxBinder
         => syntax.Select(syn => new UsingDirectiveNode(syn));
     #endregion
 
-    #region Namespaces
+    #region Namespace Declarations
     private static INamespaceDeclarationNode NamespaceDeclaration(INamespaceDeclarationSyntax syntax)
         => new NamespaceDeclarationNode(syntax, UsingDirectives(syntax.UsingDirectives),
             NamespaceMemberDeclarations(syntax.Declarations));
