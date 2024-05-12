@@ -42,6 +42,10 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedSelfType), caller, child));
 
+    internal virtual ITypeDeclarationNode InheritedContainingTypeDeclaration(IChildNode caller, IChildNode child)
+        => throw new NotImplementedException(
+            Child.InheritFailedMessage(nameof(InheritedContainingTypeDeclaration), caller, child));
+
     protected virtual void CollectDiagnostics(Diagnostics diagnostics)
     {
         foreach (var child in this.Children().Cast<SemanticNode>())

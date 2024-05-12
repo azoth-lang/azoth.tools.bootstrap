@@ -74,9 +74,9 @@ ConcreteMethodDeclaration: MethodDeclaration <: StructMemberDeclaration, Concret
 StandardMethodDeclaration: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
 GetterMethodDeclaration: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return Body;
 SetterMethodDeclaration: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
-ConstructorDeclaration: ConcreteInvocableDeclaration <: ClassMemberDeclaration
+ConstructorDeclaration: ConcreteInvocableDeclaration <: AlwaysTypeMemberDeclaration, ClassMemberDeclaration
     = DeclaringType:`IClassDeclarationSyntax` Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:`AcyclicPromise<ConstructorSymbol>`;
-InitializerDeclaration: ConcreteInvocableDeclaration <: StructMemberDeclaration
+InitializerDeclaration: ConcreteInvocableDeclaration <: AlwaysTypeMemberDeclaration, StructMemberDeclaration
     = DeclaringType:`IStructDeclarationSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:`AcyclicPromise<InitializerSymbol>`;
 FieldDeclaration: AlwaysTypeMemberDeclaration <: ClassMemberDeclaration, StructMemberDeclaration, Binding
     = DeclaringType:`IClassOrStructDeclarationSyntax` Name:`IdentifierName` Type Symbol:`AcyclicPromise<FieldSymbol>` Initializer:Expression?;

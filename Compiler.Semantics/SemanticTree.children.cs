@@ -114,7 +114,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IFieldDeclarationNode n:
-                yield return n.Type;
+                yield return n.TypeNode;
                 yield break;
             case IAssociatedFunctionDeclarationNode n:
                 foreach (var child in n.Parameters)

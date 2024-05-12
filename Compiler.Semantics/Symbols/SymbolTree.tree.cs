@@ -1,6 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -17,6 +18,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
     typeof(IStructSymbolNode),
     typeof(ITraitSymbolNode),
     typeof(ITypeMemberSymbolNode),
+    typeof(IFieldSymbolNode),
     typeof(ITypeSymbolNode))]
 public partial interface ISymbolNode
 {
@@ -34,6 +36,7 @@ public partial interface IChildSymbolNode : IChild<ISymbolNode>, ISymbolNode
 }
 
 [Closed(
+    typeof(IFieldSymbolNode),
     typeof(ITypeSymbolNode))]
 public partial interface INamedSymbolNode : IChildSymbolNode
 {
@@ -143,7 +146,8 @@ public partial interface ITypeMemberSymbolNode : ISymbolNode, IDeclarationSymbol
 }
 
 [Closed(
-    typeof(IUserTypeSymbolNode))]
+    typeof(IUserTypeSymbolNode),
+    typeof(IFieldSymbolNode))]
 public partial interface IClassMemberSymbolNode : ITypeMemberSymbolNode
 {
 }
@@ -155,9 +159,20 @@ public partial interface ITraitMemberSymbolNode : ITypeMemberSymbolNode
 }
 
 [Closed(
-    typeof(IUserTypeSymbolNode))]
+    typeof(IUserTypeSymbolNode),
+    typeof(IFieldSymbolNode))]
 public partial interface IStructMemberSymbolNode : ITypeMemberSymbolNode
 {
+}
+
+public partial interface IFieldSymbolNode : ISymbolNode, INamedSymbolNode, IClassMemberSymbolNode, IStructMemberSymbolNode
+{
+    new IdentifierName Name { get; }
+    StandardName INamedSymbolNode.Name => Name;
+    StandardName IDeclarationSymbolNode.Name => Name;
+    DataType Type { get; }
+    new FieldSymbol Symbol { get; }
+    Symbol ISymbolNode.Symbol => Symbol;
 }
 
 [Closed(

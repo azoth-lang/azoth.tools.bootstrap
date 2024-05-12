@@ -280,6 +280,8 @@ public partial interface IStructMemberDeclarationSyntax : ITypeMemberDeclaration
 
 [Closed(
     typeof(IMethodDeclarationSyntax),
+    typeof(IConstructorDeclarationSyntax),
+    typeof(IInitializerDeclarationSyntax),
     typeof(IFieldDeclarationSyntax),
     typeof(IAssociatedFunctionDeclarationSyntax))]
 public partial interface IAlwaysTypeMemberDeclarationSyntax : ITypeMemberDeclarationSyntax
@@ -333,9 +335,10 @@ public partial interface ISetterMethodDeclarationSyntax : IConcreteMethodDeclara
 {
 }
 
-public partial interface IConstructorDeclarationSyntax : IConcreteInvocableDeclarationSyntax, IClassMemberDeclarationSyntax
+public partial interface IConstructorDeclarationSyntax : IConcreteInvocableDeclarationSyntax, IAlwaysTypeMemberDeclarationSyntax, IClassMemberDeclarationSyntax
 {
     new IClassDeclarationSyntax DeclaringType { get; }
+    ITypeDeclarationSyntax IAlwaysTypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
     ITypeDeclarationSyntax? ITypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
     new IdentifierName? Name { get; }
     TypeName? IDeclarationSyntax.Name => Name;
@@ -347,9 +350,10 @@ public partial interface IConstructorDeclarationSyntax : IConcreteInvocableDecla
     IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
 }
 
-public partial interface IInitializerDeclarationSyntax : IConcreteInvocableDeclarationSyntax, IStructMemberDeclarationSyntax
+public partial interface IInitializerDeclarationSyntax : IConcreteInvocableDeclarationSyntax, IAlwaysTypeMemberDeclarationSyntax, IStructMemberDeclarationSyntax
 {
     new IStructDeclarationSyntax DeclaringType { get; }
+    ITypeDeclarationSyntax IAlwaysTypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
     ITypeDeclarationSyntax? ITypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
     new IdentifierName? Name { get; }
     TypeName? IDeclarationSyntax.Name => Name;

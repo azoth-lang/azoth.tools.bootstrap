@@ -44,6 +44,8 @@ public static class ISymbolNodeExtensions
                 yield break;
             case IGenericParameterSymbolNode n:
                 yield break;
+            case IFieldSymbolNode n:
+                yield break;
         }
     }
 }

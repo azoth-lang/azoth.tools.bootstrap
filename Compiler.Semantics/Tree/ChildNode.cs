@@ -65,4 +65,10 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected Pseudotype? InheritedSelfType()
         => Parent.InheritedSelfType(this, this);
+
+    internal override ITypeDeclarationNode InheritedContainingTypeDeclaration(IChildNode caller, IChildNode child)
+        => Parent.InheritedContainingTypeDeclaration(this, child);
+
+    protected ITypeDeclarationNode InheritedContainingTypeDeclaration()
+        => Parent.InheritedContainingTypeDeclaration(this, this);
 }

@@ -63,6 +63,9 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
         return LexicalScopeAttributes.TypeDeclaration_InheritedLexicalScope(this);
     }
 
+    internal override ITypeDeclarationNode InheritedContainingTypeDeclaration(IChildNode caller, IChildNode child)
+        => this;
+
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
         TypeDeclarationsAspect.TypeDeclaration_ContributeDiagnostics(this, diagnostics);

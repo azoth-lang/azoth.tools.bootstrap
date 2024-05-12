@@ -23,15 +23,18 @@ internal static class TypeExpressionsAspect
         => node.BareType?.WithRead() ?? node.ReferencedSymbol.GetDataType() ?? DataType.Unknown;
 
     public static DataType CapabilityType_Type(ICapabilityTypeNode node)
-        // TODO better handle of capability applied to wrong type
-        => (node.Referent as ITypeNameNode)?.BareType?.With(node.Capability.Capability) ?? DataType.Unknown;
+        => (node.Referent as ITypeNameNode)?.BareType?.With(node.Capability.Capability) ?? node.Referent.Type;
 
     public static void CapabilityType_ContributeDiagnostics(ICapabilityTypeNode node, Diagnostics diagnostics)
     {
         var capability = node.Capability.Capability;
-        if (capability.AllowsWrite && node.Type is CapabilityType { IsDeclaredConst: true } referenceType)
+        if (capability.AllowsWrite && node.Type is CapabilityType { IsDeclaredConst: true } capabilityType)
             diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(node.File, node.Syntax, capability,
-                referenceType.DeclaredType));
+                capabilityType.DeclaredType));
+        // TODO enable this once previous version is removed
+        //if (node.Referent.Type is GenericParameterType)
+        //    diagnostics.Add(TypeError.CapabilityAppliedToTypeParameter(node.File, node.Syntax));
+        // TODO I think there are more errors that can happen
     }
 
     public static DataType OptionalType_Type(IOptionalTypeNode node)

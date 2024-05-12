@@ -16,7 +16,7 @@ internal sealed class SpecialTypeNameNode : TypeNameNode, ISpecialTypeNameNode
     private ValueAttribute<TypeSymbol> referencedSymbol;
     public override TypeSymbol ReferencedSymbol
         => referencedSymbol.TryGetValue(out var value) ? value
-            : referencedSymbol.GetValue(this, SymbolAttribute.SpecialTypeName);
+            : referencedSymbol.GetValue(this, SymbolAttribute.SpecialTypeName_ReferencedSymbol);
     private ValueAttribute<BareType?> bareType;
     public override BareType? BareType
     => bareType.TryGetValue(out var value) ? value

@@ -125,6 +125,12 @@ internal static class SymbolNodeAttributes
     private static IFixedSet<ITypeSymbolNode> LookupSymbolNodes(IStandardTypeNameNode node)
         => node.ContainingLexicalScope.Lookup(node.Name).OfType<ITypeSymbolNode>().ToFixedSet();
 
+    public static IFieldSymbolNode FieldDeclaration_SymbolNode(IFieldDeclarationNode node)
+        => new SemanticFieldSymbolNode(node);
+
+    public static IFieldSymbolNode? FieldParameter_ReferencedSymbolNode(IFieldParameterNode node)
+        => node.ContainingTypeDeclaration.Members.OfType<IFieldDeclarationNode>().FirstOrDefault(f => f.Name == node.Name)?.SymbolNode;
+
     #region Construct for Symbols
     public static IDeclarationSymbolNode Symbol(Symbol symbol)
         => symbol switch

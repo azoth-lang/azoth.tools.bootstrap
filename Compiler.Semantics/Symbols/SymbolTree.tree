@@ -5,6 +5,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
+◊using Azoth.Tools.Bootstrap.Compiler.Types;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 <default> = Symbol:`Symbol`;
@@ -50,6 +51,9 @@ TypeMember <: Declaration;
 ClassMember <: TypeMember;
 TraitMember <: TypeMember;
 StructMember <: TypeMember;
+
+// ---------- Member Declarations
+Field <: Named, ClassMember, StructMember = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;
 
 // ---------- Can be Referenced by Type Name
 Type <: Named = Symbol:`TypeSymbol`;

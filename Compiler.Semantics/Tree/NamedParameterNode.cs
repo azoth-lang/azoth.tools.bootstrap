@@ -19,10 +19,10 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     public override DataType Type
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, InvocableDeclarationsAspect.NamedParameterNode_Type);
-    private ValueAttribute<Parameter> parameter;
-    public Parameter Parameter
-        => parameter.TryGetValue(out var value) ? value
-            : parameter.GetValue(this, InvocableDeclarationsAspect.NamedParameter_Parameter);
+    private ValueAttribute<Parameter> parameterType;
+    public Parameter ParameterType
+        => parameterType.TryGetValue(out var value) ? value
+            : parameterType.GetValue(this, InvocableDeclarationsAspect.NamedParameter_ParameterType);
 
     public NamedParameterNode(INamedParameterSyntax syntax, ITypeNode type)
     {

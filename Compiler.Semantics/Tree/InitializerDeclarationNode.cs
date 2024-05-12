@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -12,6 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class InitializerDeclarationNode : TypeMemberDeclarationNode, IInitializerDeclarationNode
 {
     public override IInitializerDeclarationSyntax Syntax { get; }
+    public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public IdentifierName? Name => Syntax.Name;
     public IInitializerSelfParameterNode SelfParameter { get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }

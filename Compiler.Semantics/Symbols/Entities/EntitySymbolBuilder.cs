@@ -106,18 +106,15 @@ public class EntitySymbolBuilder
 
     private void BuildConstructorSymbol(IConstructorDeclarationSyntax constructor)
     {
-        constructor.Symbol.BeginFulfilling();
-        var file = constructor.File;
-        var selfParameterType = ResolveConstructorSelfParameterType(constructor.SelfParameter, constructor.DeclaringType);
-        var resolver = new TypeResolver(file, diagnostics, selfParameterType);
-        var parameterTypes = ResolveParameterTypes(resolver, constructor.Parameters, constructor.DeclaringType);
-
-        var declaringClassSymbol = constructor.DeclaringType.Symbol.Result;
-        var symbol = new ConstructorSymbol(declaringClassSymbol, constructor.Name, selfParameterType, parameterTypes);
-        constructor.Symbol.Fulfill(symbol);
+        // Constructor symbol already set by EntitySymbolApplier
+        var symbol = constructor.Symbol.Result;
         symbolTree.Add(symbol);
+
+        // EntitySymbolApplier doesn't cover parameters because they are not metadata symbols
+        var selfParameterType = symbol.SelfParameterType;
+        var parameterTypes = symbol.Parameters;
         BuildSelfParameterSymbol(symbol, constructor.SelfParameter, selfParameterType, isConstructor: true);
-        BuildParameterSymbols(symbol, file, constructor.Parameters, parameterTypes);
+        BuildParameterSymbols(symbol, constructor.File, constructor.Parameters, parameterTypes);
     }
 
     private void BuildInitializerSymbol(IInitializerDeclarationSyntax initializer)
@@ -323,15 +320,6 @@ public class EntitySymbolBuilder
         }
     }
 
-    private ReferenceType ResolveConstructorSelfParameterType(
-        IConstructorSelfParameterSyntax selfParameter,
-        IClassDeclarationSyntax declaringClass)
-    {
-        var declaredType = (ObjectType)declaringClass.Symbol.Result.DeclaresType;
-        var resolver = new SelfTypeResolver(declaringClass.File, diagnostics);
-        return resolver.EvaluateConstructorSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterTypes);
-    }
-
     private ValueType ResolveInitializerSelfParameterType(
         IInitializerSelfParameterSyntax selfParameter,
         IStructDeclarationSyntax declaringStruct)
@@ -340,23 +328,6 @@ public class EntitySymbolBuilder
         var resolver = new SelfTypeResolver(declaringStruct.File, diagnostics);
         return resolver.EvaluateInitializerSelfParameterType(declaredType, selfParameter.Capability,
             declaredType.GenericParameterTypes);
-    }
-
-    private SelfParameter ResolveMethodSelfParameterType(
-        CodeFile file,
-        IMethodSelfParameterSyntax selfParameter,
-        ITypeDeclarationSyntax declaringType)
-    {
-        var declaredType = declaringType.Symbol.Result.DeclaresType;
-        var resolver = new SelfTypeResolver(declaringType.File, diagnostics);
-        var selfType = resolver.EvaluateMethodSelfParameterType(declaredType, selfParameter.Capability, declaredType.GenericParameterTypes);
-        bool isLent = selfParameter.IsLentBinding;
-        if (isLent && !selfType.CanBeLent())
-        {
-            diagnostics.Add(TypeError.TypeCannotBeLent(file, selfParameter.Span, selfType));
-            isLent = false;
-        }
-        return new SelfParameter(isLent, selfType);
     }
 
     private void BuildSelfParameterSymbol(

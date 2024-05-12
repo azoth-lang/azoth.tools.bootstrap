@@ -46,9 +46,15 @@ internal class EntitySymbolApplier
             case IMethodDeclarationNode n:
                 MethodDeclaration(n);
                 break;
-            case IConstructorDeclarationNode _:
+            case IConstructorDeclarationNode n:
+                ConstructorDeclaration(n);
+                break;
             case IInitializerDeclarationNode _:
-            case IFieldDeclarationNode _:
+                // TODO
+                break;
+            case IFieldDeclarationNode n:
+                // TODO
+                break;
             case IAssociatedFunctionDeclarationNode _:
                 // TODO
                 break;
@@ -85,6 +91,27 @@ internal class EntitySymbolApplier
 
     private static void NamedParameter(INamedParameterNode node) => Type(node.TypeNode);
 
+    private static void ConstructorOrInitializerParameters(IEnumerable<IConstructorOrInitializerParameterNode> nodes)
+        => nodes.ForEach(ConstructorOrInitializerParameter);
+
+    private static void ConstructorOrInitializerParameter(IConstructorOrInitializerParameterNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case INamedParameterNode n:
+                NamedParameter(n);
+                break;
+            case IFieldParameterNode n:
+                FieldParameter(n);
+                break;
+        }
+    }
+
+    private static void FieldParameter(IFieldParameterNode node)
+        => node.Syntax.ReferencedSymbol.Fulfill(node.ReferencedSymbolNode?.Symbol);
+
     private static void NamespaceDeclaration(INamespaceDeclarationNode node)
     {
         node.Syntax.Symbol.Fulfill(node.Symbol);
@@ -98,6 +125,14 @@ internal class EntitySymbolApplier
         symbol.Fulfill(node.Symbol);
         NamedParameters(node.Parameters);
         Type(node.Return);
+    }
+
+    private static void ConstructorDeclaration(IConstructorDeclarationNode node)
+    {
+        var symbol = node.Syntax.Symbol;
+        symbol.BeginFulfilling();
+        symbol.Fulfill(node.Symbol);
+        ConstructorOrInitializerParameters(node.Parameters);
     }
 
     private static void StandardTypeNames(IEnumerable<IStandardTypeNameNode> nodes)

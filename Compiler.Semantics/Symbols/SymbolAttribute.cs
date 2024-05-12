@@ -22,7 +22,7 @@ internal static class SymbolAttribute
     public static TypeSymbol? GenericTypeName(IGenericTypeNameNode node)
         => node.ReferencedSymbolNode?.Symbol;
 
-    public static TypeSymbol SpecialTypeName(ISpecialTypeNameNode node)
+    public static TypeSymbol SpecialTypeName_ReferencedSymbol(ISpecialTypeNameNode node)
         => Primitive.SymbolTree.LookupSymbol(node.Name);
 
     public static FunctionSymbol FunctionDeclaration(IFunctionDeclarationNode node)
@@ -30,6 +30,14 @@ internal static class SymbolAttribute
 
     public static MethodSymbol MethodDeclaration(IMethodDeclarationNode node)
         => new MethodSymbol(node.ContainingSymbol, node.Kind, node.Name,
-            node.SelfParameter.ParameterType, node.Parameters.Select(p => p.Parameter).ToFixedList(),
-            new Return(node.Return?.Type ?? DataType.Void));
+            node.SelfParameter.ParameterType,
+            node.Parameters.Select(p => p.ParameterType).ToFixedList(),
+            new(node.Return?.Type ?? DataType.Void));
+
+    public static ConstructorSymbol ConstructorDeclaration(IConstructorDeclarationNode node)
+        => new ConstructorSymbol(node.ContainingSymbol, node.Name, node.SelfParameter.Type,
+            node.Parameters.Select(p => p.ParameterType).ToFixedList());
+
+    public static FieldSymbol FieldDeclaration(IFieldDeclarationNode node)
+        => new FieldSymbol(node.ContainingSymbol, node.Name, node.IsMutableBinding, node.Type);
 }

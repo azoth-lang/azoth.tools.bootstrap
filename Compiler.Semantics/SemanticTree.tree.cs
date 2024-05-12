@@ -395,6 +395,8 @@ public partial interface IStructMemberDeclarationNode : ISemanticNode, ITypeMemb
 
 [Closed(
     typeof(IMethodDeclarationNode),
+    typeof(IConstructorDeclarationNode),
+    typeof(IInitializerDeclarationNode),
     typeof(IFieldDeclarationNode),
     typeof(IAssociatedFunctionDeclarationNode))]
 public partial interface IAlwaysTypeMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
@@ -486,26 +488,27 @@ public partial interface ISetterMethodDeclarationNode : ISemanticNode, IConcrete
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
 }
 
-public partial interface IConstructorDeclarationNode : IConcreteInvocableDeclarationNode, IClassMemberDeclarationNode
+public partial interface IConstructorDeclarationNode : IConcreteInvocableDeclarationNode, IAlwaysTypeMemberDeclarationNode, IClassMemberDeclarationNode
 {
     new IConstructorDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
     IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
-    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
     IdentifierName? Name { get; }
     IConstructorSelfParameterNode SelfParameter { get; }
+    ConstructorSymbol Symbol { get; }
 }
 
-public partial interface IInitializerDeclarationNode : IConcreteInvocableDeclarationNode, IStructMemberDeclarationNode
+public partial interface IInitializerDeclarationNode : IConcreteInvocableDeclarationNode, IAlwaysTypeMemberDeclarationNode, IStructMemberDeclarationNode
 {
     new IInitializerDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
     IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
-    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
     IdentifierName? Name { get; }
     IInitializerSelfParameterNode SelfParameter { get; }
 }
@@ -518,8 +521,13 @@ public partial interface IFieldDeclarationNode : IAlwaysTypeMemberDeclarationNod
     IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
     IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    bool IsMutableBinding { get; }
     IdentifierName Name { get; }
-    ITypeNode Type { get; }
+    ITypeNode TypeNode { get; }
+    DataType Type { get; }
+    new IFieldSymbolNode SymbolNode { get; }
+    IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
+    FieldSymbol Symbol { get; }
 }
 
 public partial interface IAssociatedFunctionDeclarationNode : IConcreteInvocableDeclarationNode, IAlwaysTypeMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode
@@ -587,6 +595,7 @@ public partial interface IConstructorOrInitializerParameterNode : IParameterNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     new DataType Type { get; }
     Pseudotype IParameterNode.Type => Type;
+    Parameter ParameterType { get; }
 }
 
 public partial interface INamedParameterNode : ISemanticNode, IConstructorOrInitializerParameterNode
@@ -601,7 +610,6 @@ public partial interface INamedParameterNode : ISemanticNode, IConstructorOrInit
     IdentifierName? IParameterNode.Name => Name;
     int? DeclarationNumber { get; }
     ITypeNode TypeNode { get; }
-    Parameter Parameter { get; }
 }
 
 [Closed(
@@ -623,6 +631,10 @@ public partial interface IConstructorSelfParameterNode : ISemanticNode, ISelfPar
     ISelfParameterSyntax ISelfParameterNode.Syntax => Syntax;
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICapabilityNode Capability { get; }
+    new ReferenceType Type { get; }
+    Pseudotype IParameterNode.Type => Type;
+    new ObjectType ContainingDeclaredType { get; }
+    IDeclaredUserType ISelfParameterNode.ContainingDeclaredType => ContainingDeclaredType;
 }
 
 public partial interface IInitializerSelfParameterNode : ISemanticNode, ISelfParameterNode
@@ -652,6 +664,8 @@ public partial interface IFieldParameterNode : ISemanticNode, IConstructorOrInit
     IParameterSyntax IParameterNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     IdentifierName? IParameterNode.Name => Name;
+    ITypeDeclarationNode ContainingTypeDeclaration { get; }
+    IFieldSymbolNode? ReferencedSymbolNode { get; }
 }
 
 [Closed(
