@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -28,25 +27,12 @@ public class TypeResolver
     private readonly CodeFile file;
     private readonly Diagnostics diagnostics;
     private readonly Pseudotype? selfType;
-    private readonly ITypeSymbolBuilder? typeSymbolBuilder;
 
     public TypeResolver(CodeFile file, Diagnostics diagnostics, Pseudotype? selfType)
     {
         this.file = file;
         this.diagnostics = diagnostics;
         this.selfType = selfType;
-    }
-
-    public TypeResolver(
-        CodeFile file,
-        Diagnostics diagnostics,
-        Pseudotype? selfType,
-        ITypeSymbolBuilder typeSymbolBuilder)
-    {
-        this.file = file;
-        this.diagnostics = diagnostics;
-        this.selfType = selfType;
-        this.typeSymbolBuilder = typeSymbolBuilder;
     }
 
     [return: NotNullIfNotNull(nameof(typeSyntax))]
@@ -99,7 +85,7 @@ public class TypeResolver
             case ISelfViewpointTypeSyntax syn:
             {
                 var referentType = Evaluate(syn.Referent, mustBeConstructable);
-                if (selfType is ReferenceType { Capability: var capability }
+                if (selfType is CapabilityType { Capability: var capability }
                         && referentType is GenericParameterType genericParameterType)
                     return syn.NamedType = CapabilityViewpointType.Create(capability, genericParameterType);
 
@@ -215,38 +201,6 @@ public class TypeResolver
     public BareType? EvaluateConstructableBareType(ITypeNameSyntax typeSyntax)
         => EvaluateBareType(typeSyntax, isAttribute: false);
 
-    public BareReferenceType? EvaluateSupertype(IStandardTypeNameSyntax typeSyntax)
-    {
-        return typeSyntax switch
-        {
-            IIdentifierTypeNameSyntax syn
-                => (BareReferenceType?)ResolveType(syn, isAttribute: false, FixedList.Empty<DataType>(), CreateType),
-            IGenericTypeNameSyntax syn
-                => (BareReferenceType?)ResolveType(syn, isAttribute: false, Evaluate(syn.TypeArguments, mustBeConstructable: false), CreateType),
-            _ => throw ExhaustiveMatch.Failed(typeSyntax)
-        };
-
-        BareReferenceType? CreateType(TypeSymbol symbol, IFixedList<DataType> typeArguments)
-        {
-            switch (symbol)
-            {
-                default:
-                    throw ExhaustiveMatch.Failed(symbol);
-                case PrimitiveTypeSymbol sym:
-                    throw new UnreachableException();
-                case UserTypeSymbol sym:
-                    var declaredObjectType = sym.DeclaresType;
-                    return CheckTypeArgumentsAreConstructable(declaredObjectType.With(typeArguments), typeSyntax) as BareReferenceType;
-                case GenericParameterTypeSymbol _:
-                    diagnostics.Add(TypeError.TypeParameterCannotBeUsedHere(file, typeSyntax));
-                    return null;
-                case EmptyTypeSymbol _:
-                    diagnostics.Add(TypeError.EmptyTypeCannotBeUsedHere(file, typeSyntax));
-                    return null;
-            }
-        }
-    }
-
     public BareType? EvaluateAttribute(ITypeNameSyntax typeSyntax)
         => EvaluateBareType(typeSyntax, isAttribute: true);
 
@@ -348,13 +302,12 @@ public class TypeResolver
         }
     }
 
-    private TSymbol EnsureBuilt<TSymbol>(IPromise<TSymbol> promise)
+    private static TSymbol EnsureBuilt<TSymbol>(IPromise<TSymbol> promise)
         where TSymbol : TypeSymbol
     {
-        if (promise.IsFulfilled) return promise.Result;
-        if (typeSymbolBuilder is null)
-            throw new InvalidOperationException("All type symbols should already be built");
-        return typeSymbolBuilder.Build(promise);
+        if (promise.IsFulfilled)
+            return promise.Result;
+        throw new InvalidOperationException("All type symbols should already be built");
     }
 
     private BareType? CheckTypeArgumentsAreConstructable(BareType type, IConcreteSyntax typeSyntax)

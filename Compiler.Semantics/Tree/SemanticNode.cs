@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -36,6 +37,10 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedContainingDeclaredType), caller, child));
+
+    internal virtual Pseudotype? InheritedSelfType(IChildNode caller, IChildNode child)
+        => throw new NotImplementedException(
+            Child.InheritFailedMessage(nameof(InheritedSelfType), caller, child));
 
     protected virtual void CollectDiagnostics(Diagnostics diagnostics)
     {

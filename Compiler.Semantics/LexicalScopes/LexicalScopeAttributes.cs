@@ -1,7 +1,7 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -17,7 +17,7 @@ internal static class LexicalScopeAttributes
             node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode.MainFacet)
                 .Concat(node.References.Select(r => r.SymbolNode.TestingFacet)));
 
-    public static LexicalScope CompilationUnit(CompilationUnitNode node)
+    public static LexicalScope CompilationUnit(ICompilationUnitNode node)
         => BuildNamespaceScope(node.ContainingLexicalScope, node.ImplicitNamespaceName, node.UsingDirectives);
 
     private static LexicalScope BuildNamespaceScope(
@@ -66,15 +66,16 @@ internal static class LexicalScopeAttributes
         return node.ContainingLexicalScope;
     }
 
-    public static LexicalScope TypeDeclaration(ITypeDeclarationNode node)
-        => throw new System.NotImplementedException();
+    public static LexicalScope TypeDeclaration_LexicalScope(ITypeDeclarationNode node)
+        // TODO populate the scope with members
+        => new BasicScope(node.SupertypesLexicalScope, Enumerable.Empty<INamedSymbolNode>());
 
     public static LexicalScope TypeDeclaration_InheritedLexicalScope_Supertypes(ITypeDeclarationNode node)
         => node.SupertypesLexicalScope;
 
-    public static LexicalScope TypeDeclaration_InheritedLexicalScope(TypeDeclarationNode node)
+    public static LexicalScope TypeDeclaration_InheritedLexicalScope(ITypeDeclarationNode node)
         => node.LexicalScope;
 
-    public static LexicalScope FunctionDeclaration(FunctionDeclarationNode node)
+    public static LexicalScope FunctionDeclaration(IFunctionDeclarationNode node)
         => throw new System.NotImplementedException();
 }

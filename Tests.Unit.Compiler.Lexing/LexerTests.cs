@@ -324,7 +324,7 @@ public class LexerTests
         {
             var result = Lex(token.Text);
             var outputAsPsuedoTokens = result.ToPsuedoTokens();
-            var expectedPsuedoTokens = token.Yield().Append(PsuedoToken.EndOfFile()).ToList();
+            var expectedPsuedoTokens = token.Yield().Append(PseudoToken.EndOfFile()).ToList();
             return expectedPsuedoTokens.SequenceEqual(outputAsPsuedoTokens)
                                        .Label($"Actual:   {outputAsPsuedoTokens.DebugFormat()}")
                                        .Label($"Expected: {expectedPsuedoTokens.DebugFormat()}")
@@ -342,7 +342,7 @@ public class LexerTests
             var input = string.Concat(tokens.Select(t => t.Text));
             var result = Lex(input);
             var outputAsPsuedoTokens = result.ToPsuedoTokens();
-            var expectedPsuedoTokens = tokens.Append(PsuedoToken.EndOfFile()).ToFixedList();
+            var expectedPsuedoTokens = tokens.Append(PseudoToken.EndOfFile()).ToFixedList();
             return expectedPsuedoTokens.SequenceEqual(outputAsPsuedoTokens)
                                        .Label($"Text: „{input.Escape()}„")
                                        .Label($"Actual:   {outputAsPsuedoTokens.DebugFormat()}")

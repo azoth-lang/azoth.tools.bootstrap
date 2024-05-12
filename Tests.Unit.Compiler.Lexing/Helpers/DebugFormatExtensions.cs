@@ -13,6 +13,6 @@ public static class DebugFormatExtensions
                 $"{d.ErrorCode}@{d.StartPosition.Line}:{d.StartPosition.Column}"));
     }
 
-    public static string DebugFormat(this IEnumerable<PsuedoToken> tokens)
+    public static string DebugFormat(this IEnumerable<PseudoToken> tokens)
         => string.Join(", ", tokens);
 }

@@ -19,7 +19,7 @@ internal sealed class CapabilityTypeNode : TypeNode, ICapabilityTypeNode
     public CapabilityTypeNode(ICapabilityTypeSyntax syntax, ICapabilityNode capability, ITypeNode referent)
     {
         Syntax = syntax;
-        Capability = capability;
+        Capability = Child.Attach(this, capability);
         Referent = Child.Attach(this, referent);
     }
 

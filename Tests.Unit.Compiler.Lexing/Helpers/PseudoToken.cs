@@ -9,38 +9,38 @@ using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Lexing.Helpers;
 
-public class PsuedoToken
+public class PseudoToken
 {
     public Type TokenType { get; }
 
     public string Text { get; }
     public object? Value { get; }
 
-    public PsuedoToken(Type tokenType, string text, object? value = null)
+    public PseudoToken(Type tokenType, string text, object? value = null)
     {
         TokenType = tokenType;
         Text = text;
         Value = value;
     }
 
-    public static PsuedoToken EndOfFile() => new(typeof(IEndOfFileToken), "");
+    public static PseudoToken EndOfFile() => new(typeof(IEndOfFileToken), "");
 
-    public static PsuedoToken For(IToken token, CodeText code)
+    public static PseudoToken For(IToken token, CodeText code)
     {
         var tokenType = token.GetType();
         var text = token.Text(code);
         return token switch
         {
-            IIdentifierToken identifier => new PsuedoToken(tokenType, text, identifier.Value),
-            IStringLiteralToken stringLiteral => new PsuedoToken(tokenType, text, stringLiteral.Value),
-            IIntegerLiteralToken integerLiteral => new PsuedoToken(tokenType, text, integerLiteral.Value),
-            _ => new PsuedoToken(tokenType, text)
+            IIdentifierToken identifier => new PseudoToken(tokenType, text, identifier.Value),
+            IStringLiteralToken stringLiteral => new PseudoToken(tokenType, text, stringLiteral.Value),
+            IIntegerLiteralToken integerLiteral => new PseudoToken(tokenType, text, integerLiteral.Value),
+            _ => new PseudoToken(tokenType, text)
         };
     }
 
     public override bool Equals(object? obj)
     {
-        if (obj is PsuedoToken token &&
+        if (obj is PseudoToken token &&
             (TokenType == token.TokenType
              || TokenType.IsAssignableFrom(token.TokenType)
              || token.TokenType.IsAssignableFrom(TokenType)) &&

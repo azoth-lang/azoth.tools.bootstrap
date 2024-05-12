@@ -58,7 +58,7 @@ Declaration <: Code = Syntax:`IDeclarationSyntax` ContainingSymbolNode:`ISymbolN
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
     SymbolNode:`IDeclarationSymbolNode`;
 InvocableDeclaration <: Declaration = Parameters:ConstructorOrInitializerParameter*;
-ConcreteInvocableDeclaration <: InvocableDeclaration = Parameters:ConstructorOrInitializerParameter* Body;
+ConcreteInvocableDeclaration <: InvocableDeclaration = Parameters:ConstructorOrInitializerParameter*; // Body;
 
 // ---------- Namespace Declarations
 NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`
@@ -106,25 +106,25 @@ TypeMemberDeclaration <: Declaration = Syntax:`ITypeMemberDeclarationSyntax`;
 ClassMemberDeclaration <: TypeMemberDeclaration = Syntax:`IClassMemberDeclarationSyntax`;
 TraitMemberDeclaration <: TypeMemberDeclaration = Syntax:`ITraitMemberDeclarationSyntax`;
 StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarationSyntax`;
-AlwaysTypeMemberDeclaration <: TypeMemberDeclaration = DeclaringType:`ITypeMemberDeclarationNode`;
+AlwaysTypeMemberDeclaration <: TypeMemberDeclaration;
 
 // ---------- Member Declarations
 MethodDeclaration <: AlwaysTypeMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration
-    = Kind:`MethodKind` Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
-AbstractMethodDeclaration <: MethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
+    = Syntax:`IMethodDeclarationSyntax` Kind:`MethodKind` Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
+AbstractMethodDeclaration <: MethodDeclaration = Syntax:`IAbstractMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
 ConcreteMethodDeclaration <: MethodDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration
-    = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
-StandardMethodDeclaration <: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
-GetterMethodDeclaration <: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type Body;
-SetterMethodDeclaration <: ConcreteMethodDeclaration = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
+    = Syntax:`IConcreteMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?; // Body;
+StandardMethodDeclaration <: ConcreteMethodDeclaration = Syntax:`IStandardMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?; // Body;
+GetterMethodDeclaration <: ConcreteMethodDeclaration = Syntax:`IGetterMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type; // Body;
+SetterMethodDeclaration <: ConcreteMethodDeclaration = Syntax:`ISetterMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?; // Body;
 ConstructorDeclaration <: ConcreteInvocableDeclaration, ClassMemberDeclaration
-    = DeclaringType:`IClassDeclarationNode` Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
+    = Syntax:`IConstructorDeclarationSyntax` Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter*; // Body:BlockBody;
 InitializerDeclaration <: ConcreteInvocableDeclaration, StructMemberDeclaration
-    = DeclaringType:`IStructDeclarationNode` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
+    = Syntax:`IInitializerDeclarationSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter*; // Body:BlockBody;
 FieldDeclaration <: AlwaysTypeMemberDeclaration, ClassMemberDeclaration, StructMemberDeclaration
-    = Name:`IdentifierName` Type;
-AssociatedFunctionDeclaration <: AlwaysTypeMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration
-    = Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body;
+    = Syntax:`IFieldDeclarationSyntax` Name:`IdentifierName` Type;
+AssociatedFunctionDeclaration <: ConcreteInvocableDeclaration, AlwaysTypeMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
+    = Syntax:`IAssociatedFunctionDeclarationSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?; // Body;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;
@@ -133,15 +133,17 @@ CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint
 Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability` Constraint:`Capability`;
 
 // ---------- Parameters
-Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Type:`Parameter` Unused:`bool`;
+Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool` Type:`Pseudotype`;
 /// A non-self parameter that can be declared in a constructor
-ConstructorOrInitializerParameter: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`;
-NamedParameter: ConstructorOrInitializerParameter = Syntax:`INamedParameterSyntax` IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`? TypeNode:Type;
-SelfParameter: Parameter = IsLentBinding:`bool`;
-ConstructorSelfParameter: SelfParameter = IsLentBinding:`bool` Capability;
-InitializerSelfParameter: SelfParameter = IsLentBinding:`bool` Capability;
-MethodSelfParameter: SelfParameter = IsLentBinding:`bool` Capability:CapabilityConstraint;
-FieldParameter: ConstructorOrInitializerParameter = Name:`IdentifierName`;
+ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax` Type:`DataType`;
+NamedParameter <: ConstructorOrInitializerParameter = Syntax:`INamedParameterSyntax`
+    IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`?
+    TypeNode:Type Parameter:`Parameter`;
+SelfParameter <: Parameter = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool` ContainingDeclaredType:`IDeclaredUserType`;
+ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax` IsLentBinding:`bool` Capability;
+InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax` IsLentBinding:`bool` Capability;
+MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` IsLentBinding:`bool` Capability:CapabilityConstraint;
+FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax` Name:`IdentifierName`;
 
 // ---------- Function Parts
 Body: BodyOrBlock;
@@ -165,4 +167,4 @@ FunctionType <: Type = Syntax:`IFunctionTypeSyntax` Parameters:ParameterType* Re
 ParameterType <: Code = Syntax:`IParameterTypeSyntax` IsLent:`bool` Referent:Type Parameter:`Parameter`;
 ViewpointType <: Type = Syntax:`IViewpointTypeSyntax` Referent:Type;
 CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSyntax` Capability Referent:Type;
-SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type;
+SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type SelfType:`Pseudotype`?;

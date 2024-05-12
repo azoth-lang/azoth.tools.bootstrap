@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -41,4 +42,27 @@ internal static class TypeExpressionsAspect
 
     public static Parameter ParameterType_Parameter(IParameterTypeNode node)
         => new(node.IsLent, node.Referent.Type);
+
+    public static DataType CapabilityViewpointType_Type(ICapabilityViewpointTypeNode node)
+        // TODO report error if capability is not applicable to referent
+        => CapabilityViewpointType.Create(node.Capability.Capability, node.Referent.Type);
+
+    public static Pseudotype ConcreteMethodDeclaration_InheritedSelfType(IConcreteMethodDeclarationNode node)
+        => node.SelfParameter.Type;
+
+    public static DataType SelfViewpointType_Type(ISelfViewpointTypeNode node)
+    {
+        var selfType = node.SelfType;
+        var referentType = node.Referent.Type;
+        if (selfType is CapabilityType { Capability: var capability }
+            && referentType is GenericParameterType genericParameterType)
+            return CapabilityViewpointType.Create(capability, genericParameterType);
+
+        if (selfType is CapabilityTypeConstraint { Capability: var capabilityConstraint })
+            return SelfViewpointType.Create(capabilityConstraint, referentType);
+
+        // TODO report error if self type is not applicable to referent
+
+        return referentType;
+    }
 }

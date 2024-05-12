@@ -1,0 +1,32 @@
+using System;
+using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+using Azoth.Tools.Bootstrap.Framework;
+
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
+
+internal sealed class AssociatedFunctionDeclarationNode : TypeMemberDeclarationNode, IAssociatedFunctionDeclarationNode
+{
+    public override IAssociatedFunctionDeclarationSyntax Syntax { get; }
+    public IdentifierName Name => Syntax.Name;
+    public IFixedList<INamedParameterNode> Parameters { get; }
+    // TODO this explicit implementation shouldn't be needed. There must be a bug in the code generator?
+    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDeclarationNode.Parameters => Parameters;
+    public ITypeNode? Return { get; }
+    public override LexicalScope LexicalScope => throw new NotImplementedException();
+    public override IDeclarationSymbolNode SymbolNode => throw new NotImplementedException();
+
+    public AssociatedFunctionDeclarationNode(
+        IAssociatedFunctionDeclarationSyntax syntax,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode? @return)
+    {
+        Syntax = syntax;
+        Parameters = ChildList.CreateFixed(this, parameters);
+        Return = Child.Attach(this, @return);
+    }
+}

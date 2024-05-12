@@ -18,6 +18,6 @@ internal sealed class ParameterTypeNode : CodeNode, IParameterTypeNode
     public ParameterTypeNode(IParameterTypeSyntax syntax, ITypeNode referent)
     {
         Syntax = syntax;
-        Referent = referent;
+        Referent = Child.Attach(this, referent);
     }
 }

@@ -60,8 +60,8 @@ public class LexResult
         return string.Concat(Tokens.Select(t => t.Text(File.Code)));
     }
 
-    public IFixedList<PsuedoToken> ToPsuedoTokens()
+    public IFixedList<PseudoToken> ToPsuedoTokens()
     {
-        return Tokens.Select(t => PsuedoToken.For(t, File.Code)).ToFixedList();
+        return Tokens.Select(t => PseudoToken.For(t, File.Code)).ToFixedList();
     }
 }

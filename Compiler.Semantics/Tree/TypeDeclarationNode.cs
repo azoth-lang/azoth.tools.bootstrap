@@ -34,15 +34,13 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
     public IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
     private ValueAttribute<CompilerResult<IFixedSet<BareReferenceType>>> supertypes;
     public CompilerResult<IFixedSet<BareReferenceType>> Supertypes
-        => supertypes.TryGetValue(out var value)
-            ? value
+        => supertypes.TryGetValue(out var value) ? value
             : supertypes.GetValue(this, TypeDeclarationsAspect.TypeDeclaration_Supertypes);
     public abstract IFixedList<ITypeMemberDeclarationNode> Members { get; }
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
-        => lexicalScope.TryGetValue(out var value)
-            ? value
-            : lexicalScope.GetValue(this, LexicalScopeAttributes.TypeDeclaration);
+        => lexicalScope.TryGetValue(out var value) ? value
+            : lexicalScope.GetValue(this, LexicalScopeAttributes.TypeDeclaration_LexicalScope);
 
     protected TypeDeclarationNode(
         IEnumerable<IGenericParameterNode> genericParameters,
