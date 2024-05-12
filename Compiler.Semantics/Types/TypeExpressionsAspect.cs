@@ -31,9 +31,8 @@ internal static class TypeExpressionsAspect
         if (capability.AllowsWrite && node.Type is CapabilityType { IsDeclaredConst: true } capabilityType)
             diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(node.File, node.Syntax, capability,
                 capabilityType.DeclaredType));
-        // TODO enable this once previous version is removed
-        //if (node.Referent.Type is GenericParameterType)
-        //    diagnostics.Add(TypeError.CapabilityAppliedToTypeParameter(node.File, node.Syntax));
+        if (node.Referent.Type is GenericParameterType)
+            diagnostics.Add(TypeError.CapabilityAppliedToTypeParameter(node.File, node.Syntax));
         // TODO I think there are more errors that can happen
     }
 

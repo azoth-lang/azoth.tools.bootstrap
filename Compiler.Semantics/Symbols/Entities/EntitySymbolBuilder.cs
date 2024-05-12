@@ -142,18 +142,11 @@ public class EntitySymbolBuilder
         BuildParameterSymbols(symbol, file, associatedFunction.Parameters, parameterTypes);
     }
 
-    private FieldSymbol BuildFieldSymbol(IFieldDeclarationSyntax field)
+    private void BuildFieldSymbol(IFieldDeclarationSyntax field)
     {
-        if (field.Symbol.IsFulfilled)
-            return field.Symbol.Result;
-
-        field.Symbol.BeginFulfilling();
-        var resolver = new TypeResolver(field.File, diagnostics, selfType: null);
-        var type = resolver.Evaluate(field.Type);
-        var symbol = new FieldSymbol(field.DeclaringType.Symbol.Result, field.Name, field.IsMutableBinding, type);
-        field.Symbol.Fulfill(symbol);
+        // Field symbol already set by EntitySymbolApplier
+        var symbol = field.Symbol.Result;
         symbolTree.Add(symbol);
-        return symbol;
     }
 
     private void BuildFunctionSymbol(IFunctionDeclarationSyntax function)

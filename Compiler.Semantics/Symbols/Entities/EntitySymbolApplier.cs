@@ -53,7 +53,7 @@ internal class EntitySymbolApplier
                 InitializerDeclaration(n);
                 break;
             case IFieldDeclarationNode n:
-                // TODO
+                FieldDeclaration(n);
                 break;
             case IAssociatedFunctionDeclarationNode _:
                 // TODO
@@ -141,6 +141,14 @@ internal class EntitySymbolApplier
         symbol.BeginFulfilling();
         symbol.Fulfill(node.Symbol);
         ConstructorOrInitializerParameters(node.Parameters);
+    }
+
+    private static void FieldDeclaration(IFieldDeclarationNode node)
+    {
+        var symbol = node.Syntax.Symbol;
+        symbol.BeginFulfilling();
+        symbol.Fulfill(node.Symbol);
+        Type(node.TypeNode);
     }
 
     private static void StandardTypeNames(IEnumerable<IStandardTypeNameNode> nodes)
