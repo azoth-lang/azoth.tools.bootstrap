@@ -2,8 +2,8 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
@@ -56,27 +56,39 @@ internal static class InvocableDeclarationsAspect
     public static ReferenceType ConstructorSelfParameter_Type(IConstructorSelfParameterNode node)
     {
         var declaredType = node.ContainingDeclaredType;
-        var declaredCapability = node.Syntax.Capability.Declared;
-        Capability capability = declaredCapability switch
-        {
-            DeclaredCapability.Read => Capability.InitReadOnly,
-            DeclaredCapability.Mutable => Capability.InitMutable,
-            DeclaredCapability.Isolated => Capability.InitMutable,
-            DeclaredCapability.TemporarilyIsolated => Capability.InitMutable,
-            DeclaredCapability.Constant => Capability.InitReadOnly,
-            DeclaredCapability.TemporarilyConstant => Capability.InitReadOnly,
-            DeclaredCapability.Identity => Capability.InitReadOnly,
-            _ => throw ExhaustiveMatch.Failed(declaredCapability)
-        };
-
+        var capability = node.Syntax.Capability.Declared.ToSelfParameterCapability();
         return declaredType.With(capability, declaredType.GenericParameterTypes);
     }
 
     public static void ConstructorSelfParameter_ContributeDiagnostics(
         IConstructorSelfParameterNode node,
         Diagnostics diagnostics)
+        => ContributeSelfParameterDiagnostics(node.Capability.Syntax, node.File, diagnostics);
+
+    internal static DataType FieldParameter_Type(IFieldParameterNode node)
+        => node.ReferencedSymbolNode?.Type ?? DataType.Unknown;
+
+    public static Parameter FieldParameter_ParameterType(IFieldParameterNode node)
+        => new Parameter(false, node.Type);
+
+    public static ValueType InitializerSelfParameter_Type(InitializerSelfParameterNode node)
     {
-        var declaredCapability = node.Syntax.Capability.Declared;
+        var declaredType = node.ContainingDeclaredType;
+        var capability = node.Syntax.Capability.Declared.ToSelfParameterCapability();
+        return declaredType.With(capability, declaredType.GenericParameterTypes);
+    }
+
+    public static void InitializerSelfParameter_ContributeDiagnostics(
+        IInitializerSelfParameterNode node,
+        Diagnostics diagnostics)
+        => ContributeSelfParameterDiagnostics(node.Capability.Syntax, node.File, diagnostics);
+
+    private static void ContributeSelfParameterDiagnostics(
+        ICapabilitySyntax capabilitySyntax,
+        CodeFile file,
+        Diagnostics diagnostics)
+    {
+        var declaredCapability = capabilitySyntax.Declared;
         switch (declaredCapability)
         {
             case DeclaredCapability.Read:
@@ -87,16 +99,11 @@ internal static class InvocableDeclarationsAspect
             case DeclaredCapability.Constant:
             case DeclaredCapability.TemporarilyConstant:
             case DeclaredCapability.Identity:
-                diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(node.File, node.Capability.Syntax));
+
+                diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, capabilitySyntax));
                 break;
             default:
                 throw ExhaustiveMatch.Failed(declaredCapability);
         }
     }
-
-    internal static DataType FieldParameter_Type(IFieldParameterNode node)
-        => node.ReferencedSymbolNode?.Type ?? DataType.Unknown;
-
-    public static Parameter FieldParameter_ParameterType(IFieldParameterNode node)
-        => new Parameter(false, node.Type);
 }

@@ -20,6 +20,10 @@ internal sealed class InitializerDeclarationNode : TypeMemberDeclarationNode, II
     public IBlockBodyNode Body => throw new NotImplementedException();
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     public override IDeclarationSymbolNode SymbolNode => throw new NotImplementedException();
+    private ValueAttribute<InitializerSymbol> symbol;
+    public InitializerSymbol Symbol
+        => symbol.TryGetValue(out var value) ? value
+            : symbol.GetValue(this, SymbolAttribute.InitializerDeclaration);
 
     public InitializerDeclarationNode(
         IInitializerDeclarationSyntax syntax,

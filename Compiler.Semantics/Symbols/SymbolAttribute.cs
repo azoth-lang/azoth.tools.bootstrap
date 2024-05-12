@@ -40,4 +40,8 @@ internal static class SymbolAttribute
 
     public static FieldSymbol FieldDeclaration(IFieldDeclarationNode node)
         => new FieldSymbol(node.ContainingSymbol, node.Name, node.IsMutableBinding, node.Type);
+
+    public static InitializerSymbol InitializerDeclaration(IInitializerDeclarationNode node)
+        => new InitializerSymbol(node.ContainingSymbol, node.Name, node.SelfParameter.Type,
+            node.Parameters.Select(p => p.ParameterType).ToFixedList());
 }

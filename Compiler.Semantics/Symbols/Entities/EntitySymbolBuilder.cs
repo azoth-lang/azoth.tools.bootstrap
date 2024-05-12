@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +10,10 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
-using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 
@@ -119,18 +116,15 @@ public class EntitySymbolBuilder
 
     private void BuildInitializerSymbol(IInitializerDeclarationSyntax initializer)
     {
-        initializer.Symbol.BeginFulfilling();
-        var file = initializer.File;
-        var selfParameterType = ResolveInitializerSelfParameterType(initializer.SelfParameter, initializer.DeclaringType);
-        var resolver = new TypeResolver(file, diagnostics, selfParameterType);
-        var parameterTypes = ResolveParameterTypes(resolver, initializer.Parameters, initializer.DeclaringType);
-
-        var declaringStructSymbol = initializer.DeclaringType.Symbol.Result;
-        var symbol = new InitializerSymbol(declaringStructSymbol, initializer.Name, selfParameterType, parameterTypes);
-        initializer.Symbol.Fulfill(symbol);
+        // Initializer symbol already set by EntitySymbolApplier
+        var symbol = initializer.Symbol.Result;
         symbolTree.Add(symbol);
+
+        // EntitySymbolApplier doesn't cover parameters because they are not metadata symbols
+        var selfParameterType = symbol.SelfParameterType;
+        var parameterTypes = symbol.Parameters;
         BuildSelfParameterSymbol(symbol, initializer.SelfParameter, selfParameterType, isConstructor: true);
-        BuildParameterSymbols(symbol, file, initializer.Parameters, parameterTypes);
+        BuildParameterSymbols(symbol, initializer.File, initializer.Parameters, parameterTypes);
     }
 
     private void BuildAssociatedFunctionSymbol(IAssociatedFunctionDeclarationSyntax associatedFunction)
@@ -239,46 +233,6 @@ public class EntitySymbolBuilder
         return types.ToFixedList();
     }
 
-    private IFixedList<Parameter> ResolveParameterTypes(
-        TypeResolver resolver,
-        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
-        ITypeDeclarationSyntax declaringType)
-    {
-        var types = new List<Parameter>();
-        foreach (var parameter in parameters)
-            switch (parameter)
-            {
-                default:
-                    throw ExhaustiveMatch.Failed(parameter);
-                case INamedParameterSyntax namedParameter:
-                {
-                    var type = resolver.Evaluate(namedParameter.Type);
-                    types.Add(new Parameter(namedParameter.IsLentBinding, type));
-                    break;
-                }
-                case IFieldParameterSyntax fieldParameter:
-                {
-                    var field = declaringType.Members.OfType<IFieldDeclarationSyntax>()
-                                              .SingleOrDefault(f => f.Name == fieldParameter.Name);
-                    if (field is null)
-                    {
-                        types.Add(new Parameter(false, DataType.Unknown));
-                        fieldParameter.ReferencedSymbol.Fulfill(null);
-                        throw new NotImplementedException("Report diagnostic about field parameter without matching field");
-                    }
-                    else
-                    {
-                        var fieldSymbol = BuildFieldSymbol(field);
-                        fieldParameter.ReferencedSymbol.Fulfill(fieldSymbol);
-                        types.Add(new Parameter(false, fieldSymbol.Type));
-                    }
-                    break;
-                }
-            }
-
-        return types.ToFixedList();
-    }
-
     private void BuildParameterSymbols(
         InvocableSymbol containingSymbol,
         CodeFile file,
@@ -318,16 +272,6 @@ public class EntitySymbolBuilder
                     break;
             }
         }
-    }
-
-    private ValueType ResolveInitializerSelfParameterType(
-        IInitializerSelfParameterSyntax selfParameter,
-        IStructDeclarationSyntax declaringStruct)
-    {
-        var declaredType = (StructType)declaringStruct.Symbol.Result.DeclaresType;
-        var resolver = new SelfTypeResolver(declaringStruct.File, diagnostics);
-        return resolver.EvaluateInitializerSelfParameterType(declaredType, selfParameter.Capability,
-            declaredType.GenericParameterTypes);
     }
 
     private void BuildSelfParameterSymbol(

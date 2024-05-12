@@ -129,6 +129,7 @@ internal static class SymbolNodeAttributes
         => new SemanticFieldSymbolNode(node);
 
     public static IFieldSymbolNode? FieldParameter_ReferencedSymbolNode(IFieldParameterNode node)
+        // TODO report error for field parameter without referenced field
         => node.ContainingTypeDeclaration.Members.OfType<IFieldDeclarationNode>().FirstOrDefault(f => f.Name == node.Name)?.SymbolNode;
 
     #region Construct for Symbols

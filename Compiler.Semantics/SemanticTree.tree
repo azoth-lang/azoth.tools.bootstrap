@@ -122,7 +122,8 @@ ConstructorDeclaration <: ConcreteInvocableDeclaration, AlwaysTypeMemberDeclarat
     = Syntax:`IConstructorDeclarationSyntax` Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter*
     Symbol:`ConstructorSymbol`; // Body:BlockBody;
 InitializerDeclaration <: ConcreteInvocableDeclaration, AlwaysTypeMemberDeclaration, StructMemberDeclaration
-    = Syntax:`IInitializerDeclarationSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter*; // Body:BlockBody;
+    = Syntax:`IInitializerDeclarationSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter*
+    Symbol:`InitializerSymbol`; // Body:BlockBody;
 FieldDeclaration <: AlwaysTypeMemberDeclaration, ClassMemberDeclaration, StructMemberDeclaration
     = Syntax:`IFieldDeclarationSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type Type:`DataType`
     SymbolNode:`IFieldSymbolNode` Symbol:`FieldSymbol`;
@@ -144,7 +145,7 @@ NamedParameter <: ConstructorOrInitializerParameter = Syntax:`INamedParameterSyn
     TypeNode:Type;
 SelfParameter <: Parameter = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool` ContainingDeclaredType:`IDeclaredUserType`;
 ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax` IsLentBinding:`bool` Capability Type:`ReferenceType` ContainingDeclaredType:`ObjectType`;
-InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax` IsLentBinding:`bool` Capability;
+InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax` IsLentBinding:`bool` Capability Type:`ValueType` ContainingDeclaredType:`StructType`;
 MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` IsLentBinding:`bool` Capability:CapabilityConstraint
     ParameterType:`SelfParameter`;
 FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax` Name:`IdentifierName`

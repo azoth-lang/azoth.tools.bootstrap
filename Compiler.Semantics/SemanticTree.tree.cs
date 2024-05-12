@@ -511,6 +511,7 @@ public partial interface IInitializerDeclarationNode : IConcreteInvocableDeclara
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     IdentifierName? Name { get; }
     IInitializerSelfParameterNode SelfParameter { get; }
+    InitializerSymbol Symbol { get; }
 }
 
 public partial interface IFieldDeclarationNode : IAlwaysTypeMemberDeclarationNode, IClassMemberDeclarationNode, IStructMemberDeclarationNode
@@ -644,6 +645,10 @@ public partial interface IInitializerSelfParameterNode : ISemanticNode, ISelfPar
     ISelfParameterSyntax ISelfParameterNode.Syntax => Syntax;
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICapabilityNode Capability { get; }
+    new ValueType Type { get; }
+    Pseudotype IParameterNode.Type => Type;
+    new StructType ContainingDeclaredType { get; }
+    IDeclaredUserType ISelfParameterNode.ContainingDeclaredType => ContainingDeclaredType;
 }
 
 public partial interface IMethodSelfParameterNode : ISemanticNode, ISelfParameterNode

@@ -49,8 +49,8 @@ internal class EntitySymbolApplier
             case IConstructorDeclarationNode n:
                 ConstructorDeclaration(n);
                 break;
-            case IInitializerDeclarationNode _:
-                // TODO
+            case IInitializerDeclarationNode n:
+                InitializerDeclaration(n);
                 break;
             case IFieldDeclarationNode n:
                 // TODO
@@ -128,6 +128,14 @@ internal class EntitySymbolApplier
     }
 
     private static void ConstructorDeclaration(IConstructorDeclarationNode node)
+    {
+        var symbol = node.Syntax.Symbol;
+        symbol.BeginFulfilling();
+        symbol.Fulfill(node.Symbol);
+        ConstructorOrInitializerParameters(node.Parameters);
+    }
+
+    private static void InitializerDeclaration(IInitializerDeclarationNode node)
     {
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();
