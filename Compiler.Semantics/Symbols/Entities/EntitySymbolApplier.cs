@@ -55,8 +55,8 @@ internal class EntitySymbolApplier
             case IFieldDeclarationNode n:
                 FieldDeclaration(n);
                 break;
-            case IAssociatedFunctionDeclarationNode _:
-                // TODO
+            case IAssociatedFunctionDeclarationNode n:
+                AssociatedFunctionDeclaration(n);
                 break;
         }
     }
@@ -149,6 +149,15 @@ internal class EntitySymbolApplier
         symbol.BeginFulfilling();
         symbol.Fulfill(node.Symbol);
         Type(node.TypeNode);
+    }
+
+    private static void AssociatedFunctionDeclaration(IAssociatedFunctionDeclarationNode node)
+    {
+        var symbol = node.Syntax.Symbol;
+        symbol.BeginFulfilling();
+        symbol.Fulfill(node.Symbol);
+        NamedParameters(node.Parameters);
+        Type(node.Return);
     }
 
     private static void StandardTypeNames(IEnumerable<IStandardTypeNameNode> nodes)

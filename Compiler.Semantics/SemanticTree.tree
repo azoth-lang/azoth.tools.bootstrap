@@ -128,7 +128,8 @@ FieldDeclaration <: AlwaysTypeMemberDeclaration, ClassMemberDeclaration, StructM
     = Syntax:`IFieldDeclarationSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type Type:`DataType`
     SymbolNode:`IFieldSymbolNode` Symbol:`FieldSymbol`;
 AssociatedFunctionDeclaration <: ConcreteInvocableDeclaration, AlwaysTypeMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
-    = Syntax:`IAssociatedFunctionDeclarationSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?; // Body;
+    = Syntax:`IAssociatedFunctionDeclarationSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
+    Symbol:`FunctionSymbol` Type:`FunctionType`; // Body;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;

@@ -1,12 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -42,7 +39,7 @@ public class EntitySymbolBuilder
     private void Build(IFixedSet<IEntityDeclarationSyntax> entities)
     {
         // Process all types first because they may be referenced by functions etc.
-        var typeDeclarations = new TypeSymbolBuilder(this, entities.OfType<ITypeDeclarationSyntax>());
+        var typeDeclarations = entities.OfType<ITypeDeclarationSyntax>().ToFixedList();
         foreach (var type in typeDeclarations)
             BuildTypeSymbol(type);
 
@@ -129,17 +126,13 @@ public class EntitySymbolBuilder
 
     private void BuildAssociatedFunctionSymbol(IAssociatedFunctionDeclarationSyntax associatedFunction)
     {
-        associatedFunction.Symbol.BeginFulfilling();
-        var file = associatedFunction.File;
-        var resolver = new TypeResolver(file, diagnostics, selfType: null);
-        var parameterTypes = ResolveParameterTypes(resolver, associatedFunction.Parameters);
-        var returnType = ResolveReturnType(resolver, associatedFunction.Return);
-        var type = new FunctionType(parameterTypes, returnType);
-        var declaringTypeSymbol = associatedFunction.DeclaringType.Symbol.Result;
-        var symbol = new FunctionSymbol(declaringTypeSymbol, associatedFunction.Name, type);
-        associatedFunction.Symbol.Fulfill(symbol);
+        // Associated function symbol already set by EntitySymbolApplier
+        var symbol = associatedFunction.Symbol.Result;
         symbolTree.Add(symbol);
-        BuildParameterSymbols(symbol, file, associatedFunction.Parameters, parameterTypes);
+
+        // EntitySymbolApplier doesn't cover parameters because they are not metadata symbols
+        var parameterTypes = symbol.Type.Parameters.Select(p => p.Type);
+        BuildParameterSymbols(symbol, associatedFunction.File, associatedFunction.Parameters, parameterTypes);
     }
 
     private void BuildFieldSymbol(IFieldDeclarationSyntax field)
@@ -212,20 +205,6 @@ public class EntitySymbolBuilder
         symbolTree.Add(trait.GenericParameters.Select(p => p.Symbol.Result));
     }
 
-    private static IFixedList<Parameter> ResolveParameterTypes(
-        TypeResolver resolver,
-        IEnumerable<INamedParameterSyntax> parameters)
-    {
-        var types = new List<Parameter>();
-        foreach (var parameter in parameters)
-        {
-            var type = resolver.Evaluate(parameter.Type);
-            types.Add(new Parameter(parameter.IsLentBinding, type));
-        }
-
-        return types.ToFixedList();
-    }
-
     private void BuildParameterSymbols(
         InvocableSymbol containingSymbol,
         CodeFile file,
@@ -276,41 +255,5 @@ public class EntitySymbolBuilder
         var symbol = new SelfParameterSymbol(containingSymbol, param.IsLentBinding && !isConstructor, type);
         param.Symbol.Fulfill(symbol);
         symbolTree.Add(symbol);
-    }
-
-    private static Return ResolveReturnType(
-        TypeResolver resolver,
-        IReturnSyntax? returnSyntax)
-    {
-        if (returnSyntax is null)
-            return Return.Void;
-        DataType type = resolver.Evaluate(returnSyntax.Type);
-        return new Return(type);
-    }
-
-    private class TypeSymbolBuilder : ITypeSymbolBuilder, IEnumerable<ITypeDeclarationSyntax>
-    {
-        private readonly EntitySymbolBuilder symbolBuilder;
-        private readonly FixedDictionary<IPromise<TypeSymbol>, ITypeDeclarationSyntax> typeDeclarations;
-
-        public TypeSymbolBuilder(EntitySymbolBuilder symbolBuilder, IEnumerable<ITypeDeclarationSyntax> typeDeclarations)
-        {
-            this.symbolBuilder = symbolBuilder;
-            this.typeDeclarations = typeDeclarations.ToFixedDictionary(t => (IPromise<TypeSymbol>)t.Symbol);
-        }
-
-        public TSymbol Build<TSymbol>(IPromise<TSymbol> promise)
-            where TSymbol : TypeSymbol
-        {
-            if (promise.IsFulfilled) return promise.Result;
-            var typeDeclaration = typeDeclarations[promise];
-            symbolBuilder.BuildTypeSymbol(typeDeclaration);
-            return promise.Result;
-        }
-
-        #region IEnumerable<ITypeDeclarationSyntax>
-        public IEnumerator<ITypeDeclarationSyntax> GetEnumerator() => typeDeclarations.Values.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        #endregion
     }
 }

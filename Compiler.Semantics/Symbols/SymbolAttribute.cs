@@ -44,4 +44,7 @@ internal static class SymbolAttribute
     public static InitializerSymbol InitializerDeclaration(IInitializerDeclarationNode node)
         => new InitializerSymbol(node.ContainingSymbol, node.Name, node.SelfParameter.Type,
             node.Parameters.Select(p => p.ParameterType).ToFixedList());
+
+    public static FunctionSymbol AssociatedFunctionDeclaration(IAssociatedFunctionDeclarationNode node)
+        => new(node.ContainingSymbol, node.Name, node.Type);
 }

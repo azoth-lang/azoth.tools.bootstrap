@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -14,9 +15,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static class InvocableDeclarationsAspect
 {
     public static FunctionType FunctionDeclaration_Type(IFunctionDeclarationNode node)
+        => FunctionType(node.Parameters, node.Return);
+
+    private static FunctionType FunctionType(IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
     {
-        var parameterTypes = node.Parameters.Select(p => p.ParameterType).ToFixedList();
-        var returnType = node.Return?.Type ?? DataType.Void;
+        var parameterTypes = parameters.Select(p => p.ParameterType).ToFixedList();
+        var returnType = @return?.Type ?? DataType.Void;
         return new FunctionType(parameterTypes, new Return(returnType));
     }
 
@@ -106,4 +110,7 @@ internal static class InvocableDeclarationsAspect
                 throw ExhaustiveMatch.Failed(declaredCapability);
         }
     }
+
+    public static FunctionType AssociatedFunctionDeclaration_Type(IAssociatedFunctionDeclarationNode node)
+        => FunctionType(node.Parameters, node.Return);
 }

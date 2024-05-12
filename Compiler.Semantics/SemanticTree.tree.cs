@@ -544,6 +544,8 @@ public partial interface IAssociatedFunctionDeclarationNode : IConcreteInvocable
     IdentifierName Name { get; }
     new IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
+    FunctionSymbol Symbol { get; }
+    FunctionType Type { get; }
 }
 
 [Closed(
