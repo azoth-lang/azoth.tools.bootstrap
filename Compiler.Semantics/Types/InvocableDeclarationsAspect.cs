@@ -1,5 +1,6 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -36,12 +37,17 @@ internal static class InvocableDeclarationsAspect
         };
     }
 
+    public static SelfParameter MethodSelfParameter_ParameterType(IMethodSelfParameterNode node)
+    {
+        bool isLent = node.IsLentBinding && node.Type.CanBeLent();
+        return new SelfParameter(isLent, node.Type);
+    }
+
     public static void MethodSelfParameter_ContributeDiagnostics(IMethodSelfParameterNode node, Diagnostics diagnostics)
     {
         var isLent = node.IsLentBinding;
         var selfType = node.Type;
-        // TODO add check back in
-        //if (isLent && !selfType.CanBeLent())
-        //    diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, selfType));
+        if (isLent && !selfType.CanBeLent())
+            diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, selfType));
     }
 }

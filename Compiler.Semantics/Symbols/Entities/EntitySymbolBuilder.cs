@@ -93,19 +93,15 @@ public class EntitySymbolBuilder
 
     private void BuildMethodSymbol(IMethodDeclarationSyntax method)
     {
-        method.Symbol.BeginFulfilling();
-        var declaringTypeSymbol = method.DeclaringType.Symbol.Result;
-        var file = method.File;
-        var kind = method.Kind;
-        var selfParameterType = ResolveMethodSelfParameterType(file, method.SelfParameter, method.DeclaringType);
-        var resolver = new TypeResolver(file, diagnostics, selfParameterType.Type);
-        var parameterTypes = ResolveParameterTypes(resolver, method.Parameters, method.DeclaringType);
-        var returnType = ResolveReturnType(resolver, method.Return);
-        var symbol = new MethodSymbol(declaringTypeSymbol, kind, method.Name, selfParameterType, parameterTypes, returnType);
-        method.Symbol.Fulfill(symbol);
+        // Method symbol already set by EntitySymbolApplier
+        var symbol = method.Symbol.Result;
         symbolTree.Add(symbol);
-        BuildSelfParameterSymbol(symbol, method.SelfParameter, selfParameterType.Type);
-        BuildParameterSymbols(symbol, file, method.Parameters, parameterTypes);
+
+        // EntitySymbolApplier doesn't cover parameters because they are not metadata symbols
+        var selfParameterType = symbol.SelfParameterType.Type;
+        var parameterTypes = symbol.MethodGroupType.Parameters;
+        BuildSelfParameterSymbol(symbol, method.SelfParameter, selfParameterType);
+        BuildParameterSymbols(symbol, method.File, method.Parameters, parameterTypes);
     }
 
     private void BuildConstructorSymbol(IConstructorDeclarationSyntax constructor)

@@ -399,6 +399,8 @@ public partial interface IStructMemberDeclarationNode : ISemanticNode, ITypeMemb
     typeof(IAssociatedFunctionDeclarationNode))]
 public partial interface IAlwaysTypeMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
 {
+    new UserTypeSymbol ContainingSymbol { get; }
+    Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
 }
 
 [Closed(
@@ -419,6 +421,7 @@ public partial interface IMethodDeclarationNode : IAlwaysTypeMemberDeclarationNo
     new IFixedList<INamedParameterNode> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDeclarationNode.Parameters => Parameters;
     ITypeNode? Return { get; }
+    MethodSymbol Symbol { get; }
 }
 
 public partial interface IAbstractMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
@@ -638,6 +641,7 @@ public partial interface IMethodSelfParameterNode : ISemanticNode, ISelfParamete
     ISelfParameterSyntax ISelfParameterNode.Syntax => Syntax;
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICapabilityConstraintNode Capability { get; }
+    SelfParameter ParameterType { get; }
 }
 
 public partial interface IFieldParameterNode : ISemanticNode, IConstructorOrInitializerParameterNode

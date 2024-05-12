@@ -1,0 +1,34 @@
+using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Framework;
+
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
+
+internal abstract class MethodDeclarationNode : TypeMemberDeclarationNode, IMethodDeclarationNode
+{
+    public abstract override IMethodDeclarationSyntax Syntax { get; }
+    public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
+    public MethodKind Kind => Syntax.Kind;
+    public IdentifierName Name => Syntax.Name;
+    public IMethodSelfParameterNode SelfParameter { get; }
+    public IFixedList<INamedParameterNode> Parameters { get; }
+    public virtual ITypeNode? Return { get; }
+    private ValueAttribute<MethodSymbol> symbol;
+    public MethodSymbol Symbol
+    => symbol.TryGetValue(out var value) ? value
+        : symbol.GetValue(this, SymbolAttribute.MethodDeclaration);
+
+    private protected MethodDeclarationNode(
+        IMethodSelfParameterNode selfParameter,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode? @return)
+    {
+        SelfParameter = Child.Attach(this, selfParameter);
+        Parameters = ChildList.CreateFixed(this, parameters);
+        Return = Child.Attach(this, @return);
+    }
+}

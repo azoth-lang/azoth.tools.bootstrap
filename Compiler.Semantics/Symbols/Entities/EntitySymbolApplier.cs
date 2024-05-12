@@ -43,12 +43,15 @@ internal class EntitySymbolApplier
             case INamespaceDeclarationNode n:
                 NamespaceDeclaration(n);
                 break;
-            case IMethodDeclarationNode _:
+            case IMethodDeclarationNode n:
+                MethodDeclaration(n);
+                break;
             case IConstructorDeclarationNode _:
             case IInitializerDeclarationNode _:
             case IFieldDeclarationNode _:
             case IAssociatedFunctionDeclarationNode _:
-                throw new NotImplementedException();
+                // TODO
+                break;
         }
     }
 
@@ -59,6 +62,7 @@ internal class EntitySymbolApplier
         syntax.Symbol.Fulfill(node.Symbol);
         GenericParameters(node.GenericParameters);
         StandardTypeNames(node.AllSupertypeNames);
+        Declarations(node.Members);
     }
 
     private static void GenericParameters(IFixedList<IGenericParameterNode> nodes)
@@ -87,6 +91,15 @@ internal class EntitySymbolApplier
         Declarations(node.Declarations);
     }
 
+    private static void MethodDeclaration(IMethodDeclarationNode node)
+    {
+        var symbol = node.Syntax.Symbol;
+        symbol.BeginFulfilling();
+        symbol.Fulfill(node.Symbol);
+        NamedParameters(node.Parameters);
+        Type(node.Return);
+    }
+
     private static void StandardTypeNames(IEnumerable<IStandardTypeNameNode> nodes)
         => nodes.ForEach(StandardTypeName);
 
@@ -113,8 +126,9 @@ internal class EntitySymbolApplier
             case IFunctionTypeNode n:
                 FunctionType(n);
                 break;
-            case IViewpointTypeNode _:
-                throw new NotImplementedException();
+            case IViewpointTypeNode n:
+                ViewpointType(n);
+                break;
         }
     }
 
@@ -208,4 +222,10 @@ internal class EntitySymbolApplier
 
     private static void ParameterType(IParameterTypeNode node)
         => Type(node.Referent);
+
+    private static void ViewpointType(IViewpointTypeNode node)
+    {
+        node.Syntax.NamedType = node.Type;
+        Type(node.Referent);
+    }
 }
