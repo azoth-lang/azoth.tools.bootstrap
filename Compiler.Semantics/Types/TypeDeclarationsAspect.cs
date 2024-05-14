@@ -26,6 +26,13 @@ internal static class TypeDeclarationsAspect
             GetGenericParameters(node), LazySupertypes(node));
     }
 
+    public static void ClassDeclaration_ContributeDiagnostics(IClassDeclarationNode node, Diagnostics diagnostics)
+    {
+        if (node.BaseTypeName?.ReferencedSymbol is not null
+            and not UserTypeSymbol { DeclaresType.IsClass: true })
+            diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(node.File, node.Name, node.BaseTypeName.Syntax));
+    }
+
     public static StructType StructDeclaration_DeclaredType(IStructDeclarationNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type
@@ -110,11 +117,18 @@ internal static class TypeDeclarationsAspect
         }
     }
 
+
+
     public static void TypeDeclaration_ContributeDiagnostics(ITypeDeclarationNode node, Diagnostics diagnostics)
     {
+        // Record diagnostics created while computing supertypes
         diagnostics.Add(node.Supertypes.Diagnostics);
 
         diagnostics.Add(CheckTypeArgumentsAreConstructable(node));
+
+        CheckSupertypesMustBeClassOrTrait(node, diagnostics);
+
+        // TODO check that there aren't duplicate supertypes? (including base type)
     }
 
     private static IEnumerable<Diagnostic> CheckTypeArgumentsAreConstructable(ITypeDeclarationNode node)
@@ -130,5 +144,13 @@ internal static class TypeDeclarationsAspect
                     yield return TypeError.CapabilityNotCompatibleWithConstraint(node.File, supertypeName.Syntax,
                         arg.Parameter, arg.Argument);
         }
+    }
+
+    private static void CheckSupertypesMustBeClassOrTrait(ITypeDeclarationNode typeNode, Diagnostics diagnostics)
+    {
+        foreach (var node in typeNode.SupertypeNames)
+            // Null symbol will report a separate name binding error
+            if (node.ReferencedSymbol is not null and not UserTypeSymbol { DeclaresType: ObjectType })
+                diagnostics.Add(OtherSemanticError.SupertypeMustBeClassOrTrait(node.File, typeNode.Name, node.Syntax));
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
@@ -39,5 +40,11 @@ internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarat
         Syntax = syntax;
         this.baseTypeName = Child.CreateOptional(this, baseTypeName);
         Members = ChildList.CreateFixed(this, members);
+    }
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        TypeDeclarationsAspect.ClassDeclaration_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

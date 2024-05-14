@@ -109,14 +109,6 @@ public class BasicAnalyzer
         }
     }
 
-    private void ResolveSupertypes(ITypeDeclarationSyntax type)
-    {
-        // TODO error for duplicates
-        foreach (var supertype in type.SupertypeNames)
-            if (supertype.ReferencedSymbol.Result is null)
-                diagnostics.Add(OtherSemanticError.SupertypeMustBeClassOrTrait(type.File, type.Name, supertype));
-    }
-
     private void ResolveAttributes(IFunctionDeclarationSyntax func)
     {
         if (!func.Attributes.Any())
@@ -139,13 +131,6 @@ public class BasicAnalyzer
 
     private void Resolve(IClassDeclarationSyntax @class)
     {
-        // Resolve base class
-        if (@class.BaseTypeName is not null)
-            // TODO error for duplicates
-            if (@class.BaseTypeName.ReferencedSymbol.Result is not UserTypeSymbol { DeclaresType.IsClass: true })
-                diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(@class.File, @class.Name, @class.BaseTypeName));
-
-        ResolveSupertypes(@class);
         CheckSupertypesAreOutputSafe(@class, @class.AllSupertypeNames.ToFixedList());
         CheckSupertypesMaintainIndependence(@class);
     }
@@ -186,14 +171,12 @@ public class BasicAnalyzer
 
     private void Resolve(IStructDeclarationSyntax @struct)
     {
-        ResolveSupertypes(@struct);
         CheckSupertypesAreOutputSafe(@struct, @struct.SupertypeNames);
         CheckSupertypesMaintainIndependence(@struct);
     }
 
     private void Resolve(ITraitDeclarationSyntax trait)
     {
-        ResolveSupertypes(trait);
         CheckSupertypesAreOutputSafe(trait, trait.SupertypeNames);
         CheckSupertypesMaintainIndependence(trait);
     }
