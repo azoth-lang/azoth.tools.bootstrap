@@ -188,7 +188,7 @@ internal static class TypeMemberDeclarationsAspect
         // Check variance safety. Only public fields need their safety checked. Effectively, they
         // have getters and setters. Private and protected fields are only accessed from within the
         // class where the exact type parameters are known, so they are always safe.
-        if (node.Syntax.AccessModifier.ToAccessModifier() >= AccessModifier.Public)
+        if (node.AccessModifier >= AccessModifier.Public)
         {
             if (node.IsMutableBinding)
             {

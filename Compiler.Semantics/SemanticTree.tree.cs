@@ -119,6 +119,7 @@ public partial interface IPackageFacetNode : IChildNode
 public partial interface IPackageMemberDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
 {
     IFixedList<IAttributeNode> Attributes { get; }
+    AccessModifier AccessModifier { get; }
     new IPackageMemberSymbolNode SymbolNode { get; }
     INamespaceMemberSymbolNode INamespaceMemberDeclarationNode.SymbolNode => SymbolNode;
 }
@@ -358,6 +359,7 @@ public partial interface ITypeMemberDeclarationNode : IDeclarationNode
 {
     new ITypeMemberDeclarationSyntax Syntax { get; }
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    AccessModifier AccessModifier { get; }
     new ITypeMemberSymbolNode SymbolNode { get; }
     IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
 }

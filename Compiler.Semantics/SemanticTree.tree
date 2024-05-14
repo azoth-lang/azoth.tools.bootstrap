@@ -40,7 +40,7 @@ PackageFacet <: Child = Syntax:`IPackageSyntax` PackageName:`IdentifierName`
     CompilationUnits:{CompilationUnit} Declarations:`IFixedSet<IPackageMemberDeclarationNode>`;
 
 PackageMemberDeclaration <: NamespaceMemberDeclaration
-    = Attributes:Attribute* SymbolNode:`IPackageMemberSymbolNode`;
+    = Attributes:Attribute* AccessModifier:`AccessModifier` SymbolNode:`IPackageMemberSymbolNode`;
 
 // ---------- Code Files
 Code <: Child = Syntax:`IConcreteSyntax` File:`CodeFile`;
@@ -108,7 +108,7 @@ GenericParameter <: Code = Syntax:`IGenericParameterSyntax`
     SymbolNode:`IGenericParameterSymbolNode` Symbol:`GenericParameterTypeSymbol`;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
-TypeMemberDeclaration <: Declaration = Syntax:`ITypeMemberDeclarationSyntax` SymbolNode:`ITypeMemberSymbolNode`;
+TypeMemberDeclaration <: Declaration = Syntax:`ITypeMemberDeclarationSyntax` AccessModifier:`AccessModifier` SymbolNode:`ITypeMemberSymbolNode`;
 ClassMemberDeclaration <: TypeMemberDeclaration = Syntax:`IClassMemberDeclarationSyntax` SymbolNode:`IClassMemberSymbolNode`;
 TraitMemberDeclaration <: TypeMemberDeclaration = Syntax:`ITraitMemberDeclarationSyntax` SymbolNode:`ITraitMemberSymbolNode`;
 StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarationSyntax` SymbolNode:`IStructMemberSymbolNode`;

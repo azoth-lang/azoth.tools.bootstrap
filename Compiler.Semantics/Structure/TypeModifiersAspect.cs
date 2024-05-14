@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
@@ -8,6 +9,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 /// </summary>
 internal static class TypeModifiersAspect
 {
+    public static AccessModifier PackageMemberDeclaration_AccessModifier(IDeclarationNode node)
+        => EntityDeclarationAccessModifier((IEntityDeclarationSyntax)node.Syntax);
+
+    public static AccessModifier TypeMemberDeclaration_AccessModifier(ITypeMemberDeclarationNode node)
+        => EntityDeclarationAccessModifier(node.Syntax);
+
+    private static AccessModifier EntityDeclarationAccessModifier(IEntityDeclarationSyntax entityDeclarationSyntax)
+        => entityDeclarationSyntax.AccessModifier?.ToAccessModifier() ?? AccessModifier.Private;
+
     public static void AbstractMethodDeclaration_ContributeDiagnostics(IAbstractMethodDeclarationNode node, Diagnostics diagnostics)
     {
         var concreteClass = !node.ContainingDeclaredType.IsAbstract;
