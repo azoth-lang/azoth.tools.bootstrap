@@ -435,6 +435,7 @@ public partial interface IAbstractMethodDeclarationNode : ISemanticNode, IMethod
     IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
     ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    ObjectType ContainingDeclaredType { get; }
 }
 
 [Closed(

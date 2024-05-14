@@ -125,10 +125,6 @@ public class BasicAnalyzer
 
     private void Resolve(IMethodDeclarationSyntax method)
     {
-        var concreteClass = method.DeclaringType is IClassDeclarationSyntax { IsAbstract: false };
-        if (concreteClass && method is IAbstractMethodDeclarationSyntax)
-            diagnostics.Add(OtherSemanticError.AbstractMethodNotInAbstractClass(method.File, method.Span, method.Name));
-
         CheckParameterAndReturnAreVarianceSafe(method);
         ResolveBody(method);
     }

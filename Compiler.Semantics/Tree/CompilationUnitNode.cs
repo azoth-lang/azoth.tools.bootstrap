@@ -68,7 +68,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        DiagnosticsAttribute.CompilationUnitSyntaxDiagnostics(this, diagnostics);
+        DiagnosticsAttribute.CompilationUnit_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

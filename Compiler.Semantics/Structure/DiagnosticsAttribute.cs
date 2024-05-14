@@ -13,6 +13,6 @@ internal static class DiagnosticsAttribute
     private static IEnumerable<Diagnostic> CollectForFacet(IPackageFacetNode node)
         => node.CompilationUnits.SelectMany(cu => cu.Diagnostics);
 
-    public static void CompilationUnitSyntaxDiagnostics(ICompilationUnitNode node, Diagnostics diagnostics)
+    public static void CompilationUnit_ContributeDiagnostics(ICompilationUnitNode node, Diagnostics diagnostics)
         => diagnostics.Add(node.Syntax.Diagnostics);
 }

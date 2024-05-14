@@ -112,7 +112,9 @@ AlwaysTypeMemberDeclaration <: TypeMemberDeclaration = ContainingSymbol:`UserTyp
 MethodDeclaration <: AlwaysTypeMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration
     = Syntax:`IMethodDeclarationSyntax` Kind:`MethodKind` Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
     Symbol:`MethodSymbol`;
-AbstractMethodDeclaration <: MethodDeclaration = Syntax:`IAbstractMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
+AbstractMethodDeclaration <: MethodDeclaration = Syntax:`IAbstractMethodDeclarationSyntax`
+    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
+    ContainingDeclaredType:`ObjectType`;
 ConcreteMethodDeclaration <: MethodDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration
     = Syntax:`IConcreteMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?; // Body;
 StandardMethodDeclaration <: ConcreteMethodDeclaration = Syntax:`IStandardMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?; // Body;

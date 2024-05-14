@@ -57,7 +57,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
         => Parent.InheritedContainingDeclaredType(this, child);
 
-    protected IDeclaredUserType InheritedContainingDeclaredType()
+    protected virtual IDeclaredUserType InheritedContainingDeclaredType()
         => Parent.InheritedContainingDeclaredType(this, this);
 
     internal override Pseudotype? InheritedSelfType(IChildNode caller, IChildNode child)
