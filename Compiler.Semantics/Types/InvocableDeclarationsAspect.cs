@@ -90,7 +90,12 @@ internal static class InvocableDeclarationsAspect
     public static void ConstructorSelfParameter_ContributeDiagnostics(
         IConstructorSelfParameterNode node,
         Diagnostics diagnostics)
-        => ContributeSelfParameterDiagnostics(node.Capability.Syntax, node.File, diagnostics);
+    {
+        if (node.IsLentBinding)
+            diagnostics.Add(OtherSemanticError.LentConstructorOrInitializerSelf(node.File, node.Syntax));
+
+        CheckInvalidConstructorSelfParameterCapability(node.Capability.Syntax, node.File, diagnostics);
+    }
 
     internal static DataType FieldParameter_Type(IFieldParameterNode node)
         => node.ReferencedSymbolNode?.Type ?? DataType.Unknown;
@@ -108,9 +113,14 @@ internal static class InvocableDeclarationsAspect
     public static void InitializerSelfParameter_ContributeDiagnostics(
         IInitializerSelfParameterNode node,
         Diagnostics diagnostics)
-        => ContributeSelfParameterDiagnostics(node.Capability.Syntax, node.File, diagnostics);
+    {
+        if (node.IsLentBinding)
+            diagnostics.Add(OtherSemanticError.LentConstructorOrInitializerSelf(node.File, node.Syntax));
 
-    private static void ContributeSelfParameterDiagnostics(
+        CheckInvalidConstructorSelfParameterCapability(node.Capability.Syntax, node.File, diagnostics);
+    }
+
+    private static void CheckInvalidConstructorSelfParameterCapability(
         ICapabilitySyntax capabilitySyntax,
         CodeFile file,
         Diagnostics diagnostics)

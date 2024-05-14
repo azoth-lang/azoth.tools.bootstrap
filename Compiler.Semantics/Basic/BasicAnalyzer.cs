@@ -86,10 +86,10 @@ public class BasicAnalyzer
                 Resolve(syn);
                 break;
             case IConstructorDeclarationSyntax syn:
-                Resolve(syn);
+                ResolveBody(syn);
                 break;
             case IInitializerDeclarationSyntax syn:
-                Resolve(syn);
+                ResolveBody(syn);
                 break;
             case IFunctionDeclarationSyntax syn:
                 Resolve(syn);
@@ -152,28 +152,6 @@ public class BasicAnalyzer
         var returnType = methodSymbol.Return.Type;
         if (!returnType.IsOutputSafe(nonwritableSelf))
             diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(method.File, method.Return!.Type, returnType));
-    }
-
-    private void Resolve(IConstructorDeclarationSyntax constructor)
-    {
-        if (constructor.SelfParameter.IsLentBinding)
-            diagnostics.Add(OtherSemanticError.LentConstructorOrInitializerSelf(constructor.File, constructor.SelfParameter));
-
-        // Constructors are like associated functions, so they don't need their parameters or
-        // return type checked for variance safety.
-
-        ResolveBody(constructor);
-    }
-
-    private void Resolve(IInitializerDeclarationSyntax initializer)
-    {
-        if (initializer.SelfParameter.IsLentBinding)
-            diagnostics.Add(OtherSemanticError.LentConstructorOrInitializerSelf(initializer.File, initializer.SelfParameter));
-
-        // Initializers are like associated functions, so they don't need their parameters or
-        // return type checked for variance safety.
-
-        ResolveBody(initializer);
     }
 
     private void Resolve(IFunctionDeclarationSyntax func)
