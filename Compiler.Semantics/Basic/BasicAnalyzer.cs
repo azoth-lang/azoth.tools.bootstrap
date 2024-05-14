@@ -7,8 +7,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -130,16 +128,6 @@ public class BasicAnalyzer
         var concreteClass = method.DeclaringType is IClassDeclarationSyntax { IsAbstract: false };
         if (concreteClass && method is IAbstractMethodDeclarationSyntax)
             diagnostics.Add(OtherSemanticError.AbstractMethodNotInAbstractClass(method.File, method.Span, method.Name));
-
-        var symbol = method.Symbol.Result;
-
-        var inConstClass = method.DeclaringType.Symbol.Result.DeclaresType.IsDeclaredConst;
-        var selfParameterType = symbol.SelfParameterType;
-        var selfType = selfParameterType.Type;
-        if (inConstClass &&
-           ((selfType is CapabilityType { Capability: var selfCapability } && selfCapability != Capability.Constant && selfCapability != Capability.Identity)
-           || selfType is CapabilityTypeConstraint))
-            diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(method.File, method.SelfParameter));
 
         CheckParameterAndReturnAreVarianceSafe(method);
         ResolveBody(method);

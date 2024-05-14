@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
@@ -51,10 +52,32 @@ internal static class InvocableDeclarationsAspect
 
     public static void MethodSelfParameter_ContributeDiagnostics(IMethodSelfParameterNode node, Diagnostics diagnostics)
     {
+        CheckTypeCannotBeLent(node, diagnostics);
+
+        CheckConstClassSelfParameterCannotHaveCapability(node, diagnostics);
+    }
+
+    private static void CheckTypeCannotBeLent(IMethodSelfParameterNode node, Diagnostics diagnostics)
+    {
         var isLent = node.IsLentBinding;
         var selfType = node.Type;
         if (isLent && !selfType.CanBeLent())
             diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, selfType));
+    }
+
+    private static void CheckConstClassSelfParameterCannotHaveCapability(
+        IMethodSelfParameterNode node,
+        Diagnostics diagnostics)
+    {
+        var inConstClass = node.ContainingDeclaredType.IsDeclaredConst;
+        var selfParameterType = node.ParameterType;
+        var selfType = selfParameterType.Type;
+        if (inConstClass
+            && ((selfType is CapabilityType { Capability: var selfCapability }
+                 && selfCapability != Capability.Constant
+                 && selfCapability != Capability.Identity)
+                || selfType is CapabilityTypeConstraint))
+            diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(node.File, node.Syntax));
     }
 
     public static ReferenceType ConstructorSelfParameter_Type(IConstructorSelfParameterNode node)
