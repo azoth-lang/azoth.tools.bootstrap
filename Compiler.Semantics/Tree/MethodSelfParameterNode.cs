@@ -16,11 +16,11 @@ internal sealed class MethodSelfParameterNode : SelfParameterNode, IMethodSelfPa
     private ValueAttribute<Pseudotype> type;
     public override Pseudotype Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, InvocableDeclarationsAspect.MethodSelfParameter_Type);
+            : type.GetValue(this, TypeMemberDeclarationsAspect.MethodSelfParameter_Type);
     private ValueAttribute<SelfParameter> parameterType;
     public SelfParameter ParameterType
         => parameterType.TryGetValue(out var value) ? value
-            : parameterType.GetValue(this, InvocableDeclarationsAspect.MethodSelfParameter_ParameterType);
+            : parameterType.GetValue(this, TypeMemberDeclarationsAspect.MethodSelfParameter_ParameterType);
 
     public MethodSelfParameterNode(IMethodSelfParameterSyntax syntax, ICapabilityConstraintNode capability)
     {
@@ -30,7 +30,7 @@ internal sealed class MethodSelfParameterNode : SelfParameterNode, IMethodSelfPa
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        InvocableDeclarationsAspect.MethodSelfParameter_ContributeDiagnostics(this, diagnostics);
+        TypeMemberDeclarationsAspect.MethodSelfParameter_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

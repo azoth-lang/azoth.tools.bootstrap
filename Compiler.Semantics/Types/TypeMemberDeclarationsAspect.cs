@@ -14,7 +14,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
-internal static class InvocableDeclarationsAspect
+internal static class TypeMemberDeclarationsAspect
 {
     public static FunctionType FunctionDeclaration_Type(IFunctionDeclarationNode node)
         => FunctionType(node.Parameters, node.Return);

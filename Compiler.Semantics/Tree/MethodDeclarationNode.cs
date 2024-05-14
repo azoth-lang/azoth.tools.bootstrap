@@ -40,7 +40,7 @@ internal abstract class MethodDeclarationNode : TypeMemberDeclarationNode, IMeth
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        InvocableDeclarationsAspect.MethodDeclaration_ContributeDiagnostics(this, diagnostics);
+        TypeMemberDeclarationsAspect.MethodDeclaration_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

@@ -28,7 +28,7 @@ internal sealed class AssociatedFunctionDeclarationNode : TypeMemberDeclarationN
     private ValueAttribute<FunctionType> type;
     public FunctionType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, InvocableDeclarationsAspect.AssociatedFunctionDeclaration_Type);
+            : type.GetValue(this, TypeMemberDeclarationsAspect.AssociatedFunctionDeclaration_Type);
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     private ValueAttribute<IAssociatedFunctionSymbolNode> symbolNode;
     public sealed override IAssociatedFunctionSymbolNode SymbolNode

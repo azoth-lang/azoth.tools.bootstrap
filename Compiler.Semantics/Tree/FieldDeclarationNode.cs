@@ -20,7 +20,7 @@ internal sealed class FieldDeclarationNode : TypeMemberDeclarationNode, IFieldDe
     private ValueAttribute<DataType> type;
     public DataType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, InvocableDeclarationsAspect.FieldDeclaration_Type);
+            : type.GetValue(this, TypeMemberDeclarationsAspect.FieldDeclaration_Type);
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     private ValueAttribute<IFieldSymbolNode> symbolNode;
     public override IFieldSymbolNode SymbolNode

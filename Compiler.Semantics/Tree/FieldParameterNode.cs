@@ -23,11 +23,11 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, InvocableDeclarationsAspect.FieldParameter_Type);
+            : type.GetValue(this, TypeMemberDeclarationsAspect.FieldParameter_Type);
     private ValueAttribute<Parameter> parameterType;
     public Parameter ParameterType
         => parameterType.TryGetValue(out var value) ? value
-            : parameterType.GetValue(this, InvocableDeclarationsAspect.FieldParameter_ParameterType);
+            : parameterType.GetValue(this, TypeMemberDeclarationsAspect.FieldParameter_ParameterType);
 
     public FieldParameterNode(IFieldParameterSyntax syntax)
     {

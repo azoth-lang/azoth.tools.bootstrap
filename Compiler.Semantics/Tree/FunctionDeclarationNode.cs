@@ -36,7 +36,7 @@ internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IF
     private ValueAttribute<FunctionType> type;
     public FunctionType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, InvocableDeclarationsAspect.FunctionDeclaration_Type);
+            : type.GetValue(this, TypeMemberDeclarationsAspect.FunctionDeclaration_Type);
 
     public FunctionDeclarationNode(
         IFunctionDeclarationSyntax syntax,

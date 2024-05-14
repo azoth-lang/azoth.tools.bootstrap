@@ -17,7 +17,7 @@ internal sealed class ConstructorSelfParameterNode : SelfParameterNode, IConstru
     private ValueAttribute<ReferenceType> type;
     public override ReferenceType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, InvocableDeclarationsAspect.ConstructorSelfParameter_Type);
+            : type.GetValue(this, TypeMemberDeclarationsAspect.ConstructorSelfParameter_Type);
 
     public ConstructorSelfParameterNode(IConstructorSelfParameterSyntax syntax, ICapabilityNode capability)
     {
@@ -27,7 +27,7 @@ internal sealed class ConstructorSelfParameterNode : SelfParameterNode, IConstru
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        InvocableDeclarationsAspect.ConstructorSelfParameter_ContributeDiagnostics(this, diagnostics);
+        TypeMemberDeclarationsAspect.ConstructorSelfParameter_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

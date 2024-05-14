@@ -17,7 +17,7 @@ internal sealed class InitializerSelfParameterNode : SelfParameterNode, IInitial
     private ValueAttribute<ValueType> type;
     public override ValueType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, InvocableDeclarationsAspect.InitializerSelfParameter_Type);
+            : type.GetValue(this, TypeMemberDeclarationsAspect.InitializerSelfParameter_Type);
 
     public InitializerSelfParameterNode(IInitializerSelfParameterSyntax syntax, ICapabilityNode capability)
     {
@@ -27,7 +27,7 @@ internal sealed class InitializerSelfParameterNode : SelfParameterNode, IInitial
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        InvocableDeclarationsAspect.InitializerSelfParameter_ContributeDiagnostics(this, diagnostics);
+        TypeMemberDeclarationsAspect.InitializerSelfParameter_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }
