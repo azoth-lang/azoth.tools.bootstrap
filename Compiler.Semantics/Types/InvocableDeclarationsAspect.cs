@@ -175,4 +175,7 @@ internal static class InvocableDeclarationsAspect
 
     public static FunctionType AssociatedFunctionDeclaration_Type(IAssociatedFunctionDeclarationNode node)
         => FunctionType(node.Parameters, node.Return);
+
+    public static DataType FieldDeclaration_Type(IFieldDeclarationNode node)
+        => node.TypeNode.Type;
 }
