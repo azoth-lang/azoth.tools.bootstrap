@@ -1,7 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -141,39 +140,11 @@ public class BasicAnalyzer
 
     private void Resolve(IFieldDeclarationSyntax field)
     {
-        var fieldSymbol = field.Symbol.Result;
-        var type = fieldSymbol.Type;
+        if (field.Initializer is null)
+            return;
 
-        // Check variance safety. Only public fields need their safety checked. Effectively, they
-        // have getters and setters. Private and protected fields are only accessed from within the
-        // class where the exact type parameters are known, so they are always safe.
-        if (field.AccessModifier.ToAccessModifier() >= AccessModifier.Public)
-        {
-            if (fieldSymbol.IsMutableBinding)
-            {
-                // Mutable bindings can be both read and written to, so they must be both input and output
-                // safe (i.e. invariant). Self is nonwritable for the output case which is where
-                // self writable matters.
-                if (!type.IsInputAndOutputSafe(nonwriteableSelf: true))
-                    diagnostics.Add(TypeError.VarFieldMustBeInputAndOutputSafe(field.File, field, type));
-            }
-            else
-            {
-                // Immutable bindings can only be read, so they must be output safe.
-                if (!type.IsOutputSafe(nonwritableSelf: true))
-                    diagnostics.Add(TypeError.LetFieldMustBeOutputSafe(field.File, field, type));
-            }
-        }
-
-        // Fields must also maintain the independence of independent type parameters
-        if (!type.FieldMaintainsIndependence())
-            diagnostics.Add(TypeError.FieldMustMaintainIndependence(field.File, field, type));
-
-        if (field.Initializer is not null)
-        {
-            var resolver = new BasicBodyAnalyzer(field, symbolTreeBuilder, symbolTrees,
-                stringSymbol, rangeSymbol, diagnostics);
-            resolver.CheckFieldInitializerType(field.Initializer, type);
-        }
+        var resolver = new BasicBodyAnalyzer(field, symbolTreeBuilder, symbolTrees,
+            stringSymbol, rangeSymbol, diagnostics);
+        resolver.CheckFieldInitializerType(field.Initializer, field.Symbol.Result.Type);
     }
 }

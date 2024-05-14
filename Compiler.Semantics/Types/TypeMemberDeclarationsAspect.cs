@@ -53,7 +53,6 @@ internal static class TypeMemberDeclarationsAspect
             diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(node.File, node.Return!.Syntax, returnType));
     }
 
-
     public static Parameter NamedParameter_ParameterType(INamedParameterNode node)
         => new(node.IsLentBinding, node.Type);
 
@@ -173,9 +172,49 @@ internal static class TypeMemberDeclarationsAspect
         }
     }
 
+    public static DataType FieldDeclaration_Type(IFieldDeclarationNode node) => node.TypeNode.Type;
+
+    public static void FieldDeclaration_ContributeDiagnostics(IFieldDeclarationNode node, Diagnostics diagnostics)
+    {
+        CheckFieldIsVarianceSafe(node, diagnostics);
+
+        CheckFieldMaintainsIndependence(node, diagnostics);
+    }
+
+    private static void CheckFieldIsVarianceSafe(IFieldDeclarationNode node, Diagnostics diagnostics)
+    {
+        var type = node.Type;
+
+        // Check variance safety. Only public fields need their safety checked. Effectively, they
+        // have getters and setters. Private and protected fields are only accessed from within the
+        // class where the exact type parameters are known, so they are always safe.
+        if (node.Syntax.AccessModifier.ToAccessModifier() >= AccessModifier.Public)
+        {
+            if (node.IsMutableBinding)
+            {
+                // Mutable bindings can be both read and written to, so they must be both input and output
+                // safe (i.e. invariant). Self is nonwritable for the output case which is where
+                // self writable matters.
+                if (!type.IsInputAndOutputSafe(nonwriteableSelf: true))
+                    diagnostics.Add(TypeError.VarFieldMustBeInputAndOutputSafe(node.File, node.Syntax, type));
+            }
+            else
+            {
+                // Immutable bindings can only be read, so they must be output safe.
+                if (!type.IsOutputSafe(nonwritableSelf: true))
+                    diagnostics.Add(TypeError.LetFieldMustBeOutputSafe(node.File, node.Syntax, type));
+            }
+        }
+    }
+
+    private static void CheckFieldMaintainsIndependence(IFieldDeclarationNode node, Diagnostics diagnostics)
+    {
+        var type = node.Type;
+        // Fields must also maintain the independence of independent type parameters
+        if (!type.FieldMaintainsIndependence())
+            diagnostics.Add(TypeError.FieldMustMaintainIndependence(node.File, node.Syntax, type));
+    }
+
     public static FunctionType AssociatedFunctionDeclaration_Type(IAssociatedFunctionDeclarationNode node)
         => FunctionType(node.Parameters, node.Return);
-
-    public static DataType FieldDeclaration_Type(IFieldDeclarationNode node)
-        => node.TypeNode.Type;
 }
