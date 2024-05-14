@@ -77,13 +77,11 @@ public class BasicAnalyzer
         {
             default:
                 throw ExhaustiveMatch.Failed(entity);
-            case IClassDeclarationSyntax _:
-            case ITraitDeclarationSyntax _:
-            case IStructDeclarationSyntax _:
+            case ITypeDeclarationSyntax _:
                 // Nothing to check
                 break;
             case IMethodDeclarationSyntax syn:
-                Resolve(syn);
+                ResolveBody(syn);
                 break;
             case IConstructorDeclarationSyntax syn:
                 ResolveBody(syn);
@@ -95,7 +93,7 @@ public class BasicAnalyzer
                 Resolve(syn);
                 break;
             case IAssociatedFunctionDeclarationSyntax syn:
-                Resolve(syn);
+                ResolveBody(syn);
                 break;
             case IFieldDeclarationSyntax syn:
                 Resolve(syn);
@@ -123,47 +121,11 @@ public class BasicAnalyzer
         }
     }
 
-    private void Resolve(IMethodDeclarationSyntax method)
-    {
-        CheckParameterAndReturnAreVarianceSafe(method);
-        ResolveBody(method);
-    }
-
-    private void CheckParameterAndReturnAreVarianceSafe(IMethodDeclarationSyntax method)
-    {
-        // TODO do generic methods and functions need to be checked?
-
-        var methodSymbol = method.Symbol.Result;
-        // Only methods declared in generic types need checked
-        if (methodSymbol.ContainingSymbol is not UserTypeSymbol { DeclaresType.IsGeneric: true })
-            return;
-
-        var nonwritableSelf = !method.SelfParameter.Capability.Constraint.AnyCapabilityAllowsWrite;
-
-        // The `self` parameter does not get checked for variance safety. It will always operate on
-        // the original type so it is safe.
-        foreach (var parameter in method.Parameters)
-        {
-            var type = parameter.DataType.Result;
-            if (!type.IsInputSafe(nonwritableSelf))
-                diagnostics.Add(TypeError.ParameterMustBeInputSafe(method.File, parameter, type));
-        }
-
-        var returnType = methodSymbol.Return.Type;
-        if (!returnType.IsOutputSafe(nonwritableSelf))
-            diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(method.File, method.Return!.Type, returnType));
-    }
-
     private void Resolve(IFunctionDeclarationSyntax func)
     {
         ResolveAttributes(func);
         ResolveBody(func);
     }
-
-    private void Resolve(IAssociatedFunctionDeclarationSyntax associatedFunction)
-        // Associated functions aren't called from instances, so their type parameters always act as
-        // if they were invariant. This means they don't need to be checked for variance safety.
-        => ResolveBody(associatedFunction);
 
     private void ResolveBody(IInvocableDeclarationSyntax declaration)
     {

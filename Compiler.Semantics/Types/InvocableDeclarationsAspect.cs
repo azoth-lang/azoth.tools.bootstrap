@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
@@ -24,6 +25,34 @@ internal static class InvocableDeclarationsAspect
         var returnType = @return?.Type ?? DataType.Void;
         return new FunctionType(parameterTypes, new Return(returnType));
     }
+
+    public static void MethodDeclaration_ContributeDiagnostics(IMethodDeclarationNode node, Diagnostics diagnostics)
+        => CheckParameterAndReturnAreVarianceSafe(node, diagnostics);
+
+    private static void CheckParameterAndReturnAreVarianceSafe(IMethodDeclarationNode node, Diagnostics diagnostics)
+    {
+        // TODO do generic methods and functions need to be checked?
+
+        var methodSymbol = node.Symbol;
+        // Only methods declared in generic types need checked
+        if (methodSymbol.ContainingSymbol is not UserTypeSymbol { DeclaresType.IsGeneric: true }) return;
+
+        var nonwritableSelf = !node.SelfParameter.Capability.Constraint.AnyCapabilityAllowsWrite;
+
+        // The `self` parameter does not get checked for variance safety. It will always operate on
+        // the original type so it is safe.
+        foreach (var parameter in node.Parameters)
+        {
+            var type = parameter.Type;
+            if (!type.IsInputSafe(nonwritableSelf))
+                diagnostics.Add(TypeError.ParameterMustBeInputSafe(node.File, parameter.Syntax, type));
+        }
+
+        var returnType = methodSymbol.Return.Type;
+        if (!returnType.IsOutputSafe(nonwritableSelf))
+            diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(node.File, node.Return!.Syntax, returnType));
+    }
+
 
     public static Parameter NamedParameter_ParameterType(INamedParameterNode node)
         => new(node.IsLentBinding, node.Type);
