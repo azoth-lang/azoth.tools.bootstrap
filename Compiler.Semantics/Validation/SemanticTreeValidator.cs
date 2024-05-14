@@ -76,6 +76,9 @@ internal class SemanticTreeValidator
                 _ = n.Type;
                 _ = n.Symbol;
                 break;
+            case IAttributeNode n:
+                _ = n.TypeName.ReferencedSymbol;
+                break;
         }
 
         foreach (var child in node.Children())

@@ -15,13 +15,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
 {
     public override IGenericTypeNameSyntax Syntax { get; }
+    private ValueAttribute<bool> attributeType;
+    public bool IsAttributeType
+        => attributeType.TryGetValue(out var value) ? value
+            : attributeType.GetValue(InheritedIsAttributeType);
     public override GenericName Name => Syntax.Name;
-    public override TypeSymbol? ReferencedSymbol => SymbolAttribute.GenericTypeName(this);
+    public override TypeSymbol? ReferencedSymbol => SymbolAttribute.StandardTypeName(this);
     public IFixedList<ITypeNode> TypeArguments { get; }
     private ValueAttribute<ITypeSymbolNode?> referencedSymbolNode;
     public ITypeSymbolNode? ReferencedSymbolNode
         => referencedSymbolNode.TryGetValue(out var value) ? value
-            : referencedSymbolNode.GetValue(this, SymbolNodeAttributes.StandardTypeName);
+            : referencedSymbolNode.GetValue(this, SymbolNodeAttributes.StandardTypeName_ReferencedSymbolNode);
     private ValueAttribute<BareType?> bareType;
     public override BareType? BareType
         => bareType.TryGetValue(out var value) ? value
@@ -29,7 +33,7 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.GenericTypeName_Type);
+            : type.GetValue(this, TypeExpressionsAspect.TypeName_Type);
 
     public GenericTypeNameNode(IGenericTypeNameSyntax syntax, IEnumerable<ITypeNode> typeArguments)
     {
@@ -39,7 +43,7 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        SymbolNodeAttributes.StandardTypeNameContributeDiagnostics(this, diagnostics);
+        SymbolNodeAttributes.StandardTypeName_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

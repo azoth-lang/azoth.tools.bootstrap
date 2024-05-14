@@ -392,7 +392,7 @@ public partial interface IAssociatedFunctionDeclarationSyntax : IAlwaysTypeMembe
 
 public partial interface IAttributeSyntax : IConcreteSyntax
 {
-    ITypeNameSyntax TypeName { get; }
+    IStandardTypeNameSyntax TypeName { get; }
 }
 
 [Closed(

@@ -84,7 +84,7 @@ AssociatedFunctionDeclaration: AlwaysTypeMemberDeclaration <: ClassMemberDeclara
     = Name:`IdentifierName` Parameters:NamedParameter* Return? Body Symbol:`AcyclicPromise<FunctionSymbol>`;
 
 // ---------- Attributes
-Attribute = TypeName;
+Attribute = TypeName:StandardTypeName;
 
 // ---------- Capabilities
 CapabilityConstraint = Constraint:`ICapabilityConstraint`;

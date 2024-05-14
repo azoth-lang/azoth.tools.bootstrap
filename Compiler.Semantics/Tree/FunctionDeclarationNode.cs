@@ -40,11 +40,16 @@ internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IF
 
     public FunctionDeclarationNode(
         IFunctionDeclarationSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return)
+        : base(attributes)
     {
         Syntax = syntax;
         Parameters = ChildList.CreateFixed(this, parameters);
         Return = Child.Attach(this, @return);
     }
+
+    internal override bool InheritedIsAttributeType(IChildNode caller, IChildNode child)
+        => SymbolNodeAttributes.FunctionDeclaration_InheritedIsAttributeType(this);
 }

@@ -39,7 +39,8 @@ PackageFacet <: Child = Syntax:`IPackageSyntax` PackageName:`IdentifierName`
     PackageNameScope:`PackageNameScope`
     CompilationUnits:{CompilationUnit} Declarations:`IFixedSet<IPackageMemberDeclarationNode>`;
 
-PackageMemberDeclaration <: NamespaceMemberDeclaration = SymbolNode:`IPackageMemberSymbolNode`;
+PackageMemberDeclaration <: NamespaceMemberDeclaration
+    = Attributes:Attribute* SymbolNode:`IPackageMemberSymbolNode`;
 
 // ---------- Code Files
 Code <: Child = Syntax:`IConcreteSyntax` File:`CodeFile`;
@@ -70,7 +71,8 @@ NamespaceMemberDeclaration <: Declaration = SymbolNode:`INamespaceMemberSymbolNo
 
 // ---------- Function Declaration
 FunctionDeclaration <: PackageMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`
-    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol` Name:`IdentifierName`
+    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol`
+    Attributes:Attribute* Name:`IdentifierName`
     SymbolNode:`IFunctionSymbolNode` Symbol:`FunctionSymbol` Parameters:NamedParameter* Return:Type?
     Type:`FunctionType`;
 
@@ -81,15 +83,18 @@ TypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMember
     GenericParameters:GenericParameter* SupertypesLexicalScope:`LexicalScope`
     SupertypeNames:StandardTypeName* Supertypes:`CompilerResult<IFixedSet<BareReferenceType>>`
     Members:TypeMemberDeclaration*;
-ClassDeclaration <: TypeDeclaration = Syntax:`IClassDeclarationSyntax` IsAbstract:`bool` GenericParameters:GenericParameter*
+ClassDeclaration <: TypeDeclaration = Syntax:`IClassDeclarationSyntax`
+    Attributes:Attribute* IsAbstract:`bool` GenericParameters:GenericParameter*
     BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* SymbolNode:`IClassSymbolNode`
     DeclaredType:`ObjectType`
     Members:ClassMemberDeclaration*;
-StructDeclaration <: TypeDeclaration = Syntax:`IStructDeclarationSyntax` GenericParameters:GenericParameter*
+StructDeclaration <: TypeDeclaration = Syntax:`IStructDeclarationSyntax`
+    Attributes:Attribute* GenericParameters:GenericParameter*
     SupertypeNames:StandardTypeName* SymbolNode:`IStructSymbolNode`
     DeclaredType:`StructType`
     Members:StructMemberDeclaration*;
-TraitDeclaration <: TypeDeclaration = Syntax:`ITraitDeclarationSyntax` GenericParameters:GenericParameter*
+TraitDeclaration <: TypeDeclaration = Syntax:`ITraitDeclarationSyntax`
+    Attributes:Attribute* GenericParameters:GenericParameter*
     SupertypeNames:StandardTypeName* SymbolNode:`ITraitSymbolNode`
     DeclaredType:`ObjectType`
     Members:TraitMemberDeclaration*;
@@ -133,6 +138,9 @@ AssociatedFunctionDeclaration <: ConcreteInvocableDeclaration, AlwaysTypeMemberD
     = Syntax:`IAssociatedFunctionDeclarationSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
     Symbol:`FunctionSymbol` Type:`FunctionType`; // Body;
 
+// ---------- Attributes
+Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:StandardTypeName;
+
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;
 CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint:`CapabilitySet`;
@@ -163,7 +171,7 @@ ExpressionBody: Body;
 Type <: Code = Syntax:`ITypeSyntax` Type:`DataType`;
 TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName` ContainingLexicalScope:`LexicalScope`
     ReferencedSymbol:`TypeSymbol`? BareType:`BareType`?;
-StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` Name:`StandardName` ReferencedSymbolNode:`ITypeSymbolNode`?;
+StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` IsAttributeType:`bool` Name:`StandardName` ReferencedSymbolNode:`ITypeSymbolNode`?;
 SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
 IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax` Name:`IdentifierName`;
 SpecialTypeName <: SimpleTypeName = Syntax:`ISpecialTypeNameSyntax` Name:`SpecialTypeName`

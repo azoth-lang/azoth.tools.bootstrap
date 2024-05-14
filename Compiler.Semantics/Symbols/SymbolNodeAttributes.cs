@@ -82,8 +82,13 @@ internal static class SymbolNodeAttributes
     public static INamespaceSymbolNode NamespaceDeclarationInherited(INamespaceDeclarationNode node)
         => node.SymbolNode;
 
-    public static IUserTypeSymbolNode TypeDeclarationInherited(ITypeDeclarationNode node)
+    public static bool Attribute_InheritedIsAttributeType_Child(IAttributeNode node) => true;
+
+    public static IUserTypeSymbolNode TypeDeclaration_InheritedContainingSymbolNode(ITypeDeclarationNode node)
         => node.SymbolNode;
+
+    public static bool TypeDeclaration_InheritedIsAttributeType(ITypeDeclarationNode node)
+        => false;
 
     public static IClassSymbolNode ClassDeclaration(IClassDeclarationNode node)
         => new SemanticClassSymbolNode(node);
@@ -100,10 +105,18 @@ internal static class SymbolNodeAttributes
     public static IFunctionSymbolNode FunctionDeclaration(IFunctionDeclarationNode node)
         => new SemanticFunctionSymbolNode(node);
 
-    public static ITypeSymbolNode? StandardTypeName(IStandardTypeNameNode node)
-        => LookupSymbolNodes(node).TrySingle();
+    public static bool FunctionDeclaration_InheritedIsAttributeType(IFunctionDeclarationNode node)
+        => false;
 
-    public static void StandardTypeNameContributeDiagnostics(IStandardTypeNameNode node, Diagnostics diagnostics)
+    public static ITypeSymbolNode? StandardTypeName_ReferencedSymbolNode(IStandardTypeNameNode node)
+    {
+        var symbolNode = LookupSymbolNodes(node).TrySingle();
+        if (node.IsAttributeType)
+            symbolNode ??= LookupSymbolNodes(node, withAttributeSuffix: true).TrySingle();
+        return symbolNode;
+    }
+
+    public static void StandardTypeName_ContributeDiagnostics(IStandardTypeNameNode node, Diagnostics diagnostics)
     {
         if (node.ReferencedSymbolNode is not null)
             return;
@@ -122,8 +135,11 @@ internal static class SymbolNodeAttributes
         }
     }
 
-    private static IFixedSet<ITypeSymbolNode> LookupSymbolNodes(IStandardTypeNameNode node)
-        => node.ContainingLexicalScope.Lookup(node.Name).OfType<ITypeSymbolNode>().ToFixedSet();
+    private static IFixedSet<ITypeSymbolNode> LookupSymbolNodes(IStandardTypeNameNode node, bool withAttributeSuffix = false)
+    {
+        var name = withAttributeSuffix ? node.Name + SpecialNames.AttributeSuffix : node.Name;
+        return node.ContainingLexicalScope.Lookup(name).OfType<ITypeSymbolNode>().ToFixedSet();
+    }
 
     public static IFieldSymbolNode FieldDeclaration_SymbolNode(IFieldDeclarationNode node)
         => new SemanticFieldSymbolNode(node);

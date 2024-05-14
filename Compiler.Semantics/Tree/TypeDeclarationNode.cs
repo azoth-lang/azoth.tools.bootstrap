@@ -45,13 +45,15 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
     protected TypeDeclarationNode(
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<IStandardTypeNameNode> supertypeNames)
+        // TODO support attributes on type declarations
+        : base(Enumerable.Empty<IAttributeNode>())
     {
         GenericParameters = ChildList.CreateFixed(this, genericParameters);
         SupertypeNames = ChildList.CreateFixed(this, supertypeNames);
     }
 
     internal override IUserTypeSymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
-        => SymbolNodeAttributes.TypeDeclarationInherited(this);
+        => SymbolNodeAttributes.TypeDeclaration_InheritedContainingSymbolNode(this);
 
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
         => ContainingDeclaredTypeAttribute.TypeDeclaration_InheritedContainingDeclaredType(this);
@@ -65,6 +67,9 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
 
     internal override ITypeDeclarationNode InheritedContainingTypeDeclaration(IChildNode caller, IChildNode child)
         => this;
+
+    internal override bool InheritedIsAttributeType(IChildNode caller, IChildNode child)
+        => SymbolNodeAttributes.TypeDeclaration_InheritedIsAttributeType(this);
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {

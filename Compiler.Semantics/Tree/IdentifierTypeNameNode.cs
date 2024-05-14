@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -12,13 +13,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeNameNode
 {
     public override IIdentifierTypeNameSyntax Syntax { get; }
+    private ValueAttribute<bool> attributeType;
+    public bool IsAttributeType
+        => attributeType.TryGetValue(out var value) ? value
+            : attributeType.GetValue(InheritedIsAttributeType);
     public override IdentifierName Name => Syntax.Name;
     private ValueAttribute<ITypeSymbolNode?> referencedSymbolNode;
     public ITypeSymbolNode? ReferencedSymbolNode
         => referencedSymbolNode.TryGetValue(out var value) ? value
-            : referencedSymbolNode.GetValue(this, SymbolNodeAttributes.StandardTypeName);
+            : referencedSymbolNode.GetValue(this, SymbolNodeAttributes.StandardTypeName_ReferencedSymbolNode);
     public override TypeSymbol? ReferencedSymbol
-        => SymbolAttribute.IdentifierTypeName(this);
+        => SymbolAttribute.StandardTypeName(this);
 
     private ValueAttribute<BareType?> bareType;
     public override BareType? BareType
@@ -27,10 +32,16 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.IdentifierTypeName_Type);
+            : type.GetValue(this, TypeExpressionsAspect.TypeName_Type);
 
     public IdentifierTypeNameNode(IIdentifierTypeNameSyntax syntax)
     {
         Syntax = syntax;
+    }
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        SymbolNodeAttributes.StandardTypeName_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

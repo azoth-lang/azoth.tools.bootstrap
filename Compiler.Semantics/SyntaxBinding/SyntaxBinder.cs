@@ -55,7 +55,7 @@ internal static class SyntaxBinder
 
     #region Function Declaration
     private static IFunctionDeclarationNode FunctionDeclaration(IFunctionDeclarationSyntax syntax)
-        => new FunctionDeclarationNode(syntax, NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
+        => new FunctionDeclarationNode(syntax, Attributes(syntax.Attributes), NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
     #endregion
 
     #region Type Declarations
@@ -178,6 +178,14 @@ internal static class SyntaxBinder
 
     private static IAssociatedFunctionDeclarationNode AssociatedFunctionDeclaration(IAssociatedFunctionDeclarationSyntax syntax)
         => new AssociatedFunctionDeclarationNode(syntax, NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
+    #endregion
+
+    #region Attributes
+    private static IEnumerable<IAttributeNode> Attributes(IEnumerable<IAttributeSyntax> syntax)
+        => syntax.Select(Attribute);
+
+    private static IAttributeNode Attribute(IAttributeSyntax syntax)
+        => new AttributeNode(syntax, StandardTypeName(syntax.TypeName));
     #endregion
 
     #region Capabilities

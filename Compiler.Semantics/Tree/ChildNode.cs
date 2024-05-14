@@ -71,4 +71,10 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected ITypeDeclarationNode InheritedContainingTypeDeclaration()
         => Parent.InheritedContainingTypeDeclaration(this, this);
+
+    internal override bool InheritedIsAttributeType(IChildNode caller, IChildNode child)
+        => Parent.InheritedIsAttributeType(this, child);
+
+    protected bool InheritedIsAttributeType()
+        => Parent.InheritedIsAttributeType(this, this);
 }

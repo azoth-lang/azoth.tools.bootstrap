@@ -25,7 +25,7 @@ internal sealed class SpecialTypeNameNode : TypeNameNode, ISpecialTypeNameNode
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.SpecialTypeName_Type);
+            : type.GetValue(this, TypeExpressionsAspect.TypeName_Type);
 
     public SpecialTypeNameNode(ISpecialTypeNameSyntax syntax)
     {

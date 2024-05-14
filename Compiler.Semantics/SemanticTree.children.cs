@@ -42,12 +42,16 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IFunctionDeclarationNode n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 foreach (var child in n.Parameters)
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
                 yield break;
             case IClassDeclarationNode n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 if (n.BaseTypeName is not null)
@@ -58,6 +62,8 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IStructDeclarationNode n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 foreach (var child in n.SupertypeNames)
@@ -66,6 +72,8 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case ITraitDeclarationNode n:
+                foreach (var child in n.Attributes)
+                    yield return child;
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 foreach (var child in n.SupertypeNames)
@@ -121,6 +129,9 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
+                yield break;
+            case IAttributeNode n:
+                yield return n.TypeName;
                 yield break;
             case ICapabilitySetNode n:
                 yield break;

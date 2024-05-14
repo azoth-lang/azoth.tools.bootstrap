@@ -12,15 +12,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 /// </summary>
 internal static class TypeExpressionsAspect
 {
-    // TODO combine these into just TypeName
-    public static DataType IdentifierTypeName_Type(IIdentifierTypeNameNode node)
-        => node.BareType?.WithRead() ?? node.ReferencedSymbol?.GetDataType() ?? DataType.Unknown;
-
-    public static DataType GenericTypeName_Type(IGenericTypeNameNode node)
-        => node.BareType?.WithRead() ?? node.ReferencedSymbol?.GetDataType() ?? DataType.Unknown;
-
-    public static DataType SpecialTypeName_Type(ISpecialTypeNameNode node)
-        => node.BareType?.WithRead() ?? node.ReferencedSymbol.GetDataType() ?? DataType.Unknown;
+    public static DataType TypeName_Type(ITypeNameNode node)
+        => (node.BareType?.WithRead() ?? node.ReferencedSymbol?.GetDataType()) ?? DataType.Unknown;
 
     public static DataType CapabilityType_Type(ICapabilityTypeNode node)
         => (node.Referent as ITypeNameNode)?.BareType?.With(node.Capability.Capability) ?? node.Referent.Type;

@@ -16,10 +16,7 @@ internal static class SymbolAttribute
     public static GenericParameterTypeSymbol GenericParameter(IGenericParameterNode node)
         => new(node.ContainingSymbol, node.DeclaredType);
 
-    public static TypeSymbol? IdentifierTypeName(IIdentifierTypeNameNode node)
-        => node.ReferencedSymbolNode?.Symbol;
-
-    public static TypeSymbol? GenericTypeName(IGenericTypeNameNode node)
+    public static TypeSymbol? StandardTypeName(IStandardTypeNameNode node)
         => node.ReferencedSymbolNode?.Symbol;
 
     public static TypeSymbol SpecialTypeName_ReferencedSymbol(ISpecialTypeNameNode node)

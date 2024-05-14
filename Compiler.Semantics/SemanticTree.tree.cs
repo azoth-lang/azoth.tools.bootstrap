@@ -40,6 +40,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IStandardMethodDeclarationNode),
     typeof(IGetterMethodDeclarationNode),
     typeof(ISetterMethodDeclarationNode),
+    typeof(IAttributeNode),
     typeof(ICapabilityConstraintNode),
     typeof(IParameterNode),
     typeof(INamedParameterNode),
@@ -117,6 +118,7 @@ public partial interface IPackageFacetNode : IChildNode
     typeof(ITypeDeclarationNode))]
 public partial interface IPackageMemberDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
 {
+    IFixedList<IAttributeNode> Attributes { get; }
     new IPackageMemberSymbolNode SymbolNode { get; }
     INamespaceMemberSymbolNode INamespaceMemberDeclarationNode.SymbolNode => SymbolNode;
 }
@@ -126,6 +128,7 @@ public partial interface IPackageMemberDeclarationNode : ISemanticNode, INamespa
     typeof(IUsingDirectiveNode),
     typeof(IDeclarationNode),
     typeof(IGenericParameterNode),
+    typeof(IAttributeNode),
     typeof(ICapabilityConstraintNode),
     typeof(IParameterNode),
     typeof(ITypeNode),
@@ -549,6 +552,14 @@ public partial interface IAssociatedFunctionDeclarationNode : IConcreteInvocable
     FunctionType Type { get; }
 }
 
+public partial interface IAttributeNode : ISemanticNode, ICodeNode
+{
+    new IAttributeSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
+    IStandardTypeNameNode TypeName { get; }
+}
+
 [Closed(
     typeof(ICapabilitySetNode),
     typeof(ICapabilityNode))]
@@ -728,6 +739,7 @@ public partial interface IStandardTypeNameNode : ISemanticNode, ITypeNameNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeNameSyntax ITypeNameNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
+    bool IsAttributeType { get; }
     new StandardName Name { get; }
     TypeName ITypeNameNode.Name => Name;
     ITypeSymbolNode? ReferencedSymbolNode { get; }
