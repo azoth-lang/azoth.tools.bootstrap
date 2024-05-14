@@ -19,7 +19,8 @@ internal sealed class InitializerDeclarationNode : TypeMemberDeclarationNode, II
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
     public IBlockBodyNode Body => throw new NotImplementedException();
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    public override IDeclarationSymbolNode SymbolNode => throw new NotImplementedException();
+    public override IInitializerSymbolNode SymbolNode => throw new NotImplementedException();
+    IStructMemberSymbolNode IStructMemberDeclarationNode.SymbolNode => SymbolNode;
     private ValueAttribute<InitializerSymbol> symbol;
     public InitializerSymbol Symbol
         => symbol.TryGetValue(out var value) ? value

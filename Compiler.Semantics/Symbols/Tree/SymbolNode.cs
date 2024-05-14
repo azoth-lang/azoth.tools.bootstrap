@@ -13,7 +13,8 @@ internal static class SymbolNode
         StandardName named)
         where T : IDeclarationSymbolNode
     {
-        membersByName ??= new(members.GroupBy(m => m.Name).ToDictionary(g => g.Key, g => g.ToHashSet()));
+        membersByName ??= new(members.GroupBy(m => m.Name).Where(g => g.Key is not null)
+                                     .ToDictionary(g => g.Key!, g => g.ToHashSet()));
 
         return membersByName.TryGetValue(named, out var values)
             ? values : Enumerable.Empty<T>();

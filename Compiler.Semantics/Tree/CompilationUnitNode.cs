@@ -51,10 +51,10 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     }
 
     internal override INamespaceSymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
-        => SymbolNodeAttributes.CompilationUnitInherited(this);
+        => SymbolNodeAttributes.CompilationUnit_InheritedContainingSymbolNode(this);
 
     internal override CodeFile InheritedFile(IChildNode caller, IChildNode child)
-        => FileAttribute.CompilationUnitInherited(this);
+        => FileAttribute.CompilationUnit_InheritedFile(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
         => LexicalScope;

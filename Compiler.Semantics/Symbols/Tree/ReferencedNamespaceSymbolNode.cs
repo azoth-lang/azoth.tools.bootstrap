@@ -36,7 +36,7 @@ internal class ReferencedNamespaceSymbolNode : ReferencedDeclarationSymbolNode, 
         => Members.OfType<INamespaceSymbolNode>()
                   .SelectMany(ns => ns.Members.Concat(ns.NestedMembers)).ToFixedList();
 
-    public override IEnumerable<INamespaceMemberSymbolNode> MembersNamed(StandardName named)
+    public IEnumerable<INamespaceMemberSymbolNode> MembersNamed(StandardName named)
         => Members.MembersNamed(ref membersByName, named);
 
     public IEnumerable<INamespaceMemberSymbolNode> NestedMembersNamed(StandardName named)

@@ -18,7 +18,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
     typeof(IStructSymbolNode),
     typeof(ITraitSymbolNode),
     typeof(ITypeMemberSymbolNode),
+    typeof(IMethodSymbolNode),
+    typeof(IConstructorSymbolNode),
+    typeof(IInitializerSymbolNode),
     typeof(IFieldSymbolNode),
+    typeof(IAssociatedFunctionSymbolNode),
     typeof(ITypeSymbolNode))]
 public partial interface ISymbolNode
 {
@@ -36,6 +40,7 @@ public partial interface IChildSymbolNode : IChild<ISymbolNode>, ISymbolNode
 }
 
 [Closed(
+    typeof(IFunctionSymbolNode),
     typeof(IFieldSymbolNode),
     typeof(ITypeSymbolNode))]
 public partial interface INamedSymbolNode : IChildSymbolNode
@@ -74,14 +79,14 @@ public partial interface IPackageFacetSymbolNode : IChildSymbolNode
     typeof(ITypeMemberSymbolNode))]
 public partial interface IDeclarationSymbolNode : IChildSymbolNode
 {
-    StandardName Name { get; }
+    StandardName? Name { get; }
     IPackageFacetSymbolNode Facet { get; }
 }
 
 public partial interface INamespaceSymbolNode : INamespaceMemberSymbolNode
 {
     new IdentifierName Name { get; }
-    StandardName IDeclarationSymbolNode.Name => Name;
+    StandardName? IDeclarationSymbolNode.Name => Name;
     new NamespaceSymbol Symbol { get; }
     Symbol ISymbolNode.Symbol => Symbol;
     IFixedList<INamespaceMemberSymbolNode> Members { get; }
@@ -95,7 +100,7 @@ public partial interface INamespaceMemberSymbolNode : ISymbolNode, IDeclarationS
 {
 }
 
-public partial interface IFunctionSymbolNode : ISymbolNode, IPackageMemberSymbolNode
+public partial interface IFunctionSymbolNode : ISymbolNode, IPackageMemberSymbolNode, INamedSymbolNode
 {
     new FunctionSymbol Symbol { get; }
     Symbol ISymbolNode.Symbol => Symbol;
@@ -147,32 +152,73 @@ public partial interface ITypeMemberSymbolNode : ISymbolNode, IDeclarationSymbol
 
 [Closed(
     typeof(IUserTypeSymbolNode),
-    typeof(IFieldSymbolNode))]
+    typeof(IMethodSymbolNode),
+    typeof(IConstructorSymbolNode),
+    typeof(IFieldSymbolNode),
+    typeof(IAssociatedFunctionSymbolNode))]
 public partial interface IClassMemberSymbolNode : ITypeMemberSymbolNode
 {
 }
 
 [Closed(
-    typeof(IUserTypeSymbolNode))]
+    typeof(IUserTypeSymbolNode),
+    typeof(IMethodSymbolNode),
+    typeof(IAssociatedFunctionSymbolNode))]
 public partial interface ITraitMemberSymbolNode : ITypeMemberSymbolNode
 {
 }
 
 [Closed(
     typeof(IUserTypeSymbolNode),
-    typeof(IFieldSymbolNode))]
+    typeof(IMethodSymbolNode),
+    typeof(IInitializerSymbolNode),
+    typeof(IFieldSymbolNode),
+    typeof(IAssociatedFunctionSymbolNode))]
 public partial interface IStructMemberSymbolNode : ITypeMemberSymbolNode
 {
+}
+
+public partial interface IMethodSymbolNode : ISymbolNode, IClassMemberSymbolNode, ITraitMemberSymbolNode, IStructMemberSymbolNode
+{
+    new IdentifierName Name { get; }
+    StandardName? IDeclarationSymbolNode.Name => Name;
+    new MethodSymbol Symbol { get; }
+    Symbol ISymbolNode.Symbol => Symbol;
+}
+
+public partial interface IConstructorSymbolNode : ISymbolNode, IClassMemberSymbolNode
+{
+    new IdentifierName? Name { get; }
+    StandardName? IDeclarationSymbolNode.Name => Name;
+    new ConstructorSymbol Symbol { get; }
+    Symbol ISymbolNode.Symbol => Symbol;
+}
+
+public partial interface IInitializerSymbolNode : ISymbolNode, IStructMemberSymbolNode
+{
+    new IdentifierName? Name { get; }
+    StandardName? IDeclarationSymbolNode.Name => Name;
+    new InitializerSymbol Symbol { get; }
+    Symbol ISymbolNode.Symbol => Symbol;
 }
 
 public partial interface IFieldSymbolNode : ISymbolNode, INamedSymbolNode, IClassMemberSymbolNode, IStructMemberSymbolNode
 {
     new IdentifierName Name { get; }
     StandardName INamedSymbolNode.Name => Name;
-    StandardName IDeclarationSymbolNode.Name => Name;
+    StandardName? IDeclarationSymbolNode.Name => Name;
     DataType Type { get; }
     new FieldSymbol Symbol { get; }
     Symbol ISymbolNode.Symbol => Symbol;
+}
+
+public partial interface IAssociatedFunctionSymbolNode : ISymbolNode, IClassMemberSymbolNode, ITraitMemberSymbolNode, IStructMemberSymbolNode
+{
+    new IdentifierName Name { get; }
+    StandardName? IDeclarationSymbolNode.Name => Name;
+    new FunctionSymbol Symbol { get; }
+    Symbol ISymbolNode.Symbol => Symbol;
+    FunctionType Type { get; }
 }
 
 [Closed(

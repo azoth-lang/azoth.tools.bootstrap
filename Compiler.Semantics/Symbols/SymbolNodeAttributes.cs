@@ -64,34 +64,50 @@ internal static class SymbolNodeAttributes
         return current;
     }
 
-    public static INamespaceSymbolNode CompilationUnitInherited(ICompilationUnitNode node)
+    public static INamespaceSymbolNode CompilationUnit_InheritedContainingSymbolNode(ICompilationUnitNode node)
         => node.ImplicitNamespaceSymbolNode;
 
     public static IPackageSymbolNode PackageReference(IPackageReferenceNode node)
         => new ReferencedPackageSymbolNode(node);
 
-    public static FixedDictionary<IdentifierName, IPackageSymbolNode> PackageSymbolNodes(IPackageNode node)
+    public static FixedDictionary<IdentifierName, IPackageSymbolNode> Package_SymbolNodes(IPackageNode node)
         => node.References.Select(r => r.SymbolNode).Append(node.SymbolNode).ToFixedDictionary(n => n.AliasOrName ?? node.Symbol.Name);
 
-    public static INamespaceSymbolNode NamespaceDeclarationContainingSymbolNode(INamespaceDeclarationNode node, INamespaceSymbolNode inheritedSymbolNode)
+    public static INamespaceSymbolNode NamespaceDeclaration_ContainingSymbolNode(INamespaceDeclarationNode node, INamespaceSymbolNode inheritedSymbolNode)
         => node.IsGlobalQualified ? inheritedSymbolNode.Facet.GlobalNamespace : inheritedSymbolNode;
 
-    public static INamespaceSymbolNode NamespaceDeclaration(INamespaceDeclarationNode node)
+    public static INamespaceSymbolNode NamespaceDeclaration_SymbolNode(INamespaceDeclarationNode node)
         => FindNamespace(node.ContainingSymbolNode, node.DeclaredNames);
 
-    public static INamespaceSymbolNode NamespaceDeclarationInherited(INamespaceDeclarationNode node)
+    public static INamespaceSymbolNode NamespaceDeclaration_InheritedContainingSymbolNode(INamespaceDeclarationNode node)
         => node.SymbolNode;
 
-    public static bool Attribute_InheritedIsAttributeType_Child(IAttributeNode node) => true;
+    public static bool Attribute_InheritedIsAttributeType_Child(IAttributeNode _) => true;
 
     public static IUserTypeSymbolNode TypeDeclaration_InheritedContainingSymbolNode(ITypeDeclarationNode node)
         => node.SymbolNode;
 
-    public static bool TypeDeclaration_InheritedIsAttributeType(ITypeDeclarationNode node)
+    public static bool TypeDeclaration_InheritedIsAttributeType(ITypeDeclarationNode _)
         => false;
 
-    public static IClassSymbolNode ClassDeclaration(IClassDeclarationNode node)
+    public static IClassSymbolNode ClassDeclaration_SymbolNode(IClassDeclarationNode node)
         => new SemanticClassSymbolNode(node);
+
+    /// <remarks>This needs to be lazy computed because the
+    /// <see cref="IClassDeclarationNode.DefaultConstructorSymbol"/> is dependent on the class symbol.</remarks>
+    public static IFixedList<IClassMemberSymbolNode> ClassDeclaration_MembersSymbolNodes(IClassDeclarationNode node)
+    {
+        var memberSymbolNodes = ClassMembers(node.Members);
+
+        var defaultConstructorSymbol = node.DefaultConstructorSymbol;
+        if (defaultConstructorSymbol is not null)
+            memberSymbolNodes = memberSymbolNodes.Append(ConstructorSymbol(defaultConstructorSymbol));
+
+        return memberSymbolNodes.ToFixedList();
+    }
+
+    private static IEnumerable<IClassMemberSymbolNode> ClassMembers(IEnumerable<IClassMemberDeclarationNode> nodes)
+        => nodes.Select(n => n.SymbolNode);
 
     public static IStructSymbolNode StructDeclaration(IStructDeclarationNode node)
         => new SemanticStructSymbolNode(node);
@@ -141,12 +157,21 @@ internal static class SymbolNodeAttributes
         return node.ContainingLexicalScope.Lookup(name).OfType<ITypeSymbolNode>().ToFixedSet();
     }
 
+    public static IMethodSymbolNode MethodDeclaration_SymbolNode(IMethodDeclarationNode node)
+        => new SemanticMethodSymbolNode(node);
+
+    public static IConstructorSymbolNode ConstructorDeclaration_SymbolNode(IConstructorDeclarationNode node)
+        => new SemanticConstructorSymbolNode(node);
+
     public static IFieldSymbolNode FieldDeclaration_SymbolNode(IFieldDeclarationNode node)
         => new SemanticFieldSymbolNode(node);
 
     public static IFieldSymbolNode? FieldParameter_ReferencedSymbolNode(IFieldParameterNode node)
         // TODO report error for field parameter without referenced field
         => node.ContainingTypeDeclaration.Members.OfType<IFieldDeclarationNode>().FirstOrDefault(f => f.Name == node.Name)?.SymbolNode;
+
+    public static IAssociatedFunctionSymbolNode AssociatedFunction_SymbolNode(IAssociatedFunctionDeclarationNode node)
+        => new AssociatedFunctionSymbolNode(node);
 
     #region Construct for Symbols
     public static IDeclarationSymbolNode Symbol(Symbol symbol)
@@ -193,5 +218,8 @@ internal static class SymbolNodeAttributes
 
     private static IFunctionSymbolNode FunctionSymbol(FunctionSymbol sym)
         => new ReferencedFunctionSymbolNode(sym);
+
+    private static IConstructorSymbolNode ConstructorSymbol(ConstructorSymbol sym)
+        => new ReferencedConstructorSymbolNode(sym);
     #endregion
 }

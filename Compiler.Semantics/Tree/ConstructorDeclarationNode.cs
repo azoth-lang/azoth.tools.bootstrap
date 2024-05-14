@@ -19,7 +19,11 @@ internal class ConstructorDeclarationNode : TypeMemberDeclarationNode, IConstruc
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
     public IBlockBodyNode Body => throw new NotImplementedException();
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    public override IDeclarationSymbolNode SymbolNode => throw new NotImplementedException();
+    private ValueAttribute<IConstructorSymbolNode> symbolNode;
+    public override IConstructorSymbolNode SymbolNode
+        => symbolNode.TryGetValue(out var value) ? value
+            : symbolNode.GetValue(this, SymbolNodeAttributes.ConstructorDeclaration_SymbolNode);
+    IClassMemberSymbolNode IClassMemberDeclarationNode.SymbolNode => SymbolNode;
     private ValueAttribute<ConstructorSymbol> symbol;
     public ConstructorSymbol Symbol
         => symbol.TryGetValue(out var value) ? value

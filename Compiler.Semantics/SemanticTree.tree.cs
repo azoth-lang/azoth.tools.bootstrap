@@ -264,8 +264,11 @@ public partial interface ITypeDeclarationNode : IPackageMemberDeclarationNode, I
     IDeclaredUserType DeclaredType { get; }
     new IUserTypeSymbolNode SymbolNode { get; }
     IPackageMemberSymbolNode IPackageMemberDeclarationNode.SymbolNode => SymbolNode;
-    IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
+    IClassMemberSymbolNode IClassMemberDeclarationNode.SymbolNode => SymbolNode;
+    ITraitMemberSymbolNode ITraitMemberDeclarationNode.SymbolNode => SymbolNode;
+    IStructMemberSymbolNode IStructMemberDeclarationNode.SymbolNode => SymbolNode;
     INamespaceMemberSymbolNode INamespaceMemberDeclarationNode.SymbolNode => SymbolNode;
+    ITypeMemberSymbolNode ITypeMemberDeclarationNode.SymbolNode => SymbolNode;
     UserTypeSymbol Symbol { get; }
     IFixedList<IGenericParameterNode> GenericParameters { get; }
     LexicalScope SupertypesLexicalScope { get; }
@@ -291,6 +294,7 @@ public partial interface IClassDeclarationNode : ISemanticNode, ITypeDeclaration
     IDeclaredUserType ITypeDeclarationNode.DeclaredType => DeclaredType;
     new IFixedList<IClassMemberDeclarationNode> Members { get; }
     IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+    ConstructorSymbol? DefaultConstructorSymbol { get; }
 }
 
 public partial interface IStructDeclarationNode : ISemanticNode, ITypeDeclarationNode
@@ -354,6 +358,8 @@ public partial interface ITypeMemberDeclarationNode : IDeclarationNode
 {
     new ITypeMemberDeclarationSyntax Syntax { get; }
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    new ITypeMemberSymbolNode SymbolNode { get; }
+    IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
 }
 
 [Closed(
@@ -368,6 +374,8 @@ public partial interface IClassMemberDeclarationNode : ISemanticNode, ITypeMembe
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    new IClassMemberSymbolNode SymbolNode { get; }
+    ITypeMemberSymbolNode ITypeMemberDeclarationNode.SymbolNode => SymbolNode;
 }
 
 [Closed(
@@ -380,6 +388,8 @@ public partial interface ITraitMemberDeclarationNode : ISemanticNode, ITypeMembe
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    new ITraitMemberSymbolNode SymbolNode { get; }
+    ITypeMemberSymbolNode ITypeMemberDeclarationNode.SymbolNode => SymbolNode;
 }
 
 [Closed(
@@ -394,6 +404,8 @@ public partial interface IStructMemberDeclarationNode : ISemanticNode, ITypeMemb
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
     IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    new IStructMemberSymbolNode SymbolNode { get; }
+    ITypeMemberSymbolNode ITypeMemberDeclarationNode.SymbolNode => SymbolNode;
 }
 
 [Closed(
@@ -426,6 +438,11 @@ public partial interface IMethodDeclarationNode : IAlwaysTypeMemberDeclarationNo
     new IFixedList<INamedParameterNode> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDeclarationNode.Parameters => Parameters;
     ITypeNode? Return { get; }
+    new IMethodSymbolNode SymbolNode { get; }
+    ITypeMemberSymbolNode ITypeMemberDeclarationNode.SymbolNode => SymbolNode;
+    IClassMemberSymbolNode IClassMemberDeclarationNode.SymbolNode => SymbolNode;
+    ITraitMemberSymbolNode ITraitMemberDeclarationNode.SymbolNode => SymbolNode;
+    IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
     MethodSymbol Symbol { get; }
 }
 
@@ -531,6 +548,9 @@ public partial interface IFieldDeclarationNode : IAlwaysTypeMemberDeclarationNod
     ITypeNode TypeNode { get; }
     DataType Type { get; }
     new IFieldSymbolNode SymbolNode { get; }
+    ITypeMemberSymbolNode ITypeMemberDeclarationNode.SymbolNode => SymbolNode;
+    IClassMemberSymbolNode IClassMemberDeclarationNode.SymbolNode => SymbolNode;
+    IStructMemberSymbolNode IStructMemberDeclarationNode.SymbolNode => SymbolNode;
     IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
     FieldSymbol Symbol { get; }
 }
@@ -548,6 +568,12 @@ public partial interface IAssociatedFunctionDeclarationNode : IConcreteInvocable
     IdentifierName Name { get; }
     new IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
+    new IAssociatedFunctionSymbolNode SymbolNode { get; }
+    IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
+    ITypeMemberSymbolNode ITypeMemberDeclarationNode.SymbolNode => SymbolNode;
+    IClassMemberSymbolNode IClassMemberDeclarationNode.SymbolNode => SymbolNode;
+    ITraitMemberSymbolNode ITraitMemberDeclarationNode.SymbolNode => SymbolNode;
+    IStructMemberSymbolNode IStructMemberDeclarationNode.SymbolNode => SymbolNode;
     FunctionSymbol Symbol { get; }
     FunctionType Type { get; }
 }
@@ -558,6 +584,7 @@ public partial interface IAttributeNode : ISemanticNode, ICodeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     IStandardTypeNameNode TypeName { get; }
+    ConstructorSymbol? ReferencedSymbol { get; }
 }
 
 [Closed(

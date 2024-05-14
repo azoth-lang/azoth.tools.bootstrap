@@ -30,7 +30,10 @@ internal sealed class AssociatedFunctionDeclarationNode : TypeMemberDeclarationN
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, InvocableDeclarationsAspect.AssociatedFunctionDeclaration_Type);
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    public override IDeclarationSymbolNode SymbolNode => throw new NotImplementedException();
+    private ValueAttribute<IAssociatedFunctionSymbolNode> symbolNode;
+    public sealed override IAssociatedFunctionSymbolNode SymbolNode
+        => symbolNode.TryGetValue(out var value) ? value
+            : symbolNode.GetValue(this, SymbolNodeAttributes.AssociatedFunction_SymbolNode);
 
     public AssociatedFunctionDeclarationNode(
         IAssociatedFunctionDeclarationSyntax syntax,

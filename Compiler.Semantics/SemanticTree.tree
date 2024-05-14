@@ -87,7 +87,8 @@ ClassDeclaration <: TypeDeclaration = Syntax:`IClassDeclarationSyntax`
     Attributes:Attribute* IsAbstract:`bool` GenericParameters:GenericParameter*
     BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* SymbolNode:`IClassSymbolNode`
     DeclaredType:`ObjectType`
-    Members:ClassMemberDeclaration*;
+    Members:ClassMemberDeclaration*
+    DefaultConstructorSymbol:`ConstructorSymbol`?;
 StructDeclaration <: TypeDeclaration = Syntax:`IStructDeclarationSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
     SupertypeNames:StandardTypeName* SymbolNode:`IStructSymbolNode`
@@ -107,16 +108,16 @@ GenericParameter <: Code = Syntax:`IGenericParameterSyntax`
     SymbolNode:`IGenericParameterSymbolNode` Symbol:`GenericParameterTypeSymbol`;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
-TypeMemberDeclaration <: Declaration = Syntax:`ITypeMemberDeclarationSyntax`;
-ClassMemberDeclaration <: TypeMemberDeclaration = Syntax:`IClassMemberDeclarationSyntax`;
-TraitMemberDeclaration <: TypeMemberDeclaration = Syntax:`ITraitMemberDeclarationSyntax`;
-StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarationSyntax`;
+TypeMemberDeclaration <: Declaration = Syntax:`ITypeMemberDeclarationSyntax` SymbolNode:`ITypeMemberSymbolNode`;
+ClassMemberDeclaration <: TypeMemberDeclaration = Syntax:`IClassMemberDeclarationSyntax` SymbolNode:`IClassMemberSymbolNode`;
+TraitMemberDeclaration <: TypeMemberDeclaration = Syntax:`ITraitMemberDeclarationSyntax` SymbolNode:`ITraitMemberSymbolNode`;
+StructMemberDeclaration <: TypeMemberDeclaration = Syntax:`IStructMemberDeclarationSyntax` SymbolNode:`IStructMemberSymbolNode`;
 AlwaysTypeMemberDeclaration <: TypeMemberDeclaration = ContainingSymbol:`UserTypeSymbol`;
 
 // ---------- Member Declarations
 MethodDeclaration <: AlwaysTypeMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, InvocableDeclaration
     = Syntax:`IMethodDeclarationSyntax` Kind:`MethodKind` Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
-    Symbol:`MethodSymbol`;
+    SymbolNode:`IMethodSymbolNode` Symbol:`MethodSymbol`;
 AbstractMethodDeclaration <: MethodDeclaration = Syntax:`IAbstractMethodDeclarationSyntax`
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
     ContainingDeclaredType:`ObjectType`;
@@ -136,10 +137,10 @@ FieldDeclaration <: AlwaysTypeMemberDeclaration, ClassMemberDeclaration, StructM
     SymbolNode:`IFieldSymbolNode` Symbol:`FieldSymbol`;
 AssociatedFunctionDeclaration <: ConcreteInvocableDeclaration, AlwaysTypeMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     = Syntax:`IAssociatedFunctionDeclarationSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
-    Symbol:`FunctionSymbol` Type:`FunctionType`; // Body;
+    SymbolNode:`IAssociatedFunctionSymbolNode` Symbol:`FunctionSymbol` Type:`FunctionType`; // Body;
 
 // ---------- Attributes
-Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:StandardTypeName;
+Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:StandardTypeName ReferencedSymbol:`ConstructorSymbol`?;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;

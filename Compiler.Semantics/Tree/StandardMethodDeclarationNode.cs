@@ -12,7 +12,7 @@ internal sealed class StandardMethodDeclarationNode : MethodDeclarationNode, ISt
 {
     public override IStandardMethodDeclarationSyntax Syntax { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    public override IDeclarationSymbolNode SymbolNode => throw new NotImplementedException();
+    IStructMemberSymbolNode IStructMemberDeclarationNode.SymbolNode => SymbolNode;
 
     public IBodyNode Body => throw new NotImplementedException();
 

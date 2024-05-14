@@ -4,6 +4,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal static class FileAttribute
 {
-    public static CodeFile CompilationUnitInherited(ICompilationUnitNode node)
+    public static CodeFile CompilationUnit_InheritedFile(ICompilationUnitNode node)
         => node.File;
 }

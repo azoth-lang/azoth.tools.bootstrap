@@ -44,7 +44,15 @@ public static class ISymbolNodeExtensions
                 yield break;
             case IGenericParameterSymbolNode n:
                 yield break;
+            case IMethodSymbolNode n:
+                yield break;
+            case IConstructorSymbolNode n:
+                yield break;
+            case IInitializerSymbolNode n:
+                yield break;
             case IFieldSymbolNode n:
+                yield break;
+            case IAssociatedFunctionSymbolNode n:
                 yield break;
         }
     }

@@ -26,7 +26,7 @@ PackageFacet <: Child = PackageAliasOrName:`IdentifierName`? PackageName:`Identi
     GlobalNamespace:Namespace;
 
 // ---------- Declarations
-Declaration <: Child = Name:`StandardName` Facet:`IPackageFacetSymbolNode`;
+Declaration <: Child = Name:`StandardName`? Facet:`IPackageFacetSymbolNode`;
 
 // ---------- Namespace Declarations
 Namespace <: NamespaceMember = Name:`IdentifierName` Symbol:`NamespaceSymbol`
@@ -34,10 +34,10 @@ Namespace <: NamespaceMember = Name:`IdentifierName` Symbol:`NamespaceSymbol`
 NamespaceMember <: Declaration;
 
 // ---------- Function Declaration
-Function <: PackageMember = Symbol:`FunctionSymbol`;
+Function <: PackageMember, Named = Symbol:`FunctionSymbol`;
 
 // ---------- Type Declarations
-UserType <: PackageMember, ClassMember, TraitMember, StructMember, Type
+UserType <: PackageMember, ClassMember, TraitMember, StructMember, Type, Named
     = Symbol:`UserTypeSymbol` Members:TypeMember*;
 Class <: UserType = Members:ClassMember*;
 Struct <: UserType = Members:StructMember*;
@@ -53,7 +53,12 @@ TraitMember <: TypeMember;
 StructMember <: TypeMember;
 
 // ---------- Member Declarations
+Method <: ClassMember, TraitMember, StructMember = Name:`IdentifierName` Symbol:`MethodSymbol`;
+Constructor <: ClassMember = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
+Initializer <: StructMember = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
 Field <: Named, ClassMember, StructMember = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;
+AssociatedFunction <: ClassMember, TraitMember, StructMember
+    = Name:`IdentifierName` Symbol:`FunctionSymbol` Type:`FunctionType`;
 
 // ---------- Can be Referenced by Type Name
 Type <: Named = Symbol:`TypeSymbol`;

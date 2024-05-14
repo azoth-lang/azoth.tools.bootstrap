@@ -1,5 +1,7 @@
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
@@ -44,4 +46,28 @@ internal static class SymbolAttribute
 
     public static FunctionSymbol AssociatedFunctionDeclaration(IAssociatedFunctionDeclarationNode node)
         => new(node.ContainingSymbol, node.Name, node.Type);
+
+    public static ConstructorSymbol? Attribute_ReferencedSymbol(IAttributeNode node)
+    {
+        var referencedTypeSymbolNode = node.TypeName.ReferencedSymbolNode;
+        if (referencedTypeSymbolNode is not IUserTypeSymbolNode userTypeSymbolNode)
+            return null;
+
+        return userTypeSymbolNode.Members.OfType<IConstructorSymbolNode>().Select(c => c.Symbol)
+                                 .SingleOrDefault(s => s.Arity == 0);
+    }
+
+    public static void Attribute_ContributeDiagnostics(IAttributeNode node, Diagnostics diagnostics)
+    {
+        if (node.ReferencedSymbol is null)
+            diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.TypeName.Syntax.Span));
+    }
+
+    public static ConstructorSymbol? ClassDeclaration_DefaultConstructorSymbol(IClassDeclarationNode node)
+    {
+        if (node.Members.Any(m => m is IConstructorDeclarationNode))
+            return null;
+
+        return ConstructorSymbol.CreateDefault(node.Symbol);
+    }
 }

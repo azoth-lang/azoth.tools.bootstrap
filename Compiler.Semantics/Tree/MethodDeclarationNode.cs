@@ -19,6 +19,10 @@ internal abstract class MethodDeclarationNode : TypeMemberDeclarationNode, IMeth
     public IMethodSelfParameterNode SelfParameter { get; }
     public IFixedList<INamedParameterNode> Parameters { get; }
     public virtual ITypeNode? Return { get; }
+    private ValueAttribute<IMethodSymbolNode> symbolNode;
+    public sealed override IMethodSymbolNode SymbolNode
+        => symbolNode.TryGetValue(out var value) ? value
+            : symbolNode.GetValue(this, SymbolNodeAttributes.MethodDeclaration_SymbolNode);
     private ValueAttribute<MethodSymbol> symbol;
     public MethodSymbol Symbol
     => symbol.TryGetValue(out var value) ? value

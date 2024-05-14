@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -11,9 +9,8 @@ internal sealed class SemanticFieldSymbolNode : SemanticDeclarationSymbolNode, I
     private IFieldDeclarationNode Node { get; }
     public override FieldSymbol Symbol => Node.Symbol;
     public override IdentifierName Name => Node.Name;
+    StandardName INamedSymbolNode.Name => Node.Name;
     public DataType Type => Node.Type;
-    public override IEnumerable<IDeclarationSymbolNode> MembersNamed(StandardName named)
-        => Enumerable.Empty<IDeclarationSymbolNode>();
 
     public SemanticFieldSymbolNode(IFieldDeclarationNode node)
     {

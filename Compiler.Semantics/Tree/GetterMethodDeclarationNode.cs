@@ -11,7 +11,7 @@ internal sealed class GetterMethodDeclarationNode : MethodDeclarationNode, IGett
     public override IGetterMethodDeclarationSyntax Syntax { get; }
     public override ITypeNode Return => base.Return!;
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    public override IDeclarationSymbolNode SymbolNode => throw new NotImplementedException();
+    IStructMemberSymbolNode IStructMemberDeclarationNode.SymbolNode => SymbolNode;
 
     public GetterMethodDeclarationNode(
         IGetterMethodDeclarationSyntax syntax,
