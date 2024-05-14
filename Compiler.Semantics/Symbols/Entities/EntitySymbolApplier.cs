@@ -82,6 +82,7 @@ internal class EntitySymbolApplier
         var syntax = node.Syntax;
         syntax.Symbol.BeginFulfilling();
         syntax.Symbol.Fulfill(node.Symbol);
+        Attributes(node.Attributes);
         NamedParameters(node.Parameters);
         Type(node.Return);
     }
@@ -159,6 +160,11 @@ internal class EntitySymbolApplier
         NamedParameters(node.Parameters);
         Type(node.Return);
     }
+
+    private static void Attributes(IEnumerable<IAttributeNode> nodes)
+        => nodes.ForEach(Attribute);
+
+    private static void Attribute(IAttributeNode node) => TypeName(node.TypeName);
 
     private static void StandardTypeNames(IEnumerable<IStandardTypeNameNode> nodes)
         => nodes.ForEach(StandardTypeName);

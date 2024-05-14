@@ -1,9 +1,7 @@
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -80,51 +78,13 @@ public class BasicAnalyzer
             case ITypeDeclarationSyntax _:
                 // Nothing to check
                 break;
-            case IMethodDeclarationSyntax syn:
-                ResolveBody(syn);
-                break;
-            case IConstructorDeclarationSyntax syn:
-                ResolveBody(syn);
-                break;
-            case IInitializerDeclarationSyntax syn:
-                ResolveBody(syn);
-                break;
-            case IFunctionDeclarationSyntax syn:
-                Resolve(syn);
-                break;
-            case IAssociatedFunctionDeclarationSyntax syn:
+            case IInvocableDeclarationSyntax syn:
                 ResolveBody(syn);
                 break;
             case IFieldDeclarationSyntax syn:
                 Resolve(syn);
                 break;
         }
-    }
-
-    private void ResolveAttributes(IFunctionDeclarationSyntax func)
-    {
-        if (!func.Attributes.Any())
-            return;
-
-        var typeResolver = new TypeResolver(func.File, diagnostics, selfType: null);
-        foreach (var attribute in func.Attributes)
-        {
-            _ = typeResolver.EvaluateAttribute(attribute.TypeName);
-            var referencedTypeSymbol = attribute.TypeName.ReferencedSymbol.Result;
-            if (referencedTypeSymbol is null)
-                continue;
-
-            var noArgConstructor = symbolTrees.Children(referencedTypeSymbol)
-                                    .OfType<ConstructorSymbol>().SingleOrDefault(c => c.Arity == 0);
-            if (noArgConstructor is null)
-                diagnostics.Add(NameBindingError.CouldNotBindName(func.File, attribute.TypeName.Span));
-        }
-    }
-
-    private void Resolve(IFunctionDeclarationSyntax func)
-    {
-        ResolveAttributes(func);
-        ResolveBody(func);
     }
 
     private void ResolveBody(IInvocableDeclarationSyntax declaration)
