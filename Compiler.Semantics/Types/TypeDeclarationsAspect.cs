@@ -28,9 +28,26 @@ internal static class TypeDeclarationsAspect
 
     public static void ClassDeclaration_ContributeDiagnostics(IClassDeclarationNode node, Diagnostics diagnostics)
     {
-        if (node.BaseTypeName?.ReferencedSymbol is not null
-            and not UserTypeSymbol { DeclaresType.IsClass: true })
+        CheckBaseTypeMustBeAClass(node, diagnostics);
+
+        CheckBaseTypeMustMaintainIndependence(node, diagnostics);
+    }
+
+    private static void CheckBaseTypeMustBeAClass(IClassDeclarationNode node, Diagnostics diagnostics)
+    {
+        if (node.BaseTypeName?.ReferencedSymbol is not null and not UserTypeSymbol { DeclaresType.IsClass: true })
             diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(node.File, node.Name, node.BaseTypeName.Syntax));
+    }
+
+    private static void CheckBaseTypeMustMaintainIndependence(IClassDeclarationNode node, Diagnostics diagnostics)
+    {
+        var declaresType = node.Symbol.DeclaresType;
+        // TODO nested classes and traits need to be checked if nested inside of generic types?
+        if (!declaresType.HasIndependentGenericParameters) return;
+
+        if (node.BaseTypeName is not null and var typeName
+            && (!typeName.BareType?.SupertypeMaintainsIndependence(exact: true) ?? false))
+            diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(node.File, typeName.Syntax));
     }
 
     public static StructType StructDeclaration_DeclaredType(IStructDeclarationNode node)
@@ -117,8 +134,6 @@ internal static class TypeDeclarationsAspect
         }
     }
 
-
-
     public static void TypeDeclaration_ContributeDiagnostics(ITypeDeclarationNode node, Diagnostics diagnostics)
     {
         // Record diagnostics created while computing supertypes
@@ -129,6 +144,9 @@ internal static class TypeDeclarationsAspect
         CheckSupertypesMustBeClassOrTrait(node, diagnostics);
 
         // TODO check that there aren't duplicate supertypes? (including base type)
+
+        CheckAllSupertypesAreOutputSafe(node, diagnostics);
+        CheckSupertypesMaintainIndependence(node, diagnostics);
     }
 
     private static IEnumerable<Diagnostic> CheckTypeArgumentsAreConstructable(ITypeDeclarationNode node)
@@ -152,5 +170,32 @@ internal static class TypeDeclarationsAspect
             // Null symbol will report a separate name binding error
             if (node.ReferencedSymbol is not null and not UserTypeSymbol { DeclaresType: ObjectType })
                 diagnostics.Add(OtherSemanticError.SupertypeMustBeClassOrTrait(node.File, typeNode.Name, node.Syntax));
+    }
+
+    private static void CheckAllSupertypesAreOutputSafe(ITypeDeclarationNode node, Diagnostics diagnostics)
+    {
+        var declaresType = node.Symbol.DeclaresType;
+        // TODO nested classes and traits need to be checked if nested inside of generic types
+        if (!declaresType.IsGeneric) return;
+        var nonwritableSelf = declaresType.IsDeclaredConst ? true : (bool?)null;
+        foreach (var typeName in node.AllSupertypeNames)
+        {
+            var type = typeName.BareType;
+            if (type is not null && !type.IsSupertypeOutputSafe(nonwritableSelf))
+                diagnostics.Add(TypeError.SupertypeMustBeOutputSafe(node.File, typeName.Syntax));
+        }
+    }
+
+    private static void CheckSupertypesMaintainIndependence(
+        ITypeDeclarationNode typeDeclaration,
+        Diagnostics diagnostics)
+    {
+        var declaresType = typeDeclaration.Symbol.DeclaresType;
+        // TODO nested classes and traits need to be checked if nested inside of generic types?
+        if (!declaresType.HasIndependentGenericParameters) return;
+
+        foreach (var typeName in typeDeclaration.SupertypeNames)
+            if (!typeName.BareType?.SupertypeMaintainsIndependence(exact: false) ?? false)
+                diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(typeDeclaration.File, typeName.Syntax));
     }
 }

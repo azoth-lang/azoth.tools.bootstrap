@@ -79,14 +79,10 @@ public class BasicAnalyzer
         {
             default:
                 throw ExhaustiveMatch.Failed(entity);
-            case IClassDeclarationSyntax syn:
-                Resolve(syn);
-                break;
-            case ITraitDeclarationSyntax syn:
-                Resolve(syn);
-                break;
-            case IStructDeclarationSyntax syn:
-                Resolve(syn);
+            case IClassDeclarationSyntax _:
+            case ITraitDeclarationSyntax _:
+            case IStructDeclarationSyntax _:
+                // Nothing to check
                 break;
             case IMethodDeclarationSyntax syn:
                 Resolve(syn);
@@ -127,58 +123,6 @@ public class BasicAnalyzer
             if (noArgConstructor is null)
                 diagnostics.Add(NameBindingError.CouldNotBindName(func.File, attribute.TypeName.Span));
         }
-    }
-
-    private void Resolve(IClassDeclarationSyntax @class)
-    {
-        CheckSupertypesAreOutputSafe(@class, @class.AllSupertypeNames.ToFixedList());
-        CheckSupertypesMaintainIndependence(@class);
-    }
-
-    private void CheckSupertypesAreOutputSafe(
-        ITypeDeclarationSyntax typeDeclaration,
-        IFixedList<IStandardTypeNameSyntax> allSuperTypes)
-    {
-        var declaresType = typeDeclaration.Symbol.Result.DeclaresType;
-        // TODO nested classes and traits need to be checked if nested inside of generic types
-        if (!declaresType.IsGeneric)
-            return;
-        var nonwritableSelf = declaresType.IsDeclaredConst ? true : (bool?)null;
-        foreach (var typeNameSyntax in allSuperTypes)
-        {
-            var type = typeNameSyntax.NamedBareType;
-            if (type is not null && !type.IsSupertypeOutputSafe(nonwritableSelf))
-                diagnostics.Add(TypeError.SupertypeMustBeOutputSafe(typeDeclaration.File, typeNameSyntax));
-        }
-    }
-
-    private void CheckSupertypesMaintainIndependence(
-        ITypeDeclarationSyntax typeDeclaration)
-    {
-        var declaresType = typeDeclaration.Symbol.Result.DeclaresType;
-        if (!declaresType.HasIndependentGenericParameters)
-            return;
-
-        if (typeDeclaration is IClassDeclarationSyntax { BaseTypeName: var baseTypeNameSyntax })
-            if (baseTypeNameSyntax is not null
-                && (!baseTypeNameSyntax.NamedBareType?.SupertypeMaintainsIndependence(exact: true) ?? false))
-                diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(typeDeclaration.File, baseTypeNameSyntax));
-
-        foreach (var typeNameSyntax in typeDeclaration.SupertypeNames)
-            if (!typeNameSyntax.NamedBareType?.SupertypeMaintainsIndependence(exact: false) ?? false)
-                diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(typeDeclaration.File, typeNameSyntax));
-    }
-
-    private void Resolve(IStructDeclarationSyntax @struct)
-    {
-        CheckSupertypesAreOutputSafe(@struct, @struct.SupertypeNames);
-        CheckSupertypesMaintainIndependence(@struct);
-    }
-
-    private void Resolve(ITraitDeclarationSyntax trait)
-    {
-        CheckSupertypesAreOutputSafe(trait, trait.SupertypeNames);
-        CheckSupertypesMaintainIndependence(trait);
     }
 
     private void Resolve(IMethodDeclarationSyntax method)
