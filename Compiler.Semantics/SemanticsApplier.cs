@@ -4,14 +4,14 @@ using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using MoreLinq;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
 /// <summary>
-/// Applies entity symbols created in the semantic tree to the old syntax tree approach.
+/// Applies entity symbols and types created in the semantic tree to the old syntax tree approach.
 /// </summary>
 /// <remarks>This is an intermediate phase to entirely eliminating the old approach using properties
 /// on the concrete syntax tree.</remarks>
-internal class EntitySymbolApplier
+internal class SemanticsApplier
 {
     public static void Apply(IPackageNode package)
     {

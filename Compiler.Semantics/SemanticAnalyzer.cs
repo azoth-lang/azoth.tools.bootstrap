@@ -45,7 +45,7 @@ public class SemanticAnalyzer
         var packageNode = BuildSemanticTreeAndValidate(packageSyntax);
 
         // Apply symbols from the semantic tree to the old syntax tree approach
-        EntitySymbolApplier.Apply(packageNode);
+        SemanticsApplier.Apply(packageNode);
 
         // Load namespace symbols applied to the old syntax tree approach into the symbol trees
         NamespaceSymbolCollector.Collect(packageNode, packageSyntax.SymbolTree, packageSyntax.TestingSymbolTree);
