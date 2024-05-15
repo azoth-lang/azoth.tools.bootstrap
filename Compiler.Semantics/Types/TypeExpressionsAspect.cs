@@ -31,6 +31,8 @@ internal static class TypeExpressionsAspect
                 capabilityType.DeclaredType));
         if (node.Referent.Type is GenericParameterType)
             diagnostics.Add(TypeError.CapabilityAppliedToTypeParameter(node.File, node.Syntax));
+        if (node.Referent.Type is EmptyType)
+            diagnostics.Add(TypeError.CapabilityAppliedToEmptyType(node.File, node.Syntax));
         // TODO I think there are more errors that can happen
     }
 
@@ -44,8 +46,15 @@ internal static class TypeExpressionsAspect
         => new(node.IsLent, node.Referent.Type);
 
     public static DataType CapabilityViewpointType_Type(ICapabilityViewpointTypeNode node)
-        // TODO report error if capability is not applicable to referent
         => CapabilityViewpointType.Create(node.Capability.Capability, node.Referent.Type);
+
+    public static void CapabilityViewpointType_ContributeDiagnostics(
+        ICapabilityViewpointTypeNode node,
+        Diagnostics diagnostics)
+    {
+        if (node.Referent.Type is not GenericParameterType)
+            diagnostics.Add(TypeError.CapabilityViewpointNotAppliedToTypeParameter(node.File, node.Syntax));
+    }
 
     public static Pseudotype ConcreteMethodDeclaration_InheritedSelfType(IConcreteMethodDeclarationNode node)
         => node.SelfParameter.Type;
@@ -65,6 +74,16 @@ internal static class TypeExpressionsAspect
 
         return referentType;
     }
+
+    public static void SelfViewpointType_ContributeDiagnostics(ISelfViewpointTypeNode node, Diagnostics diagnostics)
+    {
+        if (node.SelfType is not (CapabilityType or CapabilityTypeConstraint))
+            diagnostics.Add(TypeError.SelfViewpointNotAvailable(node.File, node.Syntax));
+
+        if (node.Referent.Type is not GenericParameterType)
+            diagnostics.Add(TypeError.SelfViewpointNotAppliedToTypeParameter(node.File, node.Syntax));
+    }
+
 
     public static BoolConstValueType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node)
         => node.Value ? DataType.True : DataType.False;

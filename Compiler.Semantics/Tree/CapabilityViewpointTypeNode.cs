@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -23,5 +24,11 @@ internal sealed class CapabilityViewpointTypeNode : TypeNode, ICapabilityViewpoi
         Syntax = syntax;
         Capability = Child.Attach(this, capability);
         Referent = Child.Attach(this, referent);
+    }
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        TypeExpressionsAspect.CapabilityViewpointType_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

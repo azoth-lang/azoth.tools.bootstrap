@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -24,5 +25,11 @@ internal sealed class SelfViewpointTypeNode : TypeNode, ISelfViewpointTypeNode
     {
         Syntax = syntax;
         Referent = Child.Attach(this, referent);
+    }
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        TypeExpressionsAspect.SelfViewpointType_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

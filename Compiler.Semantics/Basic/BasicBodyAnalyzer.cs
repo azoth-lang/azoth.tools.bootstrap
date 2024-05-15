@@ -14,7 +14,6 @@ using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -47,7 +46,6 @@ public class BasicBodyAnalyzer
     private readonly UserTypeSymbol? rangeSymbol;
     private readonly Diagnostics diagnostics;
     private readonly Return? returnType;
-    private readonly TypeResolver typeResolver;
     private readonly ParameterSharingRelation parameterSharing;
 
     public BasicBodyAnalyzer(
@@ -57,7 +55,7 @@ public class BasicBodyAnalyzer
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return @return)
-        : this(containingDeclaration, null, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
+        : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
             symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, @return)
     { }
     public BasicBodyAnalyzer(
@@ -67,7 +65,7 @@ public class BasicBodyAnalyzer
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return @return)
-        : this(containingDeclaration, null, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
+        : this(containingDeclaration, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
             symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, @return)
     { }
 
@@ -78,7 +76,7 @@ public class BasicBodyAnalyzer
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return @return)
-        : this(containingDeclaration, containingDeclaration.SelfParameter.DataType.Result,
+        : this(containingDeclaration,
             containingDeclaration.Parameters.OfType<INamedParameterSyntax>()
                                  .Select(p => p.Symbol.Result)
                                  .Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
@@ -92,7 +90,7 @@ public class BasicBodyAnalyzer
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return @return)
-        : this(containingDeclaration, containingDeclaration.SelfParameter.DataType.Result,
+        : this(containingDeclaration,
             containingDeclaration.Parameters.OfType<INamedParameterSyntax>()
                                  .Select(p => p.Symbol.Result)
                                  .Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
@@ -106,7 +104,7 @@ public class BasicBodyAnalyzer
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return @return)
-        : this(containingDeclaration, containingDeclaration.SelfParameter.DataType.Result,
+        : this(containingDeclaration,
             containingDeclaration.Parameters.Select(p => p.Symbol.Result).Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
             symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, @return)
     { }
@@ -117,13 +115,12 @@ public class BasicBodyAnalyzer
         SymbolForest symbolTrees,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics)
-        : this(containingDeclaration, null, Enumerable.Empty<BindingSymbol>(),
+        : this(containingDeclaration, Enumerable.Empty<BindingSymbol>(),
             symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, null)
     { }
 
     private BasicBodyAnalyzer(
         IEntityDeclarationSyntax containingDeclaration,
-        Pseudotype? selfType,
         IEnumerable<BindingSymbol> parameterSymbols,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
@@ -138,7 +135,6 @@ public class BasicBodyAnalyzer
         this.diagnostics = diagnostics;
         this.symbolTrees = symbolTrees;
         this.returnType = returnType;
-        typeResolver = new TypeResolver(file, diagnostics, selfType);
         parameterSharing = new ParameterSharingRelation(parameterSymbols);
     }
 
@@ -222,7 +218,12 @@ public class BasicBodyAnalyzer
         var initializerResult = InferType(variableDeclaration.Initializer, flow);
         DataType variableType;
         if (variableDeclaration.Type is not null)
-            variableType = typeResolver.Evaluate(variableDeclaration.Type);
+        {
+            //var expectedType = typeResolver.Evaluate(variableDeclaration.Type);
+            //if (expectedType != variableDeclaration.Type.NamedType)
+            //    throw new UnreachableException("Expected type of variable declaration should match.");
+            variableType = variableDeclaration.Type.NamedType!;
+        }
         else if (variableDeclaration.Initializer is not null)
             variableType = InferDeclarationType(variableDeclaration.Initializer, variableDeclaration.Capability);
         else
@@ -794,7 +795,10 @@ public class BasicBodyAnalyzer
             }
             case IForeachExpressionSyntax exp:
             {
-                var declaredType = typeResolver.Evaluate(exp.Type);
+                //var expectedType = typeResolver.Evaluate(exp.Type);
+                //if (expectedType != exp.Type?.NamedType)
+                //    throw new UnreachableException("Expected type of foreach should match.");
+                var declaredType = exp.Type?.NamedType;
                 // TODO deal with result variable here
                 var (expressionResult, variableType) = CheckForeachInType(declaredType, exp, flow);
                 var symbol = NamedVariableSymbol.CreateLocal(containingSymbol, exp.IsMutableBinding, exp.VariableName, exp.DeclarationNumber.Result, variableType);
@@ -962,7 +966,10 @@ public class BasicBodyAnalyzer
             case IConversionExpressionSyntax exp:
             {
                 var result = InferType(exp.Referent, flow);
-                var convertToType = typeResolver.Evaluate(exp.ConvertToType);
+                //var expectedType = typeResolver.Evaluate(exp.ConvertToType);
+                //if (expectedType != exp.ConvertToType.NamedType)
+                //    throw new UnreachableException("Expected type of conversion should match.");
+                var convertToType = exp.ConvertToType.NamedType!;
                 if (!ExplicitConversionTypesAreCompatible(exp.Referent, exp.Operator == ConversionOperator.Safe, convertToType))
                     diagnostics.Add(TypeError.CannotExplicitlyConvert(file, exp.Referent, result.Type, convertToType));
                 if (exp.Operator == ConversionOperator.Optional)
@@ -1097,7 +1104,10 @@ public class BasicBodyAnalyzer
                 throw ExhaustiveMatch.Failed(pattern);
             case IBindingContextPatternSyntax pat:
             {
-                valueType = typeResolver.Evaluate(pat.Type) ?? valueType;
+                //var expectedType = typeResolver.Evaluate(pat.Type);
+                //if (expectedType != pat.Type?.NamedType)
+                //    throw new UnreachableException("Expected type of binding context should match.");
+                valueType = pat.Type?.NamedType ?? valueType;
                 ResolveTypes(pat.Pattern, valueType, resultVariable, flow, pat.IsMutableBinding);
                 break;
             }

@@ -166,7 +166,7 @@ public static class TypeError
             3023, $"Cannot access `var` field `{exp.MemberName}` from type `{contextType.ToSourceCodeString()}`.");
     }
 
-    public static Diagnostic CapabilityAppliedToEmptyType(CodeFile file, ITypeNameSyntax typeSyntax)
+    public static Diagnostic CapabilityAppliedToEmptyType(CodeFile file, ICapabilityTypeSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3024, $"Reference capabilities cannot be applied to empty types `{typeSyntax.ToString()}`.");
