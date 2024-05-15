@@ -1,10 +1,12 @@
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
+[StructLayout(LayoutKind.Auto)]
 public struct ValueAttribute<T>
 {
     private T? value;
