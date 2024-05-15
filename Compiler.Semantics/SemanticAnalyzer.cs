@@ -90,8 +90,6 @@ public class SemanticAnalyzer
         EntitySymbolBuilder.BuildFor(packageSyntax);
 
         var globalObjectTypeSymbols = packageSyntax.SymbolTrees.GlobalSymbols.OfType<UserTypeSymbol>().ToFixedList();
-        // TODO handle `String` better
-        var stringSymbol = globalObjectTypeSymbols.SingleOrDefault(s => s.Name == "String");
         // TODO handle `range` better
         var azothNamespaceSymbols = packageSyntax.SymbolTrees.GlobalSymbols
             .OfType<LocalNamespaceSymbol>().Where(s => s.Name == "azoth");
@@ -99,7 +97,7 @@ public class SemanticAnalyzer
             .OfType<UserTypeSymbol>().SingleOrDefault(s => s.Name == "range");
 
         // Basic Analysis includes: Name Binding, Type Checking, Constant Folding
-        BasicAnalyzer.Check(packageSyntax, stringSymbol, rangeSymbol);
+        BasicAnalyzer.Check(packageSyntax, rangeSymbol);
 
         // If there are errors from the basic analysis phase, don't continue on
         // The syntax diagnostics are already included in the packageSyntax.Diagnostics

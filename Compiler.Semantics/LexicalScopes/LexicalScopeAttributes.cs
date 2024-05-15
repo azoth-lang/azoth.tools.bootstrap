@@ -76,6 +76,6 @@ internal static class LexicalScopeAttributes
     public static LexicalScope TypeDeclaration_InheritedLexicalScope(ITypeDeclarationNode node)
         => node.LexicalScope;
 
-    public static LexicalScope FunctionDeclaration(IFunctionDeclarationNode node)
+    public static LexicalScope FunctionDeclaration_LexicalScope(IFunctionDeclarationNode node)
         => throw new System.NotImplementedException();
 }

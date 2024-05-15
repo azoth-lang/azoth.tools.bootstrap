@@ -1205,6 +1205,7 @@ public partial interface IStringLiteralExpressionNode : ILiteralExpressionNode
     ILiteralExpressionSyntax ILiteralExpressionNode.Syntax => Syntax;
     string Value { get; }
     DataType Type { get; }
+    LexicalScope ContainingLexicalScope { get; }
 }
 
 public partial interface IAssignmentExpressionNode : ISemanticNode, IExpressionNode

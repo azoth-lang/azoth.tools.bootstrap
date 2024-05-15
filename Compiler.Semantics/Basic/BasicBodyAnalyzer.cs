@@ -44,7 +44,6 @@ public class BasicBodyAnalyzer
     private readonly InvocableSymbol containingSymbol;
     private readonly ISymbolTreeBuilder symbolTreeBuilder;
     private readonly SymbolForest symbolTrees;
-    private readonly UserTypeSymbol? stringSymbol;
     private readonly UserTypeSymbol? rangeSymbol;
     private readonly Diagnostics diagnostics;
     private readonly Return? returnType;
@@ -55,30 +54,27 @@ public class BasicBodyAnalyzer
         IFunctionDeclarationSyntax containingDeclaration,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        UserTypeSymbol? stringSymbol,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return @return)
         : this(containingDeclaration, null, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, @return)
+            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, @return)
     { }
     public BasicBodyAnalyzer(
         IAssociatedFunctionDeclarationSyntax containingDeclaration,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        UserTypeSymbol? stringSymbol,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return @return)
         : this(containingDeclaration, null, containingDeclaration.Parameters.Select(p => p.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, @return)
+            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, @return)
     { }
 
     public BasicBodyAnalyzer(
         IConstructorDeclarationSyntax containingDeclaration,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        UserTypeSymbol? stringSymbol,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return @return)
@@ -86,14 +82,13 @@ public class BasicBodyAnalyzer
             containingDeclaration.Parameters.OfType<INamedParameterSyntax>()
                                  .Select(p => p.Symbol.Result)
                                  .Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, @return)
+            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, @return)
     { }
 
     public BasicBodyAnalyzer(
         IInitializerDeclarationSyntax containingDeclaration,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        UserTypeSymbol? stringSymbol,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return @return)
@@ -101,31 +96,29 @@ public class BasicBodyAnalyzer
             containingDeclaration.Parameters.OfType<INamedParameterSyntax>()
                                  .Select(p => p.Symbol.Result)
                                  .Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, @return)
+            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, @return)
     { }
 
     public BasicBodyAnalyzer(
         IConcreteMethodDeclarationSyntax containingDeclaration,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        UserTypeSymbol? stringSymbol,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return @return)
         : this(containingDeclaration, containingDeclaration.SelfParameter.DataType.Result,
             containingDeclaration.Parameters.Select(p => p.Symbol.Result).Prepend<BindingSymbol>(containingDeclaration.SelfParameter.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, @return)
+            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, @return)
     { }
 
     public BasicBodyAnalyzer(
         IFieldDeclarationSyntax containingDeclaration,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        UserTypeSymbol? stringSymbol,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics)
         : this(containingDeclaration, null, Enumerable.Empty<BindingSymbol>(),
-            symbolTreeBuilder, symbolTrees, stringSymbol, rangeSymbol, diagnostics, null)
+            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, null)
     { }
 
     private BasicBodyAnalyzer(
@@ -134,7 +127,6 @@ public class BasicBodyAnalyzer
         IEnumerable<BindingSymbol> parameterSymbols,
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        UserTypeSymbol? stringSymbol,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
         Return? returnType)
@@ -142,7 +134,6 @@ public class BasicBodyAnalyzer
         file = containingDeclaration.File;
         containingSymbol = (InvocableSymbol)containingDeclaration.Symbol.Result;
         this.symbolTreeBuilder = symbolTreeBuilder;
-        this.stringSymbol = stringSymbol;
         this.rangeSymbol = rangeSymbol;
         this.diagnostics = diagnostics;
         this.symbolTrees = symbolTrees;
@@ -569,10 +560,11 @@ public class BasicBodyAnalyzer
                 return new ExpressionResult(exp);
             }
             case IStringLiteralExpressionSyntax exp:
-                if (stringSymbol is null)
-                    diagnostics.Add(TypeError.NotImplemented(file, exp.Span, "Could not find string type for string literal."));
-                exp.DataType.Fulfill(stringSymbol?.DeclaresType.With(Capability.Constant, FixedList.Empty<DataType>())
-                                     ?? DataType.Unknown);
+                // Logic moved to semantic tree
+                //if (stringSymbol is null)
+                //    diagnostics.Add(TypeError.NotImplemented(file, exp.Span, "Could not find string type for string literal."));
+                //exp.DataType.Fulfill(stringSymbol?.DeclaresType.With(Capability.Constant, FixedList.Empty<DataType>())
+                //                     ?? DataType.Unknown);
                 return new ExpressionResult(exp);
             case IBoolLiteralExpressionSyntax exp:
             {

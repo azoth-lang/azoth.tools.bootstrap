@@ -30,35 +30,29 @@ public class BasicAnalyzer
 {
     private readonly ISymbolTreeBuilder symbolTreeBuilder;
     private readonly SymbolForest symbolTrees;
-    private readonly UserTypeSymbol? stringSymbol;
     private readonly UserTypeSymbol? rangeSymbol;
     private readonly Diagnostics diagnostics;
 
     private BasicAnalyzer(
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
-        UserTypeSymbol? stringSymbol,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics)
     {
         this.symbolTreeBuilder = symbolTreeBuilder;
         this.symbolTrees = symbolTrees;
-        this.stringSymbol = stringSymbol;
         this.rangeSymbol = rangeSymbol;
         this.diagnostics = diagnostics;
     }
 
-    public static void Check(
-        PackageSyntax<Package> package,
-        UserTypeSymbol? stringSymbol,
-        UserTypeSymbol? rangeSymbol)
+    public static void Check(PackageSyntax<Package> package, UserTypeSymbol? rangeSymbol)
     {
         // Analyze standard code (*.az)
-        var analyzer = new BasicAnalyzer(package.SymbolTree, package.SymbolTrees, stringSymbol, rangeSymbol, package.Diagnostics);
+        var analyzer = new BasicAnalyzer(package.SymbolTree, package.SymbolTrees, rangeSymbol, package.Diagnostics);
         analyzer.Resolve(package.EntityDeclarations);
 
         // Analyze test code (*.azt)
-        analyzer = new BasicAnalyzer(package.TestingSymbolTree, package.TestingSymbolTrees, stringSymbol, rangeSymbol, package.Diagnostics);
+        analyzer = new BasicAnalyzer(package.TestingSymbolTree, package.TestingSymbolTrees, rangeSymbol, package.Diagnostics);
         analyzer.Resolve(package.TestingEntityDeclarations);
     }
 
@@ -95,7 +89,7 @@ public class BasicAnalyzer
             case IFunctionDeclarationSyntax function:
             {
                 var resolver = new BasicBodyAnalyzer(function, symbolTreeBuilder, symbolTrees,
-                    stringSymbol, rangeSymbol, diagnostics,
+                    rangeSymbol, diagnostics,
                     function.Symbol.Result.Return);
                 resolver.ResolveTypes(function.Body);
                 break;
@@ -103,7 +97,7 @@ public class BasicAnalyzer
             case IAssociatedFunctionDeclarationSyntax associatedFunction:
             {
                 var resolver = new BasicBodyAnalyzer(associatedFunction, symbolTreeBuilder, symbolTrees,
-                    stringSymbol, rangeSymbol, diagnostics,
+                    rangeSymbol, diagnostics,
                     associatedFunction.Symbol.Result.Return);
                 resolver.ResolveTypes(associatedFunction.Body);
                 break;
@@ -111,7 +105,7 @@ public class BasicAnalyzer
             case IConcreteMethodDeclarationSyntax method:
             {
                 var resolver = new BasicBodyAnalyzer(method, symbolTreeBuilder,
-                    symbolTrees, stringSymbol, rangeSymbol, diagnostics,
+                    symbolTrees, rangeSymbol, diagnostics,
                     method.Symbol.Result.Return);
                 resolver.ResolveTypes(method.Body);
                 break;
@@ -123,7 +117,7 @@ public class BasicAnalyzer
             {
                 Return @return = new Return(constructor.SelfParameter.DataType.Result);
                 var resolver = new BasicBodyAnalyzer(constructor, symbolTreeBuilder, symbolTrees,
-                    stringSymbol, rangeSymbol, diagnostics, @return);
+                    rangeSymbol, diagnostics, @return);
                 resolver.ResolveTypes(constructor.Body);
                 break;
             }
@@ -131,7 +125,7 @@ public class BasicAnalyzer
             {
                 Return @return = new Return(initializer.SelfParameter.DataType.Result);
                 var resolver = new BasicBodyAnalyzer(initializer, symbolTreeBuilder, symbolTrees,
-                    stringSymbol, rangeSymbol, diagnostics, @return);
+                    rangeSymbol, diagnostics, @return);
                 resolver.ResolveTypes(initializer.Body);
                 break;
             }
@@ -143,8 +137,7 @@ public class BasicAnalyzer
         if (field.Initializer is null)
             return;
 
-        var resolver = new BasicBodyAnalyzer(field, symbolTreeBuilder, symbolTrees,
-            stringSymbol, rangeSymbol, diagnostics);
+        var resolver = new BasicBodyAnalyzer(field, symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics);
         resolver.CheckFieldInitializerType(field.Initializer, field.Symbol.Result.Type);
     }
 }

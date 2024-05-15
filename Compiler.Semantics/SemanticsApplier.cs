@@ -661,12 +661,13 @@ internal class SemanticsApplier
     private static void IntegerLiteralExpression(IIntegerLiteralExpressionNode node)
         => node.Syntax.DataType.Fulfill(node.Type);
 
-    private static void NoneLiteralExpression(INoneLiteralExpressionNode node)
+    private static void NoneLiteralExpression(INoneLiteralExpressionNode _)
     {
         // DataType starts fulfilled
     }
 
-    private static void StringLiteralExpression(IStringLiteralExpressionNode node) { }
+    private static void StringLiteralExpression(IStringLiteralExpressionNode node)
+        => node.Syntax.DataType.Fulfill(node.Type);
     #endregion
 
     #region Operator Expressions

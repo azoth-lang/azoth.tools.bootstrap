@@ -225,7 +225,8 @@ LiteralExpression <: Expression = Syntax:`ILiteralExpressionSyntax`;
 BoolLiteralExpression <: LiteralExpression = Syntax:`IBoolLiteralExpressionSyntax` Value:`bool` Type:`BoolConstValueType`;
 IntegerLiteralExpression <: LiteralExpression = Syntax:`IIntegerLiteralExpressionSyntax` Value:`BigInteger` Type:`IntegerConstValueType`;
 NoneLiteralExpression <: LiteralExpression = Syntax:`INoneLiteralExpressionSyntax` Type:`OptionalType`;
-StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionSyntax` Value:`string` Type:`DataType`;
+StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionSyntax`
+    Value:`string` Type:`DataType` ContainingLexicalScope:`LexicalScope`;
 
 // ---------- Operator Expressions
 AssignmentExpression <: Expression = Syntax:`IAssignmentExpressionSyntax` LeftOperand:AssignableExpression Operator:`AssignmentOperator` RightOperand:UntypedExpression;
