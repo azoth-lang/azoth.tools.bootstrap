@@ -189,6 +189,136 @@ public static class ISemanticNodeExtensions
             case ISelfViewpointTypeNode n:
                 yield return n.Referent;
                 yield break;
+            case IResultStatementNode n:
+                yield return n.Expression;
+                yield break;
+            case IVariableDeclarationStatementNode n:
+                if (n.Capability is not null)
+                    yield return n.Capability;
+                if (n.Type is not null)
+                    yield return n.Type;
+                if (n.Initializer is not null)
+                    yield return n.Initializer;
+                yield break;
+            case IExpressionStatementNode n:
+                yield return n.Expression;
+                yield break;
+            case IBindingContextPatternNode n:
+                yield return n.Pattern;
+                if (n.Type is not null)
+                    yield return n.Type;
+                yield break;
+            case IBindingPatternNode n:
+                yield break;
+            case IOptionalPatternNode n:
+                yield return n.Pattern;
+                yield break;
+            case IBlockExpressionNode n:
+                foreach (var child in n.Statements)
+                    yield return child;
+                yield break;
+            case INewObjectExpressionNode n:
+                yield return n.Type;
+                foreach (var child in n.Arguments)
+                    yield return child;
+                yield break;
+            case IUnsafeExpressionNode n:
+                yield return n.Expression;
+                yield break;
+            case IBoolLiteralExpressionNode n:
+                yield break;
+            case IIntegerLiteralExpressionNode n:
+                yield break;
+            case INoneLiteralExpressionNode n:
+                yield break;
+            case IStringLiteralExpressionNode n:
+                yield break;
+            case IAssignmentExpressionNode n:
+                yield return n.LeftOperand;
+                yield return n.RightOperand;
+                yield break;
+            case IBinaryOperatorExpressionNode n:
+                yield return n.LeftOperand;
+                yield return n.RightOperand;
+                yield break;
+            case IUnaryOperatorExpressionNode n:
+                yield return n.Operand;
+                yield break;
+            case IIdExpressionNode n:
+                yield return n.Referent;
+                yield break;
+            case IConversionExpressionNode n:
+                yield return n.Referent;
+                yield return n.ConvertToType;
+                yield break;
+            case IPatternMatchExpressionNode n:
+                yield return n.Referent;
+                yield return n.Pattern;
+                yield break;
+            case IIfExpressionNode n:
+                yield return n.Condition;
+                yield return n.ThenBlock;
+                if (n.ElseClause is not null)
+                    yield return n.ElseClause;
+                yield break;
+            case ILoopExpressionNode n:
+                yield return n.Block;
+                yield break;
+            case IWhileExpressionNode n:
+                yield return n.Condition;
+                yield return n.Block;
+                yield break;
+            case IForeachExpressionNode n:
+                yield return n.InExpression;
+                if (n.Type is not null)
+                    yield return n.Type;
+                yield return n.Block;
+                yield break;
+            case IBreakExpressionNode n:
+                if (n.Value is not null)
+                    yield return n.Value;
+                yield break;
+            case INextExpressionNode n:
+                yield break;
+            case IReturnExpressionNode n:
+                if (n.Value is not null)
+                    yield return n.Value;
+                yield break;
+            case IInvocationExpressionNode n:
+                yield return n.Expression;
+                foreach (var child in n.Arguments)
+                    yield return child;
+                yield break;
+            case IIdentifierNameExpressionNode n:
+                yield break;
+            case ISpecialTypeNameExpressionNode n:
+                yield break;
+            case IGenericNameExpressionNode n:
+                foreach (var child in n.TypeArguments)
+                    yield return child;
+                yield break;
+            case ISelfExpressionNode n:
+                yield break;
+            case IMemberAccessExpressionNode n:
+                yield return n.Context;
+                foreach (var child in n.TypeArguments)
+                    yield return child;
+                yield break;
+            case IMoveExpressionNode n:
+                yield return n.Referent;
+                yield break;
+            case IFreezeExpressionNode n:
+                yield return n.Referent;
+                yield break;
+            case IAsyncBlockExpressionNode n:
+                yield return n.Block;
+                yield break;
+            case IAsyncStartExpressionNode n:
+                yield return n.Expression;
+                yield break;
+            case IAwaitExpressionNode n:
+                yield return n.Expression;
+                yield break;
         }
     }
 }

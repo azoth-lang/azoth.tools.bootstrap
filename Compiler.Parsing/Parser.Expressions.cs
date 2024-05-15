@@ -286,6 +286,7 @@ public partial class Parser
                 var arguments = ParseArguments();
                 var closeParen = Tokens.Expect<ICloseParenToken>();
                 var span = TextSpan.Covering(newKeyword, closeParen);
+                // TODO if we can never parse a constructor name, then change the syntax tree to reflect that
                 return new NewObjectExpressionSyntax(span, type, null, null, arguments);
             }
             case IReturnKeywordToken _:
