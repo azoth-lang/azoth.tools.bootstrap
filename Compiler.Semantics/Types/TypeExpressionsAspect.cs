@@ -1,7 +1,9 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
@@ -60,4 +62,7 @@ internal static class TypeExpressionsAspect
 
         return referentType;
     }
+
+    public static BoolConstValueType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node)
+        => node.Value ? DataType.True : DataType.False;
 }

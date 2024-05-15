@@ -571,7 +571,9 @@ public class BasicBodyAnalyzer
                                      ?? DataType.Unknown);
                 return new ExpressionResult(exp);
             case IBoolLiteralExpressionSyntax exp:
-                exp.DataType.Fulfill(exp.Value ? DataType.True : DataType.False);
+                var expected = exp.Value ? DataType.True : DataType.False;
+                if (expected != exp.DataType.Result)
+                    throw new UnreachableException("Expected type of bool literal should be fulfilled.");
                 return new ExpressionResult(exp);
             case IBinaryOperatorExpressionSyntax exp:
             {

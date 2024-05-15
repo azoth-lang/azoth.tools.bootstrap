@@ -655,7 +655,8 @@ internal class SemanticsApplier
         }
     }
 
-    private static void BoolLiteralExpression(IBoolLiteralExpressionNode node) { }
+    private static void BoolLiteralExpression(IBoolLiteralExpressionNode node)
+        => node.Syntax.DataType.Fulfill(node.Type);
 
     private static void IntegerLiteralExpression(IIntegerLiteralExpressionNode node) { }
 
