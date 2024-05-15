@@ -562,8 +562,12 @@ public class BasicBodyAnalyzer
                 return new ExpressionResult(exp);
             }
             case IIntegerLiteralExpressionSyntax exp:
-                exp.DataType.Fulfill(new IntegerConstValueType(exp.Value));
+            {
+                var expectedType = new IntegerConstValueType(exp.Value);
+                if (expectedType != exp.DataType.Result)
+                    throw new UnreachableException("Expected type of bool literal should be fulfilled.");
                 return new ExpressionResult(exp);
+            }
             case IStringLiteralExpressionSyntax exp:
                 if (stringSymbol is null)
                     diagnostics.Add(TypeError.NotImplemented(file, exp.Span, "Could not find string type for string literal."));
@@ -571,10 +575,12 @@ public class BasicBodyAnalyzer
                                      ?? DataType.Unknown);
                 return new ExpressionResult(exp);
             case IBoolLiteralExpressionSyntax exp:
-                var expected = exp.Value ? DataType.True : DataType.False;
-                if (expected != exp.DataType.Result)
+            {
+                var expectedType = exp.Value ? DataType.True : DataType.False;
+                if (expectedType != exp.DataType.Result)
                     throw new UnreachableException("Expected type of bool literal should be fulfilled.");
                 return new ExpressionResult(exp);
+            }
             case IBinaryOperatorExpressionSyntax exp:
             {
                 var leftOperand = exp.LeftOperand;

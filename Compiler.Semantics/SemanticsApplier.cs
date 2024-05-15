@@ -658,9 +658,13 @@ internal class SemanticsApplier
     private static void BoolLiteralExpression(IBoolLiteralExpressionNode node)
         => node.Syntax.DataType.Fulfill(node.Type);
 
-    private static void IntegerLiteralExpression(IIntegerLiteralExpressionNode node) { }
+    private static void IntegerLiteralExpression(IIntegerLiteralExpressionNode node)
+        => node.Syntax.DataType.Fulfill(node.Type);
 
-    private static void NoneLiteralExpression(INoneLiteralExpressionNode node) { }
+    private static void NoneLiteralExpression(INoneLiteralExpressionNode node)
+    {
+        // DataType starts fulfilled
+    }
 
     private static void StringLiteralExpression(IStringLiteralExpressionNode node) { }
     #endregion
