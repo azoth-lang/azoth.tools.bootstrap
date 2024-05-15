@@ -314,6 +314,7 @@ public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNod
     FunctionSymbol Symbol { get; }
     IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
+    IBodyNode Body { get; }
     FunctionType Type { get; }
 }
 
@@ -797,10 +798,16 @@ public partial interface IBodyNode : IBodyOrBlockNode
 
 public partial interface IBlockBodyNode : IBodyNode
 {
+    new IBlockBodySyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
 }
 
 public partial interface IExpressionBodyNode : IBodyNode
 {
+    new IExpressionBodySyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IConcreteSyntax ICodeNode.Syntax => Syntax;
 }
 
 [Closed(

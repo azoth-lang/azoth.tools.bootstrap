@@ -55,7 +55,7 @@ internal static class SyntaxBinder
 
     #region Function Declaration
     private static IFunctionDeclarationNode FunctionDeclaration(IFunctionDeclarationSyntax syntax)
-        => new FunctionDeclarationNode(syntax, Attributes(syntax.Attributes), NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
+        => new FunctionDeclarationNode(syntax, Attributes(syntax.Attributes), NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
     #endregion
 
     #region Type Declarations
@@ -237,6 +237,18 @@ internal static class SyntaxBinder
     #endregion
 
     #region Function Parts
+    private static IBodyNode Body(IBodySyntax syntax)
+        => syntax switch
+        {
+            IBlockBodySyntax syn => BlockBody(syn),
+            IExpressionBodySyntax syn => ExpressionBody(syn),
+            _ => throw ExhaustiveMatch.Failed(syntax)
+        };
+
+    private static IBlockBodyNode BlockBody(IBlockBodySyntax syntax) => new BlockBodyNode(syntax);
+
+    private static IExpressionBodyNode ExpressionBody(IExpressionBodySyntax syntax)
+        => new ExpressionBodyNode(syntax);
     #endregion
 
     #region Types

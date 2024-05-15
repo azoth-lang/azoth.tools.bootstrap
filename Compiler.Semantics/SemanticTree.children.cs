@@ -48,6 +48,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
+                yield return n.Body;
                 yield break;
             case IClassDeclarationNode n:
                 foreach (var child in n.Attributes)

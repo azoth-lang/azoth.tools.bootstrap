@@ -82,7 +82,7 @@ NamespaceMemberDeclaration <: Declaration = SymbolNode:`INamespaceMemberSymbolNo
 FunctionDeclaration <: PackageMemberDeclaration = Syntax:`IFunctionDeclarationSyntax`
     ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol`
     Attributes:Attribute* Name:`IdentifierName`
-    SymbolNode:`IFunctionSymbolNode` Symbol:`FunctionSymbol` Parameters:NamedParameter* Return:Type?
+    SymbolNode:`IFunctionSymbolNode` Symbol:`FunctionSymbol` Parameters:NamedParameter* Return:Type? Body
     Type:`FunctionType`;
 
 // ---------- Type Declarations
@@ -174,8 +174,8 @@ FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyn
 
 // ---------- Function Parts
 Body: BodyOrBlock;
-BlockBody: Body; // = Statements:BodyStatement*;
-ExpressionBody: Body; // = ResultStatement Statements:Statement*;
+BlockBody: Body = Syntax:`IBlockBodySyntax`; // = Statements:BodyStatement*;
+ExpressionBody: Body = Syntax:`IExpressionBodySyntax`; // = ResultStatement;
 
 // ---------- Types
 Type <: Code = Syntax:`ITypeSyntax` Type:`DataType`;

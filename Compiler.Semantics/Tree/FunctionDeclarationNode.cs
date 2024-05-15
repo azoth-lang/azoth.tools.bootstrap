@@ -33,6 +33,7 @@ internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IF
             : symbol.GetValue(this, SymbolAttribute.FunctionDeclaration);
     public IFixedList<INamedParameterNode> Parameters { get; }
     public ITypeNode? Return { get; }
+    public IBodyNode Body { get; }
     private ValueAttribute<FunctionType> type;
     public FunctionType Type
         => type.TryGetValue(out var value) ? value
@@ -42,12 +43,14 @@ internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IF
         IFunctionDeclarationSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<INamedParameterNode> parameters,
-        ITypeNode? @return)
+        ITypeNode? @return,
+        IBodyNode body)
         : base(attributes)
     {
         Syntax = syntax;
         Parameters = ChildList.CreateFixed(this, parameters);
         Return = Child.Attach(this, @return);
+        Body = Child.Attach(this, body);
     }
 
     internal override bool InheritedIsAttributeType(IChildNode caller, IChildNode child)
