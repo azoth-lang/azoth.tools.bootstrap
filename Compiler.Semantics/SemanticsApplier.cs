@@ -13,6 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 /// on the concrete syntax tree.</remarks>
 internal class SemanticsApplier
 {
+    #region Packages
     public static void Apply(IPackageNode package)
     {
         PackageFacet(package.MainFacet);
@@ -21,10 +22,14 @@ internal class SemanticsApplier
 
     private static void PackageFacet(IPackageFacetNode node)
         => node.CompilationUnits.ForEach(CompilationUnit);
+    #endregion
 
+    #region Code Files
     private static void CompilationUnit(ICompilationUnitNode node)
         => Declarations(node.Declarations);
+    #endregion
 
+    #region Declarations
     private static void Declarations(IEnumerable<IDeclarationNode> nodes)
         => nodes.ForEach(Declaration);
 
@@ -60,23 +65,17 @@ internal class SemanticsApplier
                 break;
         }
     }
+    #endregion
 
-    private static void TypeDeclaration(ITypeDeclarationNode node)
+    #region Namespace Declarations
+    private static void NamespaceDeclaration(INamespaceDeclarationNode node)
     {
-        var syntax = node.Syntax;
-        syntax.Symbol.BeginFulfilling();
-        syntax.Symbol.Fulfill(node.Symbol);
-        GenericParameters(node.GenericParameters);
-        StandardTypeNames(node.AllSupertypeNames);
-        Declarations(node.Members);
+        node.Syntax.Symbol.Fulfill(node.Symbol);
+        Declarations(node.Declarations);
     }
+    #endregion
 
-    private static void GenericParameters(IFixedList<IGenericParameterNode> nodes)
-        => nodes.ForEach(GenericParameter);
-
-    private static void GenericParameter(IGenericParameterNode node)
-        => node.Syntax.Symbol.Fulfill(node.Symbol);
-
+    #region Function Declaration
     private static void FunctionDeclaration(IFunctionDeclarationNode node)
     {
         var syntax = node.Syntax;
@@ -86,39 +85,29 @@ internal class SemanticsApplier
         NamedParameters(node.Parameters);
         Type(node.Return);
     }
+    #endregion
 
-    private static void NamedParameters(IEnumerable<INamedParameterNode> nodes)
-        => nodes.ForEach(NamedParameter);
-
-    private static void NamedParameter(INamedParameterNode node) => Type(node.TypeNode);
-
-    private static void ConstructorOrInitializerParameters(IEnumerable<IConstructorOrInitializerParameterNode> nodes)
-        => nodes.ForEach(ConstructorOrInitializerParameter);
-
-    private static void ConstructorOrInitializerParameter(IConstructorOrInitializerParameterNode node)
+    #region Type Declarations
+    private static void TypeDeclaration(ITypeDeclarationNode node)
     {
-        switch (node)
-        {
-            default:
-                throw ExhaustiveMatch.Failed(node);
-            case INamedParameterNode n:
-                NamedParameter(n);
-                break;
-            case IFieldParameterNode n:
-                FieldParameter(n);
-                break;
-        }
+        var syntax = node.Syntax;
+        syntax.Symbol.BeginFulfilling();
+        syntax.Symbol.Fulfill(node.Symbol);
+        GenericParameters(node.GenericParameters);
+        StandardTypeNames(node.AllSupertypeNames);
+        Declarations(node.Members);
     }
+    #endregion
 
-    private static void FieldParameter(IFieldParameterNode node)
-        => node.Syntax.ReferencedSymbol.Fulfill(node.ReferencedSymbolNode?.Symbol);
+    #region Type Declaration Parts
+    private static void GenericParameters(IFixedList<IGenericParameterNode> nodes)
+        => nodes.ForEach(GenericParameter);
 
-    private static void NamespaceDeclaration(INamespaceDeclarationNode node)
-    {
-        node.Syntax.Symbol.Fulfill(node.Symbol);
-        Declarations(node.Declarations);
-    }
+    private static void GenericParameter(IGenericParameterNode node)
+        => node.Syntax.Symbol.Fulfill(node.Symbol);
+    #endregion
 
+    #region Member Declarations
     private static void MethodDeclaration(IMethodDeclarationNode node)
     {
         var symbol = node.Syntax.Symbol;
@@ -160,12 +149,43 @@ internal class SemanticsApplier
         NamedParameters(node.Parameters);
         Type(node.Return);
     }
+    #endregion
 
+    #region Attributes
     private static void Attributes(IEnumerable<IAttributeNode> nodes)
         => nodes.ForEach(Attribute);
 
     private static void Attribute(IAttributeNode node) => TypeName(node.TypeName);
+    #endregion
 
+    #region Parameters
+    private static void NamedParameters(IEnumerable<INamedParameterNode> nodes) => nodes.ForEach(NamedParameter);
+
+    private static void NamedParameter(INamedParameterNode node) => Type(node.TypeNode);
+
+    private static void ConstructorOrInitializerParameters(IEnumerable<IConstructorOrInitializerParameterNode> nodes)
+        => nodes.ForEach(ConstructorOrInitializerParameter);
+
+    private static void ConstructorOrInitializerParameter(IConstructorOrInitializerParameterNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case INamedParameterNode n:
+                NamedParameter(n);
+                break;
+            case IFieldParameterNode n:
+                FieldParameter(n);
+                break;
+        }
+    }
+
+    private static void FieldParameter(IFieldParameterNode node)
+        => node.Syntax.ReferencedSymbol.Fulfill(node.ReferencedSymbolNode?.Symbol);
+    #endregion
+
+    #region Types
     private static void StandardTypeNames(IEnumerable<IStandardTypeNameNode> nodes)
         => nodes.ForEach(StandardTypeName);
 
@@ -294,4 +314,5 @@ internal class SemanticsApplier
         node.Syntax.NamedType = node.Type;
         Type(node.Referent);
     }
+    #endregion
 }
