@@ -159,24 +159,24 @@ internal static class SyntaxBinder
 
     private static IStandardMethodDeclarationNode StandardMethodDeclaration(IStandardMethodDeclarationSyntax syntax)
         => new StandardMethodDeclarationNode(syntax, MethodSelfParameter(syntax.SelfParameter),
-            NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
+            NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
 
     private static IGetterMethodDeclarationNode GetterMethodDeclaration(IGetterMethodDeclarationSyntax syntax)
-        => new GetterMethodDeclarationNode(syntax, MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters), Type(syntax.Return.Type));
+        => new GetterMethodDeclarationNode(syntax, MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters), Type(syntax.Return.Type), Body(syntax.Body));
 
     private static ISetterMethodDeclarationNode SetterMethodDeclaration(ISetterMethodDeclarationSyntax syntax)
-        => new SetterMethodDeclarationNode(syntax, MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
+        => new SetterMethodDeclarationNode(syntax, MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
 
     private static IConstructorDeclarationNode ConstructorDeclaration(IConstructorDeclarationSyntax syntax)
-        => new ConstructorDeclarationNode(syntax, ConstructorSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters));
+        => new ConstructorDeclarationNode(syntax, ConstructorSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
 
     private static IInitializerDeclarationNode InitializerDeclaration(IInitializerDeclarationSyntax syntax)
-        => new InitializerDeclarationNode(syntax, InitializerSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters));
+        => new InitializerDeclarationNode(syntax, InitializerSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
 
     private static IFieldDeclarationNode FieldDeclaration(IFieldDeclarationSyntax syntax)
         => new FieldDeclarationNode(syntax, Type(syntax.Type), UntypedExpression(syntax.Initializer));
     private static IAssociatedFunctionDeclarationNode AssociatedFunctionDeclaration(IAssociatedFunctionDeclarationSyntax syntax)
-        => new AssociatedFunctionDeclarationNode(syntax, NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
+        => new AssociatedFunctionDeclarationNode(syntax, NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
     #endregion
 
     #region Attributes

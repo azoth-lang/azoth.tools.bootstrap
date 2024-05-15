@@ -98,12 +98,14 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
+                yield return n.Body;
                 yield break;
             case IGetterMethodDeclarationNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
                 yield return n.Return;
+                yield return n.Body;
                 yield break;
             case ISetterMethodDeclarationNode n:
                 yield return n.SelfParameter;
@@ -111,16 +113,19 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
+                yield return n.Body;
                 yield break;
             case IConstructorDeclarationNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
+                yield return n.Body;
                 yield break;
             case IInitializerDeclarationNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
+                yield return n.Body;
                 yield break;
             case IFieldDeclarationNode n:
                 yield return n.TypeNode;
@@ -132,6 +137,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
+                yield return n.Body;
                 yield break;
             case IAttributeNode n:
                 yield return n.TypeName;

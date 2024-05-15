@@ -17,7 +17,7 @@ internal sealed class InitializerDeclarationNode : TypeMemberDeclarationNode, II
     public IdentifierName? Name => Syntax.Name;
     public IInitializerSelfParameterNode SelfParameter { get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
-    public IBlockBodyNode Body => throw new NotImplementedException();
+    public IBlockBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     public override IInitializerSymbolNode SymbolNode => throw new NotImplementedException();
     IStructMemberSymbolNode IStructMemberDeclarationNode.SymbolNode => SymbolNode;
@@ -29,10 +29,12 @@ internal sealed class InitializerDeclarationNode : TypeMemberDeclarationNode, II
     public InitializerDeclarationNode(
         IInitializerDeclarationSyntax syntax,
         IInitializerSelfParameterNode selfParameter,
-        IEnumerable<IConstructorOrInitializerParameterNode> parameters)
+        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
+        IBlockBodyNode body)
     {
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.CreateFixed(this, parameters);
+        Body = Child.Attach(this, body);
     }
 }

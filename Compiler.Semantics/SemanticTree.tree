@@ -68,7 +68,7 @@ Declaration <: Code = Syntax:`IDeclarationSyntax` ContainingSymbolNode:`ISymbolN
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
     SymbolNode:`IDeclarationSymbolNode`;
 InvocableDeclaration <: Declaration = Parameters:ConstructorOrInitializerParameter*;
-ConcreteInvocableDeclaration <: InvocableDeclaration = Parameters:ConstructorOrInitializerParameter*; // Body;
+ConcreteInvocableDeclaration <: InvocableDeclaration = Parameters:ConstructorOrInitializerParameter* Body;
 
 // ---------- Namespace Declarations
 NamespaceDeclaration <: NamespaceMemberDeclaration = Syntax:`INamespaceDeclarationSyntax`
@@ -131,22 +131,22 @@ AbstractMethodDeclaration <: MethodDeclaration = Syntax:`IAbstractMethodDeclarat
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
     ContainingDeclaredType:`ObjectType`;
 ConcreteMethodDeclaration <: MethodDeclaration, StructMemberDeclaration, ConcreteInvocableDeclaration
-    = Syntax:`IConcreteMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?; // Body;
-StandardMethodDeclaration <: ConcreteMethodDeclaration = Syntax:`IStandardMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?; // Body;
-GetterMethodDeclaration <: ConcreteMethodDeclaration = Syntax:`IGetterMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type; // Body;
-SetterMethodDeclaration <: ConcreteMethodDeclaration = Syntax:`ISetterMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?; // Body;
+    = Syntax:`IConcreteMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
+StandardMethodDeclaration <: ConcreteMethodDeclaration = Syntax:`IStandardMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
+GetterMethodDeclaration <: ConcreteMethodDeclaration = Syntax:`IGetterMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type Body;
+SetterMethodDeclaration <: ConcreteMethodDeclaration = Syntax:`ISetterMethodDeclarationSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
 ConstructorDeclaration <: ConcreteInvocableDeclaration, AlwaysTypeMemberDeclaration, ClassMemberDeclaration
     = Syntax:`IConstructorDeclarationSyntax` Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter*
-    Symbol:`ConstructorSymbol`; // Body:BlockBody;
+    Symbol:`ConstructorSymbol` Body:BlockBody;
 InitializerDeclaration <: ConcreteInvocableDeclaration, AlwaysTypeMemberDeclaration, StructMemberDeclaration
     = Syntax:`IInitializerDeclarationSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter*
-    Symbol:`InitializerSymbol`; // Body:BlockBody;
+    Symbol:`InitializerSymbol` Body:BlockBody;
 FieldDeclaration <: AlwaysTypeMemberDeclaration, ClassMemberDeclaration, StructMemberDeclaration, Binding
     = Syntax:`IFieldDeclarationSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type Type:`DataType`
     SymbolNode:`IFieldSymbolNode` Symbol:`FieldSymbol` Initializer:UntypedExpression?;
 AssociatedFunctionDeclaration <: ConcreteInvocableDeclaration, AlwaysTypeMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     = Syntax:`IAssociatedFunctionDeclarationSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
-    SymbolNode:`IAssociatedFunctionSymbolNode` Symbol:`FunctionSymbol` Type:`FunctionType`; // Body;
+    SymbolNode:`IAssociatedFunctionSymbolNode` Symbol:`FunctionSymbol` Type:`FunctionType` Body;
 
 // ---------- Attributes
 Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:StandardTypeName ReferencedSymbol:`ConstructorSymbol`?;

@@ -29,6 +29,7 @@ internal sealed class AssociatedFunctionDeclarationNode : TypeMemberDeclarationN
     public FunctionType Type
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, TypeMemberDeclarationsAspect.AssociatedFunctionDeclaration_Type);
+    public IBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     private ValueAttribute<IAssociatedFunctionSymbolNode> symbolNode;
     public sealed override IAssociatedFunctionSymbolNode SymbolNode
@@ -38,10 +39,12 @@ internal sealed class AssociatedFunctionDeclarationNode : TypeMemberDeclarationN
     public AssociatedFunctionDeclarationNode(
         IAssociatedFunctionDeclarationSyntax syntax,
         IEnumerable<INamedParameterNode> parameters,
-        ITypeNode? @return)
+        ITypeNode? @return,
+        IBodyNode body)
     {
         Syntax = syntax;
         Parameters = ChildList.CreateFixed(this, parameters);
         Return = Child.Attach(this, @return);
+        Body = Child.Attach(this, body);
     }
 }

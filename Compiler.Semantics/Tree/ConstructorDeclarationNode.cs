@@ -17,7 +17,7 @@ internal class ConstructorDeclarationNode : TypeMemberDeclarationNode, IConstruc
     public IdentifierName? Name => Syntax.Name;
     public IConstructorSelfParameterNode SelfParameter { get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
-    public IBlockBodyNode Body => throw new NotImplementedException();
+    public IBlockBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     private ValueAttribute<IConstructorSymbolNode> symbolNode;
     public override IConstructorSymbolNode SymbolNode
@@ -32,10 +32,12 @@ internal class ConstructorDeclarationNode : TypeMemberDeclarationNode, IConstruc
     public ConstructorDeclarationNode(
         IConstructorDeclarationSyntax syntax,
         IConstructorSelfParameterNode selfParameter,
-        IEnumerable<IConstructorOrInitializerParameterNode> parameters)
+        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
+        IBlockBodyNode body)
     {
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.CreateFixed(this, parameters);
+        Body = Child.Attach(this, body);
     }
 }

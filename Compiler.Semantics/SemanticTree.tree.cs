@@ -268,6 +268,7 @@ public partial interface IInvocableDeclarationNode : IDeclarationNode
     typeof(IAssociatedFunctionDeclarationNode))]
 public partial interface IConcreteInvocableDeclarationNode : ISemanticNode, IInvocableDeclarationNode
 {
+    IBodyNode Body { get; }
 }
 
 public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
@@ -594,6 +595,8 @@ public partial interface IConstructorDeclarationNode : IConcreteInvocableDeclara
     IdentifierName? Name { get; }
     IConstructorSelfParameterNode SelfParameter { get; }
     ConstructorSymbol Symbol { get; }
+    new IBlockBodyNode Body { get; }
+    IBodyNode IConcreteInvocableDeclarationNode.Body => Body;
 }
 
 public partial interface IInitializerDeclarationNode : IConcreteInvocableDeclarationNode, IAlwaysTypeMemberDeclarationNode, IStructMemberDeclarationNode
@@ -607,6 +610,8 @@ public partial interface IInitializerDeclarationNode : IConcreteInvocableDeclara
     IdentifierName? Name { get; }
     IInitializerSelfParameterNode SelfParameter { get; }
     InitializerSymbol Symbol { get; }
+    new IBlockBodyNode Body { get; }
+    IBodyNode IConcreteInvocableDeclarationNode.Body => Body;
 }
 
 public partial interface IFieldDeclarationNode : IAlwaysTypeMemberDeclarationNode, IClassMemberDeclarationNode, IStructMemberDeclarationNode, IBindingNode
