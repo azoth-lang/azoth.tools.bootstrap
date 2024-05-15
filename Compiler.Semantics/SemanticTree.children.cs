@@ -161,8 +161,11 @@ public static class ISemanticNodeExtensions
             case IFieldParameterNode n:
                 yield break;
             case IBlockBodyNode n:
+                foreach (var child in n.Statements)
+                    yield return child;
                 yield break;
             case IExpressionBodyNode n:
+                yield return n.ResultStatement;
                 yield break;
             case IIdentifierTypeNameNode n:
                 yield break;
@@ -199,7 +202,7 @@ public static class ISemanticNodeExtensions
                 yield return n.Referent;
                 yield break;
             case IResultStatementNode n:
-                yield return n.UntypedExpression;
+                yield return n.Expression;
                 yield break;
             case IVariableDeclarationStatementNode n:
                 if (n.Capability is not null)
@@ -210,7 +213,7 @@ public static class ISemanticNodeExtensions
                     yield return n.Initializer;
                 yield break;
             case IExpressionStatementNode n:
-                yield return n.UntypedExpression;
+                yield return n.Expression;
                 yield break;
             case IBindingContextPatternNode n:
                 yield return n.Pattern;
@@ -232,7 +235,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IUnsafeExpressionNode n:
-                yield return n.UntypedExpression;
+                yield return n.Expression;
                 yield break;
             case IBoolLiteralExpressionNode n:
                 yield break;
@@ -294,7 +297,7 @@ public static class ISemanticNodeExtensions
                     yield return n.Value;
                 yield break;
             case IInvocationExpressionNode n:
-                yield return n.UntypedExpression;
+                yield return n.Expression;
                 foreach (var child in n.Arguments)
                     yield return child;
                 yield break;
@@ -306,12 +309,12 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;
-            case ISelfExpressionNode n:
-                yield break;
             case IMemberAccessExpressionNode n:
                 yield return n.Context;
                 foreach (var child in n.TypeArguments)
                     yield return child;
+                yield break;
+            case ISelfExpressionNode n:
                 yield break;
             case IMoveExpressionNode n:
                 yield return n.Referent;
@@ -323,10 +326,10 @@ public static class ISemanticNodeExtensions
                 yield return n.Block;
                 yield break;
             case IAsyncStartExpressionNode n:
-                yield return n.UntypedExpression;
+                yield return n.Expression;
                 yield break;
             case IAwaitExpressionNode n:
-                yield return n.UntypedExpression;
+                yield return n.Expression;
                 yield break;
         }
     }

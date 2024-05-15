@@ -699,8 +699,8 @@ public partial interface IExpressionSyntax : IConcreteSyntax
 [Closed(
     typeof(IDataTypedExpressionSyntax),
     typeof(IAssignableExpressionSyntax),
-    typeof(ILiteralExpressionSyntax),
     typeof(INeverTypedExpressionSyntax),
+    typeof(ILiteralExpressionSyntax),
     typeof(ISelfExpressionSyntax))]
 public partial interface ITypedExpressionSyntax : IExpressionSyntax
 {
@@ -762,6 +762,16 @@ public partial interface INewObjectExpressionSyntax : IDataTypedExpressionSyntax
 public partial interface IUnsafeExpressionSyntax : IDataTypedExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
+}
+
+[Closed(
+    typeof(IBreakExpressionSyntax),
+    typeof(INextExpressionSyntax),
+    typeof(IReturnExpressionSyntax))]
+public partial interface INeverTypedExpressionSyntax : ITypedExpressionSyntax
+{
+    new Promise<NeverType> DataType { get; }
+    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 [Closed(
@@ -868,16 +878,6 @@ public partial interface IForeachExpressionSyntax : IDataTypedExpressionSyntax, 
     new Promise<NamedVariableSymbol> Symbol { get; }
     IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
     IBlockExpressionSyntax Block { get; }
-}
-
-[Closed(
-    typeof(IBreakExpressionSyntax),
-    typeof(INextExpressionSyntax),
-    typeof(IReturnExpressionSyntax))]
-public partial interface INeverTypedExpressionSyntax : ITypedExpressionSyntax
-{
-    new Promise<NeverType> DataType { get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface IBreakExpressionSyntax : INeverTypedExpressionSyntax

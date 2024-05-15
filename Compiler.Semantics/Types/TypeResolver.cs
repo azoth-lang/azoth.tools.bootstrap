@@ -56,9 +56,10 @@ public class TypeResolver
             {
                 var capability = referenceCapability.Capability.Declared.ToCapability();
                 var type = Evaluate(capability, referenceCapability.Referent, isAttribute: false, mustBeConstructable: mustBeConstructable);
-                if (capability.AllowsWrite && type is ReferenceType { IsDeclaredConst: true } referenceType)
-                    diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(file, referenceCapability, capability,
-                        referenceType.DeclaredType));
+                // Diagnostic moved to semantic tree
+                //if (capability.AllowsWrite && type is ReferenceType { IsDeclaredConst: true } referenceType)
+                //    diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(file, referenceCapability, capability,
+                //        referenceType.DeclaredType));
                 return referenceCapability.NamedType = type;
             }
             case IOptionalTypeSyntax syn:
@@ -173,7 +174,8 @@ public class TypeResolver
                     // is done on the capability type syntax.
                     return declaredObjectType.With(capability, typeArguments);
                 case GenericParameterTypeSymbol sym:
-                    diagnostics.Add(TypeError.CapabilityAppliedToTypeParameter(file, typeSyntax));
+                    // Diagnostic moved to semantic tree
+                    //diagnostics.Add(TypeError.CapabilityAppliedToTypeParameter(file, typeSyntax));
                     return sym.Type;
                 case EmptyTypeSymbol sym:
                     diagnostics.Add(TypeError.CapabilityAppliedToEmptyType(file, typeSyntax));
@@ -284,7 +286,8 @@ public class TypeResolver
         switch (symbols.Count)
         {
             case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindName(file, typeName.Span));
+                // Diagnostic moved to semantic tree
+                //diagnostics.Add(NameBindingError.CouldNotBindName(file, typeName.Span));
                 typeName.ReferencedSymbol.Fulfill(null);
                 typeName.NamedType = DataType.Unknown;
                 return null;
@@ -295,7 +298,8 @@ public class TypeResolver
                 typeName.NamedType = bareType?.With(Capability.Identity) ?? DataType.Unknown;
                 return bareType;
             default:
-                diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
+                // Diagnostic moved to semantic tree
+                //diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
                 typeName.ReferencedSymbol.Fulfill(null);
                 typeName.NamedType = DataType.Unknown;
                 return null;

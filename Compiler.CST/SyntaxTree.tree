@@ -148,6 +148,7 @@ AssignableExpression: TypedExpression = ReferencedSymbol:`IPromise<Symbol?>`;
 BlockExpression: DataTypedExpression <: BlockOrResult, BodyOrBlock = Statements:Statement* DataType:`Promise<DataType>`;
 NewObjectExpression: DataTypedExpression = Type:TypeName ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression* ReferencedSymbol:`Promise<ConstructorSymbol?>`;
 UnsafeExpression: DataTypedExpression = Expression;
+NeverTypedExpression: TypedExpression = DataType:`Promise<NeverType>`;
 
 // ---------- Literal Expressions
 LiteralExpression: TypedExpression;
@@ -169,7 +170,6 @@ IfExpression: DataTypedExpression <: ElseClause = Condition:Expression ThenBlock
 LoopExpression: DataTypedExpression = Block:BlockExpression;
 WhileExpression: DataTypedExpression = Condition:Expression Block:BlockExpression;
 ForeachExpression: DataTypedExpression <: LocalBinding = VariableName:`IdentifierName` DeclarationNumber:`Promise<int?>` InExpression:Expression IterateMethod:`Promise<MethodSymbol?>` NextMethod:`Promise<MethodSymbol>` Type? Symbol:`Promise<NamedVariableSymbol>` Block:BlockExpression;
-NeverTypedExpression: TypedExpression = DataType:`Promise<NeverType>`;
 BreakExpression: NeverTypedExpression = Value:Expression?;
 NextExpression: NeverTypedExpression;
 ReturnExpression: NeverTypedExpression = Value:Expression?;

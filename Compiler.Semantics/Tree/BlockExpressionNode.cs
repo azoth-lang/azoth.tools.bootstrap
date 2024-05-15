@@ -5,12 +5,12 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class BlockBodyNode : CodeNode, IBlockBodyNode
+internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
 {
-    public override IBlockBodySyntax Syntax { get; }
-    public IFixedList<IBodyStatementNode> Statements { get; }
+    public override IBlockExpressionSyntax Syntax { get; }
+    public IFixedList<IStatementNode> Statements { get; }
 
-    public BlockBodyNode(IBlockBodySyntax syntax, IEnumerable<IBodyStatementNode> statements)
+    public BlockExpressionNode(IBlockExpressionSyntax syntax, IEnumerable<IStatementNode> statements)
     {
         Syntax = syntax;
         Statements = ChildList.CreateFixed(this, statements);
