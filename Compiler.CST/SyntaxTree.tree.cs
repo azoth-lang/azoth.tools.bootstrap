@@ -521,7 +521,7 @@ public partial interface ITypeSyntax : IConcreteSyntax
     typeof(IStandardTypeNameSyntax),
     typeof(ISimpleTypeNameSyntax),
     typeof(IQualifiedTypeNameSyntax))]
-public partial interface ITypeNameSyntax : IHasContainingLexicalScope, ITypeSyntax
+public partial interface ITypeNameSyntax : ITypeSyntax
 {
     TypeName Name { get; }
     Promise<TypeSymbol?> ReferencedSymbol { get; }

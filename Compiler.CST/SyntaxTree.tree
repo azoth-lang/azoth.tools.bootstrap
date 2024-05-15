@@ -110,7 +110,7 @@ ExpressionBody: Body = ResultStatement Statements:Statement*;
 
 // ---------- Types
 Type;
-TypeName: Type <: `IHasContainingLexicalScope` = Name:`TypeName` ReferencedSymbol:`Promise<TypeSymbol?>`;
+TypeName: Type = Name:`TypeName` ReferencedSymbol:`Promise<TypeSymbol?>`;
 StandardTypeName: TypeName = Name:`StandardName` NamedBareType:`BareReferenceType`?;
 SimpleTypeName: TypeName;
 IdentifierTypeName: TypeName <: StandardTypeName, SimpleTypeName = Name:`IdentifierName`;
