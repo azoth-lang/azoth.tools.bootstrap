@@ -143,7 +143,7 @@ InitializerDeclaration <: ConcreteInvocableDeclaration, AlwaysTypeMemberDeclarat
     Symbol:`InitializerSymbol`; // Body:BlockBody;
 FieldDeclaration <: AlwaysTypeMemberDeclaration, ClassMemberDeclaration, StructMemberDeclaration, Binding
     = Syntax:`IFieldDeclarationSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type Type:`DataType`
-    SymbolNode:`IFieldSymbolNode` Symbol:`FieldSymbol`;
+    SymbolNode:`IFieldSymbolNode` Symbol:`FieldSymbol` Initializer:UntypedExpression?;
 AssociatedFunctionDeclaration <: ConcreteInvocableDeclaration, AlwaysTypeMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     = Syntax:`IAssociatedFunctionDeclarationSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
     SymbolNode:`IAssociatedFunctionSymbolNode` Symbol:`FunctionSymbol` Type:`FunctionType`; // Body;
@@ -198,10 +198,10 @@ SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:
 
 // ---------- Statements
 Statement <: Code;
-ResultStatement: Statement <: BlockOrResult = Expression;
+ResultStatement: Statement <: BlockOrResult = UntypedExpression;
 BodyStatement: Statement;
-VariableDeclarationStatement: BodyStatement <: LocalBinding = Name:`IdentifierName` Capability? Type? Initializer:Expression?;
-ExpressionStatement: BodyStatement = Expression;
+VariableDeclarationStatement: BodyStatement <: LocalBinding = Name:`IdentifierName` Capability? Type? Initializer:UntypedExpression?;
+ExpressionStatement: BodyStatement = UntypedExpression;
 
 // ---------- Patterns
 Pattern <: Code;
@@ -211,44 +211,43 @@ BindingPattern <: OptionalOrBindingPattern, LocalBinding = Name:`IdentifierName`
 OptionalPattern <: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
-Expression <: Code;
-TypedExpression <: Expression;
-DataTypedExpression <: TypedExpression;
-AssignableExpression <: TypedExpression; // = ReferencedSymbol:`IPromise<Symbol?>`;
-BlockExpression <: DataTypedExpression, BlockOrResult, BodyOrBlock = Statements:Statement*;
-NewObjectExpression <: DataTypedExpression = Type:TypeName ConstructorName:`IdentifierName`? Arguments:Expression* ReferencedSymbol:`ConstructorSymbol?`;
-UnsafeExpression <: DataTypedExpression = Expression;
+UntypedExpression <: Code;
+Expression <: UntypedExpression;
+AssignableExpression <: Expression; // = ReferencedSymbol:`IPromise<Symbol?>`;
+BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
+NewObjectExpression <: Expression = Type:TypeName ConstructorName:`IdentifierName`? Arguments:UntypedExpression* ReferencedSymbol:`ConstructorSymbol?`;
+UnsafeExpression <: Expression = UntypedExpression;
 
 // ---------- Literal Expressions
-LiteralExpression <: TypedExpression;
+LiteralExpression <: Expression;
 BoolLiteralExpression <: LiteralExpression = Value:`bool` Type:`BoolConstValueType`;
 IntegerLiteralExpression <: LiteralExpression = Value:`BigInteger` Type:`IntegerConstValueType`;
 NoneLiteralExpression <: LiteralExpression = Type:`OptionalType`;
 StringLiteralExpression <: LiteralExpression = Value:`string` Type:`DataType`;
 
 // ---------- Operator Expressions
-AssignmentExpression <: DataTypedExpression = LeftOperand:AssignableExpression Operator:`AssignmentOperator` RightOperand:Expression;
-BinaryOperatorExpression <: DataTypedExpression = LeftOperand:Expression Operator:`BinaryOperator` RightOperand:Expression;
-UnaryOperatorExpression <: DataTypedExpression = Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:Expression;
-IdExpression <: DataTypedExpression = Referent:Expression;
-ConversionExpression <: DataTypedExpression = Referent:Expression Operator:`ConversionOperator` ConvertToType:Type;
-PatternMatchExpression <: DataTypedExpression = Referent:Expression Pattern;
+AssignmentExpression <: Expression = LeftOperand:AssignableExpression Operator:`AssignmentOperator` RightOperand:UntypedExpression;
+BinaryOperatorExpression <: Expression = LeftOperand:UntypedExpression Operator:`BinaryOperator` RightOperand:UntypedExpression;
+UnaryOperatorExpression <: Expression = Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:UntypedExpression;
+IdExpression <: Expression = Referent:UntypedExpression;
+ConversionExpression <: Expression = Referent:UntypedExpression Operator:`ConversionOperator` ConvertToType:Type;
+PatternMatchExpression <: Expression = Referent:UntypedExpression Pattern;
 
 // ---------- Control Flow Expressions
-IfExpression <: DataTypedExpression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
-LoopExpression <: DataTypedExpression = Block:BlockExpression;
-WhileExpression <: DataTypedExpression = Condition:Expression Block:BlockExpression;
-ForeachExpression <: DataTypedExpression, LocalBinding = VariableName:`IdentifierName` InExpression:Expression Type? Block:BlockExpression;
-NeverTypedExpression <: TypedExpression = Type:`NeverType`;
-BreakExpression <: NeverTypedExpression = Value:Expression?;
+IfExpression <: Expression, ElseClause = Condition:UntypedExpression ThenBlock:BlockOrResult ElseClause?;
+LoopExpression <: Expression = Block:BlockExpression;
+WhileExpression <: Expression = Condition:UntypedExpression Block:BlockExpression;
+ForeachExpression <: Expression, LocalBinding = VariableName:`IdentifierName` InExpression:UntypedExpression Type? Block:BlockExpression;
+NeverTypedExpression <: Expression = Type:`NeverType`;
+BreakExpression <: NeverTypedExpression = Value:UntypedExpression?;
 NextExpression <: NeverTypedExpression;
-ReturnExpression <: NeverTypedExpression = Value:Expression?;
+ReturnExpression <: NeverTypedExpression = Value:UntypedExpression?;
 
 // ---------- Invocation Expressions
-InvocationExpression <: DataTypedExpression = Expression Arguments:Expression*;
+InvocationExpression <: Expression = UntypedExpression Arguments:UntypedExpression*;
 
 // ---------- Name Expressions
-NameExpression <: Expression; // = ReferencedSymbol:`Symbol?`;
+NameExpression <: UntypedExpression; // = ReferencedSymbol:`Symbol?`;
 InvocableNameExpression <: NameExpression;
 VariableNameExpression <: NameExpression;
 StandardNameExpression <: NameExpression = Name:`StandardName`? ReferencedSymbol:`Symbol?`;
@@ -256,14 +255,14 @@ SimpleNameExpression <: NameExpression;
 IdentifierNameExpression <: NameExpression, InvocableNameExpression, SimpleNameExpression, StandardNameExpression, VariableNameExpression, AssignableExpression = Name:`IdentifierName`?;
 SpecialTypeNameExpression <: NameExpression, SimpleNameExpression = Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol`?;
 GenericNameExpression <: NameExpression, InvocableNameExpression, StandardNameExpression = Name:`GenericName` TypeArguments:Type*;
-SelfExpression <: NameExpression, VariableNameExpression, TypedExpression = IsImplicit:`bool` Pseudotype:`Pseudotype`;
-MemberAccessExpression <: NameExpression, InvocableNameExpression, AssignableExpression = Context:Expression AccessOperator:`AccessOperator` MemberName:`StandardName` TypeArguments:Type*;
+SelfExpression <: NameExpression, VariableNameExpression, Expression = IsImplicit:`bool` Pseudotype:`Pseudotype`;
+MemberAccessExpression <: NameExpression, InvocableNameExpression, AssignableExpression = Context:UntypedExpression AccessOperator:`AccessOperator` MemberName:`StandardName` TypeArguments:Type*;
 
 // ---------- Capability Expressions
-MoveExpression <: DataTypedExpression = Referent:VariableNameExpression;
-FreezeExpression <: DataTypedExpression = Referent:VariableNameExpression;
+MoveExpression <: Expression = Referent:VariableNameExpression;
+FreezeExpression <: Expression = Referent:VariableNameExpression;
 
 // ---------- Async Expressions
-AsyncBlockExpression <: DataTypedExpression = Block:BlockExpression;
-AsyncStartExpression <: DataTypedExpression = Scheduled:`bool` Expression;
-AwaitExpression <: DataTypedExpression = Expression;
+AsyncBlockExpression <: Expression = Block:BlockExpression;
+AsyncStartExpression <: Expression = Scheduled:`bool` UntypedExpression;
+AwaitExpression <: Expression = UntypedExpression;

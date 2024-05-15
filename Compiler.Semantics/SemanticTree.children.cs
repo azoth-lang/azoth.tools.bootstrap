@@ -123,6 +123,8 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IFieldDeclarationNode n:
                 yield return n.TypeNode;
+                if (n.Initializer is not null)
+                    yield return n.Initializer;
                 yield break;
             case IAssociatedFunctionDeclarationNode n:
                 foreach (var child in n.Parameters)
@@ -190,7 +192,7 @@ public static class ISemanticNodeExtensions
                 yield return n.Referent;
                 yield break;
             case IResultStatementNode n:
-                yield return n.Expression;
+                yield return n.UntypedExpression;
                 yield break;
             case IVariableDeclarationStatementNode n:
                 if (n.Capability is not null)
@@ -201,7 +203,7 @@ public static class ISemanticNodeExtensions
                     yield return n.Initializer;
                 yield break;
             case IExpressionStatementNode n:
-                yield return n.Expression;
+                yield return n.UntypedExpression;
                 yield break;
             case IBindingContextPatternNode n:
                 yield return n.Pattern;
@@ -223,7 +225,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IUnsafeExpressionNode n:
-                yield return n.Expression;
+                yield return n.UntypedExpression;
                 yield break;
             case IBoolLiteralExpressionNode n:
                 yield break;
@@ -285,7 +287,7 @@ public static class ISemanticNodeExtensions
                     yield return n.Value;
                 yield break;
             case IInvocationExpressionNode n:
-                yield return n.Expression;
+                yield return n.UntypedExpression;
                 foreach (var child in n.Arguments)
                     yield return child;
                 yield break;
@@ -314,10 +316,10 @@ public static class ISemanticNodeExtensions
                 yield return n.Block;
                 yield break;
             case IAsyncStartExpressionNode n:
-                yield return n.Expression;
+                yield return n.UntypedExpression;
                 yield break;
             case IAwaitExpressionNode n:
-                yield return n.Expression;
+                yield return n.UntypedExpression;
                 yield break;
         }
     }

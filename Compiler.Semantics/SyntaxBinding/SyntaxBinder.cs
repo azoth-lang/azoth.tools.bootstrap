@@ -174,8 +174,7 @@ internal static class SyntaxBinder
         => new InitializerDeclarationNode(syntax, InitializerSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters));
 
     private static IFieldDeclarationNode FieldDeclaration(IFieldDeclarationSyntax syntax)
-        => new FieldDeclarationNode(syntax, Type(syntax.Type));
-
+        => new FieldDeclarationNode(syntax, Type(syntax.Type), UntypedExpression(syntax.Initializer));
     private static IAssociatedFunctionDeclarationNode AssociatedFunctionDeclaration(IAssociatedFunctionDeclarationSyntax syntax)
         => new AssociatedFunctionDeclarationNode(syntax, NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
     #endregion
@@ -235,6 +234,9 @@ internal static class SyntaxBinder
 
     private static IFieldParameterNode FieldParameter(IFieldParameterSyntax syntax)
         => new FieldParameterNode(syntax);
+    #endregion
+
+    #region Function Parts
     #endregion
 
     #region Types
@@ -321,5 +323,55 @@ internal static class SyntaxBinder
 
     private static ISelfViewpointTypeNode SelfViewpointType(ISelfViewpointTypeSyntax syntax)
         => new SelfViewpointTypeNode(syntax, Type(syntax.Referent));
+    #endregion
+
+    #region Statements
+    #endregion
+
+    #region Patterns
+    #endregion
+
+    #region Expressions
+    [return: NotNullIfNotNull(nameof(syntax))]
+    private static IUntypedExpressionNode? UntypedExpression(IExpressionSyntax? syntax)
+        => syntax switch
+        {
+            null => null,
+            ITypedExpressionSyntax syn => Expression(syn),
+            INameExpressionSyntax syn => NameExpression(syn),
+            _ => throw ExhaustiveMatch.Failed(syntax)
+        };
+
+    private static IExpressionNode Expression(ITypedExpressionSyntax syntax)
+        => throw new System.NotImplementedException();
+    #endregion
+
+    #region Literal Expressions
+
+    #endregion
+
+    #region Operator Expressions
+
+    #endregion
+
+    #region Control Flow Expressions
+
+    #endregion
+
+    #region Invocation Expressions
+
+    #endregion
+
+    #region Name Expressions
+    private static INameExpressionNode NameExpression(INameExpressionSyntax syntax)
+        => throw new System.NotImplementedException();
+    #endregion
+
+    #region Capability Expressions
+
+    #endregion
+
+    #region Async Expressions
+
     #endregion
 }

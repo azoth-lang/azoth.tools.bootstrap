@@ -31,11 +31,13 @@ internal sealed class FieldDeclarationNode : TypeMemberDeclarationNode, IFieldDe
     public FieldSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAttribute.FieldDeclaration);
+    public IUntypedExpressionNode? Initializer { get; }
 
-    public FieldDeclarationNode(IFieldDeclarationSyntax syntax, ITypeNode type)
+    public FieldDeclarationNode(IFieldDeclarationSyntax syntax, ITypeNode type, IUntypedExpressionNode? initializer)
     {
         Syntax = syntax;
         TypeNode = Child.Attach(this, type);
+        Initializer = Child.Attach(this, initializer);
     }
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
