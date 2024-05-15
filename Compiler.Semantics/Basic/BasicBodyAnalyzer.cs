@@ -556,7 +556,7 @@ public class BasicBodyAnalyzer
             {
                 var expectedType = new IntegerConstValueType(exp.Value);
                 if (expectedType != exp.DataType.Result)
-                    throw new UnreachableException("Expected type of bool literal should be fulfilled.");
+                    throw new UnreachableException("Expected type of bool literal should match.");
                 return new ExpressionResult(exp);
             }
             case IStringLiteralExpressionSyntax exp:
@@ -570,7 +570,7 @@ public class BasicBodyAnalyzer
             {
                 var expectedType = exp.Value ? DataType.True : DataType.False;
                 if (expectedType != exp.DataType.Result)
-                    throw new UnreachableException("Expected type of bool literal should be fulfilled.");
+                    throw new UnreachableException("Expected type of bool literal should match.");
                 return new ExpressionResult(exp);
             }
             case IBinaryOperatorExpressionSyntax exp:
@@ -758,7 +758,8 @@ public class BasicBodyAnalyzer
             case INewObjectExpressionSyntax exp:
             {
                 var arguments = InferArgumentTypes(exp.Arguments, flow);
-                var constructingType = typeResolver.EvaluateConstructableBareType(exp.Type);
+                // Type already set by semantic tree
+                var constructingType = (exp.Type.NamedType as CapabilityType)?.BareType;
                 ResultVariable? resultVariable = null;
                 if (constructingType is null)
                 {

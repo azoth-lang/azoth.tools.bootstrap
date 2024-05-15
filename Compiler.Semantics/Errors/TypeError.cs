@@ -214,10 +214,10 @@ public static class TypeError
             3031, $"Type parameter `{typeSyntax}` cannot be used here.");
     }
 
-    public static Diagnostic EmptyTypeCannotBeUsedHere(CodeFile file, ITypeNameSyntax typeSyntax)
+    public static Diagnostic SpecialTypeCannotBeUsedHere(CodeFile file, ITypeNameSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3032, $"Empty type `{typeSyntax}` cannot be used here.");
+            3032, $"Special type `{typeSyntax}` cannot be used here.");
     }
 
     public static Diagnostic CapabilityNotCompatibleWithConstraint(CodeFile file, IConcreteSyntax typeSyntax, GenericParameter parameter, DataType arg)

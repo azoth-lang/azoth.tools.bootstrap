@@ -249,7 +249,7 @@ ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax` Valu
 InvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax` Expression:UntypedExpression Arguments:UntypedExpression*;
 
 // ---------- Name Expressions
-NameExpression <: UntypedExpression = Syntax:`INameExpressionSyntax`; // = ReferencedSymbol:`Symbol?`;
+NameExpression <: UntypedExpression = Syntax:`INameExpressionSyntax`;
 InvocableNameExpression <: NameExpression = Syntax:`IInvocableNameExpressionSyntax`;
 VariableNameExpression <: NameExpression = Syntax:`IVariableNameExpressionSyntax`;
 StandardNameExpression <: NameExpression = Syntax:`IStandardNameExpressionSyntax` Name:`StandardName`? ReferencedSymbol:`Symbol?`;

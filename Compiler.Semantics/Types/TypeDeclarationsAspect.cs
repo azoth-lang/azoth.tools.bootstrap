@@ -139,7 +139,7 @@ internal static class TypeDeclarationsAspect
         // Record diagnostics created while computing supertypes
         diagnostics.Add(node.Supertypes.Diagnostics);
 
-        diagnostics.Add(CheckTypeArgumentsAreConstructable(node));
+        CheckTypeArgumentsAreConstructable(node, diagnostics);
 
         CheckSupertypesMustBeClassOrTrait(node, diagnostics);
 
@@ -149,19 +149,10 @@ internal static class TypeDeclarationsAspect
         CheckSupertypesMaintainIndependence(node, diagnostics);
     }
 
-    private static IEnumerable<Diagnostic> CheckTypeArgumentsAreConstructable(ITypeDeclarationNode node)
+    private static void CheckTypeArgumentsAreConstructable(ITypeDeclarationNode node, Diagnostics diagnostics)
     {
         foreach (IStandardTypeNameNode supertypeName in node.SupertypeNames)
-        {
-            var bareType = supertypeName.BareType;
-            if (bareType is null)
-                continue;
-
-            foreach (GenericParameterArgument arg in bareType.GenericParameterArguments)
-                if (!arg.IsConstructable())
-                    yield return TypeError.CapabilityNotCompatibleWithConstraint(node.File, supertypeName.Syntax,
-                        arg.Parameter, arg.Argument);
-        }
+            ExpressionTypesAspect.CheckTypeArgumentsAreConstructable(supertypeName, diagnostics);
     }
 
     private static void CheckSupertypesMustBeClassOrTrait(ITypeDeclarationNode typeNode, Diagnostics diagnostics)

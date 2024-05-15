@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -24,5 +26,11 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         Syntax = syntax;
         Type = Child.Attach(this, type);
         Arguments = ChildList.CreateFixed(this, arguments);
+    }
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        ExpressionTypesAspect.NewObjectExpression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

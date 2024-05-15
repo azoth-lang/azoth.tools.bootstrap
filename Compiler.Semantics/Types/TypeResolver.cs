@@ -9,10 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
@@ -205,51 +202,6 @@ public class TypeResolver
         return new Return(referent);
     }
 
-    /// <summary>
-    /// Evaluate a type that does not have any reference capability.
-    /// </summary>
-    /// <remarks>This is used for new expressions.</remarks>
-    public BareType? EvaluateConstructableBareType(ITypeNameSyntax typeSyntax)
-        => EvaluateBareType(typeSyntax);
-
-    private BareType? EvaluateBareType(
-        ITypeNameSyntax typeSyntax)
-    {
-        return typeSyntax switch
-        {
-            ISimpleTypeNameSyntax syn => ResolveType(syn, FixedList.Empty<DataType>(), CreateType),
-            IGenericTypeNameSyntax syn
-                => ResolveType(syn, Evaluate(syn.TypeArguments, mustBeConstructable: true), CreateType),
-            IQualifiedTypeNameSyntax syn => throw new NotImplementedException("IQualifiedTypeNameSyntax"),
-            _ => throw ExhaustiveMatch.Failed(typeSyntax)
-        };
-
-        BareType? CreateType(
-           TypeSymbol symbol,
-           IFixedList<DataType> typeArguments)
-        {
-            switch (symbol)
-            {
-                default:
-                    throw ExhaustiveMatch.Failed(symbol);
-                case PrimitiveTypeSymbol sym:
-                {
-                    var declaredType = sym.DeclaresType;
-                    return declaredType.With(typeArguments);
-                }
-                case UserTypeSymbol sym:
-                    var declaredObjectType = sym.DeclaresType;
-                    return CheckTypeArgumentsAreConstructable(declaredObjectType.With(typeArguments), typeSyntax);
-                case GenericParameterTypeSymbol _:
-                    diagnostics.Add(TypeError.TypeParameterCannotBeUsedHere(file, typeSyntax));
-                    return null;
-                case EmptyTypeSymbol _:
-                    diagnostics.Add(TypeError.EmptyTypeCannotBeUsedHere(file, typeSyntax));
-                    return null;
-            }
-        }
-    }
-
     private IFixedList<DataType> Evaluate(IEnumerable<ITypeSyntax> types, bool mustBeConstructable)
         => types.Select(t => Evaluate(t, mustBeConstructable)).ToFixedList();
 
@@ -286,127 +238,11 @@ public class TypeResolver
         }
     }
 
-    private static BareType? ResolveType(
-        ITypeNameSyntax typeName,
-        IFixedList<DataType> typeArguments,
-        Func<TypeSymbol, IFixedList<DataType>, BareType?> createType)
-    {
-        var symbols = typeName.LookupInContainingScope(withAttributeSuffix: false).Select(EnsureBuilt).ToFixedList();
-        switch (symbols.Count)
-        {
-            case 0:
-                // Diagnostic moved to semantic tree
-                //diagnostics.Add(NameBindingError.CouldNotBindName(file, typeName.Span));
-                if (typeName.ReferencedSymbol.IsFulfilled)
-                {
-                    // Symbol already fulfilled by SemanticsApplier
-                    var existingSymbol = typeName.ReferencedSymbol.Result!;
-                    if (existingSymbol is not null)
-                        throw new UnreachableException("Symbols should match");
-                }
-                else
-                {
-                    typeName.ReferencedSymbol.Fulfill(null);
-                    typeName.NamedType = DataType.Unknown;
-                }
-                return null;
-            case 1:
-                var symbol = symbols.Single();
-                if (typeName.ReferencedSymbol.IsFulfilled)
-                {
-                    // Symbol already fulfilled by SemanticsApplier
-                    var existingSymbol = typeName.ReferencedSymbol.Result!;
-                    if (symbol != existingSymbol)
-                        throw new UnreachableException("Symbols should match");
-                    // In this case NamedType should already be set too
-                    return createType(symbol, typeArguments);
-                }
-
-                typeName.ReferencedSymbol.Fulfill(symbol);
-                var bareType = createType(symbol, typeArguments);
-                typeName.NamedType = bareType?.With(Capability.Identity) ?? DataType.Unknown;
-                return bareType;
-            default:
-                // Diagnostic moved to semantic tree
-                //diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
-                if (typeName.ReferencedSymbol.IsFulfilled)
-                {
-                    // Symbol already fulfilled by SemanticsApplier
-                    var existingSymbol = typeName.ReferencedSymbol.Result!;
-                    if (existingSymbol is not null)
-                        throw new UnreachableException("Symbols should match");
-                }
-                else
-                {
-                    typeName.ReferencedSymbol.Fulfill(null);
-                    typeName.NamedType = DataType.Unknown;
-                }
-                return null;
-        }
-    }
-
     private static TSymbol EnsureBuilt<TSymbol>(IPromise<TSymbol> promise)
         where TSymbol : TypeSymbol
     {
         if (promise.IsFulfilled)
             return promise.Result;
         throw new InvalidOperationException("All type symbols should already be built");
-    }
-
-    private BareType? CheckTypeArgumentsAreConstructable(BareType type, IConcreteSyntax typeSyntax)
-    {
-        var constructable = true;
-        foreach (var (param, arg) in type.GenericParameterArguments)
-            constructable &= CheckTypeArgumentIsConstructable(param, arg, typeSyntax);
-
-        return constructable ? type : null;
-    }
-
-    private bool CheckTypeArgumentIsConstructable(GenericParameter param, DataType arg, IConcreteSyntax typeSyntax)
-    {
-        switch (arg)
-        {
-            case CapabilityType capabilityType:
-                if (!param.Constraint.IsAssignableFrom(capabilityType.Capability))
-                {
-                    diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(file, typeSyntax, param, capabilityType));
-                    return false;
-                }
-                break;
-            case OptionalType optionalType:
-                return CheckTypeArgumentIsConstructable(param, optionalType.Referent, typeSyntax);
-            case GenericParameterType genericParameterType:
-                if (!param.Constraint.IsAssignableFrom(genericParameterType.Parameter.Constraint))
-                {
-                    diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(file, typeSyntax, param, genericParameterType));
-                    return false;
-                }
-                break;
-            case CapabilityViewpointType viewpointType:
-                // TODO handle capabilities on the generic parameter
-                if (!param.Constraint.IsAssignableFrom(viewpointType.Capability))
-                {
-                    diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(file, typeSyntax, param, viewpointType));
-                    return false;
-                }
-                break;
-            case SelfViewpointType selfViewpointType:
-                // TODO handle capabilities on the referent
-                if (!param.Constraint.IsAssignableFrom(selfViewpointType.Capability))
-                {
-                    diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(file, typeSyntax, param, selfViewpointType));
-                    return false;
-                }
-                break;
-            case EmptyType _:
-            case UnknownType _:
-            case FunctionType _:
-            case ConstValueType _:
-                // ignore
-                break;
-            default:
-                throw ExhaustiveMatch.Failed(arg);
-        }
-        return true;
     }
 }
