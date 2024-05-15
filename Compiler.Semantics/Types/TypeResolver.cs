@@ -47,16 +47,16 @@ public class TypeResolver
             default:
                 throw ExhaustiveMatch.Failed(typeSyntax);
             case ISimpleTypeNameSyntax syn:
-                return ResolveType(syn, isAttribute: false, FixedList.Empty<DataType>(), CreateType);
+                return ResolveType(syn, FixedList.Empty<DataType>(), CreateType);
             case IGenericTypeNameSyntax syn:
                 var typeArguments = Evaluate(syn.TypeArguments, mustBeConstructable);
-                return ResolveType(syn, isAttribute: false, typeArguments, CreateType);
+                return ResolveType(syn, typeArguments, CreateType);
             case IQualifiedTypeNameSyntax syn:
                 throw new NotImplementedException("IQualifiedTypeNameSyntax");
             case ICapabilityTypeSyntax referenceCapability:
             {
                 var capability = referenceCapability.Capability.Declared.ToCapability();
-                var type = Evaluate(capability, referenceCapability.Referent, isAttribute: false, mustBeConstructable: mustBeConstructable);
+                var type = Evaluate(capability, referenceCapability.Referent, mustBeConstructable: mustBeConstructable);
                 // Diagnostic moved to semantic tree
                 //if (capability.AllowsWrite && type is ReferenceType { IsDeclaredConst: true } referenceType)
                 //    diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(file, referenceCapability, capability,
@@ -70,6 +70,7 @@ public class TypeResolver
             {
                 var referent = Evaluate(syn.Referent, mustBeConstructable);
                 var optionalType = OptionalType.Create(referent);
+                // Type already set by SemanticsApplier
                 if (syn.NamedType != optionalType)
                     throw new UnreachableException("Types should match.");
                 return optionalType;
@@ -79,6 +80,7 @@ public class TypeResolver
                 var parameterTypes = syn.Parameters.Select(Evaluate).ToFixedList();
                 var returnType = Evaluate(syn.Return);
                 var functionType = new FunctionType(parameterTypes, returnType);
+                // Type already set by SemanticsApplier
                 if (syn.NamedType != functionType)
                     throw new UnreachableException("Types should match.");
                 return functionType;
@@ -126,16 +128,16 @@ public class TypeResolver
         }
     }
 
-    private DataType Evaluate(Capability capability, ITypeSyntax typeSyntax, bool isAttribute, bool mustBeConstructable)
+    private DataType Evaluate(Capability capability, ITypeSyntax typeSyntax, bool mustBeConstructable)
     {
         switch (typeSyntax)
         {
             default:
                 throw ExhaustiveMatch.Failed(typeSyntax);
             case ISimpleTypeNameSyntax syn:
-                return Evaluate(capability, syn, isAttribute, mustBeConstructable);
+                return Evaluate(capability, syn, mustBeConstructable);
             case IGenericTypeNameSyntax syn:
-                return Evaluate(capability, syn, isAttribute, mustBeConstructable);
+                return Evaluate(capability, syn, mustBeConstructable);
             case IQualifiedTypeNameSyntax syn:
                 throw new NotImplementedException("IQualifiedTypeNameSyntax");
             case ICapabilityTypeSyntax _:
@@ -149,14 +151,13 @@ public class TypeResolver
     private DataType Evaluate(
         Capability capability,
         ITypeNameSyntax typeSyntax,
-        bool isAttribute,
         bool mustBeConstructable)
     {
         return typeSyntax switch
         {
-            ISimpleTypeNameSyntax syn => ResolveType(syn, isAttribute, FixedList.Empty<DataType>(), CreateType),
+            ISimpleTypeNameSyntax syn => ResolveType(syn, FixedList.Empty<DataType>(), CreateType),
             IGenericTypeNameSyntax syn
-                => ResolveType(syn, isAttribute, Evaluate(syn.TypeArguments, mustBeConstructable), CreateType),
+                => ResolveType(syn, Evaluate(syn.TypeArguments, mustBeConstructable), CreateType),
             IQualifiedTypeNameSyntax syn => throw new NotImplementedException("IQualifiedTypeNameSyntax"),
             _ => throw ExhaustiveMatch.Failed(typeSyntax)
         };
@@ -209,20 +210,16 @@ public class TypeResolver
     /// </summary>
     /// <remarks>This is used for new expressions.</remarks>
     public BareType? EvaluateConstructableBareType(ITypeNameSyntax typeSyntax)
-        => EvaluateBareType(typeSyntax, isAttribute: false);
-
-    public BareType? EvaluateAttribute(ITypeNameSyntax typeSyntax)
-        => EvaluateBareType(typeSyntax, isAttribute: true);
+        => EvaluateBareType(typeSyntax);
 
     private BareType? EvaluateBareType(
-        ITypeNameSyntax typeSyntax,
-        bool isAttribute)
+        ITypeNameSyntax typeSyntax)
     {
         return typeSyntax switch
         {
-            ISimpleTypeNameSyntax syn => ResolveType(syn, isAttribute, FixedList.Empty<DataType>(), CreateType),
+            ISimpleTypeNameSyntax syn => ResolveType(syn, FixedList.Empty<DataType>(), CreateType),
             IGenericTypeNameSyntax syn
-                => ResolveType(syn, isAttribute, Evaluate(syn.TypeArguments, mustBeConstructable: true), CreateType),
+                => ResolveType(syn, Evaluate(syn.TypeArguments, mustBeConstructable: true), CreateType),
             IQualifiedTypeNameSyntax syn => throw new NotImplementedException("IQualifiedTypeNameSyntax"),
             _ => throw ExhaustiveMatch.Failed(typeSyntax)
         };
@@ -258,13 +255,10 @@ public class TypeResolver
 
     private DataType ResolveType(
         ITypeNameSyntax typeName,
-        bool isAttribute,
         IFixedList<DataType> typeArguments,
         Func<TypeSymbol, IFixedList<DataType>, DataType> createType)
     {
         var symbols = typeName.LookupInContainingScope(withAttributeSuffix: false).Select(EnsureBuilt).ToFixedList();
-        if (isAttribute && !symbols.Any())
-            symbols = typeName.LookupInContainingScope(withAttributeSuffix: true).Select(EnsureBuilt).ToFixedList();
         switch (symbols.Count)
         {
             case 0:
@@ -292,15 +286,12 @@ public class TypeResolver
         }
     }
 
-    private BareType? ResolveType(
+    private static BareType? ResolveType(
         ITypeNameSyntax typeName,
-        bool isAttribute,
         IFixedList<DataType> typeArguments,
         Func<TypeSymbol, IFixedList<DataType>, BareType?> createType)
     {
         var symbols = typeName.LookupInContainingScope(withAttributeSuffix: false).Select(EnsureBuilt).ToFixedList();
-        if (isAttribute && !symbols.Any())
-            symbols = typeName.LookupInContainingScope(withAttributeSuffix: true).Select(EnsureBuilt).ToFixedList();
         switch (symbols.Count)
         {
             case 0:
