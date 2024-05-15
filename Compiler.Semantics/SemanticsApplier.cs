@@ -13,6 +13,40 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 /// on the concrete syntax tree.</remarks>
 internal class SemanticsApplier
 {
+    #region Special Parts
+    private static void ElseClause(IElseClauseNode? node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case null:
+                break;
+            case IBlockOrResultNode n:
+                BlockOrResult(n);
+                break;
+            case IIfExpressionNode n:
+                IfExpression(n);
+                break;
+        }
+    }
+
+    private static void BlockOrResult(IBlockOrResultNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IResultStatementNode n:
+                ResultStatement(n);
+                break;
+            case IBlockExpressionNode n:
+                BlockExpression(n);
+                break;
+        }
+    }
+    #endregion
+
     #region Packages
     public static void Apply(IPackageNode package)
     {
@@ -84,6 +118,7 @@ internal class SemanticsApplier
         Attributes(node.Attributes);
         NamedParameters(node.Parameters);
         Type(node.Return);
+        Body(node.Body);
     }
     #endregion
 
@@ -115,7 +150,13 @@ internal class SemanticsApplier
         symbol.Fulfill(node.Symbol);
         NamedParameters(node.Parameters);
         Type(node.Return);
+
+        if (node is IConcreteMethodDeclarationNode n)
+            ConcreteMethodDeclaration(n);
     }
+
+    private static void ConcreteMethodDeclaration(IConcreteMethodDeclarationNode node)
+        => Body(node.Body);
 
     private static void ConstructorDeclaration(IConstructorDeclarationNode node)
     {
@@ -123,6 +164,7 @@ internal class SemanticsApplier
         symbol.BeginFulfilling();
         symbol.Fulfill(node.Symbol);
         ConstructorOrInitializerParameters(node.Parameters);
+        BlockBody(node.Body);
     }
 
     private static void InitializerDeclaration(IInitializerDeclarationNode node)
@@ -131,6 +173,7 @@ internal class SemanticsApplier
         symbol.BeginFulfilling();
         symbol.Fulfill(node.Symbol);
         ConstructorOrInitializerParameters(node.Parameters);
+        BlockBody(node.Body);
     }
 
     private static void FieldDeclaration(IFieldDeclarationNode node)
@@ -139,6 +182,7 @@ internal class SemanticsApplier
         symbol.BeginFulfilling();
         symbol.Fulfill(node.Symbol);
         Type(node.TypeNode);
+        UntypedExpression(node.Initializer);
     }
 
     private static void AssociatedFunctionDeclaration(IAssociatedFunctionDeclarationNode node)
@@ -148,6 +192,7 @@ internal class SemanticsApplier
         symbol.Fulfill(node.Symbol);
         NamedParameters(node.Parameters);
         Type(node.Return);
+        Body(node.Body);
     }
     #endregion
 
@@ -156,6 +201,10 @@ internal class SemanticsApplier
         => nodes.ForEach(Attribute);
 
     private static void Attribute(IAttributeNode node) => TypeName(node.TypeName);
+    #endregion
+
+    #region Capabilities
+    private static void Capability(ICapabilityNode? node) { }
     #endregion
 
     #region Parameters
@@ -183,6 +232,28 @@ internal class SemanticsApplier
 
     private static void FieldParameter(IFieldParameterNode node)
         => node.Syntax.ReferencedSymbol.Fulfill(node.ReferencedSymbolNode?.Symbol);
+    #endregion
+
+    #region Function Parts
+    private static void Body(IBodyNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IBlockBodyNode n:
+                BlockBody(n);
+                break;
+            case IExpressionBodyNode n:
+                ExpressionBody(n);
+                break;
+        }
+    }
+
+    private static void BlockBody(IBlockBodyNode node) => BodyStatements(node.Statements);
+
+    private static void ExpressionBody(IExpressionBodyNode node)
+        => ResultStatement(node.ResultStatement);
     #endregion
 
     #region Types
@@ -314,5 +385,421 @@ internal class SemanticsApplier
         node.Syntax.NamedType = node.Type;
         Type(node.Referent);
     }
+    #endregion
+
+    #region Statements
+
+    private static void Statements(IEnumerable<IStatementNode> node)
+        => node.ForEach(Statement);
+
+    private static void Statement(IStatementNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IResultStatementNode n:
+                ResultStatement(n);
+                break;
+            case IBodyStatementNode n:
+                BodyStatement(n);
+                break;
+        }
+    }
+
+    private static void ResultStatement(IResultStatementNode node)
+        => UntypedExpression(node.Expression);
+
+    private static void BodyStatements(IEnumerable<IBodyStatementNode> nodes)
+        => nodes.ForEach(BodyStatement);
+
+    private static void BodyStatement(IBodyStatementNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IVariableDeclarationStatementNode n:
+                VariableDeclarationStatement(n);
+                break;
+            case IExpressionStatementNode n:
+                ExpressionStatement(n);
+                break;
+        }
+    }
+
+    private static void VariableDeclarationStatement(IVariableDeclarationStatementNode node)
+    {
+        Type(node.Type);
+        Capability(node.Capability);
+        UntypedExpression(node.Initializer);
+    }
+
+    private static void ExpressionStatement(IExpressionStatementNode node)
+        => UntypedExpression(node.Expression);
+    #endregion
+
+    #region Patterns
+    private static void Pattern(IPatternNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IBindingContextPatternNode n:
+                BindingContextPattern(n);
+                break;
+            case IOptionalOrBindingPatternNode n:
+                OptionalOrBindingPattern(n);
+                break;
+        }
+    }
+
+    private static void BindingContextPattern(IBindingContextPatternNode node)
+    {
+        Type(node.Type);
+        Pattern(node.Pattern);
+    }
+
+    private static void OptionalOrBindingPattern(IOptionalOrBindingPatternNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IBindingPatternNode n:
+                BindingPattern(n);
+                break;
+            case IOptionalPatternNode n:
+                OptionalPattern(n);
+                break;
+        }
+    }
+
+    private static void BindingPattern(IBindingPatternNode node) { }
+
+    private static void OptionalPattern(IOptionalPatternNode node)
+        => OptionalOrBindingPattern(node.Pattern);
+    #endregion
+
+    #region Expressions
+    private static void UntypedExpressions(IEnumerable<IUntypedExpressionNode> nodes)
+        => nodes.ForEach(UntypedExpression);
+
+    private static void UntypedExpression(IUntypedExpressionNode? node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case null:
+                break;
+            case IExpressionNode n:
+                Expression(n);
+                break;
+            case INameExpressionNode n:
+                NameExpression(n);
+                break;
+        }
+    }
+
+    private static void Expression(IExpressionNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IAssignableExpressionNode n:
+                AssignableExpression(n);
+                break;
+            case IBlockExpressionNode n:
+                BlockExpression(n);
+                break;
+            case INewObjectExpressionNode n:
+                NewObjectExpression(n);
+                break;
+            case IUnsafeExpressionNode n:
+                UnsafeExpression(n);
+                break;
+            case INeverTypedExpressionNode n:
+                NeverTypedExpression(n);
+                break;
+            case ILiteralExpressionNode n:
+                LiteralExpression(n);
+                break;
+            case IAssignmentExpressionNode n:
+                AssignmentExpression(n);
+                break;
+            case IBinaryOperatorExpressionNode n:
+                BinaryOperatorExpression(n);
+                break;
+            case IUnaryOperatorExpressionNode n:
+                UnaryOperatorExpression(n);
+                break;
+            case IIdExpressionNode n:
+                IdExpression(n);
+                break;
+            case IConversionExpressionNode n:
+                ConversionExpression(n);
+                break;
+            case IPatternMatchExpressionNode n:
+                PatternMatchExpression(n);
+                break;
+            case IIfExpressionNode n:
+                IfExpression(n);
+                break;
+            case ILoopExpressionNode n:
+                LoopExpression(n);
+                break;
+            case IWhileExpressionNode n:
+                WhileExpression(n);
+                break;
+            case IForeachExpressionNode n:
+                ForeachExpression(n);
+                break;
+            case IInvocationExpressionNode n:
+                InvocationExpression(n);
+                break;
+            case ISelfExpressionNode n:
+                SelfExpression(n);
+                break;
+            case IMoveExpressionNode n:
+                MoveExpression(n);
+                break;
+            case IFreezeExpressionNode n:
+                FreezeExpression(n);
+                break;
+            case IAsyncBlockExpressionNode n:
+                AsyncBlockExpression(n);
+                break;
+            case IAsyncStartExpressionNode n:
+                AsyncStartExpression(n);
+                break;
+            case IAwaitExpressionNode n:
+                AwaitExpression(n);
+                break;
+        }
+    }
+
+    private static void AssignableExpression(IAssignableExpressionNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IIdentifierNameExpressionNode n:
+                IdentifierNameExpression(n);
+                break;
+            case IMemberAccessExpressionNode n:
+                MemberAccessExpression(n);
+                break;
+        }
+    }
+
+    private static void BlockExpression(IBlockExpressionNode node) => Statements(node.Statements);
+
+    private static void NewObjectExpression(INewObjectExpressionNode node)
+    {
+        TypeName(node.Type);
+        UntypedExpressions(node.Arguments);
+    }
+
+    private static void UnsafeExpression(IUnsafeExpressionNode node)
+        => UntypedExpression(node.Expression);
+
+    private static void NeverTypedExpression(INeverTypedExpressionNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IBreakExpressionNode n:
+                BreakExpression(n);
+                break;
+            case INextExpressionNode n:
+                NextExpression(n);
+                break;
+            case IReturnExpressionNode n:
+                ReturnExpression(n);
+                break;
+        }
+    }
+
+    private static void BreakExpression(IBreakExpressionNode node) { }
+
+    private static void NextExpression(INextExpressionNode node) { }
+
+    private static void ReturnExpression(IReturnExpressionNode node)
+        => UntypedExpression(node.Value);
+    #endregion
+
+    #region Literal Expressions
+    private static void LiteralExpression(ILiteralExpressionNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IBoolLiteralExpressionNode n:
+                BoolLiteralExpression(n);
+                break;
+            case IIntegerLiteralExpressionNode n:
+                IntegerLiteralExpression(n);
+                break;
+            case INoneLiteralExpressionNode n:
+                NoneLiteralExpression(n);
+                break;
+            case IStringLiteralExpressionNode n:
+                StringLiteralExpression(n);
+                break;
+        }
+    }
+
+    private static void BoolLiteralExpression(IBoolLiteralExpressionNode node) { }
+
+    private static void IntegerLiteralExpression(IIntegerLiteralExpressionNode node) { }
+
+    private static void NoneLiteralExpression(INoneLiteralExpressionNode node) { }
+
+    private static void StringLiteralExpression(IStringLiteralExpressionNode node) { }
+    #endregion
+
+    #region Operator Expressions
+    private static void AssignmentExpression(IAssignmentExpressionNode node)
+    {
+        AssignableExpression(node.LeftOperand);
+        UntypedExpression(node.RightOperand);
+    }
+
+    private static void BinaryOperatorExpression(IBinaryOperatorExpressionNode node)
+    {
+        UntypedExpression(node.LeftOperand);
+        UntypedExpression(node.RightOperand);
+    }
+
+    private static void UnaryOperatorExpression(IUnaryOperatorExpressionNode node)
+        => UntypedExpression(node.Operand);
+
+    private static void IdExpression(IIdExpressionNode node) => UntypedExpression(node.Referent);
+
+    private static void ConversionExpression(IConversionExpressionNode node)
+    {
+        UntypedExpression(node.Referent);
+        Type(node.ConvertToType);
+    }
+
+    private static void PatternMatchExpression(IPatternMatchExpressionNode node)
+    {
+        UntypedExpression(node.Referent);
+        Pattern(node.Pattern);
+    }
+    #endregion
+
+    #region Invocation Expressions
+    private static void InvocationExpression(IInvocationExpressionNode node)
+    {
+        UntypedExpression(node.Expression);
+        UntypedExpressions(node.Arguments);
+    }
+    #endregion
+
+    #region Control Flow Expressions
+    private static void IfExpression(IIfExpressionNode node)
+    {
+        UntypedExpression(node.Condition);
+        BlockOrResult(node.ThenBlock);
+        ElseClause(node.ElseClause);
+    }
+
+    private static void LoopExpression(ILoopExpressionNode node) => BlockExpression(node.Block);
+
+    private static void WhileExpression(IWhileExpressionNode node)
+    {
+        UntypedExpression(node.Condition);
+        BlockExpression(node.Block);
+    }
+
+    private static void ForeachExpression(IForeachExpressionNode node)
+    {
+        Type(node.Type);
+        UntypedExpression(node.InExpression);
+        BlockExpression(node.Block);
+    }
+    #endregion
+
+    #region Name Expressions
+
+    private static void NameExpression(INameExpressionNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IIdentifierNameExpressionNode n:
+                IdentifierNameExpression(n);
+                break;
+            case ISpecialTypeNameExpressionNode n:
+                SpecialTypeNameExpression(n);
+                break;
+            case IGenericNameExpressionNode n:
+                GenericNameExpression(n);
+                break;
+            case IMemberAccessExpressionNode n:
+                MemberAccessExpression(n);
+                break;
+            case ISelfExpressionNode n:
+                SelfExpression(n);
+                break;
+        }
+    }
+
+    private static void VariableNameExpression(IVariableNameExpressionNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IIdentifierNameExpressionNode n:
+                IdentifierNameExpression(n);
+                break;
+            case ISelfExpressionNode n:
+                SelfExpression(n);
+                break;
+        }
+    }
+
+    private static void IdentifierNameExpression(IIdentifierNameExpressionNode node) { }
+
+    private static void SpecialTypeNameExpression(ISpecialTypeNameExpressionNode node) { }
+
+    private static void GenericNameExpression(IGenericNameExpressionNode node)
+        => Types(node.TypeArguments);
+
+    private static void MemberAccessExpression(IMemberAccessExpressionNode node)
+    {
+        UntypedExpression(node.Context);
+        Types(node.TypeArguments);
+    }
+
+    private static void SelfExpression(ISelfExpressionNode node) { }
+    #endregion
+
+    #region Capability Expressions
+    private static void MoveExpression(IMoveExpressionNode node)
+        => VariableNameExpression(node.Referent);
+
+    private static void FreezeExpression(IFreezeExpressionNode node)
+        => VariableNameExpression(node.Referent);
+    #endregion
+
+    #region Async Expressions
+    private static void AsyncBlockExpression(IAsyncBlockExpressionNode node)
+        => BlockExpression(node.Block);
+
+    private static void AsyncStartExpression(IAsyncStartExpressionNode node)
+        => UntypedExpression(node.Expression);
+
+    private static void AwaitExpression(IAwaitExpressionNode node)
+        => UntypedExpression(node.Expression);
     #endregion
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -60,18 +61,27 @@ public class TypeResolver
                 //if (capability.AllowsWrite && type is ReferenceType { IsDeclaredConst: true } referenceType)
                 //    diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(file, referenceCapability, capability,
                 //        referenceType.DeclaredType));
-                return referenceCapability.NamedType = type;
+                // Type already set by SemanticsApplier
+                if (referenceCapability.NamedType != type)
+                    throw new UnreachableException("Types should match.");
+                return type;
             }
             case IOptionalTypeSyntax syn:
             {
                 var referent = Evaluate(syn.Referent, mustBeConstructable);
-                return syn.NamedType = OptionalType.Create(referent);
+                var optionalType = OptionalType.Create(referent);
+                if (syn.NamedType != optionalType)
+                    throw new UnreachableException("Types should match.");
+                return optionalType;
             }
             case IFunctionTypeSyntax syn:
             {
                 var parameterTypes = syn.Parameters.Select(Evaluate).ToFixedList();
                 var returnType = Evaluate(syn.Return);
-                return syn.NamedType = new FunctionType(parameterTypes, returnType);
+                var functionType = new FunctionType(parameterTypes, returnType);
+                if (syn.NamedType != functionType)
+                    throw new UnreachableException("Types should match.");
+                return functionType;
             }
             case ICapabilityViewpointTypeSyntax syn:
             {
@@ -123,11 +133,9 @@ public class TypeResolver
             default:
                 throw ExhaustiveMatch.Failed(typeSyntax);
             case ISimpleTypeNameSyntax syn:
-                _ = Evaluate(capability, syn, isAttribute, mustBeConstructable);
-                return syn.NamedType!;
+                return Evaluate(capability, syn, isAttribute, mustBeConstructable);
             case IGenericTypeNameSyntax syn:
-                _ = Evaluate(capability, syn, isAttribute, mustBeConstructable);
-                return syn.NamedType!;
+                return Evaluate(capability, syn, isAttribute, mustBeConstructable);
             case IQualifiedTypeNameSyntax syn:
                 throw new NotImplementedException("IQualifiedTypeNameSyntax");
             case ICapabilityTypeSyntax _:
@@ -265,6 +273,16 @@ public class TypeResolver
                 return typeName.NamedType = DataType.Unknown;
             case 1:
                 var symbol = symbols.Single();
+                if (typeName.ReferencedSymbol.IsFulfilled)
+                {
+                    // Symbol already fulfilled by SemanticsApplier
+                    var existingSymbol = typeName.ReferencedSymbol.Result!;
+                    if (symbol != existingSymbol)
+                        throw new UnreachableException("Symbols should match");
+                    // In this case NamedType should already be set too
+                    return createType(symbol, typeArguments);
+                }
+
                 typeName.ReferencedSymbol.Fulfill(symbol);
                 return typeName.NamedType = createType(symbol, typeArguments);
             default:
@@ -288,11 +306,31 @@ public class TypeResolver
             case 0:
                 // Diagnostic moved to semantic tree
                 //diagnostics.Add(NameBindingError.CouldNotBindName(file, typeName.Span));
-                typeName.ReferencedSymbol.Fulfill(null);
-                typeName.NamedType = DataType.Unknown;
+                if (typeName.ReferencedSymbol.IsFulfilled)
+                {
+                    // Symbol already fulfilled by SemanticsApplier
+                    var existingSymbol = typeName.ReferencedSymbol.Result!;
+                    if (existingSymbol is not null)
+                        throw new UnreachableException("Symbols should match");
+                }
+                else
+                {
+                    typeName.ReferencedSymbol.Fulfill(null);
+                    typeName.NamedType = DataType.Unknown;
+                }
                 return null;
             case 1:
                 var symbol = symbols.Single();
+                if (typeName.ReferencedSymbol.IsFulfilled)
+                {
+                    // Symbol already fulfilled by SemanticsApplier
+                    var existingSymbol = typeName.ReferencedSymbol.Result!;
+                    if (symbol != existingSymbol)
+                        throw new UnreachableException("Symbols should match");
+                    // In this case NamedType should already be set too
+                    return createType(symbol, typeArguments);
+                }
+
                 typeName.ReferencedSymbol.Fulfill(symbol);
                 var bareType = createType(symbol, typeArguments);
                 typeName.NamedType = bareType?.With(Capability.Identity) ?? DataType.Unknown;
@@ -300,8 +338,18 @@ public class TypeResolver
             default:
                 // Diagnostic moved to semantic tree
                 //diagnostics.Add(NameBindingError.AmbiguousName(file, typeName.Span));
-                typeName.ReferencedSymbol.Fulfill(null);
-                typeName.NamedType = DataType.Unknown;
+                if (typeName.ReferencedSymbol.IsFulfilled)
+                {
+                    // Symbol already fulfilled by SemanticsApplier
+                    var existingSymbol = typeName.ReferencedSymbol.Result!;
+                    if (existingSymbol is not null)
+                        throw new UnreachableException("Symbols should match");
+                }
+                else
+                {
+                    typeName.ReferencedSymbol.Fulfill(null);
+                    typeName.NamedType = DataType.Unknown;
+                }
                 return null;
         }
     }
