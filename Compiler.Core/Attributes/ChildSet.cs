@@ -11,7 +11,7 @@ public static class ChildSet
     public static IFixedSet<TChild> CreateFixedSet<TParent, TChild>(TParent parent, IEnumerable<TChild> children)
         where TChild : class, IChild<TParent>
     {
-        var childSet = FixedSet.Create(children);
+        var childSet = children.ToFixedSet();
         foreach (var child in childSet)
             Child.Attach(parent, child);
         return childSet;

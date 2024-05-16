@@ -11,7 +11,7 @@ public struct ValueAttribute<T>
 {
     private T? value;
     // Declared as a uint to ensure Interlocked can be used on it (without any possible overhead)
-    private volatile uint state; // Starts in Pending
+    private volatile uint state; // Starts in AttributeState.Pending
 
     [DebuggerStepThrough]
     public readonly bool TryGetValue(out T value)
