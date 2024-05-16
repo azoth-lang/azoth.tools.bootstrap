@@ -6,7 +6,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
 internal abstract class SemanticChildSymbolNode : ChildNode, IChildDeclarationNode
 {
-    IDeclarationNode IChildDeclarationNode.Parent => (IDeclarationNode)base.Parent;
     public override ISyntax? Syntax => null;
     public abstract Symbol Symbol { get; }
 

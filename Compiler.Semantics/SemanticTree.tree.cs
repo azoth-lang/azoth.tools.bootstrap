@@ -36,7 +36,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IClassDefinitionNode),
     typeof(IStructDefinitionNode),
     typeof(ITraitDefinitionNode),
-    typeof(IGenericParameterNode),
     typeof(IClassMemberDefinitionNode),
     typeof(ITraitMemberDefinitionNode),
     typeof(IStructMemberDefinitionNode),
@@ -426,13 +425,12 @@ public partial interface ITraitDefinitionNode : ISemanticNode, ITypeDefinitionNo
     IFixedList<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
 }
 
-public partial interface IGenericParameterNode : ISemanticNode, ICodeNode
+public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDeclarationNode
 {
     new IGenericParameterSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityConstraintNode Constraint { get; }
-    IdentifierName Name { get; }
     ParameterIndependence Independence { get; }
     ParameterVariance Variance { get; }
     GenericParameter Parameter { get; }
@@ -440,8 +438,8 @@ public partial interface IGenericParameterNode : ISemanticNode, ICodeNode
     GenericParameterType DeclaredType { get; }
     IUserTypeDeclarationNode ContainingDeclarationNode { get; }
     UserTypeSymbol ContainingSymbol { get; }
-    IGenericParameterDeclarationNode SymbolNode { get; }
-    GenericParameterTypeSymbol Symbol { get; }
+    new GenericParameterTypeSymbol Symbol { get; }
+    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
 }
 
 [Closed(
@@ -1557,7 +1555,6 @@ public partial interface IDeclarationNode : ISemanticNode
     typeof(IFacetChildDeclarationNode))]
 public partial interface IChildDeclarationNode : IChild<ISemanticNode>, IDeclarationNode
 {
-    IDeclarationNode Parent { get; }
     IPackageDeclarationNode Package { get; }
 }
 
@@ -1675,6 +1672,7 @@ public partial interface ITraitDeclarationNode : ISemanticNode, IUserTypeDeclara
 }
 
 [Closed(
+    typeof(IGenericParameterNode),
     typeof(IGenericParameterSymbolNode))]
 public partial interface IGenericParameterDeclarationNode : ISemanticNode, ITypeDeclarationNode
 {

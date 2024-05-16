@@ -7,7 +7,6 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -115,9 +114,6 @@ internal static class SymbolNodeAttributes
 
     public static ITraitDeclarationNode TraitDeclaration(ITraitDefinitionNode node)
         => new SemanticTraitSymbolNode(node);
-
-    public static IGenericParameterDeclarationNode GenericParameter(GenericParameterNode node)
-        => new SemanticGenericParameterDeclarationNode(node);
 
     public static IFunctionDeclarationNode FunctionDeclaration(IFunctionDefinitionNode node)
         => new SemanticFunctionSymbolNode(node);

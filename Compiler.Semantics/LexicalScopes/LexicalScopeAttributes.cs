@@ -61,7 +61,7 @@ internal static class LexicalScopeAttributes
     public static LexicalScope TypeDeclaration_SupertypesLexicalScope(ITypeDefinitionNode node)
     {
         if (node.GenericParameters.Any())
-            return new BasicScope(node.ContainingLexicalScope, node.GenericParameters.Select(p => p.SymbolNode));
+            return new BasicScope(node.ContainingLexicalScope, node.GenericParameters);
 
         return node.ContainingLexicalScope;
     }

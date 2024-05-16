@@ -109,11 +109,11 @@ TraitDefinition <: TypeDefinition = Syntax:`ITraitDefinitionSyntax`
     Members:TraitMemberDefinition*;
 
 // ---------- Type Definition Parts
-GenericParameter <: Code = Syntax:`IGenericParameterSyntax`
+GenericParameter <: Code, GenericParameterDeclaration = Syntax:`IGenericParameterSyntax`
     Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance`
     Parameter:`GenericParameter` ContainingDeclaredType:`IDeclaredUserType` DeclaredType:`GenericParameterType`
     ContainingDeclarationNode:`IUserTypeDeclarationNode` ContainingSymbol:`UserTypeSymbol`
-    SymbolNode:`IGenericParameterDeclarationNode` Symbol:`GenericParameterTypeSymbol`;
+    Symbol:`GenericParameterTypeSymbol`;
 
 // ---------- Type Member Definitions (i.e. declarations that can be contained in a type)
 TypeMemberDefinition <: Definition = Syntax:`ITypeMemberDefinitionSyntax` AccessModifier:`AccessModifier` SymbolNode:`ITypeMemberDeclarationNode`;
@@ -287,7 +287,7 @@ AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax` Expression:Untyp
 
 Declaration = Symbol:`Symbol`;
 // Parent, Package, and GlobalNamespace type quoted so that is is not treated as a child node
-ChildDeclaration <: Declaration, `IChild<ISemanticNode>` = Parent:`IDeclarationNode` Package:`IPackageDeclarationNode`;
+ChildDeclaration <: Declaration, `IChild<ISemanticNode>` = Package:`IPackageDeclarationNode`;
 
 NamedDeclaration <: ChildDeclaration = Name:`StandardName`;
 
