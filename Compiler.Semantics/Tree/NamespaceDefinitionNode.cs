@@ -10,7 +10,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal class NamespaceDeclarationNode : DeclarationNode, INamespaceDeclarationNode
+internal class NamespaceDefinitionNode : DefinitionNode, INamespaceDefinitionNode
 {
     public override INamespaceDeclarationSyntax Syntax { get; }
     public bool IsGlobalQualified => Syntax.IsGlobalQualified;
@@ -32,20 +32,20 @@ internal class NamespaceDeclarationNode : DeclarationNode, INamespaceDeclaration
     public NamespaceSymbol Symbol => SymbolNode.Symbol;
 
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
-    public IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
+    public IFixedList<INamespaceMemberDefinitionNode> Definitions { get; }
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
             : lexicalScope.GetValue(this, LexicalScopeAttributes.NamespaceDeclaration);
 
-    public NamespaceDeclarationNode(
+    public NamespaceDefinitionNode(
         INamespaceDeclarationSyntax syntax,
         IEnumerable<IUsingDirectiveNode> usingDirectives,
-        IEnumerable<INamespaceMemberDeclarationNode> declarations)
+        IEnumerable<INamespaceMemberDefinitionNode> definitions)
     {
         Syntax = syntax;
         UsingDirectives = ChildList.Attach(this, usingDirectives);
-        Declarations = ChildList.Attach(this, declarations);
+        Definitions = ChildList.Attach(this, definitions);
     }
 
     internal override ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)

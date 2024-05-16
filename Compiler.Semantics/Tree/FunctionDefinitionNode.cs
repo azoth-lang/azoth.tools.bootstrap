@@ -12,7 +12,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IFunctionDeclarationNode
+internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFunctionDefinitionNode
 {
     public override IFunctionDeclarationSyntax Syntax { get; }
     public IdentifierName Name => Syntax.Name;
@@ -39,7 +39,7 @@ internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IF
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, TypeMemberDeclarationsAspect.FunctionDeclaration_Type);
 
-    public FunctionDeclarationNode(
+    public FunctionDefinitionNode(
         IFunctionDeclarationSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<INamedParameterNode> parameters,

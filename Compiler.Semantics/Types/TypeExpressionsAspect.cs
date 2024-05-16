@@ -56,7 +56,7 @@ internal static class TypeExpressionsAspect
             diagnostics.Add(TypeError.CapabilityViewpointNotAppliedToTypeParameter(node.File, node.Syntax));
     }
 
-    public static Pseudotype ConcreteMethodDeclaration_InheritedSelfType(IConcreteMethodDeclarationNode node)
+    public static Pseudotype ConcreteMethodDeclaration_InheritedSelfType(IConcreteMethodDefinitionNode node)
         => node.SelfParameter.Type;
 
     public static DataType SelfViewpointType_Type(ISelfViewpointTypeNode node)

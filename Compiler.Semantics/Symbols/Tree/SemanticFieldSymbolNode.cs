@@ -6,13 +6,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
 internal sealed class SemanticFieldSymbolNode : SemanticDeclarationSymbolNode, IFieldSymbolNode
 {
-    private IFieldDeclarationNode Node { get; }
+    private IFieldDefinitionNode Node { get; }
     public override FieldSymbol Symbol => Node.Symbol;
     public override IdentifierName Name => Node.Name;
     StandardName INamedSymbolNode.Name => Node.Name;
     public DataType Type => Node.Type;
 
-    public SemanticFieldSymbolNode(IFieldDeclarationNode node)
+    public SemanticFieldSymbolNode(IFieldDefinitionNode node)
     {
         Node = node;
     }

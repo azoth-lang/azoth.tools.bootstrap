@@ -7,12 +7,12 @@ internal class SemanticTreeValidator
     public static void Validate(ISemanticNode node)
     {
         // Validate Abstract Node Attributes
-        if (node is IDeclarationNode decl)
+        if (node is IDefinitionNode decl)
         {
             _ = decl.ContainingLexicalScope;
         }
 
-        if (node is ITypeDeclarationNode typeDecl)
+        if (node is ITypeDefinitionNode typeDecl)
         {
             _ = typeDecl.DeclaredType;
             _ = typeDecl.Supertypes;
@@ -40,29 +40,29 @@ internal class SemanticTreeValidator
                 _ = n.SymbolNodes;
                 break;
             case IPackageFacetNode n:
-                _ = n.Declarations;
+                _ = n.Definitions;
                 _ = n.PackageNameScope;
                 break;
             case ICompilationUnitNode n:
                 _ = n.ContainingLexicalScope;
                 _ = n.LexicalScope;
                 break;
-            case INamespaceDeclarationNode n:
+            case INamespaceDefinitionNode n:
                 _ = n.Symbol;
                 _ = n.ContainingLexicalScope;
                 _ = n.LexicalScope;
                 break;
-            case IClassDeclarationNode n:
+            case IClassDefinitionNode n:
                 _ = n.File;
                 _ = n.DeclaredType;
                 _ = n.Symbol;
                 break;
-            case IStructDeclarationNode n:
+            case IStructDefinitionNode n:
                 _ = n.File;
                 _ = n.DeclaredType;
                 _ = n.Symbol;
                 break;
-            case ITraitDeclarationNode n:
+            case ITraitDefinitionNode n:
                 _ = n.File;
                 _ = n.DeclaredType;
                 _ = n.Symbol;
@@ -73,7 +73,7 @@ internal class SemanticTreeValidator
                 _ = n.DeclaredType;
                 _ = n.Symbol;
                 break;
-            case IFunctionDeclarationNode n:
+            case IFunctionDefinitionNode n:
                 _ = n.File;
                 _ = n.Type;
                 _ = n.Symbol;

@@ -12,7 +12,7 @@ internal static class SymbolAttribute
 {
     public static PackageSymbol Package(IPackageNode node) => new(node.Name);
 
-    public static UserTypeSymbol TypeDeclaration(ITypeDeclarationNode node)
+    public static UserTypeSymbol TypeDeclaration(ITypeDefinitionNode node)
         => new(node.ContainingSymbol, node.DeclaredType);
 
     public static GenericParameterTypeSymbol GenericParameter(IGenericParameterNode node)
@@ -24,27 +24,27 @@ internal static class SymbolAttribute
     public static TypeSymbol SpecialTypeName_ReferencedSymbol(ISpecialTypeNameNode node)
         => Primitive.SymbolTree.LookupSymbol(node.Name);
 
-    public static FunctionSymbol FunctionDeclaration(IFunctionDeclarationNode node)
+    public static FunctionSymbol FunctionDeclaration(IFunctionDefinitionNode node)
         => new(node.ContainingSymbol, node.Name, node.Type);
 
-    public static MethodSymbol MethodDeclaration(IMethodDeclarationNode node)
+    public static MethodSymbol MethodDeclaration(IMethodDefinitionNode node)
         => new MethodSymbol(node.ContainingSymbol, node.Kind, node.Name,
             node.SelfParameter.ParameterType,
             node.Parameters.Select(p => p.ParameterType).ToFixedList(),
             new(node.Return?.Type ?? DataType.Void));
 
-    public static ConstructorSymbol ConstructorDeclaration(IConstructorDeclarationNode node)
+    public static ConstructorSymbol ConstructorDeclaration(IConstructorDefinitionNode node)
         => new ConstructorSymbol(node.ContainingSymbol, node.Name, node.SelfParameter.Type,
             node.Parameters.Select(p => p.ParameterType).ToFixedList());
 
-    public static FieldSymbol FieldDeclaration(IFieldDeclarationNode node)
+    public static FieldSymbol FieldDeclaration(IFieldDefinitionNode node)
         => new FieldSymbol(node.ContainingSymbol, node.Name, node.IsMutableBinding, node.Type);
 
-    public static InitializerSymbol InitializerDeclaration(IInitializerDeclarationNode node)
+    public static InitializerSymbol InitializerDeclaration(IInitializerDefinitionNode node)
         => new InitializerSymbol(node.ContainingSymbol, node.Name, node.SelfParameter.Type,
             node.Parameters.Select(p => p.ParameterType).ToFixedList());
 
-    public static FunctionSymbol AssociatedFunctionDeclaration(IAssociatedFunctionDeclarationNode node)
+    public static FunctionSymbol AssociatedFunctionDeclaration(IAssociatedFunctionDefinitionNode node)
         => new(node.ContainingSymbol, node.Name, node.Type);
 
     public static ConstructorSymbol? Attribute_ReferencedSymbol(IAttributeNode node)
@@ -63,9 +63,9 @@ internal static class SymbolAttribute
             diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.TypeName.Syntax.Span));
     }
 
-    public static ConstructorSymbol? ClassDeclaration_DefaultConstructorSymbol(IClassDeclarationNode node)
+    public static ConstructorSymbol? ClassDeclaration_DefaultConstructorSymbol(IClassDefinitionNode node)
     {
-        if (node.Members.Any(m => m is IConstructorDeclarationNode))
+        if (node.Members.Any(m => m is IConstructorDefinitionNode))
             return null;
 
         return ConstructorSymbol.CreateDefault(node.Symbol);

@@ -10,7 +10,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarationNode
+internal sealed class ClassDefinitionNode : TypeDefinitionNode, IClassDefinitionNode
 {
     public override IClassDeclarationSyntax Syntax { get; }
     public bool IsAbstract => Syntax.AbstractModifier is not null;
@@ -27,18 +27,18 @@ internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarat
         => declaredType.TryGetValue(out var value) ? value
             : declaredType.GetValue(this, TypeDeclarationsAspect.ClassDeclaration_DeclaredType);
 
-    public override IFixedList<IClassMemberDeclarationNode> Members { get; }
+    public override IFixedList<IClassMemberDefinitionNode> Members { get; }
     private ValueAttribute<ConstructorSymbol?> defaultConstructorSymbol;
     public ConstructorSymbol? DefaultConstructorSymbol
         => defaultConstructorSymbol.TryGetValue(out var value) ? value
             : defaultConstructorSymbol.GetValue(this, SymbolAttribute.ClassDeclaration_DefaultConstructorSymbol);
 
-    public ClassDeclarationNode(
+    public ClassDefinitionNode(
         IClassDeclarationSyntax syntax,
         IEnumerable<IGenericParameterNode> genericParameters,
         IStandardTypeNameNode? baseTypeName,
         IEnumerable<IStandardTypeNameNode> supertypeNames,
-        IEnumerable<IClassMemberDeclarationNode> members)
+        IEnumerable<IClassMemberDefinitionNode> members)
         : base(genericParameters, supertypeNames)
     {
         Syntax = syntax;

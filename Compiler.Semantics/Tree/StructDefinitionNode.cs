@@ -8,7 +8,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class StructDeclarationNode : TypeDeclarationNode, IStructDeclarationNode
+internal sealed class StructDefinitionNode : TypeDefinitionNode, IStructDefinitionNode
 {
     public override IStructDeclarationSyntax Syntax { get; }
 
@@ -22,13 +22,13 @@ internal sealed class StructDeclarationNode : TypeDeclarationNode, IStructDeclar
         => declaredType.TryGetValue(out var value) ? value
             : declaredType.GetValue(this, TypeDeclarationsAspect.StructDeclaration_DeclaredType);
 
-    public override IFixedList<IStructMemberDeclarationNode> Members { get; }
+    public override IFixedList<IStructMemberDefinitionNode> Members { get; }
 
-    public StructDeclarationNode(
+    public StructDefinitionNode(
         IStructDeclarationSyntax syntax,
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<IStandardTypeNameNode> supertypeNames,
-        IEnumerable<IStructMemberDeclarationNode> members)
+        IEnumerable<IStructMemberDefinitionNode> members)
         : base(genericParameters, supertypeNames)
     {
         Syntax = syntax;

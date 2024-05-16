@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal abstract class TypeMemberDeclarationNode : DeclarationNode, ITypeMemberDeclarationNode
+internal abstract class TypeMemberDefinitionNode : DefinitionNode, ITypeMemberDefinitionNode
 {
     public abstract override ITypeMemberDeclarationSyntax Syntax { get; }
     private ValueAttribute<AccessModifier> accessModifier;

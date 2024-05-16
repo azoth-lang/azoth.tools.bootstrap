@@ -12,8 +12,8 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
 {
     public override IFieldParameterSyntax Syntax { get; }
     public override IdentifierName Name => Syntax.Name;
-    private ValueAttribute<ITypeDeclarationNode> containingTypeDeclaration;
-    public ITypeDeclarationNode ContainingTypeDeclaration
+    private ValueAttribute<ITypeDefinitionNode> containingTypeDeclaration;
+    public ITypeDefinitionNode ContainingTypeDefinition
         => containingTypeDeclaration.TryGetValue(out var value) ? value
             : containingTypeDeclaration.GetValue(InheritedContainingTypeDeclaration);
     private ValueAttribute<IFieldSymbolNode?> referencedSymbolNode;

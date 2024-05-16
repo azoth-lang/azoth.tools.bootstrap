@@ -16,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static class TypeMemberDeclarationsAspect
 {
-    public static FunctionType FunctionDeclaration_Type(IFunctionDeclarationNode node)
+    public static FunctionType FunctionDeclaration_Type(IFunctionDefinitionNode node)
         => FunctionType(node.Parameters, node.Return);
 
     private static FunctionType FunctionType(IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
@@ -26,10 +26,10 @@ internal static class TypeMemberDeclarationsAspect
         return new FunctionType(parameterTypes, new Return(returnType));
     }
 
-    public static void MethodDeclaration_ContributeDiagnostics(IMethodDeclarationNode node, Diagnostics diagnostics)
+    public static void MethodDeclaration_ContributeDiagnostics(IMethodDefinitionNode node, Diagnostics diagnostics)
         => CheckParameterAndReturnAreVarianceSafe(node, diagnostics);
 
-    private static void CheckParameterAndReturnAreVarianceSafe(IMethodDeclarationNode node, Diagnostics diagnostics)
+    private static void CheckParameterAndReturnAreVarianceSafe(IMethodDefinitionNode node, Diagnostics diagnostics)
     {
         // TODO do generic methods and functions need to be checked?
 
@@ -172,16 +172,16 @@ internal static class TypeMemberDeclarationsAspect
         }
     }
 
-    public static DataType FieldDeclaration_Type(IFieldDeclarationNode node) => node.TypeNode.Type;
+    public static DataType FieldDeclaration_Type(IFieldDefinitionNode node) => node.TypeNode.Type;
 
-    public static void FieldDeclaration_ContributeDiagnostics(IFieldDeclarationNode node, Diagnostics diagnostics)
+    public static void FieldDeclaration_ContributeDiagnostics(IFieldDefinitionNode node, Diagnostics diagnostics)
     {
         CheckFieldIsVarianceSafe(node, diagnostics);
 
         CheckFieldMaintainsIndependence(node, diagnostics);
     }
 
-    private static void CheckFieldIsVarianceSafe(IFieldDeclarationNode node, Diagnostics diagnostics)
+    private static void CheckFieldIsVarianceSafe(IFieldDefinitionNode node, Diagnostics diagnostics)
     {
         var type = node.Type;
 
@@ -207,7 +207,7 @@ internal static class TypeMemberDeclarationsAspect
         }
     }
 
-    private static void CheckFieldMaintainsIndependence(IFieldDeclarationNode node, Diagnostics diagnostics)
+    private static void CheckFieldMaintainsIndependence(IFieldDefinitionNode node, Diagnostics diagnostics)
     {
         var type = node.Type;
         // Fields must also maintain the independence of independent type parameters
@@ -215,6 +215,6 @@ internal static class TypeMemberDeclarationsAspect
             diagnostics.Add(TypeError.FieldMustMaintainIndependence(node.File, node.Syntax, type));
     }
 
-    public static FunctionType AssociatedFunctionDeclaration_Type(IAssociatedFunctionDeclarationNode node)
+    public static FunctionType AssociatedFunctionDeclaration_Type(IAssociatedFunctionDefinitionNode node)
         => FunctionType(node.Parameters, node.Return);
 }

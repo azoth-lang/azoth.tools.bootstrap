@@ -6,12 +6,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
 internal sealed class AssociatedFunctionSymbolNode : SemanticDeclarationSymbolNode, IAssociatedFunctionSymbolNode
 {
-    private readonly IAssociatedFunctionDeclarationNode node;
+    private readonly IAssociatedFunctionDefinitionNode node;
     public override IdentifierName Name => node.Name;
     public override FunctionSymbol Symbol => node.Symbol;
     public FunctionType Type => node.Type;
 
-    public AssociatedFunctionSymbolNode(IAssociatedFunctionDeclarationNode node)
+    public AssociatedFunctionSymbolNode(IAssociatedFunctionDefinitionNode node)
     {
         this.node = node;
     }

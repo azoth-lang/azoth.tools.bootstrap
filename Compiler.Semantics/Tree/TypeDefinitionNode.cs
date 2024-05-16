@@ -15,7 +15,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITypeDeclarationNode
+internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeDefinitionNode
 {
     public abstract override ITypeDeclarationSyntax Syntax { get; }
     public bool IsConst => Syntax.IsConst;
@@ -36,13 +36,13 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
     public CompilerResult<IFixedSet<BareReferenceType>> Supertypes
         => supertypes.TryGetValue(out var value) ? value
             : supertypes.GetValue(this, TypeDeclarationsAspect.TypeDeclaration_Supertypes);
-    public abstract IFixedList<ITypeMemberDeclarationNode> Members { get; }
+    public abstract IFixedList<ITypeMemberDefinitionNode> Members { get; }
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
             : lexicalScope.GetValue(this, LexicalScopeAttributes.TypeDeclaration_LexicalScope);
 
-    protected TypeDeclarationNode(
+    protected TypeDefinitionNode(
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<IStandardTypeNameNode> supertypeNames)
         // TODO support attributes on type declarations
@@ -60,12 +60,12 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
     {
-        if (((ITypeDeclarationNode)this).AllSupertypeNames.Contains(caller))
+        if (((ITypeDefinitionNode)this).AllSupertypeNames.Contains(caller))
             return LexicalScopeAttributes.TypeDeclaration_InheritedLexicalScope_Supertypes(this);
         return LexicalScopeAttributes.TypeDeclaration_InheritedLexicalScope(this);
     }
 
-    internal override ITypeDeclarationNode InheritedContainingTypeDeclaration(IChildNode caller, IChildNode child)
+    internal override ITypeDefinitionNode InheritedContainingTypeDeclaration(IChildNode caller, IChildNode child)
         => this;
 
     internal override bool InheritedIsAttributeType(IChildNode caller, IChildNode child)

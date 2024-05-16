@@ -7,13 +7,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal static class DeclarationsAttribute
 {
-    public static IFixedSet<IPackageMemberDeclarationNode> PackageFacet(IPackageFacetNode node)
+    public static IFixedSet<IPackageMemberDefinitionNode> PackageFacet(IPackageFacetNode node)
     {
-        return node.CompilationUnits.SelectMany(n => n.Declarations)
+        return node.CompilationUnits.SelectMany(n => n.Definitions)
                    .SelectMany(n => MoreEnumerable.TraverseDepthFirst(n, NamespaceChildren))
-                   .OfType<IPackageMemberDeclarationNode>().ToFixedSet();
+                   .OfType<IPackageMemberDefinitionNode>().ToFixedSet();
 
-        static IEnumerable<INamespaceMemberDeclarationNode> NamespaceChildren(INamespaceMemberDeclarationNode m)
-            => (m as INamespaceDeclarationNode)?.Declarations ?? Enumerable.Empty<INamespaceMemberDeclarationNode>();
+        static IEnumerable<INamespaceMemberDefinitionNode> NamespaceChildren(INamespaceMemberDefinitionNode m)
+            => (m as INamespaceDefinitionNode)?.Definitions ?? Enumerable.Empty<INamespaceMemberDefinitionNode>();
     }
 }

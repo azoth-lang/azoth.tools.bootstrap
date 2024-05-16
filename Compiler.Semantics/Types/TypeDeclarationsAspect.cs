@@ -16,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static class TypeDeclarationsAspect
 {
-    public static ObjectType ClassDeclaration_DeclaredType(IClassDeclarationNode node)
+    public static ObjectType ClassDeclaration_DeclaredType(IClassDefinitionNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
@@ -26,20 +26,20 @@ internal static class TypeDeclarationsAspect
             GetGenericParameters(node), LazySupertypes(node));
     }
 
-    public static void ClassDeclaration_ContributeDiagnostics(IClassDeclarationNode node, Diagnostics diagnostics)
+    public static void ClassDeclaration_ContributeDiagnostics(IClassDefinitionNode node, Diagnostics diagnostics)
     {
         CheckBaseTypeMustBeAClass(node, diagnostics);
 
         CheckBaseTypeMustMaintainIndependence(node, diagnostics);
     }
 
-    private static void CheckBaseTypeMustBeAClass(IClassDeclarationNode node, Diagnostics diagnostics)
+    private static void CheckBaseTypeMustBeAClass(IClassDefinitionNode node, Diagnostics diagnostics)
     {
         if (node.BaseTypeName?.ReferencedSymbol is not null and not UserTypeSymbol { DeclaresType.IsClass: true })
             diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(node.File, node.Name, node.BaseTypeName.Syntax));
     }
 
-    private static void CheckBaseTypeMustMaintainIndependence(IClassDeclarationNode node, Diagnostics diagnostics)
+    private static void CheckBaseTypeMustMaintainIndependence(IClassDefinitionNode node, Diagnostics diagnostics)
     {
         var declaresType = node.Symbol.DeclaresType;
         // TODO nested classes and traits need to be checked if nested inside of generic types?
@@ -50,7 +50,7 @@ internal static class TypeDeclarationsAspect
             diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(node.File, typeName.Syntax));
     }
 
-    public static StructType StructDeclaration_DeclaredType(IStructDeclarationNode node)
+    public static StructType StructDeclaration_DeclaredType(IStructDefinitionNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
@@ -59,7 +59,7 @@ internal static class TypeDeclarationsAspect
             GetGenericParameters(node), LazySupertypes(node));
     }
 
-    public static ObjectType TraitDeclaration_DeclaredType(ITraitDeclarationNode node)
+    public static ObjectType TraitDeclaration_DeclaredType(ITraitDefinitionNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
@@ -68,7 +68,7 @@ internal static class TypeDeclarationsAspect
             GetGenericParameters(node), LazySupertypes(node));
     }
 
-    private static NamespaceName GetContainingNamespaceName(ITypeMemberDeclarationNode node)
+    private static NamespaceName GetContainingNamespaceName(ITypeMemberDefinitionNode node)
     {
         // TODO correctly deal with containing namespace
         var containingSymbol = node.ContainingSymbol;
@@ -77,10 +77,10 @@ internal static class TypeDeclarationsAspect
         return containingNamespaceName;
     }
 
-    private static IFixedList<GenericParameter> GetGenericParameters(ITypeDeclarationNode node)
+    private static IFixedList<GenericParameter> GetGenericParameters(ITypeDefinitionNode node)
         => node.GenericParameters.Select(p => p.Parameter).ToFixedList();
 
-    private static Lazy<IFixedSet<BareReferenceType>> LazySupertypes(ITypeDeclarationNode node)
+    private static Lazy<IFixedSet<BareReferenceType>> LazySupertypes(ITypeDefinitionNode node)
         // Use PublicationOnly so that initialization cycles are detected and thrown by the attributes
         => new(() => node.Supertypes.Value, LazyThreadSafetyMode.PublicationOnly);
 
@@ -90,7 +90,7 @@ internal static class TypeDeclarationsAspect
     public static GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
         => node.ContainingDeclaredType.GenericParameterTypes.Single(t => t.Parameter == node.Parameter);
 
-    public static CompilerResult<IFixedSet<BareReferenceType>> TypeDeclaration_Supertypes(ITypeDeclarationNode node)
+    public static CompilerResult<IFixedSet<BareReferenceType>> TypeDeclaration_Supertypes(ITypeDefinitionNode node)
     {
         // Avoid creating the diagnostic list unless needed since typically there are no diagnostics
         List<Diagnostic>? diagnostics = null;
@@ -134,7 +134,7 @@ internal static class TypeDeclarationsAspect
         }
     }
 
-    public static void TypeDeclaration_ContributeDiagnostics(ITypeDeclarationNode node, Diagnostics diagnostics)
+    public static void TypeDeclaration_ContributeDiagnostics(ITypeDefinitionNode node, Diagnostics diagnostics)
     {
         // Record diagnostics created while computing supertypes
         diagnostics.Add(node.Supertypes.Diagnostics);
@@ -149,13 +149,13 @@ internal static class TypeDeclarationsAspect
         CheckSupertypesMaintainIndependence(node, diagnostics);
     }
 
-    private static void CheckTypeArgumentsAreConstructable(ITypeDeclarationNode node, Diagnostics diagnostics)
+    private static void CheckTypeArgumentsAreConstructable(ITypeDefinitionNode node, Diagnostics diagnostics)
     {
         foreach (IStandardTypeNameNode supertypeName in node.SupertypeNames)
             ExpressionTypesAspect.CheckTypeArgumentsAreConstructable(supertypeName, diagnostics);
     }
 
-    private static void CheckSupertypesMustBeClassOrTrait(ITypeDeclarationNode typeNode, Diagnostics diagnostics)
+    private static void CheckSupertypesMustBeClassOrTrait(ITypeDefinitionNode typeNode, Diagnostics diagnostics)
     {
         foreach (var node in typeNode.SupertypeNames)
             // Null symbol will report a separate name binding error
@@ -163,7 +163,7 @@ internal static class TypeDeclarationsAspect
                 diagnostics.Add(OtherSemanticError.SupertypeMustBeClassOrTrait(node.File, typeNode.Name, node.Syntax));
     }
 
-    private static void CheckAllSupertypesAreOutputSafe(ITypeDeclarationNode node, Diagnostics diagnostics)
+    private static void CheckAllSupertypesAreOutputSafe(ITypeDefinitionNode node, Diagnostics diagnostics)
     {
         var declaresType = node.Symbol.DeclaresType;
         // TODO nested classes and traits need to be checked if nested inside of generic types
@@ -178,15 +178,15 @@ internal static class TypeDeclarationsAspect
     }
 
     private static void CheckSupertypesMaintainIndependence(
-        ITypeDeclarationNode typeDeclaration,
+        ITypeDefinitionNode typeDefinition,
         Diagnostics diagnostics)
     {
-        var declaresType = typeDeclaration.Symbol.DeclaresType;
+        var declaresType = typeDefinition.Symbol.DeclaresType;
         // TODO nested classes and traits need to be checked if nested inside of generic types?
         if (!declaresType.HasIndependentGenericParameters) return;
 
-        foreach (var typeName in typeDeclaration.SupertypeNames)
+        foreach (var typeName in typeDefinition.SupertypeNames)
             if (!typeName.BareType?.SupertypeMaintainsIndependence(exact: false) ?? false)
-                diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(typeDeclaration.File, typeName.Syntax));
+                diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(typeDefinition.File, typeName.Syntax));
     }
 }

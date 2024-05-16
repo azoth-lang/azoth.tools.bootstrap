@@ -12,14 +12,14 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class AssociatedFunctionDeclarationNode : TypeMemberDeclarationNode, IAssociatedFunctionDeclarationNode
+internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNode, IAssociatedFunctionDefinitionNode
 {
     public override IAssociatedFunctionDeclarationSyntax Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public IdentifierName Name => Syntax.Name;
     public IFixedList<INamedParameterNode> Parameters { get; }
     // TODO this explicit implementation shouldn't be needed. There must be a bug in the code generator?
-    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDeclarationNode.Parameters => Parameters;
+    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     public ITypeNode? Return { get; }
     private ValueAttribute<FunctionSymbol> symbol;
     public FunctionSymbol Symbol
@@ -36,7 +36,7 @@ internal sealed class AssociatedFunctionDeclarationNode : TypeMemberDeclarationN
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.AssociatedFunction_SymbolNode);
 
-    public AssociatedFunctionDeclarationNode(
+    public AssociatedFunctionDefinitionNode(
         IAssociatedFunctionDeclarationSyntax syntax,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,

@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
 internal abstract class SemanticUserTypeSymbolNode : SemanticDeclarationSymbolNode, IUserTypeSymbolNode
 {
-    protected abstract ITypeDeclarationNode Node { get; }
+    protected abstract ITypeDefinitionNode Node { get; }
     public override StandardName Name => Node.Name;
     public override UserTypeSymbol Symbol => Node.Symbol;
     public abstract IFixedList<ITypeMemberSymbolNode> Members { get; }

@@ -27,24 +27,24 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IElseClauseNode),
     typeof(IBindingNode),
     typeof(IPackageNode),
-    typeof(IPackageMemberDeclarationNode),
+    typeof(IPackageMemberDefinitionNode),
     typeof(ICompilationUnitNode),
     typeof(IUsingDirectiveNode),
-    typeof(IDeclarationNode),
-    typeof(IConcreteInvocableDeclarationNode),
-    typeof(INamespaceDeclarationNode),
-    typeof(IClassDeclarationNode),
-    typeof(IStructDeclarationNode),
-    typeof(ITraitDeclarationNode),
+    typeof(IDefinitionNode),
+    typeof(IConcreteInvocableDefinitionNode),
+    typeof(INamespaceDefinitionNode),
+    typeof(IClassDefinitionNode),
+    typeof(IStructDefinitionNode),
+    typeof(ITraitDefinitionNode),
     typeof(IGenericParameterNode),
-    typeof(IClassMemberDeclarationNode),
-    typeof(ITraitMemberDeclarationNode),
-    typeof(IStructMemberDeclarationNode),
-    typeof(IAlwaysTypeMemberDeclarationNode),
-    typeof(IAbstractMethodDeclarationNode),
-    typeof(IStandardMethodDeclarationNode),
-    typeof(IGetterMethodDeclarationNode),
-    typeof(ISetterMethodDeclarationNode),
+    typeof(IClassMemberDefinitionNode),
+    typeof(ITraitMemberDefinitionNode),
+    typeof(IStructMemberDefinitionNode),
+    typeof(IAlwaysTypeMemberDefinitionNode),
+    typeof(IAbstractMethodDefinitionNode),
+    typeof(IStandardMethodDefinitionNode),
+    typeof(IGetterMethodDefinitionNode),
+    typeof(ISetterMethodDefinitionNode),
     typeof(IAttributeNode),
     typeof(ICapabilityConstraintNode),
     typeof(IParameterNode),
@@ -127,7 +127,7 @@ public partial interface IBlockOrResultNode : IElseClauseNode
 
 [Closed(
     typeof(ILocalBindingNode),
-    typeof(IFieldDeclarationNode))]
+    typeof(IFieldDefinitionNode))]
 public partial interface IBindingNode : ISemanticNode, ICodeNode
 {
     bool IsMutableBinding { get; }
@@ -175,18 +175,18 @@ public partial interface IPackageFacetNode : IChildNode
     IPackageFacetSymbolNode SymbolNode { get; }
     PackageNameScope PackageNameScope { get; }
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
-    IFixedSet<IPackageMemberDeclarationNode> Declarations { get; }
+    IFixedSet<IPackageMemberDefinitionNode> Definitions { get; }
 }
 
 [Closed(
-    typeof(IFunctionDeclarationNode),
-    typeof(ITypeDeclarationNode))]
-public partial interface IPackageMemberDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
+    typeof(IFunctionDefinitionNode),
+    typeof(ITypeDefinitionNode))]
+public partial interface IPackageMemberDefinitionNode : ISemanticNode, INamespaceMemberDefinitionNode
 {
     IFixedList<IAttributeNode> Attributes { get; }
     AccessModifier AccessModifier { get; }
     new IPackageMemberSymbolNode SymbolNode { get; }
-    INamespaceMemberSymbolNode INamespaceMemberDeclarationNode.SymbolNode => SymbolNode;
+    INamespaceMemberSymbolNode INamespaceMemberDefinitionNode.SymbolNode => SymbolNode;
 }
 
 [Closed(
@@ -195,7 +195,7 @@ public partial interface IPackageMemberDeclarationNode : ISemanticNode, INamespa
     typeof(IBindingNode),
     typeof(ICompilationUnitNode),
     typeof(IUsingDirectiveNode),
-    typeof(IDeclarationNode),
+    typeof(IDefinitionNode),
     typeof(IGenericParameterNode),
     typeof(IAttributeNode),
     typeof(ICapabilityConstraintNode),
@@ -223,7 +223,7 @@ public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
     INamespaceSymbolNode ImplicitNamespaceSymbolNode { get; }
     NamespaceSymbol ImplicitNamespaceSymbol { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
-    IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
+    IFixedList<INamespaceMemberDefinitionNode> Definitions { get; }
     NamespaceScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
     IFixedList<Diagnostic> Diagnostics { get; }
@@ -238,10 +238,10 @@ public partial interface IUsingDirectiveNode : ISemanticNode, ICodeNode
 }
 
 [Closed(
-    typeof(IInvocableDeclarationNode),
-    typeof(INamespaceMemberDeclarationNode),
-    typeof(ITypeMemberDeclarationNode))]
-public partial interface IDeclarationNode : ISemanticNode, ICodeNode
+    typeof(IInvocableDefinitionNode),
+    typeof(INamespaceMemberDefinitionNode),
+    typeof(ITypeMemberDefinitionNode))]
+public partial interface IDefinitionNode : ISemanticNode, ICodeNode
 {
     new IDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -254,64 +254,64 @@ public partial interface IDeclarationNode : ISemanticNode, ICodeNode
 }
 
 [Closed(
-    typeof(IConcreteInvocableDeclarationNode),
-    typeof(IMethodDeclarationNode))]
-public partial interface IInvocableDeclarationNode : IDeclarationNode
+    typeof(IConcreteInvocableDefinitionNode),
+    typeof(IMethodDefinitionNode))]
+public partial interface IInvocableDefinitionNode : IDefinitionNode
 {
     IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
 }
 
 [Closed(
-    typeof(IConcreteMethodDeclarationNode),
-    typeof(IConstructorDeclarationNode),
-    typeof(IInitializerDeclarationNode),
-    typeof(IAssociatedFunctionDeclarationNode))]
-public partial interface IConcreteInvocableDeclarationNode : ISemanticNode, IInvocableDeclarationNode
+    typeof(IConcreteMethodDefinitionNode),
+    typeof(IConstructorDefinitionNode),
+    typeof(IInitializerDefinitionNode),
+    typeof(IAssociatedFunctionDefinitionNode))]
+public partial interface IConcreteInvocableDefinitionNode : ISemanticNode, IInvocableDefinitionNode
 {
     IBodyNode Body { get; }
 }
 
-public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
+public partial interface INamespaceDefinitionNode : ISemanticNode, INamespaceMemberDefinitionNode
 {
     new INamespaceDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     bool IsGlobalQualified { get; }
     NamespaceName DeclaredNames { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
-    IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
+    IFixedList<INamespaceMemberDefinitionNode> Definitions { get; }
     new INamespaceSymbolNode ContainingSymbolNode { get; }
-    ISymbolNode IDeclarationNode.ContainingSymbolNode => ContainingSymbolNode;
+    ISymbolNode IDefinitionNode.ContainingSymbolNode => ContainingSymbolNode;
     new NamespaceSymbol ContainingSymbol { get; }
-    Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
+    Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
     new INamespaceSymbolNode SymbolNode { get; }
-    INamespaceMemberSymbolNode INamespaceMemberDeclarationNode.SymbolNode => SymbolNode;
+    INamespaceMemberSymbolNode INamespaceMemberDefinitionNode.SymbolNode => SymbolNode;
     NamespaceSymbol Symbol { get; }
 }
 
 [Closed(
-    typeof(IPackageMemberDeclarationNode),
-    typeof(INamespaceDeclarationNode))]
-public partial interface INamespaceMemberDeclarationNode : IDeclarationNode
+    typeof(IPackageMemberDefinitionNode),
+    typeof(INamespaceDefinitionNode))]
+public partial interface INamespaceMemberDefinitionNode : IDefinitionNode
 {
     new INamespaceMemberSymbolNode SymbolNode { get; }
-    IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
+    IDeclarationSymbolNode IDefinitionNode.SymbolNode => SymbolNode;
 }
 
-public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNode
+public partial interface IFunctionDefinitionNode : IPackageMemberDefinitionNode
 {
     new IFunctionDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     new INamespaceSymbolNode ContainingSymbolNode { get; }
-    ISymbolNode IDeclarationNode.ContainingSymbolNode => ContainingSymbolNode;
+    ISymbolNode IDefinitionNode.ContainingSymbolNode => ContainingSymbolNode;
     new NamespaceSymbol ContainingSymbol { get; }
-    Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
+    Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
     IdentifierName Name { get; }
     new IFunctionSymbolNode SymbolNode { get; }
-    IPackageMemberSymbolNode IPackageMemberDeclarationNode.SymbolNode => SymbolNode;
+    IPackageMemberSymbolNode IPackageMemberDefinitionNode.SymbolNode => SymbolNode;
     FunctionSymbol Symbol { get; }
     IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
@@ -320,89 +320,89 @@ public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNod
 }
 
 [Closed(
-    typeof(IClassDeclarationNode),
-    typeof(IStructDeclarationNode),
-    typeof(ITraitDeclarationNode))]
-public partial interface ITypeDeclarationNode : IPackageMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode
+    typeof(IClassDefinitionNode),
+    typeof(IStructDefinitionNode),
+    typeof(ITraitDefinitionNode))]
+public partial interface ITypeDefinitionNode : IPackageMemberDefinitionNode, IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IStructMemberDefinitionNode
 {
     new ITypeDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
-    IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
-    ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
+    IClassMemberDeclarationSyntax IClassMemberDefinitionNode.Syntax => Syntax;
+    ITraitMemberDeclarationSyntax ITraitMemberDefinitionNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDefinitionNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
-    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDefinitionNode.Syntax => Syntax;
     bool IsConst { get; }
     StandardName Name { get; }
     IDeclaredUserType DeclaredType { get; }
     new IUserTypeSymbolNode SymbolNode { get; }
-    IPackageMemberSymbolNode IPackageMemberDeclarationNode.SymbolNode => SymbolNode;
-    IClassMemberSymbolNode IClassMemberDeclarationNode.SymbolNode => SymbolNode;
-    ITraitMemberSymbolNode ITraitMemberDeclarationNode.SymbolNode => SymbolNode;
-    IStructMemberSymbolNode IStructMemberDeclarationNode.SymbolNode => SymbolNode;
-    INamespaceMemberSymbolNode INamespaceMemberDeclarationNode.SymbolNode => SymbolNode;
-    ITypeMemberSymbolNode ITypeMemberDeclarationNode.SymbolNode => SymbolNode;
+    IPackageMemberSymbolNode IPackageMemberDefinitionNode.SymbolNode => SymbolNode;
+    IClassMemberSymbolNode IClassMemberDefinitionNode.SymbolNode => SymbolNode;
+    ITraitMemberSymbolNode ITraitMemberDefinitionNode.SymbolNode => SymbolNode;
+    IStructMemberSymbolNode IStructMemberDefinitionNode.SymbolNode => SymbolNode;
+    INamespaceMemberSymbolNode INamespaceMemberDefinitionNode.SymbolNode => SymbolNode;
+    ITypeMemberSymbolNode ITypeMemberDefinitionNode.SymbolNode => SymbolNode;
     UserTypeSymbol Symbol { get; }
     IFixedList<IGenericParameterNode> GenericParameters { get; }
     LexicalScope SupertypesLexicalScope { get; }
     IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
     CompilerResult<IFixedSet<BareReferenceType>> Supertypes { get; }
-    IFixedList<ITypeMemberDeclarationNode> Members { get; }
+    IFixedList<ITypeMemberDefinitionNode> Members { get; }
 }
 
-public partial interface IClassDeclarationNode : ISemanticNode, ITypeDeclarationNode
+public partial interface IClassDefinitionNode : ISemanticNode, ITypeDefinitionNode
 {
     new IClassDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeDeclarationSyntax ITypeDeclarationNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
-    IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
-    ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
+    ITypeDeclarationSyntax ITypeDefinitionNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
+    IClassMemberDeclarationSyntax IClassMemberDefinitionNode.Syntax => Syntax;
+    ITraitMemberDeclarationSyntax ITraitMemberDefinitionNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDefinitionNode.Syntax => Syntax;
     bool IsAbstract { get; }
     IStandardTypeNameNode? BaseTypeName { get; }
     new IClassSymbolNode SymbolNode { get; }
-    IUserTypeSymbolNode ITypeDeclarationNode.SymbolNode => SymbolNode;
+    IUserTypeSymbolNode ITypeDefinitionNode.SymbolNode => SymbolNode;
     new ObjectType DeclaredType { get; }
-    IDeclaredUserType ITypeDeclarationNode.DeclaredType => DeclaredType;
-    new IFixedList<IClassMemberDeclarationNode> Members { get; }
-    IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+    IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
+    new IFixedList<IClassMemberDefinitionNode> Members { get; }
+    IFixedList<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
     ConstructorSymbol? DefaultConstructorSymbol { get; }
 }
 
-public partial interface IStructDeclarationNode : ISemanticNode, ITypeDeclarationNode
+public partial interface IStructDefinitionNode : ISemanticNode, ITypeDefinitionNode
 {
     new IStructDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeDeclarationSyntax ITypeDeclarationNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
-    IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
-    ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
+    ITypeDeclarationSyntax ITypeDefinitionNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
+    IClassMemberDeclarationSyntax IClassMemberDefinitionNode.Syntax => Syntax;
+    ITraitMemberDeclarationSyntax ITraitMemberDefinitionNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDefinitionNode.Syntax => Syntax;
     new IStructSymbolNode SymbolNode { get; }
-    IUserTypeSymbolNode ITypeDeclarationNode.SymbolNode => SymbolNode;
+    IUserTypeSymbolNode ITypeDefinitionNode.SymbolNode => SymbolNode;
     new StructType DeclaredType { get; }
-    IDeclaredUserType ITypeDeclarationNode.DeclaredType => DeclaredType;
-    new IFixedList<IStructMemberDeclarationNode> Members { get; }
-    IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+    IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
+    new IFixedList<IStructMemberDefinitionNode> Members { get; }
+    IFixedList<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
 }
 
-public partial interface ITraitDeclarationNode : ISemanticNode, ITypeDeclarationNode
+public partial interface ITraitDefinitionNode : ISemanticNode, ITypeDefinitionNode
 {
     new ITraitDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeDeclarationSyntax ITypeDeclarationNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
-    IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
-    ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
+    ITypeDeclarationSyntax ITypeDefinitionNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
+    IClassMemberDeclarationSyntax IClassMemberDefinitionNode.Syntax => Syntax;
+    ITraitMemberDeclarationSyntax ITraitMemberDefinitionNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDefinitionNode.Syntax => Syntax;
     new ITraitSymbolNode SymbolNode { get; }
-    IUserTypeSymbolNode ITypeDeclarationNode.SymbolNode => SymbolNode;
+    IUserTypeSymbolNode ITypeDefinitionNode.SymbolNode => SymbolNode;
     new ObjectType DeclaredType { get; }
-    IDeclaredUserType ITypeDeclarationNode.DeclaredType => DeclaredType;
-    new IFixedList<ITraitMemberDeclarationNode> Members { get; }
-    IFixedList<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+    IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
+    new IFixedList<ITraitMemberDefinitionNode> Members { get; }
+    IFixedList<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
 }
 
 public partial interface IGenericParameterNode : ISemanticNode, ICodeNode
@@ -424,236 +424,236 @@ public partial interface IGenericParameterNode : ISemanticNode, ICodeNode
 }
 
 [Closed(
-    typeof(IClassMemberDeclarationNode),
-    typeof(ITraitMemberDeclarationNode),
-    typeof(IStructMemberDeclarationNode),
-    typeof(IAlwaysTypeMemberDeclarationNode))]
-public partial interface ITypeMemberDeclarationNode : IDeclarationNode
+    typeof(IClassMemberDefinitionNode),
+    typeof(ITraitMemberDefinitionNode),
+    typeof(IStructMemberDefinitionNode),
+    typeof(IAlwaysTypeMemberDefinitionNode))]
+public partial interface ITypeMemberDefinitionNode : IDefinitionNode
 {
     new ITypeMemberDeclarationSyntax Syntax { get; }
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
     AccessModifier AccessModifier { get; }
     new ITypeMemberSymbolNode SymbolNode { get; }
-    IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
+    IDeclarationSymbolNode IDefinitionNode.SymbolNode => SymbolNode;
 }
 
 [Closed(
-    typeof(ITypeDeclarationNode),
-    typeof(IMethodDeclarationNode),
-    typeof(IConstructorDeclarationNode),
-    typeof(IFieldDeclarationNode),
-    typeof(IAssociatedFunctionDeclarationNode))]
-public partial interface IClassMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
+    typeof(ITypeDefinitionNode),
+    typeof(IMethodDefinitionNode),
+    typeof(IConstructorDefinitionNode),
+    typeof(IFieldDefinitionNode),
+    typeof(IAssociatedFunctionDefinitionNode))]
+public partial interface IClassMemberDefinitionNode : ISemanticNode, ITypeMemberDefinitionNode
 {
     new IClassMemberDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDefinitionNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
     new IClassMemberSymbolNode SymbolNode { get; }
-    ITypeMemberSymbolNode ITypeMemberDeclarationNode.SymbolNode => SymbolNode;
+    ITypeMemberSymbolNode ITypeMemberDefinitionNode.SymbolNode => SymbolNode;
 }
 
 [Closed(
-    typeof(ITypeDeclarationNode),
-    typeof(IMethodDeclarationNode),
-    typeof(IAssociatedFunctionDeclarationNode))]
-public partial interface ITraitMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
+    typeof(ITypeDefinitionNode),
+    typeof(IMethodDefinitionNode),
+    typeof(IAssociatedFunctionDefinitionNode))]
+public partial interface ITraitMemberDefinitionNode : ISemanticNode, ITypeMemberDefinitionNode
 {
     new ITraitMemberDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDefinitionNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
     new ITraitMemberSymbolNode SymbolNode { get; }
-    ITypeMemberSymbolNode ITypeMemberDeclarationNode.SymbolNode => SymbolNode;
+    ITypeMemberSymbolNode ITypeMemberDefinitionNode.SymbolNode => SymbolNode;
 }
 
 [Closed(
-    typeof(ITypeDeclarationNode),
-    typeof(IConcreteMethodDeclarationNode),
-    typeof(IInitializerDeclarationNode),
-    typeof(IFieldDeclarationNode),
-    typeof(IAssociatedFunctionDeclarationNode))]
-public partial interface IStructMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
+    typeof(ITypeDefinitionNode),
+    typeof(IConcreteMethodDefinitionNode),
+    typeof(IInitializerDefinitionNode),
+    typeof(IFieldDefinitionNode),
+    typeof(IAssociatedFunctionDefinitionNode))]
+public partial interface IStructMemberDefinitionNode : ISemanticNode, ITypeMemberDefinitionNode
 {
     new IStructMemberDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDefinitionNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
     new IStructMemberSymbolNode SymbolNode { get; }
-    ITypeMemberSymbolNode ITypeMemberDeclarationNode.SymbolNode => SymbolNode;
+    ITypeMemberSymbolNode ITypeMemberDefinitionNode.SymbolNode => SymbolNode;
 }
 
 [Closed(
-    typeof(IMethodDeclarationNode),
-    typeof(IConstructorDeclarationNode),
-    typeof(IInitializerDeclarationNode),
-    typeof(IFieldDeclarationNode),
-    typeof(IAssociatedFunctionDeclarationNode))]
-public partial interface IAlwaysTypeMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
+    typeof(IMethodDefinitionNode),
+    typeof(IConstructorDefinitionNode),
+    typeof(IInitializerDefinitionNode),
+    typeof(IFieldDefinitionNode),
+    typeof(IAssociatedFunctionDefinitionNode))]
+public partial interface IAlwaysTypeMemberDefinitionNode : ISemanticNode, ITypeMemberDefinitionNode
 {
     new UserTypeSymbol ContainingSymbol { get; }
-    Symbol IDeclarationNode.ContainingSymbol => ContainingSymbol;
+    Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
 }
 
 [Closed(
-    typeof(IAbstractMethodDeclarationNode),
-    typeof(IConcreteMethodDeclarationNode))]
-public partial interface IMethodDeclarationNode : IAlwaysTypeMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IInvocableDeclarationNode
+    typeof(IAbstractMethodDefinitionNode),
+    typeof(IConcreteMethodDefinitionNode))]
+public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IInvocableDefinitionNode
 {
     new IMethodDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
-    IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
-    ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDefinitionNode.Syntax => Syntax;
+    IClassMemberDeclarationSyntax IClassMemberDefinitionNode.Syntax => Syntax;
+    ITraitMemberDeclarationSyntax ITraitMemberDefinitionNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     MethodKind Kind { get; }
     IdentifierName Name { get; }
     IMethodSelfParameterNode SelfParameter { get; }
     new IFixedList<INamedParameterNode> Parameters { get; }
-    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDeclarationNode.Parameters => Parameters;
+    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     ITypeNode? Return { get; }
     new IMethodSymbolNode SymbolNode { get; }
-    ITypeMemberSymbolNode ITypeMemberDeclarationNode.SymbolNode => SymbolNode;
-    IClassMemberSymbolNode IClassMemberDeclarationNode.SymbolNode => SymbolNode;
-    ITraitMemberSymbolNode ITraitMemberDeclarationNode.SymbolNode => SymbolNode;
-    IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
+    ITypeMemberSymbolNode ITypeMemberDefinitionNode.SymbolNode => SymbolNode;
+    IClassMemberSymbolNode IClassMemberDefinitionNode.SymbolNode => SymbolNode;
+    ITraitMemberSymbolNode ITraitMemberDefinitionNode.SymbolNode => SymbolNode;
+    IDeclarationSymbolNode IDefinitionNode.SymbolNode => SymbolNode;
     MethodSymbol Symbol { get; }
 }
 
-public partial interface IAbstractMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
+public partial interface IAbstractMethodDefinitionNode : ISemanticNode, IMethodDefinitionNode
 {
     new IAbstractMethodDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IMethodDeclarationSyntax IMethodDeclarationNode.Syntax => Syntax;
-    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
-    IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
-    ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IMethodDeclarationSyntax IMethodDefinitionNode.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDefinitionNode.Syntax => Syntax;
+    IClassMemberDeclarationSyntax IClassMemberDefinitionNode.Syntax => Syntax;
+    ITraitMemberDeclarationSyntax ITraitMemberDefinitionNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
     ObjectType ContainingDeclaredType { get; }
 }
 
 [Closed(
-    typeof(IStandardMethodDeclarationNode),
-    typeof(IGetterMethodDeclarationNode),
-    typeof(ISetterMethodDeclarationNode))]
-public partial interface IConcreteMethodDeclarationNode : IMethodDeclarationNode, IStructMemberDeclarationNode, IConcreteInvocableDeclarationNode
+    typeof(IStandardMethodDefinitionNode),
+    typeof(IGetterMethodDefinitionNode),
+    typeof(ISetterMethodDefinitionNode))]
+public partial interface IConcreteMethodDefinitionNode : IMethodDefinitionNode, IStructMemberDefinitionNode, IConcreteInvocableDefinitionNode
 {
     new IConcreteMethodDeclarationSyntax Syntax { get; }
-    IMethodDeclarationSyntax IMethodDeclarationNode.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
+    IMethodDeclarationSyntax IMethodDefinitionNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDefinitionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
-    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
-    IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
-    ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDefinitionNode.Syntax => Syntax;
+    IClassMemberDeclarationSyntax IClassMemberDefinitionNode.Syntax => Syntax;
+    ITraitMemberDeclarationSyntax ITraitMemberDefinitionNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     new IFixedList<INamedParameterNode> Parameters { get; }
-    IFixedList<INamedParameterNode> IMethodDeclarationNode.Parameters => Parameters;
-    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDeclarationNode.Parameters => Parameters;
+    IFixedList<INamedParameterNode> IMethodDefinitionNode.Parameters => Parameters;
+    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
 }
 
-public partial interface IStandardMethodDeclarationNode : ISemanticNode, IConcreteMethodDeclarationNode
+public partial interface IStandardMethodDefinitionNode : ISemanticNode, IConcreteMethodDefinitionNode
 {
     new IStandardMethodDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IConcreteMethodDeclarationSyntax IConcreteMethodDeclarationNode.Syntax => Syntax;
-    IMethodDeclarationSyntax IMethodDeclarationNode.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IConcreteMethodDeclarationSyntax IConcreteMethodDefinitionNode.Syntax => Syntax;
+    IMethodDeclarationSyntax IMethodDefinitionNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDefinitionNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
 }
 
-public partial interface IGetterMethodDeclarationNode : ISemanticNode, IConcreteMethodDeclarationNode
+public partial interface IGetterMethodDefinitionNode : ISemanticNode, IConcreteMethodDefinitionNode
 {
     new IGetterMethodDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IConcreteMethodDeclarationSyntax IConcreteMethodDeclarationNode.Syntax => Syntax;
-    IMethodDeclarationSyntax IMethodDeclarationNode.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IConcreteMethodDeclarationSyntax IConcreteMethodDefinitionNode.Syntax => Syntax;
+    IMethodDeclarationSyntax IMethodDefinitionNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDefinitionNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
     new ITypeNode Return { get; }
 }
 
-public partial interface ISetterMethodDeclarationNode : ISemanticNode, IConcreteMethodDeclarationNode
+public partial interface ISetterMethodDefinitionNode : ISemanticNode, IConcreteMethodDefinitionNode
 {
     new ISetterMethodDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IConcreteMethodDeclarationSyntax IConcreteMethodDeclarationNode.Syntax => Syntax;
-    IMethodDeclarationSyntax IMethodDeclarationNode.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IConcreteMethodDeclarationSyntax IConcreteMethodDefinitionNode.Syntax => Syntax;
+    IMethodDeclarationSyntax IMethodDefinitionNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDefinitionNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
 }
 
-public partial interface IConstructorDeclarationNode : IConcreteInvocableDeclarationNode, IAlwaysTypeMemberDeclarationNode, IClassMemberDeclarationNode
+public partial interface IConstructorDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode
 {
     new IConstructorDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
-    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
-    IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDefinitionNode.Syntax => Syntax;
+    IClassMemberDeclarationSyntax IClassMemberDefinitionNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     IdentifierName? Name { get; }
     IConstructorSelfParameterNode SelfParameter { get; }
     ConstructorSymbol Symbol { get; }
     new IBlockBodyNode Body { get; }
-    IBodyNode IConcreteInvocableDeclarationNode.Body => Body;
+    IBodyNode IConcreteInvocableDefinitionNode.Body => Body;
 }
 
-public partial interface IInitializerDeclarationNode : IConcreteInvocableDeclarationNode, IAlwaysTypeMemberDeclarationNode, IStructMemberDeclarationNode
+public partial interface IInitializerDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IStructMemberDefinitionNode
 {
     new IInitializerDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
-    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDefinitionNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDefinitionNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     IdentifierName? Name { get; }
     IInitializerSelfParameterNode SelfParameter { get; }
     InitializerSymbol Symbol { get; }
     new IBlockBodyNode Body { get; }
-    IBodyNode IConcreteInvocableDeclarationNode.Body => Body;
+    IBodyNode IConcreteInvocableDefinitionNode.Body => Body;
 }
 
-public partial interface IFieldDeclarationNode : IAlwaysTypeMemberDeclarationNode, IClassMemberDeclarationNode, IStructMemberDeclarationNode, IBindingNode
+public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IStructMemberDefinitionNode, IBindingNode
 {
     new IFieldDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
-    IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDefinitionNode.Syntax => Syntax;
+    IClassMemberDeclarationSyntax IClassMemberDefinitionNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDefinitionNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
     IdentifierName Name { get; }
     ITypeNode TypeNode { get; }
     DataType Type { get; }
     new IFieldSymbolNode SymbolNode { get; }
-    ITypeMemberSymbolNode ITypeMemberDeclarationNode.SymbolNode => SymbolNode;
-    IClassMemberSymbolNode IClassMemberDeclarationNode.SymbolNode => SymbolNode;
-    IStructMemberSymbolNode IStructMemberDeclarationNode.SymbolNode => SymbolNode;
-    IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
+    ITypeMemberSymbolNode ITypeMemberDefinitionNode.SymbolNode => SymbolNode;
+    IClassMemberSymbolNode IClassMemberDefinitionNode.SymbolNode => SymbolNode;
+    IStructMemberSymbolNode IStructMemberDefinitionNode.SymbolNode => SymbolNode;
+    IDeclarationSymbolNode IDefinitionNode.SymbolNode => SymbolNode;
     FieldSymbol Symbol { get; }
     IUntypedExpressionNode? Initializer { get; }
 }
 
-public partial interface IAssociatedFunctionDeclarationNode : IConcreteInvocableDeclarationNode, IAlwaysTypeMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode
+public partial interface IAssociatedFunctionDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IStructMemberDefinitionNode
 {
     new IAssociatedFunctionDeclarationSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IDeclarationSyntax IDeclarationNode.Syntax => Syntax;
-    ITypeMemberDeclarationSyntax ITypeMemberDeclarationNode.Syntax => Syntax;
-    IClassMemberDeclarationSyntax IClassMemberDeclarationNode.Syntax => Syntax;
-    ITraitMemberDeclarationSyntax ITraitMemberDeclarationNode.Syntax => Syntax;
-    IStructMemberDeclarationSyntax IStructMemberDeclarationNode.Syntax => Syntax;
+    IDeclarationSyntax IDefinitionNode.Syntax => Syntax;
+    ITypeMemberDeclarationSyntax ITypeMemberDefinitionNode.Syntax => Syntax;
+    IClassMemberDeclarationSyntax IClassMemberDefinitionNode.Syntax => Syntax;
+    ITraitMemberDeclarationSyntax ITraitMemberDefinitionNode.Syntax => Syntax;
+    IStructMemberDeclarationSyntax IStructMemberDefinitionNode.Syntax => Syntax;
     IConcreteSyntax ICodeNode.Syntax => Syntax;
     IdentifierName Name { get; }
     new IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
     new IAssociatedFunctionSymbolNode SymbolNode { get; }
-    IDeclarationSymbolNode IDeclarationNode.SymbolNode => SymbolNode;
-    ITypeMemberSymbolNode ITypeMemberDeclarationNode.SymbolNode => SymbolNode;
-    IClassMemberSymbolNode IClassMemberDeclarationNode.SymbolNode => SymbolNode;
-    ITraitMemberSymbolNode ITraitMemberDeclarationNode.SymbolNode => SymbolNode;
-    IStructMemberSymbolNode IStructMemberDeclarationNode.SymbolNode => SymbolNode;
+    IDeclarationSymbolNode IDefinitionNode.SymbolNode => SymbolNode;
+    ITypeMemberSymbolNode ITypeMemberDefinitionNode.SymbolNode => SymbolNode;
+    IClassMemberSymbolNode IClassMemberDefinitionNode.SymbolNode => SymbolNode;
+    ITraitMemberSymbolNode ITraitMemberDefinitionNode.SymbolNode => SymbolNode;
+    IStructMemberSymbolNode IStructMemberDefinitionNode.SymbolNode => SymbolNode;
     FunctionSymbol Symbol { get; }
     FunctionType Type { get; }
 }
@@ -790,7 +790,7 @@ public partial interface IFieldParameterNode : ISemanticNode, IConstructorOrInit
     IParameterSyntax IParameterNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     IdentifierName? IParameterNode.Name => Name;
-    ITypeDeclarationNode ContainingTypeDeclaration { get; }
+    ITypeDefinitionNode ContainingTypeDefinition { get; }
     IFieldSymbolNode? ReferencedSymbolNode { get; }
 }
 

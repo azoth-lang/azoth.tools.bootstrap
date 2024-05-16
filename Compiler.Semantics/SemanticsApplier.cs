@@ -60,41 +60,41 @@ internal class SemanticsApplier
 
     #region Code Files
     private static void CompilationUnit(ICompilationUnitNode node)
-        => Declarations(node.Declarations);
+        => Declarations(node.Definitions);
     #endregion
 
     #region Declarations
-    private static void Declarations(IEnumerable<IDeclarationNode> nodes)
+    private static void Declarations(IEnumerable<IDefinitionNode> nodes)
         => nodes.ForEach(Declaration);
 
-    private static void Declaration(IDeclarationNode node)
+    private static void Declaration(IDefinitionNode node)
     {
         switch (node)
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
-            case ITypeDeclarationNode n:
+            case ITypeDefinitionNode n:
                 TypeDeclaration(n);
                 break;
-            case IFunctionDeclarationNode n:
+            case IFunctionDefinitionNode n:
                 FunctionDeclaration(n);
                 break;
-            case INamespaceDeclarationNode n:
+            case INamespaceDefinitionNode n:
                 NamespaceDeclaration(n);
                 break;
-            case IMethodDeclarationNode n:
+            case IMethodDefinitionNode n:
                 MethodDeclaration(n);
                 break;
-            case IConstructorDeclarationNode n:
+            case IConstructorDefinitionNode n:
                 ConstructorDeclaration(n);
                 break;
-            case IInitializerDeclarationNode n:
+            case IInitializerDefinitionNode n:
                 InitializerDeclaration(n);
                 break;
-            case IFieldDeclarationNode n:
+            case IFieldDefinitionNode n:
                 FieldDeclaration(n);
                 break;
-            case IAssociatedFunctionDeclarationNode n:
+            case IAssociatedFunctionDefinitionNode n:
                 AssociatedFunctionDeclaration(n);
                 break;
         }
@@ -102,15 +102,15 @@ internal class SemanticsApplier
     #endregion
 
     #region Namespace Declarations
-    private static void NamespaceDeclaration(INamespaceDeclarationNode node)
+    private static void NamespaceDeclaration(INamespaceDefinitionNode node)
     {
         node.Syntax.Symbol.Fulfill(node.Symbol);
-        Declarations(node.Declarations);
+        Declarations(node.Definitions);
     }
     #endregion
 
     #region Function Declaration
-    private static void FunctionDeclaration(IFunctionDeclarationNode node)
+    private static void FunctionDeclaration(IFunctionDefinitionNode node)
     {
         var syntax = node.Syntax;
         syntax.Symbol.BeginFulfilling();
@@ -123,7 +123,7 @@ internal class SemanticsApplier
     #endregion
 
     #region Type Declarations
-    private static void TypeDeclaration(ITypeDeclarationNode node)
+    private static void TypeDeclaration(ITypeDefinitionNode node)
     {
         var syntax = node.Syntax;
         syntax.Symbol.BeginFulfilling();
@@ -143,7 +143,7 @@ internal class SemanticsApplier
     #endregion
 
     #region Member Declarations
-    private static void MethodDeclaration(IMethodDeclarationNode node)
+    private static void MethodDeclaration(IMethodDefinitionNode node)
     {
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();
@@ -151,14 +151,14 @@ internal class SemanticsApplier
         NamedParameters(node.Parameters);
         Type(node.Return);
 
-        if (node is IConcreteMethodDeclarationNode n)
+        if (node is IConcreteMethodDefinitionNode n)
             ConcreteMethodDeclaration(n);
     }
 
-    private static void ConcreteMethodDeclaration(IConcreteMethodDeclarationNode node)
+    private static void ConcreteMethodDeclaration(IConcreteMethodDefinitionNode node)
         => Body(node.Body);
 
-    private static void ConstructorDeclaration(IConstructorDeclarationNode node)
+    private static void ConstructorDeclaration(IConstructorDefinitionNode node)
     {
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();
@@ -167,7 +167,7 @@ internal class SemanticsApplier
         BlockBody(node.Body);
     }
 
-    private static void InitializerDeclaration(IInitializerDeclarationNode node)
+    private static void InitializerDeclaration(IInitializerDefinitionNode node)
     {
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();
@@ -176,7 +176,7 @@ internal class SemanticsApplier
         BlockBody(node.Body);
     }
 
-    private static void FieldDeclaration(IFieldDeclarationNode node)
+    private static void FieldDeclaration(IFieldDefinitionNode node)
     {
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();
@@ -185,7 +185,7 @@ internal class SemanticsApplier
         UntypedExpression(node.Initializer);
     }
 
-    private static void AssociatedFunctionDeclaration(IAssociatedFunctionDeclarationNode node)
+    private static void AssociatedFunctionDeclaration(IAssociatedFunctionDefinitionNode node)
     {
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();

@@ -10,7 +10,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal abstract class MethodDeclarationNode : TypeMemberDeclarationNode, IMethodDeclarationNode
+internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethodDefinitionNode
 {
     public abstract override IMethodDeclarationSyntax Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
@@ -28,7 +28,7 @@ internal abstract class MethodDeclarationNode : TypeMemberDeclarationNode, IMeth
     => symbol.TryGetValue(out var value) ? value
         : symbol.GetValue(this, SymbolAttribute.MethodDeclaration);
 
-    private protected MethodDeclarationNode(
+    private protected MethodDefinitionNode(
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return)

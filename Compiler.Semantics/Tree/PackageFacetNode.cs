@@ -21,11 +21,10 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
             : symbolNode.GetValue(this, SymbolNodeAttributes.PackageFacet);
     public IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
 
-    private ValueAttribute<IFixedSet<IPackageMemberDeclarationNode>> declarations;
-    public IFixedSet<IPackageMemberDeclarationNode> Declarations
-        => declarations.TryGetValue(out var value)
-            ? value
-            : declarations.GetValue(this, DeclarationsAttribute.PackageFacet);
+    private ValueAttribute<IFixedSet<IPackageMemberDefinitionNode>> definitions;
+    public IFixedSet<IPackageMemberDefinitionNode> Definitions
+        => definitions.TryGetValue(out var value) ? value
+            : definitions.GetValue(this, DeclarationsAttribute.PackageFacet);
 
     private ValueAttribute<PackageNameScope> packageNameScope;
     public PackageNameScope PackageNameScope

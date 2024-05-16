@@ -29,7 +29,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
             : implicitNamespaceSymbolNode.GetValue(this, SymbolNodeAttributes.CompilationUnit);
     public NamespaceSymbol ImplicitNamespaceSymbol => ImplicitNamespaceSymbolNode.Symbol;
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
-    public IFixedList<INamespaceMemberDeclarationNode> Declarations { get; }
+    public IFixedList<INamespaceMemberDefinitionNode> Definitions { get; }
     public NamespaceScope ContainingLexicalScope => (NamespaceScope)Parent.InheritedContainingLexicalScope(this, this);
     private ValueAttribute<LexicalScope> lexicalScope;
     public LexicalScope LexicalScope
@@ -43,11 +43,11 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     public CompilationUnitNode(
         ICompilationUnitSyntax syntax,
         IEnumerable<IUsingDirectiveNode> usingDirectives,
-        IEnumerable<INamespaceMemberDeclarationNode> declarations)
+        IEnumerable<INamespaceMemberDefinitionNode> declarations)
     {
         Syntax = syntax;
         UsingDirectives = ChildList.Attach(this, usingDirectives);
-        Declarations = ChildList.Attach(this, declarations);
+        Definitions = ChildList.Attach(this, declarations);
     }
 
     internal override INamespaceSymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)

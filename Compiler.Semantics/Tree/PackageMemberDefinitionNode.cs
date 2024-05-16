@@ -8,7 +8,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal abstract class PackageMemberDeclarationNode : DeclarationNode, IPackageMemberDeclarationNode
+internal abstract class PackageMemberDefinitionNode : DefinitionNode, IPackageMemberDefinitionNode
 {
     public IFixedList<IAttributeNode> Attributes { get; }
     private ValueAttribute<AccessModifier> accessModifier;
@@ -18,7 +18,7 @@ internal abstract class PackageMemberDeclarationNode : DeclarationNode, IPackage
     public abstract override IPackageMemberSymbolNode SymbolNode { get; }
     public abstract Symbol Symbol { get; }
 
-    private protected PackageMemberDeclarationNode(IEnumerable<IAttributeNode> attributes)
+    private protected PackageMemberDefinitionNode(IEnumerable<IAttributeNode> attributes)
     {
         Attributes = ChildList.Attach(this, attributes);
     }

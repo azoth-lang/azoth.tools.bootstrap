@@ -56,14 +56,14 @@ internal static class SyntaxBinder
     #endregion
 
     #region Namespace Declarations
-    private static INamespaceDeclarationNode NamespaceDeclaration(INamespaceDeclarationSyntax syntax)
-        => new NamespaceDeclarationNode(syntax, UsingDirectives(syntax.UsingDirectives),
+    private static INamespaceDefinitionNode NamespaceDeclaration(INamespaceDeclarationSyntax syntax)
+        => new NamespaceDefinitionNode(syntax, UsingDirectives(syntax.UsingDirectives),
             NamespaceMemberDeclarations(syntax.Declarations));
 
-    private static IEnumerable<INamespaceMemberDeclarationNode> NamespaceMemberDeclarations(IEnumerable<INonMemberDeclarationSyntax> syntax)
+    private static IEnumerable<INamespaceMemberDefinitionNode> NamespaceMemberDeclarations(IEnumerable<INonMemberDeclarationSyntax> syntax)
         => syntax.Select(NamespaceMemberDeclaration);
 
-    private static INamespaceMemberDeclarationNode NamespaceMemberDeclaration(INonMemberDeclarationSyntax syntax)
+    private static INamespaceMemberDefinitionNode NamespaceMemberDeclaration(INonMemberDeclarationSyntax syntax)
         => syntax switch
         {
             INamespaceDeclarationSyntax syn => NamespaceDeclaration(syn),
@@ -74,12 +74,12 @@ internal static class SyntaxBinder
     #endregion
 
     #region Function Declaration
-    private static IFunctionDeclarationNode FunctionDeclaration(IFunctionDeclarationSyntax syntax)
-        => new FunctionDeclarationNode(syntax, Attributes(syntax.Attributes), NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
+    private static IFunctionDefinitionNode FunctionDeclaration(IFunctionDeclarationSyntax syntax)
+        => new FunctionDefinitionNode(syntax, Attributes(syntax.Attributes), NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
     #endregion
 
     #region Type Declarations
-    private static ITypeDeclarationNode TypeDeclaration(ITypeDeclarationSyntax syntax)
+    private static ITypeDefinitionNode TypeDeclaration(ITypeDeclarationSyntax syntax)
         => syntax switch
         {
             IClassDeclarationSyntax syn => ClassDeclaration(syn),
@@ -88,17 +88,17 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IClassDeclarationNode ClassDeclaration(IClassDeclarationSyntax syntax)
-        => new ClassDeclarationNode(syntax, GenericParameters(syntax.GenericParameters),
+    private static IClassDefinitionNode ClassDeclaration(IClassDeclarationSyntax syntax)
+        => new ClassDefinitionNode(syntax, GenericParameters(syntax.GenericParameters),
             StandardTypeName(syntax.BaseTypeName), SupertypeNames(syntax.SupertypeNames),
             ClassMemberDeclarations(syntax.Members));
 
-    private static IStructDeclarationNode StructDeclaration(IStructDeclarationSyntax syntax)
-        => new StructDeclarationNode(syntax, GenericParameters(syntax.GenericParameters),
+    private static IStructDefinitionNode StructDeclaration(IStructDeclarationSyntax syntax)
+        => new StructDefinitionNode(syntax, GenericParameters(syntax.GenericParameters),
             SupertypeNames(syntax.SupertypeNames), StructMemberDeclarations(syntax.Members));
 
-    private static ITraitDeclarationNode TraitDeclaration(ITraitDeclarationSyntax syntax)
-        => new TraitDeclarationNode(syntax, GenericParameters(syntax.GenericParameters),
+    private static ITraitDefinitionNode TraitDeclaration(ITraitDeclarationSyntax syntax)
+        => new TraitDefinitionNode(syntax, GenericParameters(syntax.GenericParameters),
             SupertypeNames(syntax.SupertypeNames), TraitMemberDeclarations(syntax.Members));
 
     private static IEnumerable<IStandardTypeNameNode> SupertypeNames(IEnumerable<IStandardTypeNameSyntax> syntax)
@@ -114,10 +114,10 @@ internal static class SyntaxBinder
     #endregion
 
     #region Type Member Declarations
-    private static IEnumerable<IClassMemberDeclarationNode> ClassMemberDeclarations(IEnumerable<IClassMemberDeclarationSyntax> syntax)
+    private static IEnumerable<IClassMemberDefinitionNode> ClassMemberDeclarations(IEnumerable<IClassMemberDeclarationSyntax> syntax)
         => syntax.Select(ClassMemberDeclaration);
 
-    private static IClassMemberDeclarationNode ClassMemberDeclaration(IClassMemberDeclarationSyntax syntax)
+    private static IClassMemberDefinitionNode ClassMemberDeclaration(IClassMemberDeclarationSyntax syntax)
         => syntax switch
         {
             ITypeDeclarationSyntax syn => TypeDeclaration(syn),
@@ -128,10 +128,10 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IEnumerable<IStructMemberDeclarationNode> StructMemberDeclarations(IEnumerable<IStructMemberDeclarationSyntax> syntax)
+    private static IEnumerable<IStructMemberDefinitionNode> StructMemberDeclarations(IEnumerable<IStructMemberDeclarationSyntax> syntax)
         => syntax.Select(StructMemberDeclaration);
 
-    private static IStructMemberDeclarationNode StructMemberDeclaration(IStructMemberDeclarationSyntax syntax)
+    private static IStructMemberDefinitionNode StructMemberDeclaration(IStructMemberDeclarationSyntax syntax)
         => syntax switch
         {
             ITypeDeclarationSyntax syn => TypeDeclaration(syn),
@@ -142,10 +142,10 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IEnumerable<ITraitMemberDeclarationNode> TraitMemberDeclarations(IEnumerable<ITraitMemberDeclarationSyntax> syntax)
+    private static IEnumerable<ITraitMemberDefinitionNode> TraitMemberDeclarations(IEnumerable<ITraitMemberDeclarationSyntax> syntax)
         => syntax.Select(TraitMemberDeclaration);
 
-    private static ITraitMemberDeclarationNode TraitMemberDeclaration(ITraitMemberDeclarationSyntax syntax)
+    private static ITraitMemberDefinitionNode TraitMemberDeclaration(ITraitMemberDeclarationSyntax syntax)
         => syntax switch
         {
             ITypeDeclarationSyntax syn => TypeDeclaration(syn),
@@ -156,7 +156,7 @@ internal static class SyntaxBinder
     #endregion
 
     #region Member Declarations
-    private static IMethodDeclarationNode MethodDeclaration(IMethodDeclarationSyntax syntax)
+    private static IMethodDefinitionNode MethodDeclaration(IMethodDeclarationSyntax syntax)
         => syntax switch
         {
             IConcreteMethodDeclarationSyntax syn => ConcreteMethodDeclaration(syn),
@@ -164,11 +164,11 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IAbstractMethodDeclarationNode AbstractMethodDeclaration(IAbstractMethodDeclarationSyntax syntax)
-        => new AbstractMethodDeclarationNode(syntax, MethodSelfParameter(syntax.SelfParameter),
+    private static IAbstractMethodDefinitionNode AbstractMethodDeclaration(IAbstractMethodDeclarationSyntax syntax)
+        => new AbstractMethodDefinitionNode(syntax, MethodSelfParameter(syntax.SelfParameter),
                        NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
 
-    private static IConcreteMethodDeclarationNode ConcreteMethodDeclaration(IConcreteMethodDeclarationSyntax syntax)
+    private static IConcreteMethodDefinitionNode ConcreteMethodDeclaration(IConcreteMethodDeclarationSyntax syntax)
         => syntax switch
         {
             IStandardMethodDeclarationSyntax syn => StandardMethodDeclaration(syn),
@@ -177,26 +177,26 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IStandardMethodDeclarationNode StandardMethodDeclaration(IStandardMethodDeclarationSyntax syntax)
-        => new StandardMethodDeclarationNode(syntax, MethodSelfParameter(syntax.SelfParameter),
+    private static IStandardMethodDefinitionNode StandardMethodDeclaration(IStandardMethodDeclarationSyntax syntax)
+        => new StandardMethodDefinitionNode(syntax, MethodSelfParameter(syntax.SelfParameter),
             NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
 
-    private static IGetterMethodDeclarationNode GetterMethodDeclaration(IGetterMethodDeclarationSyntax syntax)
-        => new GetterMethodDeclarationNode(syntax, MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters), Type(syntax.Return.Type), Body(syntax.Body));
+    private static IGetterMethodDefinitionNode GetterMethodDeclaration(IGetterMethodDeclarationSyntax syntax)
+        => new GetterMethodDefinitionNode(syntax, MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters), Type(syntax.Return.Type), Body(syntax.Body));
 
-    private static ISetterMethodDeclarationNode SetterMethodDeclaration(ISetterMethodDeclarationSyntax syntax)
-        => new SetterMethodDeclarationNode(syntax, MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
+    private static ISetterMethodDefinitionNode SetterMethodDeclaration(ISetterMethodDeclarationSyntax syntax)
+        => new SetterMethodDefinitionNode(syntax, MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
 
-    private static IConstructorDeclarationNode ConstructorDeclaration(IConstructorDeclarationSyntax syntax)
-        => new ConstructorDeclarationNode(syntax, ConstructorSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
+    private static IConstructorDefinitionNode ConstructorDeclaration(IConstructorDeclarationSyntax syntax)
+        => new ConstructorDefinitionNode(syntax, ConstructorSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
 
-    private static IInitializerDeclarationNode InitializerDeclaration(IInitializerDeclarationSyntax syntax)
-        => new InitializerDeclarationNode(syntax, InitializerSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
+    private static IInitializerDefinitionNode InitializerDeclaration(IInitializerDeclarationSyntax syntax)
+        => new InitializerDefinitionNode(syntax, InitializerSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
 
-    private static IFieldDeclarationNode FieldDeclaration(IFieldDeclarationSyntax syntax)
-        => new FieldDeclarationNode(syntax, Type(syntax.Type), UntypedExpression(syntax.Initializer));
-    private static IAssociatedFunctionDeclarationNode AssociatedFunctionDeclaration(IAssociatedFunctionDeclarationSyntax syntax)
-        => new AssociatedFunctionDeclarationNode(syntax, NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
+    private static IFieldDefinitionNode FieldDeclaration(IFieldDeclarationSyntax syntax)
+        => new FieldDefinitionNode(syntax, Type(syntax.Type), UntypedExpression(syntax.Initializer));
+    private static IAssociatedFunctionDefinitionNode AssociatedFunctionDeclaration(IAssociatedFunctionDeclarationSyntax syntax)
+        => new AssociatedFunctionDefinitionNode(syntax, NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
     #endregion
 
     #region Attributes

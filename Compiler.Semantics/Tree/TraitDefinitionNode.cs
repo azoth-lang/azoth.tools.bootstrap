@@ -8,7 +8,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class TraitDeclarationNode : TypeDeclarationNode, ITraitDeclarationNode
+internal sealed class TraitDefinitionNode : TypeDefinitionNode, ITraitDefinitionNode
 {
     public override ITraitDeclarationSyntax Syntax { get; }
 
@@ -22,13 +22,13 @@ internal sealed class TraitDeclarationNode : TypeDeclarationNode, ITraitDeclarat
         => declaredType.TryGetValue(out var value) ? value
             : declaredType.GetValue(this, TypeDeclarationsAspect.TraitDeclaration_DeclaredType);
 
-    public override IFixedList<ITraitMemberDeclarationNode> Members { get; }
+    public override IFixedList<ITraitMemberDefinitionNode> Members { get; }
 
-    public TraitDeclarationNode(
+    public TraitDefinitionNode(
         ITraitDeclarationSyntax syntax,
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<IStandardTypeNameNode> supertypeNames,
-        IEnumerable<ITraitMemberDeclarationNode> members)
+        IEnumerable<ITraitMemberDefinitionNode> members)
         : base(genericParameters, supertypeNames)
     {
         Syntax = syntax;

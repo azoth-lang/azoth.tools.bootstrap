@@ -55,10 +55,10 @@ internal static class LexicalScopeAttributes
         return new UsingDirectivesScope(containingScope, namespaceScopes);
     }
 
-    public static LexicalScope NamespaceDeclaration(INamespaceDeclarationNode node)
+    public static LexicalScope NamespaceDeclaration(INamespaceDefinitionNode node)
         => BuildNamespaceScope(node.ContainingLexicalScope, node.DeclaredNames, node.UsingDirectives);
 
-    public static LexicalScope TypeDeclaration_SupertypesLexicalScope(ITypeDeclarationNode node)
+    public static LexicalScope TypeDeclaration_SupertypesLexicalScope(ITypeDefinitionNode node)
     {
         if (node.GenericParameters.Any())
             return new BasicScope(node.ContainingLexicalScope, node.GenericParameters.Select(p => p.SymbolNode));
@@ -66,16 +66,16 @@ internal static class LexicalScopeAttributes
         return node.ContainingLexicalScope;
     }
 
-    public static LexicalScope TypeDeclaration_LexicalScope(ITypeDeclarationNode node)
+    public static LexicalScope TypeDeclaration_LexicalScope(ITypeDefinitionNode node)
         // TODO populate the scope with members
         => new BasicScope(node.SupertypesLexicalScope, Enumerable.Empty<INamedSymbolNode>());
 
-    public static LexicalScope TypeDeclaration_InheritedLexicalScope_Supertypes(ITypeDeclarationNode node)
+    public static LexicalScope TypeDeclaration_InheritedLexicalScope_Supertypes(ITypeDefinitionNode node)
         => node.SupertypesLexicalScope;
 
-    public static LexicalScope TypeDeclaration_InheritedLexicalScope(ITypeDeclarationNode node)
+    public static LexicalScope TypeDeclaration_InheritedLexicalScope(ITypeDefinitionNode node)
         => node.LexicalScope;
 
-    public static LexicalScope FunctionDeclaration_LexicalScope(IFunctionDeclarationNode node)
+    public static LexicalScope FunctionDeclaration_LexicalScope(IFunctionDefinitionNode node)
         => throw new System.NotImplementedException();
 }

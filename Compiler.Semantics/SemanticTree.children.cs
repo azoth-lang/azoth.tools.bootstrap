@@ -30,18 +30,18 @@ public static class ISemanticNodeExtensions
             case ICompilationUnitNode n:
                 foreach (var child in n.UsingDirectives)
                     yield return child;
-                foreach (var child in n.Declarations)
+                foreach (var child in n.Definitions)
                     yield return child;
                 yield break;
             case IUsingDirectiveNode n:
                 yield break;
-            case INamespaceDeclarationNode n:
+            case INamespaceDefinitionNode n:
                 foreach (var child in n.UsingDirectives)
                     yield return child;
-                foreach (var child in n.Declarations)
+                foreach (var child in n.Definitions)
                     yield return child;
                 yield break;
-            case IFunctionDeclarationNode n:
+            case IFunctionDefinitionNode n:
                 foreach (var child in n.Attributes)
                     yield return child;
                 foreach (var child in n.Parameters)
@@ -50,7 +50,7 @@ public static class ISemanticNodeExtensions
                     yield return n.Return;
                 yield return n.Body;
                 yield break;
-            case IClassDeclarationNode n:
+            case IClassDefinitionNode n:
                 foreach (var child in n.Attributes)
                     yield return child;
                 foreach (var child in n.GenericParameters)
@@ -62,7 +62,7 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case IStructDeclarationNode n:
+            case IStructDefinitionNode n:
                 foreach (var child in n.Attributes)
                     yield return child;
                 foreach (var child in n.GenericParameters)
@@ -72,7 +72,7 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case ITraitDeclarationNode n:
+            case ITraitDefinitionNode n:
                 foreach (var child in n.Attributes)
                     yield return child;
                 foreach (var child in n.GenericParameters)
@@ -85,14 +85,14 @@ public static class ISemanticNodeExtensions
             case IGenericParameterNode n:
                 yield return n.Constraint;
                 yield break;
-            case IAbstractMethodDeclarationNode n:
+            case IAbstractMethodDefinitionNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
                 yield break;
-            case IStandardMethodDeclarationNode n:
+            case IStandardMethodDefinitionNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
@@ -100,14 +100,14 @@ public static class ISemanticNodeExtensions
                     yield return n.Return;
                 yield return n.Body;
                 yield break;
-            case IGetterMethodDeclarationNode n:
+            case IGetterMethodDefinitionNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
                 yield return n.Return;
                 yield return n.Body;
                 yield break;
-            case ISetterMethodDeclarationNode n:
+            case ISetterMethodDefinitionNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
@@ -115,24 +115,24 @@ public static class ISemanticNodeExtensions
                     yield return n.Return;
                 yield return n.Body;
                 yield break;
-            case IConstructorDeclarationNode n:
+            case IConstructorDefinitionNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
                 yield return n.Body;
                 yield break;
-            case IInitializerDeclarationNode n:
+            case IInitializerDefinitionNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
                 yield return n.Body;
                 yield break;
-            case IFieldDeclarationNode n:
+            case IFieldDefinitionNode n:
                 yield return n.TypeNode;
                 if (n.Initializer is not null)
                     yield return n.Initializer;
                 yield break;
-            case IAssociatedFunctionDeclarationNode n:
+            case IAssociatedFunctionDefinitionNode n:
                 foreach (var child in n.Parameters)
                     yield return child;
                 if (n.Return is not null)

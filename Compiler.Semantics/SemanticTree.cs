@@ -4,13 +4,13 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
-public partial interface ITypeDeclarationNode
+public partial interface ITypeDefinitionNode
 {
     IEnumerable<IStandardTypeNameNode> AllSupertypeNames => SupertypeNames;
 }
 
-public partial interface IClassDeclarationNode
+public partial interface IClassDefinitionNode
 {
-    IEnumerable<IStandardTypeNameNode> ITypeDeclarationNode.AllSupertypeNames
+    IEnumerable<IStandardTypeNameNode> ITypeDefinitionNode.AllSupertypeNames
         => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
 }

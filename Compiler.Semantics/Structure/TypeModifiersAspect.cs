@@ -9,16 +9,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 /// </summary>
 internal static class TypeModifiersAspect
 {
-    public static AccessModifier PackageMemberDeclaration_AccessModifier(IDeclarationNode node)
+    public static AccessModifier PackageMemberDeclaration_AccessModifier(IDefinitionNode node)
         => EntityDeclarationAccessModifier((IEntityDeclarationSyntax)node.Syntax);
 
-    public static AccessModifier TypeMemberDeclaration_AccessModifier(ITypeMemberDeclarationNode node)
+    public static AccessModifier TypeMemberDeclaration_AccessModifier(ITypeMemberDefinitionNode node)
         => EntityDeclarationAccessModifier(node.Syntax);
 
     private static AccessModifier EntityDeclarationAccessModifier(IEntityDeclarationSyntax entityDeclarationSyntax)
         => entityDeclarationSyntax.AccessModifier?.ToAccessModifier() ?? AccessModifier.Private;
 
-    public static void AbstractMethodDeclaration_ContributeDiagnostics(IAbstractMethodDeclarationNode node, Diagnostics diagnostics)
+    public static void AbstractMethodDeclaration_ContributeDiagnostics(IAbstractMethodDefinitionNode node, Diagnostics diagnostics)
     {
         var concreteClass = !node.ContainingDeclaredType.IsAbstract;
         if (concreteClass)

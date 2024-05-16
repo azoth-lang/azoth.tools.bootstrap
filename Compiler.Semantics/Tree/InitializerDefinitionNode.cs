@@ -10,28 +10,25 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal class ConstructorDeclarationNode : TypeMemberDeclarationNode, IConstructorDeclarationNode
+internal sealed class InitializerDefinitionNode : TypeMemberDefinitionNode, IInitializerDefinitionNode
 {
-    public override IConstructorDeclarationSyntax Syntax { get; }
+    public override IInitializerDeclarationSyntax Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public IdentifierName? Name => Syntax.Name;
-    public IConstructorSelfParameterNode SelfParameter { get; }
+    public IInitializerSelfParameterNode SelfParameter { get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
     public IBlockBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    private ValueAttribute<IConstructorSymbolNode> symbolNode;
-    public override IConstructorSymbolNode SymbolNode
-        => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttributes.ConstructorDeclaration_SymbolNode);
-    IClassMemberSymbolNode IClassMemberDeclarationNode.SymbolNode => SymbolNode;
-    private ValueAttribute<ConstructorSymbol> symbol;
-    public ConstructorSymbol Symbol
+    public override IInitializerSymbolNode SymbolNode => throw new NotImplementedException();
+    IStructMemberSymbolNode IStructMemberDefinitionNode.SymbolNode => SymbolNode;
+    private ValueAttribute<InitializerSymbol> symbol;
+    public InitializerSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAttribute.ConstructorDeclaration);
+            : symbol.GetValue(this, SymbolAttribute.InitializerDeclaration);
 
-    public ConstructorDeclarationNode(
-        IConstructorDeclarationSyntax syntax,
-        IConstructorSelfParameterNode selfParameter,
+    public InitializerDefinitionNode(
+        IInitializerDeclarationSyntax syntax,
+        IInitializerSelfParameterNode selfParameter,
         IEnumerable<IConstructorOrInitializerParameterNode> parameters,
         IBlockBodyNode body)
     {

@@ -9,7 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class AbstractMethodDeclarationNode : MethodDeclarationNode, IAbstractMethodDeclarationNode
+internal sealed class AbstractMethodDefinitionNode : MethodDefinitionNode, IAbstractMethodDefinitionNode
 {
     public override IAbstractMethodDeclarationSyntax Syntax { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
@@ -18,7 +18,7 @@ internal sealed class AbstractMethodDeclarationNode : MethodDeclarationNode, IAb
         => containingDeclaredType.TryGetValue(out var value) ? value
             : containingDeclaredType.GetValue(InheritedContainingDeclaredType);
 
-    public AbstractMethodDeclarationNode(
+    public AbstractMethodDefinitionNode(
         IAbstractMethodDeclarationSyntax syntax,
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,

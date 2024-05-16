@@ -7,15 +7,15 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class GetterMethodDeclarationNode : MethodDeclarationNode, IGetterMethodDeclarationNode
+internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetterMethodDefinitionNode
 {
     public override IGetterMethodDeclarationSyntax Syntax { get; }
     public override ITypeNode Return => base.Return!;
     public IBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    IStructMemberSymbolNode IStructMemberDeclarationNode.SymbolNode => SymbolNode;
+    IStructMemberSymbolNode IStructMemberDefinitionNode.SymbolNode => SymbolNode;
 
-    public GetterMethodDeclarationNode(
+    public GetterMethodDefinitionNode(
         IGetterMethodDeclarationSyntax syntax,
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,

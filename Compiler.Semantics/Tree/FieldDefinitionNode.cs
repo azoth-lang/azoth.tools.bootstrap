@@ -11,7 +11,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class FieldDeclarationNode : TypeMemberDeclarationNode, IFieldDeclarationNode
+internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefinitionNode
 {
     public override IFieldDeclarationSyntax Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
@@ -33,7 +33,7 @@ internal sealed class FieldDeclarationNode : TypeMemberDeclarationNode, IFieldDe
             : symbol.GetValue(this, SymbolAttribute.FieldDeclaration);
     public IUntypedExpressionNode? Initializer { get; }
 
-    public FieldDeclarationNode(IFieldDeclarationSyntax syntax, ITypeNode type, IUntypedExpressionNode? initializer)
+    public FieldDefinitionNode(IFieldDeclarationSyntax syntax, ITypeNode type, IUntypedExpressionNode? initializer)
     {
         Syntax = syntax;
         TypeNode = Child.Attach(this, type);

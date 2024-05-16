@@ -5,11 +5,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
 internal sealed class SemanticConstructorSymbolNode : SemanticDeclarationSymbolNode, IConstructorSymbolNode
 {
-    private readonly IConstructorDeclarationNode node;
+    private readonly IConstructorDefinitionNode node;
     public override IdentifierName? Name => node.Name;
     public override ConstructorSymbol Symbol => node.Symbol;
 
-    public SemanticConstructorSymbolNode(IConstructorDeclarationNode node)
+    public SemanticConstructorSymbolNode(IConstructorDefinitionNode node)
     {
         this.node = node;
     }
