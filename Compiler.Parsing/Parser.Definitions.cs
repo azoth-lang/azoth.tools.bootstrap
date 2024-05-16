@@ -41,7 +41,7 @@ public partial class Parser
         switch (Tokens.Current)
         {
             case INamespaceKeywordToken _:
-                return ParseNamespaceDeclaration(modifiers);
+                return ParseNamespace(modifiers);
             case IClassKeywordToken _:
                 return ParseClass(modifiers);
             case IStructKeywordToken _:
@@ -72,7 +72,7 @@ public partial class Parser
             : FixedList.Empty<IStandardTypeNameSyntax>();
 
     #region Parse Namespaces
-    internal NamespaceDefinitionSyntax ParseNamespaceDeclaration(ModifierParser modifiers)
+    internal NamespaceDefinitionSyntax ParseNamespace(ModifierParser modifiers)
     {
         modifiers.ParseEndOfModifiers();
         var ns = Tokens.Consume<INamespaceKeywordToken>();
@@ -259,19 +259,19 @@ public partial class Parser
         return (ParameterVariance.NonwritableCovariant, span);
     }
 
-    private (IFixedList<IClassMemberDefinitionSyntax> Members, TextSpan Span) ParseClassBody(IClassDefinitionSyntax declaringType)
+    private (IFixedList<IClassMemberDefinitionSyntax> Members, TextSpan Span) ParseClassBody(IClassDefinitionSyntax definingType)
     {
         var openBrace = Tokens.Expect<IOpenBraceToken>();
-        var members = ParseClassMemberDeclarations(declaringType);
+        var members = ParseClassMemberDefinitions(definingType);
         var closeBrace = Tokens.Expect<ICloseBraceToken>();
         var span = TextSpan.Covering(openBrace, closeBrace);
         return (members, span);
     }
 
-    private IFixedList<IClassMemberDefinitionSyntax> ParseClassMemberDeclarations(IClassDefinitionSyntax declaringType)
-        => ParseMany<IClassMemberDefinitionSyntax, ICloseBraceToken>(() => ParseClassMemberDeclaration(declaringType));
+    private IFixedList<IClassMemberDefinitionSyntax> ParseClassMemberDefinitions(IClassDefinitionSyntax definingType)
+        => ParseMany<IClassMemberDefinitionSyntax, ICloseBraceToken>(() => ParseClassMemberDefinition(definingType));
 
-    internal IClassMemberDefinitionSyntax ParseClassMemberDeclaration(IClassDefinitionSyntax classDefinition)
+    internal IClassMemberDefinitionSyntax ParseClassMemberDefinition(IClassDefinitionSyntax classDefinition)
     {
         var modifiers = ParseModifiers();
 
@@ -322,16 +322,16 @@ public partial class Parser
         IStructDefinitionSyntax declaringType)
     {
         var openBrace = Tokens.Expect<IOpenBraceToken>();
-        var members = ParseStructMemberDeclarations(declaringType);
+        var members = ParseStructMemberDefinitions(declaringType);
         var closeBrace = Tokens.Expect<ICloseBraceToken>();
         var span = TextSpan.Covering(openBrace, closeBrace);
         return (members, span);
     }
 
-    private IFixedList<IStructMemberDefinitionSyntax> ParseStructMemberDeclarations(IStructDefinitionSyntax declaringType)
-        => ParseMany<IStructMemberDefinitionSyntax, ICloseBraceToken>(() => ParseStructMemberDeclaration(declaringType));
+    private IFixedList<IStructMemberDefinitionSyntax> ParseStructMemberDefinitions(IStructDefinitionSyntax declaringType)
+        => ParseMany<IStructMemberDefinitionSyntax, ICloseBraceToken>(() => ParseStructMemberDefinition(declaringType));
 
-    internal IStructMemberDefinitionSyntax ParseStructMemberDeclaration(IStructDefinitionSyntax structDefinition)
+    internal IStructMemberDefinitionSyntax ParseStructMemberDefinition(IStructDefinitionSyntax structDefinition)
     {
         var modifiers = ParseModifiers();
 
@@ -387,21 +387,21 @@ public partial class Parser
         return (members, span);
     }
 
-    private IFixedList<ITraitMemberDefinitionSyntax> ParseTraitMemberDeclarations(ITraitDefinitionSyntax declaringType)
-        => ParseMany<ITraitMemberDefinitionSyntax, ICloseBraceToken>(() => ParseTraitMemberDeclaration(declaringType));
+    private IFixedList<ITraitMemberDefinitionSyntax> ParseTraitMemberDeclarations(ITraitDefinitionSyntax definingType)
+        => ParseMany<ITraitMemberDefinitionSyntax, ICloseBraceToken>(() => ParseTraitMemberDefinition(definingType));
 
-    internal ITraitMemberDefinitionSyntax ParseTraitMemberDeclaration(ITraitDefinitionSyntax traitDefinition)
+    internal ITraitMemberDefinitionSyntax ParseTraitMemberDefinition(ITraitDefinitionSyntax definingType)
     {
         var modifiers = ParseModifiers();
 
         switch (Tokens.Current)
         {
             case IFunctionKeywordToken _:
-                return ParseTraitMemberFunction(traitDefinition, modifiers);
+                return ParseTraitMemberFunction(definingType, modifiers);
             case IGetKeywordToken _:
-                return ParseGetterMethod(traitDefinition, modifiers);
+                return ParseGetterMethod(definingType, modifiers);
             case ISetKeywordToken _:
-                return ParseSetterMethod(traitDefinition, modifiers);
+                return ParseSetterMethod(definingType, modifiers);
             default:
                 Tokens.UnexpectedToken();
                 throw new ParseFailedException();
