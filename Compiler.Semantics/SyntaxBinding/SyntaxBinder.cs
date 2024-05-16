@@ -188,7 +188,7 @@ internal static class SyntaxBinder
         => new SetterMethodDefinitionNode(syntax, MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
 
     private static IConstructorDefinitionNode ConstructorDeclaration(IConstructorDefinitionSyntax syntax)
-        => new ConstructorDefinitionNode(syntax, ConstructorSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
+        => new SourceConstructorDefinitionNode(syntax, ConstructorSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
 
     private static IInitializerDefinitionNode InitializerDeclaration(IInitializerDefinitionSyntax syntax)
         => new InitializerDefinitionNode(syntax, InitializerSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));

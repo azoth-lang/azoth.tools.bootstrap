@@ -10,34 +10,23 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal class ConstructorDefinitionNode : TypeMemberDefinitionNode, IConstructorDefinitionNode
+internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IConstructorDefinitionNode
 {
-    public override IConstructorDefinitionSyntax Syntax { get; }
+    public abstract override IConstructorDefinitionSyntax? Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
-    public IdentifierName? Name => Syntax.Name;
-    public IConstructorSelfParameterNode SelfParameter { get; }
+    public override IdentifierName? Name => Syntax?.Name;
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
-    public IBlockBodyNode Body { get; }
+
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     private ValueAttribute<IConstructorDeclarationNode> symbolNode;
     public override IConstructorDeclarationNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.ConstructorDeclaration_SymbolNode);
-    IClassMemberDeclarationNode IClassMemberDefinitionNode.SymbolNode => SymbolNode;
-    private ValueAttribute<ConstructorSymbol> symbol;
-    public ConstructorSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAttribute.ConstructorDeclaration);
+    public abstract override ConstructorSymbol Symbol { get; }
 
-    public ConstructorDefinitionNode(
-        IConstructorDefinitionSyntax syntax,
-        IConstructorSelfParameterNode selfParameter,
-        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
-        IBlockBodyNode body)
+    private protected ConstructorDefinitionNode(
+        IEnumerable<IConstructorOrInitializerParameterNode> parameters)
     {
-        Syntax = syntax;
-        SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
-        Body = Child.Attach(this, body);
     }
 }

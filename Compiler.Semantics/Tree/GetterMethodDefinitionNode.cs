@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -13,7 +12,6 @@ internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetter
     public override ITypeNode Return => base.Return!;
     public IBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    IStructMemberDeclarationNode IStructMemberDefinitionNode.SymbolNode => SymbolNode;
 
     public GetterMethodDefinitionNode(
         IGetterMethodDefinitionSyntax syntax,

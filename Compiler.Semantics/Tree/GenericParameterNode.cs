@@ -32,7 +32,7 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
             : declaredType.GetValue(this, TypeDeclarationsAspect.GenericParameter_DeclaredType);
 
     public IUserTypeDeclarationNode ContainingDeclarationNode
-        => (IUserTypeDeclarationNode)InheritedContainingSymbolNode();
+        => (IUserTypeDeclarationNode)InheritedContainingDeclaration();
     public UserTypeSymbol ContainingSymbol => ContainingDeclarationNode.Symbol;
     private ValueAttribute<GenericParameterTypeSymbol> symbol;
     public GenericParameterTypeSymbol Symbol

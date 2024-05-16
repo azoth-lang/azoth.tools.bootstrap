@@ -47,11 +47,12 @@ PackageFacet <: Child = Syntax:`IPackageSyntax` PackageName:`IdentifierName`
     PackageNameScope:`PackageNameScope`
     CompilationUnits:{CompilationUnit} Definitions:`IFixedSet<IPackageMemberDefinitionNode>`;
 
+// TODO rename to FacetMemberDefinition
 PackageMemberDefinition <: NamespaceMemberDefinition
-    = Attributes:Attribute* AccessModifier:`AccessModifier` SymbolNode:`IPackageMemberDeclarationNode`;
+    = Attributes:Attribute* AccessModifier:`AccessModifier`;
 
 // ---------- Code Files
-Code <: Child = Syntax:`IConcreteSyntax` File:`CodeFile`;
+Code <: Child = Syntax:`IConcreteSyntax`? File:`CodeFile`;
 
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
     ContainingDeclarationNode:`IPackageFacetDeclarationNode` ContainingSymbol:`NamespaceSymbol`
@@ -63,48 +64,46 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
 // ---------- Definitions
-Definition <: Code = Syntax:`IDefinitionSyntax` ContainingDeclarationNode:`IDeclarationNode` ContainingSymbol:`Symbol`
-    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
-    SymbolNode:`IFacetChildDeclarationNode`;
+Definition <: Code = Syntax:`IDefinitionSyntax`? Facet:`IPackageFacetDeclarationNode` ContainingDeclarationNode:`IDeclarationNode` ContainingSymbol:`Symbol`
+    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter*;
-ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrInitializerParameter* Body;
+ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrInitializerParameter*;
 
 // ---------- Namespace Definitions
 NamespaceDefinition <: NamespaceMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
     IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
-    UsingDirectives:UsingDirective* Definitions:NamespaceMemberDefinition*
-    ContainingDeclarationNode:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
-    SymbolNode:`INamespaceDeclarationNode` Symbol:`NamespaceSymbol`;
-NamespaceMemberDefinition <: Definition = SymbolNode:`INamespaceMemberDeclarationNode`;
+    UsingDirectives:UsingDirective* Members:NamespaceMemberDefinition*
+    Declaration:`INamespaceDeclarationNode` ContainingDeclarationNode:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
+    Symbol:`NamespaceSymbol`;
+NamespaceMemberDefinition <: Definition;
 
 // ---------- Function Definition
-FunctionDefinition <: PackageMemberDefinition = Syntax:`IFunctionDefinitionSyntax`
+FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration = Syntax:`IFunctionDefinitionSyntax`
     ContainingDeclarationNode:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
-    Attributes:Attribute* Name:`IdentifierName`
-    SymbolNode:`IFunctionDeclarationNode` Symbol:`FunctionSymbol` Parameters:NamedParameter* Return:Type? Body
-    Type:`FunctionType`;
+    Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body
+    Type:`FunctionType` Symbol:`FunctionSymbol`;
 
 // ---------- Type Definitions
-TypeDefinition <: PackageMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition
+TypeDefinition <: PackageMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, UserTypeDeclaration
     = Syntax:`ITypeDefinitionSyntax` IsConst:`bool` Name:`StandardName`
-    DeclaredType:`IDeclaredUserType` SymbolNode:`IUserTypeDeclarationNode` Symbol:`UserTypeSymbol`
+    DeclaredType:`IDeclaredUserType` Symbol:`UserTypeSymbol`
     GenericParameters:GenericParameter* SupertypesLexicalScope:`LexicalScope`
     SupertypeNames:StandardTypeName* Supertypes:`CompilerResult<IFixedSet<BareReferenceType>>`
     Members:TypeMemberDefinition*;
-ClassDefinition <: TypeDefinition = Syntax:`IClassDefinitionSyntax`
+ClassDefinition <: TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSyntax`
     Attributes:Attribute* IsAbstract:`bool` GenericParameters:GenericParameter*
-    BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* SymbolNode:`IClassDeclarationNode`
+    BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName*
     DeclaredType:`ObjectType`
-    Members:ClassMemberDefinition*
-    DefaultConstructorSymbol:`ConstructorSymbol`?;
-StructDefinition <: TypeDefinition = Syntax:`IStructDefinitionSyntax`
+    SourceMembers:`IClassMemberDefinitionNode`* Members:ClassMemberDefinition*
+    DefaultConstructor:`IDefaultConstructorDefinitionNode`?;
+StructDefinition <: TypeDefinition, StructDeclaration = Syntax:`IStructDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
-    SupertypeNames:StandardTypeName* SymbolNode:`IStructDeclarationNode`
+    SupertypeNames:StandardTypeName*
     DeclaredType:`StructType`
     Members:StructMemberDefinition*;
-TraitDefinition <: TypeDefinition = Syntax:`ITraitDefinitionSyntax`
+TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
-    SupertypeNames:StandardTypeName* SymbolNode:`ITraitDeclarationNode`
+    SupertypeNames:StandardTypeName*
     DeclaredType:`ObjectType`
     Members:TraitMemberDefinition*;
 
@@ -116,10 +115,10 @@ GenericParameter <: Code, GenericParameterDeclaration = Syntax:`IGenericParamete
     Symbol:`GenericParameterTypeSymbol`;
 
 // ---------- Type Member Definitions (i.e. declarations that can be contained in a type)
-TypeMemberDefinition <: Definition = Syntax:`ITypeMemberDefinitionSyntax` AccessModifier:`AccessModifier` SymbolNode:`ITypeMemberDeclarationNode`;
-ClassMemberDefinition <: TypeMemberDefinition = Syntax:`IClassMemberDefinitionSyntax` SymbolNode:`IClassMemberDeclarationNode`;
-TraitMemberDefinition <: TypeMemberDefinition = Syntax:`ITraitMemberDefinitionSyntax` SymbolNode:`ITraitMemberDeclarationNode`;
-StructMemberDefinition <: TypeMemberDefinition = Syntax:`IStructMemberDefinitionSyntax` SymbolNode:`IStructMemberDeclarationNode`;
+TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`ITypeMemberDefinitionSyntax`? AccessModifier:`AccessModifier`;
+ClassMemberDefinition <: TypeMemberDefinition, ClassMemberDeclaration = Syntax:`IClassMemberDefinitionSyntax`?;
+TraitMemberDefinition <: TypeMemberDefinition, TraitMemberDeclaration = Syntax:`ITraitMemberDefinitionSyntax`;
+StructMemberDefinition <: TypeMemberDefinition, StructMemberDeclaration = Syntax:`IStructMemberDefinitionSyntax`?;
 AlwaysTypeMemberDefinition <: TypeMemberDefinition = ContainingSymbol:`UserTypeSymbol`;
 
 // ---------- Member Definitions
@@ -134,9 +133,14 @@ ConcreteMethodDefinition <: MethodDefinition, StructMemberDefinition, ConcreteIn
 StandardMethodDefinition <: ConcreteMethodDefinition = Syntax:`IStandardMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
 GetterMethodDefinition <: ConcreteMethodDefinition = Syntax:`IGetterMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type Body;
 SetterMethodDefinition <: ConcreteMethodDefinition = Syntax:`ISetterMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
-ConstructorDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition
-    = Syntax:`IConstructorDefinitionSyntax` Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter*
-    Symbol:`ConstructorSymbol` Body:BlockBody;
+ConstructorDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, ConstructorDeclaration
+    = Syntax:`IConstructorDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*
+    Symbol:`ConstructorSymbol`;
+DefaultConstructorDefinition <: ConstructorDefinition
+    = Parameters:ConstructorOrInitializerParameter*;
+SourceConstructorDefinition <: ConstructorDefinition
+    = Syntax:`IConstructorDefinitionSyntax`
+    SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
 InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition
     = Syntax:`IInitializerDefinitionSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter*
     Symbol:`InitializerSymbol` Body:BlockBody;
@@ -284,10 +288,9 @@ AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax` Expression:Untyp
 // -------------------------------------------------------------------------------------------------
 // TODO move into separate aspect
 
-
 Declaration = Symbol:`Symbol`;
 // Parent, Package, and GlobalNamespace type quoted so that is is not treated as a child node
-ChildDeclaration <: Declaration, `IChild<ISemanticNode>` = Package:`IPackageDeclarationNode`;
+ChildDeclaration <: Declaration, Child;
 
 NamedDeclaration <: ChildDeclaration = Name:`StandardName`;
 

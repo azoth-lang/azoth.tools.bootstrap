@@ -10,10 +10,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 internal static class TypeModifiersAspect
 {
     public static AccessModifier PackageMemberDeclaration_AccessModifier(IDefinitionNode node)
-        => EntityDeclarationAccessModifier((IEntityDefinitionSyntax)node.Syntax);
+        => EntityDeclarationAccessModifier((IEntityDefinitionSyntax)node.Syntax!);
 
     public static AccessModifier TypeMemberDeclaration_AccessModifier(ITypeMemberDefinitionNode node)
-        => EntityDeclarationAccessModifier(node.Syntax);
+        // Default constructors and initializers don't have syntax and are always published.
+        => node.Syntax is not null ? EntityDeclarationAccessModifier(node.Syntax) : AccessModifier.Published;
 
     private static AccessModifier EntityDeclarationAccessModifier(IEntityDefinitionSyntax entityDefinitionSyntax)
         => entityDefinitionSyntax.AccessModifier?.ToAccessModifier() ?? AccessModifier.Private;

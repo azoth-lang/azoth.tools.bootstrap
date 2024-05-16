@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -15,7 +14,6 @@ internal abstract class PackageMemberDefinitionNode : DefinitionNode, IPackageMe
     public AccessModifier AccessModifier
         => accessModifier.TryGetValue(out var value) ? value
             : accessModifier.GetValue(this, TypeModifiersAspect.PackageMemberDeclaration_AccessModifier);
-    public abstract override IPackageMemberDeclarationNode SymbolNode { get; }
     public abstract Symbol Symbol { get; }
 
     private protected PackageMemberDefinitionNode(IEnumerable<IAttributeNode> attributes)

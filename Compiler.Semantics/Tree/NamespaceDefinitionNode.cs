@@ -20,19 +20,18 @@ internal class NamespaceDefinitionNode : DefinitionNode, INamespaceDefinitionNod
     public override INamespaceDeclarationNode ContainingDeclarationNode
         => containingSymbolNode.TryGetValue(out var value) ? value
             : containingSymbolNode.GetValue(this, node
-                => SymbolNodeAttributes.NamespaceDeclaration_ContainingSymbolNode(node,
-                    (INamespaceDeclarationNode)Parent.InheritedContainingDeclarationNode(this, this)));
+                => SymbolNodeAttributes.NamespaceDeclaration_ContainingDeclarationNode(node,
+                    (INamespaceDeclarationNode)Parent.InheritedContainingDeclaration(this, this)));
     public override NamespaceSymbol ContainingSymbol => ContainingDeclarationNode.Symbol;
 
-    private ValueAttribute<INamespaceDeclarationNode> symbolNode;
-    public override INamespaceDeclarationNode SymbolNode
-        => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttributes.NamespaceDeclaration_SymbolNode);
-
-    public NamespaceSymbol Symbol => SymbolNode.Symbol;
+    private ValueAttribute<INamespaceDeclarationNode> declaration;
+    public INamespaceDeclarationNode Declaration
+        => declaration.TryGetValue(out var value) ? value
+            : declaration.GetValue(this, SymbolNodeAttributes.NamespaceDeclaration_Declaration);
+    public NamespaceSymbol Symbol => Declaration.Symbol;
 
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
-    public IFixedList<INamespaceMemberDefinitionNode> Definitions { get; }
+    public IFixedList<INamespaceMemberDefinitionNode> Members { get; }
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
@@ -41,14 +40,14 @@ internal class NamespaceDefinitionNode : DefinitionNode, INamespaceDefinitionNod
     public NamespaceDefinitionNode(
         INamespaceDefinitionSyntax syntax,
         IEnumerable<IUsingDirectiveNode> usingDirectives,
-        IEnumerable<INamespaceMemberDefinitionNode> definitions)
+        IEnumerable<INamespaceMemberDefinitionNode> members)
     {
         Syntax = syntax;
         UsingDirectives = ChildList.Attach(this, usingDirectives);
-        Definitions = ChildList.Attach(this, definitions);
+        Members = ChildList.Attach(this, members);
     }
 
-    internal override IDeclarationNode InheritedContainingDeclarationNode(IChildNode caller, IChildNode child)
+    internal override IDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
         => SymbolNodeAttributes.NamespaceDeclaration_InheritedContainingSymbolNode(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)

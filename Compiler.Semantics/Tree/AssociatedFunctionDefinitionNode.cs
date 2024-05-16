@@ -16,13 +16,13 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
 {
     public override IAssociatedFunctionDefinitionSyntax Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
-    public IdentifierName Name => Syntax.Name;
+    public override IdentifierName Name => Syntax.Name;
     public IFixedList<INamedParameterNode> Parameters { get; }
     // TODO this explicit implementation shouldn't be needed. There must be a bug in the code generator?
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     public ITypeNode? Return { get; }
     private ValueAttribute<FunctionSymbol> symbol;
-    public FunctionSymbol Symbol
+    public override FunctionSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAttribute.AssociatedFunctionDeclaration);
     private ValueAttribute<FunctionType> type;

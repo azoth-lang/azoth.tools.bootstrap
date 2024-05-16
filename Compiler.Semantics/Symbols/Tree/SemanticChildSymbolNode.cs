@@ -8,7 +8,4 @@ internal abstract class SemanticChildSymbolNode : ChildNode, IChildDeclarationNo
 {
     public override ISyntax? Syntax => null;
     public abstract Symbol Symbol { get; }
-
-    internal override IPackageFacetDeclarationNode InheritedFacet(IChildDeclarationNode caller, IChildDeclarationNode child)
-        => Parent.InheritedFacet(this, child);
 }

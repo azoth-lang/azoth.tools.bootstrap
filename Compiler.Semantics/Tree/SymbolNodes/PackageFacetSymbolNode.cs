@@ -24,6 +24,6 @@ internal sealed class PackageFacetSymbolNode : ChildSymbolNode, IPackageFacetSym
     internal override ISymbolTree InheritedSymbolTree(IChildDeclarationNode caller, IChildDeclarationNode child)
         => symbolTree;
 
-    internal override IPackageFacetDeclarationNode InheritedFacet(IChildDeclarationNode caller, IChildDeclarationNode child)
+    internal override IPackageFacetDeclarationNode InheritedFacet(IChildNode caller, IChildNode child)
         => this;
 }

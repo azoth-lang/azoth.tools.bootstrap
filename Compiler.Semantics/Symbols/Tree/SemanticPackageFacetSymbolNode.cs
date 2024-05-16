@@ -16,6 +16,6 @@ internal sealed class SemanticPackageFacetSymbolNode : SemanticChildSymbolNode, 
         GlobalNamespace = Child.Attach(this, globalNamespace);
     }
 
-    internal override IPackageFacetDeclarationNode InheritedFacet(IChildDeclarationNode caller, IChildDeclarationNode child)
+    internal override IPackageFacetDeclarationNode InheritedFacet(IChildNode caller, IChildNode child)
         => this;
 }

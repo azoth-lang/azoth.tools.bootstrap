@@ -60,57 +60,57 @@ internal class SemanticsApplier
 
     #region Code Files
     private static void CompilationUnit(ICompilationUnitNode node)
-        => Declarations(node.Definitions);
+        => Definitions(node.Definitions);
     #endregion
 
-    #region Declarations
-    private static void Declarations(IEnumerable<IDefinitionNode> nodes)
-        => nodes.ForEach(Declaration);
+    #region Definitions
+    private static void Definitions(IEnumerable<IDefinitionNode> nodes)
+        => nodes.ForEach(Definition);
 
-    private static void Declaration(IDefinitionNode node)
+    private static void Definition(IDefinitionNode node)
     {
         switch (node)
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
             case ITypeDefinitionNode n:
-                TypeDeclaration(n);
+                TypeDefinition(n);
                 break;
             case IFunctionDefinitionNode n:
-                FunctionDeclaration(n);
+                FunctionDefinition(n);
                 break;
             case INamespaceDefinitionNode n:
-                NamespaceDeclaration(n);
+                NamespaceDefinition(n);
                 break;
             case IMethodDefinitionNode n:
-                MethodDeclaration(n);
+                MethodDefinition(n);
                 break;
             case IConstructorDefinitionNode n:
-                ConstructorDeclaration(n);
+                ConstructorDefinition(n);
                 break;
             case IInitializerDefinitionNode n:
-                InitializerDeclaration(n);
+                InitializerDefinition(n);
                 break;
             case IFieldDefinitionNode n:
-                FieldDeclaration(n);
+                FieldDefinition(n);
                 break;
             case IAssociatedFunctionDefinitionNode n:
-                AssociatedFunctionDeclaration(n);
+                AssociatedFunctionDefinition(n);
                 break;
         }
     }
     #endregion
 
-    #region Namespace Declarations
-    private static void NamespaceDeclaration(INamespaceDefinitionNode node)
+    #region Namespace Definitions
+    private static void NamespaceDefinition(INamespaceDefinitionNode node)
     {
         node.Syntax.Symbol.Fulfill(node.Symbol);
-        Declarations(node.Definitions);
+        Definitions(node.Members);
     }
     #endregion
 
-    #region Function Declaration
-    private static void FunctionDeclaration(IFunctionDefinitionNode node)
+    #region Function Definition
+    private static void FunctionDefinition(IFunctionDefinitionNode node)
     {
         var syntax = node.Syntax;
         syntax.Symbol.BeginFulfilling();
@@ -122,19 +122,19 @@ internal class SemanticsApplier
     }
     #endregion
 
-    #region Type Declarations
-    private static void TypeDeclaration(ITypeDefinitionNode node)
+    #region Type Definitions
+    private static void TypeDefinition(ITypeDefinitionNode node)
     {
         var syntax = node.Syntax;
         syntax.Symbol.BeginFulfilling();
         syntax.Symbol.Fulfill(node.Symbol);
         GenericParameters(node.GenericParameters);
         StandardTypeNames(node.AllSupertypeNames);
-        Declarations(node.Members);
+        Definitions(node.Members);
     }
     #endregion
 
-    #region Type Declaration Parts
+    #region Type Definition Parts
     private static void GenericParameters(IFixedList<IGenericParameterNode> nodes)
         => nodes.ForEach(GenericParameter);
 
@@ -142,8 +142,8 @@ internal class SemanticsApplier
         => node.Syntax.Symbol.Fulfill(node.Symbol);
     #endregion
 
-    #region Member Declarations
-    private static void MethodDeclaration(IMethodDefinitionNode node)
+    #region Member Definitions
+    private static void MethodDefinition(IMethodDefinitionNode node)
     {
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();
@@ -152,13 +152,28 @@ internal class SemanticsApplier
         Type(node.Return);
 
         if (node is IConcreteMethodDefinitionNode n)
-            ConcreteMethodDeclaration(n);
+            ConcreteMethodDefinition(n);
     }
 
-    private static void ConcreteMethodDeclaration(IConcreteMethodDefinitionNode node)
+    private static void ConcreteMethodDefinition(IConcreteMethodDefinitionNode node)
         => Body(node.Body);
 
-    private static void ConstructorDeclaration(IConstructorDefinitionNode node)
+    private static void ConstructorDefinition(IConstructorDefinitionNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case ISourceConstructorDefinitionNode n:
+                SourceConstructorDefinition(n);
+                break;
+            case IDefaultConstructorDefinitionNode n:
+                DefaultConstructorDefinition(n);
+                break;
+        }
+    }
+
+    private static void SourceConstructorDefinition(ISourceConstructorDefinitionNode node)
     {
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();
@@ -167,7 +182,9 @@ internal class SemanticsApplier
         BlockBody(node.Body);
     }
 
-    private static void InitializerDeclaration(IInitializerDefinitionNode node)
+    private static void DefaultConstructorDefinition(IDefaultConstructorDefinitionNode node) { }
+
+    private static void InitializerDefinition(IInitializerDefinitionNode node)
     {
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();
@@ -176,7 +193,7 @@ internal class SemanticsApplier
         BlockBody(node.Body);
     }
 
-    private static void FieldDeclaration(IFieldDefinitionNode node)
+    private static void FieldDefinition(IFieldDefinitionNode node)
     {
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();
@@ -185,7 +202,7 @@ internal class SemanticsApplier
         UntypedExpression(node.Initializer);
     }
 
-    private static void AssociatedFunctionDeclaration(IAssociatedFunctionDefinitionNode node)
+    private static void AssociatedFunctionDefinition(IAssociatedFunctionDefinitionNode node)
     {
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();

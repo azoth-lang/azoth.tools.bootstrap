@@ -15,7 +15,7 @@ internal abstract class ChildSymbolNode : ChildNode, IChildDeclarationNode
     internal override ISymbolTree InheritedSymbolTree(IChildDeclarationNode caller, IChildDeclarationNode child)
         => Parent.InheritedSymbolTree(this, child);
 
-    internal override IPackageFacetDeclarationNode InheritedFacet(IChildDeclarationNode caller, IChildDeclarationNode child)
+    internal override IPackageFacetDeclarationNode InheritedFacet(IChildNode caller, IChildNode child)
         => Parent.InheritedFacet(this, child);
 
     protected IEnumerable<IChildDeclarationNode> GetMembers()

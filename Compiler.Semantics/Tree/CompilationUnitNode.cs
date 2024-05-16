@@ -19,7 +19,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     public override CodeFile File => Syntax.File;
 
     public IPackageFacetDeclarationNode ContainingDeclarationNode
-        => (IPackageFacetDeclarationNode)Parent.InheritedContainingDeclarationNode(this, this);
+        => (IPackageFacetDeclarationNode)Parent.InheritedContainingDeclaration(this, this);
     public NamespaceSymbol ContainingSymbol => ContainingDeclarationNode.Symbol;
     public NamespaceName ImplicitNamespaceName => Syntax.ImplicitNamespaceName;
 
@@ -50,7 +50,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
         Definitions = ChildList.Attach(this, declarations);
     }
 
-    internal override INamespaceDeclarationNode InheritedContainingDeclarationNode(IChildNode caller, IChildNode child)
+    internal override INamespaceDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
         => SymbolNodeAttributes.CompilationUnit_InheritedContainingSymbolNode(this);
 
     internal override CodeFile InheritedFile(IChildNode caller, IChildNode child)

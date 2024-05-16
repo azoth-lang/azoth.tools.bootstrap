@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
@@ -14,7 +13,6 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
     public override IStandardMethodDefinitionSyntax Syntax { get; }
     public IBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    IStructMemberDeclarationNode IStructMemberDefinitionNode.SymbolNode => SymbolNode;
 
     public StandardMethodDefinitionNode(
         IStandardMethodDefinitionSyntax syntax,

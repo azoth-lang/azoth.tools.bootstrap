@@ -22,11 +22,6 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
             : lexicalScope.GetValue(this, LexicalScopeAttributes.FunctionDeclaration_LexicalScope);
-
-    private ValueAttribute<IFunctionDeclarationNode> symbolNode;
-    public override IFunctionDeclarationNode SymbolNode
-        => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttributes.FunctionDeclaration);
     private ValueAttribute<FunctionSymbol> symbol;
     public override FunctionSymbol Symbol
         => symbol.TryGetValue(out var value) ? value

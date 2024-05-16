@@ -28,18 +28,21 @@ internal static class SymbolNodeAttributes
             BuildNamespace(packageSymbol, cu.ImplicitNamespaceName, cu.Definitions);
         return new SemanticPackageFacetSymbolNode(builder.Build());
 
-        void BuildMember(NamespaceSymbol namespaceSymbol, INamespaceMemberDefinitionNode declaration)
+        void BuildMember(NamespaceSymbol namespaceSymbol, INamespaceMemberDefinitionNode definition)
         {
-            switch (declaration)
+            switch (definition)
             {
                 default:
-                    throw ExhaustiveMatch.Failed(declaration);
+                    throw ExhaustiveMatch.Failed(definition);
                 case INamespaceDefinitionNode n:
                     var containingNamespace = n.IsGlobalQualified ? packageSymbol : namespaceSymbol;
-                    BuildNamespace(containingNamespace, n.DeclaredNames, n.Definitions);
+                    BuildNamespace(containingNamespace, n.DeclaredNames, n.Members);
                     break;
-                case IPackageMemberDefinitionNode n:
-                    builder.Add(namespaceSymbol, n.SymbolNode);
+                case IFunctionDefinitionNode n:
+                    builder.Add(namespaceSymbol, n);
+                    break;
+                case ITypeDefinitionNode n:
+                    builder.Add(namespaceSymbol, n);
                     break;
             }
         }
@@ -73,50 +76,22 @@ internal static class SymbolNodeAttributes
     public static FixedDictionary<IdentifierName, IPackageDeclarationNode> Package_SymbolNodes(IPackageNode node)
         => node.References.Select(r => r.SymbolNode).Append(node.SymbolNode).ToFixedDictionary(n => n.AliasOrName ?? node.Symbol.Name);
 
-    public static INamespaceDeclarationNode NamespaceDeclaration_ContainingSymbolNode(INamespaceDefinitionNode node, INamespaceDeclarationNode inheritedDeclarationNode)
+    public static INamespaceDeclarationNode NamespaceDeclaration_ContainingDeclarationNode(INamespaceDefinitionNode node, INamespaceDeclarationNode inheritedDeclarationNode)
         => node.IsGlobalQualified ? inheritedDeclarationNode.Facet.GlobalNamespace : inheritedDeclarationNode;
 
-    public static INamespaceDeclarationNode NamespaceDeclaration_SymbolNode(INamespaceDefinitionNode node)
+    public static INamespaceDeclarationNode NamespaceDeclaration_Declaration(INamespaceDefinitionNode node)
         => FindNamespace(node.ContainingDeclarationNode, node.DeclaredNames);
 
     public static INamespaceDeclarationNode NamespaceDeclaration_InheritedContainingSymbolNode(INamespaceDefinitionNode node)
-        => node.SymbolNode;
+        => node.Declaration;
 
     public static bool Attribute_InheritedIsAttributeType_Child(IAttributeNode _) => true;
 
     public static IUserTypeDeclarationNode TypeDeclaration_InheritedContainingSymbolNode(ITypeDefinitionNode node)
-        => node.SymbolNode;
+        => node;
 
     public static bool TypeDeclaration_InheritedIsAttributeType(ITypeDefinitionNode _)
         => false;
-
-    public static IClassDeclarationNode ClassDeclaration_SymbolNode(IClassDefinitionNode node)
-        => new SemanticClassSymbolNode(node);
-
-    /// <remarks>This needs to be lazy computed because the
-    /// <see cref="IClassDefinitionNode.DefaultConstructorSymbol"/> is dependent on the class symbol.</remarks>
-    public static IFixedList<IClassMemberDeclarationNode> ClassDeclaration_MembersSymbolNodes(IClassDefinitionNode node)
-    {
-        var memberSymbolNodes = ClassMembers(node.Members);
-
-        var defaultConstructorSymbol = node.DefaultConstructorSymbol;
-        if (defaultConstructorSymbol is not null)
-            memberSymbolNodes = memberSymbolNodes.Append(ConstructorSymbol(defaultConstructorSymbol));
-
-        return memberSymbolNodes.ToFixedList();
-    }
-
-    private static IEnumerable<IClassMemberDeclarationNode> ClassMembers(IEnumerable<IClassMemberDefinitionNode> nodes)
-        => nodes.Select(n => n.SymbolNode);
-
-    public static IStructDeclarationNode StructDeclaration(IStructDefinitionNode node)
-        => new SemanticStructSymbolNode(node);
-
-    public static ITraitDeclarationNode TraitDeclaration(ITraitDefinitionNode node)
-        => new SemanticTraitSymbolNode(node);
-
-    public static IFunctionDeclarationNode FunctionDeclaration(IFunctionDefinitionNode node)
-        => new SemanticFunctionSymbolNode(node);
 
     public static bool FunctionDeclaration_InheritedIsAttributeType(IFunctionDefinitionNode node)
         => false;

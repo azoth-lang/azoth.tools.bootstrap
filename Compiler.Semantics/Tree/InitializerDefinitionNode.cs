@@ -14,15 +14,14 @@ internal sealed class InitializerDefinitionNode : TypeMemberDefinitionNode, IIni
 {
     public override IInitializerDefinitionSyntax Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
-    public IdentifierName? Name => Syntax.Name;
+    public override IdentifierName? Name => Syntax.Name;
     public IInitializerSelfParameterNode SelfParameter { get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
     public IBlockBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     public override IInitializerDeclarationNode SymbolNode => throw new NotImplementedException();
-    IStructMemberDeclarationNode IStructMemberDefinitionNode.SymbolNode => SymbolNode;
     private ValueAttribute<InitializerSymbol> symbol;
-    public InitializerSymbol Symbol
+    public override InitializerSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAttribute.InitializerDeclaration);
 

@@ -16,7 +16,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     public override IFieldDefinitionSyntax Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public bool IsMutableBinding => Syntax.IsMutableBinding;
-    public IdentifierName Name => Syntax.Name;
+    public override IdentifierName Name => Syntax.Name;
     public ITypeNode TypeNode { get; }
     private ValueAttribute<DataType> type;
     public DataType Type
@@ -28,7 +28,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.FieldDeclaration_SymbolNode);
     private ValueAttribute<FieldSymbol> symbol;
-    public FieldSymbol Symbol
+    public override FieldSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAttribute.FieldDeclaration);
     public IUntypedExpressionNode? Initializer { get; }

@@ -14,9 +14,9 @@ internal abstract class SemanticNode : ISemanticNode
 {
     public abstract ISyntax? Syntax { get; }
 
-    internal virtual IDeclarationNode InheritedContainingDeclarationNode(IChildNode caller, IChildNode child)
+    internal virtual IDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedContainingDeclarationNode), caller, child));
+            Child.InheritFailedMessage(nameof(InheritedContainingDeclaration), caller, child));
 
     internal virtual IPackageDeclarationNode InheritedPackage(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(
@@ -54,7 +54,7 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedSymbolTree), caller, child));
 
-    internal virtual IPackageFacetDeclarationNode InheritedFacet(IChildDeclarationNode caller, IChildDeclarationNode child)
+    internal virtual IPackageFacetDeclarationNode InheritedFacet(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedFacet), caller, child));
 

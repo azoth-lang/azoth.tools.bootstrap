@@ -2,9 +2,8 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -16,33 +15,32 @@ internal sealed class ClassDefinitionNode : TypeDefinitionNode, IClassDefinition
     public bool IsAbstract => Syntax.AbstractModifier is not null;
     public IStandardTypeNameNode? BaseTypeName { get; }
 
-    private ValueAttribute<IClassDeclarationNode> symbolNode;
-    public override IClassDeclarationNode SymbolNode
-        => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttributes.ClassDeclaration_SymbolNode);
-
     private ValueAttribute<ObjectType> declaredType;
     public override ObjectType DeclaredType
         => declaredType.TryGetValue(out var value) ? value
             : declaredType.GetValue(this, TypeDeclarationsAspect.ClassDeclaration_DeclaredType);
 
-    public override IFixedList<IClassMemberDefinitionNode> Members { get; }
-    private ValueAttribute<ConstructorSymbol?> defaultConstructorSymbol;
-    public ConstructorSymbol? DefaultConstructorSymbol
-        => defaultConstructorSymbol.TryGetValue(out var value) ? value
-            : defaultConstructorSymbol.GetValue(this, SymbolAttribute.ClassDeclaration_DefaultConstructorSymbol);
+    public IFixedList<IClassMemberDefinitionNode> SourceMembers { get; }
+    private ValueAttribute<IFixedList<IClassMemberDefinitionNode>> members;
+    public override IFixedList<IClassMemberDefinitionNode> Members
+        => members.TryGetValue(out var value) ? value
+            : members.GetValue(this, DefaultMembersAspect.ClassDeclaration_Members);
+    private ValueAttribute<IDefaultConstructorDefinitionNode?> defaultConstructor;
+    public IDefaultConstructorDefinitionNode? DefaultConstructor
+        => defaultConstructor.TryGetValue(out var value) ? value
+            : defaultConstructor.GetValue(this, DefaultMembersAspect.ClassDeclaration_DefaultConstructor);
 
     public ClassDefinitionNode(
         IClassDefinitionSyntax syntax,
         IEnumerable<IGenericParameterNode> genericParameters,
         IStandardTypeNameNode? baseTypeName,
         IEnumerable<IStandardTypeNameNode> supertypeNames,
-        IEnumerable<IClassMemberDefinitionNode> members)
+        IEnumerable<IClassMemberDefinitionNode> sourceMembers)
         : base(genericParameters, supertypeNames)
     {
         Syntax = syntax;
         BaseTypeName = Child.Attach(this, baseTypeName);
-        Members = ChildList.Attach(this, members);
+        SourceMembers = ChildList.Attach(this, sourceMembers);
     }
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)

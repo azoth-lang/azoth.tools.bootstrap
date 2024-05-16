@@ -7,11 +7,13 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
+using DotNet.Collections.Generic;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -21,7 +23,6 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     public bool IsConst => Syntax.IsConst;
     public StandardName Name => Syntax.Name;
     public abstract IDeclaredUserType DeclaredType { get; }
-    public abstract override IUserTypeDeclarationNode SymbolNode { get; }
     private ValueAttribute<UserTypeSymbol> symbol;
     public override UserTypeSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
@@ -37,6 +38,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         => supertypes.TryGetValue(out var value) ? value
             : supertypes.GetValue(this, TypeDeclarationsAspect.TypeDeclaration_Supertypes);
     public abstract IFixedList<ITypeMemberDefinitionNode> Members { get; }
+    private MultiMapHashSet<StandardName, ITypeMemberDeclarationNode>? membersByName;
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
@@ -52,7 +54,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         SupertypeNames = ChildList.Attach(this, supertypeNames);
     }
 
-    internal override IUserTypeDeclarationNode InheritedContainingDeclarationNode(IChildNode caller, IChildNode child)
+    internal override IUserTypeDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
         => SymbolNodeAttributes.TypeDeclaration_InheritedContainingSymbolNode(this);
 
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
@@ -76,4 +78,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         TypeDeclarationsAspect.TypeDeclaration_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
+
+    public IEnumerable<ITypeMemberDeclarationNode> MembersNamed(StandardName named)
+        => Members.MembersNamed(ref membersByName, named);
 }

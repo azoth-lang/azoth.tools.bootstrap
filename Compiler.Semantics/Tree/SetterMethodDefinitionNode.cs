@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -12,7 +11,6 @@ internal sealed class SetterMethodDefinitionNode : MethodDefinitionNode, ISetter
     public override ISetterMethodDefinitionSyntax Syntax { get; }
     public IBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    IStructMemberDeclarationNode IStructMemberDefinitionNode.SymbolNode => SymbolNode;
 
     public SetterMethodDefinitionNode(
         ISetterMethodDefinitionSyntax syntax,

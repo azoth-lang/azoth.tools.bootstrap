@@ -38,7 +38,7 @@ public static class ISemanticNodeExtensions
             case INamespaceDefinitionNode n:
                 foreach (var child in n.UsingDirectives)
                     yield return child;
-                foreach (var child in n.Definitions)
+                foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case IFunctionDefinitionNode n:
@@ -115,7 +115,11 @@ public static class ISemanticNodeExtensions
                     yield return n.Return;
                 yield return n.Body;
                 yield break;
-            case IConstructorDefinitionNode n:
+            case IDefaultConstructorDefinitionNode n:
+                foreach (var child in n.Parameters)
+                    yield return child;
+                yield break;
+            case ISourceConstructorDefinitionNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;

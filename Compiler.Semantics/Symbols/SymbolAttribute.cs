@@ -33,9 +33,12 @@ internal static class SymbolAttribute
             node.Parameters.Select(p => p.ParameterType).ToFixedList(),
             new(node.Return?.Type ?? DataType.Void));
 
-    public static ConstructorSymbol ConstructorDeclaration(IConstructorDefinitionNode node)
+    public static ConstructorSymbol SourceConstructorDefinition(ISourceConstructorDefinitionNode node)
         => new ConstructorSymbol(node.ContainingSymbol, node.Name, node.SelfParameter.Type,
             node.Parameters.Select(p => p.ParameterType).ToFixedList());
+
+    public static ConstructorSymbol DefaultConstructorDefinition(IDefaultConstructorDefinitionNode node)
+        => ConstructorSymbol.CreateDefault(node.ContainingSymbol);
 
     public static FieldSymbol FieldDeclaration(IFieldDefinitionNode node)
         => new FieldSymbol(node.ContainingSymbol, node.Name, node.IsMutableBinding, node.Type);
@@ -61,13 +64,5 @@ internal static class SymbolAttribute
     {
         if (node.ReferencedSymbol is null)
             diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.TypeName.Syntax.Span));
-    }
-
-    public static ConstructorSymbol? ClassDeclaration_DefaultConstructorSymbol(IClassDefinitionNode node)
-    {
-        if (node.Members.Any(m => m is IConstructorDefinitionNode))
-            return null;
-
-        return ConstructorSymbol.CreateDefault(node.Symbol);
     }
 }
