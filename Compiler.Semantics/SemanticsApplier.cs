@@ -734,7 +734,6 @@ internal class SemanticsApplier
     #endregion
 
     #region Name Expressions
-
     private static void NameExpression(INameExpressionNode node)
     {
         switch (node)

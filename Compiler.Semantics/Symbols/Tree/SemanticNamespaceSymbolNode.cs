@@ -24,7 +24,7 @@ internal sealed class SemanticNamespaceSymbolNode : SemanticDeclarationSymbolNod
     public SemanticNamespaceSymbolNode(NamespaceSymbol symbol, IEnumerable<INamespaceMemberSymbolNode> members)
     {
         Symbol = symbol;
-        Members = ChildList.CreateFixed(this, members);
+        Members = ChildList.Attach(this, members);
     }
 
     public IEnumerable<INamespaceMemberSymbolNode> MembersNamed(StandardName named)

@@ -43,7 +43,7 @@ internal sealed class AssociatedFunctionDeclarationNode : TypeMemberDeclarationN
         IBodyNode body)
     {
         Syntax = syntax;
-        Parameters = ChildList.CreateFixed(this, parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
         Body = Child.Attach(this, body);
     }

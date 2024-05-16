@@ -18,6 +18,6 @@ internal sealed class InvocationExpressionNode : ExpressionNode, IInvocationExpr
     {
         Syntax = syntax;
         Expression = Child.Attach(this, expression);
-        Arguments = ChildList.CreateFixed(this, arguments);
+        Arguments = ChildList.Attach(this, arguments);
     }
 }

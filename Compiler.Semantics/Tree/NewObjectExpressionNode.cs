@@ -25,7 +25,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     {
         Syntax = syntax;
         Type = Child.Attach(this, type);
-        Arguments = ChildList.CreateFixed(this, arguments);
+        Arguments = ChildList.Attach(this, arguments);
     }
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)

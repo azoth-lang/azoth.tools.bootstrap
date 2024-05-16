@@ -13,6 +13,6 @@ internal sealed class BlockBodyNode : CodeNode, IBlockBodyNode
     public BlockBodyNode(IBlockBodySyntax syntax, IEnumerable<IBodyStatementNode> statements)
     {
         Syntax = syntax;
-        Statements = ChildList.CreateFixed(this, statements);
+        Statements = ChildList.Attach(this, statements);
     }
 }

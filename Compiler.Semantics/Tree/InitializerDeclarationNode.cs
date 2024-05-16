@@ -34,7 +34,7 @@ internal sealed class InitializerDeclarationNode : TypeMemberDeclarationNode, II
     {
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
-        Parameters = ChildList.CreateFixed(this, parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Body = Child.Attach(this, body);
     }
 }

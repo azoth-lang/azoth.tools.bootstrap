@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -18,11 +19,19 @@ public struct Child<T>
 
 public static class Child
 {
+    /// <summary>
+    /// Attach a child that does not support rewriting.
+    /// </summary>
     [return: NotNullIfNotNull(nameof(child))]
     public static TChild? Attach<TParent, TChild>(TParent parent, TChild? child)
         where TChild : class, IChild<TParent>
     {
-        child?.AttachParent(parent);
+        if (child == null)
+            return child;
+
+        if (child.MayHaveRewrite)
+            throw new NotSupportedException(ChildMayHaveRewriteMessage(child));
+        child.AttachParent(parent);
         return child;
     }
 
@@ -50,4 +59,7 @@ public static class Child
 
     public static string ParentMissingMessage(IChild child)
         => $"Parent of {child.GetType().GetFriendlyName()} is not set.";
+
+    internal static string ChildMayHaveRewriteMessage(IChild child)
+        => $"{child.GetType().GetFriendlyName()} may have rewrites and cannot be used as a fixed child.";
 }

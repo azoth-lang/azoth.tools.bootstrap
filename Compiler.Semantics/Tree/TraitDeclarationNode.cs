@@ -32,6 +32,6 @@ internal sealed class TraitDeclarationNode : TypeDeclarationNode, ITraitDeclarat
         : base(genericParameters, supertypeNames)
     {
         Syntax = syntax;
-        Members = ChildList.CreateFixed(this, members);
+        Members = ChildList.Attach(this, members);
     }
 }

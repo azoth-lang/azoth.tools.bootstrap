@@ -18,6 +18,6 @@ internal sealed class GenericNameExpressionNode : NameExpressionNode, IGenericNa
     public GenericNameExpressionNode(IGenericNameExpressionSyntax syntax, IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
-        TypeArguments = ChildList.CreateFixed(this, typeArguments);
+        TypeArguments = ChildList.Attach(this, typeArguments);
     }
 }

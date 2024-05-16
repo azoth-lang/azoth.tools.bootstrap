@@ -13,6 +13,6 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
     public BlockExpressionNode(IBlockExpressionSyntax syntax, IEnumerable<IStatementNode> statements)
     {
         Syntax = syntax;
-        Statements = ChildList.CreateFixed(this, statements);
+        Statements = ChildList.Attach(this, statements);
     }
 }

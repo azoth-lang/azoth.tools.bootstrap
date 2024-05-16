@@ -23,7 +23,7 @@ internal sealed class FunctionTypeNode : TypeNode, IFunctionTypeNode
         ITypeNode @return)
     {
         Syntax = syntax;
-        Parameters = ChildList.CreateFixed(this, parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
     }
 }

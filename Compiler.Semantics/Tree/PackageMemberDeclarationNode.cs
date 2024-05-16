@@ -20,6 +20,6 @@ internal abstract class PackageMemberDeclarationNode : DeclarationNode, IPackage
 
     private protected PackageMemberDeclarationNode(IEnumerable<IAttributeNode> attributes)
     {
-        Attributes = ChildList.CreateFixed(this, attributes);
+        Attributes = ChildList.Attach(this, attributes);
     }
 }

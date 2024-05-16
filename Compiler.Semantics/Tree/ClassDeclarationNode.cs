@@ -44,7 +44,7 @@ internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarat
     {
         Syntax = syntax;
         this.baseTypeName = Child.CreateOptional(this, baseTypeName);
-        Members = ChildList.CreateFixed(this, members);
+        Members = ChildList.Attach(this, members);
     }
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)

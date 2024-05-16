@@ -6,6 +6,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
 internal abstract class SemanticChildSymbolNode : SemanticSymbolNode, IChildSymbolNode
 {
+    protected virtual bool MayHaveRewrite => false;
+    bool IChild.MayHaveRewrite => MayHaveRewrite;
+
     private SemanticSymbolNode? parent;
     protected SemanticSymbolNode Parent
         => parent ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
@@ -13,7 +16,7 @@ internal abstract class SemanticChildSymbolNode : SemanticSymbolNode, IChildSymb
 
     public IPackageSymbolNode Package => Parent.InheritedPackage(this, this);
 
-    public void AttachParent(ISymbolNode newParent)
+    void IChild<ISymbolNode>.AttachParent(ISymbolNode newParent)
     {
         if (newParent is not SemanticSymbolNode newParentNode)
             throw new ArgumentException($"Parent must be a {nameof(SemanticSymbolNode)}.", nameof(newParent));

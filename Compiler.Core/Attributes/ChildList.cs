@@ -35,31 +35,20 @@ public static class ChildList
         where TChild : class, IChild<TParent>
     {
         var children = new ChildList<TChild>(initialValues);
-        foreach (var child in children) child.AttachParent(parent);
-        return children;
-    }
-
-    /// <summary>
-    /// Create a list of children that does not support rewriting.
-    /// </summary>
-    public static IFixedList<TChild> CreateFixed<TParent, TChild>(TParent parent, IEnumerable<TChild> initialValues)
-        where TChild : class, IChild<TParent>
-    {
-        var children = FixedList.Create(initialValues);
         foreach (var child in children)
             child.AttachParent(parent);
         return children;
     }
 
     /// <summary>
-    /// Create a set of children that does not support rewriting.
+    /// Attach a list of children that does not support rewriting.
     /// </summary>
-    public static IFixedSet<TChild> CreateFixedSet<TParent, TChild>(TParent parent, IEnumerable<TChild> initialValues)
+    public static IFixedList<TChild> Attach<TParent, TChild>(TParent parent, IEnumerable<TChild> children)
         where TChild : class, IChild<TParent>
     {
-        var children = FixedSet.Create(initialValues);
-        foreach (var child in children)
-            child.AttachParent(parent);
-        return children;
+        var childList = FixedList.Create(children);
+        foreach (var child in childList)
+            Child.Attach(parent, child);
+        return childList;
     }
 }

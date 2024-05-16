@@ -48,8 +48,8 @@ internal abstract class TypeDeclarationNode : PackageMemberDeclarationNode, ITyp
         // TODO support attributes on type declarations
         : base(Enumerable.Empty<IAttributeNode>())
     {
-        GenericParameters = ChildList.CreateFixed(this, genericParameters);
-        SupertypeNames = ChildList.CreateFixed(this, supertypeNames);
+        GenericParameters = ChildList.Attach(this, genericParameters);
+        SupertypeNames = ChildList.Attach(this, supertypeNames);
     }
 
     internal override IUserTypeSymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)

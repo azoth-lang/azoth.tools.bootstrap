@@ -46,8 +46,8 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
         IEnumerable<INamespaceMemberDeclarationNode> declarations)
     {
         Syntax = syntax;
-        UsingDirectives = ChildList.CreateFixed(this, usingDirectives);
-        Declarations = ChildList.CreateFixed(this, declarations);
+        UsingDirectives = ChildList.Attach(this, usingDirectives);
+        Declarations = ChildList.Attach(this, declarations);
     }
 
     internal override INamespaceSymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)

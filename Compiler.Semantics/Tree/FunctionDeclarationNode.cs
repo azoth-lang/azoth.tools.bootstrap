@@ -48,7 +48,7 @@ internal sealed class FunctionDeclarationNode : PackageMemberDeclarationNode, IF
         : base(attributes)
     {
         Syntax = syntax;
-        Parameters = ChildList.CreateFixed(this, parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
         Body = Child.Attach(this, body);
     }

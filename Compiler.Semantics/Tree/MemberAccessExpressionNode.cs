@@ -22,6 +22,6 @@ internal sealed class MemberAccessExpressionNode : NameExpressionNode, IMemberAc
     {
         Syntax = syntax;
         Context = Child.Attach(this, context);
-        TypeArguments = ChildList.CreateFixed(this, typeArguments);
+        TypeArguments = ChildList.Attach(this, typeArguments);
     }
 }

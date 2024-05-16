@@ -9,6 +9,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
 internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChildSymbolNode
 {
+    protected virtual bool MayHaveRewrite => false;
+    bool IChild.MayHaveRewrite => MayHaveRewrite;
+
     private ReferencedSymbolNode? parent;
     protected virtual ReferencedSymbolNode Parent
         => parent ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
@@ -17,7 +20,7 @@ internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChild
 
     public IPackageSymbolNode Package => Parent.InheritedPackage(this, this);
 
-    public void AttachParent(ISymbolNode newParent)
+    void IChild<ISymbolNode>.AttachParent(ISymbolNode newParent)
     {
         if (newParent is not ReferencedSymbolNode newParentNode)
             throw new ArgumentException($"Parent must be a {nameof(ReferencedSymbolNode)}.", nameof(newParent));

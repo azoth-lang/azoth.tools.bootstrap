@@ -30,7 +30,7 @@ internal class ReferencedNamespaceSymbolNode : ReferencedDeclarationSymbolNode, 
     }
 
     private new IFixedList<INamespaceMemberSymbolNode> GetMembers()
-        => ChildList.CreateFixed(this, base.GetMembers().Cast<INamespaceMemberSymbolNode>());
+        => ChildList.Attach(this, base.GetMembers().Cast<INamespaceMemberSymbolNode>());
 
     private IFixedList<INamespaceMemberSymbolNode> GetNestedMembers()
         => Members.OfType<INamespaceSymbolNode>()

@@ -1,6 +1,9 @@
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
-public interface IChild { }
+public interface IChild
+{
+    protected internal bool MayHaveRewrite { get; }
+}
 
 /// <summary>
 /// A child node in a syntax tree.

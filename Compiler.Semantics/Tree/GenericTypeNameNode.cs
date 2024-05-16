@@ -38,7 +38,7 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
     public GenericTypeNameNode(IGenericTypeNameSyntax syntax, IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
-        TypeArguments = ChildList.CreateFixed(this, typeArguments);
+        TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)

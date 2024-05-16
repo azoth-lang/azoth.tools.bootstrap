@@ -35,7 +35,7 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
     public PackageFacetNode(IPackageSyntax syntax, IEnumerable<ICompilationUnitNode> compilationUnits)
     {
         Syntax = syntax;
-        CompilationUnits = ChildList.CreateFixedSet(this, compilationUnits);
+        CompilationUnits = ChildSet.CreateFixedSet(this, compilationUnits);
     }
 
     internal override ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)

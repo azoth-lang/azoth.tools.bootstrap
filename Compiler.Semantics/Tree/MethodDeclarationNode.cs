@@ -34,7 +34,7 @@ internal abstract class MethodDeclarationNode : TypeMemberDeclarationNode, IMeth
         ITypeNode? @return)
     {
         SelfParameter = Child.Attach(this, selfParameter);
-        Parameters = ChildList.CreateFixed(this, parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
     }
 

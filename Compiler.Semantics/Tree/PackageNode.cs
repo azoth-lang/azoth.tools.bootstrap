@@ -52,7 +52,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
         IPackageFacetNode testingFacet)
     {
         Syntax = syntax;
-        References = ChildList.CreateFixedSet(this, references);
+        References = ChildSet.CreateFixedSet(this, references);
         MainFacet = Child.Attach(this, mainFacet);
         TestingFacet = Child.Attach(this, testingFacet);
     }

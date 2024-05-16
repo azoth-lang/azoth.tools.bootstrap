@@ -11,6 +11,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class ChildNode : SemanticNode, IChildNode
 {
+    protected virtual bool MayHaveRewrite => false;
+    bool IChild.MayHaveRewrite => MayHaveRewrite;
+
     private SemanticNode? parent;
     protected SemanticNode Parent
         => parent ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
@@ -18,7 +21,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     public IPackageNode Package => Parent.InheritedPackage(this, this);
 
-    public void AttachParent(ISemanticNode newParent)
+    void IChild<ISemanticNode>.AttachParent(ISemanticNode newParent)
     {
         if (newParent is not SemanticNode newParentNode)
             throw new ArgumentException($"Parent must be a {nameof(SemanticNode)}.", nameof(newParent));
