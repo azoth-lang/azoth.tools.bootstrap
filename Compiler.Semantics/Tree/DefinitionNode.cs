@@ -11,9 +11,9 @@ internal abstract class DefinitionNode : CodeNode, IDefinitionNode
     private ValueAttribute<IPackageFacetDeclarationNode> facet;
     public IPackageFacetDeclarationNode Facet
         => facet.TryGetValue(out var value) ? value : facet.GetValue(InheritedFacet);
-    public virtual IDeclarationNode ContainingDeclarationNode
+    public virtual IDeclarationNode ContainingDeclaration
         => Parent.InheritedContainingDeclaration(this, this);
-    public virtual Symbol ContainingSymbol => ContainingDeclarationNode.Symbol;
+    public virtual Symbol ContainingSymbol => ContainingDeclaration.Symbol;
     private ValueAttribute<LexicalScope> containingLexicalScope;
     public virtual LexicalScope ContainingLexicalScope
         => containingLexicalScope.TryGetValue(out var value) ? value

@@ -3,6 +3,7 @@ using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
+using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
@@ -14,8 +15,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     bool IChild.MayHaveRewrite => MayHaveRewrite;
 
     private SemanticNode? parent;
-    protected SemanticNode Parent
-        => parent ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
+    protected SemanticNode Parent => parent ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
     ISemanticNode IChildNode.Parent => Parent;
 
     public IPackageDeclarationNode Package => Parent.InheritedPackage(this, this);
@@ -25,41 +25,34 @@ internal abstract class ChildNode : SemanticNode, IChildNode
         if (newParent is not SemanticNode newParentNode)
             throw new ArgumentException($"Parent must be a {nameof(SemanticNode)}.", nameof(newParent));
         var oldParent = Interlocked.CompareExchange(ref parent, newParentNode, null);
-        if (oldParent is not null)
-            throw new InvalidOperationException("Parent is already set.");
+        if (oldParent is not null) throw new InvalidOperationException("Parent is already set.");
     }
 
-    protected virtual IChildNode? Rewrite()
-        => throw Child.RewriteNotSupported(this);
+    protected virtual IChildNode? Rewrite() => throw Child.RewriteNotSupported(this);
 
     IChild? IChild.Rewrite() => Rewrite();
 
     internal override IDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
         => Parent.InheritedContainingDeclaration(this, child);
 
-    protected IDeclarationNode InheritedContainingDeclaration()
-        => Parent.InheritedContainingDeclaration(this, this);
+    protected IDeclarationNode InheritedContainingDeclaration() => Parent.InheritedContainingDeclaration(this, this);
 
     internal override IPackageDeclarationNode InheritedPackage(IChildNode caller, IChildNode child)
         => Parent.InheritedPackage(this, child);
 
-    internal override CodeFile InheritedFile(IChildNode caller, IChildNode child)
-        => Parent.InheritedFile(this, child);
+    internal override CodeFile InheritedFile(IChildNode caller, IChildNode child) => Parent.InheritedFile(this, child);
 
-    protected CodeFile InheritedFile()
-        => Parent.InheritedFile(this, this);
+    protected CodeFile InheritedFile() => Parent.InheritedFile(this, this);
 
     internal override PackageNameScope InheritedPackageNameScope(IChildNode caller, IChildNode child)
         => Parent.InheritedPackageNameScope(this, child);
 
-    protected PackageNameScope InheritedPackageNameScope()
-        => Parent.InheritedPackageNameScope(this, this);
+    protected PackageNameScope InheritedPackageNameScope() => Parent.InheritedPackageNameScope(this, this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
         => Parent.InheritedContainingLexicalScope(this, child);
 
-    protected LexicalScope InheritedContainingLexicalScope()
-        => Parent.InheritedContainingLexicalScope(this, this);
+    protected LexicalScope InheritedContainingLexicalScope() => Parent.InheritedContainingLexicalScope(this, this);
 
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
         => Parent.InheritedContainingDeclaredType(this, child);
@@ -70,8 +63,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     internal override Pseudotype? InheritedSelfType(IChildNode caller, IChildNode child)
         => Parent.InheritedSelfType(this, child);
 
-    protected Pseudotype? InheritedSelfType()
-        => Parent.InheritedSelfType(this, this);
+    protected Pseudotype? InheritedSelfType() => Parent.InheritedSelfType(this, this);
 
     internal override ITypeDefinitionNode InheritedContainingTypeDeclaration(IChildNode caller, IChildNode child)
         => Parent.InheritedContainingTypeDeclaration(this, child);
@@ -82,12 +74,13 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     internal override bool InheritedIsAttributeType(IChildNode caller, IChildNode child)
         => Parent.InheritedIsAttributeType(this, child);
 
-    protected bool InheritedIsAttributeType()
-        => Parent.InheritedIsAttributeType(this, this);
+    protected bool InheritedIsAttributeType() => Parent.InheritedIsAttributeType(this, this);
 
     internal override IPackageFacetDeclarationNode InheritedFacet(IChildNode caller, IChildNode child)
         => Parent.InheritedFacet(this, child);
 
-    protected IPackageFacetDeclarationNode InheritedFacet()
-        => Parent.InheritedFacet(this, this);
+    protected IPackageFacetDeclarationNode InheritedFacet() => Parent.InheritedFacet(this, this);
+
+    internal override ISymbolTree InheritedSymbolTree(IChildNode caller, IChildNode child)
+        => Parent.InheritedSymbolTree(this, child);
 }

@@ -18,7 +18,7 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
     private ValueAttribute<IPackageFacetDeclarationNode> symbolNode;
     public IPackageFacetDeclarationNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttributes.PackageFacet);
+            : symbolNode.GetValue(this, SymbolNodeAttributes.PackageFacet_SymbolNode);
     public IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
 
     private ValueAttribute<IFixedSet<IPackageMemberDefinitionNode>> definitions;

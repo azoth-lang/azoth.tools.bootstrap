@@ -18,15 +18,15 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
 
     public override CodeFile File => Syntax.File;
 
-    public IPackageFacetDeclarationNode ContainingDeclarationNode
+    public IPackageFacetDeclarationNode ContainingDeclaration
         => (IPackageFacetDeclarationNode)Parent.InheritedContainingDeclaration(this, this);
-    public NamespaceSymbol ContainingSymbol => ContainingDeclarationNode.Symbol;
+    public NamespaceSymbol ContainingSymbol => ContainingDeclaration.Symbol;
     public NamespaceName ImplicitNamespaceName => Syntax.ImplicitNamespaceName;
 
     private ValueAttribute<INamespaceDeclarationNode> implicitNamespaceSymbolNode;
     public INamespaceDeclarationNode ImplicitNamespaceSymbolNode
         => implicitNamespaceSymbolNode.TryGetValue(out var value) ? value
-            : implicitNamespaceSymbolNode.GetValue(this, SymbolNodeAttributes.CompilationUnit);
+            : implicitNamespaceSymbolNode.GetValue(this, SymbolNodeAttributes.CompilationUnit_ImplicitNamespaceSymbolNode);
     public NamespaceSymbol ImplicitNamespaceSymbol => ImplicitNamespaceSymbolNode.Symbol;
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceMemberDefinitionNode> Definitions { get; }
@@ -51,7 +51,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     }
 
     internal override INamespaceDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
-        => SymbolNodeAttributes.CompilationUnit_InheritedContainingSymbolNode(this);
+        => SymbolNodeAttributes.CompilationUnit_InheritedContainingDeclaration(this);
 
     internal override CodeFile InheritedFile(IChildNode caller, IChildNode child)
         => FileAttribute.CompilationUnit_InheritedFile(this);

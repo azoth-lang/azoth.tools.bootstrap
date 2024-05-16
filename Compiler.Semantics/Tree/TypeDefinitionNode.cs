@@ -55,7 +55,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     }
 
     internal override IUserTypeDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
-        => SymbolNodeAttributes.TypeDeclaration_InheritedContainingSymbolNode(this);
+        => SymbolNodeAttributes.TypeDeclaration_InheritedContainingDeclaration(this);
 
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
         => ContainingDeclaredTypeAttribute.TypeDeclaration_InheritedContainingDeclaredType(this);

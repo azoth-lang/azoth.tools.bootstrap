@@ -17,10 +17,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 internal static class SymbolNodeAttributes
 {
-    public static IPackageDeclarationNode Package(IPackageNode node)
+    public static IPackageDeclarationNode Package_SymbolNode(IPackageNode node)
         => new SemanticPackageSymbolNode(node);
 
-    public static IPackageFacetDeclarationNode PackageFacet(IPackageFacetNode node)
+    public static IPackageFacetDeclarationNode PackageFacet_SymbolNode(IPackageFacetNode node)
     {
         var packageSymbol = node.PackageSymbol;
         var builder = new SemanticNamespaceSymbolNodeBuilder(packageSymbol);
@@ -56,8 +56,8 @@ internal static class SymbolNodeAttributes
         }
     }
 
-    public static INamespaceDeclarationNode CompilationUnit(ICompilationUnitNode node)
-        => FindNamespace(node.ContainingDeclarationNode.GlobalNamespace, node.ImplicitNamespaceName);
+    public static INamespaceDeclarationNode CompilationUnit_ImplicitNamespaceSymbolNode(ICompilationUnitNode node)
+        => FindNamespace(node.ContainingDeclaration.GlobalNamespace, node.ImplicitNamespaceName);
 
     private static INamespaceDeclarationNode FindNamespace(INamespaceDeclarationNode containingDeclarationNode, NamespaceName ns)
     {
@@ -67,27 +67,27 @@ internal static class SymbolNodeAttributes
         return current;
     }
 
-    public static INamespaceDeclarationNode CompilationUnit_InheritedContainingSymbolNode(ICompilationUnitNode node)
+    public static INamespaceDeclarationNode CompilationUnit_InheritedContainingDeclaration(ICompilationUnitNode node)
         => node.ImplicitNamespaceSymbolNode;
 
-    public static IPackageDeclarationNode PackageReference(IPackageReferenceNode node)
+    public static IPackageDeclarationNode PackageReference_SymbolNode(IPackageReferenceNode node)
         => new PackageSymbolNode(node);
 
     public static FixedDictionary<IdentifierName, IPackageDeclarationNode> Package_SymbolNodes(IPackageNode node)
         => node.References.Select(r => r.SymbolNode).Append(node.SymbolNode).ToFixedDictionary(n => n.AliasOrName ?? node.Symbol.Name);
 
-    public static INamespaceDeclarationNode NamespaceDeclaration_ContainingDeclarationNode(INamespaceDefinitionNode node, INamespaceDeclarationNode inheritedDeclarationNode)
+    public static INamespaceDeclarationNode NamespaceDeclaration_ContainingDeclaration(INamespaceDefinitionNode node, INamespaceDeclarationNode inheritedDeclarationNode)
         => node.IsGlobalQualified ? inheritedDeclarationNode.Facet.GlobalNamespace : inheritedDeclarationNode;
 
     public static INamespaceDeclarationNode NamespaceDeclaration_Declaration(INamespaceDefinitionNode node)
-        => FindNamespace(node.ContainingDeclarationNode, node.DeclaredNames);
+        => FindNamespace(node.ContainingDeclaration, node.DeclaredNames);
 
-    public static INamespaceDeclarationNode NamespaceDeclaration_InheritedContainingSymbolNode(INamespaceDefinitionNode node)
+    public static INamespaceDeclarationNode NamespaceDeclaration_InheritedContainingDeclaration(INamespaceDefinitionNode node)
         => node.Declaration;
 
     public static bool Attribute_InheritedIsAttributeType_Child(IAttributeNode _) => true;
 
-    public static IUserTypeDeclarationNode TypeDeclaration_InheritedContainingSymbolNode(ITypeDefinitionNode node)
+    public static IUserTypeDeclarationNode TypeDeclaration_InheritedContainingDeclaration(ITypeDefinitionNode node)
         => node;
 
     public static bool TypeDeclaration_InheritedIsAttributeType(ITypeDefinitionNode _)
@@ -98,9 +98,9 @@ internal static class SymbolNodeAttributes
 
     public static ITypeDeclarationNode? StandardTypeName_ReferencedSymbolNode(IStandardTypeNameNode node)
     {
-        var symbolNode = LookupSymbolNodes(node).TrySingle();
+        var symbolNode = LookupDeclarations(node).TrySingle();
         if (node.IsAttributeType)
-            symbolNode ??= LookupSymbolNodes(node, withAttributeSuffix: true).TrySingle();
+            symbolNode ??= LookupDeclarations(node, withAttributeSuffix: true).TrySingle();
         return symbolNode;
     }
 
@@ -108,7 +108,7 @@ internal static class SymbolNodeAttributes
     {
         if (node.ReferencedSymbolNode is not null)
             return;
-        var symbolNodes = LookupSymbolNodes(node);
+        var symbolNodes = LookupDeclarations(node);
         switch (symbolNodes.Count)
         {
             case 0:
@@ -123,7 +123,7 @@ internal static class SymbolNodeAttributes
         }
     }
 
-    private static IFixedSet<ITypeDeclarationNode> LookupSymbolNodes(IStandardTypeNameNode node, bool withAttributeSuffix = false)
+    private static IFixedSet<ITypeDeclarationNode> LookupDeclarations(IStandardTypeNameNode node, bool withAttributeSuffix = false)
     {
         var name = withAttributeSuffix ? node.Name + SpecialNames.AttributeSuffix : node.Name;
         return node.ContainingLexicalScope.Lookup(name).OfType<ITypeDeclarationNode>().ToFixedSet();

@@ -232,7 +232,7 @@ public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
     new ICompilationUnitSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    IPackageFacetDeclarationNode ContainingDeclarationNode { get; }
+    IPackageFacetDeclarationNode ContainingDeclaration { get; }
     NamespaceSymbol ContainingSymbol { get; }
     NamespaceName ImplicitNamespaceName { get; }
     INamespaceDeclarationNode ImplicitNamespaceSymbolNode { get; }
@@ -262,7 +262,7 @@ public partial interface IDefinitionNode : ISemanticNode, ICodeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IPackageFacetDeclarationNode Facet { get; }
-    IDeclarationNode ContainingDeclarationNode { get; }
+    IDeclarationNode ContainingDeclaration { get; }
     Symbol ContainingSymbol { get; }
     LexicalScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
@@ -296,8 +296,8 @@ public partial interface INamespaceDefinitionNode : ISemanticNode, INamespaceMem
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceMemberDefinitionNode> Members { get; }
     INamespaceDeclarationNode Declaration { get; }
-    new INamespaceDeclarationNode ContainingDeclarationNode { get; }
-    IDeclarationNode IDefinitionNode.ContainingDeclarationNode => ContainingDeclarationNode;
+    new INamespaceDeclarationNode ContainingDeclaration { get; }
+    IDeclarationNode IDefinitionNode.ContainingDeclaration => ContainingDeclaration;
     new NamespaceSymbol ContainingSymbol { get; }
     Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
     NamespaceSymbol Symbol { get; }
@@ -316,8 +316,8 @@ public partial interface IFunctionDefinitionNode : IPackageMemberDefinitionNode,
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    new INamespaceDeclarationNode ContainingDeclarationNode { get; }
-    IDeclarationNode IDefinitionNode.ContainingDeclarationNode => ContainingDeclarationNode;
+    new INamespaceDeclarationNode ContainingDeclaration { get; }
+    IDeclarationNode IDefinitionNode.ContainingDeclaration => ContainingDeclaration;
     new NamespaceSymbol ContainingSymbol { get; }
     Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
     new IdentifierName Name { get; }
@@ -426,7 +426,7 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     GenericParameter Parameter { get; }
     IDeclaredUserType ContainingDeclaredType { get; }
     GenericParameterType DeclaredType { get; }
-    IUserTypeDeclarationNode ContainingDeclarationNode { get; }
+    IUserTypeDeclarationNode ContainingDeclaration { get; }
     UserTypeSymbol ContainingSymbol { get; }
     new GenericParameterTypeSymbol Symbol { get; }
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;

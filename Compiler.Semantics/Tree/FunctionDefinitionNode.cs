@@ -16,7 +16,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
 {
     public override IFunctionDefinitionSyntax Syntax { get; }
     public IdentifierName Name => Syntax.Name;
-    public override INamespaceDeclarationNode ContainingDeclarationNode => (INamespaceDeclarationNode)base.ContainingDeclarationNode;
+    public override INamespaceDeclarationNode ContainingDeclaration => (INamespaceDeclarationNode)base.ContainingDeclaration;
     public override NamespaceSymbol ContainingSymbol => (NamespaceSymbol)base.ContainingSymbol;
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope

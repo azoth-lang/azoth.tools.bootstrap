@@ -50,7 +50,7 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedIsAttributeType), caller, child));
 
-    internal virtual ISymbolTree InheritedSymbolTree(IChildDeclarationNode caller, IChildDeclarationNode child)
+    internal virtual ISymbolTree InheritedSymbolTree(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedSymbolTree), caller, child));
 

@@ -21,7 +21,7 @@ internal class IntrinsicsPackageReferenceNode : ChildNode, IPackageReferenceNode
 
     public IPackageDeclarationNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttributes.PackageReference);
+            : symbolNode.GetValue(this, SymbolNodeAttributes.PackageReference_SymbolNode);
 
     /// <remarks>Not a singleton, because the parent node needs attached for each tree.</remarks>
     public IntrinsicsPackageReferenceNode() { }

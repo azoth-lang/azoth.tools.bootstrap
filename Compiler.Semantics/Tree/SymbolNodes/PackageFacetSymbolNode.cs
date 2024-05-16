@@ -21,7 +21,7 @@ internal sealed class PackageFacetSymbolNode : ChildSymbolNode, IPackageFacetSym
         GlobalNamespace = Child.Attach(this, new NamespaceSymbolNode(symbolTree.Package));
     }
 
-    internal override ISymbolTree InheritedSymbolTree(IChildDeclarationNode caller, IChildDeclarationNode child)
+    internal override ISymbolTree InheritedSymbolTree(IChildNode caller, IChildNode child)
         => symbolTree;
 
     internal override IPackageFacetDeclarationNode InheritedFacet(IChildNode caller, IChildNode child)

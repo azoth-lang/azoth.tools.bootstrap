@@ -17,12 +17,12 @@ internal class NamespaceDefinitionNode : DefinitionNode, INamespaceDefinitionNod
     public NamespaceName DeclaredNames => Syntax.DeclaredNames;
 
     private ValueAttribute<INamespaceDeclarationNode> containingSymbolNode;
-    public override INamespaceDeclarationNode ContainingDeclarationNode
+    public override INamespaceDeclarationNode ContainingDeclaration
         => containingSymbolNode.TryGetValue(out var value) ? value
             : containingSymbolNode.GetValue(this, node
-                => SymbolNodeAttributes.NamespaceDeclaration_ContainingDeclarationNode(node,
+                => SymbolNodeAttributes.NamespaceDeclaration_ContainingDeclaration(node,
                     (INamespaceDeclarationNode)Parent.InheritedContainingDeclaration(this, this)));
-    public override NamespaceSymbol ContainingSymbol => ContainingDeclarationNode.Symbol;
+    public override NamespaceSymbol ContainingSymbol => ContainingDeclaration.Symbol;
 
     private ValueAttribute<INamespaceDeclarationNode> declaration;
     public INamespaceDeclarationNode Declaration
@@ -48,7 +48,7 @@ internal class NamespaceDefinitionNode : DefinitionNode, INamespaceDefinitionNod
     }
 
     internal override IDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
-        => SymbolNodeAttributes.NamespaceDeclaration_InheritedContainingSymbolNode(this);
+        => SymbolNodeAttributes.NamespaceDeclaration_InheritedContainingDeclaration(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
         => LexicalScope;

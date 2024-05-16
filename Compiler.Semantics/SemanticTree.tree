@@ -55,7 +55,7 @@ PackageMemberDefinition <: NamespaceMemberDefinition
 Code <: Child = Syntax:`IConcreteSyntax`? File:`CodeFile`;
 
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
-    ContainingDeclarationNode:`IPackageFacetDeclarationNode` ContainingSymbol:`NamespaceSymbol`
+    ContainingDeclaration:`IPackageFacetDeclarationNode` ContainingSymbol:`NamespaceSymbol`
     ImplicitNamespaceName:`NamespaceName` ImplicitNamespaceSymbolNode:`INamespaceDeclarationNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Definitions:NamespaceMemberDefinition*
     ContainingLexicalScope:`NamespaceScope` LexicalScope:`LexicalScope`
@@ -64,7 +64,7 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
 // ---------- Definitions
-Definition <: Code = Syntax:`IDefinitionSyntax`? Facet:`IPackageFacetDeclarationNode` ContainingDeclarationNode:`IDeclarationNode` ContainingSymbol:`Symbol`
+Definition <: Code = Syntax:`IDefinitionSyntax`? Facet:`IPackageFacetDeclarationNode` ContainingDeclaration:`IDeclarationNode` ContainingSymbol:`Symbol`
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter*;
 ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrInitializerParameter*;
@@ -73,13 +73,13 @@ ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrIni
 NamespaceDefinition <: NamespaceMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
     IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
     UsingDirectives:UsingDirective* Members:NamespaceMemberDefinition*
-    Declaration:`INamespaceDeclarationNode` ContainingDeclarationNode:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
+    Declaration:`INamespaceDeclarationNode` ContainingDeclaration:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
     Symbol:`NamespaceSymbol`;
 NamespaceMemberDefinition <: Definition;
 
 // ---------- Function Definition
 FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration = Syntax:`IFunctionDefinitionSyntax`
-    ContainingDeclarationNode:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
+    ContainingDeclaration:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
     Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body
     Type:`FunctionType` Symbol:`FunctionSymbol`;
 
@@ -111,7 +111,7 @@ TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSy
 GenericParameter <: Code, GenericParameterDeclaration = Syntax:`IGenericParameterSyntax`
     Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance`
     Parameter:`GenericParameter` ContainingDeclaredType:`IDeclaredUserType` DeclaredType:`GenericParameterType`
-    ContainingDeclarationNode:`IUserTypeDeclarationNode` ContainingSymbol:`UserTypeSymbol`
+    ContainingDeclaration:`IUserTypeDeclarationNode` ContainingSymbol:`UserTypeSymbol`
     Symbol:`GenericParameterTypeSymbol`;
 
 // ---------- Type Member Definitions (i.e. declarations that can be contained in a type)
