@@ -12,7 +12,7 @@ public sealed class ChildList<T> : IReadOnlyList<T>
 
     internal ChildList(IEnumerable<T> initialValues)
     {
-        // Don't use `AsReadOnly` because FixedList<T> is already a wrapper. Use `ToArray` to
+        // Don't use `AsReadOnly` because ChildList<T> is already a wrapper. Use `ToArray` to
         // avoid allocating any more memory than necessary.
         children = initialValues.Select(x => new Child<T>(x)).ToArray();
     }
@@ -20,6 +20,10 @@ public sealed class ChildList<T> : IReadOnlyList<T>
     public int Count => children.Count;
 
     public T this[int index] => children[index].Value;
+
+    public IEnumerable<T> Final => children.Select(x => x.FinalValue);
+
+    internal IEnumerable<T> Current => children.Select(x => x.CurrentValue);
 
     public IEnumerator<T> GetEnumerator() => children.Select(x => x.Value).GetEnumerator();
 
@@ -35,7 +39,7 @@ public static class ChildList
         where TChild : class, IChild<TChild, TParent>
     {
         var children = new ChildList<TChild>(initialValues);
-        foreach (var child in children)
+        foreach (var child in children.Current)
             child.AttachParent(parent);
         return children;
     }

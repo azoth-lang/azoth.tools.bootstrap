@@ -18,9 +18,15 @@ public struct Child<T>
 
     internal Child(T initialValue)
     {
-        state = initialValue.MayHaveRewrite ? (uint)ChildState.Initial : (uint)ChildState.Final;
         value = initialValue;
+        // Volatile write ensures the value write cannot be moved after it
+        state = initialValue.MayHaveRewrite ? (uint)ChildState.Initial : (uint)ChildState.Final;
     }
+
+    /// <summary>
+    /// Get the current value without attempting any rewrites.
+    /// </summary>
+    internal readonly T CurrentValue => value;
 
     public T Value
     {
@@ -68,7 +74,9 @@ public struct Child<T>
                 }
             case ChildState.InProgress:
                 if (readFinal)
-                    throw new InvalidOperationException("Cannot read final value while the child is being computed.");
+                    throw new InvalidOperationException("Cannot read final value while the child is being rewritten.");
+                // If a rewrite is in progress, just return the current value so that the rewrite
+                // can proceed based on the current tree state.
                 // Use a volatile read of the value to try to read in progress values.
                 return Volatile.Read(ref value);
             case ChildState.Final:
