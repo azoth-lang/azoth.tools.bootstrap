@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 /// </summary>
 public class TypeKnownValidator : SyntaxWalker<bool>
 {
-    public void Validate(IEnumerable<IEntityDeclarationSyntax> entityDeclarations)
+    public void Validate(IEnumerable<IEntityDefinitionSyntax> entityDeclarations)
     {
         foreach (var declaration in entityDeclarations)
             WalkNonNull(declaration, true);
@@ -20,24 +20,24 @@ public class TypeKnownValidator : SyntaxWalker<bool>
     {
         switch (syntax)
         {
-            case IClassDeclarationSyntax syn:
+            case IClassDefinitionSyntax syn:
                 Walk(syn.BaseTypeName, true);
                 // Don't recur into body, we will see those as separate members
                 return;
-            case IConstructorDeclarationSyntax constructorDeclaration:
+            case IConstructorDefinitionSyntax constructorDeclaration:
                 WalkChildren(constructorDeclaration, true);
                 constructorDeclaration.SelfParameter.Symbol.Result.Type.Known();
                 constructorDeclaration.Symbol.Result.Return.Known();
                 return;
-            case IMethodDeclarationSyntax methodDeclaration:
+            case IMethodDefinitionSyntax methodDeclaration:
                 WalkChildren(methodDeclaration, true);
                 methodDeclaration.Symbol.Result.Return.Known();
                 return;
-            case IFunctionDeclarationSyntax functionDeclaration:
+            case IFunctionDefinitionSyntax functionDeclaration:
                 WalkChildren(functionDeclaration, true);
                 functionDeclaration.Symbol.Result.Return.Known();
                 return;
-            case IAssociatedFunctionDeclarationSyntax associatedFunctionDeclaration:
+            case IAssociatedFunctionDefinitionSyntax associatedFunctionDeclaration:
                 WalkChildren(associatedFunctionDeclaration, true);
                 associatedFunctionDeclaration.Symbol.Result.Return.Known();
                 return;
@@ -45,7 +45,7 @@ public class TypeKnownValidator : SyntaxWalker<bool>
                 WalkChildren(parameter, true);
                 parameter.DataType.Known();
                 return;
-            case IFieldDeclarationSyntax fieldDeclaration:
+            case IFieldDefinitionSyntax fieldDeclaration:
                 WalkChildren(fieldDeclaration, true);
                 fieldDeclaration.Symbol.Result.Type.Known();
                 return;

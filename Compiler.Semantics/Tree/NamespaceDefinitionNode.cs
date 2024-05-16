@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal class NamespaceDefinitionNode : DefinitionNode, INamespaceDefinitionNode
 {
-    public override INamespaceDeclarationSyntax Syntax { get; }
+    public override INamespaceDefinitionSyntax Syntax { get; }
     public bool IsGlobalQualified => Syntax.IsGlobalQualified;
     public NamespaceName DeclaredNames => Syntax.DeclaredNames;
 
@@ -39,7 +39,7 @@ internal class NamespaceDefinitionNode : DefinitionNode, INamespaceDefinitionNod
             : lexicalScope.GetValue(this, LexicalScopeAttributes.NamespaceDeclaration);
 
     public NamespaceDefinitionNode(
-        INamespaceDeclarationSyntax syntax,
+        INamespaceDefinitionSyntax syntax,
         IEnumerable<IUsingDirectiveNode> usingDirectives,
         IEnumerable<INamespaceMemberDefinitionNode> definitions)
     {

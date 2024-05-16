@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class TraitDefinitionNode : TypeDefinitionNode, ITraitDefinitionNode
 {
-    public override ITraitDeclarationSyntax Syntax { get; }
+    public override ITraitDefinitionSyntax Syntax { get; }
 
     private ValueAttribute<ITraitSymbolNode> symbolNode;
     public override ITraitSymbolNode SymbolNode
@@ -25,7 +25,7 @@ internal sealed class TraitDefinitionNode : TypeDefinitionNode, ITraitDefinition
     public override IFixedList<ITraitMemberDefinitionNode> Members { get; }
 
     public TraitDefinitionNode(
-        ITraitDeclarationSyntax syntax,
+        ITraitDefinitionSyntax syntax,
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<IStandardTypeNameNode> supertypeNames,
         IEnumerable<ITraitMemberDefinitionNode> members)

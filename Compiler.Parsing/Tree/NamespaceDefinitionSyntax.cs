@@ -8,7 +8,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class NamespaceDeclarationSyntax : NonMemberDeclarationSyntax, INamespaceDeclarationSyntax
+internal class NamespaceDefinitionSyntax : NonMemberDefinitionSyntax, INamespaceDefinitionSyntax
 {
     /// <summary>
     /// Whether this namespace declaration is in the global namespace, the
@@ -20,9 +20,9 @@ internal class NamespaceDeclarationSyntax : NonMemberDeclarationSyntax, INamespa
     public NamespaceName FullName { get; }
     public new Promise<NamespaceSymbol> Symbol { get; }
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
-    public IFixedList<INonMemberDeclarationSyntax> Declarations { get; }
+    public IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
 
-    public NamespaceDeclarationSyntax(
+    public NamespaceDefinitionSyntax(
         NamespaceName containingNamespaceName,
         TextSpan span,
         CodeFile file,
@@ -30,13 +30,13 @@ internal class NamespaceDeclarationSyntax : NonMemberDeclarationSyntax, INamespa
         NamespaceName declaredNames,
         TextSpan nameSpan,
         IFixedList<IUsingDirectiveSyntax> usingDirectives,
-        IFixedList<INonMemberDeclarationSyntax> declarations)
+        IFixedList<INonMemberDefinitionSyntax> declarations)
         : base(containingNamespaceName, span, file, declaredNames.Segments.LastOrDefault(), nameSpan, new Promise<NamespaceSymbol>())
     {
         DeclaredNames = declaredNames;
         FullName = containingNamespaceName.Qualify(declaredNames);
         UsingDirectives = usingDirectives;
-        Declarations = declarations;
+        Definitions = declarations;
         IsGlobalQualified = isGlobalQualified;
         Symbol = (Promise<NamespaceSymbol>)base.Symbol;
     }

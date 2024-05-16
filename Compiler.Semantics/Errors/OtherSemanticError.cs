@@ -81,7 +81,7 @@ public static class OtherSemanticError
             6013, "Constructor or initializer `self` parameter cannot be `lent`");
     }
 
-    public static Diagnostic CircularDefinition(CodeFile file, TextSpan span, ITypeDeclarationSyntax type)
+    public static Diagnostic CircularDefinition(CodeFile file, TextSpan span, ITypeDefinitionSyntax type)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6014, $"Declaration of type `{type.ContainingNamespaceName}.{type.Name}` is part of a circular definition");

@@ -9,14 +9,14 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal abstract class InvocableDeclarationSyntax : DeclarationSyntax, IInvocableDeclarationSyntax
+internal abstract class InvocableDefinitionSyntax : DefinitionSyntax, IInvocableDefinitionSyntax
 {
     public IAccessModifierToken? AccessModifier { get; }
     public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
     public abstract IFixedList<IParameterSyntax> AllParameters { get; }
     public new IPromise<InvocableSymbol> Symbol { get; }
 
-    protected InvocableDeclarationSyntax(
+    protected InvocableDefinitionSyntax(
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,

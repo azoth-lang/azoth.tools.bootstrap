@@ -10,54 +10,46 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class ClassDeclarationSyntax : TypeDeclarationSyntax<IClassMemberDeclarationSyntax>, IClassDeclarationSyntax
+internal class StructDefinitionSyntax : TypeDefinitionSyntax<IStructMemberDefinitionSyntax>, IStructDefinitionSyntax
 {
-    public IAbstractKeywordToken? AbstractModifier { get; }
-    public bool IsAbstract { get; }
-    public IStandardTypeNameSyntax? BaseTypeName { get; }
-    public override IFixedList<IClassMemberDeclarationSyntax> Members { get; }
-    public ConstructorSymbol? DefaultConstructorSymbol { get; private set; }
+    public override IFixedList<IStructMemberDefinitionSyntax> Members { get; }
+    public InitializerSymbol? DefaultInitializerSymbol { get; private set; }
 
-    public ClassDeclarationSyntax(
+    public StructDefinitionSyntax(
         NamespaceName containingNamespaceName,
-        ITypeDeclarationSyntax? declaringType,
+        ITypeDefinitionSyntax? declaringType,
         TextSpan headerSpan,
         CodeFile file,
         IAccessModifierToken? accessModifier,
-        IAbstractKeywordToken? abstractModifier,
         IConstKeywordToken? constModifier,
-        IMoveKeywordToken? moveModifier,
+        IStructKindKeywordToken? structKind,
         TextSpan nameSpan,
         string name,
         IFixedList<IGenericParameterSyntax> genericParameters,
-        IStandardTypeNameSyntax? baseTypeName,
         IFixedList<IStandardTypeNameSyntax> supertypesNames,
-        Func<IClassDeclarationSyntax, (IFixedList<IClassMemberDeclarationSyntax>, TextSpan)> parseMembers)
-        : base(containingNamespaceName, declaringType, headerSpan, file, accessModifier, constModifier, moveModifier,
+        Func<IStructDefinitionSyntax, (IFixedList<IStructMemberDefinitionSyntax>, TextSpan)> parseMembers)
+        : base(containingNamespaceName, declaringType, headerSpan, file, accessModifier, constModifier, structKind as IMoveKeywordToken,
             nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypesNames)
     {
-        AbstractModifier = abstractModifier;
-        IsAbstract = AbstractModifier is not null;
-        BaseTypeName = baseTypeName;
         var (members, bodySpan) = parseMembers(this);
         Members = members;
         Span = TextSpan.Covering(headerSpan, bodySpan);
     }
 
-    public void CreateDefaultConstructor(ISymbolTreeBuilder symbolTree)
+    public void CreateDefaultInitializer(ISymbolTreeBuilder symbolTree)
     {
-        if (Members.Any(m => m is IConstructorDeclarationSyntax))
+        if (Members.Any(m => m is IInitializerDefinitionSyntax))
             return;
 
-        if (DefaultConstructorSymbol is not null)
-            throw new InvalidOperationException($"Can't {nameof(CreateDefaultConstructor)} twice");
+        if (DefaultInitializerSymbol is not null)
+            throw new InvalidOperationException($"Can't {nameof(CreateDefaultInitializer)} twice");
 
-        var constructorSymbol = ConstructorSymbol.CreateDefault(Symbol.Result);
+        var constructorSymbol = InitializerSymbol.CreateDefault(Symbol.Result);
         var selfParameterSymbol = new SelfParameterSymbol(constructorSymbol, false, constructorSymbol.SelfParameterType);
 
         symbolTree.Add(constructorSymbol);
         symbolTree.Add(selfParameterSymbol);
-        DefaultConstructorSymbol = constructorSymbol;
+        DefaultInitializerSymbol = constructorSymbol;
     }
 
     public override string ToString()
@@ -65,7 +57,6 @@ internal class ClassDeclarationSyntax : TypeDeclarationSyntax<IClassMemberDeclar
         var modifiers = "";
         var accessModifier = AccessModifier.ToAccessModifier();
         if (accessModifier != CST.AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
-        if (IsAbstract) modifiers += "abstract ";
         if (IsConst) modifiers += "const ";
         if (IsMove) modifiers += "move ";
         var generics = GenericParameters.Any() ? $"[{string.Join(", ", GenericParameters)}]" : "";

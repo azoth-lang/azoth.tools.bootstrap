@@ -12,7 +12,7 @@ public class DeclarationNumberAssigner : SyntaxWalker
     private readonly Dictionary<IdentifierName, Promise<int?>> lastDeclaration = new();
     private DeclarationNumberAssigner() { }
 
-    public static void AssignIn(IEnumerable<IEntityDeclarationSyntax> entities)
+    public static void AssignIn(IEnumerable<IEntityDefinitionSyntax> entities)
     {
         foreach (var entity in entities)
         {
@@ -26,7 +26,7 @@ public class DeclarationNumberAssigner : SyntaxWalker
     {
         switch (syntax)
         {
-            case IClassDeclarationSyntax _:
+            case IClassDefinitionSyntax _:
                 // Skip, will see members separately
                 return;
             case INamedParameterSyntax syn:

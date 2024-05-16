@@ -20,7 +20,7 @@ public class SymbolValidator : SyntaxWalker
     /// <summary>
     /// Validate that the entities have symbols and those symbols are in the symbol tree.
     /// </summary>
-    public void Validate(IEnumerable<IEntityDeclarationSyntax> entityDeclaration)
+    public void Validate(IEnumerable<IEntityDefinitionSyntax> entityDeclaration)
     {
         foreach (var declaration in entityDeclaration)
             WalkNonNull(declaration);
@@ -30,15 +30,15 @@ public class SymbolValidator : SyntaxWalker
     {
         switch (syntax)
         {
-            case IClassDeclarationSyntax syn:
+            case IClassDefinitionSyntax syn:
                 ValidateSymbol(syn, syn.Symbol);
                 Walk(syn.BaseTypeName);
                 // Don't recur into body, we will see those as separate members
                 return;
-            case IFieldDeclarationSyntax syn:
+            case IFieldDefinitionSyntax syn:
                 ValidateSymbol(syn, syn.Symbol);
                 break;
-            case IEntityDeclarationSyntax syn:
+            case IEntityDefinitionSyntax syn:
                 ValidateSymbol(syn, syn.Symbol);
                 break;
             case INamedParameterSyntax syn:
@@ -61,7 +61,7 @@ public class SymbolValidator : SyntaxWalker
             case IBindingPatternSyntax syn:
                 ValidateSymbol(syn, syn.Symbol);
                 break;
-            case IDeclarationSyntax syn:
+            case IDefinitionSyntax syn:
                 ValidateSymbol(syn, syn.Symbol);
                 break;
             case ISimpleNameExpressionSyntax syn:

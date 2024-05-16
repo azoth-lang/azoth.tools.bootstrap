@@ -1,6 +1,6 @@
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
-public partial interface IDeclarationSyntax
+public partial interface IDefinitionSyntax
 {
     /// <summary>
     /// The span of whatever would count as the "name" of this declaration

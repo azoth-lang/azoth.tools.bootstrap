@@ -11,27 +11,27 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyntax, ITypeDeclarationSyntax
-    where TMember : ITypeMemberDeclarationSyntax
+internal abstract class TypeDefinitionSyntax<TMember> : NonMemberDefinitionSyntax, ITypeDefinitionSyntax
+    where TMember : ITypeMemberDefinitionSyntax
 {
-    public ITypeDeclarationSyntax? DeclaringType { get; }
+    public ITypeDefinitionSyntax? DeclaringType { get; }
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
     public bool IsConst { [DebuggerStepThrough] get; }
     public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
     public bool IsMove { [DebuggerStepThrough] get; }
     public new StandardName Name { [DebuggerStepThrough] get; }
-    TypeName INonMemberEntityDeclarationSyntax.Name => Name;
+    TypeName INonMemberEntityDefinitionSyntax.Name => Name;
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
     public new AcyclicPromise<UserTypeSymbol> Symbol { [DebuggerStepThrough] get; }
     public IFixedList<IStandardTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public abstract IFixedList<TMember> Members { [DebuggerStepThrough] get; }
-    IFixedList<ITypeMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => members.Value;
-    private readonly Lazy<IFixedList<ITypeMemberDeclarationSyntax>> members;
+    IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => members.Value;
+    private readonly Lazy<IFixedList<ITypeMemberDefinitionSyntax>> members;
 
-    protected TypeDeclarationSyntax(
+    protected TypeDefinitionSyntax(
         NamespaceName containingNamespaceName,
-        ITypeDeclarationSyntax? declaringType,
+        ITypeDefinitionSyntax? declaringType,
         TextSpan headerSpan,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -54,6 +54,6 @@ internal abstract class TypeDeclarationSyntax<TMember> : NonMemberDeclarationSyn
         SupertypeNames = supertypeNames;
         Symbol = (AcyclicPromise<UserTypeSymbol>)base.Symbol;
         // TODO not sure why SafeCast doesn't work here
-        members = new(() => Members.Cast<ITypeMemberDeclarationSyntax>().ToFixedList());
+        members = new(() => Members.Cast<ITypeMemberDefinitionSyntax>().ToFixedList());
     }
 }

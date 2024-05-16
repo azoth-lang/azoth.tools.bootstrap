@@ -36,10 +36,10 @@ public class EntitySymbolBuilder
         builder.Build(package.TestingEntityDeclarations);
     }
 
-    private void Build(IFixedSet<IEntityDeclarationSyntax> entities)
+    private void Build(IFixedSet<IEntityDefinitionSyntax> entities)
     {
         // Process all types first because they may be referenced by functions etc.
-        var typeDeclarations = entities.OfType<ITypeDeclarationSyntax>().ToFixedList();
+        var typeDeclarations = entities.OfType<ITypeDefinitionSyntax>().ToFixedList();
         foreach (var type in typeDeclarations)
             BuildTypeSymbol(type);
 
@@ -55,37 +55,37 @@ public class EntitySymbolBuilder
     /// If the type has not been resolved, this resolves it. This function
     /// also watches for type cycles and reports an error.
     /// </summary>
-    private void BuildNonTypeEntitySymbol(IEntityDeclarationSyntax entity)
+    private void BuildNonTypeEntitySymbol(IEntityDefinitionSyntax entity)
     {
         switch (entity)
         {
             default:
                 throw ExhaustiveMatch.Failed(entity);
-            case IMethodDeclarationSyntax method:
+            case IMethodDefinitionSyntax method:
                 BuildMethodSymbol(method);
                 break;
-            case IConstructorDeclarationSyntax constructor:
+            case IConstructorDefinitionSyntax constructor:
                 BuildConstructorSymbol(constructor);
                 break;
-            case IInitializerDeclarationSyntax initializer:
+            case IInitializerDefinitionSyntax initializer:
                 BuildInitializerSymbol(initializer);
                 break;
-            case IAssociatedFunctionDeclarationSyntax associatedFunction:
+            case IAssociatedFunctionDefinitionSyntax associatedFunction:
                 BuildAssociatedFunctionSymbol(associatedFunction);
                 break;
-            case IFieldDeclarationSyntax field:
+            case IFieldDefinitionSyntax field:
                 BuildFieldSymbol(field);
                 break;
-            case IFunctionDeclarationSyntax syn:
+            case IFunctionDefinitionSyntax syn:
                 BuildFunctionSymbol(syn);
                 break;
-            case ITypeDeclarationSyntax _:
+            case ITypeDefinitionSyntax _:
                 // Type declarations already processed
                 break;
         }
     }
 
-    private void BuildMethodSymbol(IMethodDeclarationSyntax method)
+    private void BuildMethodSymbol(IMethodDefinitionSyntax method)
     {
         // Method symbol already set by EntitySymbolApplier
         var symbol = method.Symbol.Result;
@@ -98,7 +98,7 @@ public class EntitySymbolBuilder
         BuildParameterSymbols(symbol, method.File, method.Parameters, parameterTypes);
     }
 
-    private void BuildConstructorSymbol(IConstructorDeclarationSyntax constructor)
+    private void BuildConstructorSymbol(IConstructorDefinitionSyntax constructor)
     {
         // Constructor symbol already set by EntitySymbolApplier
         var symbol = constructor.Symbol.Result;
@@ -111,7 +111,7 @@ public class EntitySymbolBuilder
         BuildParameterSymbols(symbol, constructor.File, constructor.Parameters, parameterTypes);
     }
 
-    private void BuildInitializerSymbol(IInitializerDeclarationSyntax initializer)
+    private void BuildInitializerSymbol(IInitializerDefinitionSyntax initializer)
     {
         // Initializer symbol already set by EntitySymbolApplier
         var symbol = initializer.Symbol.Result;
@@ -124,7 +124,7 @@ public class EntitySymbolBuilder
         BuildParameterSymbols(symbol, initializer.File, initializer.Parameters, parameterTypes);
     }
 
-    private void BuildAssociatedFunctionSymbol(IAssociatedFunctionDeclarationSyntax associatedFunction)
+    private void BuildAssociatedFunctionSymbol(IAssociatedFunctionDefinitionSyntax associatedFunction)
     {
         // Associated function symbol already set by EntitySymbolApplier
         var symbol = associatedFunction.Symbol.Result;
@@ -135,14 +135,14 @@ public class EntitySymbolBuilder
         BuildParameterSymbols(symbol, associatedFunction.File, associatedFunction.Parameters, parameterTypes);
     }
 
-    private void BuildFieldSymbol(IFieldDeclarationSyntax field)
+    private void BuildFieldSymbol(IFieldDefinitionSyntax field)
     {
         // Field symbol already set by EntitySymbolApplier
         var symbol = field.Symbol.Result;
         symbolTree.Add(symbol);
     }
 
-    private void BuildFunctionSymbol(IFunctionDeclarationSyntax function)
+    private void BuildFunctionSymbol(IFunctionDefinitionSyntax function)
     {
         // Function symbol already set by EntitySymbolApplier
         var symbol = function.Symbol.Result;
@@ -153,25 +153,25 @@ public class EntitySymbolBuilder
         BuildParameterSymbols(symbol, function.File, function.Parameters, parameterTypes);
     }
 
-    private void BuildTypeSymbol(ITypeDeclarationSyntax type)
+    private void BuildTypeSymbol(ITypeDefinitionSyntax type)
     {
         switch (type)
         {
             default:
                 throw ExhaustiveMatch.Failed(type);
-            case IClassDeclarationSyntax @class:
+            case IClassDefinitionSyntax @class:
                 BuildClassSymbol(@class);
                 break;
-            case IStructDeclarationSyntax @struct:
+            case IStructDefinitionSyntax @struct:
                 BuildStructSymbol(@struct);
                 break;
-            case ITraitDeclarationSyntax trait:
+            case ITraitDefinitionSyntax trait:
                 BuildTraitSymbol(trait);
                 break;
         }
     }
 
-    private void BuildClassSymbol(IClassDeclarationSyntax @class)
+    private void BuildClassSymbol(IClassDefinitionSyntax @class)
     {
         // Class symbol already set by EntitySymbolApplier
         var classSymbol = @class.Symbol.Result;
@@ -183,7 +183,7 @@ public class EntitySymbolBuilder
         @class.CreateDefaultConstructor(symbolTree);
     }
 
-    private void BuildStructSymbol(IStructDeclarationSyntax @struct)
+    private void BuildStructSymbol(IStructDefinitionSyntax @struct)
     {
         // Struct symbol already set by EntitySymbolApplier
         var structSymbol = @struct.Symbol.Result;
@@ -195,7 +195,7 @@ public class EntitySymbolBuilder
         @struct.CreateDefaultInitializer(symbolTree);
     }
 
-    private void BuildTraitSymbol(ITraitDeclarationSyntax trait)
+    private void BuildTraitSymbol(ITraitDefinitionSyntax trait)
     {
         // Trait symbol already set by EntitySymbolApplier
         var traitSymbol = trait.Symbol.Result;
@@ -225,20 +225,20 @@ public class EntitySymbolBuilder
                 default:
                     throw ExhaustiveMatch.Failed(param);
                 case INamedParameterSyntax namedParam:
-                {
-                    var isLent = namedParam.IsLentBinding;
-                    if (isLent && !type.CanBeLent())
                     {
-                        diagnostics.Add(TypeError.TypeCannotBeLent(file, namedParam.Span, type));
-                        isLent = false;
-                    }
+                        var isLent = namedParam.IsLentBinding;
+                        if (isLent && !type.CanBeLent())
+                        {
+                            diagnostics.Add(TypeError.TypeCannotBeLent(file, namedParam.Span, type));
+                            isLent = false;
+                        }
 
-                    var symbol = NamedVariableSymbol.CreateParameter(containingSymbol, namedParam.Name,
-                        namedParam.DeclarationNumber.Result, namedParam.IsMutableBinding, isLent, type);
-                    namedParam.Symbol.Fulfill(symbol);
-                    symbolTree.Add(symbol);
-                }
-                break;
+                        var symbol = NamedVariableSymbol.CreateParameter(containingSymbol, namedParam.Name,
+                            namedParam.DeclarationNumber.Result, namedParam.IsMutableBinding, isLent, type);
+                        namedParam.Symbol.Fulfill(symbol);
+                        symbolTree.Add(symbol);
+                    }
+                    break;
                 case IFieldParameterSyntax _:
                     // Referenced field already assigned
                     break;

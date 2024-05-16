@@ -9,13 +9,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class SetterMethodDefinitionNode : MethodDefinitionNode, ISetterMethodDefinitionNode
 {
-    public override ISetterMethodDeclarationSyntax Syntax { get; }
+    public override ISetterMethodDefinitionSyntax Syntax { get; }
     public IBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     IStructMemberSymbolNode IStructMemberDefinitionNode.SymbolNode => SymbolNode;
 
     public SetterMethodDefinitionNode(
-        ISetterMethodDeclarationSyntax syntax,
+        ISetterMethodDefinitionSyntax syntax,
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,

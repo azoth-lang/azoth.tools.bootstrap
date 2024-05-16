@@ -17,7 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeDefinitionNode
 {
-    public abstract override ITypeDeclarationSyntax Syntax { get; }
+    public abstract override ITypeDefinitionSyntax Syntax { get; }
     public bool IsConst => Syntax.IsConst;
     public StandardName Name => Syntax.Name;
     public abstract IDeclaredUserType DeclaredType { get; }

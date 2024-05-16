@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class StructDefinitionNode : TypeDefinitionNode, IStructDefinitionNode
 {
-    public override IStructDeclarationSyntax Syntax { get; }
+    public override IStructDefinitionSyntax Syntax { get; }
 
     private ValueAttribute<IStructSymbolNode> symbolNode;
     public override IStructSymbolNode SymbolNode
@@ -25,7 +25,7 @@ internal sealed class StructDefinitionNode : TypeDefinitionNode, IStructDefiniti
     public override IFixedList<IStructMemberDefinitionNode> Members { get; }
 
     public StructDefinitionNode(
-        IStructDeclarationSyntax syntax,
+        IStructDefinitionSyntax syntax,
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<IStandardTypeNameNode> supertypeNames,
         IEnumerable<IStructMemberDefinitionNode> members)

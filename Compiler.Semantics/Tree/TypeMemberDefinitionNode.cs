@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class TypeMemberDefinitionNode : DefinitionNode, ITypeMemberDefinitionNode
 {
-    public abstract override ITypeMemberDeclarationSyntax Syntax { get; }
+    public abstract override ITypeMemberDefinitionSyntax Syntax { get; }
     private ValueAttribute<AccessModifier> accessModifier;
     public AccessModifier AccessModifier
         => accessModifier.TryGetValue(out var value) ? value

@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -9,40 +8,39 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal sealed class FunctionDeclarationSyntax : InvocableNonMemberEntityDeclarationSyntax, IFunctionDeclarationSyntax
+internal class AssociatedFunctionDefinitionSyntax : InvocableDefinitionSyntax, IAssociatedFunctionDefinitionSyntax
 {
-    public IFixedList<IAttributeSyntax> Attributes { get; }
+    public ITypeDefinitionSyntax DeclaringType { get; }
     public new IdentifierName Name { get; }
-    public new IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public new IFixedList<INamedParameterSyntax> Parameters { get; }
     public override IFixedList<IParameterSyntax> AllParameters => Parameters;
-    public IReturnSyntax? Return { [DebuggerStepThrough] get; }
-    public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public IReturnSyntax? Return { get; }
+    public IBodySyntax Body { get; }
     public new AcyclicPromise<FunctionSymbol> Symbol { get; }
 
-    public FunctionDeclarationSyntax(
-        NamespaceName containingNamespaceName,
+    public AssociatedFunctionDefinitionSyntax(
+        ITypeDefinitionSyntax declaringType,
         TextSpan span,
         CodeFile file,
-        IFixedList<IAttributeSyntax> attributes,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
         IdentifierName name,
         IFixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
         IBodySyntax body)
-        : base(containingNamespaceName, span, file, accessModifier, nameSpan, name, parameters, new AcyclicPromise<FunctionSymbol>())
+        : base(span, file, accessModifier, nameSpan, name, parameters, new AcyclicPromise<FunctionSymbol>())
     {
+        DeclaringType = declaringType;
         Name = name;
         Parameters = parameters;
         Body = body;
-        Attributes = attributes;
         Return = @return;
         Symbol = (AcyclicPromise<FunctionSymbol>)base.Symbol;
     }
 
     public override string ToString()
     {
-        var @return = Return is not null ? Return.ToString() : "";
-        return $"fn {Name}({string.Join(", ", Parameters)}){@return} {Body}";
+        var returnType = Return is not null ? Return.ToString() : "";
+        return $"fn {Name}({string.Join(", ", Parameters)}){returnType} {Body}";
     }
 }

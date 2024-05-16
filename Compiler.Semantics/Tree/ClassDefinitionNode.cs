@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class ClassDefinitionNode : TypeDefinitionNode, IClassDefinitionNode
 {
-    public override IClassDeclarationSyntax Syntax { get; }
+    public override IClassDefinitionSyntax Syntax { get; }
     public bool IsAbstract => Syntax.AbstractModifier is not null;
     public IStandardTypeNameNode? BaseTypeName { get; }
 
@@ -34,7 +34,7 @@ internal sealed class ClassDefinitionNode : TypeDefinitionNode, IClassDefinition
             : defaultConstructorSymbol.GetValue(this, SymbolAttribute.ClassDeclaration_DefaultConstructorSymbol);
 
     public ClassDefinitionNode(
-        IClassDeclarationSyntax syntax,
+        IClassDefinitionSyntax syntax,
         IEnumerable<IGenericParameterNode> genericParameters,
         IStandardTypeNameNode? baseTypeName,
         IEnumerable<IStandardTypeNameNode> supertypeNames,

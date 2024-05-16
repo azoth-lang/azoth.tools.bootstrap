@@ -49,7 +49,7 @@ public class SymbolScopesBuilder
     private static IFixedList<NonMemberSymbol> GetAllNonMemberDeclarationSymbols(
         IEnumerable<NonMemberSymbol> primitiveEntitySymbols,
         ISymbolTree packageSymbolTree,
-        IEnumerable<IEntityDeclarationSyntax> packageEntityDeclarations,
+        IEnumerable<IEntityDefinitionSyntax> packageEntityDeclarations,
         IEnumerable<FixedSymbolTree> referencedSymbolTrees)
     {
         // Namespaces in the package need to be created even if they are empty
@@ -58,7 +58,7 @@ public class SymbolScopesBuilder
                                                  .Select(NonMemberSymbol.ForPackageNamespace);
 
         var packageNonMemberEntitySymbols = packageEntityDeclarations
-                                    .OfType<INonMemberEntityDeclarationSyntax>()
+                                    .OfType<INonMemberEntityDefinitionSyntax>()
                                     .Select(NonMemberSymbol.For);
 
         // TODO it might be better to go to the declarations and get their symbols (once that is implemented)

@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 
 public sealed class SemanticsFulfillmentValidator : SyntaxWalker
 {
-    public void Validate(IEnumerable<IEntityDeclarationSyntax> entityDeclarations)
+    public void Validate(IEnumerable<IEntityDefinitionSyntax> entityDeclarations)
     {
         foreach (var declaration in entityDeclarations)
             WalkNonNull(declaration);

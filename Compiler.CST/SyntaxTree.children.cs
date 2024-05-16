@@ -18,18 +18,18 @@ public static class IConcreteSyntaxExtensions
             case ICompilationUnitSyntax n:
                 foreach (var child in n.UsingDirectives)
                     yield return child;
-                foreach (var child in n.Declarations)
+                foreach (var child in n.Definitions)
                     yield return child;
                 yield break;
             case IUsingDirectiveSyntax n:
                 yield break;
-            case INamespaceDeclarationSyntax n:
+            case INamespaceDefinitionSyntax n:
                 foreach (var child in n.UsingDirectives)
                     yield return child;
-                foreach (var child in n.Declarations)
+                foreach (var child in n.Definitions)
                     yield return child;
                 yield break;
-            case IFunctionDeclarationSyntax n:
+            case IFunctionDefinitionSyntax n:
                 foreach (var child in n.Attributes)
                     yield return child;
                 foreach (var child in n.Parameters)
@@ -38,7 +38,7 @@ public static class IConcreteSyntaxExtensions
                     yield return n.Return;
                 yield return n.Body;
                 yield break;
-            case IClassDeclarationSyntax n:
+            case IClassDefinitionSyntax n:
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 if (n.BaseTypeName is not null)
@@ -48,7 +48,7 @@ public static class IConcreteSyntaxExtensions
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case IStructDeclarationSyntax n:
+            case IStructDefinitionSyntax n:
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 foreach (var child in n.SupertypeNames)
@@ -56,7 +56,7 @@ public static class IConcreteSyntaxExtensions
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case ITraitDeclarationSyntax n:
+            case ITraitDefinitionSyntax n:
                 foreach (var child in n.GenericParameters)
                     yield return child;
                 foreach (var child in n.SupertypeNames)
@@ -67,14 +67,14 @@ public static class IConcreteSyntaxExtensions
             case IGenericParameterSyntax n:
                 yield return n.Constraint;
                 yield break;
-            case IAbstractMethodDeclarationSyntax n:
+            case IAbstractMethodDefinitionSyntax n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
                 yield break;
-            case IStandardMethodDeclarationSyntax n:
+            case IStandardMethodDefinitionSyntax n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
@@ -82,14 +82,14 @@ public static class IConcreteSyntaxExtensions
                     yield return n.Return;
                 yield return n.Body;
                 yield break;
-            case IGetterMethodDeclarationSyntax n:
+            case IGetterMethodDefinitionSyntax n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
                 yield return n.Return;
                 yield return n.Body;
                 yield break;
-            case ISetterMethodDeclarationSyntax n:
+            case ISetterMethodDefinitionSyntax n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
@@ -97,24 +97,24 @@ public static class IConcreteSyntaxExtensions
                     yield return n.Return;
                 yield return n.Body;
                 yield break;
-            case IConstructorDeclarationSyntax n:
+            case IConstructorDefinitionSyntax n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
                 yield return n.Body;
                 yield break;
-            case IInitializerDeclarationSyntax n:
+            case IInitializerDefinitionSyntax n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
                 yield return n.Body;
                 yield break;
-            case IFieldDeclarationSyntax n:
+            case IFieldDefinitionSyntax n:
                 yield return n.Type;
                 if (n.Initializer is not null)
                     yield return n.Initializer;
                 yield break;
-            case IAssociatedFunctionDeclarationSyntax n:
+            case IAssociatedFunctionDefinitionSyntax n:
                 foreach (var child in n.Parameters)
                     yield return child;
                 if (n.Return is not null)

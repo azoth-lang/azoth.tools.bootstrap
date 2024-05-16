@@ -11,13 +11,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStandardMethodDefinitionNode
 {
-    public override IStandardMethodDeclarationSyntax Syntax { get; }
+    public override IStandardMethodDefinitionSyntax Syntax { get; }
     public IBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     IStructMemberSymbolNode IStructMemberDefinitionNode.SymbolNode => SymbolNode;
 
     public StandardMethodDefinitionNode(
-        IStandardMethodDeclarationSyntax syntax,
+        IStandardMethodDefinitionSyntax syntax,
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,

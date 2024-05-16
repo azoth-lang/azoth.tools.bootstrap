@@ -36,11 +36,11 @@ internal class SyntaxNotImplementedChecker : SyntaxWalker
                 if (syn.DefaultValue is not null)
                     diagnostics.Add(ParseError.NotImplemented(file, syn.DefaultValue.Span, "Default values"));
                 break;
-            case IConstructorDeclarationSyntax syn:
+            case IConstructorDefinitionSyntax syn:
                 if (syn.Name is not null)
                     diagnostics.Add(ParseError.NotImplemented(file, syn.Span, "Named constructors"));
                 break;
-            case IFieldDeclarationSyntax syn:
+            case IFieldDefinitionSyntax syn:
                 if (syn.Initializer is not null)
                     diagnostics.Add(ParseError.NotImplemented(file, syn.Initializer.Span, "Field initializers"));
                 break;

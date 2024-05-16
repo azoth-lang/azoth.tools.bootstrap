@@ -1,23 +1,22 @@
 using System;
-using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal abstract class InvocableNonMemberEntityDeclarationSyntax : InvocableDeclarationSyntax, INonMemberEntityDeclarationSyntax
+internal abstract class NonMemberDefinitionSyntax : DefinitionSyntax, INonMemberDefinitionSyntax
 {
     public NamespaceName ContainingNamespaceName { get; }
 
     private NamespaceSymbol? containingNamespaceSymbol;
     public NamespaceSymbol ContainingNamespaceSymbol
     {
-        get => containingNamespaceSymbol
-               ?? throw new InvalidOperationException($"{ContainingNamespaceSymbol} not yet assigned");
+        get =>
+            containingNamespaceSymbol
+            ?? throw new InvalidOperationException($"{ContainingNamespaceSymbol} not yet assigned");
         set
         {
             if (containingNamespaceSymbol is not null)
@@ -26,20 +25,15 @@ internal abstract class InvocableNonMemberEntityDeclarationSyntax : InvocableDec
         }
     }
 
-    public new TypeName Name { get; }
-
-    protected InvocableNonMemberEntityDeclarationSyntax(
+    protected NonMemberDefinitionSyntax(
         NamespaceName containingNamespaceName,
         TextSpan span,
         CodeFile file,
-        IAccessModifierToken? accessModifier,
+        TypeName? name,
         TextSpan nameSpan,
-        IdentifierName name,
-        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
-        IPromise<InvocableSymbol> symbol)
-        : base(span, file, accessModifier, nameSpan, name, parameters, symbol)
+        IPromise<Symbol> symbol)
+        : base(span, file, name, nameSpan, symbol)
     {
         ContainingNamespaceName = containingNamespaceName;
-        Name = name;
     }
 }

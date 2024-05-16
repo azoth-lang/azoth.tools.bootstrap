@@ -15,13 +15,13 @@ internal class TypeSymbolInheritor
 {
     private readonly ISymbolTreeBuilder symbolTree;
     private readonly SymbolForest symbolTrees;
-    private readonly IDictionary<ITypeDeclarationSyntax, bool> processed;
-    private readonly FixedDictionary<TypeSymbol, ITypeDeclarationSyntax> typeDeclarationsInPackage;
+    private readonly IDictionary<ITypeDefinitionSyntax, bool> processed;
+    private readonly FixedDictionary<TypeSymbol, ITypeDefinitionSyntax> typeDeclarationsInPackage;
 
     public TypeSymbolInheritor(
         ISymbolTreeBuilder symbolTree,
         SymbolForest symbolTrees,
-        IEnumerable<ITypeDeclarationSyntax> typeDeclarations)
+        IEnumerable<ITypeDefinitionSyntax> typeDeclarations)
     {
         this.symbolTree = symbolTree;
         this.symbolTrees = symbolTrees;
@@ -35,19 +35,19 @@ internal class TypeSymbolInheritor
             AddInheritedSymbols(typeDeclaration);
     }
 
-    private void AddInheritedSymbols(ITypeDeclarationSyntax typeDeclaration)
+    private void AddInheritedSymbols(ITypeDefinitionSyntax typeDefinition)
     {
-        if (processed[typeDeclaration]) return;
+        if (processed[typeDefinition]) return;
 
-        var typeSymbol = typeDeclaration.Symbol.Result;
+        var typeSymbol = typeDefinition.Symbol.Result;
 
         // Set processed early so that if there is a cycle, we don't infinitely recurse
-        processed[typeDeclaration] = true;
+        processed[typeDefinition] = true;
 
-        if (typeDeclaration is IClassDeclarationSyntax { BaseTypeName: not null and var baseTypeName })
+        if (typeDefinition is IClassDefinitionSyntax { BaseTypeName: not null and var baseTypeName })
             AddInheritedSymbols(typeSymbol, baseTypeName);
 
-        foreach (var superTypeName in typeDeclaration.SupertypeNames)
+        foreach (var superTypeName in typeDefinition.SupertypeNames)
             AddInheritedSymbols(typeSymbol, superTypeName);
 
         AddInheritedSymbols(typeSymbol, Primitive.Any);

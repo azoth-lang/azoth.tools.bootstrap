@@ -7,13 +7,13 @@ using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal abstract class MemberDeclarationSyntax : DeclarationSyntax, ITypeMemberDeclarationSyntax
+internal abstract class MemberDefinitionSyntax : DefinitionSyntax, ITypeMemberDefinitionSyntax
 {
-    public ITypeDeclarationSyntax DeclaringType { get; }
+    public ITypeDefinitionSyntax DeclaringType { get; }
     public IAccessModifierToken? AccessModifier { get; }
 
-    protected MemberDeclarationSyntax(
-        ITypeDeclarationSyntax declaringType,
+    protected MemberDefinitionSyntax(
+        ITypeDefinitionSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,

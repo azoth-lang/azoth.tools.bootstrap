@@ -33,12 +33,12 @@ public class PackageSyntax<TPackage> : IPackageSyntax
     [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
     public IFixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
     public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
-    public IFixedSet<IEntityDeclarationSyntax> EntityDeclarations { get; }
-    public IFixedSet<IEntityDeclarationSyntax> TestingEntityDeclarations { get; }
+    public IFixedSet<IEntityDefinitionSyntax> EntityDeclarations { get; }
+    public IFixedSet<IEntityDefinitionSyntax> TestingEntityDeclarations { get; }
     /// <summary>
     /// All the entity declarations including both regular code and testing code.
     /// </summary>
-    public IFixedSet<IEntityDeclarationSyntax> AllEntityDeclarations { get; }
+    public IFixedSet<IEntityDefinitionSyntax> AllEntityDeclarations { get; }
     public IFixedSet<IPackageReferenceSyntax<TPackage>> References { get; }
     IFixedSet<IPackageReferenceSyntax> IPackageSyntax.References => References;
     public IEnumerable<TPackage> ReferencedPackages => References.Select(r => r.Package);
@@ -71,28 +71,28 @@ public class PackageSyntax<TPackage> : IPackageSyntax
     /// the implicit namespace of a compilation unit or are implicitly declared,
     /// so it wouldn't give a full list of the namespaces.
     /// </remarks>
-    private static IEnumerable<IEntityDeclarationSyntax> GetEntityDeclarations(
+    private static IEnumerable<IEntityDefinitionSyntax> GetEntityDeclarations(
         IFixedSet<ICompilationUnitSyntax> compilationUnits)
     {
-        var declarations = new Queue<IDeclarationSyntax>();
-        declarations.EnqueueRange(compilationUnits.SelectMany(cu => cu.Declarations));
+        var declarations = new Queue<IDefinitionSyntax>();
+        declarations.EnqueueRange(compilationUnits.SelectMany(cu => cu.Definitions));
         while (declarations.TryDequeue(out var declaration))
             switch (declaration)
             {
                 default:
                     throw ExhaustiveMatch.Failed(declaration);
-                case ITypeDeclarationSyntax syn:
+                case ITypeDefinitionSyntax syn:
                     yield return syn;
                     declarations.EnqueueRange(syn.Members);
                     break;
-                case ITypeMemberDeclarationSyntax syn:
+                case ITypeMemberDefinitionSyntax syn:
                     yield return syn;
                     break;
-                case IFunctionDeclarationSyntax syn:
+                case IFunctionDefinitionSyntax syn:
                     yield return syn;
                     break;
-                case INamespaceDeclarationSyntax syn:
-                    declarations.EnqueueRange(syn.Declarations);
+                case INamespaceDefinitionSyntax syn:
+                    declarations.EnqueueRange(syn.Definitions);
                     break;
             }
     }

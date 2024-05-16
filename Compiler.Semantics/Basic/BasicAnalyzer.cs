@@ -56,83 +56,83 @@ public class BasicAnalyzer
         analyzer.Resolve(package.TestingEntityDeclarations);
     }
 
-    private void Resolve(IFixedSet<IEntityDeclarationSyntax> entities)
+    private void Resolve(IFixedSet<IEntityDefinitionSyntax> entities)
     {
         foreach (var entity in entities)
             Resolve(entity);
     }
 
-    private void Resolve(IEntityDeclarationSyntax entity)
+    private void Resolve(IEntityDefinitionSyntax entity)
     {
         switch (entity)
         {
             default:
                 throw ExhaustiveMatch.Failed(entity);
-            case ITypeDeclarationSyntax _:
+            case ITypeDefinitionSyntax _:
                 // Nothing to check
                 break;
-            case IInvocableDeclarationSyntax syn:
+            case IInvocableDefinitionSyntax syn:
                 ResolveBody(syn);
                 break;
-            case IFieldDeclarationSyntax syn:
+            case IFieldDefinitionSyntax syn:
                 Resolve(syn);
                 break;
         }
     }
 
-    private void ResolveBody(IInvocableDeclarationSyntax declaration)
+    private void ResolveBody(IInvocableDefinitionSyntax definition)
     {
-        switch (declaration)
+        switch (definition)
         {
             default:
-                throw ExhaustiveMatch.Failed(declaration);
-            case IFunctionDeclarationSyntax function:
-            {
-                var resolver = new BasicBodyAnalyzer(function, symbolTreeBuilder, symbolTrees,
-                    rangeSymbol, diagnostics,
-                    function.Symbol.Result.Return);
-                resolver.ResolveTypes(function.Body);
-                break;
-            }
-            case IAssociatedFunctionDeclarationSyntax associatedFunction:
-            {
-                var resolver = new BasicBodyAnalyzer(associatedFunction, symbolTreeBuilder, symbolTrees,
-                    rangeSymbol, diagnostics,
-                    associatedFunction.Symbol.Result.Return);
-                resolver.ResolveTypes(associatedFunction.Body);
-                break;
-            }
-            case IConcreteMethodDeclarationSyntax method:
-            {
-                var resolver = new BasicBodyAnalyzer(method, symbolTreeBuilder,
-                    symbolTrees, rangeSymbol, diagnostics,
-                    method.Symbol.Result.Return);
-                resolver.ResolveTypes(method.Body);
-                break;
-            }
-            case IAbstractMethodDeclarationSyntax _:
+                throw ExhaustiveMatch.Failed(definition);
+            case IFunctionDefinitionSyntax function:
+                {
+                    var resolver = new BasicBodyAnalyzer(function, symbolTreeBuilder, symbolTrees,
+                        rangeSymbol, diagnostics,
+                        function.Symbol.Result.Return);
+                    resolver.ResolveTypes(function.Body);
+                    break;
+                }
+            case IAssociatedFunctionDefinitionSyntax associatedFunction:
+                {
+                    var resolver = new BasicBodyAnalyzer(associatedFunction, symbolTreeBuilder, symbolTrees,
+                        rangeSymbol, diagnostics,
+                        associatedFunction.Symbol.Result.Return);
+                    resolver.ResolveTypes(associatedFunction.Body);
+                    break;
+                }
+            case IConcreteMethodDefinitionSyntax method:
+                {
+                    var resolver = new BasicBodyAnalyzer(method, symbolTreeBuilder,
+                        symbolTrees, rangeSymbol, diagnostics,
+                        method.Symbol.Result.Return);
+                    resolver.ResolveTypes(method.Body);
+                    break;
+                }
+            case IAbstractMethodDefinitionSyntax _:
                 // has no body, so nothing to resolve
                 break;
-            case IConstructorDeclarationSyntax constructor:
-            {
-                Return @return = new Return(constructor.SelfParameter.DataType.Result);
-                var resolver = new BasicBodyAnalyzer(constructor, symbolTreeBuilder, symbolTrees,
-                    rangeSymbol, diagnostics, @return);
-                resolver.ResolveTypes(constructor.Body);
-                break;
-            }
-            case IInitializerDeclarationSyntax initializer:
-            {
-                Return @return = new Return(initializer.SelfParameter.DataType.Result);
-                var resolver = new BasicBodyAnalyzer(initializer, symbolTreeBuilder, symbolTrees,
-                    rangeSymbol, diagnostics, @return);
-                resolver.ResolveTypes(initializer.Body);
-                break;
-            }
+            case IConstructorDefinitionSyntax constructor:
+                {
+                    Return @return = new Return(constructor.SelfParameter.DataType.Result);
+                    var resolver = new BasicBodyAnalyzer(constructor, symbolTreeBuilder, symbolTrees,
+                        rangeSymbol, diagnostics, @return);
+                    resolver.ResolveTypes(constructor.Body);
+                    break;
+                }
+            case IInitializerDefinitionSyntax initializer:
+                {
+                    Return @return = new Return(initializer.SelfParameter.DataType.Result);
+                    var resolver = new BasicBodyAnalyzer(initializer, symbolTreeBuilder, symbolTrees,
+                        rangeSymbol, diagnostics, @return);
+                    resolver.ResolveTypes(initializer.Body);
+                    break;
+                }
         }
     }
 
-    private void Resolve(IFieldDeclarationSyntax field)
+    private void Resolve(IFieldDefinitionSyntax field)
     {
         if (field.Initializer is null)
             return;

@@ -10,13 +10,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 internal static class TypeModifiersAspect
 {
     public static AccessModifier PackageMemberDeclaration_AccessModifier(IDefinitionNode node)
-        => EntityDeclarationAccessModifier((IEntityDeclarationSyntax)node.Syntax);
+        => EntityDeclarationAccessModifier((IEntityDefinitionSyntax)node.Syntax);
 
     public static AccessModifier TypeMemberDeclaration_AccessModifier(ITypeMemberDefinitionNode node)
         => EntityDeclarationAccessModifier(node.Syntax);
 
-    private static AccessModifier EntityDeclarationAccessModifier(IEntityDeclarationSyntax entityDeclarationSyntax)
-        => entityDeclarationSyntax.AccessModifier?.ToAccessModifier() ?? AccessModifier.Private;
+    private static AccessModifier EntityDeclarationAccessModifier(IEntityDefinitionSyntax entityDefinitionSyntax)
+        => entityDefinitionSyntax.AccessModifier?.ToAccessModifier() ?? AccessModifier.Private;
 
     public static void AbstractMethodDeclaration_ContributeDiagnostics(IAbstractMethodDefinitionNode node, Diagnostics diagnostics)
     {

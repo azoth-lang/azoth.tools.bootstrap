@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class InitializerDefinitionNode : TypeMemberDefinitionNode, IInitializerDefinitionNode
 {
-    public override IInitializerDeclarationSyntax Syntax { get; }
+    public override IInitializerDefinitionSyntax Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public IdentifierName? Name => Syntax.Name;
     public IInitializerSelfParameterNode SelfParameter { get; }
@@ -27,7 +27,7 @@ internal sealed class InitializerDefinitionNode : TypeMemberDefinitionNode, IIni
             : symbol.GetValue(this, SymbolAttribute.InitializerDeclaration);
 
     public InitializerDefinitionNode(
-        IInitializerDeclarationSyntax syntax,
+        IInitializerDefinitionSyntax syntax,
         IInitializerSelfParameterNode selfParameter,
         IEnumerable<IConstructorOrInitializerParameterNode> parameters,
         IBlockBodyNode body)

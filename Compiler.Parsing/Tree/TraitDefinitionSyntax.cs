@@ -8,13 +8,13 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class TraitDeclarationSyntax : TypeDeclarationSyntax<ITraitMemberDeclarationSyntax>, ITraitDeclarationSyntax
+internal class TraitDefinitionSyntax : TypeDefinitionSyntax<ITraitMemberDefinitionSyntax>, ITraitDefinitionSyntax
 {
-    public override IFixedList<ITraitMemberDeclarationSyntax> Members { get; }
+    public override IFixedList<ITraitMemberDefinitionSyntax> Members { get; }
 
-    public TraitDeclarationSyntax(
+    public TraitDefinitionSyntax(
         NamespaceName containingNamespaceName,
-        ITypeDeclarationSyntax? declaringType,
+        ITypeDefinitionSyntax? declaringType,
         TextSpan headerSpan,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -24,7 +24,7 @@ internal class TraitDeclarationSyntax : TypeDeclarationSyntax<ITraitMemberDeclar
         string name,
         IFixedList<IGenericParameterSyntax> genericParameters,
         IFixedList<IStandardTypeNameSyntax> supertypes,
-        Func<ITraitDeclarationSyntax, (IFixedList<ITraitMemberDeclarationSyntax>, TextSpan)> parseMembers)
+        Func<ITraitDefinitionSyntax, (IFixedList<ITraitMemberDefinitionSyntax>, TextSpan)> parseMembers)
         : base(containingNamespaceName, declaringType, headerSpan, file, accessModifier, constModifier, moveModifier,
             nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypes)
     {

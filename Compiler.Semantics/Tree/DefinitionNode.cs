@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class DefinitionNode : CodeNode, IDefinitionNode
 {
-    public abstract override IDeclarationSyntax Syntax { get; }
+    public abstract override IDefinitionSyntax Syntax { get; }
     public virtual ISymbolNode ContainingSymbolNode => Parent.InheritedContainingSymbolNode(this, this);
     public virtual Symbol ContainingSymbol => ContainingSymbolNode.Symbol;
     private ValueAttribute<LexicalScope> containingLexicalScope;

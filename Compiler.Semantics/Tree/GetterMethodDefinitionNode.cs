@@ -9,14 +9,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetterMethodDefinitionNode
 {
-    public override IGetterMethodDeclarationSyntax Syntax { get; }
+    public override IGetterMethodDefinitionSyntax Syntax { get; }
     public override ITypeNode Return => base.Return!;
     public IBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     IStructMemberSymbolNode IStructMemberDefinitionNode.SymbolNode => SymbolNode;
 
     public GetterMethodDefinitionNode(
-        IGetterMethodDeclarationSyntax syntax,
+        IGetterMethodDefinitionSyntax syntax,
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode @return,

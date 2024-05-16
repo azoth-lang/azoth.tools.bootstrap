@@ -9,41 +9,40 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal sealed class ConstructorDeclarationSyntax : InvocableDeclarationSyntax, IConstructorDeclarationSyntax
+internal class InitializerDefinitionSyntax : InvocableDefinitionSyntax, IInitializerDefinitionSyntax
 {
-    public IClassDeclarationSyntax DeclaringType { get; }
+    public IStructDefinitionSyntax DeclaringType { get; }
     public new IdentifierName? Name { get; }
-    public IConstructorSelfParameterSyntax SelfParameter { get; }
+    public IInitializerSelfParameterSyntax SelfParameter { get; }
     public new IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
     public override IFixedList<IParameterSyntax> AllParameters { get; }
     public IBlockBodySyntax Body { get; }
-    public new AcyclicPromise<ConstructorSymbol> Symbol { get; }
+    public new AcyclicPromise<InitializerSymbol> Symbol { get; }
 
-    public ConstructorDeclarationSyntax(
-        IClassDeclarationSyntax declaringClass,
+    public InitializerDefinitionSyntax(
+        IStructDefinitionSyntax declaringStruct,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
         IdentifierName? name,
-        IConstructorSelfParameterSyntax selfParameter,
+        IInitializerSelfParameterSyntax selfParameter,
         IFixedList<IConstructorOrInitializerParameterSyntax> parameters,
         IBlockBodySyntax body)
-        : base(span, file, accessModifier, nameSpan, name, parameters,
-            new AcyclicPromise<ConstructorSymbol>())
+        : base(span, file, accessModifier, nameSpan, name, parameters, new AcyclicPromise<InitializerSymbol>())
     {
-        DeclaringType = declaringClass;
+        DeclaringType = declaringStruct;
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters;
         AllParameters = parameters.Prepend<IParameterSyntax>(selfParameter).ToFixedList();
         Body = body;
-        Symbol = (AcyclicPromise<ConstructorSymbol>)base.Symbol;
+        Symbol = (AcyclicPromise<InitializerSymbol>)base.Symbol;
     }
 
     public override string ToString()
     {
         var parameters = string.Join(", ", Parameters.Prepend<IParameterSyntax>(SelfParameter));
-        return Name is null ? $"new({parameters})" : $"new {Name}({parameters})";
+        return Name is null ? $"init({parameters})" : $"init {Name}({parameters})";
     }
 }

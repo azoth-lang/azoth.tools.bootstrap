@@ -8,13 +8,13 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal sealed class AbstractMethodDeclarationSyntax : MethodDeclarationSyntax, IAbstractMethodDeclarationSyntax
+internal sealed class StandardMethodDefinitionSyntax : ConcreteMethodDefinitionSyntax, IStandardMethodDefinitionSyntax
 {
     public override MethodKind Kind => MethodKind.Standard;
     public override IReturnSyntax? Return { get; }
 
-    public AbstractMethodDeclarationSyntax(
-        ITypeDeclarationSyntax declaringType,
+    public StandardMethodDefinitionSyntax(
+        ITypeDefinitionSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -22,9 +22,9 @@ internal sealed class AbstractMethodDeclarationSyntax : MethodDeclarationSyntax,
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IFixedList<INamedParameterSyntax> parameters,
-        IReturnSyntax? @return)
-        : base(declaringType, span, file, accessModifier, nameSpan, name,
-            selfParameter, parameters)
+        IReturnSyntax? @return,
+        IBodySyntax body)
+        : base(declaringType, span, file, accessModifier, nameSpan, name, selfParameter, parameters, body)
     {
         Return = @return;
     }
@@ -32,6 +32,6 @@ internal sealed class AbstractMethodDeclarationSyntax : MethodDeclarationSyntax,
     public override string ToString()
     {
         var @return = Return is not null ? Return.ToString() : "";
-        return $"fn {Name}({string.Join(", ", Parameters.Prepend<IParameterSyntax>(SelfParameter))}){@return};";
+        return $"fn {Name}({string.Join(", ", Parameters.Prepend<IParameterSyntax>(SelfParameter))}){@return} {Body}";
     }
 }

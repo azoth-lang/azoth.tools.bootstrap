@@ -11,11 +11,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 /// </summary>
 internal class NonMemberSymbol
 {
-    public static NonMemberSymbol For(INonMemberEntityDeclarationSyntax declaration)
-        => new NonMemberSymbol(declaration);
+    public static NonMemberSymbol For(INonMemberEntityDefinitionSyntax definition)
+        => new NonMemberSymbol(definition);
 
-    public static NonMemberSymbol For(IInitializerDeclarationSyntax declaration)
-        => new NonMemberSymbol(declaration);
+    public static NonMemberSymbol For(IInitializerDefinitionSyntax definition)
+        => new NonMemberSymbol(definition);
 
     public static NonMemberSymbol ForExternalSymbol(Symbol symbol)
         => new NonMemberSymbol(symbol);
@@ -37,24 +37,24 @@ internal class NonMemberSymbol
     public NamespaceName RequiredNamespace { get; }
     public IPromise<Symbol> Symbol { get; }
 
-    private NonMemberSymbol(INonMemberEntityDeclarationSyntax declaration)
+    private NonMemberSymbol(INonMemberEntityDefinitionSyntax definition)
     {
         InCurrentPackage = true;
-        ContainingNamespace = declaration.ContainingNamespaceName;
-        Name = declaration.Name;
+        ContainingNamespace = definition.ContainingNamespaceName;
+        Name = definition.Name;
         RequiredNamespace = ContainingNamespace;
-        Symbol = declaration.Symbol;
+        Symbol = definition.Symbol;
     }
 
-    private NonMemberSymbol(IInitializerDeclarationSyntax declaration)
+    private NonMemberSymbol(IInitializerDefinitionSyntax definition)
     {
-        if (declaration.Name is not null)
+        if (definition.Name is not null)
             throw new ArgumentException("Must be for an unnamed initializer");
         InCurrentPackage = true;
-        ContainingNamespace = declaration.DeclaringType.ContainingNamespaceName;
-        Name = declaration.DeclaringType.Name.Text;
+        ContainingNamespace = definition.DeclaringType.ContainingNamespaceName;
+        Name = definition.DeclaringType.Name.Text;
         RequiredNamespace = ContainingNamespace;
-        Symbol = declaration.Symbol;
+        Symbol = definition.Symbol;
     }
 
     private NonMemberSymbol(Symbol symbol)

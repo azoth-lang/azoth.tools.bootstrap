@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNode, IAssociatedFunctionDefinitionNode
 {
-    public override IAssociatedFunctionDeclarationSyntax Syntax { get; }
+    public override IAssociatedFunctionDefinitionSyntax Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public IdentifierName Name => Syntax.Name;
     public IFixedList<INamedParameterNode> Parameters { get; }
@@ -37,7 +37,7 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
             : symbolNode.GetValue(this, SymbolNodeAttributes.AssociatedFunction_SymbolNode);
 
     public AssociatedFunctionDefinitionNode(
-        IAssociatedFunctionDeclarationSyntax syntax,
+        IAssociatedFunctionDefinitionSyntax syntax,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
         IBodyNode body)

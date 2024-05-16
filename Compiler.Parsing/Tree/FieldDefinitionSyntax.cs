@@ -8,17 +8,17 @@ using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class FieldDeclarationSyntax : MemberDeclarationSyntax, IFieldDeclarationSyntax
+internal class FieldDefinitionSyntax : MemberDefinitionSyntax, IFieldDefinitionSyntax
 {
-    public new IClassOrStructDeclarationSyntax DeclaringType { get; }
+    public new IClassOrStructDefinitionSyntax DeclaringType { get; }
     public bool IsMutableBinding { get; }
     public new IdentifierName Name { get; }
     public new AcyclicPromise<FieldSymbol> Symbol { [DebuggerStepThrough] get; }
     public ITypeSyntax Type { get; }
     public IExpressionSyntax? Initializer { [DebuggerStepThrough] get; }
 
-    public FieldDeclarationSyntax(
-        IClassOrStructDeclarationSyntax declaringType,
+    public FieldDefinitionSyntax(
+        IClassOrStructDefinitionSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,

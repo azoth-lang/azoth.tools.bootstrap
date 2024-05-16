@@ -4,10 +4,10 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
-public partial interface IClassDeclarationSyntax
+public partial interface IClassDefinitionSyntax
 {
     void CreateDefaultConstructor(ISymbolTreeBuilder symbolTree);
 
-    IEnumerable<IStandardTypeNameSyntax> ITypeDeclarationSyntax.AllSupertypeNames
+    IEnumerable<IStandardTypeNameSyntax> ITypeDefinitionSyntax.AllSupertypeNames
         => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
 }

@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 /// </summary>
 public class TypeFulfillmentValidator : SyntaxWalker
 {
-    public void Validate(IEnumerable<IEntityDeclarationSyntax> entityDeclarations)
+    public void Validate(IEnumerable<IEntityDefinitionSyntax> entityDeclarations)
     {
         foreach (var declaration in entityDeclarations)
             WalkNonNull(declaration);
@@ -24,7 +24,7 @@ public class TypeFulfillmentValidator : SyntaxWalker
     {
         switch (syntax)
         {
-            case IClassDeclarationSyntax _:
+            case IClassDefinitionSyntax _:
                 // Don't recur into body, we will see those as separate members
                 return;
             case ITypeSyntax syn:

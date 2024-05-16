@@ -9,7 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal abstract class DeclarationSyntax : Syntax, IDeclarationSyntax
+internal abstract class DefinitionSyntax : Syntax, IDefinitionSyntax
 {
     private SymbolScope? containingLexicalScope;
     public SymbolScope ContainingLexicalScope
@@ -31,7 +31,7 @@ internal abstract class DeclarationSyntax : Syntax, IDeclarationSyntax
     public TextSpan NameSpan { get; }
     public IPromise<Symbol> Symbol { get; }
 
-    protected DeclarationSyntax(
+    protected DefinitionSyntax(
         TextSpan span,
         CodeFile file,
         TypeName? name,

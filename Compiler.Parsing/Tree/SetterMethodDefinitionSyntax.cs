@@ -1,3 +1,4 @@
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -7,27 +8,25 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal sealed class GetterMethodDeclarationSyntax : ConcreteMethodDeclarationSyntax, IGetterMethodDeclarationSyntax
+internal sealed class SetterMethodDefinitionSyntax : ConcreteMethodDefinitionSyntax, ISetterMethodDefinitionSyntax
 {
-    public override MethodKind Kind => MethodKind.Getter;
-    public override IReturnSyntax Return { get; }
+    public override MethodKind Kind => MethodKind.Setter;
+    public override IReturnSyntax? Return => null;
 
-    public GetterMethodDeclarationSyntax(
-        ITypeDeclarationSyntax declaringType,
+    public SetterMethodDefinitionSyntax(
+        ITypeDefinitionSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
-        IReturnSyntax @return,
+        INamedParameterSyntax? parameter,
         IBodySyntax body)
         : base(declaringType, span, file, accessModifier, nameSpan, name, selfParameter,
-            FixedList.Empty<INamedParameterSyntax>(), body)
-    {
-        Return = @return;
-    }
+            parameter is not null ? FixedList.Create(parameter) : FixedList.Empty<INamedParameterSyntax>(), body)
+    { }
 
     public override string ToString()
-        => $"get {Name}({SelfParameter}){Return} {Body}";
+        => $"set {Name}({string.Join(", ", Parameters.Prepend<IParameterSyntax>(SelfParameter))}) {Body}";
 }

@@ -10,7 +10,7 @@ internal class CompilationUnitSyntax : Syntax, ICompilationUnitSyntax
     public CodeFile File { get; }
     public NamespaceName ImplicitNamespaceName { get; }
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
-    public IFixedList<INonMemberDeclarationSyntax> Declarations { get; }
+    public IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
     public IFixedList<Diagnostic> Diagnostics { get; private set; }
 
     public CompilationUnitSyntax(
@@ -18,13 +18,13 @@ internal class CompilationUnitSyntax : Syntax, ICompilationUnitSyntax
         TextSpan span,
         CodeFile file,
         IFixedList<IUsingDirectiveSyntax> usingDirectives,
-        IFixedList<INonMemberDeclarationSyntax> declarations)
+        IFixedList<INonMemberDefinitionSyntax> declarations)
         : base(span)
     {
         File = file;
         ImplicitNamespaceName = implicitNamespaceName;
         UsingDirectives = usingDirectives;
-        Declarations = declarations;
+        Definitions = declarations;
         Diagnostics = FixedList.Empty<Diagnostic>();
     }
 

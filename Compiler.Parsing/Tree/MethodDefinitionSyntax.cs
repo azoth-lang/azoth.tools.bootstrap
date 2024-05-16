@@ -10,9 +10,9 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IMethodDeclarationSyntax
+internal abstract class MethodDefinitionSyntax : InvocableDefinitionSyntax, IMethodDefinitionSyntax
 {
-    public ITypeDeclarationSyntax DeclaringType { [DebuggerStepThrough] get; }
+    public ITypeDefinitionSyntax DeclaringType { [DebuggerStepThrough] get; }
     public abstract MethodKind Kind { [DebuggerStepThrough] get; }
     public new IdentifierName Name { [DebuggerStepThrough] get; }
     public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
@@ -21,8 +21,8 @@ internal abstract class MethodDeclarationSyntax : InvocableDeclarationSyntax, IM
     public abstract IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public new AcyclicPromise<MethodSymbol> Symbol { [DebuggerStepThrough] get; }
 
-    protected MethodDeclarationSyntax(
-        ITypeDeclarationSyntax declaringType,
+    protected MethodDefinitionSyntax(
+        ITypeDefinitionSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,

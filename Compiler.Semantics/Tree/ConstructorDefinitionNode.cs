@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal class ConstructorDefinitionNode : TypeMemberDefinitionNode, IConstructorDefinitionNode
 {
-    public override IConstructorDeclarationSyntax Syntax { get; }
+    public override IConstructorDefinitionSyntax Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public IdentifierName? Name => Syntax.Name;
     public IConstructorSelfParameterNode SelfParameter { get; }
@@ -30,7 +30,7 @@ internal class ConstructorDefinitionNode : TypeMemberDefinitionNode, IConstructo
             : symbol.GetValue(this, SymbolAttribute.ConstructorDeclaration);
 
     public ConstructorDefinitionNode(
-        IConstructorDeclarationSyntax syntax,
+        IConstructorDefinitionSyntax syntax,
         IConstructorSelfParameterNode selfParameter,
         IEnumerable<IConstructorOrInitializerParameterNode> parameters,
         IBlockBodyNode body)

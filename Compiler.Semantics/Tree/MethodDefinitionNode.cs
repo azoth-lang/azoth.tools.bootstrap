@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethodDefinitionNode
 {
-    public abstract override IMethodDeclarationSyntax Syntax { get; }
+    public abstract override IMethodDefinitionSyntax Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public MethodKind Kind => Syntax.Kind;
     public IdentifierName Name => Syntax.Name;

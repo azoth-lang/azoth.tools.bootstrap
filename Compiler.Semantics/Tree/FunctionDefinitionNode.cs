@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFunctionDefinitionNode
 {
-    public override IFunctionDeclarationSyntax Syntax { get; }
+    public override IFunctionDefinitionSyntax Syntax { get; }
     public IdentifierName Name => Syntax.Name;
     public override INamespaceSymbolNode ContainingSymbolNode => (INamespaceSymbolNode)base.ContainingSymbolNode;
     public override NamespaceSymbol ContainingSymbol => (NamespaceSymbol)base.ContainingSymbol;
@@ -40,7 +40,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
             : type.GetValue(this, TypeMemberDeclarationsAspect.FunctionDeclaration_Type);
 
     public FunctionDefinitionNode(
-        IFunctionDeclarationSyntax syntax,
+        IFunctionDefinitionSyntax syntax,
         IEnumerable<IAttributeNode> attributes,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
