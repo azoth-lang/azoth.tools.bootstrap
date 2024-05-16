@@ -42,7 +42,7 @@ internal sealed class ClassDeclarationNode : TypeDeclarationNode, IClassDeclarat
         : base(genericParameters, supertypeNames)
     {
         Syntax = syntax;
-        this.BaseTypeName = Child.Attach(this, baseTypeName);
+        BaseTypeName = Child.Attach(this, baseTypeName);
         Members = ChildList.Attach(this, members);
     }
 

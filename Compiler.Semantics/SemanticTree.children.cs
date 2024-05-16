@@ -316,6 +316,8 @@ public static class ISemanticNodeExtensions
                 yield break;
             case ISelfExpressionNode n:
                 yield break;
+            case IMissingNameExpressionNode n:
+                yield break;
             case IMoveExpressionNode n:
                 yield return n.Referent;
                 yield break;

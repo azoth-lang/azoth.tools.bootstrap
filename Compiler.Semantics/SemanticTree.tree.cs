@@ -1097,6 +1097,7 @@ public partial interface IUntypedExpressionNode : ISemanticNode, ICodeNode
     typeof(IForeachExpressionNode),
     typeof(IInvocationExpressionNode),
     typeof(ISelfExpressionNode),
+    typeof(IMissingNameExpressionNode),
     typeof(IMoveExpressionNode),
     typeof(IFreezeExpressionNode),
     typeof(IAsyncBlockExpressionNode),
@@ -1370,7 +1371,8 @@ public partial interface IInvocableNameExpressionNode : ISemanticNode, INameExpr
 
 [Closed(
     typeof(IIdentifierNameExpressionNode),
-    typeof(ISelfExpressionNode))]
+    typeof(ISelfExpressionNode),
+    typeof(IMissingNameExpressionNode))]
 public partial interface IVariableNameExpressionNode : ISemanticNode, INameExpressionNode
 {
     new IVariableNameExpressionSyntax Syntax { get; }
@@ -1462,6 +1464,16 @@ public partial interface ISelfExpressionNode : IVariableNameExpressionNode, IExp
     IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
     bool IsImplicit { get; }
     Pseudotype Pseudotype { get; }
+}
+
+public partial interface IMissingNameExpressionNode : IVariableNameExpressionNode, IExpressionNode
+{
+    new IIdentifierNameExpressionSyntax Syntax { get; }
+    IVariableNameExpressionSyntax IVariableNameExpressionNode.Syntax => Syntax;
+    ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
 }
 
 public partial interface IMoveExpressionNode : ISemanticNode, IExpressionNode

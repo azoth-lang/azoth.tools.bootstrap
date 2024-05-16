@@ -563,6 +563,9 @@ internal class SemanticsApplier
             case ISelfExpressionNode n:
                 SelfExpression(n);
                 break;
+            case IMissingNameExpressionNode n:
+                MissingNameExpression(n);
+                break;
             case IMoveExpressionNode n:
                 MoveExpression(n);
                 break;
@@ -755,6 +758,9 @@ internal class SemanticsApplier
             case ISelfExpressionNode n:
                 SelfExpression(n);
                 break;
+            case IMissingNameExpressionNode n:
+                MissingNameExpression(n);
+                break;
         }
     }
 
@@ -769,6 +775,9 @@ internal class SemanticsApplier
                 break;
             case ISelfExpressionNode n:
                 SelfExpression(n);
+                break;
+            case IMissingNameExpressionNode n:
+                MissingNameExpression(n);
                 break;
         }
     }
@@ -787,6 +796,8 @@ internal class SemanticsApplier
     }
 
     private static void SelfExpression(ISelfExpressionNode node) { }
+
+    private static void MissingNameExpression(IMissingNameExpressionNode missingNameExpressionNode) { }
     #endregion
 
     #region Capability Expressions
