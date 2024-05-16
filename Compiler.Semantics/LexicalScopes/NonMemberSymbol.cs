@@ -51,8 +51,8 @@ internal class NonMemberSymbol
         if (definition.Name is not null)
             throw new ArgumentException("Must be for an unnamed initializer");
         InCurrentPackage = true;
-        ContainingNamespace = definition.DeclaringType.ContainingNamespaceName;
-        Name = definition.DeclaringType.Name.Text;
+        ContainingNamespace = definition.DefiningType.ContainingNamespaceName;
+        Name = definition.DefiningType.Name.Text;
         RequiredNamespace = ContainingNamespace;
         Symbol = definition.Symbol;
     }

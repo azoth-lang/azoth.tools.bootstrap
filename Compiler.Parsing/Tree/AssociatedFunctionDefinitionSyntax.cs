@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class AssociatedFunctionDefinitionSyntax : InvocableDefinitionSyntax, IAssociatedFunctionDefinitionSyntax
 {
-    public ITypeDefinitionSyntax DeclaringType { get; }
+    public ITypeDefinitionSyntax DefiningType { get; }
     public new IdentifierName Name { get; }
     public new IFixedList<INamedParameterSyntax> Parameters { get; }
     public override IFixedList<IParameterSyntax> AllParameters => Parameters;
@@ -30,7 +30,7 @@ internal class AssociatedFunctionDefinitionSyntax : InvocableDefinitionSyntax, I
         IBodySyntax body)
         : base(span, file, accessModifier, nameSpan, name, parameters, new AcyclicPromise<FunctionSymbol>())
     {
-        DeclaringType = declaringType;
+        DefiningType = declaringType;
         Name = name;
         Parameters = parameters;
         Body = body;

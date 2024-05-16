@@ -58,12 +58,12 @@ TraitDefinition: TypeDefinition = GenericParameters:GenericParameter* SupertypeN
 GenericParameter = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance` Symbol:`Promise<GenericParameterTypeSymbol>`;
 
 // ---------- Type Member Definitions (i.e. declarations that can be contained in a type)
-// Note: by declaring the DeclaringType property type with quotes, it avoids the system assuming it must represent a child syntax node
-TypeMemberDefinition: EntityDefinition = DeclaringType:`ITypeDefinitionSyntax`?;
+// Note: by declaring the DefiningType property type with quotes, it avoids the system assuming it must represent a child syntax node
+TypeMemberDefinition: EntityDefinition = DefiningType:`ITypeDefinitionSyntax`?;
 ClassMemberDefinition: TypeMemberDefinition;
 TraitMemberDefinition: TypeMemberDefinition;
 StructMemberDefinition: TypeMemberDefinition;
-AlwaysTypeMemberDefinition: TypeMemberDefinition = DeclaringType:`ITypeDefinitionSyntax`;
+AlwaysTypeMemberDefinition: TypeMemberDefinition = DefiningType:`ITypeDefinitionSyntax`;
 
 // ---------- Member Definitions
 MethodDefinition: AlwaysTypeMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition
@@ -75,11 +75,11 @@ StandardMethodDefinition: ConcreteMethodDefinition = SelfParameter:MethodSelfPar
 GetterMethodDefinition: ConcreteMethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return Body;
 SetterMethodDefinition: ConcreteMethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
 ConstructorDefinition: ConcreteInvocableDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition
-    = DeclaringType:`IClassDefinitionSyntax` Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:`AcyclicPromise<ConstructorSymbol>`;
+    = DefiningType:`IClassDefinitionSyntax` Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:`AcyclicPromise<ConstructorSymbol>`;
 InitializerDefinition: ConcreteInvocableDefinition <: AlwaysTypeMemberDefinition, StructMemberDefinition
-    = DeclaringType:`IStructDefinitionSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:`AcyclicPromise<InitializerSymbol>`;
+    = DefiningType:`IStructDefinitionSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody Symbol:`AcyclicPromise<InitializerSymbol>`;
 FieldDefinition: AlwaysTypeMemberDefinition <: ClassMemberDefinition, StructMemberDefinition, Binding
-    = DeclaringType:`IClassOrStructDefinitionSyntax` Name:`IdentifierName` Type Symbol:`AcyclicPromise<FieldSymbol>` Initializer:Expression?;
+    = DefiningType:`IClassOrStructDefinitionSyntax` Name:`IdentifierName` Type Symbol:`AcyclicPromise<FieldSymbol>` Initializer:Expression?;
 AssociatedFunctionDefinition: AlwaysTypeMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, ConcreteInvocableDefinition
     = Name:`IdentifierName` Parameters:NamedParameter* Return? Body Symbol:`AcyclicPromise<FunctionSymbol>`;
 

@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal abstract class MethodDefinitionSyntax : InvocableDefinitionSyntax, IMethodDefinitionSyntax
 {
-    public ITypeDefinitionSyntax DeclaringType { [DebuggerStepThrough] get; }
+    public ITypeDefinitionSyntax DefiningType { [DebuggerStepThrough] get; }
     public abstract MethodKind Kind { [DebuggerStepThrough] get; }
     public new IdentifierName Name { [DebuggerStepThrough] get; }
     public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
@@ -33,7 +33,7 @@ internal abstract class MethodDefinitionSyntax : InvocableDefinitionSyntax, IMet
         : base(span, file, accessModifier, nameSpan, name,
             parameters, new AcyclicPromise<MethodSymbol>())
     {
-        DeclaringType = declaringType;
+        DefiningType = declaringType;
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters;

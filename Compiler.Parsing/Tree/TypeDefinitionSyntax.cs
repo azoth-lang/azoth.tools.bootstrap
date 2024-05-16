@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal abstract class TypeDefinitionSyntax<TMember> : NonMemberDefinitionSyntax, ITypeDefinitionSyntax
     where TMember : ITypeMemberDefinitionSyntax
 {
-    public ITypeDefinitionSyntax? DeclaringType { get; }
+    public ITypeDefinitionSyntax? DefiningType { get; }
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
     public bool IsConst { [DebuggerStepThrough] get; }
@@ -43,7 +43,7 @@ internal abstract class TypeDefinitionSyntax<TMember> : NonMemberDefinitionSynta
         IFixedList<IStandardTypeNameSyntax> supertypeNames)
         : base(containingNamespaceName, headerSpan, file, name, nameSpan, new AcyclicPromise<UserTypeSymbol>())
     {
-        DeclaringType = declaringType;
+        DefiningType = declaringType;
         AccessModifier = accessModifier;
         ConstModifier = constModifier;
         IsConst = ConstModifier is not null;

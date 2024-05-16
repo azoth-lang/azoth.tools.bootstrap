@@ -17,7 +17,7 @@ public class CompilationUnitParser
         var implicitNamespaceName = ParseImplicitNamespaceName(tokens);
         var parser = new Parser(tokens, implicitNamespaceName);
         var usingDirectives = parser.ParseUsingDirectives();
-        var declarations = parser.ParseNonMemberDeclarations<IEndOfFileToken>();
+        var declarations = parser.ParseNonMemberDefinitions<IEndOfFileToken>();
         var eof = tokens.Required<IEndOfFileToken>();
         var span = TextSpan.FromStartEnd(0, eof.End);
         var diagnostics = tokens.Context.Diagnostics;

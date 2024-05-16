@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal abstract class MemberDefinitionSyntax : DefinitionSyntax, ITypeMemberDefinitionSyntax
 {
-    public ITypeDefinitionSyntax DeclaringType { get; }
+    public ITypeDefinitionSyntax DefiningType { get; }
     public IAccessModifierToken? AccessModifier { get; }
 
     protected MemberDefinitionSyntax(
@@ -22,7 +22,7 @@ internal abstract class MemberDefinitionSyntax : DefinitionSyntax, ITypeMemberDe
         IPromise<Symbol> symbol)
         : base(span, file, name, nameSpan, symbol)
     {
-        DeclaringType = declaringType;
+        DefiningType = declaringType;
         AccessModifier = accessModifier;
     }
 }

@@ -247,7 +247,7 @@ public partial interface IGenericParameterSyntax : IConcreteSyntax
     typeof(IAlwaysTypeMemberDefinitionSyntax))]
 public partial interface ITypeMemberDefinitionSyntax : IEntityDefinitionSyntax
 {
-    ITypeDefinitionSyntax? DeclaringType { get; }
+    ITypeDefinitionSyntax? DefiningType { get; }
 }
 
 [Closed(
@@ -286,8 +286,8 @@ public partial interface IStructMemberDefinitionSyntax : ITypeMemberDefinitionSy
     typeof(IAssociatedFunctionDefinitionSyntax))]
 public partial interface IAlwaysTypeMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
 {
-    new ITypeDefinitionSyntax DeclaringType { get; }
-    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DeclaringType => DeclaringType;
+    new ITypeDefinitionSyntax DefiningType { get; }
+    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DefiningType => DefiningType;
 }
 
 [Closed(
@@ -337,9 +337,9 @@ public partial interface ISetterMethodDefinitionSyntax : IConcreteMethodDefiniti
 
 public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IAlwaysTypeMemberDefinitionSyntax, IClassMemberDefinitionSyntax
 {
-    new IClassDefinitionSyntax DeclaringType { get; }
-    ITypeDefinitionSyntax IAlwaysTypeMemberDefinitionSyntax.DeclaringType => DeclaringType;
-    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DeclaringType => DeclaringType;
+    new IClassDefinitionSyntax DefiningType { get; }
+    ITypeDefinitionSyntax IAlwaysTypeMemberDefinitionSyntax.DefiningType => DefiningType;
+    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DefiningType => DefiningType;
     new IdentifierName? Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     IConstructorSelfParameterSyntax SelfParameter { get; }
@@ -352,9 +352,9 @@ public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefini
 
 public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IAlwaysTypeMemberDefinitionSyntax, IStructMemberDefinitionSyntax
 {
-    new IStructDefinitionSyntax DeclaringType { get; }
-    ITypeDefinitionSyntax IAlwaysTypeMemberDefinitionSyntax.DeclaringType => DeclaringType;
-    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DeclaringType => DeclaringType;
+    new IStructDefinitionSyntax DefiningType { get; }
+    ITypeDefinitionSyntax IAlwaysTypeMemberDefinitionSyntax.DefiningType => DefiningType;
+    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DefiningType => DefiningType;
     new IdentifierName? Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     IInitializerSelfParameterSyntax SelfParameter { get; }
@@ -367,9 +367,9 @@ public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefini
 
 public partial interface IFieldDefinitionSyntax : IAlwaysTypeMemberDefinitionSyntax, IClassMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IBindingSyntax
 {
-    new IClassOrStructDefinitionSyntax DeclaringType { get; }
-    ITypeDefinitionSyntax IAlwaysTypeMemberDefinitionSyntax.DeclaringType => DeclaringType;
-    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DeclaringType => DeclaringType;
+    new IClassOrStructDefinitionSyntax DefiningType { get; }
+    ITypeDefinitionSyntax IAlwaysTypeMemberDefinitionSyntax.DefiningType => DefiningType;
+    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DefiningType => DefiningType;
     new IdentifierName Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     ITypeSyntax Type { get; }
