@@ -15,7 +15,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class PackageNode : SemanticNode, IPackageNode
 {
     public override IPackageSyntax Syntax { get; }
-
     public IdentifierName Name => Syntax.Name;
 
     private ValueAttribute<PackageSymbol> symbol;
@@ -57,7 +56,8 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
         TestingFacet = Child.Attach(this, testingFacet);
     }
 
-    internal override IPackageNode InheritedPackage(IChildNode caller, IChildNode child) => this;
+    internal override IPackageDeclarationNode InheritedPackage(IChildNode caller, IChildNode child)
+        => SymbolNode;
 
     internal override PackageNameScope InheritedPackageNameScope(IChildNode caller, IChildNode child)
     {

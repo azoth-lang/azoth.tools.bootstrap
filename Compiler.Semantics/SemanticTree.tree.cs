@@ -122,7 +122,7 @@ public partial interface ISemanticNode
 public partial interface IChildNode : IChild<ISemanticNode>, ISemanticNode
 {
     ISemanticNode Parent { get; }
-    IPackageNode Package { get; }
+    IPackageDeclarationNode Package { get; }
 }
 
 [Closed(
@@ -1555,7 +1555,7 @@ public partial interface IDeclarationNode : ISemanticNode
     typeof(INamedDeclarationNode),
     typeof(IPackageFacetDeclarationNode),
     typeof(IFacetChildDeclarationNode))]
-public partial interface IChildDeclarationNode : IChild<IDeclarationNode>, IDeclarationNode
+public partial interface IChildDeclarationNode : IChild<ISemanticNode>, IDeclarationNode
 {
     IDeclarationNode Parent { get; }
     IPackageDeclarationNode Package { get; }

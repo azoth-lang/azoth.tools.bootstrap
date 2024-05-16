@@ -1,12 +1,14 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
-internal class PackageSymbolNode : SymbolNode, IPackageSymbolNode
+internal class PackageSymbolNode : SemanticNode, IPackageSymbolNode
 {
-    public override PackageSymbol Symbol { get; }
+    public override ISyntax? Syntax => null;
+    public PackageSymbol Symbol { get; }
     public IdentifierName AliasOrName { get; }
     public IdentifierName Name => Symbol.Name;
 
@@ -22,6 +24,6 @@ internal class PackageSymbolNode : SymbolNode, IPackageSymbolNode
         TestingFacet = Child.Attach(this, new PackageFacetSymbolNode(symbols.TestingSymbolTree));
     }
 
-    internal override IPackageDeclarationNode InheritedPackage(IChildDeclarationNode caller, IChildDeclarationNode child)
+    internal override IPackageDeclarationNode InheritedPackage(IChildNode caller, IChildNode child)
         => this;
 }

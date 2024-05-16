@@ -19,7 +19,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 internal static class SymbolNodeAttributes
 {
     public static IPackageDeclarationNode Package(IPackageNode node)
-        => new SemanticPackageSymbolNode(node, node.MainFacet.SymbolNode, node.TestingFacet.SymbolNode);
+        => new SemanticPackageSymbolNode(node);
 
     public static IPackageFacetDeclarationNode PackageFacet(IPackageFacetNode node)
     {

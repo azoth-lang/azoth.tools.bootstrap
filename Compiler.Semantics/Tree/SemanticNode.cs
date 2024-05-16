@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
@@ -18,7 +18,7 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedContainingDeclarationNode), caller, child));
 
-    internal virtual IPackageNode InheritedPackage(IChildNode caller, IChildNode child)
+    internal virtual IPackageDeclarationNode InheritedPackage(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedPackage), caller, child));
 
@@ -49,6 +49,14 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual bool InheritedIsAttributeType(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedIsAttributeType), caller, child));
+
+    internal virtual ISymbolTree InheritedSymbolTree(IChildDeclarationNode caller, IChildDeclarationNode child)
+        => throw new NotImplementedException(
+            Child.InheritFailedMessage(nameof(InheritedSymbolTree), caller, child));
+
+    internal virtual IPackageFacetDeclarationNode InheritedFacet(IChildDeclarationNode caller, IChildDeclarationNode child)
+        => throw new NotImplementedException(
+            Child.InheritFailedMessage(nameof(InheritedFacet), caller, child));
 
     protected virtual void CollectDiagnostics(Diagnostics diagnostics)
     {

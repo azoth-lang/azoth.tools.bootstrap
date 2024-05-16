@@ -3,7 +3,6 @@ using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
@@ -19,7 +18,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
         => parent ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
     ISemanticNode IChildNode.Parent => Parent;
 
-    public IPackageNode Package => Parent.InheritedPackage(this, this);
+    public IPackageDeclarationNode Package => Parent.InheritedPackage(this, this);
 
     void IChild<ISemanticNode>.AttachParent(ISemanticNode newParent)
     {
@@ -41,7 +40,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected IDeclarationNode InheritedContainingSymbolNode()
         => Parent.InheritedContainingDeclarationNode(this, this);
 
-    internal override IPackageNode InheritedPackage(IChildNode caller, IChildNode child)
+    internal override IPackageDeclarationNode InheritedPackage(IChildNode caller, IChildNode child)
         => Parent.InheritedPackage(this, child);
 
     internal override CodeFile InheritedFile(IChildNode caller, IChildNode child)
