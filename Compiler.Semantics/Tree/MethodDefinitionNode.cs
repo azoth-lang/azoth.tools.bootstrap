@@ -16,13 +16,10 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public MethodKind Kind => Syntax.Kind;
     public override IdentifierName Name => Syntax.Name;
+    StandardName INamedDeclarationNode.Name => Name;
     public IMethodSelfParameterNode SelfParameter { get; }
     public IFixedList<INamedParameterNode> Parameters { get; }
     public virtual ITypeNode? Return { get; }
-    private ValueAttribute<IMethodDeclarationNode> symbolNode;
-    public sealed override IMethodDeclarationNode SymbolNode
-        => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttributes.MethodDeclaration_SymbolNode);
     private ValueAttribute<MethodSymbol> symbol;
     public override MethodSymbol Symbol
     => symbol.TryGetValue(out var value) ? value

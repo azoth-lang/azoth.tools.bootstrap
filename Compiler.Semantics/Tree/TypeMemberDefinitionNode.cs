@@ -13,7 +13,6 @@ internal abstract class TypeMemberDefinitionNode : DefinitionNode, ITypeMemberDe
     public AccessModifier AccessModifier
         => accessModifier.TryGetValue(out var value) ? value
             : accessModifier.GetValue(this, TypeModifiersAspect.TypeMemberDeclaration_AccessModifier);
-    public abstract ITypeMemberDeclarationNode SymbolNode { get; }
     public abstract Symbol Symbol { get; }
     public abstract StandardName? Name { get; }
 }

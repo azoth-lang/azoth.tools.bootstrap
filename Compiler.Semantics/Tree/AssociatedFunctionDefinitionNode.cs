@@ -17,6 +17,7 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
     public override IAssociatedFunctionDefinitionSyntax Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public override IdentifierName Name => Syntax.Name;
+    StandardName INamedDeclarationNode.Name => Name;
     public IFixedList<INamedParameterNode> Parameters { get; }
     // TODO this explicit implementation shouldn't be needed. There must be a bug in the code generator?
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
@@ -31,10 +32,6 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
             : type.GetValue(this, TypeMemberDeclarationsAspect.AssociatedFunctionDeclaration_Type);
     public IBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    private ValueAttribute<IAssociatedFunctionDeclarationNode> symbolNode;
-    public sealed override IAssociatedFunctionDeclarationNode SymbolNode
-        => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttributes.AssociatedFunction_SymbolNode);
 
     public AssociatedFunctionDefinitionNode(
         IAssociatedFunctionDefinitionSyntax syntax,

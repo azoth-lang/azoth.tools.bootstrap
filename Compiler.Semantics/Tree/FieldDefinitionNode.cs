@@ -17,16 +17,13 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public bool IsMutableBinding => Syntax.IsMutableBinding;
     public override IdentifierName Name => Syntax.Name;
+    StandardName INamedDeclarationNode.Name => Name;
     public ITypeNode TypeNode { get; }
     private ValueAttribute<DataType> type;
     public DataType Type
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, TypeMemberDeclarationsAspect.FieldDeclaration_Type);
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    private ValueAttribute<IFieldDeclarationNode> symbolNode;
-    public override IFieldDeclarationNode SymbolNode
-        => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttributes.FieldDeclaration_SymbolNode);
     private ValueAttribute<FieldSymbol> symbol;
     public override FieldSymbol Symbol
         => symbol.TryGetValue(out var value) ? value

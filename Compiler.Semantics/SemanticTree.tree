@@ -122,9 +122,9 @@ StructMemberDefinition <: TypeMemberDefinition, StructMemberDeclaration = Syntax
 AlwaysTypeMemberDefinition <: TypeMemberDefinition = ContainingSymbol:`UserTypeSymbol`;
 
 // ---------- Member Definitions
-MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition
+MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition, MethodDeclaration
     = Syntax:`IMethodDefinitionSyntax` Kind:`MethodKind` Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
-    SymbolNode:`IMethodDeclarationNode` Symbol:`MethodSymbol`;
+    Symbol:`MethodSymbol`;
 AbstractMethodDefinition <: MethodDefinition = Syntax:`IAbstractMethodDefinitionSyntax`
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
     ContainingDeclaredType:`ObjectType`;
@@ -141,15 +141,15 @@ DefaultConstructorDefinition <: ConstructorDefinition
 SourceConstructorDefinition <: ConstructorDefinition
     = Syntax:`IConstructorDefinitionSyntax`
     SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
-InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition
+InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, InitializerDeclaration
     = Syntax:`IInitializerDefinitionSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter*
     Symbol:`InitializerSymbol` Body:BlockBody;
-FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding
+FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding, FieldDeclaration
     = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type Type:`DataType`
-    SymbolNode:`IFieldDeclarationNode` Symbol:`FieldSymbol` Initializer:UntypedExpression?;
-AssociatedFunctionDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition
+    Symbol:`FieldSymbol` Initializer:UntypedExpression?;
+AssociatedFunctionDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, AssociatedFunctionDeclaration
     = Syntax:`IAssociatedFunctionDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
-    SymbolNode:`IAssociatedFunctionDeclarationNode` Symbol:`FunctionSymbol` Type:`FunctionType` Body;
+   Symbol:`FunctionSymbol` Type:`FunctionType` Body;
 
 // ---------- Attributes
 Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:StandardTypeName ReferencedSymbol:`ConstructorSymbol`?;
@@ -337,7 +337,7 @@ MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMembe
 ConstructorDeclaration <: ClassMemberDeclaration = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
 InitializerDeclaration <: StructMemberDeclaration = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
 FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;
-AssociatedFunctionDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
+AssociatedFunctionDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration
     = Name:`IdentifierName` Symbol:`FunctionSymbol` Type:`FunctionType`;
 
 // ---------- Can be Referenced by Type Name

@@ -501,7 +501,7 @@ public partial interface IAlwaysTypeMemberDefinitionNode : ISemanticNode, ITypeM
 [Closed(
     typeof(IAbstractMethodDefinitionNode),
     typeof(IConcreteMethodDefinitionNode))]
-public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IInvocableDefinitionNode
+public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IInvocableDefinitionNode, IMethodDeclarationNode
 {
     new IMethodDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -513,13 +513,15 @@ public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode
     MethodKind Kind { get; }
     new IdentifierName Name { get; }
     StandardName? IFacetChildDeclarationNode.Name => Name;
+    IdentifierName IMethodDeclarationNode.Name => Name;
+    StandardName INamedDeclarationNode.Name => Name;
     IMethodSelfParameterNode SelfParameter { get; }
     new IFixedList<INamedParameterNode> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     ITypeNode? Return { get; }
-    IMethodDeclarationNode SymbolNode { get; }
     new MethodSymbol Symbol { get; }
     Symbol IDeclarationNode.Symbol => Symbol;
+    MethodSymbol IMethodDeclarationNode.Symbol => Symbol;
 }
 
 public partial interface IAbstractMethodDefinitionNode : ISemanticNode, IMethodDefinitionNode
@@ -621,7 +623,7 @@ public partial interface ISourceConstructorDefinitionNode : ISemanticNode, ICons
     IBlockBodyNode Body { get; }
 }
 
-public partial interface IInitializerDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IStructMemberDefinitionNode
+public partial interface IInitializerDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IStructMemberDefinitionNode, IInitializerDeclarationNode
 {
     new IInitializerDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -631,13 +633,15 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     new IdentifierName? Name { get; }
     StandardName? IFacetChildDeclarationNode.Name => Name;
+    IdentifierName? IInitializerDeclarationNode.Name => Name;
     IInitializerSelfParameterNode SelfParameter { get; }
     new InitializerSymbol Symbol { get; }
     Symbol IDeclarationNode.Symbol => Symbol;
+    InitializerSymbol IInitializerDeclarationNode.Symbol => Symbol;
     IBlockBodyNode Body { get; }
 }
 
-public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IStructMemberDefinitionNode, IBindingNode
+public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IStructMemberDefinitionNode, IBindingNode, IFieldDeclarationNode
 {
     new IFieldDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -648,15 +652,16 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     StandardName? IFacetChildDeclarationNode.Name => Name;
+    IdentifierName IFieldDeclarationNode.Name => Name;
+    StandardName INamedDeclarationNode.Name => Name;
     ITypeNode TypeNode { get; }
-    DataType Type { get; }
-    IFieldDeclarationNode SymbolNode { get; }
     new FieldSymbol Symbol { get; }
     Symbol IDeclarationNode.Symbol => Symbol;
+    FieldSymbol IFieldDeclarationNode.Symbol => Symbol;
     IUntypedExpressionNode? Initializer { get; }
 }
 
-public partial interface IAssociatedFunctionDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IStructMemberDefinitionNode
+public partial interface IAssociatedFunctionDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IStructMemberDefinitionNode, IAssociatedFunctionDeclarationNode
 {
     new IAssociatedFunctionDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -668,12 +673,13 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteInvocableD
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     StandardName? IFacetChildDeclarationNode.Name => Name;
+    IdentifierName IAssociatedFunctionDeclarationNode.Name => Name;
+    StandardName INamedDeclarationNode.Name => Name;
     new IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
-    IAssociatedFunctionDeclarationNode SymbolNode { get; }
     new FunctionSymbol Symbol { get; }
     Symbol IDeclarationNode.Symbol => Symbol;
-    FunctionType Type { get; }
+    FunctionSymbol IAssociatedFunctionDeclarationNode.Symbol => Symbol;
     IBodyNode Body { get; }
 }
 
@@ -1561,6 +1567,7 @@ public partial interface IChildDeclarationNode : IDeclarationNode, IChildNode
     typeof(IFunctionDeclarationNode),
     typeof(IMethodDeclarationNode),
     typeof(IFieldDeclarationNode),
+    typeof(IAssociatedFunctionDeclarationNode),
     typeof(ITypeDeclarationNode))]
 public partial interface INamedDeclarationNode : ISemanticNode, IChildDeclarationNode
 {
@@ -1725,6 +1732,7 @@ public partial interface IStructMemberDeclarationNode : ISemanticNode, ITypeMemb
 }
 
 [Closed(
+    typeof(IMethodDefinitionNode),
     typeof(IMethodSymbolNode))]
 public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode
 {
@@ -1747,6 +1755,7 @@ public partial interface IConstructorDeclarationNode : IClassMemberDeclarationNo
 }
 
 [Closed(
+    typeof(IInitializerDefinitionNode),
     typeof(IInitializerSymbolNode))]
 public partial interface IInitializerDeclarationNode : IStructMemberDeclarationNode
 {
@@ -1757,6 +1766,7 @@ public partial interface IInitializerDeclarationNode : IStructMemberDeclarationN
 }
 
 [Closed(
+    typeof(IFieldDefinitionNode),
     typeof(IFieldSymbolNode))]
 public partial interface IFieldDeclarationNode : INamedDeclarationNode, IClassMemberDeclarationNode, IStructMemberDeclarationNode
 {
@@ -1769,11 +1779,13 @@ public partial interface IFieldDeclarationNode : INamedDeclarationNode, IClassMe
 }
 
 [Closed(
+    typeof(IAssociatedFunctionDefinitionNode),
     typeof(IAssociatedFunctionSymbolNode))]
-public partial interface IAssociatedFunctionDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode
+public partial interface IAssociatedFunctionDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode
 {
     new IdentifierName Name { get; }
     StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName INamedDeclarationNode.Name => Name;
     new FunctionSymbol Symbol { get; }
     Symbol IDeclarationNode.Symbol => Symbol;
     FunctionType Type { get; }

@@ -129,21 +129,9 @@ internal static class SymbolNodeAttributes
         return node.ContainingLexicalScope.Lookup(name).OfType<ITypeDeclarationNode>().ToFixedSet();
     }
 
-    public static IMethodDeclarationNode MethodDeclaration_SymbolNode(IMethodDefinitionNode node)
-        => new SemanticMethodSymbolNode(node);
-
-    public static IConstructorDeclarationNode ConstructorDeclaration_SymbolNode(IConstructorDefinitionNode node)
-        => new SemanticConstructorSymbolNode(node);
-
-    public static IFieldDeclarationNode FieldDeclaration_SymbolNode(IFieldDefinitionNode node)
-        => new SemanticFieldSymbolNode(node);
-
     public static IFieldDeclarationNode? FieldParameter_ReferencedSymbolNode(IFieldParameterNode node)
         // TODO report error for field parameter without referenced field
-        => node.ContainingTypeDefinition.Members.OfType<IFieldDefinitionNode>().FirstOrDefault(f => f.Name == node.Name)?.SymbolNode;
-
-    public static IAssociatedFunctionDeclarationNode AssociatedFunction_SymbolNode(IAssociatedFunctionDefinitionNode node)
-        => new SemanticAssociatedFunctionDeclarationNode(node);
+        => node.ContainingTypeDefinition.Members.OfType<IFieldDefinitionNode>().FirstOrDefault(f => f.Name == node.Name);
 
     #region Construct for Symbols
     public static IFacetChildDeclarationNode Symbol(Symbol symbol)
