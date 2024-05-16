@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class SemanticPackageFacetSymbolNode : SemanticChildSymbolNode, IPackageFacetDeclarationNode
+internal sealed class SemanticPackageFacetSymbolNode : SemanticChildSymbolNode, IPackageFacetSymbolNode
 {
     public IdentifierName? PackageAliasOrName => Package.AliasOrName;
     public IdentifierName PackageName => Package.Name;

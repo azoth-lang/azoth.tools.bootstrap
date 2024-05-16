@@ -333,44 +333,46 @@ public static class ISemanticNodeExtensions
             case IAwaitExpressionNode n:
                 yield return n.Expression;
                 yield break;
-            case IPackageDeclarationNode n:
+            case IPackageSymbolNode n:
                 yield return n.MainFacet;
                 yield return n.TestingFacet;
                 yield break;
-            case IPackageFacetDeclarationNode n:
+            case IPackageFacetSymbolNode n:
                 yield return n.GlobalNamespace;
                 yield break;
-            case INamespaceDeclarationNode n:
-                foreach (var child in n.Members)
-                    yield return child;
-                foreach (var child in n.NestedMembers)
-                    yield return child;
-                yield break;
-            case IFunctionDeclarationNode n:
-                yield break;
-            case IClassDeclarationNode n:
+            case INamespaceSymbolNode n:
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case IStructDeclarationNode n:
+            case IFunctionSymbolNode n:
+                yield break;
+            case IUserTypeSymbolNode n:
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case ITraitDeclarationNode n:
+            case IClassSymbolNode n:
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case IGenericParameterDeclarationNode n:
+            case IStructSymbolNode n:
+                foreach (var child in n.Members)
+                    yield return child;
                 yield break;
-            case IMethodDeclarationNode n:
+            case ITraitSymbolNode n:
+                foreach (var child in n.Members)
+                    yield return child;
                 yield break;
-            case IConstructorDeclarationNode n:
+            case IGenericParameterSymbolNode n:
                 yield break;
-            case IInitializerDeclarationNode n:
+            case IMethodSymbolNode n:
                 yield break;
-            case IFieldDeclarationNode n:
+            case IConstructorSymbolNode n:
                 yield break;
-            case IAssociatedFunctionDeclarationNode n:
+            case IInitializerSymbolNode n:
+                yield break;
+            case IFieldSymbolNode n:
+                yield break;
+            case IAssociatedFunctionSymbolNode n:
                 yield break;
         }
     }

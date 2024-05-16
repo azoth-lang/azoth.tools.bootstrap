@@ -8,7 +8,7 @@ using DotNet.Collections.Generic;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class SemanticNamespaceSymbolNode : SemanticDeclarationSymbolNode, INamespaceDeclarationNode
+internal sealed class SemanticNamespaceSymbolNode : SemanticDeclarationSymbolNode, INamespaceSymbolNode
 {
     public override IdentifierName Name => Symbol.Name;
     public override NamespaceSymbol Symbol { get; }

@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class SemanticFieldSymbolNode : SemanticDeclarationSymbolNode, IFieldDeclarationNode
+internal sealed class SemanticFieldSymbolNode : SemanticDeclarationSymbolNode, IFieldSymbolNode
 {
     private IFieldDefinitionNode Node { get; }
     public override FieldSymbol Symbol => Node.Symbol;

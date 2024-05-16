@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
-internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChildDeclarationNode
+internal abstract class ChildSymbolNode : SymbolNode, IChildDeclarationNode
 {
     protected virtual bool MayHaveRewrite => false;
 
     bool IChild.MayHaveRewrite => MayHaveRewrite;
 
-    private ReferencedSymbolNode? parent;
-    protected virtual ReferencedSymbolNode Parent
+    private SymbolNode? parent;
+    protected virtual SymbolNode Parent
         => parent ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
 
     IDeclarationNode IChildDeclarationNode.Parent => Parent;
@@ -23,8 +24,8 @@ internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChild
 
     void IChild<IDeclarationNode>.AttachParent(IDeclarationNode newParent)
     {
-        if (newParent is not ReferencedSymbolNode newParentNode)
-            throw new ArgumentException($"Parent must be a {nameof(ReferencedSymbolNode)}.", nameof(newParent));
+        if (newParent is not SymbolNode newParentNode)
+            throw new ArgumentException($"Parent must be a {nameof(SymbolNode)}.", nameof(newParent));
         var oldParent = Interlocked.CompareExchange(ref parent, newParentNode, null);
         if (oldParent is not null)
             throw new InvalidOperationException("Parent is already set.");

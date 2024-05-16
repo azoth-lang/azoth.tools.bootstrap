@@ -3,14 +3,14 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
-internal sealed class ReferencedTraitSymbolNode : ReferencedUserTypeSymbolNode, ITraitDeclarationNode
+internal sealed class TraitSymbolNode : UserTypeSymbolNode, ITraitSymbolNode
 {
     public override IFixedList<ITraitMemberDeclarationNode> Members
         => throw new NotImplementedException();
 
-    internal ReferencedTraitSymbolNode(UserTypeSymbol symbol)
+    internal TraitSymbolNode(UserTypeSymbol symbol)
         : base(symbol)
     {
         Requires.That(nameof(symbol), symbol.DeclaresType is ObjectType { IsClass: false },

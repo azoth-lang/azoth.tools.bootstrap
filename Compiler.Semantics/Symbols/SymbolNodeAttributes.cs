@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
@@ -68,7 +69,7 @@ internal static class SymbolNodeAttributes
         => node.ImplicitNamespaceSymbolNode;
 
     public static IPackageDeclarationNode PackageReference(IPackageReferenceNode node)
-        => new ReferencedPackageSymbolNode(node);
+        => new PackageSymbolNode(node);
 
     public static FixedDictionary<IdentifierName, IPackageDeclarationNode> Package_SymbolNodes(IPackageNode node)
         => node.References.Select(r => r.SymbolNode).Append(node.SymbolNode).ToFixedDictionary(n => n.AliasOrName ?? node.Symbol.Name);
@@ -171,13 +172,13 @@ internal static class SymbolNodeAttributes
         => node.ContainingTypeDefinition.Members.OfType<IFieldDefinitionNode>().FirstOrDefault(f => f.Name == node.Name)?.SymbolNode;
 
     public static IAssociatedFunctionDeclarationNode AssociatedFunction_SymbolNode(IAssociatedFunctionDefinitionNode node)
-        => new AssociatedFunctionDeclarationNode(node);
+        => new SemanticAssociatedFunctionDeclarationNode(node);
 
     #region Construct for Symbols
     public static IFacetChildDeclarationNode Symbol(Symbol symbol)
         => symbol switch
         {
-            NamespaceSymbol sym => new ReferencedNamespaceSymbolNode(sym),
+            NamespaceSymbol sym => new NamespaceSymbolNode(sym),
             TypeSymbol sym => TypeSymbol(sym),
             InvocableSymbol sym => InvocableSymbol(sym),
             BindingSymbol sym => throw new NotImplementedException(),
@@ -200,11 +201,11 @@ internal static class SymbolNodeAttributes
     private static IUserTypeDeclarationNode UserTypeSymbol(UserTypeSymbol symbol)
         => symbol.DeclaresType switch
         {
-            StructType _ => new ReferencedStructSymbolNode(symbol),
+            StructType _ => new StructSymbolNode(symbol),
             ObjectType t => t.IsClass switch
             {
-                true => new ReferencedClassSymbolNode(symbol),
-                false => new ReferencedTraitSymbolNode(symbol),
+                true => new ClassSymbolNode(symbol),
+                false => new TraitSymbolNode(symbol),
             },
             _ => throw ExhaustiveMatch.Failed(symbol.DeclaresType),
         };
@@ -217,9 +218,9 @@ internal static class SymbolNodeAttributes
         };
 
     private static IFunctionDeclarationNode FunctionSymbol(FunctionSymbol sym)
-        => new ReferencedFunctionSymbolNode(sym);
+        => new FunctionSymbolNode(sym);
 
     private static IConstructorDeclarationNode ConstructorSymbol(ConstructorSymbol sym)
-        => new ReferencedConstructorSymbolNode(sym);
+        => new ConstructorSymbolNode(sym);
     #endregion
 }

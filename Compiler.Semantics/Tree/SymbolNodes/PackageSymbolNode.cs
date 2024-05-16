@@ -2,9 +2,9 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
-internal class ReferencedPackageSymbolNode : ReferencedSymbolNode, IPackageDeclarationNode
+internal class PackageSymbolNode : SymbolNode, IPackageSymbolNode
 {
     public override PackageSymbol Symbol { get; }
     public IdentifierName AliasOrName { get; }
@@ -13,13 +13,13 @@ internal class ReferencedPackageSymbolNode : ReferencedSymbolNode, IPackageDecla
     public IPackageFacetDeclarationNode MainFacet { get; }
     public IPackageFacetDeclarationNode TestingFacet { get; }
 
-    public ReferencedPackageSymbolNode(IPackageReferenceNode node)
+    public PackageSymbolNode(IPackageReferenceNode node)
     {
         var symbols = node.PackageSymbols;
         Symbol = symbols.PackageSymbol;
         AliasOrName = node.AliasOrName;
-        MainFacet = Child.Attach(this, new ReferencedPackageFacetSymbolNode(symbols.SymbolTree));
-        TestingFacet = Child.Attach(this, new ReferencedPackageFacetSymbolNode(symbols.TestingSymbolTree));
+        MainFacet = Child.Attach(this, new PackageFacetSymbolNode(symbols.SymbolTree));
+        TestingFacet = Child.Attach(this, new PackageFacetSymbolNode(symbols.TestingSymbolTree));
     }
 
     internal override IPackageDeclarationNode InheritedPackage(IChildDeclarationNode caller, IChildDeclarationNode child)

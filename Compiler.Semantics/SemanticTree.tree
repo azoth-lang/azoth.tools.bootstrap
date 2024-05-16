@@ -279,6 +279,9 @@ AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax` Expression:Untyp
 // -------------------------------------------------------------------------------------------------
 // Declarations
 // -------------------------------------------------------------------------------------------------
+// Declarations are the abstractions of both definitions an symbols. They are used to represent what
+// a name can refer to.
+// -------------------------------------------------------------------------------------------------
 // TODO move into separate aspect
 
 
@@ -304,7 +307,7 @@ FacetChildDeclaration <: ChildDeclaration = Name:`StandardName`? Facet:`IPackage
 
 // ---------- Namespace Declarations
 NamespaceDeclaration <: NamespaceMemberDeclaration = Name:`IdentifierName` Symbol:`NamespaceSymbol`
-    Members:NamespaceMemberDeclaration* NestedMembers:NamespaceMemberDeclaration*;
+    Members:NamespaceMemberDeclaration* NestedMembers:`INamespaceMemberDeclarationNode`*;
 NamespaceMemberDeclaration <: FacetChildDeclaration;
 
 // ---------- Function Declaration
@@ -336,3 +339,39 @@ AssociatedFunctionDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration,
 
 // ---------- Can be Referenced by Type Name
 TypeDeclaration <: NamedDeclaration = Symbol:`TypeSymbol`;
+
+// -------------------------------------------------------------------------------------------------
+// Symbol Nodes
+// -------------------------------------------------------------------------------------------------
+// Implementations of declarations that are derived from symbols.
+// -------------------------------------------------------------------------------------------------
+// TODO move into separate aspect
+
+// ---------- Packages
+PackageSymbol <: PackageDeclaration = MainFacet:PackageFacetDeclaration TestingFacet:PackageFacetDeclaration;
+
+// ---------- Facets
+// Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
+PackageFacetSymbol <: PackageFacetDeclaration = GlobalNamespace:NamespaceDeclaration;
+
+// ---------- Namespace Declarations
+NamespaceSymbol <: NamespaceDeclaration = Members:NamespaceMemberDeclaration*;
+
+// ---------- Function Declaration
+FunctionSymbol <: FunctionDeclaration;
+
+// ---------- Type Declarations
+UserTypeSymbol <: UserTypeDeclaration = Members:TypeMemberDeclaration*;
+ClassSymbol <: ClassDeclaration = Members:ClassMemberDeclaration*;
+StructSymbol <: StructDeclaration = Members:StructMemberDeclaration*;
+TraitSymbol <: TraitDeclaration = Members:TraitMemberDeclaration*;
+
+// ---------- Type Declaration Parts
+GenericParameterSymbol <: GenericParameterDeclaration;
+
+// ---------- Member Declarations
+MethodSymbol <: MethodDeclaration;
+ConstructorSymbol <: ConstructorDeclaration;
+InitializerSymbol <: InitializerDeclaration;
+FieldSymbol <: FieldDeclaration;
+AssociatedFunctionSymbol <: AssociatedFunctionDeclaration;

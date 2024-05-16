@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class SemanticMethodSymbolNode : SemanticDeclarationSymbolNode, IMethodDeclarationNode
+internal sealed class SemanticMethodSymbolNode : SemanticDeclarationSymbolNode, IMethodSymbolNode
 {
     private readonly IMethodDefinitionNode node;
     public override MethodSymbol Symbol => node.Symbol;

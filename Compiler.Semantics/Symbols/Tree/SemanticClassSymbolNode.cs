@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class SemanticClassSymbolNode : SemanticUserTypeSymbolNode, IClassDeclarationNode
+internal sealed class SemanticClassSymbolNode : SemanticUserTypeSymbolNode, IClassSymbolNode
 {
     protected override IClassDefinitionNode Node { get; }
     private ValueAttribute<IFixedList<IClassMemberDeclarationNode>> members;

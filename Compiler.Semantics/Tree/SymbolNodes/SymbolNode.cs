@@ -4,9 +4,9 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
-internal abstract class ReferencedSymbolNode : IDeclarationNode
+internal abstract class SymbolNode : IDeclarationNode
 {
     public ISyntax? Syntax => null;
 

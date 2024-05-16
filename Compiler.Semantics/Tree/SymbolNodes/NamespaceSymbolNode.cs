@@ -2,13 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 using DotNet.Collections.Generic;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
-internal class ReferencedNamespaceSymbolNode : ReferencedDeclarationSymbolNode, INamespaceDeclarationNode
+internal class NamespaceSymbolNode : FacetChildSymbolNode, INamespaceSymbolNode
 {
     public override NamespaceSymbol Symbol { get; }
 
@@ -24,7 +25,7 @@ internal class ReferencedNamespaceSymbolNode : ReferencedDeclarationSymbolNode, 
         => nestedMembers.TryGetValue(out var value) ? value : nestedMembers.GetValue(GetNestedMembers);
     private MultiMapHashSet<StandardName, INamespaceMemberDeclarationNode>? nestedMembersByName;
 
-    public ReferencedNamespaceSymbolNode(NamespaceSymbol symbol)
+    public NamespaceSymbolNode(NamespaceSymbol symbol)
     {
         Symbol = symbol;
     }

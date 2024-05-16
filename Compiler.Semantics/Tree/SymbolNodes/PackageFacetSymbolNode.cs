@@ -3,9 +3,9 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
-internal sealed class ReferencedPackageFacetSymbolNode : ReferencedChildSymbolNode, IPackageFacetDeclarationNode
+internal sealed class PackageFacetSymbolNode : ChildSymbolNode, IPackageFacetSymbolNode
 {
     public IdentifierName? PackageAliasOrName => Package.AliasOrName;
     public IdentifierName PackageName => Package.Name;
@@ -15,10 +15,10 @@ internal sealed class ReferencedPackageFacetSymbolNode : ReferencedChildSymbolNo
 
     public INamespaceDeclarationNode GlobalNamespace { get; }
 
-    public ReferencedPackageFacetSymbolNode(FixedSymbolTree symbolTree)
+    public PackageFacetSymbolNode(FixedSymbolTree symbolTree)
     {
         this.symbolTree = symbolTree;
-        GlobalNamespace = Child.Attach(this, new ReferencedNamespaceSymbolNode(symbolTree.Package));
+        GlobalNamespace = Child.Attach(this, new NamespaceSymbolNode(symbolTree.Package));
     }
 
     internal override ISymbolTree InheritedSymbolTree(IChildDeclarationNode caller, IChildDeclarationNode child)
