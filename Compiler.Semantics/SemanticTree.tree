@@ -274,3 +274,65 @@ FreezeExpression <: Expression = Syntax:`IFreezeExpressionSyntax` Referent:Varia
 AsyncBlockExpression <: Expression = Syntax:`IAsyncBlockExpressionSyntax` Block:BlockExpression;
 AsyncStartExpression <: Expression = Syntax:`IAsyncStartExpressionSyntax` Scheduled:`bool` Expression:UntypedExpression;
 AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax` Expression:UntypedExpression;
+
+
+// -------------------------------------------------------------------------------------------------
+// Declarations
+// -------------------------------------------------------------------------------------------------
+// TODO move into separate aspect
+
+
+Declaration = Symbol:`Symbol`;
+// Parent, Package, and GlobalNamespace type quoted so that is is not treated as a child node
+ChildDeclaration <: Declaration, `IChild<IDeclarationNode>` = Parent:`IDeclarationNode` Package:`IPackageDeclarationNode`;
+
+NamedDeclaration <: ChildDeclaration = Name:`StandardName`;
+
+// ---------- Packages
+PackageDeclaration <: Declaration = AliasOrName:`IdentifierName`? Name:`IdentifierName` Symbol:`PackageSymbol`
+    MainFacet:PackageFacetDeclaration TestingFacet:PackageFacetDeclaration;
+
+PackageMemberDeclaration <: NamespaceMemberDeclaration;
+
+// ---------- Facets
+/// Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
+PackageFacetDeclaration <: ChildDeclaration = PackageAliasOrName:`IdentifierName`? PackageName:`IdentifierName`
+    Symbol:`PackageSymbol` GlobalNamespace:NamespaceDeclaration;
+
+// ---------- Declarations
+FacetChildDeclaration <: ChildDeclaration = Name:`StandardName`? Facet:`IPackageFacetDeclarationNode`;
+
+// ---------- Namespace Declarations
+NamespaceDeclaration <: NamespaceMemberDeclaration = Name:`IdentifierName` Symbol:`NamespaceSymbol`
+    Members:NamespaceMemberDeclaration* NestedMembers:NamespaceMemberDeclaration*;
+NamespaceMemberDeclaration <: FacetChildDeclaration;
+
+// ---------- Function Declaration
+FunctionDeclaration <: PackageMemberDeclaration, NamedDeclaration = Symbol:`FunctionSymbol`;
+
+// ---------- Type Declarations
+UserTypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
+    = Symbol:`UserTypeSymbol` Members:TypeMemberDeclaration*;
+ClassDeclaration <: UserTypeDeclaration = Members:ClassMemberDeclaration*;
+StructDeclaration <: UserTypeDeclaration = Members:StructMemberDeclaration*;
+TraitDeclaration <: UserTypeDeclaration = Members:TraitMemberDeclaration*;
+
+// ---------- Type Declaration Parts
+GenericParameterDeclaration <: TypeDeclaration = Name:`IdentifierName`;
+
+// ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
+TypeMemberDeclaration <: FacetChildDeclaration;
+ClassMemberDeclaration <: TypeMemberDeclaration;
+TraitMemberDeclaration <: TypeMemberDeclaration;
+StructMemberDeclaration <: TypeMemberDeclaration;
+
+// ---------- Member Declarations
+MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration = Name:`IdentifierName` Symbol:`MethodSymbol`;
+ConstructorDeclaration <: ClassMemberDeclaration = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
+InitializerDeclaration <: StructMemberDeclaration = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
+FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;
+AssociatedFunctionDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
+    = Name:`IdentifierName` Symbol:`FunctionSymbol` Type:`FunctionType`;
+
+// ---------- Can be Referenced by Type Name
+TypeDeclaration <: NamedDeclaration = Symbol:`TypeSymbol`;

@@ -88,7 +88,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IFreezeExpressionNode),
     typeof(IAsyncBlockExpressionNode),
     typeof(IAsyncStartExpressionNode),
-    typeof(IAwaitExpressionNode))]
+    typeof(IAwaitExpressionNode),
+    typeof(IDeclarationNode),
+    typeof(INamedDeclarationNode),
+    typeof(IPackageMemberDeclarationNode),
+    typeof(IPackageFacetDeclarationNode),
+    typeof(IFacetChildDeclarationNode),
+    typeof(INamespaceDeclarationNode),
+    typeof(IClassDeclarationNode),
+    typeof(IStructDeclarationNode),
+    typeof(ITraitDeclarationNode),
+    typeof(IGenericParameterDeclarationNode),
+    typeof(IClassMemberDeclarationNode),
+    typeof(ITraitMemberDeclarationNode),
+    typeof(IStructMemberDeclarationNode))]
 public partial interface ISemanticNode
 {
     ISyntax? Syntax { get; }
@@ -1520,5 +1533,216 @@ public partial interface IAwaitExpressionNode : ISemanticNode, IExpressionNode
     ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
     IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
     IUntypedExpressionNode Expression { get; }
+}
+
+[Closed(
+    typeof(IChildDeclarationNode),
+    typeof(IPackageDeclarationNode))]
+public partial interface IDeclarationNode : ISemanticNode
+{
+    Symbol Symbol { get; }
+}
+
+[Closed(
+    typeof(INamedDeclarationNode),
+    typeof(IPackageFacetDeclarationNode),
+    typeof(IFacetChildDeclarationNode))]
+public partial interface IChildDeclarationNode : IChild<IDeclarationNode>, IDeclarationNode
+{
+    IDeclarationNode Parent { get; }
+    IPackageDeclarationNode Package { get; }
+}
+
+[Closed(
+    typeof(IFunctionDeclarationNode),
+    typeof(IMethodDeclarationNode),
+    typeof(IFieldDeclarationNode),
+    typeof(ITypeDeclarationNode))]
+public partial interface INamedDeclarationNode : ISemanticNode, IChildDeclarationNode
+{
+    StandardName Name { get; }
+}
+
+public partial interface IPackageDeclarationNode : IDeclarationNode
+{
+    IdentifierName? AliasOrName { get; }
+    IdentifierName Name { get; }
+    new PackageSymbol Symbol { get; }
+    Symbol IDeclarationNode.Symbol => Symbol;
+    IPackageFacetDeclarationNode MainFacet { get; }
+    IPackageFacetDeclarationNode TestingFacet { get; }
+}
+
+[Closed(
+    typeof(IFunctionDeclarationNode),
+    typeof(IUserTypeDeclarationNode))]
+public partial interface IPackageMemberDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
+{
+}
+
+public partial interface IPackageFacetDeclarationNode : ISemanticNode, IChildDeclarationNode
+{
+    IdentifierName? PackageAliasOrName { get; }
+    IdentifierName PackageName { get; }
+    new PackageSymbol Symbol { get; }
+    Symbol IDeclarationNode.Symbol => Symbol;
+    INamespaceDeclarationNode GlobalNamespace { get; }
+}
+
+[Closed(
+    typeof(INamespaceMemberDeclarationNode),
+    typeof(ITypeMemberDeclarationNode))]
+public partial interface IFacetChildDeclarationNode : ISemanticNode, IChildDeclarationNode
+{
+    StandardName? Name { get; }
+    IPackageFacetDeclarationNode Facet { get; }
+}
+
+public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
+{
+    new IdentifierName Name { get; }
+    StandardName? IFacetChildDeclarationNode.Name => Name;
+    new NamespaceSymbol Symbol { get; }
+    Symbol IDeclarationNode.Symbol => Symbol;
+    IFixedList<INamespaceMemberDeclarationNode> Members { get; }
+    IFixedList<INamespaceMemberDeclarationNode> NestedMembers { get; }
+}
+
+[Closed(
+    typeof(IPackageMemberDeclarationNode),
+    typeof(INamespaceDeclarationNode))]
+public partial interface INamespaceMemberDeclarationNode : IFacetChildDeclarationNode
+{
+}
+
+public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNode, INamedDeclarationNode
+{
+    new FunctionSymbol Symbol { get; }
+    Symbol IDeclarationNode.Symbol => Symbol;
+}
+
+[Closed(
+    typeof(IClassDeclarationNode),
+    typeof(IStructDeclarationNode),
+    typeof(ITraitDeclarationNode))]
+public partial interface IUserTypeDeclarationNode : IPackageMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, ITypeDeclarationNode
+{
+    new UserTypeSymbol Symbol { get; }
+    Symbol IDeclarationNode.Symbol => Symbol;
+    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    IFixedList<ITypeMemberDeclarationNode> Members { get; }
+}
+
+public partial interface IClassDeclarationNode : ISemanticNode, IUserTypeDeclarationNode
+{
+    new IFixedList<IClassMemberDeclarationNode> Members { get; }
+    IFixedList<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
+}
+
+public partial interface IStructDeclarationNode : ISemanticNode, IUserTypeDeclarationNode
+{
+    new IFixedList<IStructMemberDeclarationNode> Members { get; }
+    IFixedList<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
+}
+
+public partial interface ITraitDeclarationNode : ISemanticNode, IUserTypeDeclarationNode
+{
+    new IFixedList<ITraitMemberDeclarationNode> Members { get; }
+    IFixedList<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
+}
+
+public partial interface IGenericParameterDeclarationNode : ISemanticNode, ITypeDeclarationNode
+{
+    new IdentifierName Name { get; }
+    StandardName INamedDeclarationNode.Name => Name;
+}
+
+[Closed(
+    typeof(IClassMemberDeclarationNode),
+    typeof(ITraitMemberDeclarationNode),
+    typeof(IStructMemberDeclarationNode))]
+public partial interface ITypeMemberDeclarationNode : IFacetChildDeclarationNode
+{
+}
+
+[Closed(
+    typeof(IUserTypeDeclarationNode),
+    typeof(IMethodDeclarationNode),
+    typeof(IConstructorDeclarationNode),
+    typeof(IFieldDeclarationNode),
+    typeof(IAssociatedFunctionDeclarationNode))]
+public partial interface IClassMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
+{
+}
+
+[Closed(
+    typeof(IUserTypeDeclarationNode),
+    typeof(IMethodDeclarationNode),
+    typeof(IAssociatedFunctionDeclarationNode))]
+public partial interface ITraitMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
+{
+}
+
+[Closed(
+    typeof(IUserTypeDeclarationNode),
+    typeof(IMethodDeclarationNode),
+    typeof(IInitializerDeclarationNode),
+    typeof(IFieldDeclarationNode),
+    typeof(IAssociatedFunctionDeclarationNode))]
+public partial interface IStructMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
+{
+}
+
+public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode
+{
+    new IdentifierName Name { get; }
+    StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName INamedDeclarationNode.Name => Name;
+    new MethodSymbol Symbol { get; }
+    Symbol IDeclarationNode.Symbol => Symbol;
+}
+
+public partial interface IConstructorDeclarationNode : IClassMemberDeclarationNode
+{
+    new IdentifierName? Name { get; }
+    StandardName? IFacetChildDeclarationNode.Name => Name;
+    new ConstructorSymbol Symbol { get; }
+    Symbol IDeclarationNode.Symbol => Symbol;
+}
+
+public partial interface IInitializerDeclarationNode : IStructMemberDeclarationNode
+{
+    new IdentifierName? Name { get; }
+    StandardName? IFacetChildDeclarationNode.Name => Name;
+    new InitializerSymbol Symbol { get; }
+    Symbol IDeclarationNode.Symbol => Symbol;
+}
+
+public partial interface IFieldDeclarationNode : INamedDeclarationNode, IClassMemberDeclarationNode, IStructMemberDeclarationNode
+{
+    new IdentifierName Name { get; }
+    StandardName INamedDeclarationNode.Name => Name;
+    StandardName? IFacetChildDeclarationNode.Name => Name;
+    DataType Type { get; }
+    new FieldSymbol Symbol { get; }
+    Symbol IDeclarationNode.Symbol => Symbol;
+}
+
+public partial interface IAssociatedFunctionDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode
+{
+    new IdentifierName Name { get; }
+    StandardName? IFacetChildDeclarationNode.Name => Name;
+    new FunctionSymbol Symbol { get; }
+    Symbol IDeclarationNode.Symbol => Symbol;
+    FunctionType Type { get; }
+}
+
+[Closed(
+    typeof(IUserTypeDeclarationNode),
+    typeof(IGenericParameterDeclarationNode))]
+public partial interface ITypeDeclarationNode : INamedDeclarationNode
+{
+    new TypeSymbol Symbol { get; }
+    Symbol IDeclarationNode.Symbol => Symbol;
 }
 
