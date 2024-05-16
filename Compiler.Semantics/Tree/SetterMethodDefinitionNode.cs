@@ -12,7 +12,7 @@ internal sealed class SetterMethodDefinitionNode : MethodDefinitionNode, ISetter
     public override ISetterMethodDefinitionSyntax Syntax { get; }
     public IBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    IStructMemberSymbolNode IStructMemberDefinitionNode.SymbolNode => SymbolNode;
+    IStructMemberDeclarationNode IStructMemberDefinitionNode.SymbolNode => SymbolNode;
 
     public SetterMethodDefinitionNode(
         ISetterMethodDefinitionSyntax syntax,

@@ -17,9 +17,9 @@ internal class IntrinsicsPackageReferenceNode : ChildNode, IPackageReferenceNode
     public IPackageSymbols PackageSymbols => IntrinsicPackageSymbol.Instance;
     public bool IsTrusted => true;
 
-    private ValueAttribute<IPackageSymbolNode> symbolNode;
+    private ValueAttribute<IPackageDeclarationNode> symbolNode;
 
-    public IPackageSymbolNode SymbolNode
+    public IPackageDeclarationNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.PackageReference);
 

@@ -11,7 +11,7 @@ internal static class SymbolNode
         this IEnumerable<T> members,
         ref MultiMapHashSet<StandardName, T>? membersByName,
         StandardName named)
-        where T : IDeclarationSymbolNode
+        where T : IFacetChildDeclarationNode
     {
         membersByName ??= new(members.GroupBy(m => m.Name).Where(g => g.Key is not null)
                                      .ToDictionary(g => g.Key!, g => g.ToHashSet()));

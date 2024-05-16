@@ -16,8 +16,8 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
     public ITypeDefinitionNode ContainingTypeDefinition
         => containingTypeDeclaration.TryGetValue(out var value) ? value
             : containingTypeDeclaration.GetValue(InheritedContainingTypeDeclaration);
-    private ValueAttribute<IFieldSymbolNode?> referencedSymbolNode;
-    public IFieldSymbolNode? ReferencedSymbolNode
+    private ValueAttribute<IFieldDeclarationNode?> referencedSymbolNode;
+    public IFieldDeclarationNode? ReferencedSymbolNode
         => referencedSymbolNode.TryGetValue(out var value) ? value
             : referencedSymbolNode.GetValue(this, SymbolNodeAttributes.FieldParameter_ReferencedSymbolNode);
     private ValueAttribute<DataType> type;

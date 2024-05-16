@@ -23,8 +23,8 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, TypeMemberDeclarationsAspect.FieldDeclaration_Type);
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    private ValueAttribute<IFieldSymbolNode> symbolNode;
-    public override IFieldSymbolNode SymbolNode
+    private ValueAttribute<IFieldDeclarationNode> symbolNode;
+    public override IFieldDeclarationNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.FieldDeclaration_SymbolNode);
     private ValueAttribute<FieldSymbol> symbol;

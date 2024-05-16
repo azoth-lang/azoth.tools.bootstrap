@@ -31,8 +31,8 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
             : type.GetValue(this, TypeMemberDeclarationsAspect.AssociatedFunctionDeclaration_Type);
     public IBodyNode Body { get; }
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    private ValueAttribute<IAssociatedFunctionSymbolNode> symbolNode;
-    public sealed override IAssociatedFunctionSymbolNode SymbolNode
+    private ValueAttribute<IAssociatedFunctionDeclarationNode> symbolNode;
+    public sealed override IAssociatedFunctionDeclarationNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.AssociatedFunction_SymbolNode);
 

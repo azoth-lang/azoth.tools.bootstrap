@@ -68,7 +68,7 @@ internal static class LexicalScopeAttributes
 
     public static LexicalScope TypeDeclaration_LexicalScope(ITypeDefinitionNode node)
         // TODO populate the scope with members
-        => new BasicScope(node.SupertypesLexicalScope, Enumerable.Empty<INamedSymbolNode>());
+        => new BasicScope(node.SupertypesLexicalScope, Enumerable.Empty<INamedDeclarationNode>());
 
     public static LexicalScope TypeDeclaration_InheritedLexicalScope_Supertypes(ITypeDefinitionNode node)
         => node.SupertypesLexicalScope;

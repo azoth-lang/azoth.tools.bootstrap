@@ -34,28 +34,28 @@ Binding <: Code = IsMutableBinding:`bool`;
 LocalBinding: Binding;
 
 // ---------- Packages
-Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` SymbolNode:`IPackageSymbolNode`
+Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` SymbolNode:`IPackageDeclarationNode`
     References:{PackageReference} IntrinsicsReference:`IPackageReferenceNode`
-    SymbolNodes:`FixedDictionary<IdentifierName,IPackageSymbolNode>`
+    SymbolNodes:`FixedDictionary<IdentifierName,IPackageDeclarationNode>`
     MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`Diagnostic`*;
 
-PackageReference <: Child = Syntax:`IPackageReferenceSyntax`? SymbolNode:`IPackageSymbolNode`
+PackageReference <: Child = Syntax:`IPackageReferenceSyntax`? SymbolNode:`IPackageDeclarationNode`
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
 
 PackageFacet <: Child = Syntax:`IPackageSyntax` PackageName:`IdentifierName`
-    PackageSymbol:`PackageSymbol` SymbolNode:`IPackageFacetSymbolNode`
+    PackageSymbol:`PackageSymbol` SymbolNode:`IPackageFacetDeclarationNode`
     PackageNameScope:`PackageNameScope`
     CompilationUnits:{CompilationUnit} Definitions:`IFixedSet<IPackageMemberDefinitionNode>`;
 
 PackageMemberDefinition <: NamespaceMemberDefinition
-    = Attributes:Attribute* AccessModifier:`AccessModifier` SymbolNode:`IPackageMemberSymbolNode`;
+    = Attributes:Attribute* AccessModifier:`AccessModifier` SymbolNode:`IPackageMemberDeclarationNode`;
 
 // ---------- Code Files
 Code <: Child = Syntax:`IConcreteSyntax` File:`CodeFile`;
 
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
-    ContainingSymbolNode:`IPackageFacetSymbolNode` ContainingSymbol:`NamespaceSymbol`
-    ImplicitNamespaceName:`NamespaceName` ImplicitNamespaceSymbolNode:`INamespaceSymbolNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
+    ContainingDeclarationNode:`IPackageFacetDeclarationNode` ContainingSymbol:`NamespaceSymbol`
+    ImplicitNamespaceName:`NamespaceName` ImplicitNamespaceSymbolNode:`INamespaceDeclarationNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Definitions:NamespaceMemberDefinition*
     ContainingLexicalScope:`NamespaceScope` LexicalScope:`LexicalScope`
     Diagnostics:`Diagnostic`*;
@@ -63,9 +63,9 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
 // ---------- Definitions
-Definition <: Code = Syntax:`IDefinitionSyntax` ContainingSymbolNode:`ISymbolNode` ContainingSymbol:`Symbol`
+Definition <: Code = Syntax:`IDefinitionSyntax` ContainingDeclarationNode:`IDeclarationNode` ContainingSymbol:`Symbol`
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
-    SymbolNode:`IDeclarationSymbolNode`;
+    SymbolNode:`IFacetChildDeclarationNode`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter*;
 ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrInitializerParameter* Body;
 
@@ -73,38 +73,38 @@ ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrIni
 NamespaceDefinition <: NamespaceMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
     IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
     UsingDirectives:UsingDirective* Definitions:NamespaceMemberDefinition*
-    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol`
-    SymbolNode:`INamespaceSymbolNode` Symbol:`NamespaceSymbol`;
-NamespaceMemberDefinition <: Definition = SymbolNode:`INamespaceMemberSymbolNode`;
+    ContainingDeclarationNode:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
+    SymbolNode:`INamespaceDeclarationNode` Symbol:`NamespaceSymbol`;
+NamespaceMemberDefinition <: Definition = SymbolNode:`INamespaceMemberDeclarationNode`;
 
 // ---------- Function Definition
 FunctionDefinition <: PackageMemberDefinition = Syntax:`IFunctionDefinitionSyntax`
-    ContainingSymbolNode:`INamespaceSymbolNode` ContainingSymbol:`NamespaceSymbol`
+    ContainingDeclarationNode:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
     Attributes:Attribute* Name:`IdentifierName`
-    SymbolNode:`IFunctionSymbolNode` Symbol:`FunctionSymbol` Parameters:NamedParameter* Return:Type? Body
+    SymbolNode:`IFunctionDeclarationNode` Symbol:`FunctionSymbol` Parameters:NamedParameter* Return:Type? Body
     Type:`FunctionType`;
 
 // ---------- Type Definitions
 TypeDefinition <: PackageMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition
     = Syntax:`ITypeDefinitionSyntax` IsConst:`bool` Name:`StandardName`
-    DeclaredType:`IDeclaredUserType` SymbolNode:`IUserTypeSymbolNode` Symbol:`UserTypeSymbol`
+    DeclaredType:`IDeclaredUserType` SymbolNode:`IUserTypeDeclarationNode` Symbol:`UserTypeSymbol`
     GenericParameters:GenericParameter* SupertypesLexicalScope:`LexicalScope`
     SupertypeNames:StandardTypeName* Supertypes:`CompilerResult<IFixedSet<BareReferenceType>>`
     Members:TypeMemberDefinition*;
 ClassDefinition <: TypeDefinition = Syntax:`IClassDefinitionSyntax`
     Attributes:Attribute* IsAbstract:`bool` GenericParameters:GenericParameter*
-    BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* SymbolNode:`IClassSymbolNode`
+    BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* SymbolNode:`IClassDeclarationNode`
     DeclaredType:`ObjectType`
     Members:ClassMemberDefinition*
     DefaultConstructorSymbol:`ConstructorSymbol`?;
 StructDefinition <: TypeDefinition = Syntax:`IStructDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
-    SupertypeNames:StandardTypeName* SymbolNode:`IStructSymbolNode`
+    SupertypeNames:StandardTypeName* SymbolNode:`IStructDeclarationNode`
     DeclaredType:`StructType`
     Members:StructMemberDefinition*;
 TraitDefinition <: TypeDefinition = Syntax:`ITraitDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
-    SupertypeNames:StandardTypeName* SymbolNode:`ITraitSymbolNode`
+    SupertypeNames:StandardTypeName* SymbolNode:`ITraitDeclarationNode`
     DeclaredType:`ObjectType`
     Members:TraitMemberDefinition*;
 
@@ -112,20 +112,20 @@ TraitDefinition <: TypeDefinition = Syntax:`ITraitDefinitionSyntax`
 GenericParameter <: Code = Syntax:`IGenericParameterSyntax`
     Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance`
     Parameter:`GenericParameter` ContainingDeclaredType:`IDeclaredUserType` DeclaredType:`GenericParameterType`
-    ContainingSymbolNode:`IUserTypeSymbolNode` ContainingSymbol:`UserTypeSymbol`
-    SymbolNode:`IGenericParameterSymbolNode` Symbol:`GenericParameterTypeSymbol`;
+    ContainingDeclarationNode:`IUserTypeDeclarationNode` ContainingSymbol:`UserTypeSymbol`
+    SymbolNode:`IGenericParameterDeclarationNode` Symbol:`GenericParameterTypeSymbol`;
 
 // ---------- Type Member Definitions (i.e. declarations that can be contained in a type)
-TypeMemberDefinition <: Definition = Syntax:`ITypeMemberDefinitionSyntax` AccessModifier:`AccessModifier` SymbolNode:`ITypeMemberSymbolNode`;
-ClassMemberDefinition <: TypeMemberDefinition = Syntax:`IClassMemberDefinitionSyntax` SymbolNode:`IClassMemberSymbolNode`;
-TraitMemberDefinition <: TypeMemberDefinition = Syntax:`ITraitMemberDefinitionSyntax` SymbolNode:`ITraitMemberSymbolNode`;
-StructMemberDefinition <: TypeMemberDefinition = Syntax:`IStructMemberDefinitionSyntax` SymbolNode:`IStructMemberSymbolNode`;
+TypeMemberDefinition <: Definition = Syntax:`ITypeMemberDefinitionSyntax` AccessModifier:`AccessModifier` SymbolNode:`ITypeMemberDeclarationNode`;
+ClassMemberDefinition <: TypeMemberDefinition = Syntax:`IClassMemberDefinitionSyntax` SymbolNode:`IClassMemberDeclarationNode`;
+TraitMemberDefinition <: TypeMemberDefinition = Syntax:`ITraitMemberDefinitionSyntax` SymbolNode:`ITraitMemberDeclarationNode`;
+StructMemberDefinition <: TypeMemberDefinition = Syntax:`IStructMemberDefinitionSyntax` SymbolNode:`IStructMemberDeclarationNode`;
 AlwaysTypeMemberDefinition <: TypeMemberDefinition = ContainingSymbol:`UserTypeSymbol`;
 
 // ---------- Member Definitions
 MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition
     = Syntax:`IMethodDefinitionSyntax` Kind:`MethodKind` Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
-    SymbolNode:`IMethodSymbolNode` Symbol:`MethodSymbol`;
+    SymbolNode:`IMethodDeclarationNode` Symbol:`MethodSymbol`;
 AbstractMethodDefinition <: MethodDefinition = Syntax:`IAbstractMethodDefinitionSyntax`
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
     ContainingDeclaredType:`ObjectType`;
@@ -142,10 +142,10 @@ InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition
     Symbol:`InitializerSymbol` Body:BlockBody;
 FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding
     = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type Type:`DataType`
-    SymbolNode:`IFieldSymbolNode` Symbol:`FieldSymbol` Initializer:UntypedExpression?;
+    SymbolNode:`IFieldDeclarationNode` Symbol:`FieldSymbol` Initializer:UntypedExpression?;
 AssociatedFunctionDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition
     = Syntax:`IAssociatedFunctionDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
-    SymbolNode:`IAssociatedFunctionSymbolNode` Symbol:`FunctionSymbol` Type:`FunctionType` Body;
+    SymbolNode:`IAssociatedFunctionDeclarationNode` Symbol:`FunctionSymbol` Type:`FunctionType` Body;
 
 // ---------- Attributes
 Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:StandardTypeName ReferencedSymbol:`ConstructorSymbol`?;
@@ -169,7 +169,7 @@ InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyn
 MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` IsLentBinding:`bool` Capability:CapabilityConstraint
     ParameterType:`SelfParameter`;
 FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax` Name:`IdentifierName`
-    ContainingTypeDefinition:`ITypeDefinitionNode` ReferencedSymbolNode:`IFieldSymbolNode`?;
+    ContainingTypeDefinition:`ITypeDefinitionNode` ReferencedSymbolNode:`IFieldDeclarationNode`?;
 
 // ---------- Function Parts
 Body: BodyOrBlock;
@@ -180,7 +180,7 @@ ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 Type <: Code = Syntax:`ITypeSyntax` Type:`DataType`;
 TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName` ContainingLexicalScope:`LexicalScope`
     ReferencedSymbol:`TypeSymbol`? BareType:`BareType`?;
-StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` IsAttributeType:`bool` Name:`StandardName` ReferencedSymbolNode:`ITypeSymbolNode`?;
+StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` IsAttributeType:`bool` Name:`StandardName` ReferencedSymbolNode:`ITypeDeclarationNode`?;
 SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
 IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax` Name:`IdentifierName`;
 SpecialTypeName <: SimpleTypeName = Syntax:`ISpecialTypeNameSyntax` Name:`SpecialTypeName`

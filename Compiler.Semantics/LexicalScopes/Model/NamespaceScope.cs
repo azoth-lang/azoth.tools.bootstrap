@@ -11,13 +11,13 @@ public sealed class NamespaceScope : LexicalScope
 {
     private readonly LexicalScope? parent;
     public override PackageNameScope PackageNames { get; }
-    private readonly IFixedSet<INamespaceSymbolNode> namespaceDeclarations;
+    private readonly IFixedSet<INamespaceDeclarationNode> namespaceDeclarations;
     private readonly Dictionary<IdentifierName, NamespaceScope> childScopes = new();
 
     /// <summary>
     /// Create a top-level namespace scope.
     /// </summary>
-    public NamespaceScope(PackageNameScope parent, IEnumerable<INamespaceSymbolNode> namespaceDeclarations)
+    public NamespaceScope(PackageNameScope parent, IEnumerable<INamespaceDeclarationNode> namespaceDeclarations)
     {
         PackageNames = parent;
         this.namespaceDeclarations = namespaceDeclarations.ToFixedSet();
@@ -26,7 +26,7 @@ public sealed class NamespaceScope : LexicalScope
     /// <summary>
     /// Create a child namespace scope.
     /// </summary>
-    public NamespaceScope(NamespaceScope parent, IEnumerable<INamespaceSymbolNode> namespaceDeclarations)
+    public NamespaceScope(NamespaceScope parent, IEnumerable<INamespaceDeclarationNode> namespaceDeclarations)
     {
         this.parent = parent;
         PackageNames = parent.PackageNames;
@@ -48,23 +48,23 @@ public sealed class NamespaceScope : LexicalScope
         if (childScopes.TryGetValue(namespaceName, out var childScope)) return childScope;
 
         var childDeclarations = namespaceDeclarations.SelectMany(d => d.MembersNamed(namespaceName))
-                                                     .OfType<INamespaceSymbolNode>().ToFixedSet();
+                                                     .OfType<INamespaceDeclarationNode>().ToFixedSet();
         if (childDeclarations.Count == 0) return null;
         childScope = new NamespaceScope(this, childDeclarations);
         childScopes.Add(namespaceName, childScope);
         return childScope;
     }
 
-    public override IEnumerable<ISymbolNode> Lookup(StandardName name)
+    public override IEnumerable<IDeclarationNode> Lookup(StandardName name)
     {
         var symbolNodes = namespaceDeclarations
-            .SelectMany(ns => ns.MembersNamed(name)).SafeCast<ISymbolNode>()
+            .SelectMany(ns => ns.MembersNamed(name)).SafeCast<IDeclarationNode>()
             .FallbackIfEmpty(namespaceDeclarations.SelectMany(ns => ns.NestedMembersNamed(name)));
         if (parent is not null)
             symbolNodes = symbolNodes.FallbackIfEmpty(() => parent.Lookup(name));
         return symbolNodes;
     }
 
-    public IEnumerable<ISymbolNode> LookupInNamespaceOnly(StandardName name)
+    public IEnumerable<IDeclarationNode> LookupInNamespaceOnly(StandardName name)
         => namespaceDeclarations.SelectMany(ns => ns.MembersNamed(name));
 }

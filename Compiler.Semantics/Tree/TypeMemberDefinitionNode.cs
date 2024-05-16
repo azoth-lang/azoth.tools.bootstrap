@@ -12,5 +12,5 @@ internal abstract class TypeMemberDefinitionNode : DefinitionNode, ITypeMemberDe
     public AccessModifier AccessModifier
         => accessModifier.TryGetValue(out var value) ? value
             : accessModifier.GetValue(this, TypeModifiersAspect.TypeMemberDeclaration_AccessModifier);
-    public abstract override ITypeMemberSymbolNode SymbolNode { get; }
+    public abstract override ITypeMemberDeclarationNode SymbolNode { get; }
 }

@@ -5,9 +5,9 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class ReferencedTraitSymbolNode : ReferencedUserTypeSymbolNode, ITraitSymbolNode
+internal sealed class ReferencedTraitSymbolNode : ReferencedUserTypeSymbolNode, ITraitDeclarationNode
 {
-    public override IFixedList<ITraitMemberSymbolNode> Members
+    public override IFixedList<ITraitMemberDeclarationNode> Members
         => throw new NotImplementedException();
 
     internal ReferencedTraitSymbolNode(UserTypeSymbol symbol)

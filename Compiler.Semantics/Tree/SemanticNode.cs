@@ -14,9 +14,9 @@ internal abstract class SemanticNode : ISemanticNode
 {
     public abstract ISyntax? Syntax { get; }
 
-    internal virtual ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
+    internal virtual IDeclarationNode InheritedContainingDeclarationNode(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedContainingSymbolNode), caller, child));
+            Child.InheritFailedMessage(nameof(InheritedContainingDeclarationNode), caller, child));
 
     internal virtual IPackageNode InheritedPackage(IChildNode caller, IChildNode child)
         => throw new NotImplementedException(

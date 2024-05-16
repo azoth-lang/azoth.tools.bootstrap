@@ -16,10 +16,9 @@ internal sealed class ClassDefinitionNode : TypeDefinitionNode, IClassDefinition
     public bool IsAbstract => Syntax.AbstractModifier is not null;
     public IStandardTypeNameNode? BaseTypeName { get; }
 
-    private ValueAttribute<IClassSymbolNode> symbolNode;
-    public override IClassSymbolNode SymbolNode
-        => symbolNode.TryGetValue(out var value)
-            ? value
+    private ValueAttribute<IClassDeclarationNode> symbolNode;
+    public override IClassDeclarationNode SymbolNode
+        => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.ClassDeclaration_SymbolNode);
 
     private ValueAttribute<ObjectType> declaredType;

@@ -16,15 +16,15 @@ internal static class NamespaceSymbolCollector
         PackageFacet(node.TestingFacet.SymbolNode, testingSymbolTree);
     }
 
-    private static void PackageFacet(IPackageFacetSymbolNode node, ISymbolTreeBuilder symbolTree)
+    private static void PackageFacet(IPackageFacetDeclarationNode node, ISymbolTreeBuilder symbolTree)
         => Namespace(node.GlobalNamespace, symbolTree);
 
-    private static void Namespace(INamespaceSymbolNode node, ISymbolTreeBuilder symbolTree)
+    private static void Namespace(INamespaceDeclarationNode node, ISymbolTreeBuilder symbolTree)
     {
         symbolTree.Add(node.Symbol);
-        Namespaces(node.Members.OfType<INamespaceSymbolNode>(), symbolTree);
+        Namespaces(node.Members.OfType<INamespaceDeclarationNode>(), symbolTree);
     }
 
-    private static void Namespaces(IEnumerable<INamespaceSymbolNode> nodes, ISymbolTreeBuilder symbolTree)
+    private static void Namespaces(IEnumerable<INamespaceDeclarationNode> nodes, ISymbolTreeBuilder symbolTree)
         => nodes.ForEach(n => Namespace(n, symbolTree));
 }

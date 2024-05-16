@@ -24,7 +24,7 @@ public sealed class PackageNameScope
 
     private readonly FixedDictionary<IdentifierName, NamespaceScope> referencedGlobalScopes;
 
-    public PackageNameScope(IEnumerable<IPackageFacetSymbolNode> packageFacets, IEnumerable<IPackageFacetSymbolNode> referencedFacets)
+    public PackageNameScope(IEnumerable<IPackageFacetDeclarationNode> packageFacets, IEnumerable<IPackageFacetDeclarationNode> referencedFacets)
     {
         var packageGlobalNamespaces = packageFacets.Select(f => f.GlobalNamespace).ToFixedSet();
         var referencedGlobalNamespaces = referencedFacets.Select(f => f.GlobalNamespace).ToFixedSet();

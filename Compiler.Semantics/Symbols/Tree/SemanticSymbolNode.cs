@@ -4,15 +4,15 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal abstract class SemanticSymbolNode : ISymbolNode
+internal abstract class SemanticSymbolNode : IDeclarationNode
 {
     public abstract Symbol Symbol { get; }
 
-    internal virtual IPackageSymbolNode InheritedPackage(IChildSymbolNode caller, IChildSymbolNode child)
+    internal virtual IPackageDeclarationNode InheritedPackage(IChildDeclarationNode caller, IChildDeclarationNode child)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedPackage), caller, child));
 
-    internal virtual IPackageFacetSymbolNode InheritedFacet(IChildSymbolNode caller, IChildSymbolNode child)
+    internal virtual IPackageFacetDeclarationNode InheritedFacet(IChildDeclarationNode caller, IChildDeclarationNode child)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedFacet), caller, child));
 }

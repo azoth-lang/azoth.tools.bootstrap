@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class ReferencedPackageFacetSymbolNode : ReferencedChildSymbolNode, IPackageFacetSymbolNode
+internal sealed class ReferencedPackageFacetSymbolNode : ReferencedChildSymbolNode, IPackageFacetDeclarationNode
 {
     public IdentifierName? PackageAliasOrName => Package.AliasOrName;
     public IdentifierName PackageName => Package.Name;
@@ -13,7 +13,7 @@ internal sealed class ReferencedPackageFacetSymbolNode : ReferencedChildSymbolNo
 
     private readonly FixedSymbolTree symbolTree;
 
-    public INamespaceSymbolNode GlobalNamespace { get; }
+    public INamespaceDeclarationNode GlobalNamespace { get; }
 
     public ReferencedPackageFacetSymbolNode(FixedSymbolTree symbolTree)
     {
@@ -21,9 +21,9 @@ internal sealed class ReferencedPackageFacetSymbolNode : ReferencedChildSymbolNo
         GlobalNamespace = Child.Attach(this, new ReferencedNamespaceSymbolNode(symbolTree.Package));
     }
 
-    internal override ISymbolTree InheritedSymbolTree(IChildSymbolNode caller, IChildSymbolNode child)
+    internal override ISymbolTree InheritedSymbolTree(IChildDeclarationNode caller, IChildDeclarationNode child)
         => symbolTree;
 
-    internal override IPackageFacetSymbolNode InheritedFacet(IChildSymbolNode caller, IChildSymbolNode child)
+    internal override IPackageFacetDeclarationNode InheritedFacet(IChildDeclarationNode caller, IChildDeclarationNode child)
         => this;
 }

@@ -96,7 +96,7 @@ internal static class TypeExpressionsAspect
 
     public static DataType StringLiteralExpression_Type(IStringLiteralExpressionNode node)
     {
-        var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName).OfType<ITypeSymbolNode>().TrySingle();
+        var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName).OfType<ITypeDeclarationNode>().TrySingle();
         return typeSymbolNode?.Symbol.GetDeclaredType()?.With(Capability.Constant, FixedList.Empty<DataType>()) ?? DataType.Unknown;
     }
 

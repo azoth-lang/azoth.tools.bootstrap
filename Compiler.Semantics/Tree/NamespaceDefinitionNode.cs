@@ -16,16 +16,16 @@ internal class NamespaceDefinitionNode : DefinitionNode, INamespaceDefinitionNod
     public bool IsGlobalQualified => Syntax.IsGlobalQualified;
     public NamespaceName DeclaredNames => Syntax.DeclaredNames;
 
-    private ValueAttribute<INamespaceSymbolNode> containingSymbolNode;
-    public override INamespaceSymbolNode ContainingSymbolNode
+    private ValueAttribute<INamespaceDeclarationNode> containingSymbolNode;
+    public override INamespaceDeclarationNode ContainingDeclarationNode
         => containingSymbolNode.TryGetValue(out var value) ? value
             : containingSymbolNode.GetValue(this, node
                 => SymbolNodeAttributes.NamespaceDeclaration_ContainingSymbolNode(node,
-                    (INamespaceSymbolNode)Parent.InheritedContainingSymbolNode(this, this)));
-    public override NamespaceSymbol ContainingSymbol => ContainingSymbolNode.Symbol;
+                    (INamespaceDeclarationNode)Parent.InheritedContainingDeclarationNode(this, this)));
+    public override NamespaceSymbol ContainingSymbol => ContainingDeclarationNode.Symbol;
 
-    private ValueAttribute<INamespaceSymbolNode> symbolNode;
-    public override INamespaceSymbolNode SymbolNode
+    private ValueAttribute<INamespaceDeclarationNode> symbolNode;
+    public override INamespaceDeclarationNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.NamespaceDeclaration_SymbolNode);
 
@@ -48,7 +48,7 @@ internal class NamespaceDefinitionNode : DefinitionNode, INamespaceDefinitionNod
         Definitions = ChildList.Attach(this, definitions);
     }
 
-    internal override ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
+    internal override IDeclarationNode InheritedContainingDeclarationNode(IChildNode caller, IChildNode child)
         => SymbolNodeAttributes.NamespaceDeclaration_InheritedContainingSymbolNode(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)

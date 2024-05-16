@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChildSymbolNode
+internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChildDeclarationNode
 {
     protected virtual bool MayHaveRewrite => false;
 
@@ -17,11 +17,11 @@ internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChild
     protected virtual ReferencedSymbolNode Parent
         => parent ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
 
-    ISymbolNode IChildSymbolNode.Parent => Parent;
+    IDeclarationNode IChildDeclarationNode.Parent => Parent;
 
-    public IPackageSymbolNode Package => Parent.InheritedPackage(this, this);
+    public IPackageDeclarationNode Package => Parent.InheritedPackage(this, this);
 
-    void IChild<ISymbolNode>.AttachParent(ISymbolNode newParent)
+    void IChild<IDeclarationNode>.AttachParent(IDeclarationNode newParent)
     {
         if (newParent is not ReferencedSymbolNode newParentNode)
             throw new ArgumentException($"Parent must be a {nameof(ReferencedSymbolNode)}.", nameof(newParent));
@@ -34,16 +34,16 @@ internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChild
         => throw Child.RewriteNotSupported(this);
     IChild? IChild.Rewrite() => Rewrite();
 
-    internal override IPackageSymbolNode InheritedPackage(IChildSymbolNode caller, IChildSymbolNode child)
+    internal override IPackageDeclarationNode InheritedPackage(IChildDeclarationNode caller, IChildDeclarationNode child)
         => Parent.InheritedPackage(this, child);
 
-    internal override ISymbolTree InheritedSymbolTree(IChildSymbolNode caller, IChildSymbolNode child)
+    internal override ISymbolTree InheritedSymbolTree(IChildDeclarationNode caller, IChildDeclarationNode child)
         => Parent.InheritedSymbolTree(this, child);
 
-    internal override IPackageFacetSymbolNode InheritedFacet(IChildSymbolNode caller, IChildSymbolNode child)
+    internal override IPackageFacetDeclarationNode InheritedFacet(IChildDeclarationNode caller, IChildDeclarationNode child)
         => Parent.InheritedFacet(this, child);
 
-    protected IEnumerable<IChildSymbolNode> GetMembers()
+    protected IEnumerable<IChildDeclarationNode> GetMembers()
     {
         var symbolTree = Parent.InheritedSymbolTree(this, this);
         return symbolTree.GetChildrenOf(Symbol).Select(SymbolNodeAttributes.Symbol);

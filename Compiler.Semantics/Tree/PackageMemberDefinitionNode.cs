@@ -15,7 +15,7 @@ internal abstract class PackageMemberDefinitionNode : DefinitionNode, IPackageMe
     public AccessModifier AccessModifier
         => accessModifier.TryGetValue(out var value) ? value
             : accessModifier.GetValue(this, TypeModifiersAspect.PackageMemberDeclaration_AccessModifier);
-    public abstract override IPackageMemberSymbolNode SymbolNode { get; }
+    public abstract override IPackageMemberDeclarationNode SymbolNode { get; }
     public abstract Symbol Symbol { get; }
 
     private protected PackageMemberDefinitionNode(IEnumerable<IAttributeNode> attributes)

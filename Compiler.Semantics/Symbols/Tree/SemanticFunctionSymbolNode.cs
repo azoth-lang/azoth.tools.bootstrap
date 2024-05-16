@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class SemanticFunctionSymbolNode : SemanticDeclarationSymbolNode, IFunctionSymbolNode
+internal sealed class SemanticFunctionSymbolNode : SemanticDeclarationSymbolNode, IFunctionDeclarationNode
 {
     private IFunctionDefinitionNode Node { get; }
     public override StandardName Name => Node.Name;

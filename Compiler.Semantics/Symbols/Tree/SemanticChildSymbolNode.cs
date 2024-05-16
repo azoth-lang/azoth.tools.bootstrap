@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal abstract class SemanticChildSymbolNode : SemanticSymbolNode, IChildSymbolNode
+internal abstract class SemanticChildSymbolNode : SemanticSymbolNode, IChildDeclarationNode
 {
     protected virtual bool MayHaveRewrite => false;
     bool IChild.MayHaveRewrite => MayHaveRewrite;
@@ -12,11 +12,11 @@ internal abstract class SemanticChildSymbolNode : SemanticSymbolNode, IChildSymb
     private SemanticSymbolNode? parent;
     protected SemanticSymbolNode Parent
         => parent ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
-    ISymbolNode IChildSymbolNode.Parent => Parent;
+    IDeclarationNode IChildDeclarationNode.Parent => Parent;
 
-    public IPackageSymbolNode Package => Parent.InheritedPackage(this, this);
+    public IPackageDeclarationNode Package => Parent.InheritedPackage(this, this);
 
-    void IChild<ISymbolNode>.AttachParent(ISymbolNode newParent)
+    void IChild<IDeclarationNode>.AttachParent(IDeclarationNode newParent)
     {
         if (newParent is not SemanticSymbolNode newParentNode)
             throw new ArgumentException($"Parent must be a {nameof(SemanticSymbolNode)}.", nameof(newParent));
@@ -28,9 +28,9 @@ internal abstract class SemanticChildSymbolNode : SemanticSymbolNode, IChildSymb
         => throw Child.RewriteNotSupported(this);
     IChild? IChild.Rewrite() => Rewrite();
 
-    internal override IPackageSymbolNode InheritedPackage(IChildSymbolNode caller, IChildSymbolNode child)
+    internal override IPackageDeclarationNode InheritedPackage(IChildDeclarationNode caller, IChildDeclarationNode child)
         => Parent.InheritedPackage(this, child);
 
-    internal override IPackageFacetSymbolNode InheritedFacet(IChildSymbolNode caller, IChildSymbolNode child)
+    internal override IPackageFacetDeclarationNode InheritedFacet(IChildDeclarationNode caller, IChildDeclarationNode child)
         => Parent.InheritedFacet(this, child);
 }

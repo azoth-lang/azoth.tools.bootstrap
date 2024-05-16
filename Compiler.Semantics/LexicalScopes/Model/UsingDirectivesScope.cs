@@ -31,7 +31,7 @@ public class UsingDirectivesScope : LexicalScope
         return new NamespaceScope(this, childScope);
     }
 
-    public override IEnumerable<ISymbolNode> Lookup(StandardName name)
+    public override IEnumerable<IDeclarationNode> Lookup(StandardName name)
         => usingScopes.SelectMany(s => s.LookupInNamespaceOnly(name))
                       .FallbackIfEmpty(() => parent.Lookup(name));
 }

@@ -15,5 +15,5 @@ public abstract class LexicalScope
 
     public abstract NamespaceScope? CreateChildNamespaceScope(IdentifierName namespaceName);
 
-    public abstract IEnumerable<ISymbolNode> Lookup(StandardName name);
+    public abstract IEnumerable<IDeclarationNode> Lookup(StandardName name);
 }

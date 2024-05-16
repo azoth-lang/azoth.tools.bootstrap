@@ -11,7 +11,7 @@ internal class SemanticNamespaceSymbolNodeBuilder
 {
     private readonly PackageSymbol packageSymbol;
     private readonly ConcurrentDictionary<NamespaceSymbol, ConcurrentDictionary<IdentifierName, NamespaceSymbol>> childNamespaces = new();
-    private readonly MultiMapHashSet<NamespaceSymbol, IPackageMemberSymbolNode> childMembers = new();
+    private readonly MultiMapHashSet<NamespaceSymbol, IPackageMemberDeclarationNode> childMembers = new();
 
     public SemanticNamespaceSymbolNodeBuilder(PackageSymbol packageSymbol)
     {
@@ -36,14 +36,14 @@ internal class SemanticNamespaceSymbolNodeBuilder
         return current;
     }
 
-    public void Add(NamespaceSymbol namespaceSymbol, IPackageMemberSymbolNode symbolNode)
-        => childMembers.TryToAddMapping(namespaceSymbol, symbolNode);
+    public void Add(NamespaceSymbol namespaceSymbol, IPackageMemberDeclarationNode declarationNode)
+        => childMembers.TryToAddMapping(namespaceSymbol, declarationNode);
 
-    public INamespaceSymbolNode Build() => Build(packageSymbol);
+    public INamespaceDeclarationNode Build() => Build(packageSymbol);
 
-    private INamespaceSymbolNode Build(NamespaceSymbol ns)
+    private INamespaceDeclarationNode Build(NamespaceSymbol ns)
     {
         var children = childNamespaces[ns].Values.Select(Build);
-        return new SemanticNamespaceSymbolNode(ns, children.Concat<INamespaceMemberSymbolNode>(childMembers[ns]));
+        return new SemanticNamespaceSymbolNode(ns, children.Concat<INamespaceMemberDeclarationNode>(childMembers[ns]));
     }
 }

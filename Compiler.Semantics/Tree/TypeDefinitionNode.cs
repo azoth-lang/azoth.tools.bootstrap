@@ -21,7 +21,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     public bool IsConst => Syntax.IsConst;
     public StandardName Name => Syntax.Name;
     public abstract IDeclaredUserType DeclaredType { get; }
-    public abstract override IUserTypeSymbolNode SymbolNode { get; }
+    public abstract override IUserTypeDeclarationNode SymbolNode { get; }
     private ValueAttribute<UserTypeSymbol> symbol;
     public override UserTypeSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
@@ -52,7 +52,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         SupertypeNames = ChildList.Attach(this, supertypeNames);
     }
 
-    internal override IUserTypeSymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
+    internal override IUserTypeDeclarationNode InheritedContainingDeclarationNode(IChildNode caller, IChildNode child)
         => SymbolNodeAttributes.TypeDeclaration_InheritedContainingSymbolNode(this);
 
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)

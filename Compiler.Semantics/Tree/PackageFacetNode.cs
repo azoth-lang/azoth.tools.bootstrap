@@ -15,8 +15,8 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
     public override IPackageSyntax Syntax { get; }
     public IdentifierName PackageName => Package.Name;
     public PackageSymbol PackageSymbol => Package.Symbol;
-    private ValueAttribute<IPackageFacetSymbolNode> symbolNode;
-    public IPackageFacetSymbolNode SymbolNode
+    private ValueAttribute<IPackageFacetDeclarationNode> symbolNode;
+    public IPackageFacetDeclarationNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.PackageFacet);
     public IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
@@ -37,7 +37,7 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
         CompilationUnits = ChildSet.CreateFixedSet(this, compilationUnits);
     }
 
-    internal override ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
+    internal override IDeclarationNode InheritedContainingDeclarationNode(IChildNode caller, IChildNode child)
         => SymbolNode;
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)

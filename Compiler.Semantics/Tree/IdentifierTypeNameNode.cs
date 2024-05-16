@@ -18,8 +18,8 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
         => attributeType.TryGetValue(out var value) ? value
             : attributeType.GetValue(InheritedIsAttributeType);
     public override IdentifierName Name => Syntax.Name;
-    private ValueAttribute<ITypeSymbolNode?> referencedSymbolNode;
-    public ITypeSymbolNode? ReferencedSymbolNode
+    private ValueAttribute<ITypeDeclarationNode?> referencedSymbolNode;
+    public ITypeDeclarationNode? ReferencedSymbolNode
         => referencedSymbolNode.TryGetValue(out var value) ? value
             : referencedSymbolNode.GetValue(this, SymbolNodeAttributes.StandardTypeName_ReferencedSymbolNode);
     public override TypeSymbol? ReferencedSymbol

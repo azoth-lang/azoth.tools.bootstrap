@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class SemanticConstructorSymbolNode : SemanticDeclarationSymbolNode, IConstructorSymbolNode
+internal sealed class SemanticConstructorSymbolNode : SemanticDeclarationSymbolNode, IConstructorDeclarationNode
 {
     private readonly IConstructorDefinitionNode node;
     public override IdentifierName? Name => node.Name;

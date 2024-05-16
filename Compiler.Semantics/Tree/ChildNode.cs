@@ -35,11 +35,11 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     IChild? IChild.Rewrite() => Rewrite();
 
-    internal override ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
-        => Parent.InheritedContainingSymbolNode(this, child);
+    internal override IDeclarationNode InheritedContainingDeclarationNode(IChildNode caller, IChildNode child)
+        => Parent.InheritedContainingDeclarationNode(this, child);
 
-    protected ISymbolNode InheritedContainingSymbolNode()
-        => Parent.InheritedContainingSymbolNode(this, this);
+    protected IDeclarationNode InheritedContainingSymbolNode()
+        => Parent.InheritedContainingDeclarationNode(this, this);
 
     internal override IPackageNode InheritedPackage(IChildNode caller, IChildNode child)
         => Parent.InheritedPackage(this, child);

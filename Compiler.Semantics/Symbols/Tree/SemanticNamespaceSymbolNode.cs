@@ -8,32 +8,32 @@ using DotNet.Collections.Generic;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class SemanticNamespaceSymbolNode : SemanticDeclarationSymbolNode, INamespaceSymbolNode
+internal sealed class SemanticNamespaceSymbolNode : SemanticDeclarationSymbolNode, INamespaceDeclarationNode
 {
     public override IdentifierName Name => Symbol.Name;
     public override NamespaceSymbol Symbol { get; }
 
-    public IFixedList<INamespaceMemberSymbolNode> Members { get; }
-    private MultiMapHashSet<StandardName, INamespaceMemberSymbolNode>? membersByName;
+    public IFixedList<INamespaceMemberDeclarationNode> Members { get; }
+    private MultiMapHashSet<StandardName, INamespaceMemberDeclarationNode>? membersByName;
 
-    private ValueAttribute<IFixedList<INamespaceMemberSymbolNode>> nestedMembers;
-    public IFixedList<INamespaceMemberSymbolNode> NestedMembers
+    private ValueAttribute<IFixedList<INamespaceMemberDeclarationNode>> nestedMembers;
+    public IFixedList<INamespaceMemberDeclarationNode> NestedMembers
         => nestedMembers.TryGetValue(out var value) ? value : nestedMembers.GetValue(GetNestedMembers);
-    private MultiMapHashSet<StandardName, INamespaceMemberSymbolNode>? nestedMembersByName;
+    private MultiMapHashSet<StandardName, INamespaceMemberDeclarationNode>? nestedMembersByName;
 
-    public SemanticNamespaceSymbolNode(NamespaceSymbol symbol, IEnumerable<INamespaceMemberSymbolNode> members)
+    public SemanticNamespaceSymbolNode(NamespaceSymbol symbol, IEnumerable<INamespaceMemberDeclarationNode> members)
     {
         Symbol = symbol;
         Members = ChildList.Attach(this, members);
     }
 
-    public IEnumerable<INamespaceMemberSymbolNode> MembersNamed(StandardName named)
+    public IEnumerable<INamespaceMemberDeclarationNode> MembersNamed(StandardName named)
         => Members.MembersNamed(ref membersByName, named);
 
-    private IFixedList<INamespaceMemberSymbolNode> GetNestedMembers()
-        => Members.OfType<INamespaceSymbolNode>()
+    private IFixedList<INamespaceMemberDeclarationNode> GetNestedMembers()
+        => Members.OfType<INamespaceDeclarationNode>()
                   .SelectMany(ns => ns.Members.Concat(ns.NestedMembers)).ToFixedList();
 
-    public IEnumerable<INamespaceMemberSymbolNode> NestedMembersNamed(StandardName named)
+    public IEnumerable<INamespaceMemberDeclarationNode> NestedMembersNamed(StandardName named)
         => NestedMembers.MembersNamed(ref nestedMembersByName, named);
 }

@@ -3,14 +3,14 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class SemanticGenericParameterSymbolNode : SemanticChildSymbolNode, IGenericParameterSymbolNode
+internal sealed class SemanticGenericParameterDeclarationNode : SemanticChildSymbolNode, IGenericParameterDeclarationNode
 {
     private readonly IGenericParameterNode node;
     public override GenericParameterTypeSymbol Symbol => node.Symbol;
-    TypeSymbol ITypeSymbolNode.Symbol => Symbol;
+    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     public IdentifierName Name => node.Name;
 
-    public SemanticGenericParameterSymbolNode(IGenericParameterNode node)
+    public SemanticGenericParameterDeclarationNode(IGenericParameterNode node)
     {
         this.node = node;
     }

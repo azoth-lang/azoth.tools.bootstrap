@@ -1,64 +1,64 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
-◊root <default>;
+◊root Declaration;
 ◊prefix I;
-◊suffix SymbolNode;
+◊suffix Node;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-<default> = Symbol:`Symbol`;
+Declaration = Symbol:`Symbol`;
 // Parent, Package, and GlobalNamespace type quoted so that is is not treated as a child node
-Child <: `IChild<ISymbolNode>` = Parent:`ISymbolNode` Package:`IPackageSymbolNode`;
+ChildDeclaration <: `IChild<IDeclarationNode>` = Parent:`IDeclarationNode` Package:`IPackageDeclarationNode`;
 
-Named <: Child = Name:`StandardName`;
+NamedDeclaration <: ChildDeclaration = Name:`StandardName`;
 
 // ---------- Packages
-Package = AliasOrName:`IdentifierName`? Name:`IdentifierName` Symbol:`PackageSymbol`
-    MainFacet:PackageFacet TestingFacet:PackageFacet;
+PackageDeclaration = AliasOrName:`IdentifierName`? Name:`IdentifierName` Symbol:`PackageSymbol`
+    MainFacet:PackageFacetDeclaration TestingFacet:PackageFacetDeclaration;
 
-PackageMember <: NamespaceMember;
+PackageMemberDeclaration <: NamespaceMemberDeclaration;
 
 // ---------- Facets
 /// Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
-PackageFacet <: Child = PackageAliasOrName:`IdentifierName`? PackageName:`IdentifierName` Symbol:`PackageSymbol`
-    GlobalNamespace:Namespace;
+PackageFacetDeclaration <: ChildDeclaration = PackageAliasOrName:`IdentifierName`? PackageName:`IdentifierName`
+    Symbol:`PackageSymbol` GlobalNamespace:NamespaceDeclaration;
 
 // ---------- Declarations
-Declaration <: Child = Name:`StandardName`? Facet:`IPackageFacetSymbolNode`;
+FacetChildDeclaration <: ChildDeclaration = Name:`StandardName`? Facet:`IPackageFacetDeclarationNode`;
 
 // ---------- Namespace Declarations
-Namespace <: NamespaceMember = Name:`IdentifierName` Symbol:`NamespaceSymbol`
-    Members:NamespaceMember* NestedMembers:NamespaceMember*;
-NamespaceMember <: Declaration;
+NamespaceDeclaration <: NamespaceMemberDeclaration = Name:`IdentifierName` Symbol:`NamespaceSymbol`
+    Members:NamespaceMemberDeclaration* NestedMembers:NamespaceMemberDeclaration*;
+NamespaceMemberDeclaration <: FacetChildDeclaration;
 
 // ---------- Function Declaration
-Function <: PackageMember, Named = Symbol:`FunctionSymbol`;
+FunctionDeclaration <: PackageMemberDeclaration, NamedDeclaration = Symbol:`FunctionSymbol`;
 
 // ---------- Type Declarations
-UserType <: PackageMember, ClassMember, TraitMember, StructMember, Type, Named
-    = Symbol:`UserTypeSymbol` Members:TypeMember*;
-Class <: UserType = Members:ClassMember*;
-Struct <: UserType = Members:StructMember*;
-Trait <: UserType = Members:TraitMember*;
+UserTypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
+    = Symbol:`UserTypeSymbol` Members:TypeMemberDeclaration*;
+ClassDeclaration <: UserTypeDeclaration = Members:ClassMemberDeclaration*;
+StructDeclaration <: UserTypeDeclaration = Members:StructMemberDeclaration*;
+TraitDeclaration <: UserTypeDeclaration = Members:TraitMemberDeclaration*;
 
 // ---------- Type Declaration Parts
-GenericParameter <: Type = Name:`IdentifierName`;
+GenericParameterDeclaration <: TypeDeclaration = Name:`IdentifierName`;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
-TypeMember <: Declaration;
-ClassMember <: TypeMember;
-TraitMember <: TypeMember;
-StructMember <: TypeMember;
+TypeMemberDeclaration <: FacetChildDeclaration;
+ClassMemberDeclaration <: TypeMemberDeclaration;
+TraitMemberDeclaration <: TypeMemberDeclaration;
+StructMemberDeclaration <: TypeMemberDeclaration;
 
 // ---------- Member Declarations
-Method <: ClassMember, TraitMember, StructMember, Named = Name:`IdentifierName` Symbol:`MethodSymbol`;
-Constructor <: ClassMember = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
-Initializer <: StructMember = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
-Field <: Named, ClassMember, StructMember = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;
-AssociatedFunction <: ClassMember, TraitMember, StructMember
+MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration = Name:`IdentifierName` Symbol:`MethodSymbol`;
+ConstructorDeclaration <: ClassMemberDeclaration = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
+InitializerDeclaration <: StructMemberDeclaration = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
+FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;
+AssociatedFunctionDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration
     = Name:`IdentifierName` Symbol:`FunctionSymbol` Type:`FunctionType`;
 
 // ---------- Can be Referenced by Type Name
-Type <: Named = Symbol:`TypeSymbol`;
+TypeDeclaration <: NamedDeclaration = Symbol:`TypeSymbol`;

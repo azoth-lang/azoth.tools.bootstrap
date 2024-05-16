@@ -16,15 +16,15 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
 {
     public override IFunctionDefinitionSyntax Syntax { get; }
     public IdentifierName Name => Syntax.Name;
-    public override INamespaceSymbolNode ContainingSymbolNode => (INamespaceSymbolNode)base.ContainingSymbolNode;
+    public override INamespaceDeclarationNode ContainingDeclarationNode => (INamespaceDeclarationNode)base.ContainingDeclarationNode;
     public override NamespaceSymbol ContainingSymbol => (NamespaceSymbol)base.ContainingSymbol;
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
             : lexicalScope.GetValue(this, LexicalScopeAttributes.FunctionDeclaration_LexicalScope);
 
-    private ValueAttribute<IFunctionSymbolNode> symbolNode;
-    public override IFunctionSymbolNode SymbolNode
+    private ValueAttribute<IFunctionDeclarationNode> symbolNode;
+    public override IFunctionDeclarationNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.FunctionDeclaration);
     private ValueAttribute<FunctionSymbol> symbol;

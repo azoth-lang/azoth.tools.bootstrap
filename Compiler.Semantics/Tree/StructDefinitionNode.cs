@@ -12,8 +12,8 @@ internal sealed class StructDefinitionNode : TypeDefinitionNode, IStructDefiniti
 {
     public override IStructDefinitionSyntax Syntax { get; }
 
-    private ValueAttribute<IStructSymbolNode> symbolNode;
-    public override IStructSymbolNode SymbolNode
+    private ValueAttribute<IStructDeclarationNode> symbolNode;
+    public override IStructDeclarationNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.StructDeclaration);
 

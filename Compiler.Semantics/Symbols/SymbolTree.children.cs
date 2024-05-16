@@ -6,53 +6,53 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public static class ISymbolNodeExtensions
+public static class IDeclarationNodeExtensions
 {
     [DebuggerStepThrough]
-    public static IEnumerable<ISymbolNode> Children(this ISymbolNode node)
+    public static IEnumerable<IDeclarationNode> Children(this IDeclarationNode node)
     {
         switch (node)
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
-            case IPackageSymbolNode n:
+            case IPackageDeclarationNode n:
                 yield return n.MainFacet;
                 yield return n.TestingFacet;
                 yield break;
-            case IPackageFacetSymbolNode n:
+            case IPackageFacetDeclarationNode n:
                 yield return n.GlobalNamespace;
                 yield break;
-            case INamespaceSymbolNode n:
+            case INamespaceDeclarationNode n:
                 foreach (var child in n.Members)
                     yield return child;
                 foreach (var child in n.NestedMembers)
                     yield return child;
                 yield break;
-            case IFunctionSymbolNode n:
+            case IFunctionDeclarationNode n:
                 yield break;
-            case IClassSymbolNode n:
+            case IClassDeclarationNode n:
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case IStructSymbolNode n:
+            case IStructDeclarationNode n:
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case ITraitSymbolNode n:
+            case ITraitDeclarationNode n:
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
-            case IGenericParameterSymbolNode n:
+            case IGenericParameterDeclarationNode n:
                 yield break;
-            case IMethodSymbolNode n:
+            case IMethodDeclarationNode n:
                 yield break;
-            case IConstructorSymbolNode n:
+            case IConstructorDeclarationNode n:
                 yield break;
-            case IInitializerSymbolNode n:
+            case IInitializerDeclarationNode n:
                 yield break;
-            case IFieldSymbolNode n:
+            case IFieldDeclarationNode n:
                 yield break;
-            case IAssociatedFunctionSymbolNode n:
+            case IAssociatedFunctionDeclarationNode n:
                 yield break;
         }
     }

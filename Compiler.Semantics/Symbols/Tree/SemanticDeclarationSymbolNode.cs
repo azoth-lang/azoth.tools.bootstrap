@@ -2,8 +2,8 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal abstract class SemanticDeclarationSymbolNode : SemanticChildSymbolNode, IDeclarationSymbolNode
+internal abstract class SemanticDeclarationSymbolNode : SemanticChildSymbolNode, IFacetChildDeclarationNode
 {
     public abstract StandardName? Name { get; }
-    public IPackageFacetSymbolNode Facet => Parent.InheritedFacet(this, this);
+    public IPackageFacetDeclarationNode Facet => Parent.InheritedFacet(this, this);
 }

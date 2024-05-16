@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class ReferencedFunctionSymbolNode : ReferencedDeclarationSymbolNode, IFunctionSymbolNode
+internal sealed class ReferencedFunctionSymbolNode : ReferencedDeclarationSymbolNode, IFunctionDeclarationNode
 {
     public override StandardName Name => base.Name!;
     public override FunctionSymbol Symbol { get; }

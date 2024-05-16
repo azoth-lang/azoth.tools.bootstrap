@@ -3,13 +3,13 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
-public partial interface IUserTypeSymbolNode
+public partial interface IUserTypeDeclarationNode
 {
-    IEnumerable<ITypeMemberSymbolNode> MembersNamed(StandardName named);
+    IEnumerable<ITypeMemberDeclarationNode> MembersNamed(StandardName named);
 }
 
-public partial interface INamespaceSymbolNode
+public partial interface INamespaceDeclarationNode
 {
-    IEnumerable<INamespaceMemberSymbolNode> MembersNamed(StandardName named);
-    IEnumerable<INamespaceMemberSymbolNode> NestedMembersNamed(StandardName named);
+    IEnumerable<INamespaceMemberDeclarationNode> MembersNamed(StandardName named);
+    IEnumerable<INamespaceMemberDeclarationNode> NestedMembersNamed(StandardName named);
 }

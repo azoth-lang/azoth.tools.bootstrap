@@ -50,10 +50,10 @@ internal static class SymbolAttribute
     public static ConstructorSymbol? Attribute_ReferencedSymbol(IAttributeNode node)
     {
         var referencedTypeSymbolNode = node.TypeName.ReferencedSymbolNode;
-        if (referencedTypeSymbolNode is not IUserTypeSymbolNode userTypeSymbolNode)
+        if (referencedTypeSymbolNode is not IUserTypeDeclarationNode userTypeSymbolNode)
             return null;
 
-        return userTypeSymbolNode.Members.OfType<IConstructorSymbolNode>().Select(c => c.Symbol)
+        return userTypeSymbolNode.Members.OfType<IConstructorDeclarationNode>().Select(c => c.Symbol)
                                  .SingleOrDefault(s => s.Arity == 0);
     }
 

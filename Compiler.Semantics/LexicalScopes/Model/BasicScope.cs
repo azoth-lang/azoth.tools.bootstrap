@@ -11,9 +11,9 @@ internal class BasicScope : LexicalScope
 {
     public override PackageNameScope PackageNames { get; }
     private readonly LexicalScope parent;
-    private readonly FixedDictionary<StandardName, IFixedSet<INamedSymbolNode>> nodesInScope;
+    private readonly FixedDictionary<StandardName, IFixedSet<INamedDeclarationNode>> nodesInScope;
 
-    public BasicScope(LexicalScope parent, IEnumerable<INamedSymbolNode> nodesInScope)
+    public BasicScope(LexicalScope parent, IEnumerable<INamedDeclarationNode> nodesInScope)
     {
         this.parent = parent;
         PackageNames = parent.PackageNames;
@@ -25,7 +25,7 @@ internal class BasicScope : LexicalScope
     public override NamespaceScope? CreateChildNamespaceScope(IdentifierName namespaceName)
         => throw new NotSupportedException();
 
-    public override IEnumerable<ISymbolNode> Lookup(StandardName name)
+    public override IEnumerable<IDeclarationNode> Lookup(StandardName name)
     {
         if (nodesInScope.TryGetValue(name, out var nodes))
             return nodes;

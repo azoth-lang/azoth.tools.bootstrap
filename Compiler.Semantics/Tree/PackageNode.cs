@@ -22,13 +22,13 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public PackageSymbol Symbol
         => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolAttribute.Package);
 
-    private ValueAttribute<IPackageSymbolNode> symbolNode;
-    public IPackageSymbolNode SymbolNode
+    private ValueAttribute<IPackageDeclarationNode> symbolNode;
+    public IPackageDeclarationNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.Package);
 
-    private ValueAttribute<FixedDictionary<IdentifierName, IPackageSymbolNode>> symbolNodes;
-    public FixedDictionary<IdentifierName, IPackageSymbolNode> SymbolNodes
+    private ValueAttribute<FixedDictionary<IdentifierName, IPackageDeclarationNode>> symbolNodes;
+    public FixedDictionary<IdentifierName, IPackageDeclarationNode> SymbolNodes
         => symbolNodes.TryGetValue(out var value) ? value
             : symbolNodes.GetValue(this, SymbolNodeAttributes.Package_SymbolNodes);
 

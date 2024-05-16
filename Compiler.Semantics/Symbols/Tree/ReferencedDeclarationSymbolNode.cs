@@ -2,8 +2,8 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal abstract class ReferencedDeclarationSymbolNode : ReferencedChildSymbolNode, IDeclarationSymbolNode
+internal abstract class ReferencedDeclarationSymbolNode : ReferencedChildSymbolNode, IFacetChildDeclarationNode
 {
-    public IPackageFacetSymbolNode Facet => Parent.InheritedFacet(this, this);
+    public IPackageFacetDeclarationNode Facet => Parent.InheritedFacet(this, this);
     public virtual StandardName? Name => (StandardName?)Symbol.Name;
 }
