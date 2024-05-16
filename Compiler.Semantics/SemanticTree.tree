@@ -264,7 +264,8 @@ MemberAccessExpression <: NameExpression, InvocableNameExpression, AssignableExp
     = Syntax:`IMemberAccessExpressionSyntax` Context:UntypedExpression AccessOperator:`AccessOperator` MemberName:`StandardName` TypeArguments:Type*;
 SelfExpression <: NameExpression, VariableNameExpression, Expression
     = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype`;
-MissingNameExpression <: NameExpression, VariableNameExpression, Expression = Syntax:`IIdentifierNameExpressionSyntax`;
+MissingNameExpression <: NameExpression, VariableNameExpression, AssignableExpression, Expression
+    = Syntax:`IIdentifierNameExpressionSyntax`;
 
 // ---------- Capability Expressions
 MoveExpression <: Expression = Syntax:`IMoveExpressionSyntax` Referent:VariableNameExpression;

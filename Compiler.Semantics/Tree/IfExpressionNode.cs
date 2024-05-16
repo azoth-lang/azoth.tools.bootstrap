@@ -6,7 +6,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
 {
     public override IIfExpressionSyntax Syntax { get; }
-    public IUntypedExpressionNode Condition { get; }
+    private Child<IUntypedExpressionNode> condition;
+    public IUntypedExpressionNode Condition => condition.Value;
     public IBlockOrResultNode ThenBlock { get; }
     public IElseClauseNode? ElseClause { get; }
 
@@ -17,7 +18,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         IElseClauseNode? elseClause)
     {
         Syntax = syntax;
-        Condition = Child.Attach(this, condition);
+        this.condition = Child.Create(this, condition);
         ThenBlock = Child.Attach(this, thenBlock);
         ElseClause = Child.Attach(this, elseClause);
     }

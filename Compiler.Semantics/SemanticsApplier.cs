@@ -563,9 +563,6 @@ internal class SemanticsApplier
             case ISelfExpressionNode n:
                 SelfExpression(n);
                 break;
-            case IMissingNameExpressionNode n:
-                MissingNameExpression(n);
-                break;
             case IMoveExpressionNode n:
                 MoveExpression(n);
                 break;
@@ -595,6 +592,9 @@ internal class SemanticsApplier
                 break;
             case IMemberAccessExpressionNode n:
                 MemberAccessExpression(n);
+                break;
+            case IMissingNameExpressionNode n:
+                MissingNameExpression(n);
                 break;
         }
     }

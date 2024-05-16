@@ -11,7 +11,8 @@ internal sealed class VariableDeclarationStatementNode : CodeNode, IVariableDecl
     public IdentifierName Name => Syntax.Name;
     public ICapabilityNode? Capability { get; }
     public ITypeNode? Type { get; }
-    public IUntypedExpressionNode? Initializer { get; }
+    private Child<IUntypedExpressionNode?> initializer;
+    public IUntypedExpressionNode? Initializer => initializer.Value;
 
     public VariableDeclarationStatementNode(
         IVariableDeclarationStatementSyntax syntax,
@@ -22,6 +23,6 @@ internal sealed class VariableDeclarationStatementNode : CodeNode, IVariableDecl
         Syntax = syntax;
         Capability = Child.Attach(this, capability);
         Type = Child.Attach(this, type);
-        Initializer = Child.Attach(this, initializer);
+        this.initializer = Child.Create(this, initializer);
     }
 }

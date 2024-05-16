@@ -9,11 +9,12 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
     public override IUnaryOperatorExpressionSyntax Syntax { get; }
     public UnaryOperatorFixity Fixity => Syntax.Fixity;
     public UnaryOperator Operator => Syntax.Operator;
-    public IUntypedExpressionNode Operand { get; }
+    private Child<IUntypedExpressionNode> operand;
+    public IUntypedExpressionNode Operand => operand.Value;
 
     public UnaryOperatorExpressionNode(IUnaryOperatorExpressionSyntax syntax, IUntypedExpressionNode operand)
     {
         Syntax = syntax;
-        Operand = Child.Attach(this, operand);
+        this.operand = Child.Create(this, operand);
     }
 }

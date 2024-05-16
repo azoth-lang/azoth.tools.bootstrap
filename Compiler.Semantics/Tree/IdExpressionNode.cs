@@ -6,11 +6,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
 {
     public override IIdExpressionSyntax Syntax { get; }
-    public IUntypedExpressionNode Referent { get; }
+    private Child<IUntypedExpressionNode> referent;
+    public IUntypedExpressionNode Referent => referent.Value;
 
     public IdExpressionNode(IIdExpressionSyntax syntax, IUntypedExpressionNode referent)
     {
         Syntax = syntax;
-        Referent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
     }
 }

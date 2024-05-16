@@ -9,7 +9,8 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public override IForeachExpressionSyntax Syntax { get; }
     public bool IsMutableBinding => Syntax.IsMutableBinding;
     public IdentifierName VariableName => Syntax.VariableName;
-    public IUntypedExpressionNode InExpression { get; }
+    private Child<IUntypedExpressionNode> inExpression;
+    public IUntypedExpressionNode InExpression => inExpression.Value;
     public ITypeNode? Type { get; }
     public IBlockExpressionNode Block { get; }
 
@@ -20,7 +21,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         IBlockExpressionNode block)
     {
         Syntax = syntax;
-        InExpression = Child.Attach(this, inExpression);
+        this.inExpression = Child.Create(this, inExpression);
         Type = Child.Attach(this, type);
         Block = Child.Attach(this, block);
     }

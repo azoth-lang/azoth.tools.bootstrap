@@ -10,7 +10,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class MemberAccessExpressionNode : NameExpressionNode, IMemberAccessExpressionNode
 {
     public override IMemberAccessExpressionSyntax Syntax { get; }
-    public IUntypedExpressionNode Context { get; }
+    private Child<IUntypedExpressionNode> context;
+    public IUntypedExpressionNode Context => context.Value;
     public AccessOperator AccessOperator => Syntax.AccessOperator;
     public StandardName MemberName => Syntax.MemberName;
     public IFixedList<ITypeNode> TypeArguments { get; }
@@ -21,7 +22,9 @@ internal sealed class MemberAccessExpressionNode : NameExpressionNode, IMemberAc
         IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
+
+    protected override IAssignableExpressionNode Rewrite() => (IAssignableExpressionNode)base.Rewrite();
 }

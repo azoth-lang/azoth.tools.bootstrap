@@ -7,9 +7,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpressionNode
 {
     public override IAssignmentExpressionSyntax Syntax { get; }
-    public IAssignableExpressionNode LeftOperand { get; }
+    private Child<IAssignableExpressionNode> leftOperand;
+    public IAssignableExpressionNode LeftOperand => leftOperand.Value;
     public AssignmentOperator Operator => Syntax.Operator;
-    public IUntypedExpressionNode RightOperand { get; }
+    private Child<IUntypedExpressionNode> rightOperand;
+    public IUntypedExpressionNode RightOperand => rightOperand.Value;
 
     public AssignmentExpressionNode(
         IAssignmentExpressionSyntax syntax,
@@ -17,7 +19,7 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
         IUntypedExpressionNode rightOperand)
     {
         Syntax = syntax;
-        LeftOperand = Child.Attach(this, leftOperand);
-        RightOperand = Child.Attach(this, rightOperand);
+        this.leftOperand = Child.Create(this, leftOperand);
+        this.rightOperand = Child.Create(this, rightOperand);
     }
 }

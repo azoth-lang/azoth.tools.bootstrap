@@ -6,11 +6,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class ResultStatementNode : CodeNode, IResultStatementNode
 {
     public override IResultStatementSyntax Syntax { get; }
-    public IUntypedExpressionNode Expression { get; }
+    private Child<IUntypedExpressionNode> expression;
+    public IUntypedExpressionNode Expression => expression.Value;
 
     public ResultStatementNode(IResultStatementSyntax syntax, IUntypedExpressionNode expression)
     {
         Syntax = syntax;
-        Expression = Child.Attach(this, expression);
+        this.expression = Child.Create(this, expression);
     }
 }

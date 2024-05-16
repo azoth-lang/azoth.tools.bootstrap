@@ -5,8 +5,8 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
-public sealed class ChildList<T> : IReadOnlyList<T>
-    where T : class, IRewritableChild<T>
+public sealed class ChildList<T> : IFixedList<T>
+    where T : class, IChild
 {
     private readonly IReadOnlyList<Child<T>> children;
 
@@ -36,7 +36,7 @@ public static class ChildList
     /// Create a list of potentially rewritable children.
     /// </summary>
     public static ChildList<TChild> Create<TParent, TChild>(TParent parent, IEnumerable<TChild> initialValues)
-        where TChild : class, IChild<TChild, TParent>
+        where TChild : class, IChild<TParent>
     {
         var children = new ChildList<TChild>(initialValues);
         foreach (var child in children.Current)

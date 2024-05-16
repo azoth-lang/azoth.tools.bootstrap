@@ -24,6 +24,10 @@ internal abstract class SemanticChildSymbolNode : SemanticSymbolNode, IChildSymb
         if (oldParent is not null) throw new InvalidOperationException("Parent is already set.");
     }
 
+    protected IChild Rewrite()
+        => throw new NotSupportedException(Child.RewriteNotSupportedMessaged(this));
+    IChild IChild.Rewrite() => Rewrite();
+
     internal override IPackageSymbolNode InheritedPackage(IChildSymbolNode caller, IChildSymbolNode child)
         => Parent.InheritedPackage(this, child);
 

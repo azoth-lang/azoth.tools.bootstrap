@@ -7,9 +7,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOperatorExpressionNode
 {
     public override IBinaryOperatorExpressionSyntax Syntax { get; }
-    public IUntypedExpressionNode LeftOperand { get; }
+    private Child<IUntypedExpressionNode> leftOperand;
+    public IUntypedExpressionNode LeftOperand => leftOperand.Value;
     public BinaryOperator Operator => Syntax.Operator;
-    public IUntypedExpressionNode RightOperand { get; }
+    private Child<IUntypedExpressionNode> rightOperand;
+    public IUntypedExpressionNode RightOperand => rightOperand.Value;
 
     public BinaryOperatorExpressionNode(
         IBinaryOperatorExpressionSyntax syntax,
@@ -17,7 +19,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         IUntypedExpressionNode rightOperand)
     {
         Syntax = syntax;
-        LeftOperand = Child.Attach(this, leftOperand);
-        RightOperand = Child.Attach(this, rightOperand);
+        this.leftOperand = Child.Create(this, leftOperand);
+        this.rightOperand = Child.Create(this, rightOperand);
     }
 }

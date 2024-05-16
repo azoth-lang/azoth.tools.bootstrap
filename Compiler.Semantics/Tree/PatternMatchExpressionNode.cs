@@ -6,7 +6,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatchExpressionNode
 {
     public override IPatternMatchExpressionSyntax Syntax { get; }
-    public IUntypedExpressionNode Referent { get; }
+    private Child<IUntypedExpressionNode> referent;
+    public IUntypedExpressionNode Referent => referent.Value;
     public IPatternNode Pattern { get; }
 
     public PatternMatchExpressionNode(
@@ -15,7 +16,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
         IPatternNode pattern)
     {
         Syntax = syntax;
-        Referent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
         Pattern = Child.Attach(this, pattern);
     }
 }

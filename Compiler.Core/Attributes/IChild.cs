@@ -6,6 +6,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 public interface IChild
 {
     protected internal bool MayHaveRewrite { get; }
+
+    /// <summary>
+    /// Rewrite the child node.
+    /// </summary>
+    /// <returns>Must return a type that implements the same interface the child is being accessed
+    /// through.</returns>
+    protected internal IChild Rewrite();
 }
 
 /// <summary>
@@ -14,14 +21,4 @@ public interface IChild
 public interface IChild<in TParent> : IChild
 {
     protected internal void AttachParent(TParent parent);
-}
-
-public interface IRewritableChild<out TSelf> : IChild
-{
-    protected internal TSelf Rewrite();
-}
-
-public interface IChild<out TSelf, in TParent> : IChild<TParent>, IRewritableChild<TSelf>
-    where TSelf : IChild<TSelf, TParent>
-{
 }

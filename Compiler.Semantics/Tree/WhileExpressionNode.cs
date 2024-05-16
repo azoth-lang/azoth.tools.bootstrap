@@ -6,7 +6,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
 {
     public override IWhileExpressionSyntax Syntax { get; }
-    public IUntypedExpressionNode Condition { get; }
+    private Child<IUntypedExpressionNode> condition;
+    public IUntypedExpressionNode Condition => condition.Value;
     public IBlockExpressionNode Block { get; }
 
     public WhileExpressionNode(
@@ -15,7 +16,7 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
         IBlockExpressionNode block)
     {
         Syntax = syntax;
-        Condition = Child.Attach(this, condition);
+        this.condition = Child.Create(this, condition);
         Block = Child.Attach(this, block);
     }
 }

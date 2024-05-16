@@ -8,7 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class InvocationExpressionNode : ExpressionNode, IInvocationExpressionNode
 {
     public override IInvocationExpressionSyntax Syntax { get; }
-    public IUntypedExpressionNode Expression { get; }
+    private Child<IUntypedExpressionNode> expression;
+    public IUntypedExpressionNode Expression => expression.Value;
     public IFixedList<IUntypedExpressionNode> Arguments { get; }
 
     public InvocationExpressionNode(
@@ -17,7 +18,7 @@ internal sealed class InvocationExpressionNode : ExpressionNode, IInvocationExpr
         IEnumerable<IUntypedExpressionNode> arguments)
     {
         Syntax = syntax;
-        Expression = Child.Attach(this, expression);
-        Arguments = ChildList.Attach(this, arguments);
+        this.expression = Child.Create(this, expression);
+        Arguments = ChildList.Create(this, arguments);
     }
 }

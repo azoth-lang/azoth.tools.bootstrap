@@ -6,11 +6,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class MoveExpressionNode : ExpressionNode, IMoveExpressionNode
 {
     public override IMoveExpressionSyntax Syntax { get; }
-    public IVariableNameExpressionNode Referent { get; }
+    private Child<IVariableNameExpressionNode> referent;
+    public IVariableNameExpressionNode Referent => referent.Value;
 
     public MoveExpressionNode(IMoveExpressionSyntax syntax, IVariableNameExpressionNode referent)
     {
         Syntax = syntax;
-        Referent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
     }
 }

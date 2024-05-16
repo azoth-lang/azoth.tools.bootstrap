@@ -10,6 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChildSymbolNode
 {
     protected virtual bool MayHaveRewrite => false;
+
     bool IChild.MayHaveRewrite => MayHaveRewrite;
 
     private ReferencedSymbolNode? parent;
@@ -28,6 +29,10 @@ internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChild
         if (oldParent is not null)
             throw new InvalidOperationException("Parent is already set.");
     }
+
+    protected IChild Rewrite()
+        => throw new NotSupportedException(Child.RewriteNotSupportedMessaged(this));
+    IChild IChild.Rewrite() => Rewrite();
 
     internal override IPackageSymbolNode InheritedPackage(IChildSymbolNode caller, IChildSymbolNode child)
         => Parent.InheritedPackage(this, child);

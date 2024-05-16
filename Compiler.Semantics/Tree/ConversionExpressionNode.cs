@@ -7,7 +7,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpressionNode
 {
     public override IConversionExpressionSyntax Syntax { get; }
-    public IUntypedExpressionNode Referent { get; }
+    private Child<IUntypedExpressionNode> referent;
+    public IUntypedExpressionNode Referent => referent.Value;
     public ConversionOperator Operator => Syntax.Operator;
     public ITypeNode ConvertToType { get; }
 
@@ -17,7 +18,7 @@ internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpr
         ITypeNode convertToType)
     {
         Syntax = syntax;
-        Referent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
         ConvertToType = Child.Attach(this, convertToType);
     }
 }

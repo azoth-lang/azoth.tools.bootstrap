@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -10,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
 [StructLayout(LayoutKind.Auto)]
 public struct Child<T>
-    where T : class, IRewritableChild<T>
+    where T : class?, IChild?
 {
     private T value;
     // Declared as a uint to ensure Interlocked can be used on it (without any possible overhead)
@@ -20,7 +19,7 @@ public struct Child<T>
     {
         value = initialValue;
         // Volatile write ensures the value write cannot be moved after it
-        state = initialValue.MayHaveRewrite ? (uint)ChildState.Initial : (uint)ChildState.Final;
+        state = initialValue is not null && initialValue.MayHaveRewrite ? (uint)ChildState.Initial : (uint)ChildState.Final;
     }
 
     /// <summary>
@@ -58,20 +57,20 @@ public struct Child<T>
                     return Read(readFinal);
 
                 // We now have the right to compute the value
-                while (true)
+                while (value!.MayHaveRewrite)
                 {
-                    var newValue = value.Rewrite();
+                    var newValue = (T)value!.Rewrite();
                     if (ReferenceEquals(value, newValue))
-                    {
-                        // Volatile write ensures the last value write cannot be moved after it
-                        state = (uint)ChildState.Final;
-                        return newValue;
-                    }
+                        break;
 
                     // Use a volatile write of the value to try to write in progress values in such
                     // a way that they can be read by other threads.
                     Volatile.Write(ref value, newValue);
                 }
+
+                // Volatile write ensures the last value write cannot be moved after it
+                state = (uint)ChildState.Final;
+                return value;
             case ChildState.InProgress:
                 if (readFinal)
                     throw new InvalidOperationException("Cannot read final value while the child is being rewritten.");
@@ -90,11 +89,10 @@ public static class Child
     /// <summary>
     /// Attach a child that does not support rewriting.
     /// </summary>
-    [return: NotNullIfNotNull(nameof(child))]
-    public static TChild? Attach<TParent, TChild>(TParent parent, TChild? child)
-        where TChild : class, IChild<TParent>
+    public static TChild Attach<TParent, TChild>(TParent parent, TChild child)
+        where TChild : class?, IChild<TParent>?
     {
-        if (child == null)
+        if (child is null)
             return child;
 
         if (child.MayHaveRewrite)
@@ -104,30 +102,26 @@ public static class Child
     }
 
     public static Child<TChild> Create<TParent, TChild>(TParent parent, TChild initialValue)
-        where TChild : class, IChild<TChild, TParent>
+        where TChild : class?, IChild<TParent>?
     {
-        initialValue.AttachParent(parent);
+        initialValue?.AttachParent(parent);
         return new Child<TChild>(initialValue);
     }
 
-    [return: NotNullIfNotNull(nameof(initialValue))]
-    public static Child<TChild>? CreateOptional<TParent, TChild>(TParent parent, TChild? initialValue)
-        where TChild : class, IChild<TChild, TParent>
-    {
-        if (initialValue is null)
-            return null;
-        initialValue.AttachParent(parent);
-        return new Child<TChild>(initialValue);
-    }
-
+    // TODO replace with factory for exception
     public static string InheritFailedMessage<TChild>(string attribute, TChild caller, TChild child)
         where TChild : IChild
         => $"{attribute} not implemented for child node type {child.GetType().GetFriendlyName()} "
            + $"when accessed through caller {caller.GetType().GetFriendlyName()}.";
 
+    // TODO replace with factory for exception
     public static string ParentMissingMessage(IChild child)
         => $"Parent of {child.GetType().GetFriendlyName()} is not set.";
 
-    internal static string ChildMayHaveRewriteMessage(IChild child)
+    // TODO replace with factory for exception
+    public static string RewriteNotSupportedMessaged(IChild child)
+        => $"Rewrite of {child.GetType().GetFriendlyName()} is not supported.";
+
+    private static string ChildMayHaveRewriteMessage(IChild child)
         => $"{child.GetType().GetFriendlyName()} may have rewrites and cannot be used as a fixed child.";
 }

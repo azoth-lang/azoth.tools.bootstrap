@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
