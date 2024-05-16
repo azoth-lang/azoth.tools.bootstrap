@@ -18,13 +18,6 @@ internal sealed class IdentifierNameExpressionNode : NameExpressionNode, IIdenti
         Syntax = syntax;
     }
 
-    protected override INameExpressionNode Rewrite()
-    {
-        INameExpressionNode result;
-        result = MissingNameExpressionRewrite.IdentifierNameExpressionNode_Rewrite(this);
-        if (!ReferenceEquals(result, this))
-            return result;
-
-        return this;
-    }
+    protected override IMissingNameExpressionNode? Rewrite()
+        => MissingNameExpressionRewrite.IdentifierNameExpressionNode_Rewrite(this);
 }

@@ -59,13 +59,14 @@ public struct Child<T>
                 // We now have the right to compute the value
                 while (value!.MayHaveRewrite)
                 {
-                    var newValue = (T)value!.Rewrite();
-                    if (ReferenceEquals(value, newValue))
+                    var newValue = value!.Rewrite();
+                    // Null is the preferred way to signal no change, but returning the same value works too
+                    if (newValue is null || ReferenceEquals(value, newValue))
                         break;
 
                     // Use a volatile write of the value to try to write in progress values in such
                     // a way that they can be read by other threads.
-                    Volatile.Write(ref value, newValue);
+                    Volatile.Write(ref value, (T)newValue);
                 }
 
                 // Volatile write ensures the last value write cannot be moved after it

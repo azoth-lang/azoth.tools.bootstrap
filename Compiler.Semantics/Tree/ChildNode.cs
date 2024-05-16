@@ -31,13 +31,13 @@ internal abstract class ChildNode : SemanticNode, IChildNode
             throw new InvalidOperationException("Parent is already set.");
     }
 
-    protected virtual IChildNode Rewrite()
+    protected virtual IChildNode? Rewrite()
         => RewriteNotSupported<IChildNode>();
 
-    IChild IChild.Rewrite() => Rewrite();
+    IChild? IChild.Rewrite() => Rewrite();
 
     [DoesNotReturn]
-    protected T RewriteNotSupported<T>()
+    protected T? RewriteNotSupported<T>()
         where T : IChildNode
         => throw new NotSupportedException(Child.RewriteNotSupportedMessaged(this));
 

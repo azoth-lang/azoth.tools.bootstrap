@@ -6,5 +6,6 @@ internal abstract class UntypedExpressionNode : CodeNode, IUntypedExpressionNode
 {
     public abstract override IExpressionSyntax Syntax { get; }
 
-    protected override IUntypedExpressionNode Rewrite() => RewriteNotSupported<IUntypedExpressionNode>();
+    protected override IUntypedExpressionNode? Rewrite()
+        => RewriteNotSupported<IUntypedExpressionNode>();
 }

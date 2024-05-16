@@ -30,9 +30,9 @@ internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChild
             throw new InvalidOperationException("Parent is already set.");
     }
 
-    protected IChild Rewrite()
+    protected IChild? Rewrite()
         => throw new NotSupportedException(Child.RewriteNotSupportedMessaged(this));
-    IChild IChild.Rewrite() => Rewrite();
+    IChild? IChild.Rewrite() => Rewrite();
 
     internal override IPackageSymbolNode InheritedPackage(IChildSymbolNode caller, IChildSymbolNode child)
         => Parent.InheritedPackage(this, child);

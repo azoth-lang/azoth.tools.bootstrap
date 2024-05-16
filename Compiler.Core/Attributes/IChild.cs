@@ -10,9 +10,9 @@ public interface IChild
     /// <summary>
     /// Rewrite the child node.
     /// </summary>
-    /// <returns>Must return a type that implements the same interface the child is being accessed
-    /// through.</returns>
-    protected internal IChild Rewrite();
+    /// <returns>The node to replace this node with or <see langword="null"/> if this node is
+    /// final. Returned type must inherit from the type used with <see cref="Child{T}"/>.</returns>
+    protected internal IChild? Rewrite();
 }
 
 /// <summary>

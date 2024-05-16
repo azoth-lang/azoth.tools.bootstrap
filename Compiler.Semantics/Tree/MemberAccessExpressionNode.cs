@@ -26,5 +26,6 @@ internal sealed class MemberAccessExpressionNode : NameExpressionNode, IMemberAc
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
-    protected override IAssignableExpressionNode Rewrite() => (IAssignableExpressionNode)base.Rewrite();
+    protected override IAssignableExpressionNode? Rewrite()
+        => RewriteNotSupported<IAssignableExpressionNode>();
 }
