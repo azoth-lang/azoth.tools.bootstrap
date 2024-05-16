@@ -31,7 +31,7 @@ internal abstract class ReferencedChildSymbolNode : ReferencedSymbolNode, IChild
     }
 
     protected IChild? Rewrite()
-        => throw new NotSupportedException(Child.RewriteNotSupportedMessaged(this));
+        => throw Child.RewriteNotSupported(this);
     IChild? IChild.Rewrite() => Rewrite();
 
     internal override IPackageSymbolNode InheritedPackage(IChildSymbolNode caller, IChildSymbolNode child)

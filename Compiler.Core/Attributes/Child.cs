@@ -119,9 +119,8 @@ public static class Child
     public static string ParentMissingMessage(IChild child)
         => $"Parent of {child.GetType().GetFriendlyName()} is not set.";
 
-    // TODO replace with factory for exception
-    public static string RewriteNotSupportedMessaged(IChild child)
-        => $"Rewrite of {child.GetType().GetFriendlyName()} is not supported.";
+    public static NotSupportedException RewriteNotSupported(IChild child)
+        => new($"Rewrite of {child.GetType().GetFriendlyName()} is not supported.");
 
     private static string ChildMayHaveRewriteMessage(IChild child)
         => $"{child.GetType().GetFriendlyName()} may have rewrites and cannot be used as a fixed child.";

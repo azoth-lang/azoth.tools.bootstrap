@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -32,14 +31,9 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     }
 
     protected virtual IChildNode? Rewrite()
-        => RewriteNotSupported<IChildNode>();
+        => throw Child.RewriteNotSupported(this);
 
     IChild? IChild.Rewrite() => Rewrite();
-
-    [DoesNotReturn]
-    protected T? RewriteNotSupported<T>()
-        where T : IChildNode
-        => throw new NotSupportedException(Child.RewriteNotSupportedMessaged(this));
 
     internal override ISymbolNode InheritedContainingSymbolNode(IChildNode caller, IChildNode child)
         => Parent.InheritedContainingSymbolNode(this, child);

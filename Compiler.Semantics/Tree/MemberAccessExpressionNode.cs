@@ -27,5 +27,5 @@ internal sealed class MemberAccessExpressionNode : NameExpressionNode, IMemberAc
     }
 
     protected override IAssignableExpressionNode? Rewrite()
-        => RewriteNotSupported<IAssignableExpressionNode>();
+        => throw Child.RewriteNotSupported(this);
 }
