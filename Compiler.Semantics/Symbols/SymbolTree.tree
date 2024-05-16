@@ -53,7 +53,7 @@ TraitMember <: TypeMember;
 StructMember <: TypeMember;
 
 // ---------- Member Declarations
-Method <: ClassMember, TraitMember, StructMember = Name:`IdentifierName` Symbol:`MethodSymbol`;
+Method <: ClassMember, TraitMember, StructMember, Named = Name:`IdentifierName` Symbol:`MethodSymbol`;
 Constructor <: ClassMember = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
 Initializer <: StructMember = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
 Field <: Named, ClassMember, StructMember = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;

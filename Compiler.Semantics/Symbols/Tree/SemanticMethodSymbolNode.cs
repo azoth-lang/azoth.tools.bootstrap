@@ -8,6 +8,7 @@ internal sealed class SemanticMethodSymbolNode : SemanticDeclarationSymbolNode, 
     private readonly IMethodDeclarationNode node;
     public override MethodSymbol Symbol => node.Symbol;
     public override IdentifierName Name => node.Name;
+    StandardName INamedSymbolNode.Name => Name;
 
     public SemanticMethodSymbolNode(IMethodDeclarationNode node)
     {

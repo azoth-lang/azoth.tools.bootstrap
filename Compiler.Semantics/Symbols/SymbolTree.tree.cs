@@ -41,6 +41,7 @@ public partial interface IChildSymbolNode : IChild<ISymbolNode>, ISymbolNode
 
 [Closed(
     typeof(IFunctionSymbolNode),
+    typeof(IMethodSymbolNode),
     typeof(IFieldSymbolNode),
     typeof(ITypeSymbolNode))]
 public partial interface INamedSymbolNode : IChildSymbolNode
@@ -178,10 +179,11 @@ public partial interface IStructMemberSymbolNode : ITypeMemberSymbolNode
 {
 }
 
-public partial interface IMethodSymbolNode : ISymbolNode, IClassMemberSymbolNode, ITraitMemberSymbolNode, IStructMemberSymbolNode
+public partial interface IMethodSymbolNode : ISymbolNode, IClassMemberSymbolNode, ITraitMemberSymbolNode, IStructMemberSymbolNode, INamedSymbolNode
 {
     new IdentifierName Name { get; }
     StandardName? IDeclarationSymbolNode.Name => Name;
+    StandardName INamedSymbolNode.Name => Name;
     new MethodSymbol Symbol { get; }
     Symbol ISymbolNode.Symbol => Symbol;
 }
