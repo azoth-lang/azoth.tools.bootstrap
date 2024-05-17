@@ -21,7 +21,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
 {
     public abstract override ITypeDefinitionSyntax Syntax { get; }
     public bool IsConst => Syntax.IsConst;
-    public StandardName Name => Syntax.Name;
+    public override StandardName Name => Syntax.Name;
     public abstract IDeclaredUserType DeclaredType { get; }
     private ValueAttribute<UserTypeSymbol> symbol;
     public override UserTypeSymbol Symbol

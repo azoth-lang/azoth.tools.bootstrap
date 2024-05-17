@@ -31,7 +31,7 @@ internal class NamespaceBlockDefinitionNode : DefinitionNode, INamespaceBlockDef
     public NamespaceSymbol Symbol => Declaration.Symbol;
 
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
-    public IFixedList<INamespaceMemberDefinitionNode> Members { get; }
+    public IFixedList<INamespaceBlockMemberDefinitionNode> Members { get; }
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
@@ -40,7 +40,7 @@ internal class NamespaceBlockDefinitionNode : DefinitionNode, INamespaceBlockDef
     public NamespaceBlockDefinitionNode(
         INamespaceDefinitionSyntax syntax,
         IEnumerable<IUsingDirectiveNode> usingDirectives,
-        IEnumerable<INamespaceMemberDefinitionNode> members)
+        IEnumerable<INamespaceBlockMemberDefinitionNode> members)
     {
         Syntax = syntax;
         UsingDirectives = ChildList.Attach(this, usingDirectives);

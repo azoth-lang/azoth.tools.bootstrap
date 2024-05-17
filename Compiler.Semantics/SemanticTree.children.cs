@@ -42,6 +42,10 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
+            case INamespaceDefinitionNode n:
+                foreach (var child in n.MemberNamespaces)
+                    yield return child;
+                yield break;
             case IFunctionDefinitionNode n:
                 foreach (var child in n.Attributes)
                     yield return child;

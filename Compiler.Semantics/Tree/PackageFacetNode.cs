@@ -17,8 +17,8 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
     /// should be <see langword="null"/> for the current package.</remarks>
     public IdentifierName? PackageAliasOrName => null;
     public IdentifierName PackageName => Package.Name;
-    private ValueAttribute<INamespaceDeclarationNode> globalNamespace;
-    public INamespaceDeclarationNode GlobalNamespace
+    private ValueAttribute<INamespaceDefinitionNode> globalNamespace;
+    public INamespaceDefinitionNode GlobalNamespace
         => globalNamespace.TryGetValue(out var value) ? value
             : globalNamespace.GetValue(this, SymbolNodeAttributes.PackageFacet_GlobalNamespace);
     public PackageSymbol Symbol => Package.Symbol;

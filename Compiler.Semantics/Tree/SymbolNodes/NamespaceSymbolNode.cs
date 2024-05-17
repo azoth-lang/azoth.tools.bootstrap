@@ -14,6 +14,7 @@ internal class NamespaceSymbolNode : FacetChildSymbolNode, INamespaceSymbolNode
     public override NamespaceSymbol Symbol { get; }
 
     public override IdentifierName Name => Symbol.Name;
+    StandardName INamedDeclarationNode.Name => Name;
 
     private ValueAttribute<IFixedList<INamespaceMemberDeclarationNode>> members;
     public IFixedList<INamespaceMemberDeclarationNode> Members

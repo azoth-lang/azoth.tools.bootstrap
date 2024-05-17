@@ -55,7 +55,11 @@ internal class SemanticsApplier
     }
 
     private static void PackageFacet(IPackageFacetNode node)
-        => node.CompilationUnits.ForEach(CompilationUnit);
+    {
+        node.CompilationUnits.ForEach(CompilationUnit);
+        NamespaceDefinition(node.GlobalNamespace);
+    }
+
     #endregion
 
     #region Code Files
@@ -107,6 +111,12 @@ internal class SemanticsApplier
         node.Syntax.Symbol.Fulfill(node.Symbol);
         Definitions(node.Members);
     }
+
+    private static void NamespaceDefinitions(IEnumerable<INamespaceDefinitionNode> nodes)
+        => nodes.ForEach(NamespaceDefinition);
+
+    private static void NamespaceDefinition(INamespaceDefinitionNode node)
+        => NamespaceDefinitions(node.MemberNamespaces);
     #endregion
 
     #region Function Definition

@@ -13,7 +13,7 @@ internal static class DeclarationsAttribute
                    .SelectMany(n => MoreEnumerable.TraverseDepthFirst(n, NamespaceChildren))
                    .OfType<IPackageMemberDefinitionNode>().ToFixedSet();
 
-        static IEnumerable<INamespaceMemberDefinitionNode> NamespaceChildren(INamespaceMemberDefinitionNode m)
-            => (m as INamespaceBlockDefinitionNode)?.Members ?? Enumerable.Empty<INamespaceMemberDefinitionNode>();
+        static IEnumerable<INamespaceBlockMemberDefinitionNode> NamespaceChildren(INamespaceBlockMemberDefinitionNode m)
+            => (m as INamespaceBlockDefinitionNode)?.Members ?? Enumerable.Empty<INamespaceBlockMemberDefinitionNode>();
     }
 }

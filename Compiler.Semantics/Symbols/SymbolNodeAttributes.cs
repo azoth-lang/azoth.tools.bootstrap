@@ -17,7 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 internal static class SymbolNodeAttributes
 {
-    public static INamespaceDeclarationNode PackageFacet_GlobalNamespace(IPackageFacetNode node)
+    public static INamespaceDefinitionNode PackageFacet_GlobalNamespace(IPackageFacetNode node)
     {
         var packageSymbol = node.Symbol;
         var builder = new SemanticNamespaceSymbolNodeBuilder(packageSymbol);
@@ -25,7 +25,7 @@ internal static class SymbolNodeAttributes
             BuildNamespace(packageSymbol, cu.ImplicitNamespaceName, cu.Definitions);
         return Child.Attach(node, builder.Build());
 
-        void BuildMember(NamespaceSymbol namespaceSymbol, INamespaceMemberDefinitionNode definition)
+        void BuildMember(NamespaceSymbol namespaceSymbol, INamespaceBlockMemberDefinitionNode definition)
         {
             switch (definition)
             {
@@ -45,7 +45,7 @@ internal static class SymbolNodeAttributes
         }
 
         void BuildNamespace(NamespaceSymbol containingNamespace, NamespaceName name,
-            IEnumerable<INamespaceMemberDefinitionNode> declarations)
+            IEnumerable<INamespaceBlockMemberDefinitionNode> declarations)
         {
             var namespaceSymbol = builder.AddNamespace(containingNamespace, name);
             foreach (var declaration in declarations)

@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFunctionDefinitionNode
 {
     public override IFunctionDefinitionSyntax Syntax { get; }
-    public IdentifierName Name => Syntax.Name;
+    public override IdentifierName Name => Syntax.Name;
     public override INamespaceDeclarationNode ContainingDeclaration => (INamespaceDeclarationNode)base.ContainingDeclaration;
     public override NamespaceSymbol ContainingSymbol => (NamespaceSymbol)base.ContainingSymbol;
     private ValueAttribute<LexicalScope> lexicalScope;

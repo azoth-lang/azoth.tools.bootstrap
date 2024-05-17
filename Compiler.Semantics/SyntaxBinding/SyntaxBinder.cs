@@ -60,10 +60,10 @@ internal static class SyntaxBinder
         => new NamespaceBlockDefinitionNode(syntax, UsingDirectives(syntax.UsingDirectives),
             NamespaceMemberDefinitions(syntax.Definitions));
 
-    private static IEnumerable<INamespaceMemberDefinitionNode> NamespaceMemberDefinitions(IEnumerable<INonMemberDefinitionSyntax> syntax)
+    private static IEnumerable<INamespaceBlockMemberDefinitionNode> NamespaceMemberDefinitions(IEnumerable<INonMemberDefinitionSyntax> syntax)
         => syntax.Select(NamespaceMemberDefinition);
 
-    private static INamespaceMemberDefinitionNode NamespaceMemberDefinition(INonMemberDefinitionSyntax syntax)
+    private static INamespaceBlockMemberDefinitionNode NamespaceMemberDefinition(INonMemberDefinitionSyntax syntax)
         => syntax switch
         {
             INamespaceDefinitionSyntax syn => NamespaceDefinition(syn),

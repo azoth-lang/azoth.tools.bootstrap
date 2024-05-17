@@ -46,10 +46,10 @@ PackageFacet <: Child, PackageFacetDeclaration = Syntax:`IPackageSyntax` Package
     Symbol:`PackageSymbol`
     PackageNameScope:`PackageNameScope`
     CompilationUnits:{CompilationUnit} Definitions:`IFixedSet<IPackageMemberDefinitionNode>`
-    GlobalNamespace:NamespaceDeclaration;
+    GlobalNamespace:NamespaceDefinition;
 
 // TODO rename to FacetMemberDefinition
-PackageMemberDefinition <: NamespaceMemberDefinition
+PackageMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefinition
     = Attributes:Attribute* AccessModifier:`AccessModifier`;
 
 // ---------- Code Files
@@ -58,7 +58,7 @@ Code <: Child = Syntax:`IConcreteSyntax`? File:`CodeFile`;
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
     ContainingDeclaration:`IPackageFacetDeclarationNode` ContainingSymbol:`NamespaceSymbol`
     ImplicitNamespaceName:`NamespaceName` ImplicitNamespaceSymbolNode:`INamespaceDeclarationNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
-    UsingDirectives:UsingDirective* Definitions:NamespaceMemberDefinition*
+    UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*
     ContainingLexicalScope:`NamespaceScope` LexicalScope:`LexicalScope`
     Diagnostics:`Diagnostic`*;
 
@@ -71,12 +71,16 @@ InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter
 ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrInitializerParameter*;
 
 // ---------- Namespace Definitions
-NamespaceBlockDefinition <: NamespaceMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
+NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
     IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
-    UsingDirectives:UsingDirective* Members:NamespaceMemberDefinition*
+    UsingDirectives:UsingDirective* Members:NamespaceBlockMemberDefinition*
     Declaration:`INamespaceDeclarationNode` ContainingDeclaration:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
     Symbol:`NamespaceSymbol`;
-NamespaceMemberDefinition <: Definition;
+NamespaceBlockMemberDefinition <: Definition;
+NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
+    = MemberNamespaces:NamespaceDefinition* PackageMembers:`IPackageMemberDefinitionNode`*
+    Members:`INamespaceMemberDefinitionNode`*;
+NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 
 // ---------- Function Definition
 FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration = Syntax:`IFunctionDefinitionSyntax`
@@ -309,8 +313,8 @@ FacetChildDeclaration <: ChildDeclaration = Name:`StandardName`? Facet:`IPackage
 
 // ---------- Namespace Declarations
 NamespaceDeclaration <: NamespaceMemberDeclaration = Name:`IdentifierName` Symbol:`NamespaceSymbol`
-    Members:NamespaceMemberDeclaration* NestedMembers:`INamespaceMemberDeclarationNode`*;
-NamespaceMemberDeclaration <: FacetChildDeclaration;
+    Members:`INamespaceMemberDeclarationNode`* NestedMembers:`INamespaceMemberDeclarationNode`*;
+NamespaceMemberDeclaration <: FacetChildDeclaration, NamedDeclaration;
 
 // ---------- Function Declaration
 FunctionDeclaration <: PackageMemberDeclaration, NamedDeclaration = Symbol:`FunctionSymbol`;

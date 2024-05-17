@@ -10,14 +10,15 @@ using DotNet.Collections.Generic;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal sealed class SemanticNamespaceSymbolNode : ChildNode, INamespaceSymbolNode
+internal sealed class NamespaceDefinitionNode : ChildNode, INamespaceDefinitionNode
 {
     public override ISyntax? Syntax => null;
     public IPackageFacetDeclarationNode Facet => Parent.InheritedFacet(this, this);
     public IdentifierName Name => Symbol.Name;
     public NamespaceSymbol Symbol { get; }
-
-    public IFixedList<INamespaceMemberDeclarationNode> Members { get; }
+    public IFixedList<INamespaceDefinitionNode> MemberNamespaces { get; }
+    public IFixedList<IPackageMemberDefinitionNode> PackageMembers { get; }
+    public IFixedList<INamespaceMemberDefinitionNode> Members { get; }
     private MultiMapHashSet<StandardName, INamespaceMemberDeclarationNode>? membersByName;
 
     private ValueAttribute<IFixedList<INamespaceMemberDeclarationNode>> nestedMembers;
@@ -26,13 +27,15 @@ internal sealed class SemanticNamespaceSymbolNode : ChildNode, INamespaceSymbolN
 
     private MultiMapHashSet<StandardName, INamespaceMemberDeclarationNode>? nestedMembersByName;
 
-    public SemanticNamespaceSymbolNode(NamespaceSymbol symbol, IEnumerable<INamespaceMemberDeclarationNode> members)
+    public NamespaceDefinitionNode(
+        NamespaceSymbol symbol,
+        IEnumerable<INamespaceDefinitionNode> memberNamespaces,
+        IEnumerable<IPackageMemberDefinitionNode> packageMembers)
     {
         Symbol = symbol;
-        Members = members.ToFixedList();
-        // Attach only child namespaces
-        foreach (var childNamespace in Members.OfType<INamespaceDeclarationNode>())
-            Child.Attach(this, childNamespace);
+        MemberNamespaces = ChildList.Attach(this, memberNamespaces);
+        PackageMembers = packageMembers.ToFixedList();
+        Members = MemberNamespaces.Concat<INamespaceMemberDefinitionNode>(PackageMembers).ToFixedList();
     }
 
     public IEnumerable<INamespaceMemberDeclarationNode> MembersNamed(StandardName named)
