@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
@@ -57,7 +58,7 @@ internal static class LexicalScopeAttributes
     public static NamespaceSearchScope NamespaceBlockDefinition_LexicalScope(INamespaceBlockDefinitionNode node)
         => BuildNamespaceScope(node.ContainingLexicalScope, node.DeclaredNames, node.UsingDirectives);
 
-    public static LexicalScope TypeDeclaration_SupertypesLexicalScope(ITypeDefinitionNode node)
+    public static LexicalScope TypeDefinition_SupertypesLexicalScope(ITypeDefinitionNode node)
     {
         if (node.GenericParameters.Any())
             return new DeclarationScope(node.ContainingLexicalScope, node.GenericParameters);
@@ -65,16 +66,20 @@ internal static class LexicalScopeAttributes
         return node.ContainingLexicalScope;
     }
 
-    public static LexicalScope TypeDeclaration_LexicalScope(ITypeDefinitionNode node)
+    public static LexicalScope TypeDefinition_LexicalScope(ITypeDefinitionNode node)
         // TODO populate the scope with members
         => new DeclarationScope(node.SupertypesLexicalScope, Enumerable.Empty<INamedDeclarationNode>());
 
-    public static LexicalScope TypeDeclaration_InheritedLexicalScope_Supertypes(ITypeDefinitionNode node)
+    public static LexicalScope TypeDefinition_InheritedLexicalScope_Supertypes(ITypeDefinitionNode node)
         => node.SupertypesLexicalScope;
 
-    public static LexicalScope TypeDeclaration_InheritedLexicalScope(ITypeDefinitionNode node)
+    public static LexicalScope TypeDefinition_InheritedLexicalScope(ITypeDefinitionNode node)
         => node.LexicalScope;
 
-    public static LexicalScope FunctionDeclaration_LexicalScope(IFunctionDefinitionNode node)
-        => throw new System.NotImplementedException();
+    public static LexicalScope FunctionDefinition_LexicalScope(IFunctionDefinitionNode node)
+    {
+        // TODO create a type parameter scope when type parameters are supported
+        //return new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
+        throw new NotImplementedException();
+    }
 }

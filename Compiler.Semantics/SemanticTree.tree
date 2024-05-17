@@ -66,7 +66,8 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
 // ---------- Definitions
-Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? Facet:`IPackageFacetNode` ContainingDeclaration:`IDeclarationNode` ContainingSymbol:`Symbol`
+Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? Facet:`IPackageFacetNode`
+    ContainingDeclaration:`ISymbolDeclarationNode` ContainingSymbol:`Symbol`
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter*;
 ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrInitializerParameter*;
@@ -121,7 +122,7 @@ GenericParameter <: Code, GenericParameterDeclaration = Syntax:`IGenericParamete
     ContainingDeclaration:`IUserTypeDeclarationNode` ContainingSymbol:`UserTypeSymbol`
     Symbol:`GenericParameterTypeSymbol`;
 
-// ---------- Type Member Definitions (i.e. declarations that can be contained in a type)
+// ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
 TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`ITypeMemberDefinitionSyntax`? AccessModifier:`AccessModifier`;
 ClassMemberDefinition <: TypeMemberDefinition, ClassMemberDeclaration = Syntax:`IClassMemberDefinitionSyntax`?;
 TraitMemberDefinition <: TypeMemberDefinition, TraitMemberDeclaration = Syntax:`ITraitMemberDefinitionSyntax`;
@@ -210,7 +211,7 @@ SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:
 Statement <: Code = Syntax:`IStatementSyntax`;
 ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax` Expression:UntypedExpression;
 BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;
-VariableDeclarationStatement: BodyStatement <: LocalBinding = Syntax:`IVariableDeclarationStatementSyntax`
+VariableDeclarationStatement <: BodyStatement, LocalBinding = Syntax:`IVariableDeclarationStatementSyntax`
     Name:`IdentifierName` Capability? Type? Initializer:UntypedExpression?;
 ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax` Expression:UntypedExpression;
 
@@ -295,27 +296,34 @@ AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax` Expression:Untyp
 // -------------------------------------------------------------------------------------------------
 // TODO move into separate aspect
 
-Declaration = Symbol:`Symbol`;
+Declaration;
 ChildDeclaration <: Declaration, Child;
 NamedDeclaration <: ChildDeclaration = Name:`StandardName`;
+SymbolDeclaration <: Declaration = Symbol:`Symbol`;
+
+// ---------- Bindings
+BindingDeclaration <: NamedDeclaration = Name:`IdentifierName`;
+LocalBindingDeclaration <: BindingDeclaration;
 
 // ---------- Packages
-PackageDeclaration <: Declaration = AliasOrName:`IdentifierName`? Name:`IdentifierName` Symbol:`PackageSymbol`
+PackageDeclaration <: SymbolDeclaration = AliasOrName:`IdentifierName`? Name:`IdentifierName` Symbol:`PackageSymbol`
     MainFacet:PackageFacetDeclaration TestingFacet:PackageFacetDeclaration;
 
 PackageMemberDeclaration <: NamespaceMemberDeclaration;
 
 // ---------- Facets
 /// Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
-PackageFacetDeclaration <: ChildDeclaration = PackageAliasOrName:`IdentifierName`? PackageName:`IdentifierName`
+PackageFacetDeclaration <: ChildDeclaration, SymbolDeclaration
+    = PackageAliasOrName:`IdentifierName`? PackageName:`IdentifierName`
     Symbol:`PackageSymbol` GlobalNamespace:NamespaceDeclaration;
 
-PackageFacetChildDeclaration <: ChildDeclaration = Name:`StandardName`? Facet:`IPackageFacetDeclarationNode`;
+PackageFacetChildDeclaration <: ChildDeclaration
+    = Name:`StandardName`? Facet:`IPackageFacetDeclarationNode`;
 
 // ---------- Namespace Declarations
 NamespaceDeclaration <: NamespaceMemberDeclaration = Name:`IdentifierName` Symbol:`NamespaceSymbol`
     Members:`INamespaceMemberDeclarationNode`* NestedMembers:`INamespaceMemberDeclarationNode`*;
-NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration;
+NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, SymbolDeclaration;
 
 // ---------- Function Declaration
 FunctionDeclaration <: PackageMemberDeclaration, NamedDeclaration = Symbol:`FunctionSymbol`;
@@ -331,7 +339,7 @@ TraitDeclaration <: UserTypeDeclaration = Members:TraitMemberDeclaration*;
 GenericParameterDeclaration <: TypeDeclaration = Name:`IdentifierName`;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
-TypeMemberDeclaration <: PackageFacetChildDeclaration;
+TypeMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration;
 ClassMemberDeclaration <: TypeMemberDeclaration;
 TraitMemberDeclaration <: TypeMemberDeclaration;
 StructMemberDeclaration <: TypeMemberDeclaration;
@@ -345,7 +353,7 @@ AssociatedFunctionDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration,
     = Name:`IdentifierName` Symbol:`FunctionSymbol` Type:`FunctionType`;
 
 // ---------- Can be Referenced by Type Name
-TypeDeclaration <: NamedDeclaration = Symbol:`TypeSymbol`;
+TypeDeclaration <: NamedDeclaration, SymbolDeclaration = Symbol:`TypeSymbol`;
 
 // -------------------------------------------------------------------------------------------------
 // Symbol Nodes

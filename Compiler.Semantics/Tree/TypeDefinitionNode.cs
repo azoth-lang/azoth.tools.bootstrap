@@ -30,7 +30,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     private ValueAttribute<LexicalScope> supertypesLexicalScope;
     public LexicalScope SupertypesLexicalScope
         => supertypesLexicalScope.TryGetValue(out var value) ? value
-            : supertypesLexicalScope.GetValue(this, LexicalScopeAttributes.TypeDeclaration_SupertypesLexicalScope);
+            : supertypesLexicalScope.GetValue(this, LexicalScopeAttributes.TypeDefinition_SupertypesLexicalScope);
     public IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
     private ValueAttribute<CompilerResult<IFixedSet<BareReferenceType>>> supertypes;
     public CompilerResult<IFixedSet<BareReferenceType>> Supertypes
@@ -41,7 +41,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopeAttributes.TypeDeclaration_LexicalScope);
+            : lexicalScope.GetValue(this, LexicalScopeAttributes.TypeDefinition_LexicalScope);
 
     protected TypeDefinitionNode(
         IEnumerable<IGenericParameterNode> genericParameters,
@@ -53,7 +53,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         SupertypeNames = ChildList.Attach(this, supertypeNames);
     }
 
-    internal override IUserTypeDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
+    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
         => SymbolNodeAttributes.TypeDeclaration_InheritedContainingDeclaration(this);
 
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
@@ -62,8 +62,8 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
     {
         if (((ITypeDefinitionNode)this).AllSupertypeNames.Contains(caller))
-            return LexicalScopeAttributes.TypeDeclaration_InheritedLexicalScope_Supertypes(this);
-        return LexicalScopeAttributes.TypeDeclaration_InheritedLexicalScope(this);
+            return LexicalScopeAttributes.TypeDefinition_InheritedLexicalScope_Supertypes(this);
+        return LexicalScopeAttributes.TypeDefinition_InheritedLexicalScope(this);
     }
 
     internal override ITypeDefinitionNode InheritedContainingTypeDeclaration(IChildNode caller, IChildNode child)

@@ -342,6 +342,8 @@ public static class ISemanticNodeExtensions
             case IAwaitExpressionNode n:
                 yield return n.Expression;
                 yield break;
+            case ILocalBindingDeclarationNode n:
+                yield break;
             case IPackageSymbolNode n:
                 yield return n.MainFacet;
                 yield return n.TestingFacet;
