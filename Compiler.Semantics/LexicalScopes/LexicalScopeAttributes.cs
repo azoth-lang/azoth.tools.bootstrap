@@ -7,16 +7,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 internal static class LexicalScopeAttributes
 {
-    public static PackageNameScope PackageInheritedMainFacet(IPackageNode node)
+    public static PackageNameScope Package_InheritedPackageNameScope_MainFacet(IPackageNode node)
         => new PackageNameScope(new[] { node.MainFacet },
             node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode.MainFacet));
 
-    public static PackageNameScope PackageInheritedTestingFacet(IPackageNode node)
+    public static PackageNameScope Package_InheritedPackageNameScope_TestingFacet(IPackageNode node)
         => new PackageNameScope(new[] { node.MainFacet, node.TestingFacet },
             node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode.MainFacet)
                 .Concat(node.References.Select(r => r.SymbolNode.TestingFacet)));
 
-    public static LexicalScope CompilationUnit(ICompilationUnitNode node)
+    public static LexicalScope CompilationUnit_LexicalScope(ICompilationUnitNode node)
         => BuildNamespaceScope(node.ContainingLexicalScope, node.ImplicitNamespaceName, node.UsingDirectives);
 
     private static LexicalScope BuildNamespaceScope(
