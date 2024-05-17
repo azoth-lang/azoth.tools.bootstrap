@@ -8,6 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
 public partial interface IPackageFacetNode
 {
+    // TODO some way to code gen this hiding
     PackageSymbol IPackageFacetDeclarationNode.Symbol => PackageSymbol;
 }
 
@@ -30,12 +31,8 @@ public partial interface ICapabilityNode
 
 public partial interface IForeachExpressionNode
 {
+    // TODO some way to code gen this hiding
     IdentifierName IBindingDeclarationNode.Name => VariableName;
-}
-
-public partial interface IUserTypeDeclarationNode
-{
-    IEnumerable<ITypeMemberDeclarationNode> MembersNamed(StandardName named);
 }
 
 public partial interface INamespaceDeclarationNode
