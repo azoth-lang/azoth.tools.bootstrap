@@ -1502,6 +1502,7 @@ public partial interface IMissingNameExpressionNode : IVariableNameExpressionNod
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
+    UnknownType Type { get; }
 }
 
 public partial interface IMoveExpressionNode : ISemanticNode, IExpressionNode
