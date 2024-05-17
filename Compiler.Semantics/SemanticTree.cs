@@ -1,9 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
+
+public partial interface IPackageFacetNode
+{
+    PackageSymbol IPackageFacetDeclarationNode.Symbol => PackageSymbol;
+}
 
 public partial interface ITypeDefinitionNode
 {

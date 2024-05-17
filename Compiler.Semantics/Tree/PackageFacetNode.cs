@@ -21,7 +21,7 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
     public INamespaceDefinitionNode GlobalNamespace
         => globalNamespace.TryGetValue(out var value) ? value
             : globalNamespace.GetValue(this, SymbolNodeAttributes.PackageFacet_GlobalNamespace);
-    public PackageSymbol Symbol => Package.Symbol;
+    public PackageSymbol PackageSymbol => Package.Symbol;
     public IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
 
     private ValueAttribute<IFixedSet<IPackageMemberDefinitionNode>> definitions;

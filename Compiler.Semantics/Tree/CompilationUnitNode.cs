@@ -20,7 +20,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
 
     public IPackageFacetNode ContainingDeclaration
         => (IPackageFacetNode)Parent.InheritedContainingDeclaration(this, this);
-    public PackageSymbol ContainingSymbol => ContainingDeclaration.Symbol;
+    public PackageSymbol ContainingSymbol => ContainingDeclaration.PackageSymbol;
     public NamespaceName ImplicitNamespaceName => Syntax.ImplicitNamespaceName;
 
     private ValueAttribute<INamespaceDefinitionNode> implicitNamespaceDeclaration;

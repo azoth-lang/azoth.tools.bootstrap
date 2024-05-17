@@ -19,7 +19,7 @@ internal static class SymbolNodeAttributes
 {
     public static INamespaceDefinitionNode PackageFacet_GlobalNamespace(IPackageFacetNode node)
     {
-        var packageSymbol = node.Symbol;
+        var packageSymbol = node.PackageSymbol;
         var builder = new SemanticNamespaceSymbolNodeBuilder(packageSymbol);
         foreach (var cu in node.CompilationUnits)
             BuildNamespace(packageSymbol, cu.ImplicitNamespaceName, cu.Definitions);

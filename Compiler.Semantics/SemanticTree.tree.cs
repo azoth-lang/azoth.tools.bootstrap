@@ -187,6 +187,7 @@ public partial interface IPackageFacetNode : IChildNode, IPackageFacetDeclaratio
 {
     new IPackageSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
+    PackageSymbol PackageSymbol { get; }
     PackageNameScope PackageNameScope { get; }
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     IFixedSet<IPackageMemberDefinitionNode> Definitions { get; }

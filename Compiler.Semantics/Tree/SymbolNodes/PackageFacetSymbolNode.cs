@@ -9,7 +9,8 @@ internal sealed class PackageFacetSymbolNode : ChildSymbolNode, IPackageFacetSym
 {
     public IdentifierName? PackageAliasOrName => Package.AliasOrName;
     public IdentifierName PackageName => Package.Name;
-    public override PackageSymbol Symbol => Package.Symbol;
+    public PackageSymbol PackageSymbol => Package.Symbol;
+    public override PackageSymbol Symbol => PackageSymbol;
 
     private readonly FixedSymbolTree symbolTree;
 

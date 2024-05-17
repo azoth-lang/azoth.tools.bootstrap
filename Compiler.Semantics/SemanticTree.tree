@@ -43,8 +43,8 @@ PackageReference <: Child = Syntax:`IPackageReferenceSyntax`? SymbolNode:`IPacka
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
 
 // ---------- Facets
-PackageFacet <: Child, PackageFacetDeclaration = Syntax:`IPackageSyntax` PackageName:`IdentifierName`
-    Symbol:`PackageSymbol`
+PackageFacet <: Child, PackageFacetDeclaration = Syntax:`IPackageSyntax`
+    PackageName:`IdentifierName` PackageSymbol:`PackageSymbol`
     PackageNameScope:`PackageNameScope`
     CompilationUnits:{CompilationUnit} Definitions:`IFixedSet<IPackageMemberDefinitionNode>`
     GlobalNamespace:NamespaceDefinition;
