@@ -180,7 +180,7 @@ InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyn
 MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` IsLentBinding:`bool` Capability:CapabilityConstraint
     ParameterType:`SelfParameter`;
 FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax` Name:`IdentifierName`
-    ContainingTypeDefinition:`ITypeDefinitionNode` ReferencedSymbolNode:`IFieldDeclarationNode`?;
+    ContainingTypeDefinition:`ITypeDefinitionNode` ReferencedField:`IFieldDefinitionNode`?;
 
 // ---------- Function Parts
 Body: BodyOrBlock;
@@ -191,7 +191,7 @@ ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 Type <: Code = Syntax:`ITypeSyntax` Type:`DataType`;
 TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName` ContainingLexicalScope:`LexicalScope`
     ReferencedSymbol:`TypeSymbol`? BareType:`BareType`?;
-StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` IsAttributeType:`bool` Name:`StandardName` ReferencedSymbolNode:`ITypeDeclarationNode`?;
+StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` IsAttributeType:`bool` Name:`StandardName` ReferencedDeclaration:`ITypeDeclarationNode`?;
 SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
 IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax` Name:`IdentifierName`;
 SpecialTypeName <: SimpleTypeName = Syntax:`ISpecialTypeNameSyntax` Name:`SpecialTypeName`
@@ -224,7 +224,7 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 // ---------- Expressions
 UntypedExpression <: Code = Syntax:`IExpressionSyntax`;
 Expression <: UntypedExpression = Syntax:`ITypedExpressionSyntax`;
-AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`; // ReferencedSymbol:`IPromise<Symbol?>`;
+AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax` Type:TypeName ConstructorName:`IdentifierName`? Arguments:UntypedExpression* ReferencedSymbol:`ConstructorSymbol?`;
 UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:UntypedExpression;

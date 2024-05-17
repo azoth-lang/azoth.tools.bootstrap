@@ -819,7 +819,7 @@ public partial interface IFieldParameterNode : ISemanticNode, IConstructorOrInit
     new IdentifierName Name { get; }
     IdentifierName? IParameterNode.Name => Name;
     ITypeDefinitionNode ContainingTypeDefinition { get; }
-    IFieldDeclarationNode? ReferencedSymbolNode { get; }
+    IFieldDefinitionNode? ReferencedField { get; }
 }
 
 [Closed(
@@ -885,7 +885,7 @@ public partial interface IStandardTypeNameNode : ISemanticNode, ITypeNameNode
     bool IsAttributeType { get; }
     new StandardName Name { get; }
     TypeName ITypeNameNode.Name => Name;
-    ITypeDeclarationNode? ReferencedSymbolNode { get; }
+    ITypeDeclarationNode? ReferencedDeclaration { get; }
 }
 
 [Closed(

@@ -95,7 +95,7 @@ internal static class SymbolNodeAttributes
     public static bool FunctionDeclaration_InheritedIsAttributeType(IFunctionDefinitionNode node)
         => false;
 
-    public static ITypeDeclarationNode? StandardTypeName_ReferencedSymbolNode(IStandardTypeNameNode node)
+    public static ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node)
     {
         var symbolNode = LookupDeclarations(node).TrySingle();
         if (node.IsAttributeType)
@@ -105,7 +105,7 @@ internal static class SymbolNodeAttributes
 
     public static void StandardTypeName_ContributeDiagnostics(IStandardTypeNameNode node, Diagnostics diagnostics)
     {
-        if (node.ReferencedSymbolNode is not null)
+        if (node.ReferencedDeclaration is not null)
             return;
         var symbolNodes = LookupDeclarations(node);
         switch (symbolNodes.Count)
@@ -128,7 +128,7 @@ internal static class SymbolNodeAttributes
         return node.ContainingLexicalScope.Lookup(name).OfType<ITypeDeclarationNode>().ToFixedSet();
     }
 
-    public static IFieldDeclarationNode? FieldParameter_ReferencedSymbolNode(IFieldParameterNode node)
+    public static IFieldDefinitionNode? FieldParameter_ReferencedField(IFieldParameterNode node)
         // TODO report error for field parameter without referenced field
         => node.ContainingTypeDefinition.Members.OfType<IFieldDefinitionNode>().FirstOrDefault(f => f.Name == node.Name);
 

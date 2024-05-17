@@ -26,7 +26,7 @@ internal class SemanticTreeValidator
         }
         if (node is IStandardTypeNameNode standardTypeName)
         {
-            _ = standardTypeName.ReferencedSymbolNode;
+            _ = standardTypeName.ReferencedDeclaration;
         }
         if (node is ITypeNode type)
         {

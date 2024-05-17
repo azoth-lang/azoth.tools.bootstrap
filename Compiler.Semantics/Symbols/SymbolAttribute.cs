@@ -19,7 +19,7 @@ internal static class SymbolAttribute
         => new(node.ContainingSymbol, node.DeclaredType);
 
     public static TypeSymbol? StandardTypeName(IStandardTypeNameNode node)
-        => node.ReferencedSymbolNode?.Symbol;
+        => node.ReferencedDeclaration?.Symbol;
 
     public static TypeSymbol SpecialTypeName_ReferencedSymbol(ISpecialTypeNameNode node)
         => Primitive.SymbolTree.LookupSymbol(node.Name);
@@ -52,7 +52,7 @@ internal static class SymbolAttribute
 
     public static ConstructorSymbol? Attribute_ReferencedSymbol(IAttributeNode node)
     {
-        var referencedTypeSymbolNode = node.TypeName.ReferencedSymbolNode;
+        var referencedTypeSymbolNode = node.TypeName.ReferencedDeclaration;
         if (referencedTypeSymbolNode is not IUserTypeDeclarationNode userTypeSymbolNode)
             return null;
 

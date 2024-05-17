@@ -258,7 +258,7 @@ internal class SemanticsApplier
     }
 
     private static void FieldParameter(IFieldParameterNode node)
-        => node.Syntax.ReferencedSymbol.Fulfill(node.ReferencedSymbolNode?.Symbol);
+        => node.Syntax.ReferencedSymbol.Fulfill(node.ReferencedField?.Symbol);
     #endregion
 
     #region Function Parts

@@ -126,7 +126,7 @@ internal static class TypeMemberDeclarationsAspect
     }
 
     internal static DataType FieldParameter_Type(IFieldParameterNode node)
-        => node.ReferencedSymbolNode?.Type ?? DataType.Unknown;
+        => node.ReferencedField?.Type ?? DataType.Unknown;
 
     public static Parameter FieldParameter_ParameterType(IFieldParameterNode node)
         => new Parameter(false, node.Type);

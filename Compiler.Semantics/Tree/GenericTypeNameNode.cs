@@ -22,10 +22,10 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
     public override GenericName Name => Syntax.Name;
     public override TypeSymbol? ReferencedSymbol => SymbolAttribute.StandardTypeName(this);
     public IFixedList<ITypeNode> TypeArguments { get; }
-    private ValueAttribute<ITypeDeclarationNode?> referencedSymbolNode;
-    public ITypeDeclarationNode? ReferencedSymbolNode
-        => referencedSymbolNode.TryGetValue(out var value) ? value
-            : referencedSymbolNode.GetValue(this, SymbolNodeAttributes.StandardTypeName_ReferencedSymbolNode);
+    private ValueAttribute<ITypeDeclarationNode?> referencedDeclaration;
+    public ITypeDeclarationNode? ReferencedDeclaration
+        => referencedDeclaration.TryGetValue(out var value) ? value
+            : referencedDeclaration.GetValue(this, SymbolNodeAttributes.StandardTypeName_ReferencedDeclaration);
     private ValueAttribute<BareType?> bareType;
     public override BareType? BareType
         => bareType.TryGetValue(out var value) ? value
