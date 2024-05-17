@@ -14,8 +14,8 @@ internal sealed class PackageReferenceNode : ChildNode, IPackageReferenceNode
     public IPackageSymbols PackageSymbols => Syntax.Package;
     public bool IsTrusted => Syntax.IsTrusted;
 
-    private ValueAttribute<IPackageDeclarationNode> symbolNode;
-    public IPackageDeclarationNode SymbolNode
+    private ValueAttribute<IPackageSymbolNode> symbolNode;
+    public IPackageSymbolNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
             : symbolNode.GetValue(this, SymbolNodeAttributes.PackageReference_SymbolNode);
 

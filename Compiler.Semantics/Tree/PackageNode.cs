@@ -15,21 +15,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class PackageNode : SemanticNode, IPackageNode
 {
     public override IPackageSyntax Syntax { get; }
+    /// <remarks>Implements <see cref="IPackageDeclarationNode.AliasOrName"/> which
+    /// should be <see langword="null"/> for the current package.</remarks>
+    public IdentifierName? AliasOrName => null;
     public IdentifierName Name => Syntax.Name;
 
     private ValueAttribute<PackageSymbol> symbol;
     public PackageSymbol Symbol
         => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolAttribute.Package);
-
-    private ValueAttribute<IPackageDeclarationNode> symbolNode;
-    public IPackageDeclarationNode SymbolNode
-        => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttributes.Package_SymbolNode);
-
-    private ValueAttribute<FixedDictionary<IdentifierName, IPackageDeclarationNode>> symbolNodes;
-    public FixedDictionary<IdentifierName, IPackageDeclarationNode> SymbolNodes
-        => symbolNodes.TryGetValue(out var value) ? value
-            : symbolNodes.GetValue(this, SymbolNodeAttributes.Package_SymbolNodes);
+    private ValueAttribute<FixedDictionary<IdentifierName, IPackageDeclarationNode>> packageDeclarations;
+    public FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations
+        => packageDeclarations.TryGetValue(out var value) ? value
+            : packageDeclarations.GetValue(this, SymbolNodeAttributes.Package_PackageDeclarations);
 
     private ValueAttribute<IFixedList<Diagnostic>> diagnostics;
     public IFixedList<Diagnostic> Diagnostics
@@ -57,7 +54,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     }
 
     internal override IPackageDeclarationNode InheritedPackage(IChildNode caller, IChildNode child)
-        => SymbolNode;
+        => this;
 
     internal override PackageNameScope InheritedPackageNameScope(IChildNode caller, IChildNode child)
     {

@@ -158,18 +158,17 @@ public partial interface ILocalBindingNode : IBindingNode
 {
 }
 
-public partial interface IPackageNode : ISemanticNode
+public partial interface IPackageNode : ISemanticNode, IPackageDeclarationNode
 {
     new IPackageSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IdentifierName Name { get; }
-    PackageSymbol Symbol { get; }
-    IPackageDeclarationNode SymbolNode { get; }
     IFixedSet<IPackageReferenceNode> References { get; }
     IPackageReferenceNode IntrinsicsReference { get; }
-    FixedDictionary<IdentifierName,IPackageDeclarationNode> SymbolNodes { get; }
-    IPackageFacetNode MainFacet { get; }
-    IPackageFacetNode TestingFacet { get; }
+    FixedDictionary<IdentifierName,IPackageDeclarationNode> PackageDeclarations { get; }
+    new IPackageFacetNode MainFacet { get; }
+    IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
+    new IPackageFacetNode TestingFacet { get; }
+    IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
     IFixedList<Diagnostic> Diagnostics { get; }
 }
 
@@ -177,7 +176,7 @@ public partial interface IPackageReferenceNode : IChildNode
 {
     new IPackageReferenceSyntax? Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IPackageDeclarationNode SymbolNode { get; }
+    IPackageSymbolNode SymbolNode { get; }
     IdentifierName AliasOrName { get; }
     IPackageSymbols PackageSymbols { get; }
     bool IsTrusted { get; }
@@ -1572,6 +1571,7 @@ public partial interface INamedDeclarationNode : ISemanticNode, IChildDeclaratio
 }
 
 [Closed(
+    typeof(IPackageNode),
     typeof(IPackageSymbolNode))]
 public partial interface IPackageDeclarationNode : IDeclarationNode
 {

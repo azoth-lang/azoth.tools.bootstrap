@@ -34,12 +34,12 @@ Binding <: Code = IsMutableBinding:`bool`;
 LocalBinding: Binding;
 
 // ---------- Packages
-Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` SymbolNode:`IPackageDeclarationNode`
+Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
     References:{PackageReference} IntrinsicsReference:`IPackageReferenceNode`
-    SymbolNodes:`FixedDictionary<IdentifierName,IPackageDeclarationNode>`
+    PackageDeclarations:`FixedDictionary<IdentifierName,IPackageDeclarationNode>`
     MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`Diagnostic`*;
 
-PackageReference <: Child = Syntax:`IPackageReferenceSyntax`? SymbolNode:`IPackageDeclarationNode`
+PackageReference <: Child = Syntax:`IPackageReferenceSyntax`? SymbolNode:`IPackageSymbolNode`
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
 
 PackageFacet <: Child, PackageFacetDeclaration = Syntax:`IPackageSyntax` PackageName:`IdentifierName`

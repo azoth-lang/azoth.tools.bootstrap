@@ -7,7 +7,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -18,9 +17,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 internal static class SymbolNodeAttributes
 {
-    public static IPackageDeclarationNode Package_SymbolNode(IPackageNode node)
-        => new SemanticPackageSymbolNode(node);
-
     public static INamespaceDeclarationNode PackageFacet_GlobalNamespace(IPackageFacetNode node)
     {
         var packageSymbol = node.Symbol;
@@ -71,11 +67,12 @@ internal static class SymbolNodeAttributes
     public static INamespaceDeclarationNode CompilationUnit_InheritedContainingDeclaration(ICompilationUnitNode node)
         => node.ImplicitNamespaceSymbolNode;
 
-    public static IPackageDeclarationNode PackageReference_SymbolNode(IPackageReferenceNode node)
+    public static IPackageSymbolNode PackageReference_SymbolNode(IPackageReferenceNode node)
         => new PackageSymbolNode(node);
 
-    public static FixedDictionary<IdentifierName, IPackageDeclarationNode> Package_SymbolNodes(IPackageNode node)
-        => node.References.Select(r => r.SymbolNode).Append(node.SymbolNode).ToFixedDictionary(n => n.AliasOrName ?? node.Symbol.Name);
+    public static FixedDictionary<IdentifierName, IPackageDeclarationNode> Package_PackageDeclarations(IPackageNode node)
+        => node.References.Select(r => r.SymbolNode).Append<IPackageDeclarationNode>(node)
+               .ToFixedDictionary(n => n.AliasOrName ?? node.Symbol.Name);
 
     public static INamespaceDeclarationNode NamespaceDeclaration_ContainingDeclaration(INamespaceDefinitionNode node, INamespaceDeclarationNode inheritedDeclarationNode)
         => node.IsGlobalQualified ? inheritedDeclarationNode.Facet.GlobalNamespace : inheritedDeclarationNode;
