@@ -79,8 +79,8 @@ internal class SemanticsApplier
             case IFunctionDefinitionNode n:
                 FunctionDefinition(n);
                 break;
-            case INamespaceDefinitionNode n:
-                NamespaceDefinition(n);
+            case INamespaceBlockDefinitionNode n:
+                NamespaceBlockDefinition(n);
                 break;
             case IMethodDefinitionNode n:
                 MethodDefinition(n);
@@ -102,7 +102,7 @@ internal class SemanticsApplier
     #endregion
 
     #region Namespace Definitions
-    private static void NamespaceDefinition(INamespaceDefinitionNode node)
+    private static void NamespaceBlockDefinition(INamespaceBlockDefinitionNode node)
     {
         node.Syntax.Symbol.Fulfill(node.Symbol);
         Definitions(node.Members);

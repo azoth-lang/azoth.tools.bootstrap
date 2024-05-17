@@ -31,7 +31,7 @@ internal static class SymbolNodeAttributes
             {
                 default:
                     throw ExhaustiveMatch.Failed(definition);
-                case INamespaceDefinitionNode n:
+                case INamespaceBlockDefinitionNode n:
                     var containingNamespace = n.IsGlobalQualified ? packageSymbol : namespaceSymbol;
                     BuildNamespace(containingNamespace, n.DeclaredNames, n.Members);
                     break;
@@ -74,13 +74,13 @@ internal static class SymbolNodeAttributes
         => node.References.Select(r => r.SymbolNode).Append<IPackageDeclarationNode>(node)
                .ToFixedDictionary(n => n.AliasOrName ?? node.Symbol.Name);
 
-    public static INamespaceDeclarationNode NamespaceDeclaration_ContainingDeclaration(INamespaceDefinitionNode node, INamespaceDeclarationNode inheritedDeclarationNode)
+    public static INamespaceDeclarationNode NamespaceBlockDefinition_ContainingDeclaration(INamespaceBlockDefinitionNode node, INamespaceDeclarationNode inheritedDeclarationNode)
         => node.IsGlobalQualified ? inheritedDeclarationNode.Facet.GlobalNamespace : inheritedDeclarationNode;
 
-    public static INamespaceDeclarationNode NamespaceDeclaration_Declaration(INamespaceDefinitionNode node)
+    public static INamespaceDeclarationNode NamespaceBlockDefinition_Declaration(INamespaceBlockDefinitionNode node)
         => FindNamespace(node.ContainingDeclaration, node.DeclaredNames);
 
-    public static INamespaceDeclarationNode NamespaceDeclaration_InheritedContainingDeclaration(INamespaceDefinitionNode node)
+    public static INamespaceDeclarationNode NamespaceBlockDefinition_InheritedContainingDeclaration(INamespaceBlockDefinitionNode node)
         => node.Declaration;
 
     public static bool Attribute_InheritedIsAttributeType_Child(IAttributeNode _) => true;

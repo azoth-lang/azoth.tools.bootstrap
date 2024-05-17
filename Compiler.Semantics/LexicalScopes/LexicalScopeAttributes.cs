@@ -54,7 +54,7 @@ internal static class LexicalScopeAttributes
         return new UsingDirectivesScope(containingScope, namespaceScopes);
     }
 
-    public static LexicalScope NamespaceDeclaration(INamespaceDefinitionNode node)
+    public static LexicalScope NamespaceBlockDefinition_LexicalScope(INamespaceBlockDefinitionNode node)
         => BuildNamespaceScope(node.ContainingLexicalScope, node.DeclaredNames, node.UsingDirectives);
 
     public static LexicalScope TypeDeclaration_SupertypesLexicalScope(ITypeDefinitionNode node)

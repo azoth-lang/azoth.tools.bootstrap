@@ -36,7 +36,7 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IUsingDirectiveNode n:
                 yield break;
-            case INamespaceDefinitionNode n:
+            case INamespaceBlockDefinitionNode n:
                 foreach (var child in n.UsingDirectives)
                     yield return child;
                 foreach (var child in n.Members)

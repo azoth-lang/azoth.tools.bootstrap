@@ -14,6 +14,6 @@ internal static class DeclarationsAttribute
                    .OfType<IPackageMemberDefinitionNode>().ToFixedSet();
 
         static IEnumerable<INamespaceMemberDefinitionNode> NamespaceChildren(INamespaceMemberDefinitionNode m)
-            => (m as INamespaceDefinitionNode)?.Members ?? Enumerable.Empty<INamespaceMemberDefinitionNode>();
+            => (m as INamespaceBlockDefinitionNode)?.Members ?? Enumerable.Empty<INamespaceMemberDefinitionNode>();
     }
 }

@@ -32,7 +32,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IUsingDirectiveNode),
     typeof(IDefinitionNode),
     typeof(IConcreteInvocableDefinitionNode),
-    typeof(INamespaceDefinitionNode),
+    typeof(INamespaceBlockDefinitionNode),
     typeof(IAlwaysTypeMemberDefinitionNode),
     typeof(IAbstractMethodDefinitionNode),
     typeof(IStandardMethodDefinitionNode),
@@ -281,7 +281,7 @@ public partial interface IConcreteInvocableDefinitionNode : ISemanticNode, IInvo
 {
 }
 
-public partial interface INamespaceDefinitionNode : ISemanticNode, INamespaceMemberDefinitionNode
+public partial interface INamespaceBlockDefinitionNode : ISemanticNode, INamespaceMemberDefinitionNode
 {
     new INamespaceDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -301,7 +301,7 @@ public partial interface INamespaceDefinitionNode : ISemanticNode, INamespaceMem
 
 [Closed(
     typeof(IPackageMemberDefinitionNode),
-    typeof(INamespaceDefinitionNode))]
+    typeof(INamespaceBlockDefinitionNode))]
 public partial interface INamespaceMemberDefinitionNode : IDefinitionNode
 {
 }

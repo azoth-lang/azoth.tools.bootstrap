@@ -71,7 +71,7 @@ InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter
 ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrInitializerParameter*;
 
 // ---------- Namespace Definitions
-NamespaceDefinition <: NamespaceMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
+NamespaceBlockDefinition <: NamespaceMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
     IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
     UsingDirectives:UsingDirective* Members:NamespaceMemberDefinition*
     Declaration:`INamespaceDeclarationNode` ContainingDeclaration:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`

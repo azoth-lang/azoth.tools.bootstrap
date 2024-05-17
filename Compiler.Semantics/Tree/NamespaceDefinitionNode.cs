@@ -10,7 +10,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal class NamespaceDefinitionNode : DefinitionNode, INamespaceDefinitionNode
+internal class NamespaceBlockDefinitionNode : DefinitionNode, INamespaceBlockDefinitionNode
 {
     public override INamespaceDefinitionSyntax Syntax { get; }
     public bool IsGlobalQualified => Syntax.IsGlobalQualified;
@@ -20,14 +20,14 @@ internal class NamespaceDefinitionNode : DefinitionNode, INamespaceDefinitionNod
     public override INamespaceDeclarationNode ContainingDeclaration
         => containingSymbolNode.TryGetValue(out var value) ? value
             : containingSymbolNode.GetValue(this, node
-                => SymbolNodeAttributes.NamespaceDeclaration_ContainingDeclaration(node,
+                => SymbolNodeAttributes.NamespaceBlockDefinition_ContainingDeclaration(node,
                     (INamespaceDeclarationNode)Parent.InheritedContainingDeclaration(this, this)));
     public override NamespaceSymbol ContainingSymbol => ContainingDeclaration.Symbol;
 
     private ValueAttribute<INamespaceDeclarationNode> declaration;
     public INamespaceDeclarationNode Declaration
         => declaration.TryGetValue(out var value) ? value
-            : declaration.GetValue(this, SymbolNodeAttributes.NamespaceDeclaration_Declaration);
+            : declaration.GetValue(this, SymbolNodeAttributes.NamespaceBlockDefinition_Declaration);
     public NamespaceSymbol Symbol => Declaration.Symbol;
 
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
@@ -35,9 +35,9 @@ internal class NamespaceDefinitionNode : DefinitionNode, INamespaceDefinitionNod
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopeAttributes.NamespaceDeclaration);
+            : lexicalScope.GetValue(this, LexicalScopeAttributes.NamespaceBlockDefinition_LexicalScope);
 
-    public NamespaceDefinitionNode(
+    public NamespaceBlockDefinitionNode(
         INamespaceDefinitionSyntax syntax,
         IEnumerable<IUsingDirectiveNode> usingDirectives,
         IEnumerable<INamespaceMemberDefinitionNode> members)
@@ -48,7 +48,7 @@ internal class NamespaceDefinitionNode : DefinitionNode, INamespaceDefinitionNod
     }
 
     internal override IDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
-        => SymbolNodeAttributes.NamespaceDeclaration_InheritedContainingDeclaration(this);
+        => SymbolNodeAttributes.NamespaceBlockDefinition_InheritedContainingDeclaration(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
         => LexicalScope;
