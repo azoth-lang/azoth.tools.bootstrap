@@ -60,14 +60,14 @@ internal static class LexicalScopeAttributes
     public static LexicalScope TypeDeclaration_SupertypesLexicalScope(ITypeDefinitionNode node)
     {
         if (node.GenericParameters.Any())
-            return new BasicScope(node.ContainingLexicalScope, node.GenericParameters);
+            return new DeclarationScope(node.ContainingLexicalScope, node.GenericParameters);
 
         return node.ContainingLexicalScope;
     }
 
     public static LexicalScope TypeDeclaration_LexicalScope(ITypeDefinitionNode node)
         // TODO populate the scope with members
-        => new BasicScope(node.SupertypesLexicalScope, Enumerable.Empty<INamedDeclarationNode>());
+        => new DeclarationScope(node.SupertypesLexicalScope, Enumerable.Empty<INamedDeclarationNode>());
 
     public static LexicalScope TypeDeclaration_InheritedLexicalScope_Supertypes(ITypeDefinitionNode node)
         => node.SupertypesLexicalScope;

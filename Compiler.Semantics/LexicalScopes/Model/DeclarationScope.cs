@@ -5,13 +5,16 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 
-internal class BasicScope : LexicalScope
+/// <summary>
+/// A scope defined by a declaration other than a namespace or using directive.
+/// </summary>
+internal class DeclarationScope : LexicalScope
 {
     public override PackageNameScope PackageNames { get; }
     private readonly LexicalScope parent;
     private readonly FixedDictionary<StandardName, IFixedSet<INamedDeclarationNode>> declarations;
 
-    internal BasicScope(LexicalScope parent, IEnumerable<INamedDeclarationNode> declarations)
+    internal DeclarationScope(LexicalScope parent, IEnumerable<INamedDeclarationNode> declarations)
     {
         this.parent = parent;
         PackageNames = parent.PackageNames;
