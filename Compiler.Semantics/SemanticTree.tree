@@ -30,8 +30,8 @@ ElseClause <: Code;
 BlockOrResult: ElseClause;
 
 // ---------- Bindings
-Binding <: Code = IsMutableBinding:`bool`;
-LocalBinding: Binding;
+Binding <: Code, BindingDeclaration = IsMutableBinding:`bool`;
+LocalBinding <: Binding, LocalBindingDeclaration;
 
 // ---------- Packages
 Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
@@ -163,10 +163,9 @@ AssociatedFunctionDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDef
 Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:StandardTypeName ReferencedSymbol:`ConstructorSymbol`?;
 
 // ---------- Capabilities
-CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`Compiler.Types.Capabilities.ICapabilityConstraint`;
+CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`ICapabilityConstraint`;
 CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint:`CapabilitySet`;
-// TODO have a way to make Capability hide Constraint
-Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability` Constraint:`Capability`;
+Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability`;
 
 // ---------- Parameters
 Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool` Type:`Pseudotype`;

@@ -146,7 +146,7 @@ public partial interface IBlockOrResultNode : IElseClauseNode
 [Closed(
     typeof(ILocalBindingNode),
     typeof(IFieldDefinitionNode))]
-public partial interface IBindingNode : ISemanticNode, ICodeNode
+public partial interface IBindingNode : ISemanticNode, ICodeNode, IBindingDeclarationNode
 {
     bool IsMutableBinding { get; }
 }
@@ -155,7 +155,7 @@ public partial interface IBindingNode : ISemanticNode, ICodeNode
     typeof(IVariableDeclarationStatementNode),
     typeof(IBindingPatternNode),
     typeof(IForeachExpressionNode))]
-public partial interface ILocalBindingNode : IBindingNode
+public partial interface ILocalBindingNode : IBindingNode, ILocalBindingDeclarationNode
 {
 }
 
@@ -657,6 +657,7 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    IdentifierName IBindingDeclarationNode.Name => Name;
     IdentifierName IFieldDeclarationNode.Name => Name;
     StandardName INamedDeclarationNode.Name => Name;
     ITypeNode TypeNode { get; }
@@ -705,7 +706,7 @@ public partial interface ICapabilityConstraintNode : ISemanticNode, ICodeNode
     new ICapabilityConstraintSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    Compiler.Types.Capabilities.ICapabilityConstraint Constraint { get; }
+    ICapabilityConstraint Constraint { get; }
 }
 
 public partial interface ICapabilitySetNode : ICapabilityConstraintNode
@@ -713,7 +714,7 @@ public partial interface ICapabilitySetNode : ICapabilityConstraintNode
     new ICapabilitySetSyntax Syntax { get; }
     ICapabilityConstraintSyntax ICapabilityConstraintNode.Syntax => Syntax;
     new CapabilitySet Constraint { get; }
-    Compiler.Types.Capabilities.ICapabilityConstraint ICapabilityConstraintNode.Constraint => Constraint;
+    ICapabilityConstraint ICapabilityConstraintNode.Constraint => Constraint;
 }
 
 public partial interface ICapabilityNode : ICapabilityConstraintNode
@@ -721,8 +722,6 @@ public partial interface ICapabilityNode : ICapabilityConstraintNode
     new ICapabilitySyntax Syntax { get; }
     ICapabilityConstraintSyntax ICapabilityConstraintNode.Syntax => Syntax;
     Capability Capability { get; }
-    new Capability Constraint { get; }
-    Compiler.Types.Capabilities.ICapabilityConstraint ICapabilityConstraintNode.Constraint => Constraint;
 }
 
 [Closed(
@@ -1038,7 +1037,6 @@ public partial interface IVariableDeclarationStatementNode : ISemanticNode, IBod
     IBodyStatementSyntax IBodyStatementNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IStatementSyntax IStatementNode.Syntax => Syntax;
-    IdentifierName Name { get; }
     ICapabilityNode? Capability { get; }
     ITypeNode? Type { get; }
     IUntypedExpressionNode? Initializer { get; }
@@ -1086,7 +1084,6 @@ public partial interface IBindingPatternNode : ISemanticNode, IOptionalOrBinding
     IOptionalOrBindingPatternSyntax IOptionalOrBindingPatternNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IPatternSyntax IPatternNode.Syntax => Syntax;
-    IdentifierName Name { get; }
 }
 
 public partial interface IOptionalPatternNode : ISemanticNode, IOptionalOrBindingPatternNode
@@ -1593,6 +1590,7 @@ public partial interface ISymbolDeclarationNode : IDeclarationNode
 }
 
 [Closed(
+    typeof(IBindingNode),
     typeof(ILocalBindingDeclarationNode))]
 public partial interface IBindingDeclarationNode : INamedDeclarationNode
 {
@@ -1600,6 +1598,8 @@ public partial interface IBindingDeclarationNode : INamedDeclarationNode
     StandardName INamedDeclarationNode.Name => Name;
 }
 
+[Closed(
+    typeof(ILocalBindingNode))]
 public partial interface ILocalBindingDeclarationNode : ISemanticNode, IBindingDeclarationNode
 {
 }

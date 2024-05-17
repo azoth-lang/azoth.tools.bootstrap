@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
@@ -15,6 +16,16 @@ public partial interface IClassDefinitionNode
         => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
 }
 
+public partial interface ICapabilityNode
+{
+    // TODO some way to code gen this hiding
+    ICapabilityConstraint ICapabilityConstraintNode.Constraint => Capability;
+}
+
+public partial interface IForeachExpressionNode
+{
+    IdentifierName IBindingDeclarationNode.Name => VariableName;
+}
 
 public partial interface IUserTypeDeclarationNode
 {
