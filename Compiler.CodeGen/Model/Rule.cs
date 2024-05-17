@@ -31,6 +31,7 @@ public class Rule
     private readonly Lazy<IFixedSet<Rule>> ancestorRules;
     public IFixedSet<Rule> DerivedRules => derivedRules.Value;
     private readonly Lazy<IFixedSet<Rule>> derivedRules;
+    // TODO this is not the correct term for this. Terminal/Non-Terminal is about whether it is a rule or a token
     public bool IsTerminal => !DerivedRules.Any();
     public IFixedSet<Rule> DescendantRules => descendantRules.Value;
     private readonly Lazy<IFixedSet<Rule>> descendantRules;

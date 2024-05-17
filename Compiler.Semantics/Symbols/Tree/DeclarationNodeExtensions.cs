@@ -5,7 +5,7 @@ using DotNet.Collections.Generic;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 
-internal static class SymbolNode
+internal static class DeclarationNodeExtensions
 {
     public static IEnumerable<T> MembersNamed<T>(
         this IEnumerable<T> members,
