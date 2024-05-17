@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using DotNet.Collections.Generic;
 

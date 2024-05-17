@@ -7,7 +7,6 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;

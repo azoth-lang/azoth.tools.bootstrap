@@ -3,7 +3,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using DotNet.Collections.Generic;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Tree;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal static class DeclarationNodeExtensions
 {
