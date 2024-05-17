@@ -53,19 +53,20 @@ internal static class SymbolNodeAttributes
         }
     }
 
-    public static INamespaceDeclarationNode CompilationUnit_ImplicitNamespaceSymbolNode(ICompilationUnitNode node)
+    public static INamespaceDefinitionNode CompilationUnit_ImplicitNamespaceDeclaration(ICompilationUnitNode node)
         => FindNamespace(node.ContainingDeclaration.GlobalNamespace, node.ImplicitNamespaceName);
 
-    private static INamespaceDeclarationNode FindNamespace(INamespaceDeclarationNode containingDeclarationNode, NamespaceName ns)
+    private static INamespaceDefinitionNode FindNamespace(INamespaceDefinitionNode containingDeclarationNode, NamespaceName ns)
     {
+        // TODO rework
         var current = containingDeclarationNode;
         foreach (var name in ns.Segments)
-            current = current.MembersNamed(name).OfType<INamespaceDeclarationNode>().Single();
+            current = current.MembersNamed(name).OfType<INamespaceDefinitionNode>().Single();
         return current;
     }
 
     public static INamespaceDeclarationNode CompilationUnit_InheritedContainingDeclaration(ICompilationUnitNode node)
-        => node.ImplicitNamespaceSymbolNode;
+        => node.ImplicitNamespace;
 
     public static IPackageSymbolNode PackageReference_SymbolNode(IPackageReferenceNode node)
         => new PackageSymbolNode(node);
@@ -74,14 +75,14 @@ internal static class SymbolNodeAttributes
         => node.References.Select(r => r.SymbolNode).Append<IPackageDeclarationNode>(node)
                .ToFixedDictionary(n => n.AliasOrName ?? node.Symbol.Name);
 
-    public static INamespaceDeclarationNode NamespaceBlockDefinition_ContainingDeclaration(INamespaceBlockDefinitionNode node, INamespaceDeclarationNode inheritedDeclarationNode)
-        => node.IsGlobalQualified ? inheritedDeclarationNode.Facet.GlobalNamespace : inheritedDeclarationNode;
+    public static INamespaceDefinitionNode NamespaceBlockDefinition_ContainingDeclaration(INamespaceBlockDefinitionNode node)
+        => node.IsGlobalQualified ? node.Facet.GlobalNamespace : node.ContainingDeclaration;
 
-    public static INamespaceDeclarationNode NamespaceBlockDefinition_Declaration(INamespaceBlockDefinitionNode node)
-        => FindNamespace(node.ContainingDeclaration, node.DeclaredNames);
+    public static INamespaceDefinitionNode NamespaceBlockDefinition_Declaration(INamespaceBlockDefinitionNode node)
+        => FindNamespace(node.ContainingNamespace, node.DeclaredNames);
 
     public static INamespaceDeclarationNode NamespaceBlockDefinition_InheritedContainingDeclaration(INamespaceBlockDefinitionNode node)
-        => node.Declaration;
+        => node.Definition;
 
     public static bool Attribute_InheritedIsAttributeType_Child(IAttributeNode _) => true;
 
@@ -132,7 +133,7 @@ internal static class SymbolNodeAttributes
         => node.ContainingTypeDefinition.Members.OfType<IFieldDefinitionNode>().FirstOrDefault(f => f.Name == node.Name);
 
     #region Construct for Symbols
-    public static IFacetChildDeclarationNode Symbol(Symbol symbol)
+    public static IPackageFacetChildDeclarationNode Symbol(Symbol symbol)
         => symbol switch
         {
             NamespaceSymbol sym => new NamespaceSymbolNode(sym),

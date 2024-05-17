@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
-internal sealed class ConstructorSymbolNode : FacetChildSymbolNode, IConstructorSymbolNode
+internal sealed class ConstructorSymbolNode : PackageFacetChildSymbolNode, IConstructorSymbolNode
 {
     public override ConstructorSymbol Symbol { get; }
     public override IdentifierName? Name => Symbol.Name;

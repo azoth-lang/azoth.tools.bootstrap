@@ -42,6 +42,7 @@ Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Sy
 PackageReference <: Child = Syntax:`IPackageReferenceSyntax`? SymbolNode:`IPackageSymbolNode`
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
 
+// ---------- Facets
 PackageFacet <: Child, PackageFacetDeclaration = Syntax:`IPackageSyntax` PackageName:`IdentifierName`
     Symbol:`PackageSymbol`
     PackageNameScope:`PackageNameScope`
@@ -56,8 +57,8 @@ PackageMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefini
 Code <: Child = Syntax:`IConcreteSyntax`? File:`CodeFile`;
 
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
-    ContainingDeclaration:`IPackageFacetDeclarationNode` ContainingSymbol:`NamespaceSymbol`
-    ImplicitNamespaceName:`NamespaceName` ImplicitNamespaceSymbolNode:`INamespaceDeclarationNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
+    ContainingDeclaration:`IPackageFacetNode` ContainingSymbol:`PackageSymbol`
+    ImplicitNamespaceName:`NamespaceName` ImplicitNamespace:`INamespaceDefinitionNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*
     ContainingLexicalScope:`NamespaceScope` LexicalScope:`LexicalScope`
     Diagnostics:`Diagnostic`*;
@@ -65,7 +66,7 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
 // ---------- Definitions
-Definition <: Code = Syntax:`IDefinitionSyntax`? Facet:`IPackageFacetDeclarationNode` ContainingDeclaration:`IDeclarationNode` ContainingSymbol:`Symbol`
+Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? Facet:`IPackageFacetNode` ContainingDeclaration:`IDeclarationNode` ContainingSymbol:`Symbol`
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter*;
 ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrInitializerParameter*;
@@ -74,7 +75,8 @@ ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrIni
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
     IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
     UsingDirectives:UsingDirective* Members:NamespaceBlockMemberDefinition*
-    Declaration:`INamespaceDeclarationNode` ContainingDeclaration:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
+    Definition:`INamespaceDefinitionNode` ContainingDeclaration:`INamespaceDefinitionNode`
+    ContainingNamespace:`INamespaceDefinitionNode` ContainingSymbol:`NamespaceSymbol`
     Symbol:`NamespaceSymbol`;
 NamespaceBlockMemberDefinition <: Definition;
 NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
@@ -308,13 +310,12 @@ PackageMemberDeclaration <: NamespaceMemberDeclaration;
 PackageFacetDeclaration <: ChildDeclaration = PackageAliasOrName:`IdentifierName`? PackageName:`IdentifierName`
     Symbol:`PackageSymbol` GlobalNamespace:NamespaceDeclaration;
 
-// ---------- Declarations
-FacetChildDeclaration <: ChildDeclaration = Name:`StandardName`? Facet:`IPackageFacetDeclarationNode`;
+PackageFacetChildDeclaration <: ChildDeclaration = Name:`StandardName`? Facet:`IPackageFacetDeclarationNode`;
 
 // ---------- Namespace Declarations
 NamespaceDeclaration <: NamespaceMemberDeclaration = Name:`IdentifierName` Symbol:`NamespaceSymbol`
     Members:`INamespaceMemberDeclarationNode`* NestedMembers:`INamespaceMemberDeclarationNode`*;
-NamespaceMemberDeclaration <: FacetChildDeclaration, NamedDeclaration;
+NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration;
 
 // ---------- Function Declaration
 FunctionDeclaration <: PackageMemberDeclaration, NamedDeclaration = Symbol:`FunctionSymbol`;
@@ -330,7 +331,7 @@ TraitDeclaration <: UserTypeDeclaration = Members:TraitMemberDeclaration*;
 GenericParameterDeclaration <: TypeDeclaration = Name:`IdentifierName`;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
-TypeMemberDeclaration <: FacetChildDeclaration;
+TypeMemberDeclaration <: PackageFacetChildDeclaration;
 ClassMemberDeclaration <: TypeMemberDeclaration;
 TraitMemberDeclaration <: TypeMemberDeclaration;
 StructMemberDeclaration <: TypeMemberDeclaration;

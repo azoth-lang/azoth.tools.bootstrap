@@ -11,7 +11,7 @@ internal static class DeclarationNodeExtensions
         this IEnumerable<T> members,
         ref MultiMapHashSet<StandardName, T>? membersByName,
         StandardName named)
-        where T : IFacetChildDeclarationNode
+        where T : IPackageFacetChildDeclarationNode
     {
         membersByName ??= new(members.GroupBy(m => m.Name).Where(g => g.Key is not null)
                                      .ToDictionary(g => g.Key!, g => g.ToHashSet()));

@@ -29,19 +29,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IPackageNode),
     typeof(ICompilationUnitNode),
     typeof(IUsingDirectiveNode),
-    typeof(IDefinitionNode),
-    typeof(IConcreteInvocableDefinitionNode),
-    typeof(INamespaceBlockDefinitionNode),
+    typeof(IInvocableDefinitionNode),
+    typeof(INamespaceBlockMemberDefinitionNode),
     typeof(INamespaceMemberDefinitionNode),
     typeof(IFunctionDefinitionNode),
     typeof(ITypeDefinitionNode),
-    typeof(IAlwaysTypeMemberDefinitionNode),
+    typeof(ITypeMemberDefinitionNode),
     typeof(IAbstractMethodDefinitionNode),
-    typeof(IStandardMethodDefinitionNode),
-    typeof(IGetterMethodDefinitionNode),
-    typeof(ISetterMethodDefinitionNode),
-    typeof(IDefaultConstructorDefinitionNode),
-    typeof(ISourceConstructorDefinitionNode),
+    typeof(IConcreteMethodDefinitionNode),
+    typeof(IConstructorDefinitionNode),
+    typeof(IInitializerDefinitionNode),
+    typeof(IAssociatedFunctionDefinitionNode),
     typeof(IAttributeNode),
     typeof(ICapabilityConstraintNode),
     typeof(IParameterNode),
@@ -90,7 +88,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(INamedDeclarationNode),
     typeof(IPackageMemberDeclarationNode),
     typeof(IPackageFacetDeclarationNode),
-    typeof(IFacetChildDeclarationNode),
+    typeof(IPackageFacetChildDeclarationNode),
     typeof(INamespaceDeclarationNode),
     typeof(IClassDeclarationNode),
     typeof(IStructDeclarationNode),
@@ -232,10 +230,10 @@ public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
     new ICompilationUnitSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    IPackageFacetDeclarationNode ContainingDeclaration { get; }
-    NamespaceSymbol ContainingSymbol { get; }
+    IPackageFacetNode ContainingDeclaration { get; }
+    PackageSymbol ContainingSymbol { get; }
     NamespaceName ImplicitNamespaceName { get; }
-    INamespaceDeclarationNode ImplicitNamespaceSymbolNode { get; }
+    INamespaceDefinitionNode ImplicitNamespace { get; }
     NamespaceSymbol ImplicitNamespaceSymbol { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
@@ -256,12 +254,13 @@ public partial interface IUsingDirectiveNode : ISemanticNode, ICodeNode
     typeof(IInvocableDefinitionNode),
     typeof(INamespaceBlockMemberDefinitionNode),
     typeof(ITypeMemberDefinitionNode))]
-public partial interface IDefinitionNode : ISemanticNode, ICodeNode
+public partial interface IDefinitionNode : ICodeNode, IPackageFacetChildDeclarationNode
 {
     new IDefinitionSyntax? Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    IPackageFacetDeclarationNode Facet { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    new IPackageFacetNode Facet { get; }
+    IPackageFacetDeclarationNode IPackageFacetChildDeclarationNode.Facet => Facet;
     IDeclarationNode ContainingDeclaration { get; }
     Symbol ContainingSymbol { get; }
     LexicalScope ContainingLexicalScope { get; }
@@ -271,7 +270,7 @@ public partial interface IDefinitionNode : ISemanticNode, ICodeNode
 [Closed(
     typeof(IConcreteInvocableDefinitionNode),
     typeof(IMethodDefinitionNode))]
-public partial interface IInvocableDefinitionNode : IDefinitionNode
+public partial interface IInvocableDefinitionNode : ISemanticNode, IDefinitionNode
 {
     IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
 }
@@ -281,11 +280,11 @@ public partial interface IInvocableDefinitionNode : IDefinitionNode
     typeof(IConstructorDefinitionNode),
     typeof(IInitializerDefinitionNode),
     typeof(IAssociatedFunctionDefinitionNode))]
-public partial interface IConcreteInvocableDefinitionNode : ISemanticNode, IInvocableDefinitionNode
+public partial interface IConcreteInvocableDefinitionNode : IInvocableDefinitionNode
 {
 }
 
-public partial interface INamespaceBlockDefinitionNode : ISemanticNode, INamespaceBlockMemberDefinitionNode
+public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDefinitionNode
 {
     new INamespaceDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -295,18 +294,20 @@ public partial interface INamespaceBlockDefinitionNode : ISemanticNode, INamespa
     NamespaceName DeclaredNames { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceBlockMemberDefinitionNode> Members { get; }
-    INamespaceDeclarationNode Declaration { get; }
-    new INamespaceDeclarationNode ContainingDeclaration { get; }
+    INamespaceDefinitionNode Definition { get; }
+    new INamespaceDefinitionNode ContainingDeclaration { get; }
     IDeclarationNode IDefinitionNode.ContainingDeclaration => ContainingDeclaration;
+    INamespaceDefinitionNode ContainingNamespace { get; }
     new NamespaceSymbol ContainingSymbol { get; }
     Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
-    NamespaceSymbol Symbol { get; }
+    new NamespaceSymbol Symbol { get; }
+    Symbol IDeclarationNode.Symbol => Symbol;
 }
 
 [Closed(
     typeof(IPackageMemberDefinitionNode),
     typeof(INamespaceBlockDefinitionNode))]
-public partial interface INamespaceBlockMemberDefinitionNode : IDefinitionNode
+public partial interface INamespaceBlockMemberDefinitionNode : ISemanticNode, IDefinitionNode
 {
 }
 
@@ -336,7 +337,7 @@ public partial interface IFunctionDefinitionNode : ISemanticNode, IPackageMember
     new NamespaceSymbol ContainingSymbol { get; }
     Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
     new IdentifierName Name { get; }
-    StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     StandardName INamedDeclarationNode.Name => Name;
     IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
@@ -363,7 +364,7 @@ public partial interface ITypeDefinitionNode : ISemanticNode, IPackageMemberDefi
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     bool IsConst { get; }
     new StandardName Name { get; }
-    StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     StandardName INamedDeclarationNode.Name => Name;
     IDeclaredUserType DeclaredType { get; }
     new UserTypeSymbol Symbol { get; }
@@ -455,11 +456,11 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     typeof(ITraitMemberDefinitionNode),
     typeof(IStructMemberDefinitionNode),
     typeof(IAlwaysTypeMemberDefinitionNode))]
-public partial interface ITypeMemberDefinitionNode : IDefinitionNode, ITypeMemberDeclarationNode
+public partial interface ITypeMemberDefinitionNode : ISemanticNode, IDefinitionNode, ITypeMemberDeclarationNode
 {
     new ITypeMemberDefinitionSyntax? Syntax { get; }
-    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     AccessModifier AccessModifier { get; }
 }
@@ -510,7 +511,7 @@ public partial interface IStructMemberDefinitionNode : ITypeMemberDefinitionNode
     typeof(IInitializerDefinitionNode),
     typeof(IFieldDefinitionNode),
     typeof(IAssociatedFunctionDefinitionNode))]
-public partial interface IAlwaysTypeMemberDefinitionNode : ISemanticNode, ITypeMemberDefinitionNode
+public partial interface IAlwaysTypeMemberDefinitionNode : ITypeMemberDefinitionNode
 {
     new UserTypeSymbol ContainingSymbol { get; }
     Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
@@ -522,15 +523,15 @@ public partial interface IAlwaysTypeMemberDefinitionNode : ISemanticNode, ITypeM
 public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IInvocableDefinitionNode, IMethodDeclarationNode
 {
     new IMethodDefinitionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IClassMemberDefinitionSyntax? IClassMemberDefinitionNode.Syntax => Syntax;
     ITraitMemberDefinitionSyntax ITraitMemberDefinitionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     MethodKind Kind { get; }
     new IdentifierName Name { get; }
-    StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName IMethodDeclarationNode.Name => Name;
     StandardName INamedDeclarationNode.Name => Name;
     IMethodSelfParameterNode SelfParameter { get; }
@@ -558,12 +559,12 @@ public partial interface IAbstractMethodDefinitionNode : ISemanticNode, IMethodD
     typeof(IStandardMethodDefinitionNode),
     typeof(IGetterMethodDefinitionNode),
     typeof(ISetterMethodDefinitionNode))]
-public partial interface IConcreteMethodDefinitionNode : IMethodDefinitionNode, IStructMemberDefinitionNode, IConcreteInvocableDefinitionNode
+public partial interface IConcreteMethodDefinitionNode : ISemanticNode, IMethodDefinitionNode, IStructMemberDefinitionNode, IConcreteInvocableDefinitionNode
 {
     new IConcreteMethodDefinitionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
     IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IClassMemberDefinitionSyntax? IClassMemberDefinitionNode.Syntax => Syntax;
@@ -575,41 +576,29 @@ public partial interface IConcreteMethodDefinitionNode : IMethodDefinitionNode, 
     IBodyNode Body { get; }
 }
 
-public partial interface IStandardMethodDefinitionNode : ISemanticNode, IConcreteMethodDefinitionNode
+public partial interface IStandardMethodDefinitionNode : IConcreteMethodDefinitionNode
 {
     new IStandardMethodDefinitionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteMethodDefinitionSyntax IConcreteMethodDefinitionNode.Syntax => Syntax;
-    IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
-    IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
-    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
 }
 
-public partial interface IGetterMethodDefinitionNode : ISemanticNode, IConcreteMethodDefinitionNode
+public partial interface IGetterMethodDefinitionNode : IConcreteMethodDefinitionNode
 {
     new IGetterMethodDefinitionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteMethodDefinitionSyntax IConcreteMethodDefinitionNode.Syntax => Syntax;
-    IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
-    IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
-    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     new ITypeNode Return { get; }
 }
 
-public partial interface ISetterMethodDefinitionNode : ISemanticNode, IConcreteMethodDefinitionNode
+public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinitionNode
 {
     new ISetterMethodDefinitionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteMethodDefinitionSyntax IConcreteMethodDefinitionNode.Syntax => Syntax;
-    IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
-    IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
-    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
 }
 
 [Closed(
     typeof(IDefaultConstructorDefinitionNode),
     typeof(ISourceConstructorDefinitionNode))]
-public partial interface IConstructorDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IConstructorDeclarationNode
+public partial interface IConstructorDefinitionNode : ISemanticNode, IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IConstructorDeclarationNode
 {
     new IConstructorDefinitionSyntax? Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -618,30 +607,26 @@ public partial interface IConstructorDefinitionNode : IConcreteInvocableDefiniti
     IClassMemberDefinitionSyntax? IClassMemberDefinitionNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     new IdentifierName? Name { get; }
-    StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName? IConstructorDeclarationNode.Name => Name;
     new ConstructorSymbol Symbol { get; }
     Symbol IDeclarationNode.Symbol => Symbol;
     ConstructorSymbol IConstructorDeclarationNode.Symbol => Symbol;
 }
 
-public partial interface IDefaultConstructorDefinitionNode : ISemanticNode, IConstructorDefinitionNode
+public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinitionNode
 {
 }
 
-public partial interface ISourceConstructorDefinitionNode : ISemanticNode, IConstructorDefinitionNode
+public partial interface ISourceConstructorDefinitionNode : IConstructorDefinitionNode
 {
     new IConstructorDefinitionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IConstructorDefinitionSyntax? IConstructorDefinitionNode.Syntax => Syntax;
-    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    IClassMemberDefinitionSyntax? IClassMemberDefinitionNode.Syntax => Syntax;
     IConstructorSelfParameterNode SelfParameter { get; }
     IBlockBodyNode Body { get; }
 }
 
-public partial interface IInitializerDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IStructMemberDefinitionNode, IInitializerDeclarationNode
+public partial interface IInitializerDefinitionNode : ISemanticNode, IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IStructMemberDefinitionNode, IInitializerDeclarationNode
 {
     new IInitializerDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -650,7 +635,7 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
     IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     new IdentifierName? Name { get; }
-    StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName? IInitializerDeclarationNode.Name => Name;
     IInitializerSelfParameterNode SelfParameter { get; }
     new InitializerSymbol Symbol { get; }
@@ -662,14 +647,14 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
 public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IStructMemberDefinitionNode, IBindingNode, IFieldDeclarationNode
 {
     new IFieldDefinitionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IClassMemberDefinitionSyntax? IClassMemberDefinitionNode.Syntax => Syntax;
     IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     new IdentifierName Name { get; }
-    StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName IFieldDeclarationNode.Name => Name;
     StandardName INamedDeclarationNode.Name => Name;
     ITypeNode TypeNode { get; }
@@ -679,7 +664,7 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     IUntypedExpressionNode? Initializer { get; }
 }
 
-public partial interface IAssociatedFunctionDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IStructMemberDefinitionNode, IAssociatedFunctionDeclarationNode
+public partial interface IAssociatedFunctionDefinitionNode : ISemanticNode, IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IStructMemberDefinitionNode, IAssociatedFunctionDeclarationNode
 {
     new IAssociatedFunctionDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -690,7 +675,7 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteInvocableD
     IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     new IdentifierName Name { get; }
-    StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName IAssociatedFunctionDeclarationNode.Name => Name;
     StandardName INamedDeclarationNode.Name => Name;
     new IFixedList<INamedParameterNode> Parameters { get; }
@@ -1576,7 +1561,7 @@ public partial interface IDeclarationNode : ISemanticNode
 [Closed(
     typeof(INamedDeclarationNode),
     typeof(IPackageFacetDeclarationNode),
-    typeof(IFacetChildDeclarationNode))]
+    typeof(IPackageFacetChildDeclarationNode))]
 public partial interface IChildDeclarationNode : IDeclarationNode, IChildNode
 {
 }
@@ -1626,9 +1611,10 @@ public partial interface IPackageFacetDeclarationNode : ISemanticNode, IChildDec
 }
 
 [Closed(
+    typeof(IDefinitionNode),
     typeof(INamespaceMemberDeclarationNode),
     typeof(ITypeMemberDeclarationNode))]
-public partial interface IFacetChildDeclarationNode : ISemanticNode, IChildDeclarationNode
+public partial interface IPackageFacetChildDeclarationNode : ISemanticNode, IChildDeclarationNode
 {
     StandardName? Name { get; }
     IPackageFacetDeclarationNode Facet { get; }
@@ -1640,7 +1626,7 @@ public partial interface IFacetChildDeclarationNode : ISemanticNode, IChildDecla
 public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMemberDeclarationNode
 {
     new IdentifierName Name { get; }
-    StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     StandardName INamedDeclarationNode.Name => Name;
     new NamespaceSymbol Symbol { get; }
     Symbol IDeclarationNode.Symbol => Symbol;
@@ -1652,7 +1638,7 @@ public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMe
     typeof(INamespaceMemberDefinitionNode),
     typeof(IPackageMemberDeclarationNode),
     typeof(INamespaceDeclarationNode))]
-public partial interface INamespaceMemberDeclarationNode : IFacetChildDeclarationNode, INamedDeclarationNode
+public partial interface INamespaceMemberDeclarationNode : IPackageFacetChildDeclarationNode, INamedDeclarationNode
 {
 }
 
@@ -1720,7 +1706,7 @@ public partial interface IGenericParameterDeclarationNode : ISemanticNode, IType
     typeof(IClassMemberDeclarationNode),
     typeof(ITraitMemberDeclarationNode),
     typeof(IStructMemberDeclarationNode))]
-public partial interface ITypeMemberDeclarationNode : IFacetChildDeclarationNode
+public partial interface ITypeMemberDeclarationNode : IPackageFacetChildDeclarationNode
 {
 }
 
@@ -1761,7 +1747,7 @@ public partial interface IStructMemberDeclarationNode : ISemanticNode, ITypeMemb
 public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode
 {
     new IdentifierName Name { get; }
-    StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     StandardName INamedDeclarationNode.Name => Name;
     new MethodSymbol Symbol { get; }
     Symbol IDeclarationNode.Symbol => Symbol;
@@ -1773,7 +1759,7 @@ public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, I
 public partial interface IConstructorDeclarationNode : IClassMemberDeclarationNode
 {
     new IdentifierName? Name { get; }
-    StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     new ConstructorSymbol Symbol { get; }
     Symbol IDeclarationNode.Symbol => Symbol;
 }
@@ -1784,7 +1770,7 @@ public partial interface IConstructorDeclarationNode : IClassMemberDeclarationNo
 public partial interface IInitializerDeclarationNode : IStructMemberDeclarationNode
 {
     new IdentifierName? Name { get; }
-    StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     new InitializerSymbol Symbol { get; }
     Symbol IDeclarationNode.Symbol => Symbol;
 }
@@ -1796,7 +1782,7 @@ public partial interface IFieldDeclarationNode : INamedDeclarationNode, IClassMe
 {
     new IdentifierName Name { get; }
     StandardName INamedDeclarationNode.Name => Name;
-    StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     DataType Type { get; }
     new FieldSymbol Symbol { get; }
     Symbol IDeclarationNode.Symbol => Symbol;
@@ -1808,7 +1794,7 @@ public partial interface IFieldDeclarationNode : INamedDeclarationNode, IClassMe
 public partial interface IAssociatedFunctionDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode
 {
     new IdentifierName Name { get; }
-    StandardName? IFacetChildDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     StandardName INamedDeclarationNode.Name => Name;
     new FunctionSymbol Symbol { get; }
     Symbol IDeclarationNode.Symbol => Symbol;

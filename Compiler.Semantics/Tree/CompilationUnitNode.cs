@@ -18,16 +18,16 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
 
     public override CodeFile File => Syntax.File;
 
-    public IPackageFacetDeclarationNode ContainingDeclaration
-        => (IPackageFacetDeclarationNode)Parent.InheritedContainingDeclaration(this, this);
-    public NamespaceSymbol ContainingSymbol => ContainingDeclaration.Symbol;
+    public IPackageFacetNode ContainingDeclaration
+        => (IPackageFacetNode)Parent.InheritedContainingDeclaration(this, this);
+    public PackageSymbol ContainingSymbol => ContainingDeclaration.Symbol;
     public NamespaceName ImplicitNamespaceName => Syntax.ImplicitNamespaceName;
 
-    private ValueAttribute<INamespaceDeclarationNode> implicitNamespaceSymbolNode;
-    public INamespaceDeclarationNode ImplicitNamespaceSymbolNode
-        => implicitNamespaceSymbolNode.TryGetValue(out var value) ? value
-            : implicitNamespaceSymbolNode.GetValue(this, SymbolNodeAttributes.CompilationUnit_ImplicitNamespaceSymbolNode);
-    public NamespaceSymbol ImplicitNamespaceSymbol => ImplicitNamespaceSymbolNode.Symbol;
+    private ValueAttribute<INamespaceDefinitionNode> implicitNamespaceDeclaration;
+    public INamespaceDefinitionNode ImplicitNamespace
+        => implicitNamespaceDeclaration.TryGetValue(out var value) ? value
+            : implicitNamespaceDeclaration.GetValue(this, SymbolNodeAttributes.CompilationUnit_ImplicitNamespaceDeclaration);
+    public NamespaceSymbol ImplicitNamespaceSymbol => ImplicitNamespace.Symbol;
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
     public NamespaceScope ContainingLexicalScope => (NamespaceScope)Parent.InheritedContainingLexicalScope(this, this);

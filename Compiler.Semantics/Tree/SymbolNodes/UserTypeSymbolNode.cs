@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
-internal abstract class UserTypeSymbolNode : FacetChildSymbolNode, IUserTypeDeclarationNode
+internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserTypeDeclarationNode
 {
     public override StandardName Name => base.Name!;
     public override UserTypeSymbol Symbol { get; }

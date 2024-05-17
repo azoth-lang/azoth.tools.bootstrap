@@ -8,7 +8,7 @@ using DotNet.Collections.Generic;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
-internal class NamespaceSymbolNode : FacetChildSymbolNode, INamespaceSymbolNode
+internal class NamespaceSymbolNode : PackageFacetChildSymbolNode, INamespaceSymbolNode
 {
     public override NamespaceSymbol Symbol { get; }
 
