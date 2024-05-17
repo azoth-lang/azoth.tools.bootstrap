@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -28,4 +29,6 @@ internal sealed class MemberAccessExpressionNode : NameExpressionNode, IMemberAc
 
     protected override IAssignableExpressionNode? Rewrite()
         => throw Child.RewriteNotSupported(this);
+
+    public override ConditionalLexicalScope GetFlowLexicalScope() => Context.GetFlowLexicalScope();
 }

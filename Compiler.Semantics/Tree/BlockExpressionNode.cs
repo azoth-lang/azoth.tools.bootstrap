@@ -18,8 +18,6 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
         Statements = ChildList.Attach(this, statements);
     }
 
-    public LexicalScope GetContainingLexicalScope() => InheritedContainingLexicalScope();
-
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, Statements.IndexOf(child)!.Value);
 }

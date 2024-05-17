@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Framework;
@@ -95,4 +96,39 @@ internal static class LexicalScopingAspect
 
     public static LexicalScope VariableDeclarationStatement_LexicalScope(IVariableDeclarationStatementNode node)
         => new DeclarationScope(node.ContainingLexicalScope, node);
+
+    /// <summary>
+    /// Default implementation for expressions that can't introduce a new scope.
+    /// </summary>
+    public static ConditionalLexicalScope UntypedExpression_GetFlowLexicalScope(IUntypedExpressionNode node)
+        => ConditionalLexicalScope.Unconditional(node.GetContainingLexicalScope());
+
+    public static ConditionalLexicalScope BinaryOperatorExpression_GetFlowLexicalScope(IBinaryOperatorExpressionNode node)
+    {
+        if (node.Operator == BinaryOperator.Or)
+            // Cannot statically be sure which part of the expression was evaluated
+            return ConditionalLexicalScope.Unconditional(node.GetContainingLexicalScope());
+        return node.RightOperand.GetFlowLexicalScope();
+    }
+
+    public static LexicalScope BinaryOperatorExpression_InheritedContainingLexicalScope_RightOperand(IBinaryOperatorExpressionNode node)
+    {
+        var flowScope = node.LeftOperand.GetFlowLexicalScope();
+        // Logical-or is short-circuiting, so the right operand is only evaluated if the left
+        // operand is false. Otherwise, the operator is logical-and or another operator and the
+        // right operand will be evaluated when the left operand is true (or always).
+        return node.Operator == BinaryOperator.Or ? flowScope.False : flowScope.True;
+    }
+
+    /// <remarks>In an assignment, the left hand side cannot use variables declared in the right-hand
+    /// side because parts of it will be evaluated first. For simplicity, both sides are evaluated
+    /// in the containing lexical scope and only the right hand scope is used.</remarks>
+    public static ConditionalLexicalScope AssignmentExpression_GetFlowLexicalScope(IAssignmentExpressionNode node)
+        => node.RightOperand.GetFlowLexicalScope();
+
+    public static ConditionalLexicalScope UnaryOperatorExpression_GetFlowLexicalScope(IUnaryOperatorExpressionNode node)
+    {
+        var flow = node.Operand.GetFlowLexicalScope();
+        return node.Operator == UnaryOperator.Not ? flow.Swapped() : flow;
+    }
 }

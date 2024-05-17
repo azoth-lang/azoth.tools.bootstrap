@@ -1,6 +1,8 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -17,4 +19,7 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
         Syntax = syntax;
         this.operand = Child.Create(this, operand);
     }
+
+    public override ConditionalLexicalScope GetFlowLexicalScope()
+        => LexicalScopingAspect.UnaryOperatorExpression_GetFlowLexicalScope(this);
 }

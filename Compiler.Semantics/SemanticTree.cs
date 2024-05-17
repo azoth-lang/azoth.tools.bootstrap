@@ -40,6 +40,13 @@ public partial interface IStatementNode
     LexicalScope GetLexicalScope();
 }
 
+public partial interface IUntypedExpressionNode
+{
+    LexicalScope GetContainingLexicalScope();
+    // TODO it is strange that this is always a conditional scope. Instead use conditional only where it makes sense?
+    ConditionalLexicalScope GetFlowLexicalScope();
+}
+
 public partial interface IForeachExpressionNode
 {
     // TODO some way to code gen this hiding

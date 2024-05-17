@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -14,4 +15,6 @@ internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
     }
+
+    public override ConditionalLexicalScope GetFlowLexicalScope() => Referent.GetFlowLexicalScope();
 }
