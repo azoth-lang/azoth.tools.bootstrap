@@ -21,7 +21,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopeAttributes.FunctionDefinition_LexicalScope);
+            : lexicalScope.GetValue(this, LexicalScopingAspect.FunctionDefinition_LexicalScope);
     private ValueAttribute<FunctionSymbol> symbol;
     public override FunctionSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
@@ -50,4 +50,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
 
     internal override bool InheritedIsAttributeType(IChildNode caller, IChildNode child)
         => SymbolNodeAttributes.FunctionDeclaration_InheritedIsAttributeType(this);
+
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
+        => LexicalScope;
 }

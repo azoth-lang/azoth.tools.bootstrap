@@ -32,7 +32,7 @@ public partial interface ICapabilityNode
 public partial interface IForeachExpressionNode
 {
     // TODO some way to code gen this hiding
-    IdentifierName IBindingDeclarationNode.Name => VariableName;
+    IdentifierName INamedBindingDeclarationNode.Name => VariableName;
 }
 
 public partial interface INamespaceDeclarationNode

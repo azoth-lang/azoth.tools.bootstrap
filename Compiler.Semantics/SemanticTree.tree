@@ -30,8 +30,8 @@ ElseClause <: Code;
 BlockOrResult: ElseClause;
 
 // ---------- Bindings
-Binding <: Code, BindingDeclaration = IsMutableBinding:`bool`;
-LocalBinding <: Binding, LocalBindingDeclaration;
+Binding <: Code, BindingDeclaration;
+NamedBinding <: Binding, NamedBindingDeclaration;
 
 // ---------- Packages
 Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
@@ -168,9 +168,9 @@ CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint
 Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability`;
 
 // ---------- Parameters
-Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool` Type:`Pseudotype`;
+Parameter <: Code, Binding = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool` Type:`Pseudotype`;
 /// A non-self parameter that can be declared in a constructor
-ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax` Type:`DataType` ParameterType:`Parameter`;
+ConstructorOrInitializerParameter <: Parameter, NamedBinding = Syntax:`IConstructorOrInitializerParameterSyntax` Type:`DataType` ParameterType:`Parameter`;
 NamedParameter <: ConstructorOrInitializerParameter = Syntax:`INamedParameterSyntax`
     IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`?
     TypeNode:Type;
@@ -210,7 +210,7 @@ SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:
 Statement <: Code = Syntax:`IStatementSyntax`;
 ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax` Expression:UntypedExpression;
 BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;
-VariableDeclarationStatement <: BodyStatement, LocalBinding = Syntax:`IVariableDeclarationStatementSyntax`
+VariableDeclarationStatement <: BodyStatement, NamedBinding = Syntax:`IVariableDeclarationStatementSyntax`
     Name:`IdentifierName` Capability? Type? Initializer:UntypedExpression?;
 ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax` Expression:UntypedExpression;
 
@@ -218,7 +218,7 @@ ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax` Express
 Pattern <: Code = Syntax:`IPatternSyntax`;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
-BindingPattern <: OptionalOrBindingPattern, LocalBinding = Syntax:`IBindingPatternSyntax` Name:`IdentifierName`;
+BindingPattern <: OptionalOrBindingPattern, NamedBinding = Syntax:`IBindingPatternSyntax` Name:`IdentifierName`;
 OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
@@ -250,7 +250,7 @@ PatternMatchExpression <: Expression = Syntax:`IPatternMatchExpressionSyntax` Re
 IfExpression <: Expression, ElseClause = Syntax:`IIfExpressionSyntax` Condition:UntypedExpression ThenBlock:BlockOrResult ElseClause?;
 LoopExpression <: Expression = Syntax:`ILoopExpressionSyntax` Block:BlockExpression;
 WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax` Condition:UntypedExpression Block:BlockExpression;
-ForeachExpression <: Expression, LocalBinding = Syntax:`IForeachExpressionSyntax` VariableName:`IdentifierName` InExpression:UntypedExpression Type? Block:BlockExpression;
+ForeachExpression <: Expression, NamedBinding = Syntax:`IForeachExpressionSyntax` VariableName:`IdentifierName` InExpression:UntypedExpression Type? Block:BlockExpression;
 BreakExpression <: NeverTypedExpression = Syntax:`IBreakExpressionSyntax` Value:UntypedExpression?;
 NextExpression <: NeverTypedExpression = Syntax:`INextExpressionSyntax`;
 ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax` Value:UntypedExpression?;
@@ -301,8 +301,8 @@ NamedDeclaration <: ChildDeclaration = Name:`StandardName`;
 SymbolDeclaration <: Declaration = Symbol:`Symbol`;
 
 // ---------- Bindings
-BindingDeclaration <: NamedDeclaration = Name:`IdentifierName`;
-LocalBindingDeclaration <: BindingDeclaration;
+BindingDeclaration <: ChildDeclaration;
+NamedBindingDeclaration <: BindingDeclaration, NamedDeclaration = Name:`IdentifierName`;
 
 // ---------- Packages
 PackageDeclaration <: SymbolDeclaration = AliasOrName:`IdentifierName`? Name:`IdentifierName` Symbol:`PackageSymbol`

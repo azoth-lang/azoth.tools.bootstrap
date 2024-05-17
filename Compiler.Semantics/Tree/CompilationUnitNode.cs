@@ -34,7 +34,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     private ValueAttribute<LexicalScope> lexicalScope;
     public LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopeAttributes.CompilationUnit_LexicalScope);
+            : lexicalScope.GetValue(this, LexicalScopingAspect.CompilationUnit_LexicalScope);
 
     private ValueAttribute<IFixedList<Diagnostic>> diagnostics;
     public IFixedList<Diagnostic> Diagnostics

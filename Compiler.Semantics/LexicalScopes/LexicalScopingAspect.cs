@@ -1,4 +1,4 @@
-using System;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
-internal static class LexicalScopeAttributes
+internal static class LexicalScopingAspect
 {
     public static PackageNameScope Package_InheritedPackageNameScope_MainFacet(IPackageNode node)
         => new PackageNameScope(new[] { node.MainFacet },
@@ -35,7 +35,8 @@ internal static class LexicalScopeAttributes
     {
         var lexicalScope = containingLexicalScope;
         foreach (var ns in namespaceName.Segments)
-            lexicalScope = lexicalScope.CreateChildNamespaceScope(ns)!;
+            lexicalScope = lexicalScope.CreateChildNamespaceScope(ns)
+                           ?? throw new UnreachableException("Should always be getting namespace names that correspond to definitions.");
         // Either CreateChildNamespaceScope was called, or this is a compilation unit and the
         // original containingLexicalScope was a NamespaceScope.
         return (NamespaceScope)lexicalScope;
@@ -56,7 +57,12 @@ internal static class LexicalScopeAttributes
     }
 
     public static NamespaceSearchScope NamespaceBlockDefinition_LexicalScope(INamespaceBlockDefinitionNode node)
-        => BuildNamespaceScope(node.ContainingLexicalScope, node.DeclaredNames, node.UsingDirectives);
+    {
+        var containingLexicalScope = node.ContainingLexicalScope;
+        if (node.IsGlobalQualified)
+            containingLexicalScope = containingLexicalScope.PackageNames.PackageGlobalScope;
+        return BuildNamespaceScope(containingLexicalScope, node.DeclaredNames, node.UsingDirectives);
+    }
 
     public static LexicalScope TypeDefinition_SupertypesLexicalScope(ITypeDefinitionNode node)
     {
@@ -77,9 +83,6 @@ internal static class LexicalScopeAttributes
         => node.LexicalScope;
 
     public static LexicalScope FunctionDefinition_LexicalScope(IFunctionDefinitionNode node)
-    {
         // TODO create a type parameter scope when type parameters are supported
-        //return new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
-        throw new NotImplementedException();
-    }
+        => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
 }

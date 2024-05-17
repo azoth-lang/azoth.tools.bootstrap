@@ -36,7 +36,7 @@ internal class NamespaceBlockDefinitionNode : DefinitionNode, INamespaceBlockDef
     private ValueAttribute<NamespaceSearchScope> lexicalScope;
     public override NamespaceSearchScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopeAttributes.NamespaceBlockDefinition_LexicalScope);
+            : lexicalScope.GetValue(this, LexicalScopingAspect.NamespaceBlockDefinition_LexicalScope);
 
     public NamespaceBlockDefinitionNode(
         INamespaceDefinitionSyntax syntax,

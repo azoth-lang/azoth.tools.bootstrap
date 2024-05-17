@@ -29,7 +29,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     private ValueAttribute<LexicalScope> supertypesLexicalScope;
     public LexicalScope SupertypesLexicalScope
         => supertypesLexicalScope.TryGetValue(out var value) ? value
-            : supertypesLexicalScope.GetValue(this, LexicalScopeAttributes.TypeDefinition_SupertypesLexicalScope);
+            : supertypesLexicalScope.GetValue(this, LexicalScopingAspect.TypeDefinition_SupertypesLexicalScope);
     public IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
     private ValueAttribute<CompilerResult<IFixedSet<BareReferenceType>>> supertypes;
     public CompilerResult<IFixedSet<BareReferenceType>> Supertypes
@@ -39,7 +39,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopeAttributes.TypeDefinition_LexicalScope);
+            : lexicalScope.GetValue(this, LexicalScopingAspect.TypeDefinition_LexicalScope);
 
     protected TypeDefinitionNode(
         IEnumerable<IGenericParameterNode> genericParameters,
@@ -60,8 +60,8 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
     {
         if (((ITypeDefinitionNode)this).AllSupertypeNames.Contains(caller))
-            return LexicalScopeAttributes.TypeDefinition_InheritedLexicalScope_Supertypes(this);
-        return LexicalScopeAttributes.TypeDefinition_InheritedLexicalScope(this);
+            return LexicalScopingAspect.TypeDefinition_InheritedLexicalScope_Supertypes(this);
+        return LexicalScopingAspect.TypeDefinition_InheritedLexicalScope(this);
     }
 
     internal override ITypeDefinitionNode InheritedContainingTypeDeclaration(IChildNode caller, IChildNode child)

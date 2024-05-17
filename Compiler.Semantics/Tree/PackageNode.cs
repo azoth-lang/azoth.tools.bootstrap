@@ -60,9 +60,9 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     {
         // We are assuming these will be cached in the child nodes
         if (child == MainFacet)
-            return LexicalScopeAttributes.Package_InheritedPackageNameScope_MainFacet(this);
+            return LexicalScopingAspect.Package_InheritedPackageNameScope_MainFacet(this);
         if (child == TestingFacet)
-            return LexicalScopeAttributes.Package_InheritedPackageNameScope_TestingFacet(this);
+            return LexicalScopingAspect.Package_InheritedPackageNameScope_TestingFacet(this);
         return base.InheritedPackageNameScope(caller, child);
     }
 }
