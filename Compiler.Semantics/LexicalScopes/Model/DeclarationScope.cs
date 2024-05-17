@@ -22,6 +22,11 @@ internal class DeclarationScope : LexicalScope
                                         .ToFixedDictionary(g => g.Key, g => g.ToFixedSet());
     }
 
+    internal DeclarationScope(LexicalScope parent, params INamedDeclarationNode[] declarations)
+        : this(parent, declarations.AsEnumerable())
+    {
+    }
+
     public override IEnumerable<IDeclarationNode> Lookup(StandardName name)
     {
         if (declarations.TryGetValue(name, out var nodes))

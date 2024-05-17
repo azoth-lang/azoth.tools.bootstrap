@@ -56,7 +56,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     internal override CodeFile InheritedFile(IChildNode caller, IChildNode child)
         => FileAttribute.CompilationUnit_InheritedFile(this);
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => LexicalScope;
 
     private IFixedList<Diagnostic> GetDiagnostics()

@@ -37,6 +37,15 @@ public static class FixedList
         return true;
     }
 
+    public static int? IndexOf<T>(this IFixedList<T> list, T item)
+    {
+        var comparer = EqualityComparer<T>.Default;
+        for (int i = 0; i < list.Count; i++)
+            if (comparer.Equals(list[i], item))
+                return i;
+        return null;
+    }
+
     // These attributes make it so FixedList.Of<T> is displayed nicely in the debugger similar to List<T>
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]

@@ -85,4 +85,14 @@ internal static class LexicalScopingAspect
     public static LexicalScope FunctionDefinition_LexicalScope(IFunctionDefinitionNode node)
         // TODO create a type parameter scope when type parameters are supported
         => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
+
+    public static LexicalScope BodyOrBlock_InheritedLexicalScope(IBodyOrBlockNode node, int statementIndex)
+    {
+        if (statementIndex == 0)
+            return node.GetContainingLexicalScope();
+        return node.Statements[statementIndex - 1].GetLexicalScope();
+    }
+
+    public static LexicalScope VariableDeclarationStatement_LexicalScope(IVariableDeclarationStatementNode node)
+        => new DeclarationScope(node.ContainingLexicalScope, node);
 }

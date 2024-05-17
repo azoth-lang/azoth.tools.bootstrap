@@ -57,9 +57,9 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
         => ContainingDeclaredTypeAttribute.TypeDeclaration_InheritedContainingDeclaredType(this);
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
     {
-        if (((ITypeDefinitionNode)this).AllSupertypeNames.Contains(caller))
+        if (((ITypeDefinitionNode)this).AllSupertypeNames.Contains(child))
             return LexicalScopingAspect.TypeDefinition_InheritedLexicalScope_Supertypes(this);
         return LexicalScopingAspect.TypeDefinition_InheritedLexicalScope(this);
     }

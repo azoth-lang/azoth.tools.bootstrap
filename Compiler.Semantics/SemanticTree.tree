@@ -25,7 +25,7 @@ Semantic = Syntax:`ISyntax`?;
 Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPackageDeclarationNode`;
 
 // ---------- Special Parts
-BodyOrBlock <: Code;
+BodyOrBlock <: Code = Statements:`IStatementNode`*;
 ElseClause <: Code;
 BlockOrResult: ElseClause;
 
@@ -211,7 +211,8 @@ Statement <: Code = Syntax:`IStatementSyntax`;
 ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax` Expression:UntypedExpression;
 BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;
 VariableDeclarationStatement <: BodyStatement, NamedBinding = Syntax:`IVariableDeclarationStatementSyntax`
-    Name:`IdentifierName` Capability? Type? Initializer:UntypedExpression?;
+    IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type? Initializer:UntypedExpression?
+    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
 ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax` Expression:UntypedExpression;
 
 // ---------- Patterns

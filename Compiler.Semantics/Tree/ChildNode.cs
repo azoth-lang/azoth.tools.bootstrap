@@ -50,8 +50,8 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected PackageNameScope InheritedPackageNameScope() => Parent.InheritedPackageNameScope(this, this);
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
-        => Parent.InheritedContainingLexicalScope(this, child);
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+        => Parent.InheritedContainingLexicalScope(this, descendant);
 
     protected LexicalScope InheritedContainingLexicalScope() => Parent.InheritedContainingLexicalScope(this, this);
 

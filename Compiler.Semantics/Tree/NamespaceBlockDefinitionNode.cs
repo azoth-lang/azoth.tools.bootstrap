@@ -51,6 +51,6 @@ internal class NamespaceBlockDefinitionNode : DefinitionNode, INamespaceBlockDef
     internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
         => SymbolNodeAttributes.NamespaceBlockDefinition_InheritedContainingDeclaration(this);
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => LexicalScope;
 }

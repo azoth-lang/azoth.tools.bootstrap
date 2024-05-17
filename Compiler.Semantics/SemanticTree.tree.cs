@@ -125,6 +125,7 @@ public partial interface IChildNode : IChild<ISemanticNode>, ISemanticNode
     typeof(IBlockExpressionNode))]
 public partial interface IBodyOrBlockNode : ISemanticNode, ICodeNode
 {
+    IFixedList<IStatementNode> Statements { get; }
 }
 
 [Closed(
@@ -842,7 +843,8 @@ public partial interface IBlockBodyNode : IBodyNode
     new IBlockBodySyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    IFixedList<IBodyStatementNode> Statements { get; }
+    new IFixedList<IBodyStatementNode> Statements { get; }
+    IFixedList<IStatementNode> IBodyOrBlockNode.Statements => Statements;
 }
 
 public partial interface IExpressionBodyNode : IBodyNode
@@ -1044,9 +1046,12 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IStatementSyntax IStatementNode.Syntax => Syntax;
+    bool IsMutableBinding { get; }
     ICapabilityNode? Capability { get; }
     ITypeNode? Type { get; }
     IUntypedExpressionNode? Initializer { get; }
+    LexicalScope ContainingLexicalScope { get; }
+    LexicalScope LexicalScope { get; }
 }
 
 public partial interface IExpressionStatementNode : IBodyStatementNode
@@ -1161,7 +1166,8 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
-    IFixedList<IStatementNode> Statements { get; }
+    new IFixedList<IStatementNode> Statements { get; }
+    IFixedList<IStatementNode> IBodyOrBlockNode.Statements => Statements;
 }
 
 public partial interface INewObjectExpressionNode : ISemanticNode, IExpressionNode
