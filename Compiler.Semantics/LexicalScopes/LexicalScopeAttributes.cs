@@ -19,8 +19,8 @@ internal static class LexicalScopeAttributes
     public static LexicalScope CompilationUnit_LexicalScope(ICompilationUnitNode node)
         => BuildNamespaceScope(node.ContainingLexicalScope, node.ImplicitNamespaceName, node.UsingDirectives);
 
-    private static LexicalScope BuildNamespaceScope(
-        LexicalScope containingLexicalScope,
+    private static NamespaceSearchScope BuildNamespaceScope(
+        NamespaceSearchScope containingLexicalScope,
         NamespaceName namespaceName,
         IFixedList<IUsingDirectiveNode> usingDirectives)
     {
@@ -30,7 +30,7 @@ internal static class LexicalScopeAttributes
     }
 
     private static NamespaceScope GetNamespaceScope(
-        LexicalScope containingLexicalScope, NamespaceName namespaceName)
+        NamespaceSearchScope containingLexicalScope, NamespaceName namespaceName)
     {
         var lexicalScope = containingLexicalScope;
         foreach (var ns in namespaceName.Segments)
@@ -40,7 +40,7 @@ internal static class LexicalScopeAttributes
         return (NamespaceScope)lexicalScope;
     }
 
-    private static LexicalScope BuildUsingDirectivesScope(
+    private static NamespaceSearchScope BuildUsingDirectivesScope(
         NamespaceScope containingScope,
         IFixedList<IUsingDirectiveNode> usingDirectives)
     {
@@ -54,7 +54,7 @@ internal static class LexicalScopeAttributes
         return new UsingDirectivesScope(containingScope, namespaceScopes);
     }
 
-    public static LexicalScope NamespaceBlockDefinition_LexicalScope(INamespaceBlockDefinitionNode node)
+    public static NamespaceSearchScope NamespaceBlockDefinition_LexicalScope(INamespaceBlockDefinitionNode node)
         => BuildNamespaceScope(node.ContainingLexicalScope, node.DeclaredNames, node.UsingDirectives);
 
     public static LexicalScope TypeDeclaration_SupertypesLexicalScope(ITypeDefinitionNode node)

@@ -23,7 +23,8 @@ internal class NamespaceBlockDefinitionNode : DefinitionNode, INamespaceBlockDef
         => containingNamespace.TryGetValue(out var value) ? value
             : containingNamespace.GetValue(this, SymbolNodeAttributes.NamespaceBlockDefinition_ContainingDeclaration);
     public override NamespaceSymbol ContainingSymbol => ContainingDeclaration.Symbol;
-
+    public override NamespaceSearchScope ContainingLexicalScope
+        => (NamespaceSearchScope)base.ContainingLexicalScope;
     private ValueAttribute<INamespaceDefinitionNode> definition;
     public INamespaceDefinitionNode Definition
         => definition.TryGetValue(out var value) ? value
@@ -32,8 +33,8 @@ internal class NamespaceBlockDefinitionNode : DefinitionNode, INamespaceBlockDef
 
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Members { get; }
-    private ValueAttribute<LexicalScope> lexicalScope;
-    public override LexicalScope LexicalScope
+    private ValueAttribute<NamespaceSearchScope> lexicalScope;
+    public override NamespaceSearchScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
             : lexicalScope.GetValue(this, LexicalScopeAttributes.NamespaceBlockDefinition_LexicalScope);
 

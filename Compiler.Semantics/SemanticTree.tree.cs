@@ -302,6 +302,8 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
     Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
     new NamespaceSymbol Symbol { get; }
     Symbol IDeclarationNode.Symbol => Symbol;
+    new NamespaceSearchScope ContainingLexicalScope { get; }
+    LexicalScope IDefinitionNode.ContainingLexicalScope => ContainingLexicalScope;
 }
 
 [Closed(

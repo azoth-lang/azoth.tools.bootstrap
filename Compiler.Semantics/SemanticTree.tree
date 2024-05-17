@@ -77,7 +77,7 @@ NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceD
     UsingDirectives:UsingDirective* Members:NamespaceBlockMemberDefinition*
     Definition:`INamespaceDefinitionNode` ContainingDeclaration:`INamespaceDefinitionNode`
     ContainingNamespace:`INamespaceDefinitionNode` ContainingSymbol:`NamespaceSymbol`
-    Symbol:`NamespaceSymbol`;
+    Symbol:`NamespaceSymbol` ContainingLexicalScope:`NamespaceSearchScope`;
 NamespaceBlockMemberDefinition <: Definition;
 NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
     = MemberNamespaces:NamespaceDefinition* PackageMembers:`IPackageMemberDefinitionNode`*

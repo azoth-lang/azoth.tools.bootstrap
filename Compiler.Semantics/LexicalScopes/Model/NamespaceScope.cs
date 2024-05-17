@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 
-public sealed class NamespaceScope : LexicalScope
+public sealed class NamespaceScope : NamespaceSearchScope
 {
     private readonly LexicalScope? parent;
     public override PackageNameScope PackageNames { get; }
@@ -17,7 +16,7 @@ public sealed class NamespaceScope : LexicalScope
     /// <summary>
     /// Create a top-level namespace scope.
     /// </summary>
-    public NamespaceScope(PackageNameScope parent, IEnumerable<INamespaceDeclarationNode> namespaceDeclarations)
+    internal NamespaceScope(PackageNameScope parent, IEnumerable<INamespaceDeclarationNode> namespaceDeclarations)
     {
         PackageNames = parent;
         this.namespaceDeclarations = namespaceDeclarations.ToFixedSet();
@@ -26,7 +25,7 @@ public sealed class NamespaceScope : LexicalScope
     /// <summary>
     /// Create a child namespace scope.
     /// </summary>
-    public NamespaceScope(NamespaceScope parent, IEnumerable<INamespaceDeclarationNode> namespaceDeclarations)
+    internal NamespaceScope(NamespaceScope parent, IEnumerable<INamespaceDeclarationNode> namespaceDeclarations)
     {
         this.parent = parent;
         PackageNames = parent.PackageNames;
@@ -36,11 +35,11 @@ public sealed class NamespaceScope : LexicalScope
     /// <summary>
     /// Create a child namespace scope that is nested inside a scope with using directives.
     /// </summary>
-    public NamespaceScope(UsingDirectivesScope parent, NamespaceScope copyOfScope)
+    internal NamespaceScope(UsingDirectivesScope parent, NamespaceScope copyFromScope)
     {
         this.parent = parent;
         PackageNames = parent.PackageNames;
-        namespaceDeclarations = copyOfScope.namespaceDeclarations;
+        namespaceDeclarations = copyFromScope.namespaceDeclarations;
     }
 
     public override NamespaceScope? CreateChildNamespaceScope(IdentifierName namespaceName)

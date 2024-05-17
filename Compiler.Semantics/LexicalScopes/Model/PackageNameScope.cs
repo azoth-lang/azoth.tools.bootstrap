@@ -23,14 +23,15 @@ public sealed class PackageNameScope
 
     private readonly FixedDictionary<IdentifierName, NamespaceScope> referencedGlobalScopes;
 
-    public PackageNameScope(IEnumerable<IPackageFacetDeclarationNode> packageFacets, IEnumerable<IPackageFacetDeclarationNode> referencedFacets)
+    internal PackageNameScope(IEnumerable<IPackageFacetNode> packageFacets, IEnumerable<IPackageFacetDeclarationNode> referencedFacets)
     {
         var packageGlobalNamespaces = packageFacets.Select(f => f.GlobalNamespace).ToFixedSet();
         var referencedGlobalNamespaces = referencedFacets.Select(f => f.GlobalNamespace).ToFixedSet();
 
         UsingGlobalScope = new NamespaceScope(this, packageGlobalNamespaces.Concat(referencedGlobalNamespaces));
 
-        // That parent scope is like the ReferencedGlobalScope, but includes nested namespaces.
+        // That parent scope is like the UsingGlobalScope, but includes only referenced packages
+        // since the current package will already be searched by the PackageGlobalScope.
         var parent = new NamespaceScope(this, referencedGlobalNamespaces);
         PackageGlobalScope = new NamespaceScope(parent, packageGlobalNamespaces);
 
