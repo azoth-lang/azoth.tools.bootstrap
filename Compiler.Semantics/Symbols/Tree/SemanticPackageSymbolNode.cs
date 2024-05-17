@@ -12,8 +12,8 @@ internal sealed class SemanticPackageSymbolNode : SemanticNode, IPackageSymbolNo
     public IdentifierName? AliasOrName => null;
     public PackageSymbol Symbol => Node.Symbol;
     public IdentifierName Name => Symbol.Name;
-    public IPackageFacetDeclarationNode MainFacet => Node.MainFacet.SymbolNode;
-    public IPackageFacetDeclarationNode TestingFacet => Node.TestingFacet.SymbolNode;
+    public IPackageFacetDeclarationNode MainFacet => Node.MainFacet;
+    public IPackageFacetDeclarationNode TestingFacet => Node.TestingFacet;
 
     public SemanticPackageSymbolNode(IPackageNode node)
     {

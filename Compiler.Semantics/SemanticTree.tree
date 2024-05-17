@@ -42,10 +42,11 @@ Package = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol` S
 PackageReference <: Child = Syntax:`IPackageReferenceSyntax`? SymbolNode:`IPackageDeclarationNode`
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
 
-PackageFacet <: Child = Syntax:`IPackageSyntax` PackageName:`IdentifierName`
-    PackageSymbol:`PackageSymbol` SymbolNode:`IPackageFacetDeclarationNode`
+PackageFacet <: Child, PackageFacetDeclaration = Syntax:`IPackageSyntax` PackageName:`IdentifierName`
+    Symbol:`PackageSymbol`
     PackageNameScope:`PackageNameScope`
-    CompilationUnits:{CompilationUnit} Definitions:`IFixedSet<IPackageMemberDefinitionNode>`;
+    CompilationUnits:{CompilationUnit} Definitions:`IFixedSet<IPackageMemberDefinitionNode>`
+    GlobalNamespace:NamespaceDeclaration;
 
 // TODO rename to FacetMemberDefinition
 PackageMemberDefinition <: NamespaceMemberDefinition
@@ -289,9 +290,7 @@ AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax` Expression:Untyp
 // TODO move into separate aspect
 
 Declaration = Symbol:`Symbol`;
-// Parent, Package, and GlobalNamespace type quoted so that is is not treated as a child node
 ChildDeclaration <: Declaration, Child;
-
 NamedDeclaration <: ChildDeclaration = Name:`StandardName`;
 
 // ---------- Packages

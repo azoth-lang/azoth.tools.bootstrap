@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
@@ -20,13 +21,13 @@ internal static class SymbolNodeAttributes
     public static IPackageDeclarationNode Package_SymbolNode(IPackageNode node)
         => new SemanticPackageSymbolNode(node);
 
-    public static IPackageFacetDeclarationNode PackageFacet_SymbolNode(IPackageFacetNode node)
+    public static INamespaceDeclarationNode PackageFacet_GlobalNamespace(IPackageFacetNode node)
     {
-        var packageSymbol = node.PackageSymbol;
+        var packageSymbol = node.Symbol;
         var builder = new SemanticNamespaceSymbolNodeBuilder(packageSymbol);
         foreach (var cu in node.CompilationUnits)
             BuildNamespace(packageSymbol, cu.ImplicitNamespaceName, cu.Definitions);
-        return new SemanticPackageFacetSymbolNode(builder.Build());
+        return Child.Attach(node, builder.Build());
 
         void BuildMember(NamespaceSymbol namespaceSymbol, INamespaceMemberDefinitionNode definition)
         {

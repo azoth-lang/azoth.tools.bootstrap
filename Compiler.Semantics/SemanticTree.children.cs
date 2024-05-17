@@ -26,6 +26,7 @@ public static class ISemanticNodeExtensions
             case IPackageFacetNode n:
                 foreach (var child in n.CompilationUnits)
                     yield return child;
+                yield return n.GlobalNamespace;
                 yield break;
             case ICompilationUnitNode n:
                 foreach (var child in n.UsingDirectives)

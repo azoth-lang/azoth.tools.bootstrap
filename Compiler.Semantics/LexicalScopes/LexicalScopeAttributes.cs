@@ -1,7 +1,6 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -9,11 +8,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 internal static class LexicalScopeAttributes
 {
     public static PackageNameScope PackageInheritedMainFacet(IPackageNode node)
-        => new PackageNameScope(new[] { node.MainFacet.SymbolNode },
+        => new PackageNameScope(new[] { node.MainFacet },
             node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode.MainFacet));
 
     public static PackageNameScope PackageInheritedTestingFacet(IPackageNode node)
-        => new PackageNameScope(new[] { node.MainFacet.SymbolNode, node.TestingFacet.SymbolNode },
+        => new PackageNameScope(new[] { node.MainFacet, node.TestingFacet },
             node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode.MainFacet)
                 .Concat(node.References.Select(r => r.SymbolNode.TestingFacet)));
 

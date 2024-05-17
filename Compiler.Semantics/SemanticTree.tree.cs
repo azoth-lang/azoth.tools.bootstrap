@@ -183,13 +183,10 @@ public partial interface IPackageReferenceNode : IChildNode
     bool IsTrusted { get; }
 }
 
-public partial interface IPackageFacetNode : IChildNode
+public partial interface IPackageFacetNode : IChildNode, IPackageFacetDeclarationNode
 {
     new IPackageSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IdentifierName PackageName { get; }
-    PackageSymbol PackageSymbol { get; }
-    IPackageFacetDeclarationNode SymbolNode { get; }
     PackageNameScope PackageNameScope { get; }
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     IFixedSet<IPackageMemberDefinitionNode> Definitions { get; }
@@ -1594,6 +1591,7 @@ public partial interface IPackageMemberDeclarationNode : ISemanticNode, INamespa
 }
 
 [Closed(
+    typeof(IPackageFacetNode),
     typeof(IPackageFacetSymbolNode))]
 public partial interface IPackageFacetDeclarationNode : ISemanticNode, IChildDeclarationNode
 {

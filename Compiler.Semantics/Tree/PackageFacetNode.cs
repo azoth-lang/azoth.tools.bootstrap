@@ -13,12 +13,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal class PackageFacetNode : ChildNode, IPackageFacetNode
 {
     public override IPackageSyntax Syntax { get; }
+    /// <remarks>Implements <see cref="IPackageFacetDeclarationNode.PackageAliasOrName"/> which
+    /// should be <see langword="null"/> for the current package.</remarks>
+    public IdentifierName? PackageAliasOrName => null;
     public IdentifierName PackageName => Package.Name;
-    public PackageSymbol PackageSymbol => Package.Symbol;
-    private ValueAttribute<IPackageFacetDeclarationNode> symbolNode;
-    public IPackageFacetDeclarationNode SymbolNode
-        => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAttributes.PackageFacet_SymbolNode);
+    private ValueAttribute<INamespaceDeclarationNode> globalNamespace;
+    public INamespaceDeclarationNode GlobalNamespace
+        => globalNamespace.TryGetValue(out var value) ? value
+            : globalNamespace.GetValue(this, SymbolNodeAttributes.PackageFacet_GlobalNamespace);
+    public PackageSymbol Symbol => Package.Symbol;
     public IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
 
     private ValueAttribute<IFixedSet<IPackageMemberDefinitionNode>> definitions;
@@ -38,8 +41,11 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
     }
 
     internal override IDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
-        => SymbolNode;
+        => this;
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode caller, IChildNode child)
         => PackageNameScope.PackageGlobalScope;
+
+    internal override IPackageFacetDeclarationNode InheritedFacet(IChildNode caller, IChildNode child)
+        => this;
 }

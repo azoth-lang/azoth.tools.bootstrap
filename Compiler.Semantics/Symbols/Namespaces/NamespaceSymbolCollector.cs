@@ -12,8 +12,8 @@ internal static class NamespaceSymbolCollector
         ISymbolTreeBuilder symbolTree,
         ISymbolTreeBuilder testingSymbolTree)
     {
-        PackageFacet(node.MainFacet.SymbolNode, symbolTree);
-        PackageFacet(node.TestingFacet.SymbolNode, testingSymbolTree);
+        PackageFacet(node.MainFacet, symbolTree);
+        PackageFacet(node.TestingFacet, testingSymbolTree);
     }
 
     private static void PackageFacet(IPackageFacetDeclarationNode node, ISymbolTreeBuilder symbolTree)
