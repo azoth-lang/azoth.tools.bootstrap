@@ -50,10 +50,10 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
         Definitions = ChildList.Attach(this, declarations);
     }
 
-    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
+    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant)
         => SymbolNodeAttributes.CompilationUnit_InheritedContainingDeclaration(this);
 
-    internal override CodeFile InheritedFile(IChildNode caller, IChildNode child)
+    internal override CodeFile InheritedFile(IChildNode child, IChildNode descendant)
         => FileAttribute.CompilationUnit_InheritedFile(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)

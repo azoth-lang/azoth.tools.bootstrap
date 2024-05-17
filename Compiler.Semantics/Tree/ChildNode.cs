@@ -32,21 +32,22 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     IChild? IChild.Rewrite() => Rewrite();
 
-    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
-        => Parent.InheritedContainingDeclaration(this, child);
+    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant)
+        => Parent.InheritedContainingDeclaration(this, descendant);
 
     protected ISymbolDeclarationNode InheritedContainingDeclaration()
         => Parent.InheritedContainingDeclaration(this, this);
 
-    internal override IPackageDeclarationNode InheritedPackage(IChildNode caller, IChildNode child)
-        => Parent.InheritedPackage(this, child);
+    internal override IPackageDeclarationNode InheritedPackage(IChildNode child, IChildNode descendant)
+        => Parent.InheritedPackage(this, descendant);
 
-    internal override CodeFile InheritedFile(IChildNode caller, IChildNode child) => Parent.InheritedFile(this, child);
+    internal override CodeFile InheritedFile(IChildNode child, IChildNode descendant)
+        => Parent.InheritedFile(this, descendant);
 
     protected CodeFile InheritedFile() => Parent.InheritedFile(this, this);
 
-    internal override PackageNameScope InheritedPackageNameScope(IChildNode caller, IChildNode child)
-        => Parent.InheritedPackageNameScope(this, child);
+    internal override PackageNameScope InheritedPackageNameScope(IChildNode child, IChildNode descendant)
+        => Parent.InheritedPackageNameScope(this, descendant);
 
     protected PackageNameScope InheritedPackageNameScope() => Parent.InheritedPackageNameScope(this, this);
 
@@ -55,33 +56,33 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected LexicalScope InheritedContainingLexicalScope() => Parent.InheritedContainingLexicalScope(this, this);
 
-    internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
-        => Parent.InheritedContainingDeclaredType(this, child);
+    internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant)
+        => Parent.InheritedContainingDeclaredType(this, descendant);
 
     protected virtual IDeclaredUserType InheritedContainingDeclaredType()
         => Parent.InheritedContainingDeclaredType(this, this);
 
-    internal override Pseudotype? InheritedSelfType(IChildNode caller, IChildNode child)
-        => Parent.InheritedSelfType(this, child);
+    internal override Pseudotype? InheritedSelfType(IChildNode child, IChildNode descendant)
+        => Parent.InheritedSelfType(this, descendant);
 
     protected Pseudotype? InheritedSelfType() => Parent.InheritedSelfType(this, this);
 
-    internal override ITypeDefinitionNode InheritedContainingTypeDeclaration(IChildNode caller, IChildNode child)
-        => Parent.InheritedContainingTypeDeclaration(this, child);
+    internal override ITypeDefinitionNode InheritedContainingTypeDeclaration(IChildNode child, IChildNode descendant)
+        => Parent.InheritedContainingTypeDeclaration(this, descendant);
 
     protected ITypeDefinitionNode InheritedContainingTypeDeclaration()
         => Parent.InheritedContainingTypeDeclaration(this, this);
 
-    internal override bool InheritedIsAttributeType(IChildNode caller, IChildNode child)
-        => Parent.InheritedIsAttributeType(this, child);
+    internal override bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
+        => Parent.InheritedIsAttributeType(this, descendant);
 
     protected bool InheritedIsAttributeType() => Parent.InheritedIsAttributeType(this, this);
 
-    internal override IPackageFacetDeclarationNode InheritedFacet(IChildNode caller, IChildNode child)
-        => Parent.InheritedFacet(this, child);
+    internal override IPackageFacetDeclarationNode InheritedFacet(IChildNode child, IChildNode descendant)
+        => Parent.InheritedFacet(this, descendant);
 
     protected IPackageFacetDeclarationNode InheritedFacet() => Parent.InheritedFacet(this, this);
 
-    internal override ISymbolTree InheritedSymbolTree(IChildNode caller, IChildNode child)
-        => Parent.InheritedSymbolTree(this, child);
+    internal override ISymbolTree InheritedSymbolTree(IChildNode child, IChildNode descendant)
+        => Parent.InheritedSymbolTree(this, descendant);
 }

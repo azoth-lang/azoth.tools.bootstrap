@@ -48,7 +48,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
         Body = Child.Attach(this, body);
     }
 
-    internal override bool InheritedIsAttributeType(IChildNode caller, IChildNode child)
+    internal override bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
         => SymbolNodeAttributes.FunctionDeclaration_InheritedIsAttributeType(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)

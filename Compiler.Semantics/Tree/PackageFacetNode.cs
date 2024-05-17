@@ -40,12 +40,12 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
         CompilationUnits = ChildSet.CreateFixedSet(this, compilationUnits);
     }
 
-    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
+    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant)
         => this;
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => PackageNameScope.PackageGlobalScope;
 
-    internal override IPackageFacetDeclarationNode InheritedFacet(IChildNode caller, IChildNode child)
+    internal override IPackageFacetDeclarationNode InheritedFacet(IChildNode child, IChildNode descendant)
         => this;
 }

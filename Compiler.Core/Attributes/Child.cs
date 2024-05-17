@@ -110,10 +110,10 @@ public static class Child
     }
 
     // TODO replace with factory for exception
-    public static string InheritFailedMessage<TChild>(string attribute, TChild caller, TChild child)
+    public static string InheritFailedMessage<TChild>(string attribute, TChild child, TChild descendant)
         where TChild : IChild
-        => $"{attribute} not implemented for child node type {child.GetType().GetFriendlyName()} "
-           + $"when accessed through caller {caller.GetType().GetFriendlyName()}.";
+        => $"{attribute} not implemented for descendant node type {descendant.GetType().GetFriendlyName()} "
+           + $"when accessed through child of type {child.GetType().GetFriendlyName()}.";
 
     // TODO replace with factory for exception
     public static string ParentMissingMessage(IChild child)

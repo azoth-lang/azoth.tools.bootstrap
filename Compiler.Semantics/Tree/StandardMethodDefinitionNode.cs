@@ -26,6 +26,6 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
         Body = Child.Attach(this, body);
     }
 
-    internal override Pseudotype InheritedSelfType(IChildNode caller, IChildNode child)
+    internal override Pseudotype InheritedSelfType(IChildNode child, IChildNode descendant)
         => TypeExpressionsAspect.ConcreteMethodDeclaration_InheritedSelfType(this);
 }

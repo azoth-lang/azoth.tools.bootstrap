@@ -14,49 +14,49 @@ internal abstract class SemanticNode : ISemanticNode
 {
     public abstract ISyntax? Syntax { get; }
 
-    internal virtual ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
+    internal virtual ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedContainingDeclaration), caller, child));
+            Child.InheritFailedMessage(nameof(InheritedContainingDeclaration), child, descendant));
 
-    internal virtual IPackageDeclarationNode InheritedPackage(IChildNode caller, IChildNode child)
+    internal virtual IPackageDeclarationNode InheritedPackage(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedPackage), caller, child));
+            Child.InheritFailedMessage(nameof(InheritedPackage), child, descendant));
 
-    internal virtual CodeFile InheritedFile(IChildNode caller, IChildNode child)
+    internal virtual CodeFile InheritedFile(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedFile), caller, child));
+            Child.InheritFailedMessage(nameof(InheritedFile), child, descendant));
 
-    internal virtual PackageNameScope InheritedPackageNameScope(IChildNode caller, IChildNode child)
+    internal virtual PackageNameScope InheritedPackageNameScope(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedPackageNameScope), caller, child));
+            Child.InheritFailedMessage(nameof(InheritedPackageNameScope), child, descendant));
 
     internal virtual LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedContainingLexicalScope), child, descendant));
 
-    internal virtual IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
+    internal virtual IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedContainingDeclaredType), caller, child));
+            Child.InheritFailedMessage(nameof(InheritedContainingDeclaredType), child, descendant));
 
-    internal virtual Pseudotype? InheritedSelfType(IChildNode caller, IChildNode child)
+    internal virtual Pseudotype? InheritedSelfType(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedSelfType), caller, child));
+            Child.InheritFailedMessage(nameof(InheritedSelfType), child, descendant));
 
-    internal virtual ITypeDefinitionNode InheritedContainingTypeDeclaration(IChildNode caller, IChildNode child)
+    internal virtual ITypeDefinitionNode InheritedContainingTypeDeclaration(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedContainingTypeDeclaration), caller, child));
+            Child.InheritFailedMessage(nameof(InheritedContainingTypeDeclaration), child, descendant));
 
-    internal virtual bool InheritedIsAttributeType(IChildNode caller, IChildNode child)
+    internal virtual bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedIsAttributeType), caller, child));
+            Child.InheritFailedMessage(nameof(InheritedIsAttributeType), child, descendant));
 
-    internal virtual ISymbolTree InheritedSymbolTree(IChildNode caller, IChildNode child)
+    internal virtual ISymbolTree InheritedSymbolTree(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedSymbolTree), caller, child));
+            Child.InheritFailedMessage(nameof(InheritedSymbolTree), child, descendant));
 
-    internal virtual IPackageFacetDeclarationNode InheritedFacet(IChildNode caller, IChildNode child)
+    internal virtual IPackageFacetDeclarationNode InheritedFacet(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedFacet), caller, child));
+            Child.InheritFailedMessage(nameof(InheritedFacet), child, descendant));
 
     protected virtual void CollectDiagnostics(Diagnostics diagnostics)
     {

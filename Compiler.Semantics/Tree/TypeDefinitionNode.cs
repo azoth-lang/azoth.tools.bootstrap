@@ -51,10 +51,10 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         SupertypeNames = ChildList.Attach(this, supertypeNames);
     }
 
-    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode caller, IChildNode child)
+    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant)
         => SymbolNodeAttributes.TypeDeclaration_InheritedContainingDeclaration(this);
 
-    internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode caller, IChildNode child)
+    internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant)
         => ContainingDeclaredTypeAttribute.TypeDeclaration_InheritedContainingDeclaredType(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
@@ -64,10 +64,10 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         return LexicalScopingAspect.TypeDefinition_InheritedLexicalScope(this);
     }
 
-    internal override ITypeDefinitionNode InheritedContainingTypeDeclaration(IChildNode caller, IChildNode child)
+    internal override ITypeDefinitionNode InheritedContainingTypeDeclaration(IChildNode child, IChildNode descendant)
         => this;
 
-    internal override bool InheritedIsAttributeType(IChildNode caller, IChildNode child)
+    internal override bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
         => SymbolNodeAttributes.TypeDeclaration_InheritedIsAttributeType(this);
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
