@@ -278,7 +278,7 @@ MemberAccessExpression <: AmbiguousNameExpression, AssignableExpression
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression;
 SpecialTypeNameExpression <: NameExpression
-    = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol`?;
+    = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol`? Type:`UnknownType`;
 InstanceExpression <: NameExpression, SimpleName; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression

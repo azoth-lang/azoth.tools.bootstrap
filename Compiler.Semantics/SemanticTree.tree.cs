@@ -1483,6 +1483,7 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     SpecialTypeName Name { get; }
     TypeSymbol? ReferencedSymbol { get; }
+    UnknownType Type { get; }
 }
 
 [Closed(
