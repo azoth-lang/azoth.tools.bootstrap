@@ -398,7 +398,8 @@ internal class ASTBuilder
             IStringLiteralExpressionSyntax syn => BuildStringLiteralExpression(syn),
             ILoopExpressionSyntax syn => BuildLoopExpression(syn),
             IMoveExpressionSyntax syn => BuildMoveExpression(syn),
-            ISimpleNameExpressionSyntax syn => BuildNameExpression(syn, isMove),
+            IIdentifierNameExpressionSyntax syn => BuildNameExpression(syn, isMove),
+            ISpecialTypeNameExpressionSyntax syn => BuildNameExpression(syn),
             IGenericNameExpressionSyntax syn => throw new NotImplementedException(),
             INewObjectExpressionSyntax syn => BuildNewObjectExpression(syn),
             IInvocationExpressionSyntax syn => BuildInvocationExpression(syn),
@@ -455,22 +456,22 @@ internal class ASTBuilder
         switch (leftOperandSymbol)
         {
             case BindingSymbol _:
-                {
-                    var type = syn.DataType.Assigned();
-                    var leftOperand = BuildAssignableExpression(syn.LeftOperand);
-                    var @operator = syn.Operator;
-                    var rightOperand = BuildExpression(syn.RightOperand);
-                    return new AssignmentExpression(syn.Span, type, leftOperand, @operator, rightOperand);
-                }
+            {
+                var type = syn.DataType.Assigned();
+                var leftOperand = BuildAssignableExpression(syn.LeftOperand);
+                var @operator = syn.Operator;
+                var rightOperand = BuildExpression(syn.RightOperand);
+                return new AssignmentExpression(syn.Span, type, leftOperand, @operator, rightOperand);
+            }
             case MethodSymbol methodSymbol:
-                {
-                    var type = syn.DataType.Assigned();
-                    var contextSyntax = ((IMemberAccessExpressionSyntax)syn.LeftOperand).Context;
-                    var context = BuildExpression(contextSyntax);
-                    var rightOperand = BuildExpression(syn.RightOperand);
-                    return new MethodInvocationExpression(syn.Span, type, context,
-                        methodSymbol, FixedList.Create(rightOperand));
-                }
+            {
+                var type = syn.DataType.Assigned();
+                var contextSyntax = ((IMemberAccessExpressionSyntax)syn.LeftOperand).Context;
+                var context = BuildExpression(contextSyntax);
+                var rightOperand = BuildExpression(syn.RightOperand);
+                return new MethodInvocationExpression(syn.Span, type, context,
+                    methodSymbol, FixedList.Create(rightOperand));
+            }
             default:
                 throw new NotSupportedException();
         }
@@ -524,12 +525,12 @@ internal class ASTBuilder
             case FieldSymbol _:
                 return BuildFieldAccessExpression(syn);
             case MethodSymbol methodSymbol:
-                {
-                    var type = syn.DataType.Assigned();
-                    var context = BuildExpression(syn.Context);
-                    return new MethodInvocationExpression(syn.Span, type, context, methodSymbol,
-                        FixedList.Empty<IExpression>());
-                }
+            {
+                var type = syn.DataType.Assigned();
+                var context = BuildExpression(syn.Context);
+                return new MethodInvocationExpression(syn.Span, type, context, methodSymbol,
+                    FixedList.Empty<IExpression>());
+            }
             default:
                 throw new NotSupportedException();
         }
@@ -706,31 +707,38 @@ internal class ASTBuilder
         return new MoveExpression(syn.Span, type, referencedSymbol, referent);
     }
 
-    private static INameExpression BuildNameExpression(ISimpleNameExpressionSyntax syn, bool isMove)
+    private static INameExpression BuildNameExpression(ISpecialTypeNameExpressionSyntax _)
+        => throw new InvalidOperationException("Cannot build a name expression for a type.");
+
+    private static INameExpression BuildNameExpression(IIdentifierNameExpressionSyntax syn, bool isMove)
     {
-        return syn.ReferencedSymbol.Result.Assigned() switch
+        var symbol = ((IStandardNameExpressionSyntax)syn).ReferencedSymbol.Result.Assigned();
+        return symbol switch
         {
-            NamedVariableSymbol symbol => BuildVariableNameExpression(syn, symbol, isMove),
-            FunctionSymbol symbol => BuildFunctionNameExpression(syn, symbol),
+            NamedVariableSymbol sym => BuildVariableNameExpression(syn, sym, isMove),
+            FunctionSymbol sym => BuildFunctionNameExpression(syn, sym),
             TypeSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a type."),
             InvocableSymbol _ => throw new InvalidOperationException("Cannot build a name expression for an invocable."),
             NamespaceSymbol _ => throw new InvalidOperationException("Cannot build a name expression for a namespace or package."),
             FieldSymbol _ => throw new UnreachableException("Field would be a different expression."),
             SelfParameterSymbol _ => throw new UnreachableException("Self parameter would be a different expression."),
-            _ => throw ExhaustiveMatch.Failed(syn),
+            _ => throw ExhaustiveMatch.Failed(symbol),
         };
     }
 
-    private static IVariableNameExpression BuildVariableNameExpression(ISimpleNameExpressionSyntax syn, bool isMove)
-        => BuildVariableNameExpression(syn, (NamedVariableSymbol)syn.ReferencedSymbol.Result.Assigned(), isMove);
+    private static IVariableNameExpression BuildVariableNameExpression(IIdentifierNameExpressionSyntax syn, bool isMove)
+    {
+        var variableSymbol = (NamedVariableSymbol)((IStandardNameExpressionSyntax)syn).ReferencedSymbol.Result.Assigned();
+        return BuildVariableNameExpression(syn, variableSymbol, isMove);
+    }
 
-    private static IVariableNameExpression BuildVariableNameExpression(ISimpleNameExpressionSyntax syn, NamedVariableSymbol referencedSymbol, bool isMove)
+    private static IVariableNameExpression BuildVariableNameExpression(IIdentifierNameExpressionSyntax syn, NamedVariableSymbol referencedSymbol, bool isMove)
     {
         var type = syn.DataType.Assigned();
         return new VariableNameExpression(syn.Span, type, referencedSymbol, isMove);
     }
 
-    private static IFunctionNameExpression BuildFunctionNameExpression(ISimpleNameExpressionSyntax syn, FunctionSymbol referencedSymbol)
+    private static IFunctionNameExpression BuildFunctionNameExpression(IIdentifierNameExpressionSyntax syn, FunctionSymbol referencedSymbol)
     {
         var type = syn.DataType.Assigned();
         return new FunctionNameExpression(syn.Span, type, referencedSymbol);

@@ -904,7 +904,7 @@ public partial interface IInvocationExpressionSyntax : IHasContainingLexicalScop
 [Closed(
     typeof(IVariableNameExpressionSyntax),
     typeof(IStandardNameExpressionSyntax),
-    typeof(ISimpleNameExpressionSyntax),
+    typeof(ISpecialTypeNameExpressionSyntax),
     typeof(IMemberAccessExpressionSyntax))]
 public partial interface INameExpressionSyntax : IExpressionSyntax
 {
@@ -929,14 +929,7 @@ public partial interface IStandardNameExpressionSyntax : IHasContainingLexicalSc
     StandardName? Name { get; }
 }
 
-[Closed(
-    typeof(IIdentifierNameExpressionSyntax),
-    typeof(ISpecialTypeNameExpressionSyntax))]
-public partial interface ISimpleNameExpressionSyntax : INameExpressionSyntax
-{
-}
-
-public partial interface IIdentifierNameExpressionSyntax : ISimpleNameExpressionSyntax, IStandardNameExpressionSyntax, IVariableNameExpressionSyntax, IAssignableExpressionSyntax
+public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressionSyntax, IVariableNameExpressionSyntax, IAssignableExpressionSyntax
 {
     new IdentifierName? Name { get; }
     StandardName? IStandardNameExpressionSyntax.Name => Name;
@@ -945,7 +938,7 @@ public partial interface IIdentifierNameExpressionSyntax : ISimpleNameExpression
     IPromise<IVariableNameExpressionSyntaxSemantics> IVariableNameExpressionSyntax.Semantics => Semantics;
 }
 
-public partial interface ISpecialTypeNameExpressionSyntax : ISimpleNameExpressionSyntax
+public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSyntax
 {
     SpecialTypeName Name { get; }
     new Promise<SpecialTypeNameExpressionSyntaxSemantics> Semantics { get; }

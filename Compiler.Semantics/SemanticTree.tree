@@ -268,10 +268,9 @@ InvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax` Expres
 NameExpression <: UntypedExpression = Syntax:`INameExpressionSyntax`;
 VariableNameExpression <: NameExpression = Syntax:`IVariableNameExpressionSyntax`;
 StandardNameExpression <: NameExpression = Syntax:`IStandardNameExpressionSyntax` Name:`StandardName`? ReferencedSymbol:`Symbol?`;
-SimpleNameExpression <: NameExpression = Syntax:`ISimpleNameExpressionSyntax`;
-IdentifierNameExpression <: NameExpression, SimpleNameExpression, StandardNameExpression, VariableNameExpression, AssignableExpression
+IdentifierNameExpression <: NameExpression, StandardNameExpression, VariableNameExpression, AssignableExpression
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`?;
-SpecialTypeNameExpression <: NameExpression, SimpleNameExpression
+SpecialTypeNameExpression <: NameExpression
     = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol`?;
 GenericNameExpression <: NameExpression, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;

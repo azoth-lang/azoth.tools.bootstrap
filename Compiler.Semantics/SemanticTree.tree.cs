@@ -75,7 +75,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IInvocationExpressionNode),
     typeof(IVariableNameExpressionNode),
     typeof(IStandardNameExpressionNode),
-    typeof(ISimpleNameExpressionNode),
+    typeof(ISpecialTypeNameExpressionNode),
     typeof(ISelfExpressionNode),
     typeof(IMoveExpressionNode),
     typeof(IFreezeExpressionNode),
@@ -1398,7 +1398,7 @@ public partial interface IInvocationExpressionNode : ISemanticNode, IExpressionN
 [Closed(
     typeof(IVariableNameExpressionNode),
     typeof(IStandardNameExpressionNode),
-    typeof(ISimpleNameExpressionNode),
+    typeof(ISpecialTypeNameExpressionNode),
     typeof(IMemberAccessExpressionNode))]
 public partial interface INameExpressionNode : IUntypedExpressionNode
 {
@@ -1431,21 +1431,9 @@ public partial interface IStandardNameExpressionNode : ISemanticNode, INameExpre
     Symbol? ReferencedSymbol { get; }
 }
 
-[Closed(
-    typeof(IIdentifierNameExpressionNode),
-    typeof(ISpecialTypeNameExpressionNode))]
-public partial interface ISimpleNameExpressionNode : ISemanticNode, INameExpressionNode
-{
-    new ISimpleNameExpressionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
-    IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
-}
-
-public partial interface IIdentifierNameExpressionNode : ISimpleNameExpressionNode, IStandardNameExpressionNode, IVariableNameExpressionNode, IAssignableExpressionNode
+public partial interface IIdentifierNameExpressionNode : IStandardNameExpressionNode, IVariableNameExpressionNode, IAssignableExpressionNode
 {
     new IIdentifierNameExpressionSyntax Syntax { get; }
-    ISimpleNameExpressionSyntax ISimpleNameExpressionNode.Syntax => Syntax;
     IStandardNameExpressionSyntax IStandardNameExpressionNode.Syntax => Syntax;
     IVariableNameExpressionSyntax IVariableNameExpressionNode.Syntax => Syntax;
     IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
@@ -1456,10 +1444,12 @@ public partial interface IIdentifierNameExpressionNode : ISimpleNameExpressionNo
     StandardName? IStandardNameExpressionNode.Name => Name;
 }
 
-public partial interface ISpecialTypeNameExpressionNode : ISimpleNameExpressionNode
+public partial interface ISpecialTypeNameExpressionNode : ISemanticNode, INameExpressionNode
 {
     new ISpecialTypeNameExpressionSyntax Syntax { get; }
-    ISimpleNameExpressionSyntax ISimpleNameExpressionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
     SpecialTypeName Name { get; }
     TypeSymbol? ReferencedSymbol { get; }
 }

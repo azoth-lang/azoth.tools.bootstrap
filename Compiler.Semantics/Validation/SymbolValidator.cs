@@ -64,7 +64,10 @@ public class SymbolValidator : SyntaxWalker
             case IDefinitionSyntax syn:
                 ValidateSymbol(syn, syn.Symbol);
                 break;
-            case ISimpleNameExpressionSyntax syn:
+            case IIdentifierNameExpressionSyntax syn:
+                ValidateReferencedSymbol(syn, ((IStandardNameExpressionSyntax)syn).ReferencedSymbol, optional: true);
+                break;
+            case ISpecialTypeNameExpressionSyntax syn:
                 ValidateReferencedSymbol(syn, syn.ReferencedSymbol, optional: true);
                 break;
             case ISelfExpressionSyntax syn:

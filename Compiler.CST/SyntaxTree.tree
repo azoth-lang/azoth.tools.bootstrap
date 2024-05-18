@@ -181,9 +181,8 @@ InvocationExpression: DataTypedExpression <: `IHasContainingLexicalScope` = Expr
 NameExpression: Expression = Semantics:`IPromise<ISyntaxSemantics>` ReferencedSymbol:`IPromise<Symbol?>`;
 VariableNameExpression: NameExpression = Semantics:`IPromise<IVariableNameExpressionSyntaxSemantics>`;
 StandardNameExpression: NameExpression <: `IHasContainingLexicalScope` = Name:`StandardName`? ReferencedSymbol:`IPromise<Symbol?>`;
-SimpleNameExpression: NameExpression;
-IdentifierNameExpression: NameExpression <: SimpleNameExpression, StandardNameExpression, VariableNameExpression, AssignableExpression = Name:`IdentifierName`? Semantics:`Promise<IIdentifierNameExpressionSyntaxSemantics>`;
-SpecialTypeNameExpression: NameExpression <: SimpleNameExpression = Name:`SpecialTypeName` Semantics:`Promise<SpecialTypeNameExpressionSyntaxSemantics>` DataType:`Promise<DataType?>` ReferencedSymbol:`Promise<TypeSymbol?>`;
+IdentifierNameExpression: NameExpression <: StandardNameExpression, VariableNameExpression, AssignableExpression = Name:`IdentifierName`? Semantics:`Promise<IIdentifierNameExpressionSyntaxSemantics>`;
+SpecialTypeNameExpression: NameExpression = Name:`SpecialTypeName` Semantics:`Promise<SpecialTypeNameExpressionSyntaxSemantics>` DataType:`Promise<DataType?>` ReferencedSymbol:`Promise<TypeSymbol?>`;
 GenericNameExpression: NameExpression <: StandardNameExpression = Name:`GenericName` TypeArguments:Type* DataType:`Promise<DataType?>`;
 SelfExpression: NameExpression <: VariableNameExpression, TypedExpression = IsImplicit:`bool` Semantics:`Promise<ISelfExpressionSyntaxSemantics>` ReferencedSymbol:`IPromise<SelfParameterSymbol?>` Pseudotype:`IPromise<Pseudotype>`;
 MemberAccessExpression: NameExpression <: AssignableExpression = Context:Expression AccessOperator:`AccessOperator` MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan` Semantics:`Promise<IMemberAccessSyntaxSemantics>` ReferencedSymbol:`IPromise<Symbol?>`;
