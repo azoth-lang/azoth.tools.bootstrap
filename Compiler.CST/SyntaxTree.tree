@@ -186,7 +186,9 @@ SpecialTypeNameExpression: NameExpression = Name:`SpecialTypeName` Semantics:`Pr
 GenericNameExpression: NameExpression <: StandardNameExpression = Name:`GenericName` TypeArguments:Type* DataType:`Promise<DataType?>`;
 InstanceExpression <: SimpleName, TypedExpression; // i.e. `self` or `base`
 SelfExpression: NameExpression <: InstanceExpression = IsImplicit:`bool` Semantics:`Promise<ISelfExpressionSyntaxSemantics>` ReferencedSymbol:`IPromise<SelfParameterSymbol?>` Pseudotype:`IPromise<Pseudotype>`;
-MemberAccessExpression: NameExpression <: AssignableExpression = Context:Expression AccessOperator:`AccessOperator` MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan` Semantics:`Promise<IMemberAccessSyntaxSemantics>` ReferencedSymbol:`IPromise<Symbol?>`;
+MemberAccessExpression: NameExpression <: AssignableExpression
+    = Context:Expression MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan`
+    Semantics:`Promise<IMemberAccessSyntaxSemantics>` ReferencedSymbol:`IPromise<Symbol?>`;
 
 // ---------- Capability Expressions
 MoveExpression: DataTypedExpression = Referent:SimpleName ReferencedSymbol:`Promise<BindingSymbol?>`;

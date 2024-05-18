@@ -152,15 +152,14 @@ public partial class Parser
                     }
                     break;
                 case IDotToken _:
-                case IQuestionDotToken _:
                     if (minPrecedence <= OperatorPrecedence.Primary)
                     {
                         // Member Access
-                        var accessOperator = BuildAccessOperator(Tokens.ConsumeToken<IAccessOperatorToken>());
+                        Tokens.ConsumeToken<IAccessOperatorToken>();
                         // TODO support generic names
                         var nameSyntax = ParseIdentifierName();
                         var memberAccessSpan = TextSpan.Covering(expression.Span, nameSyntax.Span);
-                        expression = new MemberAccessExpressionSyntax(memberAccessSpan, expression, accessOperator, nameSyntax);
+                        expression = new MemberAccessExpressionSyntax(memberAccessSpan, expression, nameSyntax);
                         continue;
                     }
                     break;
@@ -216,16 +215,6 @@ public partial class Parser
             IAsteriskEqualsToken _ => AssignmentOperator.Asterisk,
             ISlashEqualsToken _ => AssignmentOperator.Slash,
             _ => throw ExhaustiveMatch.Failed(assignmentToken)
-        };
-    }
-
-    private static AccessOperator BuildAccessOperator(IAccessOperatorToken accessOperatorToken)
-    {
-        return accessOperatorToken switch
-        {
-            IDotToken _ => AccessOperator.Standard,
-            IQuestionDotToken _ => AccessOperator.Conditional,
-            _ => throw ExhaustiveMatch.Failed(accessOperatorToken)
         };
     }
 

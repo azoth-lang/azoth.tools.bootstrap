@@ -1472,7 +1472,6 @@ public partial interface IMemberAccessExpressionNode : INameExpressionNode, IAss
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Context { get; }
-    AccessOperator AccessOperator { get; }
     StandardName MemberName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
 }

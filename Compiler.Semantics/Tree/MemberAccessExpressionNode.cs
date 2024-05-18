@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
-using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
@@ -13,7 +12,6 @@ internal sealed class MemberAccessExpressionNode : NameExpressionNode, IMemberAc
     public override IMemberAccessExpressionSyntax Syntax { get; }
     private Child<IAmbiguousExpressionNode> context;
     public IAmbiguousExpressionNode Context => context.Value;
-    public AccessOperator AccessOperator => Syntax.AccessOperator;
     public StandardName MemberName => Syntax.MemberName;
     public IFixedList<ITypeNode> TypeArguments { get; }
 

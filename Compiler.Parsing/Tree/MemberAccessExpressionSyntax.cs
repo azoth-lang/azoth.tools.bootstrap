@@ -14,7 +14,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal sealed class MemberAccessExpressionSyntax : NameExpressionSyntax, IMemberAccessExpressionSyntax
 {
     public IExpressionSyntax Context { [DebuggerStepThrough] get; }
-    public AccessOperator AccessOperator { [DebuggerStepThrough] get; }
     public StandardName MemberName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
     public TextSpan MemberNameSpan { get; }
@@ -26,12 +25,10 @@ internal sealed class MemberAccessExpressionSyntax : NameExpressionSyntax, IMemb
     public MemberAccessExpressionSyntax(
         TextSpan span,
         IExpressionSyntax context,
-        AccessOperator accessOperator,
         IIdentifierNameExpressionSyntax member)
         : base(span)
     {
         Context = context;
-        AccessOperator = accessOperator;
         MemberName = member.Name!;
         TypeArguments = FixedList.Empty<ITypeSyntax>();
         DataType = Semantics.Select(s => s.Type).Flatten();
@@ -42,5 +39,5 @@ internal sealed class MemberAccessExpressionSyntax : NameExpressionSyntax, IMemb
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
     public override string ToString()
-        => $"{Context.ToGroupedString(ExpressionPrecedence)}{AccessOperator.ToSymbolString()}{MemberName}";
+        => $"{Context.ToGroupedString(ExpressionPrecedence)}.{MemberName}";
 }

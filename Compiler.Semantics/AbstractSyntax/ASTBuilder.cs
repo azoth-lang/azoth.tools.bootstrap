@@ -540,9 +540,8 @@ internal class ASTBuilder
     {
         var type = syn.DataType.Assigned();
         var context = BuildExpression(syn.Context);
-        var accessOperator = syn.AccessOperator;
         var fieldSymbol = (FieldSymbol)syn.ReferencedSymbol.Result.Assigned();
-        return new FieldAccessExpression(syn.Span, type, context, accessOperator, fieldSymbol);
+        return new FieldAccessExpression(syn.Span, type, context, fieldSymbol);
     }
 
     private static IForeachExpression BuildForeachExpression(IForeachExpressionSyntax syn)

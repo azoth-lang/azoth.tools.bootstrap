@@ -980,7 +980,6 @@ public partial interface ISelfExpressionSyntax : INameExpressionSyntax, IInstanc
 public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, IAssignableExpressionSyntax
 {
     IExpressionSyntax Context { get; }
-    AccessOperator AccessOperator { get; }
     StandardName MemberName { get; }
     IFixedList<ITypeSyntax> TypeArguments { get; }
     TextSpan MemberNameSpan { get; }

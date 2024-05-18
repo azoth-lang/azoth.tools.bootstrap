@@ -275,7 +275,7 @@ SpecialTypeNameExpression <: NameExpression
 GenericNameExpression <: NameExpression, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
 MemberAccessExpression <: NameExpression, AssignableExpression
-    = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression AccessOperator:`AccessOperator` MemberName:`StandardName` TypeArguments:Type*;
+    = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression MemberName:`StandardName` TypeArguments:Type*;
 InstanceExpression <: SimpleName, Expression; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression

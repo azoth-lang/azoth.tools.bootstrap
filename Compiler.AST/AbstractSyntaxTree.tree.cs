@@ -646,7 +646,6 @@ public partial interface ISelfExpression : IExpression
 public partial interface IFieldAccessExpression : IAssignableExpression
 {
     IExpression Context { get; }
-    AccessOperator AccessOperator { get; }
     FieldSymbol ReferencedSymbol { get; }
 }
 
