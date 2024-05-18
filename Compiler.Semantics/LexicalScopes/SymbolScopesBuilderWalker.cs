@@ -157,19 +157,19 @@ internal class SymbolScopesBuilderWalker : SyntaxWalker<SymbolScope>
                 _ = Walk(exp.Value, containingScope);
                 break;
             case IConversionExpressionSyntax exp:
-                {
-                    var scopes = Walk(exp.Referent, containingScope);
-                    Walk(exp.ConvertToType, containingScope);
-                    return scopes;
-                }
+            {
+                var scopes = Walk(exp.Referent, containingScope);
+                Walk(exp.ConvertToType, containingScope);
+                return scopes;
+            }
             case IForeachExpressionSyntax exp:
-                {
-                    Walk(exp.Type, containingScope);
-                    var bodyScope = Walk(exp.InExpression, containingScope).True;
-                    bodyScope = BuildVariableScope(bodyScope, exp.VariableName, exp.Symbol);
-                    WalkNonNull(exp.Block, bodyScope);
-                    break;
-                }
+            {
+                Walk(exp.Type, containingScope);
+                var bodyScope = Walk(exp.InExpression, containingScope).True;
+                bodyScope = BuildVariableScope(bodyScope, exp.VariableName, exp.Symbol);
+                WalkNonNull(exp.Block, bodyScope);
+                break;
+            }
             case IFreezeExpressionSyntax exp:
                 return Walk(exp.Referent, containingScope);
             case IIdExpressionSyntax exp:
@@ -196,33 +196,33 @@ internal class SymbolScopesBuilderWalker : SyntaxWalker<SymbolScope>
                 _ = Walk(exp.Value, containingScope);
                 break;
             case IUnaryOperatorExpressionSyntax exp:
-                {
-                    var scopes = Walk(exp.Operand, containingScope);
-                    if (exp.Operator == UnaryOperator.Not) scopes = scopes.Swapped();
-                    return scopes;
-                }
+            {
+                var scopes = Walk(exp.Operand, containingScope);
+                if (exp.Operator == UnaryOperator.Not) scopes = scopes.Swapped();
+                return scopes;
+            }
             case IUnsafeExpressionSyntax exp:
                 return Walk(exp.Expression, containingScope);
             case IWhileExpressionSyntax exp:
-                {
-                    var bodyScope = Walk(exp.Condition, containingScope).True;
-                    WalkNonNull(exp.Block, bodyScope);
-                    break;
-                }
+            {
+                var bodyScope = Walk(exp.Condition, containingScope).True;
+                WalkNonNull(exp.Block, bodyScope);
+                break;
+            }
             case IIfExpressionSyntax exp:
-                {
-                    var conditionScopes = Walk(exp.Condition, containingScope);
-                    Walk(exp.ThenBlock, conditionScopes.True);
-                    if (exp.ElseClause is not null)
-                        Walk(exp.ElseClause, conditionScopes.False);
-                    break;
-                }
+            {
+                var conditionScopes = Walk(exp.Condition, containingScope);
+                Walk(exp.ThenBlock, conditionScopes.True);
+                if (exp.ElseClause is not null)
+                    Walk(exp.ElseClause, conditionScopes.False);
+                break;
+            }
             case IAsyncBlockExpressionSyntax exp:
-                {
-                    // TODO once `async let` is supported, create a lexical scope for the variable
-                    WalkNonNull(exp.Block, containingScope);
-                    break;
-                }
+            {
+                // TODO once `async let` is supported, create a lexical scope for the variable
+                WalkNonNull(exp.Block, containingScope);
+                break;
+            }
             case IAsyncStartExpressionSyntax exp:
                 Walk(exp.Expression, containingScope);
                 break;
@@ -234,7 +234,8 @@ internal class SymbolScopesBuilderWalker : SyntaxWalker<SymbolScope>
                 break;
             case ILiteralExpressionSyntax _:
             case ISelfExpressionSyntax _:
-            case ISimpleNameExpressionSyntax _:
+            case IIdentifierNameExpressionSyntax _:
+            case ISpecialTypeNameExpressionSyntax _:
             case INextExpressionSyntax _:
             case null:
                 // Nothing special to do
@@ -251,11 +252,11 @@ internal class SymbolScopesBuilderWalker : SyntaxWalker<SymbolScope>
             default:
                 throw ExhaustiveMatch.Failed(syntax);
             case IBindingContextPatternSyntax pat:
-                {
-                    var scopes = WalkNonNull(pat.Pattern, containingScope);
-                    Walk(pat.Type, containingScope);
-                    return scopes;
-                }
+            {
+                var scopes = WalkNonNull(pat.Pattern, containingScope);
+                Walk(pat.Type, containingScope);
+                return scopes;
+            }
             case IBindingPatternSyntax pat:
                 var trueScope = BuildVariableScope(containingScope, pat.Name, pat.Symbol);
                 return new ConditionalSymbolScopes(trueScope, containingScope);

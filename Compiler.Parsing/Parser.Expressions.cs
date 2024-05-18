@@ -428,7 +428,7 @@ public partial class Parser
         return new SelfExpressionSyntax(selfKeyword, false);
     }
 
-    private ISimpleNameExpressionSyntax ParseMissingIdentifier()
+    private IIdentifierNameExpressionSyntax ParseMissingIdentifier()
     {
         var identifierSpan = Tokens.Expect<IIdentifierToken>();
         return new IdentifierNameExpressionSyntax(identifierSpan, null);

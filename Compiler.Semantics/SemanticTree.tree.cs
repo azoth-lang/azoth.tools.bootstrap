@@ -76,6 +76,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IVariableNameExpressionNode),
     typeof(IStandardNameExpressionNode),
     typeof(ISimpleNameExpressionNode),
+    typeof(ISelfExpressionNode),
     typeof(IMoveExpressionNode),
     typeof(IFreezeExpressionNode),
     typeof(IAsyncBlockExpressionNode),
@@ -1140,7 +1141,7 @@ public partial interface IUntypedExpressionNode : ISemanticNode, ICodeNode
     typeof(IWhileExpressionNode),
     typeof(IForeachExpressionNode),
     typeof(IInvocationExpressionNode),
-    typeof(ISelfExpressionNode),
+    typeof(IInstanceExpressionNode),
     typeof(IMoveExpressionNode),
     typeof(IFreezeExpressionNode),
     typeof(IAsyncBlockExpressionNode),
@@ -1407,7 +1408,7 @@ public partial interface INameExpressionNode : IUntypedExpressionNode
 
 [Closed(
     typeof(IIdentifierNameExpressionNode),
-    typeof(ISelfExpressionNode),
+    typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode))]
 public partial interface IVariableNameExpressionNode : ISemanticNode, INameExpressionNode
 {
@@ -1486,12 +1487,18 @@ public partial interface IMemberAccessExpressionNode : INameExpressionNode, IAss
     IFixedList<ITypeNode> TypeArguments { get; }
 }
 
-public partial interface ISelfExpressionNode : IVariableNameExpressionNode, IExpressionNode
+[Closed(
+    typeof(ISelfExpressionNode))]
+public partial interface IInstanceExpressionNode : IVariableNameExpressionNode, IExpressionNode
+{
+}
+
+public partial interface ISelfExpressionNode : ISemanticNode, IInstanceExpressionNode
 {
     new ISelfExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IVariableNameExpressionSyntax IVariableNameExpressionNode.Syntax => Syntax;
     ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
     bool IsImplicit { get; }

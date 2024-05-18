@@ -277,7 +277,9 @@ GenericNameExpression <: NameExpression, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
 MemberAccessExpression <: NameExpression, AssignableExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:UntypedExpression AccessOperator:`AccessOperator` MemberName:`StandardName` TypeArguments:Type*;
-SelfExpression <: NameExpression, VariableNameExpression, Expression
+InstanceExpression <: VariableNameExpression, Expression; // i.e. `self` or `base`
+// TODO BaseExpression <: InstanceExpression
+SelfExpression <: InstanceExpression
     = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype`;
 MissingNameExpression <: NameExpression, VariableNameExpression, AssignableExpression, Expression
     = Syntax:`IIdentifierNameExpressionSyntax` Type:`UnknownType`;
