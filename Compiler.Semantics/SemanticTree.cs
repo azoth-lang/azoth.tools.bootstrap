@@ -35,10 +35,20 @@ public partial interface ICapabilityNode
     ICapabilityConstraint ICapabilityConstraintNode.Constraint => Capability;
 }
 
+#region Statements
 public partial interface IStatementNode
 {
     LexicalScope GetLexicalScope();
 }
+#endregion
+
+#region Patterns
+public partial interface IPatternNode
+{
+    LexicalScope GetContainingLexicalScope();
+    ConditionalLexicalScope GetFlowLexicalScope();
+}
+#endregion
 
 public partial interface IUntypedExpressionNode
 {

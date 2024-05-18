@@ -1,9 +1,10 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class BindingContextPatternNode : CodeNode, IBindingContextPatternNode
+internal sealed class BindingContextPatternNode : PatternNode, IBindingContextPatternNode
 {
     public override IBindingContextPatternSyntax Syntax { get; }
     public bool IsMutableBinding => Syntax.IsMutableBinding;
@@ -19,4 +20,6 @@ internal sealed class BindingContextPatternNode : CodeNode, IBindingContextPatte
         Pattern = Child.Attach(this, pattern);
         Type = Child.Attach(this, type);
     }
+
+    public override ConditionalLexicalScope GetFlowLexicalScope() => Pattern.GetFlowLexicalScope();
 }

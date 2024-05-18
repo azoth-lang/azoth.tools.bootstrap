@@ -1096,6 +1096,8 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IN
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IPatternSyntax IPatternNode.Syntax => Syntax;
+    bool IsMutableBinding { get; }
+    LexicalScope ContainingLexicalScope { get; }
 }
 
 public partial interface IOptionalPatternNode : ISemanticNode, IOptionalOrBindingPatternNode

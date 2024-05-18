@@ -1,9 +1,10 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class OptionalPatternNode : CodeNode, IOptionalPatternNode
+internal sealed class OptionalPatternNode : PatternNode, IOptionalPatternNode
 {
     public override IOptionalPatternSyntax Syntax { get; }
     public IOptionalOrBindingPatternNode Pattern { get; }
@@ -13,4 +14,6 @@ internal sealed class OptionalPatternNode : CodeNode, IOptionalPatternNode
         Syntax = syntax;
         Pattern = Child.Attach(this, pattern);
     }
+
+    public override ConditionalLexicalScope GetFlowLexicalScope() => Pattern.GetFlowLexicalScope();
 }

@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -19,4 +20,13 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
         this.referent = Child.Create(this, referent);
         Pattern = Child.Attach(this, pattern);
     }
+
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    {
+        if (child == Pattern)
+            return Referent.GetFlowLexicalScope().True;
+        return GetContainingLexicalScope();
+    }
+
+    public override ConditionalLexicalScope GetFlowLexicalScope() => Pattern.GetFlowLexicalScope();
 }

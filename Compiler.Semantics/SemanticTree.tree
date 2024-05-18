@@ -219,7 +219,8 @@ ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax` Express
 Pattern <: Code = Syntax:`IPatternSyntax`;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
-BindingPattern <: OptionalOrBindingPattern, NamedBinding = Syntax:`IBindingPatternSyntax` Name:`IdentifierName`;
+BindingPattern <: OptionalOrBindingPattern, NamedBinding = Syntax:`IBindingPatternSyntax`
+    IsMutableBinding:`bool` Name:`IdentifierName` ContainingLexicalScope:`LexicalScope`;
 OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
