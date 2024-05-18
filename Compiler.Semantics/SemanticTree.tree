@@ -92,7 +92,7 @@ FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration = Syntax:`IFu
     Type:`FunctionType` Symbol:`FunctionSymbol`;
 
 // ---------- Type Definitions
-TypeDefinition <: PackageMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, UserTypeDeclaration
+TypeDefinition <: PackageMemberDefinition, AssociatedMemberDefinition, UserTypeDeclaration
     = Syntax:`ITypeDefinitionSyntax` IsConst:`bool` Name:`StandardName`
     DeclaredType:`IDeclaredUserType` Symbol:`UserTypeSymbol`
     GenericParameters:GenericParameter* SupertypesLexicalScope:`LexicalScope`
@@ -128,6 +128,7 @@ ClassMemberDefinition <: TypeMemberDefinition, ClassMemberDeclaration = Syntax:`
 TraitMemberDefinition <: TypeMemberDefinition, TraitMemberDeclaration = Syntax:`ITraitMemberDefinitionSyntax`;
 StructMemberDefinition <: TypeMemberDefinition, StructMemberDeclaration = Syntax:`IStructMemberDefinitionSyntax`?;
 AlwaysTypeMemberDefinition <: TypeMemberDefinition = ContainingSymbol:`UserTypeSymbol`;
+AssociatedMemberDefinition <: TypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, NamedDeclaration;
 
 // ---------- Member Definitions
 MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition, MethodDeclaration
@@ -155,7 +156,7 @@ InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition
 FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding, FieldDeclaration
     = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type Type:`DataType`
     Symbol:`FieldSymbol` Initializer:UntypedExpression?;
-AssociatedFunctionDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, AssociatedFunctionDeclaration
+AssociatedFunctionDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
     = Syntax:`IAssociatedFunctionDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
    Symbol:`FunctionSymbol` Type:`FunctionType` Body;
 

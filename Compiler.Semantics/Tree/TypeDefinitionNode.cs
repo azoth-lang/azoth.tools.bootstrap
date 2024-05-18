@@ -59,9 +59,11 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
     {
+        if (GenericParameters.Contains(child))
+            return ContainingLexicalScope;
         if (((ITypeDefinitionNode)this).AllSupertypeNames.Contains(child))
-            return LexicalScopingAspect.TypeDefinition_InheritedLexicalScope_Supertypes(this);
-        return LexicalScopingAspect.TypeDefinition_InheritedLexicalScope(this);
+            return LexicalScopingAspect.TypeDefinition_InheritedLexicalScope_AllSupertypeNames(this);
+        return LexicalScopingAspect.TypeDefinition_InheritedLexicalScope_Members(this);
     }
 
     internal override ITypeDefinitionNode InheritedContainingTypeDeclaration(IChildNode child, IChildNode descendant)

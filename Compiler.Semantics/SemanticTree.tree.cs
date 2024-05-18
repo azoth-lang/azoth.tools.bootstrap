@@ -354,7 +354,7 @@ public partial interface IFunctionDefinitionNode : ISemanticNode, IPackageMember
     typeof(IClassDefinitionNode),
     typeof(IStructDefinitionNode),
     typeof(ITraitDefinitionNode))]
-public partial interface ITypeDefinitionNode : ISemanticNode, IPackageMemberDefinitionNode, IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IStructMemberDefinitionNode, IUserTypeDeclarationNode
+public partial interface ITypeDefinitionNode : ISemanticNode, IPackageMemberDefinitionNode, IAssociatedMemberDefinitionNode, IUserTypeDeclarationNode
 {
     new ITypeDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -468,11 +468,10 @@ public partial interface ITypeMemberDefinitionNode : ISemanticNode, IDefinitionN
 }
 
 [Closed(
-    typeof(ITypeDefinitionNode),
+    typeof(IAssociatedMemberDefinitionNode),
     typeof(IMethodDefinitionNode),
     typeof(IConstructorDefinitionNode),
-    typeof(IFieldDefinitionNode),
-    typeof(IAssociatedFunctionDefinitionNode))]
+    typeof(IFieldDefinitionNode))]
 public partial interface IClassMemberDefinitionNode : ITypeMemberDefinitionNode, IClassMemberDeclarationNode
 {
     new IClassMemberDefinitionSyntax? Syntax { get; }
@@ -482,9 +481,8 @@ public partial interface IClassMemberDefinitionNode : ITypeMemberDefinitionNode,
 }
 
 [Closed(
-    typeof(ITypeDefinitionNode),
-    typeof(IMethodDefinitionNode),
-    typeof(IAssociatedFunctionDefinitionNode))]
+    typeof(IAssociatedMemberDefinitionNode),
+    typeof(IMethodDefinitionNode))]
 public partial interface ITraitMemberDefinitionNode : ITypeMemberDefinitionNode, ITraitMemberDeclarationNode
 {
     new ITraitMemberDefinitionSyntax Syntax { get; }
@@ -494,11 +492,10 @@ public partial interface ITraitMemberDefinitionNode : ITypeMemberDefinitionNode,
 }
 
 [Closed(
-    typeof(ITypeDefinitionNode),
+    typeof(IAssociatedMemberDefinitionNode),
     typeof(IConcreteMethodDefinitionNode),
     typeof(IInitializerDefinitionNode),
-    typeof(IFieldDefinitionNode),
-    typeof(IAssociatedFunctionDefinitionNode))]
+    typeof(IFieldDefinitionNode))]
 public partial interface IStructMemberDefinitionNode : ITypeMemberDefinitionNode, IStructMemberDeclarationNode
 {
     new IStructMemberDefinitionSyntax? Syntax { get; }
@@ -517,6 +514,13 @@ public partial interface IAlwaysTypeMemberDefinitionNode : ITypeMemberDefinition
 {
     new UserTypeSymbol ContainingSymbol { get; }
     Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
+}
+
+[Closed(
+    typeof(ITypeDefinitionNode),
+    typeof(IAssociatedFunctionDefinitionNode))]
+public partial interface IAssociatedMemberDefinitionNode : IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IStructMemberDefinitionNode, INamedDeclarationNode
+{
 }
 
 [Closed(
@@ -667,7 +671,7 @@ public partial interface IFieldDefinitionNode : ISemanticNode, IAlwaysTypeMember
     IUntypedExpressionNode? Initializer { get; }
 }
 
-public partial interface IAssociatedFunctionDefinitionNode : ISemanticNode, IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IStructMemberDefinitionNode, IAssociatedFunctionDeclarationNode
+public partial interface IAssociatedFunctionDefinitionNode : ISemanticNode, IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IAssociatedMemberDefinitionNode, IAssociatedFunctionDeclarationNode
 {
     new IAssociatedFunctionDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -679,8 +683,8 @@ public partial interface IAssociatedFunctionDefinitionNode : ISemanticNode, ICon
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    IdentifierName IAssociatedFunctionDeclarationNode.Name => Name;
     StandardName INamedDeclarationNode.Name => Name;
+    IdentifierName IAssociatedFunctionDeclarationNode.Name => Name;
     new IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
     new FunctionSymbol Symbol { get; }
@@ -1585,6 +1589,7 @@ public partial interface IChildDeclarationNode : IDeclarationNode, IChildNode
 }
 
 [Closed(
+    typeof(IAssociatedMemberDefinitionNode),
     typeof(INamedBindingDeclarationNode),
     typeof(INamespaceMemberDeclarationNode),
     typeof(IFunctionDeclarationNode),

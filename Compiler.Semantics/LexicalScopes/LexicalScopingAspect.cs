@@ -74,13 +74,13 @@ internal static class LexicalScopingAspect
     }
 
     public static LexicalScope TypeDefinition_LexicalScope(ITypeDefinitionNode node)
-        // TODO populate the scope with members
-        => new DeclarationScope(node.SupertypesLexicalScope, Enumerable.Empty<INamedDeclarationNode>());
+        // Only associated (i.e. "static") names are in scope. Other names must use `self.`
+        => new DeclarationScope(node.SupertypesLexicalScope, node.Members.OfType<IAssociatedMemberDefinitionNode>());
 
-    public static LexicalScope TypeDefinition_InheritedLexicalScope_Supertypes(ITypeDefinitionNode node)
+    public static LexicalScope TypeDefinition_InheritedLexicalScope_AllSupertypeNames(ITypeDefinitionNode node)
         => node.SupertypesLexicalScope;
 
-    public static LexicalScope TypeDefinition_InheritedLexicalScope(ITypeDefinitionNode node)
+    public static LexicalScope TypeDefinition_InheritedLexicalScope_Members(ITypeDefinitionNode node)
         => node.LexicalScope;
 
     public static LexicalScope FunctionDefinition_LexicalScope(IFunctionDefinitionNode node)
