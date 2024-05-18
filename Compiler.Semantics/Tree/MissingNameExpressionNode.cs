@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class MissingNameExpressionNode : NameExpressionNode, IMissingNameExpressionNode
+internal sealed class MissingNameExpressionNode : AmbiguousNameExpressionNode, IMissingNameExpressionNode
 {
     public override IIdentifierNameExpressionSyntax Syntax { get; }
     public UnknownType Type => (UnknownType)DataType.Unknown;

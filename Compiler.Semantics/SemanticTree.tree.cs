@@ -1115,7 +1115,7 @@ public partial interface IOptionalPatternNode : ISemanticNode, IOptionalOrBindin
 
 [Closed(
     typeof(IExpressionNode),
-    typeof(INameExpressionNode))]
+    typeof(IAmbiguousNameExpressionNode))]
 public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
 {
     new IExpressionSyntax Syntax { get; }
@@ -1400,7 +1400,7 @@ public partial interface IInvocationExpressionNode : ISemanticNode, IExpressionN
     typeof(IStandardNameExpressionNode),
     typeof(ISpecialTypeNameExpressionNode),
     typeof(IMemberAccessExpressionNode))]
-public partial interface INameExpressionNode : IAmbiguousExpressionNode
+public partial interface IAmbiguousNameExpressionNode : IAmbiguousExpressionNode
 {
     new INameExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
@@ -1410,22 +1410,22 @@ public partial interface INameExpressionNode : IAmbiguousExpressionNode
     typeof(IIdentifierNameExpressionNode),
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode))]
-public partial interface ISimpleNameNode : ISemanticNode, INameExpressionNode
+public partial interface ISimpleNameNode : ISemanticNode, IAmbiguousNameExpressionNode
 {
     new ISimpleNameSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
 }
 
 [Closed(
     typeof(IIdentifierNameExpressionNode),
     typeof(IGenericNameExpressionNode))]
-public partial interface IStandardNameExpressionNode : ISemanticNode, INameExpressionNode
+public partial interface IStandardNameExpressionNode : ISemanticNode, IAmbiguousNameExpressionNode
 {
     new IStandardNameExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     StandardName? Name { get; }
     Symbol? ReferencedSymbol { get; }
@@ -1438,17 +1438,17 @@ public partial interface IIdentifierNameExpressionNode : IStandardNameExpression
     ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
     IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
     new IdentifierName? Name { get; }
     StandardName? IStandardNameExpressionNode.Name => Name;
 }
 
-public partial interface ISpecialTypeNameExpressionNode : ISemanticNode, INameExpressionNode
+public partial interface ISpecialTypeNameExpressionNode : ISemanticNode, IAmbiguousNameExpressionNode
 {
     new ISpecialTypeNameExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     SpecialTypeName Name { get; }
     TypeSymbol? ReferencedSymbol { get; }
@@ -1463,10 +1463,10 @@ public partial interface IGenericNameExpressionNode : IStandardNameExpressionNod
     IFixedList<ITypeNode> TypeArguments { get; }
 }
 
-public partial interface IMemberAccessExpressionNode : INameExpressionNode, IAssignableExpressionNode
+public partial interface IMemberAccessExpressionNode : IAmbiguousNameExpressionNode, IAssignableExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -1488,7 +1488,7 @@ public partial interface ISelfExpressionNode : ISemanticNode, IInstanceExpressio
     ISyntax? ISemanticNode.Syntax => Syntax;
     ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
     ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     bool IsImplicit { get; }
     Pseudotype Pseudotype { get; }
@@ -1500,7 +1500,7 @@ public partial interface IMissingNameExpressionNode : ISimpleNameNode, IAssignab
     ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
     IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
     UnknownType Type { get; }
 }

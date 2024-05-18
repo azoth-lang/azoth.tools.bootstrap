@@ -524,7 +524,7 @@ internal class SemanticsApplier
             case IExpressionNode n:
                 Expression(n);
                 break;
-            case INameExpressionNode n:
+            case IAmbiguousNameExpressionNode n:
                 NameExpression(n);
                 break;
         }
@@ -764,7 +764,7 @@ internal class SemanticsApplier
     #endregion
 
     #region Name Expressions
-    private static void NameExpression(INameExpressionNode node)
+    private static void NameExpression(IAmbiguousNameExpressionNode node)
     {
         switch (node)
         {

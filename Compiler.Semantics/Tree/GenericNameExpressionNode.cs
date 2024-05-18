@@ -8,7 +8,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class GenericNameExpressionNode : NameExpressionNode, IGenericNameExpressionNode
+internal sealed class GenericNameExpressionNode : AmbiguousNameExpressionNode, IGenericNameExpressionNode
 {
     public override IGenericNameExpressionSyntax Syntax { get; }
     public GenericName Name => Syntax.Name;

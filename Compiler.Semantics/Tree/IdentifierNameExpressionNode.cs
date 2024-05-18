@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class IdentifierNameExpressionNode : NameExpressionNode, IIdentifierNameExpressionNode
+internal sealed class IdentifierNameExpressionNode : AmbiguousNameExpressionNode, IIdentifierNameExpressionNode
 {
     protected override bool MayHaveRewrite => true;
     public override IIdentifierNameExpressionSyntax Syntax { get; }

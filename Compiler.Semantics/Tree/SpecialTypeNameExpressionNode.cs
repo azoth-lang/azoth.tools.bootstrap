@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class SpecialTypeNameExpressionNode : NameExpressionNode, ISpecialTypeNameExpressionNode
+internal sealed class SpecialTypeNameExpressionNode : AmbiguousNameExpressionNode, ISpecialTypeNameExpressionNode
 {
     public override ISpecialTypeNameExpressionSyntax Syntax { get; }
     public SpecialTypeName Name => Syntax.Name;

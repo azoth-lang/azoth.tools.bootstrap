@@ -564,7 +564,7 @@ internal static class SyntaxBinder
     #endregion
 
     #region Name Expressions
-    private static INameExpressionNode NameExpression(INameExpressionSyntax syntax)
+    private static IAmbiguousNameExpressionNode NameExpression(INameExpressionSyntax syntax)
         => syntax switch
         {
             IIdentifierNameExpressionSyntax syn => IdentifierNameExpression(syn),
