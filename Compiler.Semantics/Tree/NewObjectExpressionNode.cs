@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
@@ -32,5 +33,17 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     {
         ExpressionTypesAspect.NewObjectExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
+    }
+
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    {
+        if (child == Type)
+            return GetContainingLexicalScope();
+        var argumentIndex = Arguments.IndexOf(child)
+                            ?? throw new ArgumentException("Is not a child of this node.", nameof(child));
+        if (argumentIndex == 0)
+            return GetContainingLexicalScope();
+
+        return Arguments[argumentIndex - 1].GetFlowLexicalScope().True;
     }
 }
