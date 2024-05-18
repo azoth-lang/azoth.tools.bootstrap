@@ -76,6 +76,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(ISimpleNameNode),
     typeof(IStandardNameExpressionNode),
     typeof(ISpecialTypeNameExpressionNode),
+    typeof(INameExpressionNode),
     typeof(ISelfExpressionNode),
     typeof(IMoveExpressionNode),
     typeof(IFreezeExpressionNode),
@@ -1141,7 +1142,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
     typeof(IWhileExpressionNode),
     typeof(IForeachExpressionNode),
     typeof(IInvocationExpressionNode),
-    typeof(IInstanceExpressionNode),
+    typeof(INameExpressionNode),
     typeof(IMoveExpressionNode),
     typeof(IFreezeExpressionNode),
     typeof(IAsyncBlockExpressionNode),
@@ -1399,7 +1400,8 @@ public partial interface IInvocationExpressionNode : ISemanticNode, IExpressionN
     typeof(ISimpleNameNode),
     typeof(IStandardNameExpressionNode),
     typeof(ISpecialTypeNameExpressionNode),
-    typeof(IMemberAccessExpressionNode))]
+    typeof(IMemberAccessExpressionNode),
+    typeof(INameExpressionNode))]
 public partial interface IAmbiguousNameExpressionNode : IAmbiguousExpressionNode
 {
     new INameExpressionSyntax Syntax { get; }
@@ -1477,8 +1479,15 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameExpressionN
 }
 
 [Closed(
+    typeof(IInstanceExpressionNode),
+    typeof(IMissingNameExpressionNode))]
+public partial interface INameExpressionNode : ISemanticNode, IExpressionNode, IAmbiguousNameExpressionNode
+{
+}
+
+[Closed(
     typeof(ISelfExpressionNode))]
-public partial interface IInstanceExpressionNode : ISimpleNameNode, IExpressionNode
+public partial interface IInstanceExpressionNode : INameExpressionNode, ISimpleNameNode
 {
 }
 
@@ -1486,22 +1495,23 @@ public partial interface ISelfExpressionNode : ISemanticNode, IInstanceExpressio
 {
     new ISelfExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
     ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     bool IsImplicit { get; }
     Pseudotype Pseudotype { get; }
 }
 
-public partial interface IMissingNameExpressionNode : ISimpleNameNode, IAssignableExpressionNode
+public partial interface IMissingNameExpressionNode : INameExpressionNode, ISimpleNameNode, IAssignableExpressionNode
 {
     new IIdentifierNameExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
     IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
-    ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     UnknownType Type { get; }
 }
 
