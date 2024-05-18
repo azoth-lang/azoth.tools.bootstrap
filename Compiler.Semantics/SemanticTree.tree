@@ -251,7 +251,9 @@ PatternMatchExpression <: Expression = Syntax:`IPatternMatchExpressionSyntax` Re
 IfExpression <: Expression, ElseClause = Syntax:`IIfExpressionSyntax` Condition:UntypedExpression ThenBlock:BlockOrResult ElseClause?;
 LoopExpression <: Expression = Syntax:`ILoopExpressionSyntax` Block:BlockExpression;
 WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax` Condition:UntypedExpression Block:BlockExpression;
-ForeachExpression <: Expression, NamedBinding = Syntax:`IForeachExpressionSyntax` VariableName:`IdentifierName` InExpression:UntypedExpression Type? Block:BlockExpression;
+ForeachExpression <: Expression, NamedBinding = Syntax:`IForeachExpressionSyntax`
+    IsMutableBinding:`bool` VariableName:`IdentifierName` InExpression:UntypedExpression Type? Block:BlockExpression
+    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
 BreakExpression <: NeverTypedExpression = Syntax:`IBreakExpressionSyntax` Value:UntypedExpression?;
 NextExpression <: NeverTypedExpression = Syntax:`INextExpressionSyntax`;
 ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax` Value:UntypedExpression?;

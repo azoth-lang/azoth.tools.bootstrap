@@ -1,6 +1,8 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -13,6 +15,14 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public IUntypedExpressionNode InExpression => inExpression.Value;
     public ITypeNode? Type { get; }
     public IBlockExpressionNode Block { get; }
+    private ValueAttribute<LexicalScope> containingLexicalScope;
+    public LexicalScope ContainingLexicalScope
+        => containingLexicalScope.TryGetValue(out var value) ? value
+            : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
+    private ValueAttribute<LexicalScope> lexicalScope;
+    public LexicalScope LexicalScope
+        => lexicalScope.TryGetValue(out var value) ? value
+            : lexicalScope.GetValue(this, LexicalScopingAspect.ForeachExpression_LexicalScope);
 
     public ForeachExpressionNode(
         IForeachExpressionSyntax syntax,
@@ -25,4 +35,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         Type = Child.Attach(this, type);
         Block = Child.Attach(this, block);
     }
+
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+        => child == Block ? LexicalScope : ContainingLexicalScope;
 }

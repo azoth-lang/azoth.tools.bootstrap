@@ -131,4 +131,10 @@ internal static class LexicalScopingAspect
         var flow = node.Operand.GetFlowLexicalScope();
         return node.Operator == UnaryOperator.Not ? flow.Swapped() : flow;
     }
+
+    public static LexicalScope ForeachExpression_LexicalScope(IForeachExpressionNode node)
+    {
+        var flowScope = node.InExpression.GetFlowLexicalScope().True;
+        return new DeclarationScope(flowScope, node);
+    }
 }

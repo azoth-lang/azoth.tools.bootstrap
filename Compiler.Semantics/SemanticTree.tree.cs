@@ -1350,10 +1350,13 @@ public partial interface IForeachExpressionNode : IExpressionNode, INamedBinding
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
+    bool IsMutableBinding { get; }
     IdentifierName VariableName { get; }
     IUntypedExpressionNode InExpression { get; }
     ITypeNode? Type { get; }
     IBlockExpressionNode Block { get; }
+    LexicalScope ContainingLexicalScope { get; }
+    LexicalScope LexicalScope { get; }
 }
 
 public partial interface IBreakExpressionNode : INeverTypedExpressionNode
