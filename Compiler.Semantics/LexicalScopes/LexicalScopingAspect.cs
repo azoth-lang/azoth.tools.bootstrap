@@ -87,6 +87,10 @@ internal static class LexicalScopingAspect
         // TODO create a type parameter scope when type parameters are supported
         => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
 
+    public static LexicalScope ConcreteMethod_LexicalScope(IConcreteMethodDefinitionNode node)
+        // TODO create a type parameter scope when type parameters are supported
+        => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
+
     public static LexicalScope BodyOrBlock_InheritedLexicalScope(IBodyOrBlockNode node, int statementIndex)
     {
         if (statementIndex == 0)

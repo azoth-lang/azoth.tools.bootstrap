@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -11,7 +11,10 @@ internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetter
     public override IGetterMethodDefinitionSyntax Syntax { get; }
     public override ITypeNode Return => base.Return!;
     public IBodyNode Body { get; }
-    public override LexicalScope LexicalScope => throw new NotImplementedException();
+    private ValueAttribute<LexicalScope> lexicalScope;
+    public override LexicalScope LexicalScope
+        => lexicalScope.TryGetValue(out var value) ? value
+            : lexicalScope.GetValue(this, LexicalScopingAspect.ConcreteMethod_LexicalScope);
 
     public GetterMethodDefinitionNode(
         IGetterMethodDefinitionSyntax syntax,
@@ -23,5 +26,11 @@ internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetter
     {
         Syntax = syntax;
         Body = Child.Attach(this, body);
+    }
+
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    {
+        if (child == Body) return LexicalScope;
+        return base.InheritedContainingLexicalScope(child, descendant);
     }
 }

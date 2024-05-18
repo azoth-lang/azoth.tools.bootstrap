@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -12,7 +12,10 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
 {
     public override IStandardMethodDefinitionSyntax Syntax { get; }
     public IBodyNode Body { get; }
-    public override LexicalScope LexicalScope => throw new NotImplementedException();
+    private ValueAttribute<LexicalScope> lexicalScope;
+    public override LexicalScope LexicalScope
+        => lexicalScope.TryGetValue(out var value) ? value
+            : lexicalScope.GetValue(this, LexicalScopingAspect.ConcreteMethod_LexicalScope);
 
     public StandardMethodDefinitionNode(
         IStandardMethodDefinitionSyntax syntax,
@@ -28,4 +31,10 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
 
     internal override Pseudotype InheritedSelfType(IChildNode child, IChildNode descendant)
         => TypeExpressionsAspect.ConcreteMethodDeclaration_InheritedSelfType(this);
+
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    {
+        if (child == Body) return LexicalScope;
+        return base.InheritedContainingLexicalScope(child, descendant);
+    }
 }
