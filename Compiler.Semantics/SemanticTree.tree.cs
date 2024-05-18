@@ -75,7 +75,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IInvocationExpressionNode),
     typeof(ISimpleNameNode),
     typeof(IStandardNameExpressionNode),
-    typeof(ISpecialTypeNameExpressionNode),
     typeof(INameExpressionNode),
     typeof(ISelfExpressionNode),
     typeof(IMoveExpressionNode),
@@ -1399,7 +1398,6 @@ public partial interface IInvocationExpressionNode : ISemanticNode, IExpressionN
 [Closed(
     typeof(ISimpleNameNode),
     typeof(IStandardNameExpressionNode),
-    typeof(ISpecialTypeNameExpressionNode),
     typeof(IMemberAccessExpressionNode),
     typeof(INameExpressionNode))]
 public partial interface IAmbiguousNameExpressionNode : IAmbiguousExpressionNode
@@ -1446,16 +1444,6 @@ public partial interface IIdentifierNameExpressionNode : IStandardNameExpression
     StandardName? IStandardNameExpressionNode.Name => Name;
 }
 
-public partial interface ISpecialTypeNameExpressionNode : ISemanticNode, IAmbiguousNameExpressionNode
-{
-    new ISpecialTypeNameExpressionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    SpecialTypeName Name { get; }
-    TypeSymbol? ReferencedSymbol { get; }
-}
-
 public partial interface IGenericNameExpressionNode : IStandardNameExpressionNode
 {
     new IGenericNameExpressionSyntax Syntax { get; }
@@ -1479,10 +1467,22 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameExpressionN
 }
 
 [Closed(
+    typeof(ISpecialTypeNameExpressionNode),
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode))]
 public partial interface INameExpressionNode : ISemanticNode, IExpressionNode, IAmbiguousNameExpressionNode
 {
+}
+
+public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
+{
+    new ISpecialTypeNameExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    SpecialTypeName Name { get; }
+    TypeSymbol? ReferencedSymbol { get; }
 }
 
 [Closed(

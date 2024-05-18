@@ -461,6 +461,7 @@ internal static class SyntaxBinder
             IAsyncBlockExpressionSyntax syn => AsyncBlockExpression(syn),
             IAsyncStartExpressionSyntax syn => AsyncStartExpression(syn),
             IAwaitExpressionSyntax syn => AwaitExpression(syn),
+            ISpecialTypeNameExpressionSyntax syn => SpecialTypeNameExpression(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 

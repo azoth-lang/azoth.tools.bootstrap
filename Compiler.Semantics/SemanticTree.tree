@@ -270,8 +270,6 @@ SimpleName <: AmbiguousNameExpression = Syntax:`ISimpleNameSyntax`;
 StandardNameExpression <: AmbiguousNameExpression = Syntax:`IStandardNameExpressionSyntax` Name:`StandardName`? ReferencedSymbol:`Symbol?`;
 IdentifierNameExpression <: AmbiguousNameExpression, StandardNameExpression, SimpleName, AssignableExpression
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`?;
-SpecialTypeNameExpression <: AmbiguousNameExpression
-    = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol`?;
 GenericNameExpression <: AmbiguousNameExpression, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
 MemberAccessExpression <: AmbiguousNameExpression, AssignableExpression
@@ -279,6 +277,8 @@ MemberAccessExpression <: AmbiguousNameExpression, AssignableExpression
 
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression;
+SpecialTypeNameExpression <: NameExpression
+    = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol`?;
 InstanceExpression <: NameExpression, SimpleName; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression

@@ -209,7 +209,7 @@ internal class SemanticsApplier
         symbol.BeginFulfilling();
         symbol.Fulfill(node.Symbol);
         Type(node.TypeNode);
-        UntypedExpression(node.Initializer);
+        AmbiguousExpression(node.Initializer);
     }
 
     private static void AssociatedFunctionDefinition(IAssociatedFunctionDefinitionNode node)
@@ -435,7 +435,7 @@ internal class SemanticsApplier
     }
 
     private static void ResultStatement(IResultStatementNode node)
-        => UntypedExpression(node.Expression);
+        => AmbiguousExpression(node.Expression);
 
     private static void BodyStatements(IEnumerable<IBodyStatementNode> nodes)
         => nodes.ForEach(BodyStatement);
@@ -459,11 +459,11 @@ internal class SemanticsApplier
     {
         Type(node.Type);
         Capability(node.Capability);
-        UntypedExpression(node.Initializer);
+        AmbiguousExpression(node.Initializer);
     }
 
     private static void ExpressionStatement(IExpressionStatementNode node)
-        => UntypedExpression(node.Expression);
+        => AmbiguousExpression(node.Expression);
     #endregion
 
     #region Patterns
@@ -510,10 +510,10 @@ internal class SemanticsApplier
     #endregion
 
     #region Expressions
-    private static void UntypedExpressions(IEnumerable<IAmbiguousExpressionNode> nodes)
-        => nodes.ForEach(UntypedExpression);
+    private static void AmbiguousExpressions(IEnumerable<IAmbiguousExpressionNode> nodes)
+        => nodes.ForEach(AmbiguousExpression);
 
-    private static void UntypedExpression(IAmbiguousExpressionNode? node)
+    private static void AmbiguousExpression(IAmbiguousExpressionNode? node)
     {
         switch (node)
         {
@@ -525,7 +525,7 @@ internal class SemanticsApplier
                 Expression(n);
                 break;
             case IAmbiguousNameExpressionNode n:
-                NameExpression(n);
+                AmbiguousNameExpression(n);
                 break;
         }
     }
@@ -584,11 +584,11 @@ internal class SemanticsApplier
             case IForeachExpressionNode n:
                 ForeachExpression(n);
                 break;
+            case INameExpressionNode n:
+                NameExpression(n);
+                break;
             case IInvocationExpressionNode n:
                 InvocationExpression(n);
-                break;
-            case ISelfExpressionNode n:
-                SelfExpression(n);
                 break;
             case IMoveExpressionNode n:
                 MoveExpression(n);
@@ -631,11 +631,11 @@ internal class SemanticsApplier
     private static void NewObjectExpression(INewObjectExpressionNode node)
     {
         TypeName(node.Type);
-        UntypedExpressions(node.Arguments);
+        AmbiguousExpressions(node.Arguments);
     }
 
     private static void UnsafeExpression(IUnsafeExpressionNode node)
-        => UntypedExpression(node.Expression);
+        => AmbiguousExpression(node.Expression);
 
     private static void NeverTypedExpression(INeverTypedExpressionNode node)
     {
@@ -660,7 +660,7 @@ internal class SemanticsApplier
     private static void NextExpression(INextExpressionNode node) { }
 
     private static void ReturnExpression(IReturnExpressionNode node)
-        => UntypedExpression(node.Value);
+        => AmbiguousExpression(node.Value);
     #endregion
 
     #region Literal Expressions
@@ -704,29 +704,29 @@ internal class SemanticsApplier
     private static void AssignmentExpression(IAssignmentExpressionNode node)
     {
         AssignableExpression(node.LeftOperand);
-        UntypedExpression(node.RightOperand);
+        AmbiguousExpression(node.RightOperand);
     }
 
     private static void BinaryOperatorExpression(IBinaryOperatorExpressionNode node)
     {
-        UntypedExpression(node.LeftOperand);
-        UntypedExpression(node.RightOperand);
+        AmbiguousExpression(node.LeftOperand);
+        AmbiguousExpression(node.RightOperand);
     }
 
     private static void UnaryOperatorExpression(IUnaryOperatorExpressionNode node)
-        => UntypedExpression(node.Operand);
+        => AmbiguousExpression(node.Operand);
 
-    private static void IdExpression(IIdExpressionNode node) => UntypedExpression(node.Referent);
+    private static void IdExpression(IIdExpressionNode node) => AmbiguousExpression(node.Referent);
 
     private static void ConversionExpression(IConversionExpressionNode node)
     {
-        UntypedExpression(node.Referent);
+        AmbiguousExpression(node.Referent);
         Type(node.ConvertToType);
     }
 
     private static void PatternMatchExpression(IPatternMatchExpressionNode node)
     {
-        UntypedExpression(node.Referent);
+        AmbiguousExpression(node.Referent);
         Pattern(node.Pattern);
     }
     #endregion
@@ -734,15 +734,15 @@ internal class SemanticsApplier
     #region Invocation Expressions
     private static void InvocationExpression(IInvocationExpressionNode node)
     {
-        UntypedExpression(node.Expression);
-        UntypedExpressions(node.Arguments);
+        AmbiguousExpression(node.Expression);
+        AmbiguousExpressions(node.Arguments);
     }
     #endregion
 
     #region Control Flow Expressions
     private static void IfExpression(IIfExpressionNode node)
     {
-        UntypedExpression(node.Condition);
+        AmbiguousExpression(node.Condition);
         BlockOrResult(node.ThenBlock);
         ElseClause(node.ElseClause);
     }
@@ -751,20 +751,20 @@ internal class SemanticsApplier
 
     private static void WhileExpression(IWhileExpressionNode node)
     {
-        UntypedExpression(node.Condition);
+        AmbiguousExpression(node.Condition);
         BlockExpression(node.Block);
     }
 
     private static void ForeachExpression(IForeachExpressionNode node)
     {
         Type(node.Type);
-        UntypedExpression(node.InExpression);
+        AmbiguousExpression(node.InExpression);
         BlockExpression(node.Block);
     }
     #endregion
 
-    #region Name Expressions
-    private static void NameExpression(IAmbiguousNameExpressionNode node)
+    #region Ambiguous Name Expressions
+    private static void AmbiguousNameExpression(IAmbiguousNameExpressionNode node)
     {
         switch (node)
         {
@@ -811,20 +811,40 @@ internal class SemanticsApplier
 
     private static void IdentifierNameExpression(IIdentifierNameExpressionNode node) { }
 
-    private static void SpecialTypeNameExpression(ISpecialTypeNameExpressionNode node) { }
-
     private static void GenericNameExpression(IGenericNameExpressionNode node)
         => Types(node.TypeArguments);
 
     private static void MemberAccessExpression(IMemberAccessExpressionNode node)
     {
-        UntypedExpression(node.Context);
+        AmbiguousExpression(node.Context);
         Types(node.TypeArguments);
     }
+    #endregion
+
+    #region Name Expressions
+    private static void NameExpression(INameExpressionNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case ISpecialTypeNameExpressionNode n:
+                SpecialTypeNameExpression(n);
+                break;
+            case ISelfExpressionNode n:
+                SelfExpression(n);
+                break;
+            case IMissingNameExpressionNode n:
+                MissingNameExpression(n);
+                break;
+        }
+    }
+
+    private static void SpecialTypeNameExpression(ISpecialTypeNameExpressionNode node) { }
 
     private static void SelfExpression(ISelfExpressionNode node) { }
 
-    private static void MissingNameExpression(IMissingNameExpressionNode missingNameExpressionNode) { }
+    private static void MissingNameExpression(IMissingNameExpressionNode node) { }
     #endregion
 
     #region Capability Expressions
@@ -840,9 +860,9 @@ internal class SemanticsApplier
         => BlockExpression(node.Block);
 
     private static void AsyncStartExpression(IAsyncStartExpressionNode node)
-        => UntypedExpression(node.Expression);
+        => AmbiguousExpression(node.Expression);
 
     private static void AwaitExpression(IAwaitExpressionNode node)
-        => UntypedExpression(node.Expression);
+        => AmbiguousExpression(node.Expression);
     #endregion
 }

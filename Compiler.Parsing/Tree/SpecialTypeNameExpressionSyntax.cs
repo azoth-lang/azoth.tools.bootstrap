@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
@@ -37,6 +36,7 @@ internal sealed class SpecialTypeNameExpressionSyntax : NameExpressionSyntax, IS
     public SpecialTypeName Name { get; }
     public override Promise<SpecialTypeNameExpressionSyntaxSemantics> Semantics { [DebuggerStepThrough] get; } = new();
     public override Promise<DataType?> DataType => Promise.Null<DataType>();
+    IPromise<DataType> ITypedExpressionSyntax.DataType => Types.DataType.PromiseOfUnknown;
     public override Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
 
     public SpecialTypeNameExpressionSyntax(TextSpan span, SpecialTypeName name)
@@ -44,15 +44,6 @@ internal sealed class SpecialTypeNameExpressionSyntax : NameExpressionSyntax, IS
     {
         Name = name;
     }
-
-    public IEnumerable<IPromise<Symbol>> LookupInContainingScope()
-    {
-        if (containingLexicalScope is null)
-            throw new InvalidOperationException($"Can't lookup type name without {nameof(ContainingLexicalScope)}");
-
-        return containingLexicalScope.Lookup(Name);
-    }
-
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
     public override string ToString() => Name.ToString();

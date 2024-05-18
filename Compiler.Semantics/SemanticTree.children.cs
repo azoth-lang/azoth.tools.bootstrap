@@ -312,8 +312,6 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IIdentifierNameExpressionNode n:
                 yield break;
-            case ISpecialTypeNameExpressionNode n:
-                yield break;
             case IGenericNameExpressionNode n:
                 foreach (var child in n.TypeArguments)
                     yield return child;
@@ -322,6 +320,8 @@ public static class ISemanticNodeExtensions
                 yield return n.Context;
                 foreach (var child in n.TypeArguments)
                     yield return child;
+                yield break;
+            case ISpecialTypeNameExpressionNode n:
                 yield break;
             case ISelfExpressionNode n:
                 yield break;

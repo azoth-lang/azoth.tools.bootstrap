@@ -182,7 +182,7 @@ NameExpression: Expression = Semantics:`IPromise<ISyntaxSemantics>` ReferencedSy
 SimpleName: NameExpression = Semantics:`IPromise<ISimpleNameExpressionSyntaxSemantics>`;
 StandardNameExpression: NameExpression <: `IHasContainingLexicalScope` = Name:`StandardName`? ReferencedSymbol:`IPromise<Symbol?>`;
 IdentifierNameExpression: NameExpression <: StandardNameExpression, SimpleName, AssignableExpression = Name:`IdentifierName`? Semantics:`Promise<IIdentifierNameExpressionSyntaxSemantics>`;
-SpecialTypeNameExpression: NameExpression = Name:`SpecialTypeName` Semantics:`Promise<SpecialTypeNameExpressionSyntaxSemantics>` DataType:`Promise<DataType?>` ReferencedSymbol:`Promise<TypeSymbol?>`;
+SpecialTypeNameExpression: NameExpression <: TypedExpression = Name:`SpecialTypeName` Semantics:`Promise<SpecialTypeNameExpressionSyntaxSemantics>` DataType:`Promise<DataType?>` ReferencedSymbol:`Promise<TypeSymbol?>`;
 GenericNameExpression: NameExpression <: StandardNameExpression = Name:`GenericName` TypeArguments:Type* DataType:`Promise<DataType?>`;
 InstanceExpression <: SimpleName, TypedExpression; // i.e. `self` or `base`
 SelfExpression: NameExpression <: InstanceExpression = IsImplicit:`bool` Semantics:`Promise<ISelfExpressionSyntaxSemantics>` ReferencedSymbol:`IPromise<SelfParameterSymbol?>` Pseudotype:`IPromise<Pseudotype>`;

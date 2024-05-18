@@ -702,6 +702,7 @@ public partial interface IExpressionSyntax : IConcreteSyntax
     typeof(IAssignableExpressionSyntax),
     typeof(INeverTypedExpressionSyntax),
     typeof(ILiteralExpressionSyntax),
+    typeof(ISpecialTypeNameExpressionSyntax),
     typeof(IInstanceExpressionSyntax))]
 public partial interface ITypedExpressionSyntax : IExpressionSyntax
 {
@@ -940,13 +941,14 @@ public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressi
     IPromise<ISimpleNameExpressionSyntaxSemantics> ISimpleNameSyntax.Semantics => Semantics;
 }
 
-public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSyntax
+public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSyntax, ITypedExpressionSyntax
 {
     SpecialTypeName Name { get; }
     new Promise<SpecialTypeNameExpressionSyntaxSemantics> Semantics { get; }
     IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
     new Promise<DataType?> DataType { get; }
     IPromise<DataType?> IExpressionSyntax.DataType => DataType;
+    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
     new Promise<TypeSymbol?> ReferencedSymbol { get; }
     IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
 }
