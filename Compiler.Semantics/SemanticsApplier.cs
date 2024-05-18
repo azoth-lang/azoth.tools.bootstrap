@@ -791,7 +791,7 @@ internal class SemanticsApplier
         }
     }
 
-    private static void VariableNameExpression(IVariableNameExpressionNode node)
+    private static void SimpleName(ISimpleNameNode node)
     {
         switch (node)
         {
@@ -829,10 +829,10 @@ internal class SemanticsApplier
 
     #region Capability Expressions
     private static void MoveExpression(IMoveExpressionNode node)
-        => VariableNameExpression(node.Referent);
+        => SimpleName(node.Referent);
 
     private static void FreezeExpression(IFreezeExpressionNode node)
-        => VariableNameExpression(node.Referent);
+        => SimpleName(node.Referent);
     #endregion
 
     #region Async Expressions

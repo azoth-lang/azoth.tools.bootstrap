@@ -575,7 +575,7 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IVariableNameExpressionNode VariableNameExpression(IVariableNameExpressionSyntax syntax)
+    private static ISimpleNameNode SimpleName(ISimpleNameSyntax syntax)
         => syntax switch
         {
             IIdentifierNameExpressionSyntax syn => IdentifierNameExpression(syn),
@@ -601,10 +601,10 @@ internal static class SyntaxBinder
 
     #region Capability Expressions
     private static IMoveExpressionNode MoveExpression(IMoveExpressionSyntax syntax)
-        => new MoveExpressionNode(syntax, VariableNameExpression(syntax.Referent));
+        => new MoveExpressionNode(syntax, SimpleName(syntax.Referent));
 
     private static IFreezeExpressionNode FreezeExpression(IFreezeExpressionSyntax syntax)
-        => new FreezeExpressionNode(syntax, VariableNameExpression(syntax.Referent));
+        => new FreezeExpressionNode(syntax, SimpleName(syntax.Referent));
     #endregion
 
     #region Async Expressions

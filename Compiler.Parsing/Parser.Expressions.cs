@@ -368,8 +368,8 @@ public partial class Parser
                 // `move` is like a unary operator
                 var expression = ParseExpression(OperatorPrecedence.Unary);
                 var span = TextSpan.Covering(move, expression.Span);
-                if (expression is IVariableNameExpressionSyntax variable)
-                    return new MoveExpressionSyntax(span, variable);
+                if (expression is ISimpleNameSyntax simpleName)
+                    return new MoveExpressionSyntax(span, simpleName);
                 Add(ParseError.CantMoveOutOfExpression(File, span));
                 return expression;
             }
@@ -379,8 +379,8 @@ public partial class Parser
                 // `freeze` is like a unary operator
                 var expression = ParseExpression(OperatorPrecedence.Unary);
                 var span = TextSpan.Covering(freeze, expression.Span);
-                if (expression is IVariableNameExpressionSyntax variable)
-                    return new FreezeExpressionSyntax(span, variable);
+                if (expression is ISimpleNameSyntax simpleName)
+                    return new FreezeExpressionSyntax(span, simpleName);
                 Add(ParseError.CantFreezeExpression(File, span));
                 return expression;
             }

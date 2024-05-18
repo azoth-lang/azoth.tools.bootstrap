@@ -179,17 +179,18 @@ InvocationExpression: DataTypedExpression <: `IHasContainingLexicalScope` = Expr
 
 // ---------- Name Expressions
 NameExpression: Expression = Semantics:`IPromise<ISyntaxSemantics>` ReferencedSymbol:`IPromise<Symbol?>`;
-VariableNameExpression: NameExpression = Semantics:`IPromise<IVariableNameExpressionSyntaxSemantics>`;
+SimpleName: NameExpression = Semantics:`IPromise<ISimpleNameExpressionSyntaxSemantics>`;
 StandardNameExpression: NameExpression <: `IHasContainingLexicalScope` = Name:`StandardName`? ReferencedSymbol:`IPromise<Symbol?>`;
-IdentifierNameExpression: NameExpression <: StandardNameExpression, VariableNameExpression, AssignableExpression = Name:`IdentifierName`? Semantics:`Promise<IIdentifierNameExpressionSyntaxSemantics>`;
+IdentifierNameExpression: NameExpression <: StandardNameExpression, SimpleName, AssignableExpression = Name:`IdentifierName`? Semantics:`Promise<IIdentifierNameExpressionSyntaxSemantics>`;
 SpecialTypeNameExpression: NameExpression = Name:`SpecialTypeName` Semantics:`Promise<SpecialTypeNameExpressionSyntaxSemantics>` DataType:`Promise<DataType?>` ReferencedSymbol:`Promise<TypeSymbol?>`;
 GenericNameExpression: NameExpression <: StandardNameExpression = Name:`GenericName` TypeArguments:Type* DataType:`Promise<DataType?>`;
-SelfExpression: NameExpression <: VariableNameExpression, TypedExpression = IsImplicit:`bool` Semantics:`Promise<ISelfExpressionSyntaxSemantics>` ReferencedSymbol:`IPromise<SelfParameterSymbol?>` Pseudotype:`IPromise<Pseudotype>`;
+InstanceExpression <: SimpleName, TypedExpression; // i.e. `self` or `base`
+SelfExpression: NameExpression <: InstanceExpression = IsImplicit:`bool` Semantics:`Promise<ISelfExpressionSyntaxSemantics>` ReferencedSymbol:`IPromise<SelfParameterSymbol?>` Pseudotype:`IPromise<Pseudotype>`;
 MemberAccessExpression: NameExpression <: AssignableExpression = Context:Expression AccessOperator:`AccessOperator` MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan` Semantics:`Promise<IMemberAccessSyntaxSemantics>` ReferencedSymbol:`IPromise<Symbol?>`;
 
 // ---------- Capability Expressions
-MoveExpression: DataTypedExpression = Referent:VariableNameExpression ReferencedSymbol:`Promise<BindingSymbol?>`;
-FreezeExpression: DataTypedExpression = Referent:VariableNameExpression ReferencedSymbol:`Promise<BindingSymbol?>`;
+MoveExpression: DataTypedExpression = Referent:SimpleName ReferencedSymbol:`Promise<BindingSymbol?>`;
+FreezeExpression: DataTypedExpression = Referent:SimpleName ReferencedSymbol:`Promise<BindingSymbol?>`;
 
 // ---------- Async Expressions
 AsyncBlockExpression: DataTypedExpression = Block:BlockExpression;

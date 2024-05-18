@@ -7,10 +7,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class FreezeExpressionNode : ExpressionNode, IFreezeExpressionNode
 {
     public override IFreezeExpressionSyntax Syntax { get; }
-    private Child<IVariableNameExpressionNode> referent;
-    public IVariableNameExpressionNode Referent => referent.Value;
+    private Child<ISimpleNameNode> referent;
+    public ISimpleNameNode Referent => referent.Value;
 
-    public FreezeExpressionNode(IFreezeExpressionSyntax syntax, IVariableNameExpressionNode referent)
+    public FreezeExpressionNode(IFreezeExpressionSyntax syntax, ISimpleNameNode referent)
     {
         Syntax = syntax;
         this.referent = Child.Create(this, referent);

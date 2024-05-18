@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 
 [Closed(
     typeof(IMemberAccessSyntaxSemantics),
-    typeof(IVariableNameExpressionSyntaxSemantics))]
+    typeof(ISimpleNameExpressionSyntaxSemantics))]
 public interface ISyntaxSemantics
 {
     IFixedSet<Symbol> Symbols { get; }

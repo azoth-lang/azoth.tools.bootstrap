@@ -1669,7 +1669,7 @@ public class BasicBodyAnalyzer
 
     private static bool NonInvocableSymbols(Symbol symbol) => symbol is not InvocableSymbol;
 
-    private IVariableNameExpressionSyntaxSemantics InferSemantics(IVariableNameExpressionSyntax expression)
+    private ISimpleNameExpressionSyntaxSemantics InferSemantics(ISimpleNameSyntax expression)
         => expression switch
         {
             IIdentifierNameExpressionSyntax exp => InferSemantics(exp),

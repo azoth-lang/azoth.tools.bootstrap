@@ -9,12 +9,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class FreezeExpressionSyntax : DataTypedExpressionSyntax, IFreezeExpressionSyntax
 {
-    public IVariableNameExpressionSyntax Referent { [DebuggerStepThrough] get; }
+    public ISimpleNameSyntax Referent { [DebuggerStepThrough] get; }
 
     public Promise<BindingSymbol?> ReferencedSymbol { [DebuggerStepThrough] get; }
         = new Promise<BindingSymbol?>();
 
-    public FreezeExpressionSyntax(TextSpan span, IVariableNameExpressionSyntax referent)
+    public FreezeExpressionSyntax(TextSpan span, ISimpleNameSyntax referent)
         : base(span)
     {
         Referent = referent;

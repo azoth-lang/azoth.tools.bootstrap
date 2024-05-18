@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
     typeof(FunctionGroupNameSyntax),
     typeof(NamespaceNameSyntax),
     typeof(UnknownNameSyntax))]
-public interface IIdentifierNameExpressionSyntaxSemantics : IVariableNameExpressionSyntaxSemantics
+public interface IIdentifierNameExpressionSyntaxSemantics : ISimpleNameExpressionSyntaxSemantics
 {
     IPromise<Symbol?> Symbol { get; }
 }

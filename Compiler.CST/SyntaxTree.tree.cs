@@ -37,7 +37,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(IReturnTypeSyntax),
     typeof(IStatementSyntax),
     typeof(IPatternSyntax),
-    typeof(IExpressionSyntax))]
+    typeof(IExpressionSyntax),
+    typeof(IInstanceExpressionSyntax))]
 public partial interface IConcreteSyntax
 {
     TextSpan Span { get; }
@@ -701,7 +702,7 @@ public partial interface IExpressionSyntax : IConcreteSyntax
     typeof(IAssignableExpressionSyntax),
     typeof(INeverTypedExpressionSyntax),
     typeof(ILiteralExpressionSyntax),
-    typeof(ISelfExpressionSyntax))]
+    typeof(IInstanceExpressionSyntax))]
 public partial interface ITypedExpressionSyntax : IExpressionSyntax
 {
     new IPromise<DataType> DataType { get; }
@@ -902,9 +903,10 @@ public partial interface IInvocationExpressionSyntax : IHasContainingLexicalScop
 }
 
 [Closed(
-    typeof(IVariableNameExpressionSyntax),
+    typeof(ISimpleNameSyntax),
     typeof(IStandardNameExpressionSyntax),
     typeof(ISpecialTypeNameExpressionSyntax),
+    typeof(ISelfExpressionSyntax),
     typeof(IMemberAccessExpressionSyntax))]
 public partial interface INameExpressionSyntax : IExpressionSyntax
 {
@@ -914,10 +916,10 @@ public partial interface INameExpressionSyntax : IExpressionSyntax
 
 [Closed(
     typeof(IIdentifierNameExpressionSyntax),
-    typeof(ISelfExpressionSyntax))]
-public partial interface IVariableNameExpressionSyntax : INameExpressionSyntax
+    typeof(IInstanceExpressionSyntax))]
+public partial interface ISimpleNameSyntax : INameExpressionSyntax
 {
-    new IPromise<IVariableNameExpressionSyntaxSemantics> Semantics { get; }
+    new IPromise<ISimpleNameExpressionSyntaxSemantics> Semantics { get; }
     IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
 }
 
@@ -929,13 +931,13 @@ public partial interface IStandardNameExpressionSyntax : IHasContainingLexicalSc
     StandardName? Name { get; }
 }
 
-public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressionSyntax, IVariableNameExpressionSyntax, IAssignableExpressionSyntax
+public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressionSyntax, ISimpleNameSyntax, IAssignableExpressionSyntax
 {
     new IdentifierName? Name { get; }
     StandardName? IStandardNameExpressionSyntax.Name => Name;
     new Promise<IIdentifierNameExpressionSyntaxSemantics> Semantics { get; }
     IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
-    IPromise<IVariableNameExpressionSyntaxSemantics> IVariableNameExpressionSyntax.Semantics => Semantics;
+    IPromise<ISimpleNameExpressionSyntaxSemantics> ISimpleNameSyntax.Semantics => Semantics;
 }
 
 public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSyntax
@@ -958,11 +960,18 @@ public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionS
     IPromise<DataType?> IExpressionSyntax.DataType => DataType;
 }
 
-public partial interface ISelfExpressionSyntax : IVariableNameExpressionSyntax, ITypedExpressionSyntax
+[Closed(
+    typeof(ISelfExpressionSyntax))]
+public partial interface IInstanceExpressionSyntax : IConcreteSyntax, ISimpleNameSyntax, ITypedExpressionSyntax
+{
+}
+
+public partial interface ISelfExpressionSyntax : INameExpressionSyntax, IInstanceExpressionSyntax
 {
     bool IsImplicit { get; }
     new Promise<ISelfExpressionSyntaxSemantics> Semantics { get; }
-    IPromise<IVariableNameExpressionSyntaxSemantics> IVariableNameExpressionSyntax.Semantics => Semantics;
+    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
+    IPromise<ISimpleNameExpressionSyntaxSemantics> ISimpleNameSyntax.Semantics => Semantics;
     new IPromise<SelfParameterSymbol?> ReferencedSymbol { get; }
     IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
     IPromise<Pseudotype> Pseudotype { get; }
@@ -984,13 +993,13 @@ public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, 
 
 public partial interface IMoveExpressionSyntax : IDataTypedExpressionSyntax
 {
-    IVariableNameExpressionSyntax Referent { get; }
+    ISimpleNameSyntax Referent { get; }
     Promise<BindingSymbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IFreezeExpressionSyntax : IDataTypedExpressionSyntax
 {
-    IVariableNameExpressionSyntax Referent { get; }
+    ISimpleNameSyntax Referent { get; }
     Promise<BindingSymbol?> ReferencedSymbol { get; }
 }
 

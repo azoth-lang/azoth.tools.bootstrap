@@ -6,7 +6,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 
 [Closed(typeof(SelfExpressionSyntax), typeof(UnknownNameSyntax))]
-public interface ISelfExpressionSyntaxSemantics : IVariableNameExpressionSyntaxSemantics
+public interface ISelfExpressionSyntaxSemantics : ISimpleNameExpressionSyntaxSemantics
 {
     SelfParameterSymbol? Symbol { get; }
     IPromise<Pseudotype> Pseudotype { get; }

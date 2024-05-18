@@ -73,7 +73,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(ILoopExpressionNode),
     typeof(IWhileExpressionNode),
     typeof(IInvocationExpressionNode),
-    typeof(IVariableNameExpressionNode),
+    typeof(ISimpleNameNode),
     typeof(IStandardNameExpressionNode),
     typeof(ISpecialTypeNameExpressionNode),
     typeof(ISelfExpressionNode),
@@ -1396,7 +1396,7 @@ public partial interface IInvocationExpressionNode : ISemanticNode, IExpressionN
 }
 
 [Closed(
-    typeof(IVariableNameExpressionNode),
+    typeof(ISimpleNameNode),
     typeof(IStandardNameExpressionNode),
     typeof(ISpecialTypeNameExpressionNode),
     typeof(IMemberAccessExpressionNode))]
@@ -1410,9 +1410,9 @@ public partial interface INameExpressionNode : IUntypedExpressionNode
     typeof(IIdentifierNameExpressionNode),
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode))]
-public partial interface IVariableNameExpressionNode : ISemanticNode, INameExpressionNode
+public partial interface ISimpleNameNode : ISemanticNode, INameExpressionNode
 {
-    new IVariableNameExpressionSyntax Syntax { get; }
+    new ISimpleNameSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
@@ -1431,11 +1431,11 @@ public partial interface IStandardNameExpressionNode : ISemanticNode, INameExpre
     Symbol? ReferencedSymbol { get; }
 }
 
-public partial interface IIdentifierNameExpressionNode : IStandardNameExpressionNode, IVariableNameExpressionNode, IAssignableExpressionNode
+public partial interface IIdentifierNameExpressionNode : IStandardNameExpressionNode, ISimpleNameNode, IAssignableExpressionNode
 {
     new IIdentifierNameExpressionSyntax Syntax { get; }
     IStandardNameExpressionSyntax IStandardNameExpressionNode.Syntax => Syntax;
-    IVariableNameExpressionSyntax IVariableNameExpressionNode.Syntax => Syntax;
+    ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
     IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
@@ -1479,7 +1479,7 @@ public partial interface IMemberAccessExpressionNode : INameExpressionNode, IAss
 
 [Closed(
     typeof(ISelfExpressionNode))]
-public partial interface IInstanceExpressionNode : IVariableNameExpressionNode, IExpressionNode
+public partial interface IInstanceExpressionNode : ISimpleNameNode, IExpressionNode
 {
 }
 
@@ -1487,7 +1487,7 @@ public partial interface ISelfExpressionNode : ISemanticNode, IInstanceExpressio
 {
     new ISelfExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IVariableNameExpressionSyntax IVariableNameExpressionNode.Syntax => Syntax;
+    ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
     ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
@@ -1495,10 +1495,10 @@ public partial interface ISelfExpressionNode : ISemanticNode, IInstanceExpressio
     Pseudotype Pseudotype { get; }
 }
 
-public partial interface IMissingNameExpressionNode : IVariableNameExpressionNode, IAssignableExpressionNode
+public partial interface IMissingNameExpressionNode : ISimpleNameNode, IAssignableExpressionNode
 {
     new IIdentifierNameExpressionSyntax Syntax { get; }
-    IVariableNameExpressionSyntax IVariableNameExpressionNode.Syntax => Syntax;
+    ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
     IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
@@ -1512,7 +1512,7 @@ public partial interface IMoveExpressionNode : ISemanticNode, IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
     IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
-    IVariableNameExpressionNode Referent { get; }
+    ISimpleNameNode Referent { get; }
 }
 
 public partial interface IFreezeExpressionNode : ISemanticNode, IExpressionNode
@@ -1521,7 +1521,7 @@ public partial interface IFreezeExpressionNode : ISemanticNode, IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
     IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
-    IVariableNameExpressionNode Referent { get; }
+    ISimpleNameNode Referent { get; }
 }
 
 public partial interface IAsyncBlockExpressionNode : ISemanticNode, IExpressionNode
