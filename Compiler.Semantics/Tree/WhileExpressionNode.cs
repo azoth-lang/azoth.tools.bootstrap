@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -18,5 +19,12 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
         Syntax = syntax;
         this.condition = Child.Create(this, condition);
         Block = Child.Attach(this, block);
+    }
+
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    {
+        if (child == Block)
+            return Condition.GetFlowLexicalScope().True;
+        return base.InheritedContainingLexicalScope(child, descendant);
     }
 }
