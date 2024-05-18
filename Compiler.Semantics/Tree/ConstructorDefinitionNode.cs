@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
@@ -16,7 +16,10 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
     public override IdentifierName? Name => Syntax?.Name;
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
 
-    public override LexicalScope LexicalScope => throw new NotImplementedException();
+    private ValueAttribute<LexicalScope> lexicalScope;
+    public override LexicalScope LexicalScope
+        => lexicalScope.TryGetValue(out var value) ? value
+            : lexicalScope.GetValue(this, LexicalScopingAspect.ConstructorDefinition_LexicalScope);
     public abstract override ConstructorSymbol Symbol { get; }
 
     private protected ConstructorDefinitionNode(

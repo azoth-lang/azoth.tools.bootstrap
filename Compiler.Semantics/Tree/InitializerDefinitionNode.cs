@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -18,7 +18,10 @@ internal sealed class InitializerDefinitionNode : TypeMemberDefinitionNode, IIni
     public IInitializerSelfParameterNode SelfParameter { get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
     public IBlockBodyNode Body { get; }
-    public override LexicalScope LexicalScope => throw new NotImplementedException();
+    private ValueAttribute<LexicalScope> lexicalScope;
+    public override LexicalScope LexicalScope
+        => lexicalScope.TryGetValue(out var value) ? value
+            : lexicalScope.GetValue(this, LexicalScopingAspect.InitializerDefinition_LexicalScope);
     private ValueAttribute<InitializerSymbol> symbol;
     public override InitializerSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
@@ -34,5 +37,11 @@ internal sealed class InitializerDefinitionNode : TypeMemberDefinitionNode, IIni
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
         Body = Child.Attach(this, body);
+    }
+
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    {
+        if (child == Body) return LexicalScope;
+        return base.InheritedContainingLexicalScope(child, descendant);
     }
 }

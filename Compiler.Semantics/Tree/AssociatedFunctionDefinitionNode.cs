@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -31,7 +31,10 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, TypeMemberDeclarationsAspect.AssociatedFunctionDeclaration_Type);
     public IBodyNode Body { get; }
-    public override LexicalScope LexicalScope => throw new NotImplementedException();
+    private ValueAttribute<LexicalScope> lexicalScope;
+    public override LexicalScope LexicalScope
+        => lexicalScope.TryGetValue(out var value) ? value
+            : lexicalScope.GetValue(this, LexicalScopingAspect.AssociatedFunctionDefinition_LexicalScope);
 
     public AssociatedFunctionDefinitionNode(
         IAssociatedFunctionDefinitionSyntax syntax,
@@ -43,5 +46,11 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
         Body = Child.Attach(this, body);
+    }
+
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    {
+        if (child == Body) return LexicalScope;
+        return base.InheritedContainingLexicalScope(child, descendant);
     }
 }

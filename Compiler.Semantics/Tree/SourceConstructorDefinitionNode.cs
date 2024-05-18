@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -22,5 +23,11 @@ internal sealed class SourceConstructorDefinitionNode : ConstructorDefinitionNod
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
         Body = Child.Attach(this, body);
+    }
+
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    {
+        if (child == Body) return LexicalScope;
+        return base.InheritedContainingLexicalScope(child, descendant);
     }
 }
