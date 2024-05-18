@@ -902,22 +902,14 @@ public partial interface IInvocationExpressionSyntax : IHasContainingLexicalScop
 }
 
 [Closed(
-    typeof(IInvocableNameExpressionSyntax),
     typeof(IVariableNameExpressionSyntax),
     typeof(IStandardNameExpressionSyntax),
-    typeof(ISimpleNameExpressionSyntax))]
+    typeof(ISimpleNameExpressionSyntax),
+    typeof(IMemberAccessExpressionSyntax))]
 public partial interface INameExpressionSyntax : IExpressionSyntax
 {
     IPromise<ISyntaxSemantics> Semantics { get; }
     IPromise<Symbol?> ReferencedSymbol { get; }
-}
-
-[Closed(
-    typeof(IIdentifierNameExpressionSyntax),
-    typeof(IGenericNameExpressionSyntax),
-    typeof(IMemberAccessExpressionSyntax))]
-public partial interface IInvocableNameExpressionSyntax : INameExpressionSyntax
-{
 }
 
 [Closed(
@@ -944,7 +936,7 @@ public partial interface ISimpleNameExpressionSyntax : INameExpressionSyntax
 {
 }
 
-public partial interface IIdentifierNameExpressionSyntax : IInvocableNameExpressionSyntax, ISimpleNameExpressionSyntax, IStandardNameExpressionSyntax, IVariableNameExpressionSyntax, IAssignableExpressionSyntax
+public partial interface IIdentifierNameExpressionSyntax : ISimpleNameExpressionSyntax, IStandardNameExpressionSyntax, IVariableNameExpressionSyntax, IAssignableExpressionSyntax
 {
     new IdentifierName? Name { get; }
     StandardName? IStandardNameExpressionSyntax.Name => Name;
@@ -964,7 +956,7 @@ public partial interface ISpecialTypeNameExpressionSyntax : ISimpleNameExpressio
     IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
 }
 
-public partial interface IGenericNameExpressionSyntax : IInvocableNameExpressionSyntax, IStandardNameExpressionSyntax
+public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionSyntax
 {
     new GenericName Name { get; }
     StandardName? IStandardNameExpressionSyntax.Name => Name;
@@ -983,7 +975,7 @@ public partial interface ISelfExpressionSyntax : IVariableNameExpressionSyntax, 
     IPromise<Pseudotype> Pseudotype { get; }
 }
 
-public partial interface IMemberAccessExpressionSyntax : IInvocableNameExpressionSyntax, IAssignableExpressionSyntax
+public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, IAssignableExpressionSyntax
 {
     IExpressionSyntax Context { get; }
     AccessOperator AccessOperator { get; }

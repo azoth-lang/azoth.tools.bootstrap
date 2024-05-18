@@ -179,15 +179,14 @@ InvocationExpression: DataTypedExpression <: `IHasContainingLexicalScope` = Expr
 
 // ---------- Name Expressions
 NameExpression: Expression = Semantics:`IPromise<ISyntaxSemantics>` ReferencedSymbol:`IPromise<Symbol?>`;
-InvocableNameExpression: NameExpression;
 VariableNameExpression: NameExpression = Semantics:`IPromise<IVariableNameExpressionSyntaxSemantics>`;
 StandardNameExpression: NameExpression <: `IHasContainingLexicalScope` = Name:`StandardName`? ReferencedSymbol:`IPromise<Symbol?>`;
 SimpleNameExpression: NameExpression;
-IdentifierNameExpression: NameExpression <: InvocableNameExpression, SimpleNameExpression, StandardNameExpression, VariableNameExpression, AssignableExpression = Name:`IdentifierName`? Semantics:`Promise<IIdentifierNameExpressionSyntaxSemantics>`;
+IdentifierNameExpression: NameExpression <: SimpleNameExpression, StandardNameExpression, VariableNameExpression, AssignableExpression = Name:`IdentifierName`? Semantics:`Promise<IIdentifierNameExpressionSyntaxSemantics>`;
 SpecialTypeNameExpression: NameExpression <: SimpleNameExpression = Name:`SpecialTypeName` Semantics:`Promise<SpecialTypeNameExpressionSyntaxSemantics>` DataType:`Promise<DataType?>` ReferencedSymbol:`Promise<TypeSymbol?>`;
-GenericNameExpression: NameExpression <: InvocableNameExpression, StandardNameExpression = Name:`GenericName` TypeArguments:Type* DataType:`Promise<DataType?>`;
+GenericNameExpression: NameExpression <: StandardNameExpression = Name:`GenericName` TypeArguments:Type* DataType:`Promise<DataType?>`;
 SelfExpression: NameExpression <: VariableNameExpression, TypedExpression = IsImplicit:`bool` Semantics:`Promise<ISelfExpressionSyntaxSemantics>` ReferencedSymbol:`IPromise<SelfParameterSymbol?>` Pseudotype:`IPromise<Pseudotype>`;
-MemberAccessExpression: NameExpression <: InvocableNameExpression, AssignableExpression = Context:Expression AccessOperator:`AccessOperator` MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan` Semantics:`Promise<IMemberAccessSyntaxSemantics>` ReferencedSymbol:`IPromise<Symbol?>`;
+MemberAccessExpression: NameExpression <: AssignableExpression = Context:Expression AccessOperator:`AccessOperator` MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan` Semantics:`Promise<IMemberAccessSyntaxSemantics>` ReferencedSymbol:`IPromise<Symbol?>`;
 
 // ---------- Capability Expressions
 MoveExpression: DataTypedExpression = Referent:VariableNameExpression ReferencedSymbol:`Promise<BindingSymbol?>`;

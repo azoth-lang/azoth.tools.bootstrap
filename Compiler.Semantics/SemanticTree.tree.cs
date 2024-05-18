@@ -73,7 +73,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(ILoopExpressionNode),
     typeof(IWhileExpressionNode),
     typeof(IInvocationExpressionNode),
-    typeof(IInvocableNameExpressionNode),
     typeof(IVariableNameExpressionNode),
     typeof(IStandardNameExpressionNode),
     typeof(ISimpleNameExpressionNode),
@@ -1396,25 +1395,13 @@ public partial interface IInvocationExpressionNode : ISemanticNode, IExpressionN
 }
 
 [Closed(
-    typeof(IInvocableNameExpressionNode),
     typeof(IVariableNameExpressionNode),
     typeof(IStandardNameExpressionNode),
-    typeof(ISimpleNameExpressionNode))]
+    typeof(ISimpleNameExpressionNode),
+    typeof(IMemberAccessExpressionNode))]
 public partial interface INameExpressionNode : IUntypedExpressionNode
 {
     new INameExpressionSyntax Syntax { get; }
-    IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
-}
-
-[Closed(
-    typeof(IIdentifierNameExpressionNode),
-    typeof(IGenericNameExpressionNode),
-    typeof(IMemberAccessExpressionNode))]
-public partial interface IInvocableNameExpressionNode : ISemanticNode, INameExpressionNode
-{
-    new IInvocableNameExpressionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
 }
 
@@ -1454,10 +1441,9 @@ public partial interface ISimpleNameExpressionNode : ISemanticNode, INameExpress
     IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
 }
 
-public partial interface IIdentifierNameExpressionNode : IInvocableNameExpressionNode, ISimpleNameExpressionNode, IStandardNameExpressionNode, IVariableNameExpressionNode, IAssignableExpressionNode
+public partial interface IIdentifierNameExpressionNode : ISimpleNameExpressionNode, IStandardNameExpressionNode, IVariableNameExpressionNode, IAssignableExpressionNode
 {
     new IIdentifierNameExpressionSyntax Syntax { get; }
-    IInvocableNameExpressionSyntax IInvocableNameExpressionNode.Syntax => Syntax;
     ISimpleNameExpressionSyntax ISimpleNameExpressionNode.Syntax => Syntax;
     IStandardNameExpressionSyntax IStandardNameExpressionNode.Syntax => Syntax;
     IVariableNameExpressionSyntax IVariableNameExpressionNode.Syntax => Syntax;
@@ -1477,25 +1463,22 @@ public partial interface ISpecialTypeNameExpressionNode : ISimpleNameExpressionN
     TypeSymbol? ReferencedSymbol { get; }
 }
 
-public partial interface IGenericNameExpressionNode : IInvocableNameExpressionNode, IStandardNameExpressionNode
+public partial interface IGenericNameExpressionNode : IStandardNameExpressionNode
 {
     new IGenericNameExpressionSyntax Syntax { get; }
-    IInvocableNameExpressionSyntax IInvocableNameExpressionNode.Syntax => Syntax;
     IStandardNameExpressionSyntax IStandardNameExpressionNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     new GenericName Name { get; }
     StandardName? IStandardNameExpressionNode.Name => Name;
     IFixedList<ITypeNode> TypeArguments { get; }
 }
 
-public partial interface IMemberAccessExpressionNode : IInvocableNameExpressionNode, IAssignableExpressionNode
+public partial interface IMemberAccessExpressionNode : INameExpressionNode, IAssignableExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
-    IInvocableNameExpressionSyntax IInvocableNameExpressionNode.Syntax => Syntax;
-    IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IUntypedExpressionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
     IUntypedExpressionNode Context { get; }
     AccessOperator AccessOperator { get; }

@@ -190,6 +190,7 @@ ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 
 // ---------- Types
 Type <: Code = Syntax:`ITypeSyntax` Type:`DataType`;
+// TODO start from generalized names in syntax and rewrite to type names
 TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName` ContainingLexicalScope:`LexicalScope`
     ReferencedSymbol:`TypeSymbol`? BareType:`BareType`?;
 StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` IsAttributeType:`bool` Name:`StandardName` ReferencedDeclaration:`ITypeDeclarationNode`?;
@@ -265,17 +266,16 @@ InvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax` Expres
 
 // ---------- Name Expressions
 NameExpression <: UntypedExpression = Syntax:`INameExpressionSyntax`;
-InvocableNameExpression <: NameExpression = Syntax:`IInvocableNameExpressionSyntax`;
 VariableNameExpression <: NameExpression = Syntax:`IVariableNameExpressionSyntax`;
 StandardNameExpression <: NameExpression = Syntax:`IStandardNameExpressionSyntax` Name:`StandardName`? ReferencedSymbol:`Symbol?`;
 SimpleNameExpression <: NameExpression = Syntax:`ISimpleNameExpressionSyntax`;
-IdentifierNameExpression <: NameExpression, InvocableNameExpression, SimpleNameExpression, StandardNameExpression, VariableNameExpression, AssignableExpression
+IdentifierNameExpression <: NameExpression, SimpleNameExpression, StandardNameExpression, VariableNameExpression, AssignableExpression
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`?;
 SpecialTypeNameExpression <: NameExpression, SimpleNameExpression
     = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol`?;
-GenericNameExpression <: NameExpression, InvocableNameExpression, StandardNameExpression
+GenericNameExpression <: NameExpression, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
-MemberAccessExpression <: NameExpression, InvocableNameExpression, AssignableExpression
+MemberAccessExpression <: NameExpression, AssignableExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:UntypedExpression AccessOperator:`AccessOperator` MemberName:`StandardName` TypeArguments:Type*;
 SelfExpression <: NameExpression, VariableNameExpression, Expression
     = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype`;
