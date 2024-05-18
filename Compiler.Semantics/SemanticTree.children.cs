@@ -321,6 +321,11 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;
+            case IUnqualifiedNamespaceNameNode n:
+                yield break;
+            case IQualifiedNamespaceNameNode n:
+                yield return n.Context;
+                yield break;
             case ISpecialTypeNameExpressionNode n:
                 yield break;
             case ISelfExpressionNode n:

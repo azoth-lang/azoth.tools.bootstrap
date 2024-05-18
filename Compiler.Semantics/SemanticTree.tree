@@ -277,6 +277,10 @@ MemberAccessExpression <: AmbiguousNameExpression, AssignableExpression
 
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression;
+NamespaceName <: NameExpression = Type:`UnknownType`;
+UnqualifiedNamespaceName <: NamespaceName = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
+QualifiedNamespaceName <: NamespaceName = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName Name:`IdentifierName`;
+// TODO merge with SpecialTypeName and keep the name "SpecialTypeName" because it really isn't an expression
 SpecialTypeNameExpression <: NameExpression
     = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol`? Type:`UnknownType`;
 InstanceExpression <: NameExpression, SimpleName; // i.e. `self` or `base`

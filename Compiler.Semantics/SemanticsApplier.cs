@@ -770,23 +770,17 @@ internal class SemanticsApplier
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
+            case INameExpressionNode n:
+                NameExpression(n);
+                break;
             case IIdentifierNameExpressionNode n:
                 IdentifierNameExpression(n);
-                break;
-            case ISpecialTypeNameExpressionNode n:
-                SpecialTypeNameExpression(n);
                 break;
             case IGenericNameExpressionNode n:
                 GenericNameExpression(n);
                 break;
             case IMemberAccessExpressionNode n:
                 MemberAccessExpression(n);
-                break;
-            case ISelfExpressionNode n:
-                SelfExpression(n);
-                break;
-            case IMissingNameExpressionNode n:
-                MissingNameExpression(n);
                 break;
         }
     }
@@ -828,6 +822,9 @@ internal class SemanticsApplier
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
+            case INamespaceNameNode n:
+                NamespaceName(n);
+                break;
             case ISpecialTypeNameExpressionNode n:
                 SpecialTypeNameExpression(n);
                 break;
@@ -839,6 +836,25 @@ internal class SemanticsApplier
                 break;
         }
     }
+
+    private static void NamespaceName(INamespaceNameNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IUnqualifiedNamespaceNameNode n:
+                UnqualifiedNamespaceName(n);
+                break;
+            case IQualifiedNamespaceNameNode n:
+                QualifiedNamespaceName(n);
+                break;
+        }
+    }
+
+    private static void UnqualifiedNamespaceName(IUnqualifiedNamespaceNameNode node) { }
+
+    private static void QualifiedNamespaceName(IQualifiedNamespaceNameNode node) { }
 
     private static void SpecialTypeNameExpression(ISpecialTypeNameExpressionNode node) { }
 

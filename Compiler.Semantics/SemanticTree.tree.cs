@@ -76,6 +76,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(ISimpleNameNode),
     typeof(IStandardNameExpressionNode),
     typeof(INameExpressionNode),
+    typeof(IUnqualifiedNamespaceNameNode),
+    typeof(IQualifiedNamespaceNameNode),
     typeof(ISelfExpressionNode),
     typeof(IMoveExpressionNode),
     typeof(IFreezeExpressionNode),
@@ -1467,11 +1469,41 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameExpressionN
 }
 
 [Closed(
+    typeof(INamespaceNameNode),
     typeof(ISpecialTypeNameExpressionNode),
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode))]
 public partial interface INameExpressionNode : ISemanticNode, IExpressionNode, IAmbiguousNameExpressionNode
 {
+}
+
+[Closed(
+    typeof(IUnqualifiedNamespaceNameNode),
+    typeof(IQualifiedNamespaceNameNode))]
+public partial interface INamespaceNameNode : INameExpressionNode
+{
+    UnknownType Type { get; }
+}
+
+public partial interface IUnqualifiedNamespaceNameNode : ISemanticNode, INamespaceNameNode
+{
+    new IIdentifierNameExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    IdentifierName Name { get; }
+}
+
+public partial interface IQualifiedNamespaceNameNode : ISemanticNode, INamespaceNameNode
+{
+    new IMemberAccessExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    INamespaceNameNode Context { get; }
+    IdentifierName Name { get; }
 }
 
 public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
