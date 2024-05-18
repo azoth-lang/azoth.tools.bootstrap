@@ -422,11 +422,11 @@ internal static class SyntaxBinder
     #endregion
 
     #region Expressions
-    private static IEnumerable<IUntypedExpressionNode> UntypedExpressions(IEnumerable<IExpressionSyntax> syntax)
+    private static IEnumerable<IAmbiguousExpressionNode> UntypedExpressions(IEnumerable<IExpressionSyntax> syntax)
         => syntax.Select(syn => UntypedExpression(syn));
 
     [return: NotNullIfNotNull(nameof(syntax))]
-    private static IUntypedExpressionNode? UntypedExpression(IExpressionSyntax? syntax)
+    private static IAmbiguousExpressionNode? UntypedExpression(IExpressionSyntax? syntax)
         => syntax switch
         {
             null => null,

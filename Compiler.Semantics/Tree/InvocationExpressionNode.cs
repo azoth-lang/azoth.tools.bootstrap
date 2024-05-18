@@ -10,14 +10,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class InvocationExpressionNode : ExpressionNode, IInvocationExpressionNode
 {
     public override IInvocationExpressionSyntax Syntax { get; }
-    private Child<IUntypedExpressionNode> expression;
-    public IUntypedExpressionNode Expression => expression.Value;
-    public IFixedList<IUntypedExpressionNode> Arguments { get; }
+    private Child<IAmbiguousExpressionNode> expression;
+    public IAmbiguousExpressionNode Expression => expression.Value;
+    public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
 
     public InvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
-        IUntypedExpressionNode expression,
-        IEnumerable<IUntypedExpressionNode> arguments)
+        IAmbiguousExpressionNode expression,
+        IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
         this.expression = Child.Create(this, expression);

@@ -7,9 +7,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class UnsafeExpressionNode : ExpressionNode, IUnsafeExpressionNode
 {
     public override IUnsafeExpressionSyntax Syntax { get; }
-    public IUntypedExpressionNode Expression { get; }
+    public IAmbiguousExpressionNode Expression { get; }
 
-    public UnsafeExpressionNode(IUnsafeExpressionSyntax syntax, IUntypedExpressionNode expression)
+    public UnsafeExpressionNode(IUnsafeExpressionSyntax syntax, IAmbiguousExpressionNode expression)
     {
         Syntax = syntax;
         Expression = Child.Attach(this, expression);

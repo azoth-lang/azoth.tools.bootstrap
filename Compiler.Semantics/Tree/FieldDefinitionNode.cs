@@ -28,9 +28,9 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     public override FieldSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAttribute.FieldDeclaration);
-    public IUntypedExpressionNode? Initializer { get; }
+    public IAmbiguousExpressionNode? Initializer { get; }
 
-    public FieldDefinitionNode(IFieldDefinitionSyntax syntax, ITypeNode type, IUntypedExpressionNode? initializer)
+    public FieldDefinitionNode(IFieldDefinitionSyntax syntax, ITypeNode type, IAmbiguousExpressionNode? initializer)
     {
         Syntax = syntax;
         TypeNode = Child.Attach(this, type);

@@ -11,10 +11,10 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
     public override IUnaryOperatorExpressionSyntax Syntax { get; }
     public UnaryOperatorFixity Fixity => Syntax.Fixity;
     public UnaryOperator Operator => Syntax.Operator;
-    private Child<IUntypedExpressionNode> operand;
-    public IUntypedExpressionNode Operand => operand.Value;
+    private Child<IAmbiguousExpressionNode> operand;
+    public IAmbiguousExpressionNode Operand => operand.Value;
 
-    public UnaryOperatorExpressionNode(IUnaryOperatorExpressionSyntax syntax, IUntypedExpressionNode operand)
+    public UnaryOperatorExpressionNode(IUnaryOperatorExpressionSyntax syntax, IAmbiguousExpressionNode operand)
     {
         Syntax = syntax;
         this.operand = Child.Create(this, operand);

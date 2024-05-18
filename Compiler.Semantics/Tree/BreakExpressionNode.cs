@@ -7,10 +7,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class BreakExpressionNode : ExpressionNode, IBreakExpressionNode
 {
     public override IBreakExpressionSyntax Syntax { get; }
-    public IUntypedExpressionNode? Value { get; }
+    public IAmbiguousExpressionNode? Value { get; }
     public NeverType Type => DataType.Never;
 
-    public BreakExpressionNode(IBreakExpressionSyntax syntax, IUntypedExpressionNode? value)
+    public BreakExpressionNode(IBreakExpressionSyntax syntax, IAmbiguousExpressionNode? value)
     {
         Syntax = syntax;
         Value = Child.Attach(this, value);

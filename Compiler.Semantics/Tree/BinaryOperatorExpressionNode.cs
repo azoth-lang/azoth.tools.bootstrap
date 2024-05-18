@@ -10,16 +10,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOperatorExpressionNode
 {
     public override IBinaryOperatorExpressionSyntax Syntax { get; }
-    private Child<IUntypedExpressionNode> leftOperand;
-    public IUntypedExpressionNode LeftOperand => leftOperand.Value;
+    private Child<IAmbiguousExpressionNode> leftOperand;
+    public IAmbiguousExpressionNode LeftOperand => leftOperand.Value;
     public BinaryOperator Operator => Syntax.Operator;
-    private Child<IUntypedExpressionNode> rightOperand;
-    public IUntypedExpressionNode RightOperand => rightOperand.Value;
+    private Child<IAmbiguousExpressionNode> rightOperand;
+    public IAmbiguousExpressionNode RightOperand => rightOperand.Value;
 
     public BinaryOperatorExpressionNode(
         IBinaryOperatorExpressionSyntax syntax,
-        IUntypedExpressionNode leftOperand,
-        IUntypedExpressionNode rightOperand)
+        IAmbiguousExpressionNode leftOperand,
+        IAmbiguousExpressionNode rightOperand)
     {
         Syntax = syntax;
         this.leftOperand = Child.Create(this, leftOperand);

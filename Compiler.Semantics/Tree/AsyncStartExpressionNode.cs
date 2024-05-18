@@ -7,9 +7,9 @@ internal sealed class AsyncStartExpressionNode : ExpressionNode, IAsyncStartExpr
 {
     public override IAsyncStartExpressionSyntax Syntax { get; }
     public bool Scheduled => Syntax.Scheduled;
-    public IUntypedExpressionNode Expression { get; }
+    public IAmbiguousExpressionNode Expression { get; }
 
-    public AsyncStartExpressionNode(IAsyncStartExpressionSyntax syntax, IUntypedExpressionNode expression)
+    public AsyncStartExpressionNode(IAsyncStartExpressionSyntax syntax, IAmbiguousExpressionNode expression)
     {
         Syntax = syntax;
         Expression = Child.Attach(this, expression);

@@ -13,8 +13,8 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public IdentifierName Name => Syntax.Name;
     public ICapabilityNode? Capability { get; }
     public ITypeNode? Type { get; }
-    private Child<IUntypedExpressionNode?> initializer;
-    public IUntypedExpressionNode? Initializer => initializer.Value;
+    private Child<IAmbiguousExpressionNode?> initializer;
+    public IAmbiguousExpressionNode? Initializer => initializer.Value;
     private ValueAttribute<LexicalScope> containingLexicalScope;
     public LexicalScope ContainingLexicalScope
         => containingLexicalScope.TryGetValue(out var value) ? value
@@ -28,7 +28,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         IVariableDeclarationStatementSyntax syntax,
         ICapabilityNode? capability,
         ITypeNode? type,
-        IUntypedExpressionNode? initializer)
+        IAmbiguousExpressionNode? initializer)
     {
         Syntax = syntax;
         Capability = Child.Attach(this, capability);

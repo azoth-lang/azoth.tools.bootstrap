@@ -12,13 +12,13 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     private Child<IAssignableExpressionNode> leftOperand;
     public IAssignableExpressionNode LeftOperand => leftOperand.Value;
     public AssignmentOperator Operator => Syntax.Operator;
-    private Child<IUntypedExpressionNode> rightOperand;
-    public IUntypedExpressionNode RightOperand => rightOperand.Value;
+    private Child<IAmbiguousExpressionNode> rightOperand;
+    public IAmbiguousExpressionNode RightOperand => rightOperand.Value;
 
     public AssignmentExpressionNode(
         IAssignmentExpressionSyntax syntax,
         IAssignableExpressionNode leftOperand,
-        IUntypedExpressionNode rightOperand)
+        IAmbiguousExpressionNode rightOperand)
     {
         Syntax = syntax;
         this.leftOperand = Child.Create(this, leftOperand);

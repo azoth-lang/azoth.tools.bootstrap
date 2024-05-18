@@ -11,8 +11,8 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public override IForeachExpressionSyntax Syntax { get; }
     public bool IsMutableBinding => Syntax.IsMutableBinding;
     public IdentifierName VariableName => Syntax.VariableName;
-    private Child<IUntypedExpressionNode> inExpression;
-    public IUntypedExpressionNode InExpression => inExpression.Value;
+    private Child<IAmbiguousExpressionNode> inExpression;
+    public IAmbiguousExpressionNode InExpression => inExpression.Value;
     public ITypeNode? Type { get; }
     public IBlockExpressionNode Block { get; }
     private ValueAttribute<LexicalScope> containingLexicalScope;
@@ -26,7 +26,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
 
     public ForeachExpressionNode(
         IForeachExpressionSyntax syntax,
-        IUntypedExpressionNode inExpression,
+        IAmbiguousExpressionNode inExpression,
         ITypeNode? type,
         IBlockExpressionNode block)
     {

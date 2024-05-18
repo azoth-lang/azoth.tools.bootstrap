@@ -16,13 +16,13 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     public override INewObjectExpressionSyntax Syntax { get; }
     public ITypeNameNode Type { get; }
     public IdentifierName? ConstructorName => Syntax.ConstructorName;
-    public IFixedList<IUntypedExpressionNode> Arguments { get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     public ConstructorSymbol? ReferencedSymbol => throw new NotImplementedException();
 
     public NewObjectExpressionNode(
         INewObjectExpressionSyntax syntax,
         ITypeNameNode type,
-        IEnumerable<IUntypedExpressionNode> arguments)
+        IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
         Type = Child.Attach(this, type);

@@ -50,7 +50,7 @@ public partial interface IPatternNode
 }
 #endregion
 
-public partial interface IUntypedExpressionNode
+public partial interface IAmbiguousExpressionNode
 {
     LexicalScope GetContainingLexicalScope();
     // TODO it is strange that this is always a conditional scope. Instead use conditional only where it makes sense?

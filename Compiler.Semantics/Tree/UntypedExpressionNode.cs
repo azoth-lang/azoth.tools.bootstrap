@@ -5,11 +5,11 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal abstract class UntypedExpressionNode : CodeNode, IUntypedExpressionNode
+internal abstract class AmbiguousExpressionNode : CodeNode, IAmbiguousExpressionNode
 {
     public abstract override IExpressionSyntax Syntax { get; }
 
-    protected override IUntypedExpressionNode? Rewrite()
+    protected override IAmbiguousExpressionNode? Rewrite()
         => throw Child.RewriteNotSupported(this);
 
     public LexicalScope GetContainingLexicalScope() => InheritedContainingLexicalScope();

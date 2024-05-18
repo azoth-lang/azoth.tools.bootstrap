@@ -8,10 +8,10 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
 {
     public override IReturnExpressionSyntax Syntax { get; }
     public NeverType Type => DataType.Never;
-    private Child<IUntypedExpressionNode?> value;
-    public IUntypedExpressionNode? Value => value.Value;
+    private Child<IAmbiguousExpressionNode?> value;
+    public IAmbiguousExpressionNode? Value => value.Value;
 
-    public ReturnExpressionNode(IReturnExpressionSyntax syntax, IUntypedExpressionNode? value)
+    public ReturnExpressionNode(IReturnExpressionSyntax syntax, IAmbiguousExpressionNode? value)
     {
         Syntax = syntax;
         this.value = Child.Create(this, value);

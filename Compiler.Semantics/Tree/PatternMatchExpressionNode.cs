@@ -7,13 +7,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatchExpressionNode
 {
     public override IPatternMatchExpressionSyntax Syntax { get; }
-    private Child<IUntypedExpressionNode> referent;
-    public IUntypedExpressionNode Referent => referent.Value;
+    private Child<IAmbiguousExpressionNode> referent;
+    public IAmbiguousExpressionNode Referent => referent.Value;
     public IPatternNode Pattern { get; }
 
     public PatternMatchExpressionNode(
         IPatternMatchExpressionSyntax syntax,
-        IUntypedExpressionNode referent,
+        IAmbiguousExpressionNode referent,
         IPatternNode pattern)
     {
         Syntax = syntax;

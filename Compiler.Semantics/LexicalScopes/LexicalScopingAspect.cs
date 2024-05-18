@@ -114,7 +114,7 @@ internal static class LexicalScopingAspect
     /// <summary>
     /// Default implementation for expressions that can't introduce a new scope.
     /// </summary>
-    public static ConditionalLexicalScope UntypedExpression_GetFlowLexicalScope(IUntypedExpressionNode node)
+    public static ConditionalLexicalScope UntypedExpression_GetFlowLexicalScope(IAmbiguousExpressionNode node)
         => ConditionalLexicalScope.Unconditional(node.GetContainingLexicalScope());
 
     public static ConditionalLexicalScope BinaryOperatorExpression_GetFlowLexicalScope(IBinaryOperatorExpressionNode node)

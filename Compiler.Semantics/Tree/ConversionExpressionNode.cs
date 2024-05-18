@@ -8,14 +8,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpressionNode
 {
     public override IConversionExpressionSyntax Syntax { get; }
-    private Child<IUntypedExpressionNode> referent;
-    public IUntypedExpressionNode Referent => referent.Value;
+    private Child<IAmbiguousExpressionNode> referent;
+    public IAmbiguousExpressionNode Referent => referent.Value;
     public ConversionOperator Operator => Syntax.Operator;
     public ITypeNode ConvertToType { get; }
 
     public ConversionExpressionNode(
         IConversionExpressionSyntax syntax,
-        IUntypedExpressionNode referent,
+        IAmbiguousExpressionNode referent,
         ITypeNode convertToType)
     {
         Syntax = syntax;

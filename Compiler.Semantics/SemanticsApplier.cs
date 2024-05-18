@@ -510,10 +510,10 @@ internal class SemanticsApplier
     #endregion
 
     #region Expressions
-    private static void UntypedExpressions(IEnumerable<IUntypedExpressionNode> nodes)
+    private static void UntypedExpressions(IEnumerable<IAmbiguousExpressionNode> nodes)
         => nodes.ForEach(UntypedExpression);
 
-    private static void UntypedExpression(IUntypedExpressionNode? node)
+    private static void UntypedExpression(IAmbiguousExpressionNode? node)
     {
         switch (node)
         {

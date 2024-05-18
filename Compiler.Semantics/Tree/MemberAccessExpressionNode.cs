@@ -11,15 +11,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class MemberAccessExpressionNode : NameExpressionNode, IMemberAccessExpressionNode
 {
     public override IMemberAccessExpressionSyntax Syntax { get; }
-    private Child<IUntypedExpressionNode> context;
-    public IUntypedExpressionNode Context => context.Value;
+    private Child<IAmbiguousExpressionNode> context;
+    public IAmbiguousExpressionNode Context => context.Value;
     public AccessOperator AccessOperator => Syntax.AccessOperator;
     public StandardName MemberName => Syntax.MemberName;
     public IFixedList<ITypeNode> TypeArguments { get; }
 
     public MemberAccessExpressionNode(
         IMemberAccessExpressionSyntax syntax,
-        IUntypedExpressionNode context,
+        IAmbiguousExpressionNode context,
         IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
