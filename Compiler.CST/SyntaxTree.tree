@@ -18,6 +18,12 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
+// TODO:
+//     The syntax tree ought to be indepdendent of semantics. It should not try to enforce rules
+//     such as that certian kinds of expressions are expected in certian places. It should collapse
+//     node types even if they appear in different contexts. For example, a `SpecialTypeName` and a
+//     `SpecialTypeNameExpression` should be the same type.
+
 Concrete = Span:`TextSpan`;
 CompilationUnit = File:`CodeFile` ImplicitNamespaceName:`NamespaceName` Diagnostics:`Diagnostic`*
     UsingDirectives:UsingDirective* Definitions:NonMemberDefinition*;
