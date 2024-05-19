@@ -19,7 +19,7 @@ public abstract class InvocableSymbol : Symbol
     public int Arity => Parameters.Count;
     public Return Return { get; }
 
-    protected InvocableSymbol(
+    private protected InvocableSymbol(
         IFixedList<Parameter> parameters,
         Return @return)
     {

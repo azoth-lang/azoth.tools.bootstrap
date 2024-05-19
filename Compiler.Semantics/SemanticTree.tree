@@ -277,7 +277,7 @@ GenericNameExpression <: AmbiguousNameExpression, StandardNameExpression
 MemberAccessExpression <: AmbiguousNameExpression, AssignableExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression MemberName:`StandardName` TypeArguments:Type*;
 FunctionGroupName <: AmbiguousName = Context:NamespaceName? FunctionName:`StandardName` TypeArguments:Type*
-    ReferencedDeclarations:`IFunctionDeclarationNode`*;
+    ReferencedDeclarations:`IFunctionLikeDeclarationNode`*;
 
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression;
@@ -343,7 +343,9 @@ NamespaceDeclaration <: NamespaceMemberDeclaration = Name:`IdentifierName` Symbo
 NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, SymbolDeclaration;
 
 // ---------- Function Declaration
-FunctionDeclaration <: PackageMemberDeclaration, NamedDeclaration = Symbol:`FunctionSymbol`;
+// TODO better name for this or perhaps just merge AssociatedFunctionDeclaration into FunctionDeclaration
+FunctionLikeDeclaration <: NamedDeclaration = Symbol:`FunctionSymbol` Type:`FunctionType`;
+FunctionDeclaration <: PackageMemberDeclaration, FunctionLikeDeclaration;
 
 // ---------- Type Declarations
 UserTypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
@@ -366,8 +368,7 @@ MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMembe
 ConstructorDeclaration <: ClassMemberDeclaration = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
 InitializerDeclaration <: StructMemberDeclaration = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
 FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;
-AssociatedFunctionDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration
-    = Name:`IdentifierName` Symbol:`FunctionSymbol` Type:`FunctionType`;
+AssociatedFunctionDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, FunctionLikeDeclaration;
 
 // ---------- Can be Referenced by Type Name
 TypeDeclaration <: NamedDeclaration, SymbolDeclaration = Symbol:`TypeSymbol`;

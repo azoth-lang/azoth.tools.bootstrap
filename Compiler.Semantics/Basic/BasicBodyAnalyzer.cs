@@ -1701,14 +1701,17 @@ public class BasicBodyAnalyzer
         }
         if (symbols.All(s => s is FunctionSymbol))
         {
-            var functionSymbols = symbols.Cast<FunctionSymbol>().ToFixedSet();
-            return expression.Semantics.Fulfill(new FunctionGroupNameSyntax(functionSymbols));
+            var expectedSymbols = symbols.Cast<FunctionSymbol>().ToFixedSet();
+            if (expression.Semantics.Result is not FunctionGroupNameSyntax semantics
+                || !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbols))
+                throw new UnreachableException("Expected semantics and symbols should match.");
+            return semantics;
         }
         if (symbols.All(s => s is LocalNamespaceSymbol))
         {
-            var expectedSymbol = symbols.Cast<LocalNamespaceSymbol>().ToFixedSet();
+            var expectedSymbols = symbols.Cast<LocalNamespaceSymbol>().ToFixedSet();
             if (expression.Semantics.Result is not NamespaceNameSyntax semantics
-               || !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbol))
+               || !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbols))
                 throw new UnreachableException("Expected semantics and symbols should match.");
             return semantics;
         }

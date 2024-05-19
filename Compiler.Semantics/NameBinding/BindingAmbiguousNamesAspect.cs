@@ -10,12 +10,16 @@ internal static class BindingAmbiguousNamesAspect
     public static IFixedList<IDeclarationNode> StandardNameExpression_ReferencedDeclarations(IStandardNameExpressionNode node)
         => node.ContainingLexicalScope.Lookup(node.Name).ToFixedList();
 
-    public static IUnqualifiedNamespaceNameNode? IdentifierName_Rewrite(IIdentifierNameExpressionNode node)
+    public static IAmbiguousNameExpressionNode? IdentifierName_Rewrite(IIdentifierNameExpressionNode node)
     {
+        // If not all referenced declarations are namespaces, then this is not a namespace name.
         if (node.ReferencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
-            return null;
+            return new UnqualifiedNamespaceNameNode(node.Syntax, referencedNamespaces);
 
-        return new UnqualifiedNamespaceNameNode(node.Syntax, referencedNamespaces);
+        if (node.ReferencedDeclarations.TryAllOfType<IFunctionLikeDeclarationNode>(out var referencedFunctions))
+            return new FunctionGroupName(node.Syntax, null, node.Name, FixedList.Empty<ITypeNode>(), referencedFunctions);
+
+        return null;
     }
 
     public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite(IMemberAccessExpressionNode node)
@@ -42,8 +46,7 @@ internal static class BindingAmbiguousNamesAspect
         where T : IDeclarationNode
     {
         referencedNamespaces = declarations.OfType<T>().ToFixedList();
-        // If not all referenced declarations are namespaces, then this is not a namespace name.
-        if (referencedNamespaces.Count != declarations.Count) return true;
-        return false;
+        // All of type T when counts match
+        return referencedNamespaces.Count == declarations.Count;
     }
 }

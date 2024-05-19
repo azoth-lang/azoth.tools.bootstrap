@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
@@ -821,7 +822,19 @@ internal class SemanticsApplier
     }
 
     private static void FunctionGroupName(IFunctionGroupNameNode node)
-        => NamespaceName(node.Context);
+    {
+        switch (node.Syntax)
+        {
+            case IIdentifierNameExpressionSyntax syntax:
+                syntax.Semantics.Fulfill(new FunctionGroupNameSyntax(
+                    node.ReferencedDeclarations.Select(d => d.Symbol).ToFixedSet()));
+                break;
+            case IMemberAccessExpressionSyntax syntax:
+                // TODO assign semantics
+                break;
+        }
+        NamespaceName(node.Context);
+    }
 
     #endregion
 

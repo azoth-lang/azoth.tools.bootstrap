@@ -12,14 +12,14 @@ internal sealed class FunctionGroupName : AmbiguousNameExpressionNode, IFunction
     public INamespaceNameNode? Context { get; }
     public StandardName FunctionName { get; }
     public IFixedList<ITypeNode> TypeArguments { get; }
-    public IFixedList<IFunctionDeclarationNode> ReferencedDeclarations { get; }
+    public IFixedList<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; }
 
     public FunctionGroupName(
         INameExpressionSyntax syntax,
         INamespaceNameNode? context,
         StandardName functionName,
         IEnumerable<ITypeNode> typeArguments,
-        IEnumerable<IFunctionDeclarationNode> referencedDeclarations)
+        IEnumerable<IFunctionLikeDeclarationNode> referencedDeclarations)
     {
         Syntax = syntax;
         Context = Child.Attach(this, context);

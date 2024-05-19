@@ -347,10 +347,9 @@ public partial interface IFunctionDefinitionNode : ISemanticNode, IPackageMember
     IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
     IBodyNode Body { get; }
-    FunctionType Type { get; }
     new FunctionSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
-    FunctionSymbol IFunctionDeclarationNode.Symbol => Symbol;
+    FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
 }
 
 [Closed(
@@ -687,12 +686,11 @@ public partial interface IAssociatedFunctionDefinitionNode : ISemanticNode, ICon
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     StandardName INamedDeclarationNode.Name => Name;
-    IdentifierName IAssociatedFunctionDeclarationNode.Name => Name;
     new IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
     new FunctionSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
-    FunctionSymbol IAssociatedFunctionDeclarationNode.Symbol => Symbol;
+    FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
     IBodyNode Body { get; }
 }
 
@@ -1461,7 +1459,7 @@ public partial interface IFunctionGroupNameNode : IAmbiguousNameNode
     INamespaceNameNode? Context { get; }
     StandardName FunctionName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
-    IFixedList<IFunctionDeclarationNode> ReferencedDeclarations { get; }
+    IFixedList<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; }
 }
 
 [Closed(
@@ -1601,10 +1599,9 @@ public partial interface IChildDeclarationNode : IDeclarationNode, IChildNode
     typeof(IAssociatedMemberDefinitionNode),
     typeof(INamedBindingDeclarationNode),
     typeof(INamespaceMemberDeclarationNode),
-    typeof(IFunctionDeclarationNode),
+    typeof(IFunctionLikeDeclarationNode),
     typeof(IMethodDeclarationNode),
     typeof(IFieldDeclarationNode),
-    typeof(IAssociatedFunctionDeclarationNode),
     typeof(ITypeDeclarationNode))]
 public partial interface INamedDeclarationNode : ISemanticNode, IChildDeclarationNode
 {
@@ -1702,12 +1699,19 @@ public partial interface INamespaceMemberDeclarationNode : IPackageFacetChildDec
 }
 
 [Closed(
+    typeof(IFunctionDeclarationNode),
+    typeof(IAssociatedFunctionDeclarationNode))]
+public partial interface IFunctionLikeDeclarationNode : INamedDeclarationNode
+{
+    FunctionSymbol Symbol { get; }
+    FunctionType Type { get; }
+}
+
+[Closed(
     typeof(IFunctionDefinitionNode),
     typeof(IFunctionSymbolNode))]
-public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNode, INamedDeclarationNode
+public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNode, IFunctionLikeDeclarationNode
 {
-    new FunctionSymbol Symbol { get; }
-    Symbol ISymbolDeclarationNode.Symbol => Symbol;
 }
 
 [Closed(
@@ -1850,14 +1854,8 @@ public partial interface IFieldDeclarationNode : INamedDeclarationNode, IClassMe
 [Closed(
     typeof(IAssociatedFunctionDefinitionNode),
     typeof(IAssociatedFunctionSymbolNode))]
-public partial interface IAssociatedFunctionDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode
+public partial interface IAssociatedFunctionDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, IFunctionLikeDeclarationNode
 {
-    new IdentifierName Name { get; }
-    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    StandardName INamedDeclarationNode.Name => Name;
-    new FunctionSymbol Symbol { get; }
-    Symbol ISymbolDeclarationNode.Symbol => Symbol;
-    FunctionType Type { get; }
 }
 
 [Closed(
