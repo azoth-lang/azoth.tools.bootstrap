@@ -42,6 +42,11 @@ public class SemanticAnalyzer
         // If there are errors from the lex and parse phase, don't continue on
         packageSyntax.Diagnostics.ThrowIfFatalErrors();
 
+        // Assign declaration numbers before building the semantic tree so that, for now, they can
+        // be used to build symbols for the old syntax tree approach.
+        DeclarationNumberAssigner.AssignIn(packageSyntax.AllEntityDeclarations);
+
+        // New semantic tree approach
         var packageNode = BuildSemanticTreeAndValidate(packageSyntax);
 
         // Apply symbols from the semantic tree to the old syntax tree approach
@@ -84,8 +89,6 @@ public class SemanticAnalyzer
 
     private static PackageBuilder CheckSemantics(PackageSyntax<Package> packageSyntax, IPackageNode packageNode)
     {
-        DeclarationNumberAssigner.AssignIn(packageSyntax.AllEntityDeclarations);
-
         // Resolve symbols for the entities
         EntitySymbolBuilder.BuildFor(packageSyntax);
 
