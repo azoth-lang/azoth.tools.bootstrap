@@ -621,6 +621,9 @@ internal class SemanticsApplier
             case IIdentifierNameExpressionNode n:
                 IdentifierNameExpression(n);
                 break;
+            case IVariableNameExpressionNode n:
+                VariableNameExpression(n);
+                break;
             case IMemberAccessExpressionNode n:
                 MemberAccessExpression(n);
                 break;
@@ -807,6 +810,9 @@ internal class SemanticsApplier
             case IMissingNameExpressionNode n:
                 MissingNameExpression(n);
                 break;
+            case IVariableNameExpressionNode n:
+                VariableNameExpression(n);
+                break;
         }
     }
 
@@ -848,6 +854,9 @@ internal class SemanticsApplier
             case INamespaceNameNode n:
                 NamespaceName(n);
                 break;
+            case IVariableNameExpressionNode n:
+                VariableNameExpression(n);
+                break;
             case ISpecialTypeNameExpressionNode n:
                 SpecialTypeNameExpression(n);
                 break;
@@ -887,6 +896,12 @@ internal class SemanticsApplier
 
     private static void QualifiedNamespaceName(IQualifiedNamespaceNameNode node)
         => NamespaceName(node.Context);
+
+    private static void VariableNameExpression(IVariableNameExpressionNode node)
+    {
+        //var syntax = node.Syntax;
+        //syntax.Semantics.Fulfill(new NamedVariableNameSyntax(node.ReferencedDeclaration.Syntax.Symbol.Result));
+    }
 
     private static void SpecialTypeNameExpression(ISpecialTypeNameExpressionNode node)
     {

@@ -97,7 +97,7 @@ public partial interface IBindingSyntax : IConcreteSyntax
     typeof(IForeachExpressionSyntax))]
 public partial interface ILocalBindingSyntax : IBindingSyntax
 {
-    new IPromise<NamedBindingSymbol> Symbol { get; }
+    new IPromise<NamedVariableSymbol> Symbol { get; }
     IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
 }
 
@@ -444,7 +444,7 @@ public partial interface INamedParameterSyntax : IConstructorOrInitializerParame
     new IPromise<DataType> DataType { get; }
     IPromise<Pseudotype> IParameterSyntax.DataType => DataType;
     new Promise<NamedVariableSymbol> Symbol { get; }
-    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
+    IPromise<NamedVariableSymbol> ILocalBindingSyntax.Symbol => Symbol;
     IExpressionSyntax? DefaultValue { get; }
 }
 
@@ -644,7 +644,7 @@ public partial interface IVariableDeclarationStatementSyntax : IBodyStatementSyn
     ICapabilitySyntax? Capability { get; }
     ITypeSyntax? Type { get; }
     new Promise<NamedVariableSymbol> Symbol { get; }
-    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
+    IPromise<NamedVariableSymbol> ILocalBindingSyntax.Symbol => Symbol;
     IExpressionSyntax? Initializer { get; }
 }
 
@@ -679,7 +679,7 @@ public partial interface IBindingPatternSyntax : IOptionalOrBindingPatternSyntax
     IdentifierName Name { get; }
     Promise<int?> DeclarationNumber { get; }
     new Promise<NamedVariableSymbol> Symbol { get; }
-    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
+    IPromise<NamedVariableSymbol> ILocalBindingSyntax.Symbol => Symbol;
 }
 
 public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSyntax
@@ -879,7 +879,7 @@ public partial interface IForeachExpressionSyntax : IDataTypedExpressionSyntax, 
     Promise<MethodSymbol> NextMethod { get; }
     ITypeSyntax? Type { get; }
     new Promise<NamedVariableSymbol> Symbol { get; }
-    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
+    IPromise<NamedVariableSymbol> ILocalBindingSyntax.Symbol => Symbol;
     IBlockExpressionSyntax Block { get; }
 }
 

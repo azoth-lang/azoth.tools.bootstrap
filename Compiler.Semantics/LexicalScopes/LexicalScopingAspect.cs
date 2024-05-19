@@ -96,10 +96,10 @@ internal static class LexicalScopingAspect
         => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
 
     public static LexicalScope ConstructorDefinition_LexicalScope(IConstructorDefinitionNode node)
-        => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
+        => new DeclarationScope(node.ContainingLexicalScope, node.Parameters.OfType<INamedDeclarationNode>());
 
     public static LexicalScope InitializerDefinition_LexicalScope(IInitializerDefinitionNode node)
-        => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
+        => new DeclarationScope(node.ContainingLexicalScope, node.Parameters.OfType<INamedDeclarationNode>());
 
     public static LexicalScope BodyOrBlock_InheritedLexicalScope(IBodyOrBlockNode node, int statementIndex)
     {

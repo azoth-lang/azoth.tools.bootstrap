@@ -19,6 +19,15 @@ internal static class BindingAmbiguousNamesAspect
         if (node.ReferencedDeclarations.TryAllOfType<IFunctionLikeDeclarationNode>(out var referencedFunctions))
             return new FunctionGroupName(node.Syntax, null, node.Name, FixedList.Empty<ITypeNode>(), referencedFunctions);
 
+        if (node.ReferencedDeclarations.TrySingle() is not null and var referencedDeclaration)
+        {
+            switch (referencedDeclaration)
+            {
+                case INamedBindingNode referencedVariable:
+                    return new VariableNameExpressionNode(node.Syntax, referencedVariable);
+            }
+        }
+
         return null;
     }
 

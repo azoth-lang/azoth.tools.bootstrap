@@ -1686,9 +1686,15 @@ public class BasicBodyAnalyzer
         var variableSymbols = LookupSymbols<NamedVariableSymbol>(expression);
         if (variableSymbols.Count != 0)
         {
-            var variableSymbol = InferSymbol(expression, variableSymbols);
-            if (variableSymbol is not null)
-                return expression.Semantics.Fulfill(new NamedVariableNameSyntax(variableSymbol));
+            var expectedSymbol = InferSymbol(expression, variableSymbols);
+            if (expectedSymbol is not null)
+            {
+                //if (expression.Semantics.Result is not NamedVariableNameSyntax semantics
+                //    || semantics.Symbols.TrySingle() != expectedSymbol)
+                //    throw new UnreachableException("Expected semantics and symbols should match.");
+                //return semantics;
+                return expression.Semantics.Fulfill(new NamedVariableNameSyntax(expectedSymbol));
+            }
 
             return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
         }

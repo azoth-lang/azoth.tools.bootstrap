@@ -43,7 +43,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IAttributeNode),
     typeof(ICapabilityConstraintNode),
     typeof(IParameterNode),
-    typeof(INamedParameterNode),
     typeof(IConstructorSelfParameterNode),
     typeof(IInitializerSelfParameterNode),
     typeof(IMethodSelfParameterNode),
@@ -154,12 +153,15 @@ public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 }
 
 [Closed(
-    typeof(IConstructorOrInitializerParameterNode),
+    typeof(INamedParameterNode),
     typeof(IVariableDeclarationStatementNode),
     typeof(IBindingPatternNode),
     typeof(IForeachExpressionNode))]
 public partial interface INamedBindingNode : ISemanticNode, IBindingNode, INamedBindingDeclarationNode
 {
+    new ILocalBindingSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IConcreteSyntax? ICodeNode.Syntax => Syntax;
 }
 
 public partial interface IPackageNode : IPackageDeclarationNode
@@ -745,23 +747,22 @@ public partial interface IParameterNode : ISemanticNode, IBindingNode
 [Closed(
     typeof(INamedParameterNode),
     typeof(IFieldParameterNode))]
-public partial interface IConstructorOrInitializerParameterNode : IParameterNode, INamedBindingNode
+public partial interface IConstructorOrInitializerParameterNode : IParameterNode
 {
     new IConstructorOrInitializerParameterSyntax Syntax { get; }
     IParameterSyntax IParameterNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IConcreteSyntax? ICodeNode.Syntax => Syntax;
     new DataType Type { get; }
     Pseudotype IParameterNode.Type => Type;
     Parameter ParameterType { get; }
 }
 
-public partial interface INamedParameterNode : ISemanticNode, IConstructorOrInitializerParameterNode
+public partial interface INamedParameterNode : IConstructorOrInitializerParameterNode, INamedBindingNode
 {
     new INamedParameterSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IConstructorOrInitializerParameterSyntax IConstructorOrInitializerParameterNode.Syntax => Syntax;
+    ILocalBindingSyntax INamedBindingNode.Syntax => Syntax;
     IParameterSyntax IParameterNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     bool IsMutableBinding { get; }
     bool IsLentBinding { get; }
@@ -827,11 +828,8 @@ public partial interface IFieldParameterNode : ISemanticNode, IConstructorOrInit
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConstructorOrInitializerParameterSyntax IConstructorOrInitializerParameterNode.Syntax => Syntax;
     IParameterSyntax IParameterNode.Syntax => Syntax;
-    IConcreteSyntax? ICodeNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     IdentifierName? IParameterNode.Name => Name;
-    IdentifierName INamedBindingDeclarationNode.Name => Name;
-    StandardName INamedDeclarationNode.Name => Name;
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     IFieldDefinitionNode? ReferencedField { get; }
 }
@@ -1048,9 +1046,10 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
 {
     new IVariableDeclarationStatementSyntax Syntax { get; }
     IBodyStatementSyntax IBodyStatementNode.Syntax => Syntax;
+    ILocalBindingSyntax INamedBindingNode.Syntax => Syntax;
+    IStatementSyntax IStatementNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    IStatementSyntax IStatementNode.Syntax => Syntax;
     bool IsMutableBinding { get; }
     ICapabilityNode? Capability { get; }
     ITypeNode? Type { get; }
@@ -1098,9 +1097,10 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IN
 {
     new IBindingPatternSyntax Syntax { get; }
     IOptionalOrBindingPatternSyntax IOptionalOrBindingPatternNode.Syntax => Syntax;
+    ILocalBindingSyntax INamedBindingNode.Syntax => Syntax;
+    IPatternSyntax IPatternNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    IPatternSyntax IPatternNode.Syntax => Syntax;
     bool IsMutableBinding { get; }
     LexicalScope ContainingLexicalScope { get; }
 }
@@ -1155,6 +1155,7 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode
 [Closed(
     typeof(IIdentifierNameExpressionNode),
     typeof(IMemberAccessExpressionNode),
+    typeof(IVariableNameExpressionNode),
     typeof(IMissingNameExpressionNode))]
 public partial interface IAssignableExpressionNode : ISemanticNode, IExpressionNode
 {
@@ -1336,9 +1337,10 @@ public partial interface IWhileExpressionNode : ISemanticNode, IExpressionNode
 public partial interface IForeachExpressionNode : IExpressionNode, INamedBindingNode
 {
     new IForeachExpressionSyntax Syntax { get; }
+    ILocalBindingSyntax INamedBindingNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     bool IsMutableBinding { get; }
     IdentifierName VariableName { get; }
     IAmbiguousExpressionNode InExpression { get; }
@@ -1397,6 +1399,7 @@ public partial interface IAmbiguousNameNode : ISemanticNode, IAmbiguousNameExpre
 
 [Closed(
     typeof(IIdentifierNameExpressionNode),
+    typeof(IVariableNameExpressionNode),
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode))]
 public partial interface ISimpleNameNode : ISemanticNode, IAmbiguousNameExpressionNode
@@ -1464,6 +1467,7 @@ public partial interface IFunctionGroupNameNode : IAmbiguousNameNode
 
 [Closed(
     typeof(INamespaceNameNode),
+    typeof(IVariableNameExpressionNode),
     typeof(ISpecialTypeNameExpressionNode),
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode))]
@@ -1497,6 +1501,18 @@ public partial interface IQualifiedNamespaceNameNode : ISemanticNode, INamespace
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     INamespaceNameNode Context { get; }
     IdentifierName Name { get; }
+}
+
+public partial interface IVariableNameExpressionNode : INameExpressionNode, IAssignableExpressionNode, ISimpleNameNode
+{
+    new IIdentifierNameExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
+    ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    IdentifierName Name { get; }
+    INamedBindingNode ReferencedDeclaration { get; }
 }
 
 public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode

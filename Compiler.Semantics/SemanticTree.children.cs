@@ -332,6 +332,8 @@ public static class ISemanticNodeExtensions
             case IQualifiedNamespaceNameNode n:
                 yield return n.Context;
                 yield break;
+            case IVariableNameExpressionNode n:
+                yield break;
             case ISpecialTypeNameExpressionNode n:
                 yield break;
             case ISelfExpressionNode n:

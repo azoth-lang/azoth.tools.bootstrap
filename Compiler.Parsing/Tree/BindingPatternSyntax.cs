@@ -14,7 +14,6 @@ internal class BindingPatternSyntax : Syntax, IBindingPatternSyntax
     public Promise<int?> DeclarationNumber { [DebuggerStepThrough] get; } = new Promise<int?>();
 
     public Promise<NamedVariableSymbol> Symbol { [DebuggerStepThrough] get; } = new Promise<NamedVariableSymbol>();
-    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol { [DebuggerStepThrough] get => Symbol; }
     IPromise<BindingSymbol> IBindingSyntax.Symbol { [DebuggerStepThrough] get => Symbol; }
 
     public BindingPatternSyntax(TextSpan span, bool isMutableBinding, IdentifierName name)

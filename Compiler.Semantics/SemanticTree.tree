@@ -31,7 +31,7 @@ BlockOrResult: ElseClause;
 
 // ---------- Bindings
 Binding <: Code, BindingDeclaration;
-NamedBinding <: Binding, NamedBindingDeclaration;
+NamedBinding <: Binding, NamedBindingDeclaration = Syntax:`ILocalBindingSyntax`;
 
 // ---------- Packages
 Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
@@ -171,8 +171,8 @@ Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capa
 // ---------- Parameters
 Parameter <: Code, Binding = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool` Type:`Pseudotype`;
 /// A non-self parameter that can be declared in a constructor
-ConstructorOrInitializerParameter <: Parameter, NamedBinding = Syntax:`IConstructorOrInitializerParameterSyntax` Type:`DataType` ParameterType:`Parameter`;
-NamedParameter <: ConstructorOrInitializerParameter = Syntax:`INamedParameterSyntax`
+ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax` Type:`DataType` ParameterType:`Parameter`;
+NamedParameter <: ConstructorOrInitializerParameter, NamedBinding = Syntax:`INamedParameterSyntax`
     IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`?
     TypeNode:Type;
 SelfParameter <: Parameter = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool` ContainingDeclaredType:`IDeclaredUserType`;
@@ -285,6 +285,7 @@ NameExpression <: Expression, AmbiguousNameExpression;
 NamespaceName <: NameExpression = Type:`UnknownType` ReferencedDeclarations:`INamespaceDeclarationNode`*;
 UnqualifiedNamespaceName <: NamespaceName = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 QualifiedNamespaceName <: NamespaceName = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName Name:`IdentifierName`;
+VariableNameExpression <: NameExpression, AssignableExpression, SimpleName = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDeclaration:`INamedBindingNode`;
 // TODO merge with SpecialTypeName and keep the name "SpecialTypeName" because it really isn't an expression
 SpecialTypeNameExpression <: NameExpression
     = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol`? Type:`UnknownType`;

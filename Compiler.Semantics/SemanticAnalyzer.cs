@@ -89,7 +89,6 @@ public class SemanticAnalyzer
         // Resolve symbols for the entities
         EntitySymbolBuilder.BuildFor(packageSyntax);
 
-        var globalObjectTypeSymbols = packageSyntax.SymbolTrees.GlobalSymbols.OfType<UserTypeSymbol>().ToFixedList();
         // TODO handle `range` better
         var azothNamespaceSymbols = packageSyntax.SymbolTrees.GlobalSymbols
             .OfType<LocalNamespaceSymbol>().Where(s => s.Name == "azoth");

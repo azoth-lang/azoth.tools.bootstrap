@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class VariableDeclarationStatementSyntax : StatementSyntax, IVariableDeclarationStatementSyntax
+internal sealed class VariableDeclarationStatementSyntax : StatementSyntax, IVariableDeclarationStatementSyntax
 {
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
