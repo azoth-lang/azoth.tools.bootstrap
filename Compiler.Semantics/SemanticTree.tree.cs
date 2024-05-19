@@ -31,7 +31,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IInvocableDefinitionNode),
     typeof(INamespaceBlockMemberDefinitionNode),
     typeof(INamespaceMemberDefinitionNode),
-    typeof(IFunctionDefinitionNode),
     typeof(ITypeDefinitionNode),
     typeof(ITypeMemberDefinitionNode),
     typeof(IAbstractMethodDefinitionNode),
@@ -275,6 +274,7 @@ public partial interface IDefinitionNode : ICodeNode, IPackageFacetChildDeclarat
 
 [Closed(
     typeof(IConcreteInvocableDefinitionNode),
+    typeof(IFunctionDefinitionNode),
     typeof(IMethodDefinitionNode))]
 public partial interface IInvocableDefinitionNode : ISemanticNode, IDefinitionNode
 {
@@ -334,7 +334,7 @@ public partial interface INamespaceMemberDefinitionNode : ISemanticNode, INamesp
 {
 }
 
-public partial interface IFunctionDefinitionNode : ISemanticNode, IPackageMemberDefinitionNode, IFunctionDeclarationNode
+public partial interface IFunctionDefinitionNode : IPackageMemberDefinitionNode, IFunctionDeclarationNode, IInvocableDefinitionNode
 {
     new IFunctionDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -347,12 +347,14 @@ public partial interface IFunctionDefinitionNode : ISemanticNode, IPackageMember
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     StandardName INamedDeclarationNode.Name => Name;
-    IFixedList<INamedParameterNode> Parameters { get; }
+    new IFixedList<INamedParameterNode> Parameters { get; }
+    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     ITypeNode? Return { get; }
     IBodyNode Body { get; }
     new FunctionSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
 }
 
 [Closed(
@@ -777,6 +779,7 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     StandardName INamedDeclarationNode.Name => Name;
     int? DeclarationNumber { get; }
     ITypeNode TypeNode { get; }
+    NamedVariableSymbol Symbol { get; }
 }
 
 [Closed(

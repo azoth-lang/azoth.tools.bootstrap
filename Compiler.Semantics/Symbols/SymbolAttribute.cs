@@ -73,4 +73,13 @@ internal static class SymbolAttribute
         var isConstructor = node.Parent is IConstructorDefinitionNode or IInitializerDefinitionNode;
         return new SelfParameterSymbol(parent.Symbol, node.IsLentBinding && !isConstructor, node.Type);
     }
+
+    // TODO remove parameter symbols
+    public static NamedVariableSymbol NamedParameter_Symbol(INamedParameterNode node)
+    {
+        var parent = (IInvocableDefinitionNode)node.Parent;
+        var isLent = node.IsLentBinding;
+        return NamedVariableSymbol.CreateParameter(parent.Symbol, node.Name,
+            node.DeclarationNumber, node.IsMutableBinding, isLent, node.Type);
+    }
 }

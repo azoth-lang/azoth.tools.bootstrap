@@ -86,7 +86,7 @@ NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
 NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 
 // ---------- Function Definition
-FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration = Syntax:`IFunctionDefinitionSyntax`
+FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration, InvocableDefinition = Syntax:`IFunctionDefinitionSyntax`
     ContainingDeclaration:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
     Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body
     Type:`FunctionType` Symbol:`FunctionSymbol`;
@@ -174,7 +174,9 @@ Parameter <: Code, Binding = Syntax:`IParameterSyntax` Name:`IdentifierName`? Un
 ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax` Type:`DataType` ParameterType:`Parameter`;
 NamedParameter <: ConstructorOrInitializerParameter, NamedBinding = Syntax:`INamedParameterSyntax`
     IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`?
-    TypeNode:Type;
+    TypeNode:Type
+    // TODO remove parameter symbols
+    Symbol:`NamedVariableSymbol`;
 SelfParameter <: Parameter = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool` ContainingDeclaredType:`IDeclaredUserType`
     // TODO remove parameter symbols
     Symbol:`SelfParameterSymbol`;

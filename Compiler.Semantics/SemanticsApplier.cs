@@ -244,7 +244,11 @@ internal class SemanticsApplier
     #region Parameters
     private static void NamedParameters(IEnumerable<INamedParameterNode> nodes) => nodes.ForEach(NamedParameter);
 
-    private static void NamedParameter(INamedParameterNode node) => Type(node.TypeNode);
+    private static void NamedParameter(INamedParameterNode node)
+    {
+        node.Syntax.Symbol.Fulfill(node.Symbol);
+        Type(node.TypeNode);
+    }
 
     private static void SelfParameter(ISelfParameterNode node)
         => node.Syntax.Symbol.Fulfill(node.Symbol);

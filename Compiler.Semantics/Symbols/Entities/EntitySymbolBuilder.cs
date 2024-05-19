@@ -234,10 +234,12 @@ public class EntitySymbolBuilder
                         isLent = false;
                     }
 
-                    var symbol = NamedVariableSymbol.CreateParameter(containingSymbol, namedParam.Name,
+                    var expected = NamedVariableSymbol.CreateParameter(containingSymbol, namedParam.Name,
                         namedParam.DeclarationNumber.Result, namedParam.IsMutableBinding, isLent, type);
-                    namedParam.Symbol.Fulfill(symbol);
-                    symbolTree.Add(symbol);
+                    //namedParam.Symbol.Fulfill(symbol);
+                    if (namedParam.Symbol.Result != expected)
+                        throw new UnreachableException("Named parameter symbol should match expected.");
+                    symbolTree.Add(namedParam.Symbol.Result);
                 }
                 break;
                 case IFieldParameterSyntax _:
@@ -257,6 +259,6 @@ public class EntitySymbolBuilder
         //param.Symbol.Fulfill(expected);
         if (param.Symbol.Result != expected)
             throw new UnreachableException("Self parameter symbol should match expected.");
-        symbolTree.Add(expected);
+        symbolTree.Add(param.Symbol.Result);
     }
 }
