@@ -3,12 +3,15 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, IMemberAccessExpressionNode
 {
+    protected override bool MayHaveRewrite => true;
+
     public override IMemberAccessExpressionSyntax Syntax { get; }
     private Child<IAmbiguousExpressionNode> context;
     public IAmbiguousExpressionNode Context => context.Value;
@@ -25,8 +28,8 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
-    protected override IAssignableExpressionNode? Rewrite()
-        => throw Child.RewriteNotSupported(this);
+    protected override IQualifiedNamespaceNameNode? Rewrite()
+        => BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite(this);
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Context.GetFlowLexicalScope();
 }

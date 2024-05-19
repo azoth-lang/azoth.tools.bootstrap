@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
@@ -9,8 +8,7 @@ internal abstract class AmbiguousExpressionNode : CodeNode, IAmbiguousExpression
 {
     public abstract override IExpressionSyntax Syntax { get; }
 
-    protected override IAmbiguousExpressionNode? Rewrite()
-        => throw Child.RewriteNotSupported(this);
+    private protected AmbiguousExpressionNode() { }
 
     public LexicalScope GetContainingLexicalScope() => InheritedContainingLexicalScope();
 
