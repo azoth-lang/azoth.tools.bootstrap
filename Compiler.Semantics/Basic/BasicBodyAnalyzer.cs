@@ -678,12 +678,11 @@ public class BasicBodyAnalyzer
                         return new ExpressionResult(exp);
                 }
             }
+            case IMissingNameSyntax exp:
+                return new ExpressionResult(exp);
             case ISpecialTypeNameExpressionSyntax exp:
             {
                 InferSymbol(exp);
-                // It is a type name and as such isn't a proper expression
-                var type = DataType.Void;
-                exp.DataType.Fulfill(type);
                 return new ExpressionResult(exp, null);
             }
             case IGenericNameExpressionSyntax exp:
@@ -1340,6 +1339,8 @@ public class BasicBodyAnalyzer
                         return new(exp);
                 }
             }
+            case IMissingNameSyntax exp:
+                return new(exp);
         }
     }
 
@@ -1462,6 +1463,10 @@ public class BasicBodyAnalyzer
                 }
                 break;
             }
+            case IMissingNameSyntax exp:
+                args = InferArgumentTypes(invocation.Arguments, flow);
+                invocation.ReferencedSymbol.Fulfill(null);
+                break;
             default:
             {
                 var contextResult = InferType(invocation.Expression, flow);
@@ -1674,14 +1679,12 @@ public class BasicBodyAnalyzer
         {
             IIdentifierNameExpressionSyntax exp => InferSemantics(exp),
             ISelfExpressionSyntax exp => InferSemantics(exp),
+            IMissingNameSyntax exp => exp.Semantics.Result, // semantics are already "Unknown"
             _ => throw ExhaustiveMatch.Failed(expression)
         };
 
     private IIdentifierNameExpressionSyntaxSemantics InferSemantics(IIdentifierNameExpressionSyntax expression)
     {
-        if (expression.Name is null)
-            return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
-
         // First look for local variables
         var variableSymbols = LookupSymbols<NamedVariableSymbol>(expression);
         if (variableSymbols.Count != 0)

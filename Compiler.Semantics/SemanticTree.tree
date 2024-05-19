@@ -266,10 +266,12 @@ InvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax` Expres
 
 // ---------- Ambiguous Name Expressions
 AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
+// TODO AmbiguousName <: AmbiguousNameExpression
 SimpleName <: AmbiguousNameExpression = Syntax:`ISimpleNameSyntax`;
-StandardNameExpression <: AmbiguousNameExpression = Syntax:`IStandardNameExpressionSyntax` Name:`StandardName`? ReferencedSymbol:`Symbol?`;
+StandardNameExpression <: AmbiguousNameExpression = Syntax:`IStandardNameExpressionSyntax`
+    Name:`StandardName` ContainingLexicalScope:`LexicalScope` ReferencedDeclarations:`IDeclarationNode`*;
 IdentifierNameExpression <: AmbiguousNameExpression, StandardNameExpression, SimpleName, AssignableExpression
-    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`?;
+    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 GenericNameExpression <: AmbiguousNameExpression, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
 MemberAccessExpression <: AmbiguousNameExpression, AssignableExpression
@@ -277,6 +279,7 @@ MemberAccessExpression <: AmbiguousNameExpression, AssignableExpression
 
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression;
+// TODO Name <: NameExpression
 NamespaceName <: NameExpression = Type:`UnknownType`;
 UnqualifiedNamespaceName <: NamespaceName = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 QualifiedNamespaceName <: NamespaceName = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName Name:`IdentifierName`;
@@ -288,7 +291,7 @@ InstanceExpression <: NameExpression, SimpleName; // i.e. `self` or `base`
 SelfExpression <: InstanceExpression
     = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype`;
 MissingNameExpression <: NameExpression, SimpleName, AssignableExpression
-    = Syntax:`IIdentifierNameExpressionSyntax` Type:`UnknownType`;
+    = Syntax:`IMissingNameSyntax` Type:`UnknownType`;
 
 // ---------- Capability Expressions
 MoveExpression <: Expression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName;

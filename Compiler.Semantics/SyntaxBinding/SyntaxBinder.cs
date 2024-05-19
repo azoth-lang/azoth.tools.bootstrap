@@ -470,6 +470,7 @@ internal static class SyntaxBinder
         {
             IIdentifierNameExpressionSyntax syn => IdentifierNameExpression(syn),
             IMemberAccessExpressionSyntax syn => MemberAccessExpression(syn),
+            IMissingNameSyntax syn => MissingName(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
@@ -573,6 +574,7 @@ internal static class SyntaxBinder
             IGenericNameExpressionSyntax syn => GenericNameExpression(syn),
             IMemberAccessExpressionSyntax syn => MemberAccessExpression(syn),
             ISelfExpressionSyntax syn => SelfExpression(syn),
+            IMissingNameSyntax syn => MissingName(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
@@ -581,6 +583,7 @@ internal static class SyntaxBinder
         {
             IIdentifierNameExpressionSyntax syn => IdentifierNameExpression(syn),
             ISelfExpressionSyntax syn => SelfExpression(syn),
+            IMissingNameSyntax syn => MissingName(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
@@ -598,6 +601,9 @@ internal static class SyntaxBinder
 
     private static ISelfExpressionNode SelfExpression(ISelfExpressionSyntax syntax)
         => new SelfExpressionNode(syntax);
+
+    private static IMissingNameExpressionNode MissingName(IMissingNameSyntax syn)
+        => new MissingNameExpressionNode(syn);
     #endregion
 
     #region Capability Expressions

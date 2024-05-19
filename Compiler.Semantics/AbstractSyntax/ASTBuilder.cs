@@ -401,6 +401,7 @@ internal class ASTBuilder
             IIdentifierNameExpressionSyntax syn => BuildNameExpression(syn, isMove),
             ISpecialTypeNameExpressionSyntax syn => BuildNameExpression(syn),
             IGenericNameExpressionSyntax syn => throw new NotImplementedException(),
+            IMissingNameSyntax syn => throw new NotSupportedException(),
             INewObjectExpressionSyntax syn => BuildNewObjectExpression(syn),
             IInvocationExpressionSyntax syn => BuildInvocationExpression(syn),
             INextExpressionSyntax syn => BuildNextExpression(syn),
@@ -483,6 +484,7 @@ internal class ASTBuilder
         {
             IMemberAccessExpressionSyntax syn => BuildFieldAccessExpression(syn),
             IIdentifierNameExpressionSyntax syn => BuildVariableNameExpression(syn, false),
+            IMissingNameSyntax syn => throw new NotSupportedException(),
             _ => throw ExhaustiveMatch.Failed(expression),
         };
     }

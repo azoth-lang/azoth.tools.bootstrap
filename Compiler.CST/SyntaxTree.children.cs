@@ -310,6 +310,8 @@ public static class IConcreteSyntaxExtensions
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;
+            case IMissingNameSyntax n:
+                yield break;
             case IMoveExpressionSyntax n:
                 yield return n.Referent;
                 yield break;

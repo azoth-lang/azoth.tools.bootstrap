@@ -35,8 +35,7 @@ internal sealed class SpecialTypeNameExpressionSyntax : NameExpressionSyntax, IS
     // A null name means this syntax was generated as an assumed missing name and the name is unknown
     public SpecialTypeName Name { get; }
     public override Promise<SpecialTypeNameExpressionSyntaxSemantics> Semantics { [DebuggerStepThrough] get; } = new();
-    public override Promise<DataType?> DataType => Promise.Null<DataType>();
-    IPromise<DataType> ITypedExpressionSyntax.DataType => Types.DataType.PromiseOfUnknown;
+    public override IPromise<DataType> DataType => Types.DataType.PromiseOfUnknown;
     public override Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
 
     public SpecialTypeNameExpressionSyntax(TextSpan span, SpecialTypeName name)

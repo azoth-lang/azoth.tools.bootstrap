@@ -186,15 +186,18 @@ InvocationExpression: DataTypedExpression <: `IHasContainingLexicalScope` = Expr
 // ---------- Name Expressions
 NameExpression: Expression = Semantics:`IPromise<ISyntaxSemantics>` ReferencedSymbol:`IPromise<Symbol?>`;
 SimpleName: NameExpression = Semantics:`IPromise<ISimpleNameExpressionSyntaxSemantics>`;
-StandardNameExpression: NameExpression <: `IHasContainingLexicalScope` = Name:`StandardName`? ReferencedSymbol:`IPromise<Symbol?>`;
-IdentifierNameExpression: NameExpression <: StandardNameExpression, SimpleName, AssignableExpression = Name:`IdentifierName`? Semantics:`Promise<IIdentifierNameExpressionSyntaxSemantics>`;
-SpecialTypeNameExpression: NameExpression <: TypedExpression = Name:`SpecialTypeName` Semantics:`Promise<SpecialTypeNameExpressionSyntaxSemantics>` DataType:`Promise<DataType?>` ReferencedSymbol:`Promise<TypeSymbol?>`;
-GenericNameExpression: NameExpression <: StandardNameExpression = Name:`GenericName` TypeArguments:Type* DataType:`Promise<DataType?>`;
+StandardNameExpression: NameExpression <: `IHasContainingLexicalScope` = Name:`StandardName` ReferencedSymbol:`IPromise<Symbol?>`;
+IdentifierNameExpression: NameExpression <: StandardNameExpression, SimpleName, AssignableExpression
+    = Name:`IdentifierName` Semantics:`Promise<IIdentifierNameExpressionSyntaxSemantics>`;
+SpecialTypeNameExpression: NameExpression <: TypedExpression = Name:`SpecialTypeName` Semantics:`Promise<SpecialTypeNameExpressionSyntaxSemantics>` DataType:`IPromise<DataType>` ReferencedSymbol:`Promise<TypeSymbol?>`;
+GenericNameExpression: NameExpression <: StandardNameExpression = Name:`GenericName` TypeArguments:Type* DataType:`Promise<DataType>`;
 InstanceExpression <: SimpleName, TypedExpression; // i.e. `self` or `base`
 SelfExpression: NameExpression <: InstanceExpression = IsImplicit:`bool` Semantics:`Promise<ISelfExpressionSyntaxSemantics>` ReferencedSymbol:`IPromise<SelfParameterSymbol?>` Pseudotype:`IPromise<Pseudotype>`;
 MemberAccessExpression: NameExpression <: AssignableExpression
     = Context:Expression MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan`
     Semantics:`Promise<IMemberAccessSyntaxSemantics>` ReferencedSymbol:`IPromise<Symbol?>`;
+MissingName: NameExpression <: SimpleName, AssignableExpression
+    = Semantics:`Promise<UnknownNameSyntax>`;
 
 // ---------- Capability Expressions
 MoveExpression: DataTypedExpression = Referent:SimpleName ReferencedSymbol:`Promise<BindingSymbol?>`;

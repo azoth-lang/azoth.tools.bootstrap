@@ -235,6 +235,7 @@ internal class SymbolScopesBuilderWalker : SyntaxWalker<SymbolScope>
             case ILiteralExpressionSyntax _:
             case ISelfExpressionSyntax _:
             case IIdentifierNameExpressionSyntax _:
+            case IMissingNameSyntax _:
             case ISpecialTypeNameExpressionSyntax _:
             case INextExpressionSyntax _:
             case null:

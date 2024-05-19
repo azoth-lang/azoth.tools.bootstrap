@@ -1429,8 +1429,9 @@ public partial interface IStandardNameExpressionNode : ISemanticNode, IAmbiguous
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    StandardName? Name { get; }
-    Symbol? ReferencedSymbol { get; }
+    StandardName Name { get; }
+    LexicalScope ContainingLexicalScope { get; }
+    IFixedList<IDeclarationNode> ReferencedDeclarations { get; }
 }
 
 public partial interface IIdentifierNameExpressionNode : IStandardNameExpressionNode, ISimpleNameNode, IAssignableExpressionNode
@@ -1442,8 +1443,8 @@ public partial interface IIdentifierNameExpressionNode : IStandardNameExpression
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
-    new IdentifierName? Name { get; }
-    StandardName? IStandardNameExpressionNode.Name => Name;
+    new IdentifierName Name { get; }
+    StandardName IStandardNameExpressionNode.Name => Name;
 }
 
 public partial interface IGenericNameExpressionNode : IStandardNameExpressionNode
@@ -1451,7 +1452,7 @@ public partial interface IGenericNameExpressionNode : IStandardNameExpressionNod
     new IGenericNameExpressionSyntax Syntax { get; }
     IStandardNameExpressionSyntax IStandardNameExpressionNode.Syntax => Syntax;
     new GenericName Name { get; }
-    StandardName? IStandardNameExpressionNode.Name => Name;
+    StandardName IStandardNameExpressionNode.Name => Name;
     IFixedList<ITypeNode> TypeArguments { get; }
 }
 
@@ -1538,7 +1539,7 @@ public partial interface ISelfExpressionNode : ISemanticNode, IInstanceExpressio
 
 public partial interface IMissingNameExpressionNode : INameExpressionNode, ISimpleNameNode, IAssignableExpressionNode
 {
-    new IIdentifierNameExpressionSyntax Syntax { get; }
+    new IMissingNameSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypedExpressionSyntax IExpressionNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
