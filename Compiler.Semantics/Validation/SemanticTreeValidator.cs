@@ -87,6 +87,9 @@ internal class SemanticTreeValidator
                 break;
             case IMissingNameExpressionNode _:
                 break;
+            case ISelfParameterNode n:
+                _ = n.Symbol;
+                break;
         }
 
         foreach (var child in node.Children())

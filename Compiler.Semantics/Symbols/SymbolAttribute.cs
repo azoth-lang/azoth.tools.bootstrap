@@ -65,4 +65,12 @@ internal static class SymbolAttribute
         if (node.ReferencedSymbol is null)
             diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.TypeName.Syntax.Span));
     }
+
+    // TODO remove parameter symbols
+    public static SelfParameterSymbol SelfParameter_Symbol(ISelfParameterNode node)
+    {
+        var parent = (IInvocableDefinitionNode)node.Parent;
+        var isConstructor = node.Parent is IConstructorDefinitionNode or IInitializerDefinitionNode;
+        return new SelfParameterSymbol(parent.Symbol, node.IsLentBinding && !isConstructor, node.Type);
+    }
 }

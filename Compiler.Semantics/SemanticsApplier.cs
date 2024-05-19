@@ -162,6 +162,7 @@ internal class SemanticsApplier
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();
         symbol.Fulfill(node.Symbol);
+        SelfParameter(node.SelfParameter);
         NamedParameters(node.Parameters);
         Type(node.Return);
 
@@ -192,6 +193,7 @@ internal class SemanticsApplier
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();
         symbol.Fulfill(node.Symbol);
+        SelfParameter(node.SelfParameter);
         ConstructorOrInitializerParameters(node.Parameters);
         BlockBody(node.Body);
     }
@@ -203,6 +205,7 @@ internal class SemanticsApplier
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();
         symbol.Fulfill(node.Symbol);
+        SelfParameter(node.SelfParameter);
         ConstructorOrInitializerParameters(node.Parameters);
         BlockBody(node.Body);
     }
@@ -242,6 +245,9 @@ internal class SemanticsApplier
     private static void NamedParameters(IEnumerable<INamedParameterNode> nodes) => nodes.ForEach(NamedParameter);
 
     private static void NamedParameter(INamedParameterNode node) => Type(node.TypeNode);
+
+    private static void SelfParameter(ISelfParameterNode node)
+        => node.Syntax.Symbol.Fulfill(node.Symbol);
 
     private static void ConstructorOrInitializerParameters(IEnumerable<IConstructorOrInitializerParameterNode> nodes)
         => nodes.ForEach(ConstructorOrInitializerParameter);

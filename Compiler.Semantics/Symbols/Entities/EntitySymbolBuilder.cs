@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -225,20 +226,20 @@ public class EntitySymbolBuilder
                 default:
                     throw ExhaustiveMatch.Failed(param);
                 case INamedParameterSyntax namedParam:
+                {
+                    var isLent = namedParam.IsLentBinding;
+                    if (isLent && !type.CanBeLent())
                     {
-                        var isLent = namedParam.IsLentBinding;
-                        if (isLent && !type.CanBeLent())
-                        {
-                            diagnostics.Add(TypeError.TypeCannotBeLent(file, namedParam.Span, type));
-                            isLent = false;
-                        }
-
-                        var symbol = NamedVariableSymbol.CreateParameter(containingSymbol, namedParam.Name,
-                            namedParam.DeclarationNumber.Result, namedParam.IsMutableBinding, isLent, type);
-                        namedParam.Symbol.Fulfill(symbol);
-                        symbolTree.Add(symbol);
+                        diagnostics.Add(TypeError.TypeCannotBeLent(file, namedParam.Span, type));
+                        isLent = false;
                     }
-                    break;
+
+                    var symbol = NamedVariableSymbol.CreateParameter(containingSymbol, namedParam.Name,
+                        namedParam.DeclarationNumber.Result, namedParam.IsMutableBinding, isLent, type);
+                    namedParam.Symbol.Fulfill(symbol);
+                    symbolTree.Add(symbol);
+                }
+                break;
                 case IFieldParameterSyntax _:
                     // Referenced field already assigned
                     break;
@@ -252,8 +253,10 @@ public class EntitySymbolBuilder
         Pseudotype type,
         bool isConstructor = false)
     {
-        var symbol = new SelfParameterSymbol(containingSymbol, param.IsLentBinding && !isConstructor, type);
-        param.Symbol.Fulfill(symbol);
-        symbolTree.Add(symbol);
+        var expected = new SelfParameterSymbol(containingSymbol, param.IsLentBinding && !isConstructor, type);
+        //param.Symbol.Fulfill(expected);
+        if (param.Symbol.Result != expected)
+            throw new UnreachableException("Self parameter symbol should match expected.");
+        symbolTree.Add(expected);
     }
 }

@@ -279,6 +279,7 @@ public partial interface IDefinitionNode : ICodeNode, IPackageFacetChildDeclarat
 public partial interface IInvocableDefinitionNode : ISemanticNode, IDefinitionNode
 {
     IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
+    InvocableSymbol Symbol { get; }
 }
 
 [Closed(
@@ -550,6 +551,7 @@ public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode
     ITypeNode? Return { get; }
     new MethodSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
     MethodSymbol IMethodDeclarationNode.Symbol => Symbol;
 }
 
@@ -620,6 +622,7 @@ public partial interface IConstructorDefinitionNode : ISemanticNode, IConcreteIn
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName? IConstructorDeclarationNode.Name => Name;
     new ConstructorSymbol Symbol { get; }
+    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     ConstructorSymbol IConstructorDeclarationNode.Symbol => Symbol;
 }
@@ -649,6 +652,7 @@ public partial interface IInitializerDefinitionNode : ISemanticNode, IConcreteIn
     IdentifierName? IInitializerDeclarationNode.Name => Name;
     IInitializerSelfParameterNode SelfParameter { get; }
     new InitializerSymbol Symbol { get; }
+    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     InitializerSymbol IInitializerDeclarationNode.Symbol => Symbol;
     IBlockBodyNode Body { get; }
@@ -691,6 +695,7 @@ public partial interface IAssociatedFunctionDefinitionNode : ISemanticNode, ICon
     new IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
     new FunctionSymbol Symbol { get; }
+    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
     IBodyNode Body { get; }
@@ -784,6 +789,7 @@ public partial interface ISelfParameterNode : IParameterNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     bool IsLentBinding { get; }
     IDeclaredUserType ContainingDeclaredType { get; }
+    SelfParameterSymbol Symbol { get; }
 }
 
 public partial interface IConstructorSelfParameterNode : ISemanticNode, ISelfParameterNode
