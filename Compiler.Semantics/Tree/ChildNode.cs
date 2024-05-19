@@ -15,22 +15,26 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     bool IChild.MayHaveRewrite => MayHaveRewrite;
 
     private SemanticNode? parent;
-    protected SemanticNode Parent => parent ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
+    protected SemanticNode Parent
+        // Use volatile read to ensure order of operations as seen by other threads
+        => Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
     ISemanticNode IChildNode.Parent => Parent;
 
     public IPackageDeclarationNode Package => Parent.InheritedPackage(this, this);
 
-    void IChild<ISemanticNode>.AttachParent(ISemanticNode newParent)
+    private protected ChildNode() { }
+
+    void IChild<ISemanticNode>.SetParent(ISemanticNode newParent)
     {
         if (newParent is not SemanticNode newParentNode)
             throw new ArgumentException($"Parent must be a {nameof(SemanticNode)}.", nameof(newParent));
-        var oldParent = Interlocked.CompareExchange(ref parent, newParentNode, null);
-        if (oldParent is not null) throw new InvalidOperationException("Parent is already set.");
+        // Use volatile write to ensure order of operations as seen by other threads
+        Volatile.Write(ref parent, newParentNode);
     }
 
     protected virtual IChildNode? Rewrite() => throw Child.RewriteNotSupported(this);
 
-    IChild? IChild.Rewrite() => Rewrite();
+    IChild? IChild.Rewrite() => Child.Attach(Parent, Rewrite());
 
     internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant)
         => Parent.InheritedContainingDeclaration(this, descendant);

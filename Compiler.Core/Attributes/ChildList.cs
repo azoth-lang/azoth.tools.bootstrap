@@ -74,7 +74,7 @@ public static class ChildList
     {
         var children = new ChildList<TChild>(initialValues);
         foreach (var child in children.Current)
-            child.AttachParent(parent);
+            child.SetParent(parent);
         return children;
     }
 

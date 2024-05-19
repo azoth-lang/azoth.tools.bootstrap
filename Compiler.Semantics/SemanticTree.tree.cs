@@ -73,6 +73,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(ILoopExpressionNode),
     typeof(IWhileExpressionNode),
     typeof(IInvocationExpressionNode),
+    typeof(IAmbiguousNameNode),
     typeof(ISimpleNameNode),
     typeof(IStandardNameExpressionNode),
     typeof(INameExpressionNode),
@@ -1379,6 +1380,7 @@ public partial interface IInvocationExpressionNode : ISemanticNode, IExpressionN
 }
 
 [Closed(
+    typeof(IAmbiguousNameNode),
     typeof(ISimpleNameNode),
     typeof(IStandardNameExpressionNode),
     typeof(IMemberAccessExpressionNode),
@@ -1387,6 +1389,12 @@ public partial interface IAmbiguousNameExpressionNode : IAmbiguousExpressionNode
 {
     new INameExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+}
+
+[Closed(
+    typeof(IFunctionGroupNameNode))]
+public partial interface IAmbiguousNameNode : ISemanticNode, IAmbiguousNameExpressionNode
+{
 }
 
 [Closed(
@@ -1446,6 +1454,14 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameExpressionN
     IAmbiguousExpressionNode Context { get; }
     StandardName MemberName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
+}
+
+public partial interface IFunctionGroupNameNode : IAmbiguousNameNode
+{
+    INamespaceNameNode? Context { get; }
+    StandardName FunctionName { get; }
+    IFixedList<ITypeNode> TypeArguments { get; }
+    IFixedList<IFunctionDeclarationNode> ReferencedDeclarations { get; }
 }
 
 [Closed(

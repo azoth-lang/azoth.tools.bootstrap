@@ -266,7 +266,7 @@ InvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax` Expres
 
 // ---------- Ambiguous Name Expressions
 AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
-// TODO AmbiguousName <: AmbiguousNameExpression
+AmbiguousName <: AmbiguousNameExpression;
 SimpleName <: AmbiguousNameExpression = Syntax:`ISimpleNameSyntax`;
 StandardNameExpression <: AmbiguousNameExpression = Syntax:`IStandardNameExpressionSyntax`
     Name:`StandardName` ContainingLexicalScope:`LexicalScope` ReferencedDeclarations:`IDeclarationNode`*;
@@ -276,6 +276,8 @@ GenericNameExpression <: AmbiguousNameExpression, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
 MemberAccessExpression <: AmbiguousNameExpression, AssignableExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression MemberName:`StandardName` TypeArguments:Type*;
+FunctionGroupName <: AmbiguousName = Context:NamespaceName? FunctionName:`StandardName` TypeArguments:Type*
+    ReferencedDeclarations:`IFunctionDeclarationNode`*;
 
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression;

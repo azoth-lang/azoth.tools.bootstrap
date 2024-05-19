@@ -18,7 +18,7 @@ internal static class BindingAmbiguousNamesAspect
         return new UnqualifiedNamespaceNameNode(node.Syntax, referencedNamespaces);
     }
 
-    public static IQualifiedNamespaceNameNode? MemberAccessExpression_Rewrite(IMemberAccessExpressionNode node)
+    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite(IMemberAccessExpressionNode node)
     {
         if (node.Context is not INamespaceNameNode context)
             return null;
@@ -29,6 +29,9 @@ internal static class BindingAmbiguousNamesAspect
 
         if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
             return new QualifiedNamespaceNameNode(node.Syntax, context, referencedNamespaces);
+
+        if (members.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
+            return new FunctionGroupName(node.Syntax, context, node.MemberName, node.TypeArguments, referencedFunctions);
 
         return null;
     }

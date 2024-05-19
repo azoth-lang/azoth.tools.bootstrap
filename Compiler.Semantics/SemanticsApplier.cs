@@ -782,6 +782,9 @@ internal class SemanticsApplier
             case IMemberAccessExpressionNode n:
                 MemberAccessExpression(n);
                 break;
+            case IFunctionGroupNameNode n:
+                FunctionGroupName(n);
+                break;
         }
     }
 
@@ -813,6 +816,8 @@ internal class SemanticsApplier
         AmbiguousExpression(node.Context);
         Types(node.TypeArguments);
     }
+
+    private static void FunctionGroupName(IFunctionGroupNameNode node) { }
     #endregion
 
     #region Name Expressions

@@ -28,7 +28,7 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
-    protected override IQualifiedNamespaceNameNode? Rewrite()
+    protected override IAmbiguousNameExpressionNode? Rewrite()
         => BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite(this);
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Context.GetFlowLexicalScope();

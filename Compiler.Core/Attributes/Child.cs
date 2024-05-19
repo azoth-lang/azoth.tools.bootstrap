@@ -100,14 +100,14 @@ public static class Child
 
         if (child.MayHaveRewrite)
             throw new NotSupportedException(ChildMayHaveRewriteMessage(child));
-        child.AttachParent(parent);
+        child.SetParent(parent);
         return child;
     }
 
     public static Child<TChild> Create<TParent, TChild>(TParent parent, TChild initialValue)
         where TChild : class?, IChild<TParent>?
     {
-        initialValue?.AttachParent(parent);
+        initialValue?.SetParent(parent);
         return new Child<TChild>(initialValue);
     }
 

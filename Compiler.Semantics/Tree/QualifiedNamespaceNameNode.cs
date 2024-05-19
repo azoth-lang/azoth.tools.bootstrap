@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
@@ -18,7 +19,7 @@ internal sealed class QualifiedNamespaceNameNode : NamespaceNameNode, IQualified
         IEnumerable<INamespaceDeclarationNode> referencedDeclarations)
     {
         Syntax = syntax;
-        Context = context;
+        Context = Child.Attach(this, context);
         ReferencedDeclarations = referencedDeclarations.ToFixedList();
     }
 }

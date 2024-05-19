@@ -20,5 +20,5 @@ public interface IChild
 /// </summary>
 public interface IChild<in TParent> : IChild
 {
-    protected internal void AttachParent(TParent parent);
+    protected internal void SetParent(TParent parent);
 }

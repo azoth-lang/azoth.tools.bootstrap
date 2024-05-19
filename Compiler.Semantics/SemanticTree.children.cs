@@ -321,6 +321,12 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;
+            case IFunctionGroupNameNode n:
+                if (n.Context is not null)
+                    yield return n.Context;
+                foreach (var child in n.TypeArguments)
+                    yield return child;
+                yield break;
             case IUnqualifiedNamespaceNameNode n:
                 yield break;
             case IQualifiedNamespaceNameNode n:
