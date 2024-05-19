@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using MoreLinq;
@@ -817,7 +820,9 @@ internal class SemanticsApplier
         Types(node.TypeArguments);
     }
 
-    private static void FunctionGroupName(IFunctionGroupNameNode node) { }
+    private static void FunctionGroupName(IFunctionGroupNameNode node)
+        => NamespaceName(node.Context);
+
     #endregion
 
     #region Name Expressions
@@ -842,12 +847,14 @@ internal class SemanticsApplier
         }
     }
 
-    private static void NamespaceName(INamespaceNameNode node)
+    private static void NamespaceName(INamespaceNameNode? node)
     {
         switch (node)
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
+            case null:
+                break;
             case IUnqualifiedNamespaceNameNode n:
                 UnqualifiedNamespaceName(n);
                 break;
@@ -857,9 +864,16 @@ internal class SemanticsApplier
         }
     }
 
-    private static void UnqualifiedNamespaceName(IUnqualifiedNamespaceNameNode node) { }
+    private static void UnqualifiedNamespaceName(IUnqualifiedNamespaceNameNode node)
+    {
+        var syntax = node.Syntax;
+        syntax.Semantics.Fulfill(
+            new NamespaceNameSyntax(node.ReferencedDeclarations.Select(d => d.Symbol)
+                                        .Cast<LocalNamespaceSymbol>().ToFixedSet()));
+    }
 
-    private static void QualifiedNamespaceName(IQualifiedNamespaceNameNode node) { }
+    private static void QualifiedNamespaceName(IQualifiedNamespaceNameNode node)
+        => NamespaceName(node.Context);
 
     private static void SpecialTypeNameExpression(ISpecialTypeNameExpressionNode node) { }
 

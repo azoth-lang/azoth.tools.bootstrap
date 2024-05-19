@@ -219,9 +219,6 @@ public class BasicBodyAnalyzer
         DataType variableType;
         if (variableDeclaration.Type is not null)
         {
-            //var expectedType = typeResolver.Evaluate(variableDeclaration.Type);
-            //if (expectedType != variableDeclaration.Type.NamedType)
-            //    throw new UnreachableException("Expected type of variable declaration should match.");
             variableType = variableDeclaration.Type.NamedType!;
         }
         else if (variableDeclaration.Initializer is not null)
@@ -1709,8 +1706,11 @@ public class BasicBodyAnalyzer
         }
         if (symbols.All(s => s is LocalNamespaceSymbol))
         {
-            var namespaceSymbols = symbols.Cast<LocalNamespaceSymbol>().ToFixedSet();
-            return expression.Semantics.Fulfill(new NamespaceNameSyntax(namespaceSymbols));
+            var expectedSymbol = symbols.Cast<LocalNamespaceSymbol>().ToFixedSet();
+            if (expression.Semantics.Result is not NamespaceNameSyntax semantics
+               || !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbol))
+                throw new UnreachableException("Expected semantics and symbols should match.");
+            return semantics;
         }
 
         var symbol = InferSymbol(expression, symbols);
