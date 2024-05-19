@@ -227,7 +227,7 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 
 // ---------- Expressions
 AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
-Expression <: AmbiguousExpression = Syntax:`ITypedExpressionSyntax`;
+Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax`;
 AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax` Type:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression* ReferencedSymbol:`ConstructorSymbol?`;
@@ -280,7 +280,7 @@ MemberAccessExpression <: AmbiguousNameExpression, AssignableExpression
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression;
 // TODO Name <: NameExpression
-NamespaceName <: NameExpression = Type:`UnknownType`;
+NamespaceName <: NameExpression = Type:`UnknownType` ReferencedDeclarations:`INamespaceDeclarationNode`*;
 UnqualifiedNamespaceName <: NamespaceName = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 QualifiedNamespaceName <: NamespaceName = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName Name:`IdentifierName`;
 // TODO merge with SpecialTypeName and keep the name "SpecialTypeName" because it really isn't an expression

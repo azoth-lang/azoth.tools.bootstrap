@@ -12,7 +12,7 @@ public struct Child<T>
     where T : class?, IChild?
 {
     private T value;
-    // Declared as a uint to ensure Interlocked can be used on it (without any possible overhead)
+    // Declared as an uint to ensure Interlocked can be used on it (without any possible overhead)
     private volatile uint state; // Defaults to ChildState.NotSet
 
     internal Child(T initialValue)
@@ -25,7 +25,9 @@ public struct Child<T>
     /// <summary>
     /// Get the current value without attempting any rewrites.
     /// </summary>
-    internal readonly T CurrentValue => value;
+    /// <remarks>This isn't marked <see langword="readonly"/> because it does a volatile read so we
+    /// don't want people to think it is ok to copy the struct before accessing it.</remarks>
+    internal T CurrentValue => Volatile.Read(in value);
 
     public T Value
     {
@@ -78,7 +80,7 @@ public struct Child<T>
                 // If a rewrite is in progress, just return the current value so that the rewrite
                 // can proceed based on the current tree state.
                 // Use a volatile read of the value to try to read in progress values.
-                return Volatile.Read(ref value);
+                return Volatile.Read(in value);
             case ChildState.Final:
                 return value;
         }
