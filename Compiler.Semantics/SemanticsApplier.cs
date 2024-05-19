@@ -888,7 +888,11 @@ internal class SemanticsApplier
     private static void QualifiedNamespaceName(IQualifiedNamespaceNameNode node)
         => NamespaceName(node.Context);
 
-    private static void SpecialTypeNameExpression(ISpecialTypeNameExpressionNode node) { }
+    private static void SpecialTypeNameExpression(ISpecialTypeNameExpressionNode node)
+    {
+        var syntax = node.Syntax;
+        syntax.ReferencedSymbol.Fulfill(node.ReferencedSymbol);
+    }
 
     private static void SelfExpression(ISelfExpressionNode node) { }
 

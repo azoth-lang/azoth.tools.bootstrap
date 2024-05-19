@@ -1916,8 +1916,9 @@ public class BasicBodyAnalyzer
     private void InferSymbol(
         ISpecialTypeNameExpressionSyntax nameExpression)
     {
-        var symbol = symbolTrees.PrimitiveSymbolTree.LookupSymbol(nameExpression.Name);
-        nameExpression.ReferencedSymbol.Fulfill(symbol);
+        var expectedSymbol = symbolTrees.PrimitiveSymbolTree.LookupSymbol(nameExpression.Name);
+        if (nameExpression.ReferencedSymbol.Result != expectedSymbol)
+            throw new UnreachableException("Expected symbol should match referenced symbol.");
     }
 
     private FunctionType? InferSymbol<TSymbol>(
