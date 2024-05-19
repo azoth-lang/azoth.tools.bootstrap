@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -34,5 +35,11 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     {
         Syntax = syntax;
         TypeNode = Child.Attach(this, type);
+    }
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        SymbolAttribute.NamedParameter_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

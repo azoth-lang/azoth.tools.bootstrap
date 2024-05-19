@@ -228,11 +228,11 @@ public class EntitySymbolBuilder
                 case INamedParameterSyntax namedParam:
                 {
                     var isLent = namedParam.IsLentBinding;
-                    if (isLent && !type.CanBeLent())
-                    {
-                        diagnostics.Add(TypeError.TypeCannotBeLent(file, namedParam.Span, type));
-                        isLent = false;
-                    }
+                    //if (isLent && !type.CanBeLent())
+                    //{
+                    //    diagnostics.Add(TypeError.TypeCannotBeLent(file, namedParam.Span, type));
+                    //    isLent = false;
+                    //}
 
                     var expected = NamedVariableSymbol.CreateParameter(containingSymbol, namedParam.Name,
                         namedParam.DeclarationNumber.Result, namedParam.IsMutableBinding, isLent, type);

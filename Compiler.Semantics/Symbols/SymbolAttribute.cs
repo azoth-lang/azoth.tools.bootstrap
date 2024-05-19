@@ -78,8 +78,15 @@ internal static class SymbolAttribute
     public static NamedVariableSymbol NamedParameter_Symbol(INamedParameterNode node)
     {
         var parent = (IInvocableDefinitionNode)node.Parent;
-        var isLent = node.IsLentBinding;
+        var isLent = node.IsLentBinding && node.Type.CanBeLent();
         return NamedVariableSymbol.CreateParameter(parent.Symbol, node.Name,
             node.DeclarationNumber, node.IsMutableBinding, isLent, node.Type);
+    }
+
+    public static void NamedParameter_ContributeDiagnostics(INamedParameterNode node, Diagnostics diagnostics)
+    {
+        var type = node.Type;
+        if (node.IsLentBinding && !type.CanBeLent())
+            diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, type));
     }
 }
