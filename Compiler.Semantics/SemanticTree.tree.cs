@@ -1065,6 +1065,8 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     IAmbiguousExpressionNode? Initializer { get; }
     LexicalScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
+    NamedVariableSymbol Symbol { get; }
+    int? DeclarationNumber { get; }
 }
 
 public partial interface IExpressionStatementNode : IBodyStatementNode

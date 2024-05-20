@@ -3,6 +3,8 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -23,6 +25,11 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
             : lexicalScope.GetValue(this, LexicalScopingAspect.VariableDeclarationStatement_LexicalScope);
+    private ValueAttribute<NamedVariableSymbol> symbol;
+    public NamedVariableSymbol Symbol
+        => symbol.TryGetValue(out var value) ? value
+            : symbol.GetValue(this, SymbolAttribute.VariableDeclarationStatement_Symbol);
+    public int? DeclarationNumber => Syntax.DeclarationNumber.Result;
 
     public VariableDeclarationStatementNode(
         IVariableDeclarationStatementSyntax syntax,

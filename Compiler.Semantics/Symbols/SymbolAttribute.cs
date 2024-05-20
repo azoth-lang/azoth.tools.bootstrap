@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
@@ -89,4 +90,8 @@ internal static class SymbolAttribute
         if (node.IsLentBinding && !type.CanBeLent())
             diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, type));
     }
+
+    public static NamedVariableSymbol VariableDeclarationStatement_Symbol(IVariableDeclarationStatementNode node)
+        //var symbol = NamedVariableSymbol.CreateLocal(containingSymbol, node.IsMutableBinding, node.Name, node.DeclarationNumber, node.Type);
+        => throw new NotImplementedException();
 }

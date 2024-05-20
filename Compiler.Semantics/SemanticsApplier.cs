@@ -471,6 +471,7 @@ internal class SemanticsApplier
 
     private static void VariableDeclarationStatement(IVariableDeclarationStatementNode node)
     {
+        // node.Syntax.Symbol.Fulfill(node.Symbol);
         Type(node.Type);
         Capability(node.Capability);
         AmbiguousExpression(node.Initializer);
