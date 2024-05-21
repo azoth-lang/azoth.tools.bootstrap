@@ -298,7 +298,7 @@ SpecialTypeNameExpression <: NameExpression
 InstanceExpression <: NameExpression, SimpleName; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression
-    = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype`;
+    = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype` ContainingDeclaration:`IAlwaysTypeMemberDefinitionNode`;
 MissingNameExpression <: NameExpression, SimpleName, AssignableExpression
     = Syntax:`IMissingNameSyntax` Type:`UnknownType`;
 

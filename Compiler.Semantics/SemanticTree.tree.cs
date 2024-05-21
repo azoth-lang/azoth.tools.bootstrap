@@ -1552,6 +1552,7 @@ public partial interface ISelfExpressionNode : ISemanticNode, IInstanceExpressio
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     bool IsImplicit { get; }
     Pseudotype Pseudotype { get; }
+    IAlwaysTypeMemberDefinitionNode ContainingDeclaration { get; }
 }
 
 public partial interface IMissingNameExpressionNode : INameExpressionNode, ISimpleNameNode, IAssignableExpressionNode

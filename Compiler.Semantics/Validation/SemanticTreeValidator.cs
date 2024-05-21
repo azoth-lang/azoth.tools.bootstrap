@@ -90,6 +90,9 @@ internal class SemanticTreeValidator
             case ISelfParameterNode n:
                 _ = n.Symbol;
                 break;
+            case ISelfExpressionNode n:
+                _ = n.ContainingDeclaration;
+                break;
         }
 
         foreach (var child in node.Children())
