@@ -29,7 +29,9 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
     }
 
     protected override IAmbiguousNameExpressionNode? Rewrite()
-        => BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite(this);
+        => BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_FunctionGroupNameContext(this)
+        ?? BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_NamespaceNameContext(this)
+        ?? BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite(this);
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Context.GetFlowLexicalScope();
 }

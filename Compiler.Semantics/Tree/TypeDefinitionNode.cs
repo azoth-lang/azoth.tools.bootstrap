@@ -12,6 +12,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
+using DotNet.Collections.Generic;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -36,6 +37,8 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         => supertypes.TryGetValue(out var value) ? value
             : supertypes.GetValue(this, TypeDeclarationsAspect.TypeDeclaration_Supertypes);
     public abstract IFixedList<ITypeMemberDefinitionNode> Members { get; }
+    private MultiMapHashSet<StandardName, IInstanceMemberDeclarationNode>? instanceMembersByName;
+    private MultiMapHashSet<StandardName, IAssociatedMemberDeclarationNode>? associatedMembersByName;
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
@@ -77,4 +80,10 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         TypeDeclarationsAspect.TypeDeclaration_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
+
+    public IEnumerable<IInstanceMemberDeclarationNode> InstanceMembersNamed(StandardName named)
+        => Members.OfType<IInstanceMemberDeclarationNode>().MembersNamed(ref instanceMembersByName, named);
+
+    public IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named)
+        => Members.OfType<IAssociatedMemberDeclarationNode>().MembersNamed(ref associatedMembersByName, named);
 }

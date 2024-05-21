@@ -63,6 +63,12 @@ public partial interface IForeachExpressionNode
     IdentifierName INamedBindingDeclarationNode.Name => VariableName;
 }
 
+public partial interface IUserTypeDeclarationNode
+{
+    IEnumerable<IInstanceMemberDeclarationNode> InstanceMembersNamed(StandardName named);
+    IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
+}
+
 public partial interface INamespaceDeclarationNode
 {
     IEnumerable<INamespaceMemberDeclarationNode> MembersNamed(StandardName named);

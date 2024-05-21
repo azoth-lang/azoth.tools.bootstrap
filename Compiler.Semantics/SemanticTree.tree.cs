@@ -39,7 +39,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IConcreteMethodDefinitionNode),
     typeof(IConstructorDefinitionNode),
     typeof(IInitializerDefinitionNode),
-    typeof(IAssociatedFunctionDefinitionNode),
     typeof(IAttributeNode),
     typeof(ICapabilityConstraintNode),
     typeof(IParameterNode),
@@ -101,13 +100,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IClassMemberDeclarationNode),
     typeof(ITraitMemberDeclarationNode),
     typeof(IStructMemberDeclarationNode),
+    typeof(IInstanceMemberDeclarationNode),
+    typeof(IAssociatedFunctionDeclarationNode),
     typeof(IFunctionSymbolNode),
     typeof(IUserTypeSymbolNode),
     typeof(IMethodSymbolNode),
     typeof(IConstructorSymbolNode),
     typeof(IInitializerSymbolNode),
-    typeof(IFieldSymbolNode),
-    typeof(IAssociatedFunctionSymbolNode))]
+    typeof(IFieldSymbolNode))]
 public partial interface ISemanticNode
 {
     ISyntax? Syntax { get; }
@@ -691,7 +691,7 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     IAmbiguousExpressionNode? Initializer { get; }
 }
 
-public partial interface IAssociatedFunctionDefinitionNode : ISemanticNode, IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IAssociatedMemberDefinitionNode, IAssociatedFunctionDeclarationNode
+public partial interface IAssociatedFunctionDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IAssociatedMemberDefinitionNode, IAssociatedFunctionDeclarationNode
 {
     new IAssociatedFunctionDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -1726,6 +1726,7 @@ public partial interface IChildDeclarationNode : IDeclarationNode, IChildNode
     typeof(INamedBindingDeclarationNode),
     typeof(INamespaceMemberDeclarationNode),
     typeof(IFunctionLikeDeclarationNode),
+    typeof(IAssociatedMemberDeclarationNode),
     typeof(IMethodDeclarationNode),
     typeof(IFieldDeclarationNode),
     typeof(ITypeDeclarationNode))]
@@ -1739,6 +1740,7 @@ public partial interface INamedDeclarationNode : ISemanticNode, IChildDeclaratio
     typeof(IPackageFacetDeclarationNode),
     typeof(INamespaceMemberDeclarationNode),
     typeof(ITypeMemberDeclarationNode),
+    typeof(IAssociatedMemberDeclarationNode),
     typeof(ITypeDeclarationNode))]
 public partial interface ISymbolDeclarationNode : IDeclarationNode
 {
@@ -1894,7 +1896,8 @@ public partial interface IGenericParameterDeclarationNode : ISemanticNode, IType
     typeof(ITypeMemberDefinitionNode),
     typeof(IClassMemberDeclarationNode),
     typeof(ITraitMemberDeclarationNode),
-    typeof(IStructMemberDeclarationNode))]
+    typeof(IStructMemberDeclarationNode),
+    typeof(IInstanceMemberDeclarationNode))]
 public partial interface ITypeMemberDeclarationNode : IPackageFacetChildDeclarationNode, ISymbolDeclarationNode
 {
 }
@@ -1902,10 +1905,10 @@ public partial interface ITypeMemberDeclarationNode : IPackageFacetChildDeclarat
 [Closed(
     typeof(IClassMemberDefinitionNode),
     typeof(IUserTypeDeclarationNode),
+    typeof(IAssociatedMemberDeclarationNode),
     typeof(IMethodDeclarationNode),
     typeof(IConstructorDeclarationNode),
-    typeof(IFieldDeclarationNode),
-    typeof(IAssociatedFunctionDeclarationNode))]
+    typeof(IFieldDeclarationNode))]
 public partial interface IClassMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
 {
 }
@@ -1913,8 +1916,8 @@ public partial interface IClassMemberDeclarationNode : ISemanticNode, ITypeMembe
 [Closed(
     typeof(ITraitMemberDefinitionNode),
     typeof(IUserTypeDeclarationNode),
-    typeof(IMethodDeclarationNode),
-    typeof(IAssociatedFunctionDeclarationNode))]
+    typeof(IAssociatedMemberDeclarationNode),
+    typeof(IMethodDeclarationNode))]
 public partial interface ITraitMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
 {
 }
@@ -1922,18 +1925,31 @@ public partial interface ITraitMemberDeclarationNode : ISemanticNode, ITypeMembe
 [Closed(
     typeof(IStructMemberDefinitionNode),
     typeof(IUserTypeDeclarationNode),
+    typeof(IAssociatedMemberDeclarationNode),
     typeof(IMethodDeclarationNode),
     typeof(IInitializerDeclarationNode),
-    typeof(IFieldDeclarationNode),
-    typeof(IAssociatedFunctionDeclarationNode))]
+    typeof(IFieldDeclarationNode))]
 public partial interface IStructMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
+{
+}
+
+[Closed(
+    typeof(IAssociatedFunctionDeclarationNode))]
+public partial interface IAssociatedMemberDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode, ISymbolDeclarationNode
+{
+}
+
+[Closed(
+    typeof(IMethodDeclarationNode),
+    typeof(IFieldDeclarationNode))]
+public partial interface IInstanceMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
 {
 }
 
 [Closed(
     typeof(IMethodDefinitionNode),
     typeof(IMethodSymbolNode))]
-public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode
+public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode, IInstanceMemberDeclarationNode
 {
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
@@ -1967,7 +1983,7 @@ public partial interface IInitializerDeclarationNode : IStructMemberDeclarationN
 [Closed(
     typeof(IFieldDefinitionNode),
     typeof(IFieldSymbolNode))]
-public partial interface IFieldDeclarationNode : INamedDeclarationNode, IClassMemberDeclarationNode, IStructMemberDeclarationNode
+public partial interface IFieldDeclarationNode : INamedDeclarationNode, IClassMemberDeclarationNode, IStructMemberDeclarationNode, IInstanceMemberDeclarationNode
 {
     new IdentifierName Name { get; }
     StandardName INamedDeclarationNode.Name => Name;
@@ -1980,7 +1996,7 @@ public partial interface IFieldDeclarationNode : INamedDeclarationNode, IClassMe
 [Closed(
     typeof(IAssociatedFunctionDefinitionNode),
     typeof(IAssociatedFunctionSymbolNode))]
-public partial interface IAssociatedFunctionDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, IFunctionLikeDeclarationNode
+public partial interface IAssociatedFunctionDeclarationNode : ISemanticNode, IAssociatedMemberDeclarationNode, IFunctionLikeDeclarationNode
 {
 }
 
@@ -2047,7 +2063,7 @@ public partial interface IFieldSymbolNode : ISemanticNode, IFieldDeclarationNode
 {
 }
 
-public partial interface IAssociatedFunctionSymbolNode : ISemanticNode, IAssociatedFunctionDeclarationNode
+public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDeclarationNode
 {
 }
 

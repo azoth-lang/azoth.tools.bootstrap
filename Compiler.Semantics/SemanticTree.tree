@@ -130,7 +130,7 @@ ClassMemberDefinition <: TypeMemberDefinition, ClassMemberDeclaration = Syntax:`
 TraitMemberDefinition <: TypeMemberDefinition, TraitMemberDeclaration = Syntax:`ITraitMemberDefinitionSyntax`;
 StructMemberDefinition <: TypeMemberDefinition, StructMemberDeclaration = Syntax:`IStructMemberDefinitionSyntax`?;
 AlwaysTypeMemberDefinition <: TypeMemberDefinition = ContainingSymbol:`UserTypeSymbol`;
-AssociatedMemberDefinition <: TypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, NamedDeclaration;
+AssociatedMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, NamedDeclaration;
 
 // ---------- Member Definitions
 MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition, MethodDeclaration
@@ -387,13 +387,15 @@ TypeMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration;
 ClassMemberDeclaration <: TypeMemberDeclaration;
 TraitMemberDeclaration <: TypeMemberDeclaration;
 StructMemberDeclaration <: TypeMemberDeclaration;
+AssociatedMemberDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, SymbolDeclaration;
+InstanceMemberDeclaration <: TypeMemberDeclaration;
 
 // ---------- Member Declarations
-MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration = Name:`IdentifierName` Symbol:`MethodSymbol`;
+MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, InstanceMemberDeclaration = Name:`IdentifierName` Symbol:`MethodSymbol`;
 ConstructorDeclaration <: ClassMemberDeclaration = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
 InitializerDeclaration <: StructMemberDeclaration = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
-FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;
-AssociatedFunctionDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, FunctionLikeDeclaration;
+FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;
+AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionLikeDeclaration;
 
 // ---------- Can be Referenced by Type Name
 TypeDeclaration <: NamedDeclaration, SymbolDeclaration = Symbol:`TypeSymbol`;
