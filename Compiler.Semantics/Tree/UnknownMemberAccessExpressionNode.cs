@@ -14,13 +14,13 @@ internal class UnknownMemberAccessExpressionNode : AmbiguousNameExpressionNode, 
     public IExpressionNode Context { get; }
     public StandardName MemberName => Syntax.MemberName;
     public IFixedList<ITypeNode> TypeArguments { get; }
-    public IFixedList<IDefinitionNode> ReferencedMembers { get; }
+    public IFixedList<IDeclarationNode> ReferencedMembers { get; }
 
     public UnknownMemberAccessExpressionNode(
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         IEnumerable<ITypeNode> typeArguments,
-        IEnumerable<IDefinitionNode> referencedMembers)
+        IEnumerable<IDeclarationNode> referencedMembers)
     {
         Syntax = syntax;
 

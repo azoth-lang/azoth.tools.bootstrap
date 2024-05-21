@@ -1668,18 +1668,18 @@ public class BasicBodyAnalyzer
     private IMemberAccessSyntaxSemantics InferSemantics(IMemberAccessExpressionSyntax expression, ExpressionResult contextResult)
     {
         var memberName = expression.MemberName;
-        if (expression.Context is INameExpressionSyntax exp)
+        if (expression.Context is INameExpressionSyntax contextExp)
         {
-            switch (exp.Semantics.Result)
+            switch (contextExp.Semantics.Result)
             {
                 default:
-                    throw ExhaustiveMatch.Failed(exp.Semantics.Result);
+                    throw ExhaustiveMatch.Failed(contextExp.Semantics.Result);
                 case FunctionGroupNameSyntax _:
                 case MethodGroupNameSyntax _:
                     // Semantics already assigned by SemanticsApplier
                     return expression.Semantics.Result;
-                case TypeNameSyntax sem:
-                    var typeMemberSymbols = symbolTrees.Children(sem.Symbol)
+                case TypeNameSyntax contextSemantics:
+                    var typeMemberSymbols = symbolTrees.Children(contextSemantics.Symbol)
                                                                .Where(s => s.Name == memberName)
                                                                .ToFixedSet();
                     if (typeMemberSymbols.Count == 0)
@@ -1701,57 +1701,8 @@ public class BasicBodyAnalyzer
                     diagnostics.Add(NameBindingError.AmbiguousName(file, expression.MemberNameSpan));
                     return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
                 case NamespaceNameSyntax sem:
-                    var namespaceMemberSymbols = sem.Symbols.SelectMany(symbolTrees.Children)
-                                                    .Where(s => s.Name == memberName).ToFixedSet();
-                    if (namespaceMemberSymbols.Count == 0)
-                    {
-                        // Semantics already assigned by SemanticsApplier
-                        return expression.Semantics.Result;
-                    }
-                    if (namespaceMemberSymbols.All(s => s is FunctionSymbol))
-                    {
-                        // Semantics already assigned by SemanticsApplier
-                        var expectedSymbols = namespaceMemberSymbols.Cast<FunctionSymbol>().ToFixedSet();
-                        if (expression.Semantics.Result is FunctionGroupNameSyntax semantics
-                            && !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbols))
-                            throw new UnreachableException("Semantics and symbols should match.");
-                        return expression.Semantics.Result;
-                    }
-                    if (namespaceMemberSymbols.All(s => s is LocalNamespaceSymbol))
-                    {
-                        // Semantics already assigned by SemanticsApplier
-                        var expectedSymbols = namespaceMemberSymbols.Cast<LocalNamespaceSymbol>().ToFixedSet();
-                        if (expression.Semantics.Result is NamespaceNameSyntax semantics
-                            && !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbols))
-                            throw new UnreachableException("Semantics and symbols should match.");
-                        return expression.Semantics.Result;
-                    }
-                    if (namespaceMemberSymbols.Count > 1)
-                    {
-                        diagnostics.Add(NameBindingError.AmbiguousName(file, expression.MemberNameSpan));
-                        return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
-                    }
-
-                    var namespaceMemberSymbol = namespaceMemberSymbols.Single();
-                    switch (namespaceMemberSymbol)
-                    {
-                        default:
-                            throw ExhaustiveMatch.Failed(namespaceMemberSymbol);
-                        case UserTypeSymbol userTypeSymbol:
-                            return expression.Semantics.Fulfill(new TypeNameSyntax(userTypeSymbol));
-                        case FieldSymbol _:
-                        case GenericParameterTypeSymbol _:
-                        case MethodSymbol _:
-                        case InitializerSymbol _:
-                        case SelfParameterSymbol _:
-                        case NamedVariableSymbol _:
-                        case EmptyTypeSymbol _:
-                        case PrimitiveTypeSymbol _:
-                        case NamespaceSymbol _: // NamespaceSymbol covered above
-                        case FunctionSymbol _: // Covered above
-                        case ConstructorSymbol _:
-                            throw new UnreachableException();
-                    }
+                    // Semantics already assigned by SemanticsApplier
+                    return expression.Semantics.Result;
                 case UnknownNameSyntax _:
                     return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
                 case InitializerGroupNameSyntax _:

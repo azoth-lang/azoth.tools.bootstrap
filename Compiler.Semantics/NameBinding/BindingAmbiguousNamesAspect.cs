@@ -28,7 +28,7 @@ internal static class BindingAmbiguousNamesAspect
                 case INamedBindingNode referencedVariable:
                     return new VariableNameExpressionNode(node.Syntax, referencedVariable);
                 case ITypeDeclarationNode referencedType:
-                    return new StandardTypeNameExpressionNode(node.Syntax, referencedType);
+                    return new StandardTypeNameExpressionNode(node.Syntax, FixedList.Empty<ITypeNode>(), referencedType);
             }
 
         return new UnknownIdentifierNameExpressionNode(node.Syntax, node.ReferencedDeclarations);
@@ -58,19 +58,36 @@ internal static class BindingAmbiguousNamesAspect
         if (node.Context is FunctionGroupName functionGroupName) // TODO or MethodGroupName
             return new UnknownMemberAccessExpressionNode(node.Syntax, functionGroupName, node.TypeArguments, FixedList.Empty<DefinitionNode>());
 
-        if (node.Context is not INamespaceNameNode context)
-            return null;
+        if (node.Context is INamespaceNameNode context)
+        {
+            var members = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
+            if (members.Count == 0)
+                return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments,
+                    FixedList.Empty<DefinitionNode>());
 
-        var members = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
-        if (members.Count == 0)
-            return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<DefinitionNode>());
+            if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
+                return new QualifiedNamespaceNameNode(node.Syntax, context, referencedNamespaces);
 
-        if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
-            return new QualifiedNamespaceNameNode(node.Syntax, context, referencedNamespaces);
+            // TODO do the functions need to be in the same package?
+            if (members.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
+                return new FunctionGroupName(node.Syntax, context, node.MemberName, node.TypeArguments,
+                    referencedFunctions);
 
-        // TODO do the functions need to be in the same package?
-        if (members.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
-            return new FunctionGroupName(node.Syntax, context, node.MemberName, node.TypeArguments, referencedFunctions);
+            if (members.TrySingle() is not null and var referencedDeclaration)
+                switch (referencedDeclaration)
+                {
+                    case ITypeDeclarationNode referencedType:
+                        return new QualifiedTypeNameExpression(node.Syntax, context, node.TypeArguments,
+                            referencedType);
+                }
+
+            return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
+        }
+
+        if (node.Context is ITypeNameExpressionNode)
+        {
+
+        }
 
         return null;
     }
@@ -93,6 +110,7 @@ internal static class BindingAmbiguousNamesAspect
                     // If there is only one match, then it would not be an unknown member access expression
                     throw new UnreachableException();
                 default:
+                    // TODO better errors explaining. For example, are they different kinds of declarations?
                     diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.MemberNameSpan));
                     break;
             }

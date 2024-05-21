@@ -295,10 +295,11 @@ FunctionGroupName <: NameExpression = Context:NamespaceName? FunctionName:`Stand
     ReferencedDeclarations:`IFunctionLikeDeclarationNode`*;
 VariableNameExpression <: NameExpression, AssignableExpression, SimpleName
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDeclaration:`INamedBindingNode`;
-StandardTypeNameExpression <: NameExpression = Syntax:`IStandardNameExpressionSyntax`
+TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
     Name:`StandardName` TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
-QualifiedTypeNameExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:NamespaceName Name:`StandardName` TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
+StandardTypeNameExpression <: TypeNameExpression = Syntax:`IStandardNameExpressionSyntax` TypeArguments:Type*;
+QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
+    Context:NamespaceName TypeArguments:Type*;
 // TODO merge with SpecialTypeName and keep the name "SpecialTypeName" because it really isn't an expression
 SpecialTypeNameExpression <: NameExpression
     = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol` Type:`UnknownType`;
@@ -317,7 +318,7 @@ UnknownGenericNameExpression <: UnknownNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
 UnknownMemberAccessExpression <: NameExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:Expression MemberName:`StandardName` TypeArguments:Type*
-    ReferencedMembers:Definition*;
+    ReferencedMembers:Declaration*;
 
 // ---------- Capability Expressions
 MoveExpression <: Expression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName;
