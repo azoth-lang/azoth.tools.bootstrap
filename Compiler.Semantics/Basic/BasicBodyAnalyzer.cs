@@ -1728,7 +1728,10 @@ public class BasicBodyAnalyzer
             default:
                 throw ExhaustiveMatch.Failed(symbol);
             case TypeSymbol sym:
-                return expression.Semantics.Fulfill(new TypeNameSyntax(sym));
+                if (expression.Semantics.Result is not TypeNameSyntax semantics
+                    || semantics.Symbol != sym)
+                    throw new UnreachableException("Expected semantics and symbols should match.");
+                return semantics;
             case LocalNamespaceSymbol _:
             case FunctionSymbol _:
             case SelfParameterSymbol _:

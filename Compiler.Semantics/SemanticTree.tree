@@ -293,10 +293,13 @@ NameExpression <: Expression, AmbiguousNameExpression;
 NamespaceName <: NameExpression = Type:`UnknownType` ReferencedDeclarations:`INamespaceDeclarationNode`*;
 UnqualifiedNamespaceName <: NamespaceName = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 QualifiedNamespaceName <: NamespaceName = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName Name:`IdentifierName`;
-VariableNameExpression <: NameExpression, AssignableExpression, SimpleName = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDeclaration:`INamedBindingNode`;
+VariableNameExpression <: NameExpression, AssignableExpression, SimpleName
+    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDeclaration:`INamedBindingNode`;
+StandardTypeNameExpression <: NameExpression = Syntax:`IStandardNameExpressionSyntax`
+    Name:`StandardName` ReferencedDeclaration:`ITypeDeclarationNode`;
 // TODO merge with SpecialTypeName and keep the name "SpecialTypeName" because it really isn't an expression
 SpecialTypeNameExpression <: NameExpression
-    = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol`? Type:`UnknownType`;
+    = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol` Type:`UnknownType`;
 InstanceExpression <: NameExpression, SimpleName; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression

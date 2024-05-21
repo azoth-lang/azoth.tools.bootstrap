@@ -27,6 +27,8 @@ internal static class BindingAmbiguousNamesAspect
             {
                 case INamedBindingNode referencedVariable:
                     return new VariableNameExpressionNode(node.Syntax, referencedVariable);
+                case ITypeDeclarationNode referencedType:
+                    return new StandardTypeNameExpressionNode(node.Syntax, referencedType);
             }
         }
 

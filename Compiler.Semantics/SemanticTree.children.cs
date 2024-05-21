@@ -334,6 +334,8 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IVariableNameExpressionNode n:
                 yield break;
+            case IStandardTypeNameExpressionNode n:
+                yield break;
             case ISpecialTypeNameExpressionNode n:
                 yield break;
             case ISelfExpressionNode n:

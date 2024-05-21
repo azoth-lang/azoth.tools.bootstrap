@@ -1487,6 +1487,7 @@ public partial interface IFunctionGroupNameNode : IAmbiguousNameNode
 [Closed(
     typeof(INamespaceNameNode),
     typeof(IVariableNameExpressionNode),
+    typeof(IStandardTypeNameExpressionNode),
     typeof(ISpecialTypeNameExpressionNode),
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode))]
@@ -1534,6 +1535,16 @@ public partial interface IVariableNameExpressionNode : INameExpressionNode, IAss
     INamedBindingNode ReferencedDeclaration { get; }
 }
 
+public partial interface IStandardTypeNameExpressionNode : INameExpressionNode
+{
+    new IStandardNameExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    StandardName Name { get; }
+    ITypeDeclarationNode ReferencedDeclaration { get; }
+}
+
 public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
 {
     new ISpecialTypeNameExpressionSyntax Syntax { get; }
@@ -1541,7 +1552,7 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     SpecialTypeName Name { get; }
-    TypeSymbol? ReferencedSymbol { get; }
+    TypeSymbol ReferencedSymbol { get; }
     UnknownType Type { get; }
 }
 

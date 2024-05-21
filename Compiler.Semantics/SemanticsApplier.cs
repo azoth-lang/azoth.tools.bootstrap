@@ -868,6 +868,9 @@ internal class SemanticsApplier
             case IVariableNameExpressionNode n:
                 VariableNameExpression(n);
                 break;
+            case IStandardTypeNameExpressionNode n:
+                StandardTypeNameExpression(n);
+                break;
             case ISpecialTypeNameExpressionNode n:
                 SpecialTypeNameExpression(n);
                 break;
@@ -913,6 +916,23 @@ internal class SemanticsApplier
         //var syntax = node.Syntax;
         //syntax.Semantics.Fulfill(new NamedVariableNameSyntax(node.ReferencedDeclaration.Syntax.Symbol.Result));
     }
+
+    private static void StandardTypeNameExpression(IStandardTypeNameExpressionNode node)
+    {
+        var semantics = new TypeNameSyntax(node.ReferencedDeclaration.Symbol);
+        switch (node.Syntax)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node.Syntax);
+            case IIdentifierNameExpressionSyntax syntax:
+                syntax.Semantics.Fulfill(semantics);
+                break;
+            case IGenericNameExpressionSyntax syntax:
+                //syntax.Semantics.Fulfill(semantics);
+                throw new NotImplementedException("Generic names not implemented in syntax yet");
+        }
+    }
+
 
     private static void SpecialTypeNameExpression(ISpecialTypeNameExpressionNode node)
     {
