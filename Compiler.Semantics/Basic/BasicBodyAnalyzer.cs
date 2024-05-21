@@ -1743,31 +1743,8 @@ public class BasicBodyAnalyzer
     }
 
     private ISelfExpressionSyntaxSemantics InferSemantics(ISelfExpressionSyntax expression)
-    {
-        SelfParameterSymbol? expectedSelfSymbol;
-        switch (containingSymbol)
-        {
-            default:
-                throw ExhaustiveMatch.Failed(containingSymbol);
-            case MethodSymbol _:
-            case ConstructorSymbol _:
-            case InitializerSymbol _:
-                var symbols = LookupSymbols<SelfParameterSymbol>(containingSymbol);
-                expectedSelfSymbol = BindName(expression, symbols);
-                break;
-            case FunctionSymbol _:
-                //diagnostics.Add(expression.IsImplicit
-                //    ? OtherSemanticError.ImplicitSelfOutsideMethod(file, expression.Span)
-                //    : OtherSemanticError.SelfOutsideMethod(file, expression.Span));
-                expectedSelfSymbol = null;
-                break;
-        }
-
-        var semantics = expression.Semantics.Result;
-        if (semantics.Symbol != expectedSelfSymbol)
-            throw new UnreachableException("Expected semantics and symbols should match.");
-        return semantics;
-    }
+        // Semantics already assigned by SemanticsApplier
+        => expression.Semantics.Result;
 
     private IMemberAccessSyntaxSemantics InferSemantics(IMemberAccessExpressionSyntax expression, ExpressionResult contextResult)
     {
@@ -2021,25 +1998,6 @@ public class BasicBodyAnalyzer
         return constructor;
     }
 
-    private TSymbol? BindName<TNameSymbol, TSymbol>(
-        INameExpressionSyntax<TNameSymbol> exp,
-        IFixedSet<TSymbol> symbols)
-        where TNameSymbol : Symbol
-        where TSymbol : TNameSymbol
-    {
-        switch (symbols.Count)
-        {
-            case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindName(file, exp.Span));
-                return null;
-            case 1:
-                return symbols.Single();
-            default:
-                diagnostics.Add(NameBindingError.AmbiguousName(file, exp.Span));
-                return null;
-        }
-    }
-
     private TSymbol? InferSymbol<TNameSymbol, TSymbol>(
         INameExpressionSyntax<TNameSymbol> exp,
         IFixedSet<TSymbol> symbols)
@@ -2074,10 +2032,6 @@ public class BasicBodyAnalyzer
         return exp.LookupInContainingScope().Select(p => p.Downcast().As<TSymbol>())
                              .WhereNotNull().Select(p => p.Result).Where(symbolFilter).ToFixedSet();
     }
-
-    private IFixedSet<TSymbol> LookupSymbols<TSymbol>(Symbol contextSymbol)
-        where TSymbol : Symbol
-        => symbolTrees.Children(contextSymbol).OfType<TSymbol>().ToFixedSet();
 
     /// <summary>
     /// Eventually, a `foreach` `in` expression will just be a regular expression. However, at the
