@@ -98,8 +98,8 @@ internal static class BindingAmbiguousNamesAspect
             return null;
 
         var members = referencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
-        //if (members.Count == 0)
-        //    return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<DefinitionNode>());
+        if (members.Count == 0)
+            return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<DefinitionNode>());
 
         if (members.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
             return new FunctionGroupName(node.Syntax, context, node.MemberName, node.TypeArguments,
@@ -109,7 +109,7 @@ internal static class BindingAmbiguousNamesAspect
             // TODO handle type arguments (which are not allowed for initializers)
             return new InitializerGroupNameNode(node.Syntax, context, referencedInitializers);
 
-        return null;
+        return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
     }
 
     public static void UnknownMemberAccessExpression_ContributeDiagnostics(

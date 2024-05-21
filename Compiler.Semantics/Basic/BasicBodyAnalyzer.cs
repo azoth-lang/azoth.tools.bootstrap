@@ -1684,8 +1684,10 @@ public class BasicBodyAnalyzer
                                                                .ToFixedSet();
                     if (typeMemberSymbols.Count == 0)
                     {
-                        diagnostics.Add(NameBindingError.CouldNotBindMember(file, expression.MemberNameSpan));
-                        return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+                        // Semantics already assigned by SemanticsApplier
+                        if (expression.Semantics.Result is not UnknownNameSyntax)
+                            throw new UnreachableException("Semantics should match");
+                        return expression.Semantics.Result;
                     }
                     if (typeMemberSymbols.All(s => s is FunctionSymbol))
                     {
@@ -1706,8 +1708,10 @@ public class BasicBodyAnalyzer
                         return expression.Semantics.Result;
                     }
 
-                    diagnostics.Add(NameBindingError.AmbiguousName(file, expression.MemberNameSpan));
-                    return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+                    // Semantics already assigned by SemanticsApplier
+                    if (expression.Semantics.Result is not UnknownNameSyntax)
+                        throw new UnreachableException("Semantics should match");
+                    return expression.Semantics.Result;
                 case NamespaceNameSyntax sem:
                     // Semantics already assigned by SemanticsApplier
                     return expression.Semantics.Result;
