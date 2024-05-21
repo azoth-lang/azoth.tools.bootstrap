@@ -1705,8 +1705,8 @@ public class BasicBodyAnalyzer
                                                     .Where(s => s.Name == memberName).ToFixedSet();
                     if (namespaceMemberSymbols.Count == 0)
                     {
-                        diagnostics.Add(NameBindingError.CouldNotBindMember(file, expression.MemberNameSpan));
-                        return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+                        // Semantics already assigned by SemanticsApplier
+                        return expression.Semantics.Result;
                     }
                     // TODO do the functions need to be in the same package?
                     if (namespaceMemberSymbols.All(s => s is FunctionSymbol))
@@ -1716,8 +1716,12 @@ public class BasicBodyAnalyzer
                     }
                     if (namespaceMemberSymbols.All(s => s is LocalNamespaceSymbol))
                     {
-                        var namespaceSymbols = namespaceMemberSymbols.Cast<LocalNamespaceSymbol>().ToFixedSet();
-                        return expression.Semantics.Fulfill(new NamespaceNameSyntax(namespaceSymbols));
+                        // Semantics already assigned by SemanticsApplier
+                        var expectedSymbols = namespaceMemberSymbols.Cast<LocalNamespaceSymbol>().ToFixedSet();
+                        if (expression.Semantics.Result is NamespaceNameSyntax semantics
+                            && !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbols))
+                            throw new UnreachableException("Semantics and symbols should match.");
+                        return expression.Semantics.Result;
                     }
                     if (namespaceMemberSymbols.Count > 1)
                     {

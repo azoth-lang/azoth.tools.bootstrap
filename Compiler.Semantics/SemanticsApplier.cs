@@ -905,7 +905,11 @@ internal class SemanticsApplier
     }
 
     private static void QualifiedNamespaceName(IQualifiedNamespaceNameNode node)
-        => NamespaceName(node.Context);
+    {
+        var namespaceSymbols = node.ReferencedDeclarations.Select(d => d.Symbol).Cast<LocalNamespaceSymbol>().ToFixedSet();
+        node.Syntax.Semantics.Fulfill(new NamespaceNameSyntax(namespaceSymbols));
+        NamespaceName(node.Context);
+    }
 
     private static void FunctionGroupName(IFunctionGroupNameNode node)
     {

@@ -63,7 +63,7 @@ internal static class BindingAmbiguousNamesAspect
 
         var members = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
         if (members.Count == 0)
-            return null;
+            return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<DefinitionNode>());
 
         if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
             return new QualifiedNamespaceNameNode(node.Syntax, context, referencedNamespaces);
@@ -80,6 +80,12 @@ internal static class BindingAmbiguousNamesAspect
     {
         if (node.Context is FunctionGroupName)
             diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "No member accessible from function or method."));
+
+        if (node.Context is INamespaceNameNode context)
+        {
+            if (node.ReferencedMembers.Count == 0)
+                diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.MemberNameSpan));
+        }
     }
 
     private static bool TryAllOfType<T>(
