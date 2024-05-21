@@ -1689,6 +1689,7 @@ public class BasicBodyAnalyzer
                     }
                     if (typeMemberSymbols.All(s => s is FunctionSymbol))
                     {
+                        // Semantics already assigned by SemanticsApplier
                         var expectedSymbols = typeMemberSymbols.Cast<FunctionSymbol>().ToFixedSet();
                         if (expression.Semantics.Result is FunctionGroupNameSyntax semantics
                             && !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbols))
@@ -1697,8 +1698,12 @@ public class BasicBodyAnalyzer
                     }
                     if (typeMemberSymbols.All(s => s is InitializerSymbol))
                     {
-                        var initializerSymbols = typeMemberSymbols.Cast<InitializerSymbol>().ToFixedSet();
-                        return expression.Semantics.Fulfill(new InitializerGroupNameSyntax(initializerSymbols));
+                        // Semantics already assigned by SemanticsApplier
+                        var expectedSymbols = typeMemberSymbols.Cast<InitializerSymbol>().ToFixedSet();
+                        if (expression.Semantics.Result is InitializerGroupNameSyntax semantics
+                            && !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbols))
+                            throw new UnreachableException("Semantics and symbols should match");
+                        return expression.Semantics.Result;
                     }
 
                     diagnostics.Add(NameBindingError.AmbiguousName(file, expression.MemberNameSpan));

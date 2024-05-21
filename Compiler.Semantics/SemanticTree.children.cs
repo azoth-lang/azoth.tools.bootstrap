@@ -343,6 +343,10 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;
+            case IInitializerGroupNameNode n:
+                if (n.Context is not null)
+                    yield return n.Context;
+                yield break;
             case ISpecialTypeNameExpressionNode n:
                 yield break;
             case ISelfExpressionNode n:

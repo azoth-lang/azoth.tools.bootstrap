@@ -866,6 +866,9 @@ internal class SemanticsApplier
             case IQualifiedTypeNameExpressionNode n:
                 QualifiedTypeNameExpression(n);
                 break;
+            case IInitializerGroupNameNode n:
+                InitializeGroupName(n);
+                break;
             case ISpecialTypeNameExpressionNode n:
                 SpecialTypeNameExpression(n);
                 break;
@@ -959,6 +962,13 @@ internal class SemanticsApplier
         node.Syntax.Semantics.Fulfill(new TypeNameSyntax(node.ReferencedDeclaration.Symbol));
         Expression(node.Context);
         Types(node.TypeArguments);
+    }
+
+    private static void InitializeGroupName(IInitializerGroupNameNode node)
+    {
+        var symbols = node.ReferencedDeclarations.Select(d => d.Symbol).ToFixedSet();
+        node.Syntax.Semantics.Fulfill(new InitializerGroupNameSyntax(symbols));
+        Expression(node.Context);
     }
 
     private static void SpecialTypeNameExpression(ISpecialTypeNameExpressionNode node)

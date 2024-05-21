@@ -12,7 +12,7 @@ internal sealed class FunctionGroupName : AmbiguousNameExpressionNode, IFunction
     public INameExpressionNode? Context { get; }
     public StandardName FunctionName { get; }
     public IFixedList<ITypeNode> TypeArguments { get; }
-    public IFixedList<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; }
+    public IFixedSet<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; }
 
     public FunctionGroupName(
         INameExpressionSyntax syntax,
@@ -25,6 +25,6 @@ internal sealed class FunctionGroupName : AmbiguousNameExpressionNode, IFunction
         Context = Child.Attach(this, context);
         FunctionName = functionName;
         TypeArguments = ChildList.Attach(this, typeArguments);
-        ReferencedDeclarations = referencedDeclarations.ToFixedList();
+        ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 }

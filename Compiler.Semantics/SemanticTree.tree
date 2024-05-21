@@ -292,7 +292,7 @@ NamespaceName <: NameExpression = Type:`UnknownType` ReferencedDeclarations:`INa
 UnqualifiedNamespaceName <: NamespaceName = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 QualifiedNamespaceName <: NamespaceName = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName Name:`IdentifierName`;
 FunctionGroupName <: NameExpression = Context:NameExpression? FunctionName:`StandardName` TypeArguments:Type*
-    ReferencedDeclarations:`IFunctionLikeDeclarationNode`*;
+    ReferencedDeclarations:{`IFunctionLikeDeclarationNode`};
 VariableNameExpression <: NameExpression, AssignableExpression, SimpleName
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDeclaration:`INamedBindingNode`;
 TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
@@ -300,6 +300,8 @@ TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
 StandardTypeNameExpression <: TypeNameExpression = Syntax:`IStandardNameExpressionSyntax` TypeArguments:Type*;
 QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:NamespaceName TypeArguments:Type*;
+InitializerGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax` Context:TypeNameExpression? InitializerName:`StandardName`
+    ReferencedDeclarations:{`IInitializerDeclarationNode`};
 // TODO merge with SpecialTypeName and keep the name "SpecialTypeName" because it really isn't an expression
 SpecialTypeNameExpression <: NameExpression
     = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol` Type:`UnknownType`;
@@ -387,13 +389,13 @@ TypeMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration;
 ClassMemberDeclaration <: TypeMemberDeclaration;
 TraitMemberDeclaration <: TypeMemberDeclaration;
 StructMemberDeclaration <: TypeMemberDeclaration;
-AssociatedMemberDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, SymbolDeclaration;
+AssociatedMemberDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, SymbolDeclaration;
 InstanceMemberDeclaration <: TypeMemberDeclaration;
 
 // ---------- Member Declarations
 MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, InstanceMemberDeclaration = Name:`IdentifierName` Symbol:`MethodSymbol`;
 ConstructorDeclaration <: ClassMemberDeclaration = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
-InitializerDeclaration <: StructMemberDeclaration = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
+InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
 FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;
 AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionLikeDeclaration;
 
