@@ -920,7 +920,13 @@ internal class SemanticsApplier
         syntax.ReferencedSymbol.Fulfill(node.ReferencedSymbol);
     }
 
-    private static void SelfExpression(ISelfExpressionNode node) { }
+    private static void SelfExpression(ISelfExpressionNode node)
+    {
+        var semantics = node.ReferencedSymbol is not null
+            ? new SelfExpressionSyntax(node.ReferencedSymbol)
+            : (ISelfExpressionSyntaxSemantics)UnknownNameSyntax.Instance;
+        node.Syntax.Semantics.Fulfill(semantics);
+    }
 
     private static void MissingNameExpression(IMissingNameExpressionNode node) { }
     #endregion

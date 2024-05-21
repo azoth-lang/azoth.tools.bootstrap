@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
@@ -6,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
@@ -94,4 +96,18 @@ internal static class SymbolAttribute
     public static NamedVariableSymbol VariableDeclarationStatement_Symbol(IVariableDeclarationStatementNode node)
         //var symbol = NamedVariableSymbol.CreateLocal(containingSymbol, node.IsMutableBinding, node.Name, node.DeclarationNumber, node.Type);
         => throw new NotImplementedException();
+
+    public static SelfParameterSymbol? SelfExpression_ReferencedSymbol(ISelfExpressionNode node)
+        => node.ContainingDeclaration switch
+        {
+            IConcreteMethodDefinitionNode n => n.SelfParameter.Symbol,
+            ISourceConstructorDefinitionNode n => n.SelfParameter.Symbol,
+            IDefaultConstructorDefinitionNode _
+                => throw new UnreachableException("A `self` expression cannot occur here because it has an empty body."),
+            IInitializerDefinitionNode n => n.SelfParameter.Symbol,
+            IFieldDefinitionNode _ => null,
+            IAssociatedFunctionDefinitionNode _ => null,
+            IFunctionDefinitionNode _ => null,
+            _ => throw ExhaustiveMatch.Failed(node.ContainingDeclaration),
+        };
 }

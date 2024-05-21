@@ -1744,7 +1744,7 @@ public class BasicBodyAnalyzer
 
     private ISelfExpressionSyntaxSemantics InferSemantics(ISelfExpressionSyntax expression)
     {
-        SelfParameterSymbol? selfSymbol;
+        SelfParameterSymbol? expectedSelfSymbol;
         switch (containingSymbol)
         {
             default:
@@ -1753,18 +1753,20 @@ public class BasicBodyAnalyzer
             case ConstructorSymbol _:
             case InitializerSymbol _:
                 var symbols = LookupSymbols<SelfParameterSymbol>(containingSymbol);
-                selfSymbol = BindName(expression, symbols);
+                expectedSelfSymbol = BindName(expression, symbols);
                 break;
             case FunctionSymbol _:
-                diagnostics.Add(expression.IsImplicit
-                    ? OtherSemanticError.ImplicitSelfOutsideMethod(file, expression.Span)
-                    : OtherSemanticError.SelfOutsideMethod(file, expression.Span));
-                selfSymbol = null;
+                //diagnostics.Add(expression.IsImplicit
+                //    ? OtherSemanticError.ImplicitSelfOutsideMethod(file, expression.Span)
+                //    : OtherSemanticError.SelfOutsideMethod(file, expression.Span));
+                expectedSelfSymbol = null;
                 break;
         }
 
-        return selfSymbol is null ? expression.Semantics.Fulfill(UnknownNameSyntax.Instance)
-            : expression.Semantics.Fulfill(new SelfExpressionSyntax(selfSymbol));
+        var semantics = expression.Semantics.Result;
+        if (semantics.Symbol != expectedSelfSymbol)
+            throw new UnreachableException("Expected semantics and symbols should match.");
+        return semantics;
     }
 
     private IMemberAccessSyntaxSemantics InferSemantics(IMemberAccessExpressionSyntax expression, ExpressionResult contextResult)

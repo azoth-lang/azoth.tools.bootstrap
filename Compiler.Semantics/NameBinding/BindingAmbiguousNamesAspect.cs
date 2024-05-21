@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -57,5 +59,13 @@ internal static class BindingAmbiguousNamesAspect
         referencedNamespaces = declarations.OfType<T>().ToFixedList();
         // All of type T when counts match
         return referencedNamespaces.Count == declarations.Count;
+    }
+
+    public static void SelfExpression_ContributeDiagnostics(ISelfExpressionNode node, Diagnostics diagnostics)
+    {
+        if (node.ContainingDeclaration is not (IMethodDefinitionNode or ISourceConstructorDefinitionNode or IInitializerDeclarationNode))
+            diagnostics.Add(node.IsImplicit
+                ? OtherSemanticError.ImplicitSelfOutsideMethod(node.File, node.Syntax.Span)
+                : OtherSemanticError.SelfOutsideMethod(node.File, node.Syntax.Span));
     }
 }

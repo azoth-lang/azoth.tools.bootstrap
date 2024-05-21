@@ -29,15 +29,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(ICompilationUnitNode),
     typeof(IUsingDirectiveNode),
     typeof(IInvocableDefinitionNode),
+    typeof(IExecutableDefinitionNode),
     typeof(INamespaceBlockMemberDefinitionNode),
     typeof(INamespaceMemberDefinitionNode),
+    typeof(IFunctionDefinitionNode),
     typeof(ITypeDefinitionNode),
     typeof(ITypeMemberDefinitionNode),
     typeof(IAbstractMethodDefinitionNode),
     typeof(IConcreteMethodDefinitionNode),
     typeof(IConstructorDefinitionNode),
     typeof(IInitializerDefinitionNode),
-    typeof(IFieldDefinitionNode),
     typeof(IAssociatedFunctionDefinitionNode),
     typeof(IAttributeNode),
     typeof(ICapabilityConstraintNode),
@@ -257,6 +258,7 @@ public partial interface IUsingDirectiveNode : ISemanticNode, ICodeNode
 
 [Closed(
     typeof(IInvocableDefinitionNode),
+    typeof(IExecutableDefinitionNode),
     typeof(INamespaceBlockMemberDefinitionNode),
     typeof(ITypeMemberDefinitionNode))]
 public partial interface IDefinitionNode : ICodeNode, IPackageFacetChildDeclarationNode
@@ -274,7 +276,6 @@ public partial interface IDefinitionNode : ICodeNode, IPackageFacetChildDeclarat
 
 [Closed(
     typeof(IConcreteInvocableDefinitionNode),
-    typeof(IFunctionDefinitionNode),
     typeof(IMethodDefinitionNode))]
 public partial interface IInvocableDefinitionNode : ISemanticNode, IDefinitionNode
 {
@@ -283,11 +284,19 @@ public partial interface IInvocableDefinitionNode : ISemanticNode, IDefinitionNo
 }
 
 [Closed(
+    typeof(IConcreteInvocableDefinitionNode),
+    typeof(IFieldDefinitionNode))]
+public partial interface IExecutableDefinitionNode : ISemanticNode, IDefinitionNode
+{
+}
+
+[Closed(
+    typeof(IFunctionDefinitionNode),
     typeof(IConcreteMethodDefinitionNode),
     typeof(IConstructorDefinitionNode),
     typeof(IInitializerDefinitionNode),
     typeof(IAssociatedFunctionDefinitionNode))]
-public partial interface IConcreteInvocableDefinitionNode : IInvocableDefinitionNode
+public partial interface IConcreteInvocableDefinitionNode : IInvocableDefinitionNode, IExecutableDefinitionNode
 {
 }
 
@@ -334,7 +343,7 @@ public partial interface INamespaceMemberDefinitionNode : ISemanticNode, INamesp
 {
 }
 
-public partial interface IFunctionDefinitionNode : IPackageMemberDefinitionNode, IFunctionDeclarationNode, IInvocableDefinitionNode
+public partial interface IFunctionDefinitionNode : ISemanticNode, IPackageMemberDefinitionNode, IFunctionDeclarationNode, IConcreteInvocableDefinitionNode
 {
     new IFunctionDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -348,7 +357,6 @@ public partial interface IFunctionDefinitionNode : IPackageMemberDefinitionNode,
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     StandardName INamedDeclarationNode.Name => Name;
     new IFixedList<INamedParameterNode> Parameters { get; }
-    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     ITypeNode? Return { get; }
     IBodyNode Body { get; }
     new FunctionSymbol Symbol { get; }
@@ -660,14 +668,14 @@ public partial interface IInitializerDefinitionNode : ISemanticNode, IConcreteIn
     IBlockBodyNode Body { get; }
 }
 
-public partial interface IFieldDefinitionNode : ISemanticNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IStructMemberDefinitionNode, IBindingNode, IFieldDeclarationNode
+public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IStructMemberDefinitionNode, IBindingNode, IFieldDeclarationNode, IExecutableDefinitionNode
 {
     new IFieldDefinitionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IClassMemberDefinitionSyntax? IClassMemberDefinitionNode.Syntax => Syntax;
     IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     bool IsMutableBinding { get; }
     new IdentifierName Name { get; }
@@ -1552,7 +1560,8 @@ public partial interface ISelfExpressionNode : ISemanticNode, IInstanceExpressio
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     bool IsImplicit { get; }
     Pseudotype Pseudotype { get; }
-    IAlwaysTypeMemberDefinitionNode ContainingDeclaration { get; }
+    IExecutableDefinitionNode ContainingDeclaration { get; }
+    SelfParameterSymbol? ReferencedSymbol { get; }
 }
 
 public partial interface IMissingNameExpressionNode : INameExpressionNode, ISimpleNameNode, IAssignableExpressionNode

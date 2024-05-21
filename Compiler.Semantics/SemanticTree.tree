@@ -70,7 +70,8 @@ Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? F
     ContainingDeclaration:`ISymbolDeclarationNode` ContainingSymbol:`Symbol`
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol`;
-ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrInitializerParameter*;
+ExecutableDefinition <: Definition;
+ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition = Parameters:ConstructorOrInitializerParameter*;
 
 // ---------- Namespace Definitions
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
@@ -86,7 +87,8 @@ NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
 NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 
 // ---------- Function Definition
-FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration, InvocableDefinition = Syntax:`IFunctionDefinitionSyntax`
+FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration, ConcreteInvocableDefinition
+    = Syntax:`IFunctionDefinitionSyntax`
     ContainingDeclaration:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
     Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body
     Type:`FunctionType` Symbol:`FunctionSymbol`;
@@ -153,7 +155,7 @@ SourceConstructorDefinition <: ConstructorDefinition
 InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, InitializerDeclaration
     = Syntax:`IInitializerDefinitionSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter*
     Symbol:`InitializerSymbol` Body:BlockBody;
-FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding, FieldDeclaration
+FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding, FieldDeclaration, ExecutableDefinition
     = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type Type:`DataType`
     Symbol:`FieldSymbol` Initializer:AmbiguousExpression?;
 AssociatedFunctionDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
@@ -298,7 +300,8 @@ SpecialTypeNameExpression <: NameExpression
 InstanceExpression <: NameExpression, SimpleName; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression
-    = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype` ContainingDeclaration:`IAlwaysTypeMemberDefinitionNode`;
+    = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype`
+    ContainingDeclaration:`IExecutableDefinitionNode` ReferencedSymbol:`SelfParameterSymbol`?;
 MissingNameExpression <: NameExpression, SimpleName, AssignableExpression
     = Syntax:`IMissingNameSyntax` Type:`UnknownType`;
 

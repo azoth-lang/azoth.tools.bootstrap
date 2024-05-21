@@ -27,6 +27,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAttribute.FunctionDeclaration);
     public IFixedList<INamedParameterNode> Parameters { get; }
+    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     public ITypeNode? Return { get; }
     public IBodyNode Body { get; }
     private ValueAttribute<FunctionType> type;
