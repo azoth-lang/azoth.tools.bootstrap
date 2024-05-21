@@ -451,7 +451,7 @@ public class BasicBodyAnalyzer
     /// </summary>
     [return: NotNullIfNotNull(nameof(expression))]
     private ExpressionResult? InferType(
-        IExpressionSyntax? expression, FlowState flow, Func<Symbol, bool>? symbolFilter = null)
+        IExpressionSyntax? expression, FlowState flow)
     {
         switch (expression)
         {
@@ -859,7 +859,7 @@ public class BasicBodyAnalyzer
             }
             case IMemberAccessExpressionSyntax exp:
             {
-                var contextResult = InferType(exp.Context, flow, NonInvocableSymbols);
+                var contextResult = InferType(exp.Context, flow);
                 var semantics = InferSemantics(exp, contextResult);
                 switch (semantics)
                 {
@@ -1263,7 +1263,7 @@ public class BasicBodyAnalyzer
                 throw ExhaustiveMatch.Failed(expression);
             case IMemberAccessExpressionSyntax exp:
             {
-                var contextResult = InferType(exp.Context, flow, NonInvocableSymbols);
+                var contextResult = InferType(exp.Context, flow);
                 var semantics = InferSemantics(exp, contextResult);
                 switch (semantics)
                 {
@@ -1346,7 +1346,7 @@ public class BasicBodyAnalyzer
         {
             case IMemberAccessExpressionSyntax exp:
             {
-                var contextResult = InferType(exp.Context, flow, NonInvocableSymbols);
+                var contextResult = InferType(exp.Context, flow);
                 var semantics = InferSemantics(exp, contextResult);
 
                 switch (semantics)
@@ -1653,8 +1653,6 @@ public class BasicBodyAnalyzer
                 return InferType(result.Expression, flow);
         }
     }
-
-    private static bool NonInvocableSymbols(Symbol symbol) => symbol is not InvocableSymbol;
 
     private ISimpleNameExpressionSyntaxSemantics InferSemantics(ISimpleNameSyntax expression)
         => expression switch
