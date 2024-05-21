@@ -679,7 +679,7 @@ public class BasicBodyAnalyzer
                 return new ExpressionResult(exp);
             case ISpecialTypeNameExpressionSyntax exp:
             {
-                InferSymbol(exp);
+                // Referenced symbol already assigned by SemanticsApplier
                 return new ExpressionResult(exp, null);
             }
             case IGenericNameExpressionSyntax exp:
@@ -1695,57 +1695,10 @@ public class BasicBodyAnalyzer
                 //return semantics;
                 return expression.Semantics.Fulfill(new NamedVariableNameSyntax(expectedSymbol));
             }
-
-            if (expression.Semantics.Result is not UnknownNameSyntax semantics)
-                throw new UnreachableException("Expected semantics should match.");
-            return semantics;
         }
 
-        var symbols = LookupSymbols(expression);
-        if (symbols.Count == 0)
-        {
-            if (expression.Semantics.Result is not UnknownNameSyntax semantics)
-                throw new UnreachableException("Expected semantics should match.");
-            return semantics;
-        }
-        if (symbols.All(s => s is FunctionSymbol))
-        {
-            var expectedSymbols = symbols.Cast<FunctionSymbol>().ToFixedSet();
-            if (expression.Semantics.Result is not FunctionGroupNameSyntax semantics
-                || !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbols))
-                throw new UnreachableException("Expected semantics and symbols should match.");
-            return semantics;
-        }
-        if (symbols.All(s => s is LocalNamespaceSymbol))
-        {
-            var expectedSymbols = symbols.Cast<LocalNamespaceSymbol>().ToFixedSet();
-            if (expression.Semantics.Result is not NamespaceNameSyntax semantics
-               || !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbols))
-                throw new UnreachableException("Expected semantics and symbols should match.");
-            return semantics;
-        }
-
-        var symbol = InferSymbol(expression, symbols);
-        switch (symbol)
-        {
-            default:
-                throw ExhaustiveMatch.Failed(symbol);
-            case TypeSymbol sym:
-                if (expression.Semantics.Result is not TypeNameSyntax semantics
-                    || semantics.Symbol != sym)
-                    throw new UnreachableException("Expected semantics and symbols should match.");
-                return semantics;
-            case LocalNamespaceSymbol _:
-            case FunctionSymbol _:
-            case SelfParameterSymbol _:
-            case ConstructorSymbol _:
-            case FieldSymbol _:
-            case MethodSymbol _:
-            case PackageSymbol _:
-            case NamedVariableSymbol _:
-            case InitializerSymbol _:
-                throw new UnreachableException();
-        }
+        // Semantics already assigned by SemanticsApplier
+        return expression.Semantics.Result;
     }
 
     private ISelfExpressionSyntaxSemantics InferSemantics(ISelfExpressionSyntax expression)
@@ -1904,14 +1857,6 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private void InferSymbol(
-        ISpecialTypeNameExpressionSyntax nameExpression)
-    {
-        var expectedSymbol = symbolTrees.PrimitiveSymbolTree.LookupSymbol(nameExpression.Name);
-        if (nameExpression.ReferencedSymbol.Result != expectedSymbol)
-            throw new UnreachableException("Expected symbol should match referenced symbol.");
-    }
-
     private FunctionType? InferSymbol<TSymbol>(
         IInvocationExpressionSyntax invocation,
         Promise<TSymbol?> promise,
@@ -2021,12 +1966,6 @@ public class BasicBodyAnalyzer
                 diagnostics.Add(NameBindingError.AmbiguousName(file, exp.Span));
                 return null;
         }
-    }
-
-    private static IFixedSet<Symbol> LookupSymbols(IStandardNameExpressionSyntax exp, Func<Symbol, bool>? symbolFilter = null)
-    {
-        symbolFilter ??= AllSymbols;
-        return exp.LookupInContainingScope().Select(p => p.Result).Where(symbolFilter).ToFixedSet();
     }
 
     private static IFixedSet<TSymbol> LookupSymbols<TSymbol>(
