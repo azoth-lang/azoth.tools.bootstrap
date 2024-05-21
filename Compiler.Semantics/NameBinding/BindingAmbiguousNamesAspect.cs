@@ -68,6 +68,7 @@ internal static class BindingAmbiguousNamesAspect
         if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
             return new QualifiedNamespaceNameNode(node.Syntax, context, referencedNamespaces);
 
+        // TODO do the functions need to be in the same package?
         if (members.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
             return new FunctionGroupName(node.Syntax, context, node.MemberName, node.TypeArguments, referencedFunctions);
 

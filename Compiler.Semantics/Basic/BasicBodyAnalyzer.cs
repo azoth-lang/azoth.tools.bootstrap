@@ -1708,11 +1708,14 @@ public class BasicBodyAnalyzer
                         // Semantics already assigned by SemanticsApplier
                         return expression.Semantics.Result;
                     }
-                    // TODO do the functions need to be in the same package?
                     if (namespaceMemberSymbols.All(s => s is FunctionSymbol))
                     {
-                        var functionSymbols = namespaceMemberSymbols.Cast<FunctionSymbol>().ToFixedSet();
-                        return expression.Semantics.Fulfill(new FunctionGroupNameSyntax(functionSymbols));
+                        // Semantics already assigned by SemanticsApplier
+                        var expectedSymbols = namespaceMemberSymbols.Cast<FunctionSymbol>().ToFixedSet();
+                        if (expression.Semantics.Result is FunctionGroupNameSyntax semantics
+                            && !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbols))
+                            throw new UnreachableException("Semantics and symbols should match.");
+                        return expression.Semantics.Result;
                     }
                     if (namespaceMemberSymbols.All(s => s is LocalNamespaceSymbol))
                     {

@@ -913,17 +913,17 @@ internal class SemanticsApplier
 
     private static void FunctionGroupName(IFunctionGroupNameNode node)
     {
+        var semantics = new FunctionGroupNameSyntax(
+            node.ReferencedDeclarations.Select(d => d.Symbol).ToFixedSet());
         switch (node.Syntax)
         {
             case IIdentifierNameExpressionSyntax syntax:
-                syntax.Semantics.Fulfill(new FunctionGroupNameSyntax(
-                    node.ReferencedDeclarations.Select(d => d.Symbol).ToFixedSet()));
+                syntax.Semantics.Fulfill(semantics);
                 break;
             case IMemberAccessExpressionSyntax syntax:
-                // TODO assign semantics
+                syntax.Semantics.Fulfill(semantics);
                 break;
         }
-
         NamespaceName(node.Context);
     }
 
