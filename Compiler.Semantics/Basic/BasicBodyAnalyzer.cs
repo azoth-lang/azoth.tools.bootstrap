@@ -1696,14 +1696,17 @@ public class BasicBodyAnalyzer
                 return expression.Semantics.Fulfill(new NamedVariableNameSyntax(expectedSymbol));
             }
 
-            return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+            if (expression.Semantics.Result is not UnknownNameSyntax semantics)
+                throw new UnreachableException("Expected semantics should match.");
+            return semantics;
         }
 
         var symbols = LookupSymbols(expression);
         if (symbols.Count == 0)
         {
-            diagnostics.Add(NameBindingError.CouldNotBindName(file, expression.Span));
-            return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+            if (expression.Semantics.Result is not UnknownNameSyntax semantics)
+                throw new UnreachableException("Expected semantics should match.");
+            return semantics;
         }
         if (symbols.All(s => s is FunctionSymbol))
         {

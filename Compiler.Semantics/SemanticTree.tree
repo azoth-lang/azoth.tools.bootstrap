@@ -307,6 +307,12 @@ SelfExpression <: InstanceExpression
     ContainingDeclaration:`IExecutableDefinitionNode` ReferencedSymbol:`SelfParameterSymbol`?;
 MissingNameExpression <: NameExpression, SimpleName, AssignableExpression
     = Syntax:`IMissingNameSyntax` Type:`UnknownType`;
+UnknownNameExpression <: NameExpression
+    = Syntax:`IStandardNameExpressionSyntax` Name:`StandardName` Type:`UnknownType` ReferencedDeclarations:`IDeclarationNode`*;
+UnknownIdentifierNameExpression <: UnknownNameExpression, SimpleName, AssignableExpression
+    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
+UnknownGenericNameExpression <: UnknownNameExpression
+    = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
 
 // ---------- Capability Expressions
 MoveExpression <: Expression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
@@ -12,7 +13,7 @@ internal static class BindingAmbiguousNamesAspect
     public static IFixedList<IDeclarationNode> StandardNameExpression_ReferencedDeclarations(IStandardNameExpressionNode node)
         => node.ContainingLexicalScope.Lookup(node.Name).ToFixedList();
 
-    public static IAmbiguousNameExpressionNode? IdentifierName_Rewrite(IIdentifierNameExpressionNode node)
+    public static IAmbiguousNameExpressionNode IdentifierName_Rewrite(IIdentifierNameExpressionNode node)
     {
         // If not all referenced declarations are namespaces, then this is not a namespace name.
         if (node.ReferencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
@@ -22,7 +23,6 @@ internal static class BindingAmbiguousNamesAspect
             return new FunctionGroupName(node.Syntax, null, node.Name, FixedList.Empty<ITypeNode>(), referencedFunctions);
 
         if (node.ReferencedDeclarations.TrySingle() is not null and var referencedDeclaration)
-        {
             switch (referencedDeclaration)
             {
                 case INamedBindingNode referencedVariable:
@@ -30,9 +30,27 @@ internal static class BindingAmbiguousNamesAspect
                 case ITypeDeclarationNode referencedType:
                     return new StandardTypeNameExpressionNode(node.Syntax, referencedType);
             }
-        }
 
-        return null;
+        return new UnknownIdentifierNameExpressionNode(node.Syntax, node.ReferencedDeclarations);
+    }
+
+    public static void UnknownIdentifierNameExpression_ContributeDiagnostics(
+        IUnknownIdentifierNameExpressionNode node,
+        Diagnostics diagnostics)
+    {
+        switch (node.ReferencedDeclarations.Count)
+        {
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
+                break;
+            case 1:
+                // If there is only one match, then ReferencedSymbol is not null
+                throw new UnreachableException();
+            default:
+                // TODO better errors explaining. For example, are they different kinds of declarations?
+                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.Span));
+                break;
+        }
     }
 
     public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite(IMemberAccessExpressionNode node)

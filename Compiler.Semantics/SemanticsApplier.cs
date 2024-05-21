@@ -641,6 +641,9 @@ internal class SemanticsApplier
             case IMissingNameExpressionNode n:
                 MissingNameExpression(n);
                 break;
+            case IUnknownIdentifierNameExpressionNode n:
+                UnknownIdentifierNameExpression(n);
+                break;
         }
     }
 
@@ -824,6 +827,9 @@ internal class SemanticsApplier
             case IVariableNameExpressionNode n:
                 VariableNameExpression(n);
                 break;
+            case IUnknownIdentifierNameExpressionNode n:
+                UnknownIdentifierNameExpression(n);
+                break;
         }
     }
 
@@ -879,6 +885,9 @@ internal class SemanticsApplier
                 break;
             case IMissingNameExpressionNode n:
                 MissingNameExpression(n);
+                break;
+            case IUnknownNameExpressionNode n:
+                UnknownNameExpression(n);
                 break;
         }
     }
@@ -949,6 +958,28 @@ internal class SemanticsApplier
     }
 
     private static void MissingNameExpression(IMissingNameExpressionNode node) { }
+
+    private static void UnknownNameExpression(IUnknownNameExpressionNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IUnknownIdentifierNameExpressionNode n:
+                UnknownIdentifierNameExpression(n);
+                break;
+
+            case IUnknownGenericNameExpressionNode n:
+                UnknownGenericNameExpression(n);
+                break;
+        }
+    }
+
+    private static void UnknownIdentifierNameExpression(IUnknownIdentifierNameExpressionNode node)
+        => node.Syntax.Semantics.Fulfill(UnknownNameSyntax.Instance);
+
+    private static void UnknownGenericNameExpression(IUnknownGenericNameExpressionNode node)
+        => throw new NotImplementedException("Generic names not implement in parser yet");
     #endregion
 
     #region Capability Expressions

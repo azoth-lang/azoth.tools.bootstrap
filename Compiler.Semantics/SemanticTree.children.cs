@@ -342,6 +342,12 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IMissingNameExpressionNode n:
                 yield break;
+            case IUnknownIdentifierNameExpressionNode n:
+                yield break;
+            case IUnknownGenericNameExpressionNode n:
+                foreach (var child in n.TypeArguments)
+                    yield return child;
+                yield break;
             case IMoveExpressionNode n:
                 yield return n.Referent;
                 yield break;
