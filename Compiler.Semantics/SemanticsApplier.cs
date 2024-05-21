@@ -803,9 +803,6 @@ internal class SemanticsApplier
             case IMemberAccessExpressionNode n:
                 MemberAccessExpression(n);
                 break;
-            case IFunctionGroupNameNode n:
-                FunctionGroupName(n);
-                break;
         }
     }
 
@@ -843,22 +840,6 @@ internal class SemanticsApplier
         AmbiguousExpression(node.Context);
         Types(node.TypeArguments);
     }
-
-    private static void FunctionGroupName(IFunctionGroupNameNode node)
-    {
-        switch (node.Syntax)
-        {
-            case IIdentifierNameExpressionSyntax syntax:
-                syntax.Semantics.Fulfill(new FunctionGroupNameSyntax(
-                    node.ReferencedDeclarations.Select(d => d.Symbol).ToFixedSet()));
-                break;
-            case IMemberAccessExpressionSyntax syntax:
-                // TODO assign semantics
-                break;
-        }
-        NamespaceName(node.Context);
-    }
-
     #endregion
 
     #region Name Expressions
@@ -870,6 +851,9 @@ internal class SemanticsApplier
                 throw ExhaustiveMatch.Failed(node);
             case INamespaceNameNode n:
                 NamespaceName(n);
+                break;
+            case IFunctionGroupNameNode n:
+                FunctionGroupName(n);
                 break;
             case IVariableNameExpressionNode n:
                 VariableNameExpression(n);
@@ -888,6 +872,9 @@ internal class SemanticsApplier
                 break;
             case IUnknownNameExpressionNode n:
                 UnknownNameExpression(n);
+                break;
+            case IUnknownMemberAccessExpressionNode n:
+                UnknownMemberAccessExpression(n);
                 break;
         }
     }
@@ -919,6 +906,22 @@ internal class SemanticsApplier
 
     private static void QualifiedNamespaceName(IQualifiedNamespaceNameNode node)
         => NamespaceName(node.Context);
+
+    private static void FunctionGroupName(IFunctionGroupNameNode node)
+    {
+        switch (node.Syntax)
+        {
+            case IIdentifierNameExpressionSyntax syntax:
+                syntax.Semantics.Fulfill(new FunctionGroupNameSyntax(
+                    node.ReferencedDeclarations.Select(d => d.Symbol).ToFixedSet()));
+                break;
+            case IMemberAccessExpressionSyntax syntax:
+                // TODO assign semantics
+                break;
+        }
+
+        NamespaceName(node.Context);
+    }
 
     private static void VariableNameExpression(IVariableNameExpressionNode node)
     {
@@ -980,6 +983,12 @@ internal class SemanticsApplier
 
     private static void UnknownGenericNameExpression(IUnknownGenericNameExpressionNode node)
         => throw new NotImplementedException("Generic names not implement in parser yet");
+
+    private static void UnknownMemberAccessExpression(IUnknownMemberAccessExpressionNode node)
+    {
+        node.Syntax.Semantics.Fulfill(UnknownNameSyntax.Instance);
+        Expression(node.Context);
+    }
     #endregion
 
     #region Capability Expressions

@@ -55,6 +55,9 @@ internal static class BindingAmbiguousNamesAspect
 
     public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite(IMemberAccessExpressionNode node)
     {
+        if (node.Context is FunctionGroupName functionGroupName) // TODO or MethodGroupName
+            return new UnknownMemberAccessExpressionNode(node.Syntax, functionGroupName, node.TypeArguments, FixedList.Empty<DefinitionNode>());
+
         if (node.Context is not INamespaceNameNode context)
             return null;
 
@@ -69,6 +72,14 @@ internal static class BindingAmbiguousNamesAspect
             return new FunctionGroupName(node.Syntax, context, node.MemberName, node.TypeArguments, referencedFunctions);
 
         return null;
+    }
+
+    public static void UnknownMemberAccessExpression_ContributeDiagnostics(
+        IUnknownMemberAccessExpressionNode node,
+        Diagnostics diagnostics)
+    {
+        if (node.Context is FunctionGroupName)
+            diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "No member accessible from function or method."));
     }
 
     private static bool TryAllOfType<T>(

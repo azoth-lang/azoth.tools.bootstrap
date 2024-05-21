@@ -275,17 +275,15 @@ InvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax` Expres
 // ---------- Ambiguous Name Expressions
 AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
 AmbiguousName <: AmbiguousNameExpression;
-SimpleName <: AmbiguousNameExpression = Syntax:`ISimpleNameSyntax`;
-StandardNameExpression <: AmbiguousNameExpression = Syntax:`IStandardNameExpressionSyntax`
+SimpleName <: AmbiguousName = Syntax:`ISimpleNameSyntax`;
+StandardNameExpression <: AmbiguousName = Syntax:`IStandardNameExpressionSyntax`
     Name:`StandardName` ContainingLexicalScope:`LexicalScope` ReferencedDeclarations:`IDeclarationNode`*;
-IdentifierNameExpression <: AmbiguousNameExpression, StandardNameExpression, SimpleName, AssignableExpression
+IdentifierNameExpression <: AmbiguousName, StandardNameExpression, SimpleName, AssignableExpression
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
-GenericNameExpression <: AmbiguousNameExpression, StandardNameExpression
+GenericNameExpression <: AmbiguousName, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
-MemberAccessExpression <: AmbiguousNameExpression, AssignableExpression
+MemberAccessExpression <: AmbiguousName, AssignableExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression MemberName:`StandardName` TypeArguments:Type*;
-FunctionGroupName <: AmbiguousName = Context:NamespaceName? FunctionName:`StandardName` TypeArguments:Type*
-    ReferencedDeclarations:`IFunctionLikeDeclarationNode`*;
 
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression;
@@ -293,6 +291,8 @@ NameExpression <: Expression, AmbiguousNameExpression;
 NamespaceName <: NameExpression = Type:`UnknownType` ReferencedDeclarations:`INamespaceDeclarationNode`*;
 UnqualifiedNamespaceName <: NamespaceName = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 QualifiedNamespaceName <: NamespaceName = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName Name:`IdentifierName`;
+FunctionGroupName <: NameExpression = Context:NamespaceName? FunctionName:`StandardName` TypeArguments:Type*
+    ReferencedDeclarations:`IFunctionLikeDeclarationNode`*;
 VariableNameExpression <: NameExpression, AssignableExpression, SimpleName
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDeclaration:`INamedBindingNode`;
 StandardTypeNameExpression <: NameExpression = Syntax:`IStandardNameExpressionSyntax`
@@ -313,6 +313,9 @@ UnknownIdentifierNameExpression <: UnknownNameExpression, SimpleName, Assignable
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 UnknownGenericNameExpression <: UnknownNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
+UnknownMemberAccessExpression <: NameExpression
+    = Syntax:`IMemberAccessExpressionSyntax` Context:Expression MemberName:`StandardName` TypeArguments:Type*
+    ReferencedMembers:Definition*;
 
 // ---------- Capability Expressions
 MoveExpression <: Expression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName;

@@ -1087,9 +1087,7 @@ public class BasicBodyAnalyzer
                 throw ExhaustiveMatch.Failed(pattern);
             case IBindingContextPatternSyntax pat:
             {
-                //var expectedType = typeResolver.Evaluate(pat.Type);
-                //if (expectedType != pat.Type?.NamedType)
-                //    throw new UnreachableException("Expected type of binding context should match.");
+                // Named type already assigned by SemanticsApplier
                 valueType = pat.Type?.NamedType ?? valueType;
                 ResolveTypes(pat.Pattern, valueType, resultVariable, flow, pat.IsMutableBinding);
                 break;
@@ -1664,10 +1662,8 @@ public class BasicBodyAnalyzer
         };
 
     private IIdentifierNameExpressionSyntaxSemantics InferSemantics(IIdentifierNameExpressionSyntax expression)
-    {
         // Semantics already assigned by SemanticsApplier
-        return expression.Semantics.Result;
-    }
+        => expression.Semantics.Result;
 
     private IMemberAccessSyntaxSemantics InferSemantics(IMemberAccessExpressionSyntax expression, ExpressionResult contextResult)
     {
@@ -1680,8 +1676,8 @@ public class BasicBodyAnalyzer
                     throw ExhaustiveMatch.Failed(exp.Semantics.Result);
                 case FunctionGroupNameSyntax _:
                 case MethodGroupNameSyntax _:
-                    diagnostics.Add(TypeError.NotImplemented(file, expression.Span, "No member accessible from function or method."));
-                    return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+                    // Semantics already assigned by SemanticsApplier
+                    return expression.Semantics.Result;
                 case TypeNameSyntax sem:
                     var typeMemberSymbols = symbolTrees.Children(sem.Symbol)
                                                                .Where(s => s.Name == memberName)
