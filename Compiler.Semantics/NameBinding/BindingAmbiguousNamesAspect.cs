@@ -84,8 +84,18 @@ internal static class BindingAmbiguousNamesAspect
 
         if (node.Context is INamespaceNameNode context)
         {
-            if (node.ReferencedMembers.Count == 0)
-                diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.MemberNameSpan));
+            switch (node.ReferencedMembers.Count)
+            {
+                case 0:
+                    diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.MemberNameSpan));
+                    break;
+                case 1:
+                    // If there is only one match, then it would not be an unknown member access expression
+                    throw new UnreachableException();
+                default:
+                    diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.MemberNameSpan));
+                    break;
+            }
         }
     }
 

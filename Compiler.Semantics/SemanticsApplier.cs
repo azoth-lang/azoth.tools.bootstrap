@@ -861,6 +861,9 @@ internal class SemanticsApplier
             case IStandardTypeNameExpressionNode n:
                 StandardTypeNameExpression(n);
                 break;
+            case IQualifiedTypeNameExpressionNode n:
+                QualifiedTypeNameExpression(n);
+                break;
             case ISpecialTypeNameExpressionNode n:
                 SpecialTypeNameExpression(n);
                 break;
@@ -949,6 +952,12 @@ internal class SemanticsApplier
         }
     }
 
+    private static void QualifiedTypeNameExpression(IQualifiedTypeNameExpressionNode node)
+    {
+        node.Syntax.Semantics.Fulfill(new TypeNameSyntax(node.ReferencedDeclaration.Symbol));
+        Expression(node.Context);
+        Types(node.TypeArguments);
+    }
 
     private static void SpecialTypeNameExpression(ISpecialTypeNameExpressionNode node)
     {

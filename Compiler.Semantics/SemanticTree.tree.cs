@@ -1484,6 +1484,7 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameNode, IAssi
     typeof(IFunctionGroupNameNode),
     typeof(IVariableNameExpressionNode),
     typeof(IStandardTypeNameExpressionNode),
+    typeof(IQualifiedTypeNameExpressionNode),
     typeof(ISpecialTypeNameExpressionNode),
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode),
@@ -1548,6 +1549,19 @@ public partial interface IStandardTypeNameExpressionNode : INameExpressionNode
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     StandardName Name { get; }
+    IFixedList<ITypeNode> TypeArguments { get; }
+    ITypeDeclarationNode ReferencedDeclaration { get; }
+}
+
+public partial interface IQualifiedTypeNameExpressionNode : INameExpressionNode
+{
+    new IMemberAccessExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    INamespaceNameNode Context { get; }
+    StandardName Name { get; }
+    IFixedList<ITypeNode> TypeArguments { get; }
     ITypeDeclarationNode ReferencedDeclaration { get; }
 }
 

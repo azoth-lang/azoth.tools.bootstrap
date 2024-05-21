@@ -335,6 +335,13 @@ public static class ISemanticNodeExtensions
             case IVariableNameExpressionNode n:
                 yield break;
             case IStandardTypeNameExpressionNode n:
+                foreach (var child in n.TypeArguments)
+                    yield return child;
+                yield break;
+            case IQualifiedTypeNameExpressionNode n:
+                yield return n.Context;
+                foreach (var child in n.TypeArguments)
+                    yield return child;
                 yield break;
             case ISpecialTypeNameExpressionNode n:
                 yield break;

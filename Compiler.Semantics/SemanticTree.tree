@@ -296,7 +296,9 @@ FunctionGroupName <: NameExpression = Context:NamespaceName? FunctionName:`Stand
 VariableNameExpression <: NameExpression, AssignableExpression, SimpleName
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDeclaration:`INamedBindingNode`;
 StandardTypeNameExpression <: NameExpression = Syntax:`IStandardNameExpressionSyntax`
-    Name:`StandardName` ReferencedDeclaration:`ITypeDeclarationNode`;
+    Name:`StandardName` TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
+QualifiedTypeNameExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
+    Context:NamespaceName Name:`StandardName` TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
 // TODO merge with SpecialTypeName and keep the name "SpecialTypeName" because it really isn't an expression
 SpecialTypeNameExpression <: NameExpression
     = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol` Type:`UnknownType`;
