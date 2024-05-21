@@ -1525,7 +1525,7 @@ public partial interface IQualifiedNamespaceNameNode : ISemanticNode, INamespace
 
 public partial interface IFunctionGroupNameNode : INameExpressionNode
 {
-    INamespaceNameNode? Context { get; }
+    INameExpressionNode? Context { get; }
     StandardName FunctionName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedList<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; }

@@ -1689,8 +1689,11 @@ public class BasicBodyAnalyzer
                     }
                     if (typeMemberSymbols.All(s => s is FunctionSymbol))
                     {
-                        var functionSymbols = typeMemberSymbols.Cast<FunctionSymbol>().ToFixedSet();
-                        return expression.Semantics.Fulfill(new FunctionGroupNameSyntax(functionSymbols));
+                        var expectedSymbols = typeMemberSymbols.Cast<FunctionSymbol>().ToFixedSet();
+                        if (expression.Semantics.Result is FunctionGroupNameSyntax semantics
+                            && !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbols))
+                            throw new UnreachableException("Semantics and symbols should match");
+                        return expression.Semantics.Result;
                     }
                     if (typeMemberSymbols.All(s => s is InitializerSymbol))
                     {

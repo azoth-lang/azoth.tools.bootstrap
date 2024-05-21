@@ -101,6 +101,11 @@ internal static class BindingAmbiguousNamesAspect
         //if (members.Count == 0)
         //    return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<DefinitionNode>());
 
+        if (members.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
+            return new FunctionGroupName(node.Syntax, context, node.MemberName, node.TypeArguments,
+                referencedFunctions);
+
+
         return null;
     }
 
@@ -134,6 +139,11 @@ internal static class BindingAmbiguousNamesAspect
         out IFixedList<T> referencedNamespaces)
         where T : IDeclarationNode
     {
+        if (declarations.Count == 0)
+        {
+            referencedNamespaces = FixedList.Empty<T>();
+            return false;
+        }
         referencedNamespaces = declarations.OfType<T>().ToFixedList();
         // All of type T when counts match
         return referencedNamespaces.Count == declarations.Count;

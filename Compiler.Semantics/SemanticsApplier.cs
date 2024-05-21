@@ -545,12 +545,14 @@ internal class SemanticsApplier
         }
     }
 
-    private static void Expression(IExpressionNode node)
+    private static void Expression(IExpressionNode? node)
     {
         switch (node)
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
+            case null:
+                break;
             case IAssignableExpressionNode n:
                 AssignableExpression(n);
                 break;
@@ -927,7 +929,7 @@ internal class SemanticsApplier
                 syntax.Semantics.Fulfill(semantics);
                 break;
         }
-        NamespaceName(node.Context);
+        Expression(node.Context);
     }
 
     private static void VariableNameExpression(IVariableNameExpressionNode node)

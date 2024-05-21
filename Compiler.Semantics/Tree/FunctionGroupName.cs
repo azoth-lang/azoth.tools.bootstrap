@@ -9,14 +9,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class FunctionGroupName : AmbiguousNameExpressionNode, IFunctionGroupNameNode
 {
     public override INameExpressionSyntax Syntax { get; }
-    public INamespaceNameNode? Context { get; }
+    public INameExpressionNode? Context { get; }
     public StandardName FunctionName { get; }
     public IFixedList<ITypeNode> TypeArguments { get; }
     public IFixedList<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; }
 
     public FunctionGroupName(
         INameExpressionSyntax syntax,
-        INamespaceNameNode? context,
+        INameExpressionNode? context,
         StandardName functionName,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IFunctionLikeDeclarationNode> referencedDeclarations)
