@@ -552,23 +552,15 @@ public class BasicBodyAnalyzer
             }
             case IIntegerLiteralExpressionSyntax exp:
             {
-                var expectedType = new IntegerConstValueType(exp.Value);
-                if (expectedType != exp.DataType.Result)
-                    throw new UnreachableException("Expected type of bool literal should match.");
+                // Logic moved to semantic tree
                 return new ExpressionResult(exp);
             }
             case IStringLiteralExpressionSyntax exp:
                 // Logic moved to semantic tree
-                //if (stringSymbol is null)
-                //    diagnostics.Add(TypeError.NotImplemented(file, exp.Span, "Could not find string type for string literal."));
-                //exp.DataType.Fulfill(stringSymbol?.DeclaresType.With(Capability.Constant, FixedList.Empty<DataType>())
-                //                     ?? DataType.Unknown);
                 return new ExpressionResult(exp);
             case IBoolLiteralExpressionSyntax exp:
             {
-                var expectedType = exp.Value ? DataType.True : DataType.False;
-                if (expectedType != exp.DataType.Result)
-                    throw new UnreachableException("Expected type of bool literal should match.");
+                // Logic moved to semantic tree
                 return new ExpressionResult(exp);
             }
             case IBinaryOperatorExpressionSyntax exp:
@@ -791,9 +783,6 @@ public class BasicBodyAnalyzer
             }
             case IForeachExpressionSyntax exp:
             {
-                //var expectedType = typeResolver.Evaluate(exp.Type);
-                //if (expectedType != exp.Type?.NamedType)
-                //    throw new UnreachableException("Expected type of foreach should match.");
                 var declaredType = exp.Type?.NamedType;
                 // TODO deal with result variable here
                 var (expressionResult, variableType) = CheckForeachInType(declaredType, exp, flow);
@@ -963,9 +952,6 @@ public class BasicBodyAnalyzer
             case IConversionExpressionSyntax exp:
             {
                 var result = InferType(exp.Referent, flow);
-                //var expectedType = typeResolver.Evaluate(exp.ConvertToType);
-                //if (expectedType != exp.ConvertToType.NamedType)
-                //    throw new UnreachableException("Expected type of conversion should match.");
                 var convertToType = exp.ConvertToType.NamedType!;
                 if (!ExplicitConversionTypesAreCompatible(exp.Referent, exp.Operator == ConversionOperator.Safe, convertToType))
                     diagnostics.Add(TypeError.CannotExplicitlyConvert(file, exp.Referent, result.Type, convertToType));
@@ -1667,8 +1653,6 @@ public class BasicBodyAnalyzer
                 return InferType(result.Expression, flow);
         }
     }
-
-    private static bool AllSymbols(Symbol symbol) => true;
 
     private static bool NonInvocableSymbols(Symbol symbol) => symbol is not InvocableSymbol;
 

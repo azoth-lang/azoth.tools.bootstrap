@@ -12,11 +12,6 @@ public sealed class NamedVariableNameSyntax : VariableNameSyntax, IIdentifierNam
     private IFixedSet<Symbol>? symbols;
     public override IFixedSet<Symbol> Symbols => symbols ??= FixedSet.Create(symbolPromise.Result);
 
-    public NamedVariableNameSyntax(NamedVariableSymbol symbol) : base(symbol)
-    {
-        symbolPromise = Promise.ForValue(symbol);
-    }
-
     public NamedVariableNameSyntax(IPromise<NamedVariableSymbol> symbolPromise)
         : base(FixedSet.Empty<NamedVariableSymbol>())
     {
