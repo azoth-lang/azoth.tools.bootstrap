@@ -936,7 +936,8 @@ public class BasicBodyAnalyzer
             }
             case ISelfExpressionSyntax exp:
             {
-                var semantics = InferSemantics(exp);
+                // Semantics already assigned by SemanticsApplier
+                var semantics = exp.Semantics.Result;
                 switch (semantics)
                 {
                     default:
@@ -1675,7 +1676,7 @@ public class BasicBodyAnalyzer
         => expression switch
         {
             IIdentifierNameExpressionSyntax exp => InferSemantics(exp),
-            ISelfExpressionSyntax exp => InferSemantics(exp),
+            ISelfExpressionSyntax exp => exp.Semantics.Result, // Semantics already assigned by SemanticsApplier
             IMissingNameSyntax exp => exp.Semantics.Result, // semantics are already "Unknown"
             _ => throw ExhaustiveMatch.Failed(expression)
         };
@@ -1700,10 +1701,6 @@ public class BasicBodyAnalyzer
         // Semantics already assigned by SemanticsApplier
         return expression.Semantics.Result;
     }
-
-    private ISelfExpressionSyntaxSemantics InferSemantics(ISelfExpressionSyntax expression)
-        // Semantics already assigned by SemanticsApplier
-        => expression.Semantics.Result;
 
     private IMemberAccessSyntaxSemantics InferSemantics(IMemberAccessExpressionSyntax expression, ExpressionResult contextResult)
     {
@@ -2215,16 +2212,6 @@ public class BasicBodyAnalyzer
 
     private TypeSymbol LookupSymbolForType(ReferenceType type)
         => LookupSymbolForType(type.DeclaredType);
-
-    private TypeSymbol LookupSymbolForType(DeclaredType type)
-    {
-        return type switch
-        {
-            DeclaredReferenceType t => LookupSymbolForType(t),
-            DeclaredValueType t => LookupSymbolForType(t),
-            _ => throw ExhaustiveMatch.Failed(type),
-        };
-    }
 
     private TypeSymbol LookupSymbolForType(DeclaredReferenceType type)
     {
