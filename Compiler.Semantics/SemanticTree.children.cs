@@ -363,8 +363,6 @@ public static class ISemanticNodeExtensions
                 yield return n.Context;
                 foreach (var child in n.TypeArguments)
                     yield return child;
-                foreach (var child in n.ReferencedMembers)
-                    yield return child;
                 yield break;
             case IMoveExpressionNode n:
                 yield return n.Referent;

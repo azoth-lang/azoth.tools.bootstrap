@@ -92,7 +92,7 @@ internal static class BindingAmbiguousNamesAspect
         return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
     }
 
-    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite(IMemberAccessExpressionNode node)
+    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_TypeNameExpressionContext(IMemberAccessExpressionNode node)
     {
         if (node.Context is not ITypeNameExpressionNode { ReferencedDeclaration: IUserTypeDeclarationNode referencedDeclaration } context)
             return null;
@@ -111,6 +111,15 @@ internal static class BindingAmbiguousNamesAspect
 
         return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
     }
+
+    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_UnknownNameExpressionContext(IMemberAccessExpressionNode node)
+    {
+        if (node.Context is not IUnknownNameExpressionNode context)
+            return null;
+
+        return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDeclarationNode>());
+    }
+
 
     public static void UnknownMemberAccessExpression_ContributeDiagnostics(
         IUnknownMemberAccessExpressionNode node,

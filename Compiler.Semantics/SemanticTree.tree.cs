@@ -78,7 +78,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IStandardTypeNameExpressionNode),
     typeof(IQualifiedTypeNameExpressionNode),
     typeof(ISelfExpressionNode),
-    typeof(IUnknownGenericNameExpressionNode),
+    typeof(IUnknownStandardNameExpressionNode),
+    typeof(IUnknownMemberAccessExpressionNode),
     typeof(IMoveExpressionNode),
     typeof(IFreezeExpressionNode),
     typeof(IAsyncBlockExpressionNode),
@@ -1489,8 +1490,7 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameNode, IAssi
     typeof(ISpecialTypeNameExpressionNode),
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode),
-    typeof(IUnknownNameExpressionNode),
-    typeof(IUnknownMemberAccessExpressionNode))]
+    typeof(IUnknownNameExpressionNode))]
 public partial interface INameExpressionNode : ISemanticNode, IExpressionNode, IAmbiguousNameExpressionNode
 {
 }
@@ -1627,52 +1627,62 @@ public partial interface IMissingNameExpressionNode : INameExpressionNode, ISimp
 }
 
 [Closed(
+    typeof(IUnknownStandardNameExpressionNode),
+    typeof(IUnknownMemberAccessExpressionNode))]
+public partial interface IUnknownNameExpressionNode : INameExpressionNode
+{
+    new INameExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    UnknownType Type { get; }
+}
+
+[Closed(
     typeof(IUnknownIdentifierNameExpressionNode),
     typeof(IUnknownGenericNameExpressionNode))]
-public partial interface IUnknownNameExpressionNode : INameExpressionNode
+public partial interface IUnknownStandardNameExpressionNode : ISemanticNode, IUnknownNameExpressionNode
 {
     new IStandardNameExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
+    INameExpressionSyntax IUnknownNameExpressionNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     StandardName Name { get; }
-    UnknownType Type { get; }
-    IFixedList<IDeclarationNode> ReferencedDeclarations { get; }
+    IFixedSet<IDeclarationNode> ReferencedDeclarations { get; }
 }
 
-public partial interface IUnknownIdentifierNameExpressionNode : IUnknownNameExpressionNode, ISimpleNameNode, IAssignableExpressionNode
+public partial interface IUnknownIdentifierNameExpressionNode : IUnknownStandardNameExpressionNode, ISimpleNameNode, IAssignableExpressionNode
 {
     new IIdentifierNameExpressionSyntax Syntax { get; }
-    IStandardNameExpressionSyntax IUnknownNameExpressionNode.Syntax => Syntax;
+    IStandardNameExpressionSyntax IUnknownStandardNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
     IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    INameExpressionSyntax IUnknownNameExpressionNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     new IdentifierName Name { get; }
-    StandardName IUnknownNameExpressionNode.Name => Name;
+    StandardName IUnknownStandardNameExpressionNode.Name => Name;
 }
 
-public partial interface IUnknownGenericNameExpressionNode : ISemanticNode, IUnknownNameExpressionNode
+public partial interface IUnknownGenericNameExpressionNode : IUnknownStandardNameExpressionNode
 {
     new IGenericNameExpressionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IStandardNameExpressionSyntax IUnknownNameExpressionNode.Syntax => Syntax;
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    IStandardNameExpressionSyntax IUnknownStandardNameExpressionNode.Syntax => Syntax;
     new GenericName Name { get; }
-    StandardName IUnknownNameExpressionNode.Name => Name;
+    StandardName IUnknownStandardNameExpressionNode.Name => Name;
     IFixedList<ITypeNode> TypeArguments { get; }
 }
 
-public partial interface IUnknownMemberAccessExpressionNode : INameExpressionNode
+public partial interface IUnknownMemberAccessExpressionNode : ISemanticNode, IUnknownNameExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
+    INameExpressionSyntax IUnknownNameExpressionNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     StandardName MemberName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
-    IFixedList<IDeclarationNode> ReferencedMembers { get; }
+    IFixedSet<IDeclarationNode> ReferencedMembers { get; }
 }
 
 public partial interface IMoveExpressionNode : ISemanticNode, IExpressionNode

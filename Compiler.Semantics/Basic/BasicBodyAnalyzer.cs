@@ -1676,50 +1676,13 @@ public class BasicBodyAnalyzer
                     throw ExhaustiveMatch.Failed(contextExp.Semantics.Result);
                 case FunctionGroupNameSyntax _:
                 case MethodGroupNameSyntax _:
-                    // Semantics already assigned by SemanticsApplier
-                    return expression.Semantics.Result;
-                case TypeNameSyntax contextSemantics:
-                    var typeMemberSymbols = symbolTrees.Children(contextSemantics.Symbol)
-                                                               .Where(s => s.Name == memberName)
-                                                               .ToFixedSet();
-                    if (typeMemberSymbols.Count == 0)
-                    {
-                        // Semantics already assigned by SemanticsApplier
-                        if (expression.Semantics.Result is not UnknownNameSyntax)
-                            throw new UnreachableException("Semantics should match");
-                        return expression.Semantics.Result;
-                    }
-                    if (typeMemberSymbols.All(s => s is FunctionSymbol))
-                    {
-                        // Semantics already assigned by SemanticsApplier
-                        var expectedSymbols = typeMemberSymbols.Cast<FunctionSymbol>().ToFixedSet();
-                        if (expression.Semantics.Result is FunctionGroupNameSyntax semantics
-                            && !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbols))
-                            throw new UnreachableException("Semantics and symbols should match");
-                        return expression.Semantics.Result;
-                    }
-                    if (typeMemberSymbols.All(s => s is InitializerSymbol))
-                    {
-                        // Semantics already assigned by SemanticsApplier
-                        var expectedSymbols = typeMemberSymbols.Cast<InitializerSymbol>().ToFixedSet();
-                        if (expression.Semantics.Result is InitializerGroupNameSyntax semantics
-                            && !semantics.Symbols.ItemsEqual<Symbol>(expectedSymbols))
-                            throw new UnreachableException("Semantics and symbols should match");
-                        return expression.Semantics.Result;
-                    }
-
-                    // Semantics already assigned by SemanticsApplier
-                    if (expression.Semantics.Result is not UnknownNameSyntax)
-                        throw new UnreachableException("Semantics should match");
-                    return expression.Semantics.Result;
-                case NamespaceNameSyntax sem:
-                    // Semantics already assigned by SemanticsApplier
-                    return expression.Semantics.Result;
-                case UnknownNameSyntax _:
-                    return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+                case TypeNameSyntax _:
+                case NamespaceNameSyntax _:
                 case InitializerGroupNameSyntax _:
                 case SetterGroupNameSyntax _:
-                    throw new NotImplementedException();
+                case UnknownNameSyntax _:
+                    // Semantics already assigned by SemanticsApplier
+                    return expression.Semantics.Result;
                 case FieldNameExpressionSyntax _:
                 case NamedVariableNameSyntax _:
                 case SelfExpressionSyntax _:

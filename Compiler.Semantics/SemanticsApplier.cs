@@ -881,9 +881,6 @@ internal class SemanticsApplier
             case IUnknownNameExpressionNode n:
                 UnknownNameExpression(n);
                 break;
-            case IUnknownMemberAccessExpressionNode n:
-                UnknownMemberAccessExpression(n);
-                break;
         }
     }
 
@@ -988,6 +985,21 @@ internal class SemanticsApplier
     private static void MissingNameExpression(IMissingNameExpressionNode node) { }
 
     private static void UnknownNameExpression(IUnknownNameExpressionNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IUnknownStandardNameExpressionNode n:
+                UnknownStandardNameExpression(n);
+                break;
+            case IUnknownMemberAccessExpressionNode n:
+                UnknownMemberAccessExpression(n);
+                break;
+        }
+    }
+
+    private static void UnknownStandardNameExpression(IUnknownStandardNameExpressionNode node)
     {
         switch (node)
         {

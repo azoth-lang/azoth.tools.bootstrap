@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class UnknownIdentifierNameExpressionNode : UnknownNameExpressionNode, IUnknownIdentifierNameExpressionNode
+internal sealed class UnknownIdentifierNameExpressionNode : UnknownStandardNameExpressionNode, IUnknownIdentifierNameExpressionNode
 {
     public override IIdentifierNameExpressionSyntax Syntax { get; }
     public override IdentifierName Name => Syntax.Name;

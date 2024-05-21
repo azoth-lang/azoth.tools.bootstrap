@@ -8,13 +8,13 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal class UnknownMemberAccessExpressionNode : AmbiguousNameExpressionNode, IUnknownMemberAccessExpressionNode
+internal class UnknownMemberAccessExpressionNode : UnknownNameExpressionNode, IUnknownMemberAccessExpressionNode
 {
     public override IMemberAccessExpressionSyntax Syntax { get; }
     public IExpressionNode Context { get; }
     public StandardName MemberName => Syntax.MemberName;
     public IFixedList<ITypeNode> TypeArguments { get; }
-    public IFixedList<IDeclarationNode> ReferencedMembers { get; }
+    public IFixedSet<IDeclarationNode> ReferencedMembers { get; }
 
     public UnknownMemberAccessExpressionNode(
         IMemberAccessExpressionSyntax syntax,
@@ -26,7 +26,7 @@ internal class UnknownMemberAccessExpressionNode : AmbiguousNameExpressionNode, 
 
         Context = Child.Attach(this, context);
         TypeArguments = ChildList.Attach(this, typeArguments);
-        ReferencedMembers = referencedMembers.ToFixedList();
+        ReferencedMembers = referencedMembers.ToFixedSet();
     }
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
