@@ -922,8 +922,8 @@ internal class SemanticsApplier
 
     private static void VariableNameExpression(IVariableNameExpressionNode node)
     {
-        //var syntax = node.Syntax;
-        //syntax.Semantics.Fulfill(new NamedVariableNameSyntax(node.ReferencedDeclaration.Syntax.Symbol.Result));
+        var syntax = node.Syntax;
+        syntax.Semantics.Fulfill(new NamedVariableNameSyntax(node.ReferencedDeclaration.Syntax.Symbol));
     }
 
     private static void StandardTypeNameExpression(IStandardTypeNameExpressionNode node)

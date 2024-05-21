@@ -1683,21 +1683,6 @@ public class BasicBodyAnalyzer
 
     private IIdentifierNameExpressionSyntaxSemantics InferSemantics(IIdentifierNameExpressionSyntax expression)
     {
-        // First look for local variables
-        var variableSymbols = LookupSymbols<NamedVariableSymbol>(expression);
-        if (variableSymbols.Count != 0)
-        {
-            var expectedSymbol = InferSymbol(expression, variableSymbols);
-            if (expectedSymbol is not null)
-            {
-                //if (expression.Semantics.Result is not NamedVariableNameSyntax semantics
-                //    || semantics.Symbols.TrySingle() != expectedSymbol)
-                //    throw new UnreachableException("Expected semantics and symbols should match.");
-                //return semantics;
-                return expression.Semantics.Fulfill(new NamedVariableNameSyntax(expectedSymbol));
-            }
-        }
-
         // Semantics already assigned by SemanticsApplier
         return expression.Semantics.Result;
     }
@@ -1944,35 +1929,6 @@ public class BasicBodyAnalyzer
             invocation.ReferencedSymbol.Fulfill(null);
 
         return constructor;
-    }
-
-    private TSymbol? InferSymbol<TNameSymbol, TSymbol>(
-        INameExpressionSyntax<TNameSymbol> exp,
-        IFixedSet<TSymbol> symbols)
-        where TNameSymbol : Symbol
-        where TSymbol : TNameSymbol
-    {
-        switch (symbols.Count)
-        {
-            case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindName(file, exp.Span));
-                return null;
-            case 1:
-                return symbols.Single();
-            default:
-                diagnostics.Add(NameBindingError.AmbiguousName(file, exp.Span));
-                return null;
-        }
-    }
-
-    private static IFixedSet<TSymbol> LookupSymbols<TSymbol>(
-        IStandardNameExpressionSyntax exp,
-        Func<TSymbol, bool>? symbolFilter = null)
-        where TSymbol : Symbol
-    {
-        symbolFilter ??= AllSymbols;
-        return exp.LookupInContainingScope().Select(p => p.Downcast().As<TSymbol>())
-                             .WhereNotNull().Select(p => p.Result).Where(symbolFilter).ToFixedSet();
     }
 
     /// <summary>
