@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
@@ -45,14 +44,6 @@ internal sealed class IdentifierNameExpressionSyntax : NameExpressionSyntax, IId
         Name = name;
         DataType = Semantics.Select(s => s.Type).Flatten();
         ReferencedSymbol = Semantics.Select(s => s.Symbol).Flatten();
-    }
-
-    public IEnumerable<IPromise<Symbol>> LookupInContainingScope()
-    {
-        if (containingLexicalScope is null)
-            throw new InvalidOperationException($"Can't lookup type name without {nameof(ContainingLexicalScope)}");
-
-        return containingLexicalScope.Lookup(Name);
     }
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
