@@ -39,7 +39,7 @@ Binding = IsMutableBinding:`bool` Symbol:`IPromise<BindingSymbol>`;
 LocalBinding: Binding = Symbol:`IPromise<NamedVariableSymbol>`;
 
 // ---------- Definitions
-Definition: Concrete <: `IHasContainingLexicalScope` = File:`CodeFile` Name:`TypeName`? NameSpan:`TextSpan` Symbol:`IPromise<Symbol>`;
+Definition: Concrete = File:`CodeFile` Name:`TypeName`? NameSpan:`TextSpan` Symbol:`IPromise<Symbol>`;
 EntityDefinition: Definition = AccessModifier:`IAccessModifierToken`?;
 InvocableDefinition: EntityDefinition = Parameters:ConstructorOrInitializerParameter* Symbol:`IPromise<InvocableSymbol>`;
 ConcreteInvocableDefinition: InvocableDefinition = Parameters:ConstructorOrInitializerParameter* Body;
@@ -181,12 +181,12 @@ NextExpression: NeverTypedExpression;
 ReturnExpression: NeverTypedExpression = Value:Expression?;
 
 // ---------- Invocation Expressions
-InvocationExpression: DataTypedExpression <: `IHasContainingLexicalScope` = Expression Arguments:Expression* ReferencedSymbol:`Promise<Symbol?>`;
+InvocationExpression: DataTypedExpression = Expression Arguments:Expression* ReferencedSymbol:`Promise<Symbol?>`;
 
 // ---------- Name Expressions
 NameExpression: Expression = Semantics:`IPromise<ISyntaxSemantics>` ReferencedSymbol:`IPromise<Symbol?>`;
 SimpleName: NameExpression = Semantics:`IPromise<ISimpleNameExpressionSyntaxSemantics>`;
-StandardNameExpression: NameExpression <: `IHasContainingLexicalScope` = Name:`StandardName` ReferencedSymbol:`IPromise<Symbol?>`;
+StandardNameExpression: NameExpression = Name:`StandardName` ReferencedSymbol:`IPromise<Symbol?>`;
 IdentifierNameExpression: NameExpression <: StandardNameExpression, SimpleName, AssignableExpression
     = Name:`IdentifierName` Semantics:`Promise<IIdentifierNameExpressionSyntaxSemantics>`;
 SpecialTypeNameExpression: NameExpression <: TypedExpression = Name:`SpecialTypeName` Semantics:`Promise<SpecialTypeNameExpressionSyntaxSemantics>` DataType:`IPromise<DataType>` ReferencedSymbol:`Promise<TypeSymbol?>`;

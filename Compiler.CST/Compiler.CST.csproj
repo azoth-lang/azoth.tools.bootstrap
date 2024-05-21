@@ -25,7 +25,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Compiler.Core\Compiler.Core.csproj" />
     <ProjectReference Include="..\Framework\Framework.csproj" />
-    <ProjectReference Include="..\Compiler.LexicalScopes\Compiler.LexicalScopes.csproj" />
     <ProjectReference Include="..\Compiler.Names\Compiler.Names.csproj" />
     <ProjectReference Include="..\Compiler.Primitives\Compiler.Primitives.csproj" />
     <ProjectReference Include="..\Compiler.Symbols\Compiler.Symbols.csproj" />

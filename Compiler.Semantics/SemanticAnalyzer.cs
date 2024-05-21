@@ -6,7 +6,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Liveness;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Startup;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
@@ -54,9 +53,6 @@ public class SemanticAnalyzer
 
         // Load namespace symbols applied to the old syntax tree approach into the symbol trees
         NamespaceSymbolCollector.Collect(packageNode, packageSyntax.SymbolTree, packageSyntax.TestingSymbolTree);
-
-        // Build up lexical scopes down to the declaration level
-        new SymbolScopesBuilder().BuildFor(packageSyntax);
 
         // Check the semantics of the package
         var packageBuilder = CheckSemantics(packageSyntax, packageNode);

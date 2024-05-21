@@ -29,7 +29,6 @@
     <ProjectReference Include="..\Compiler.CST\Compiler.CST.csproj" />
     <ProjectReference Include="..\Compiler.Core\Compiler.Core.csproj" />
     <ProjectReference Include="..\Framework\Framework.csproj" />
-    <ProjectReference Include="..\Compiler.LexicalScopes\Compiler.LexicalScopes.csproj" />
     <ProjectReference Include="..\Compiler.Primitives\Compiler.Primitives.csproj" />
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

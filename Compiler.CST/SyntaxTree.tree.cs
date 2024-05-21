@@ -104,7 +104,7 @@ public partial interface ILocalBindingSyntax : IBindingSyntax
 [Closed(
     typeof(IEntityDefinitionSyntax),
     typeof(INonMemberDefinitionSyntax))]
-public partial interface IDefinitionSyntax : IHasContainingLexicalScope, IConcreteSyntax
+public partial interface IDefinitionSyntax : IConcreteSyntax
 {
     CodeFile File { get; }
     TypeName? Name { get; }
@@ -897,7 +897,7 @@ public partial interface IReturnExpressionSyntax : INeverTypedExpressionSyntax
     IExpressionSyntax? Value { get; }
 }
 
-public partial interface IInvocationExpressionSyntax : IHasContainingLexicalScope, IDataTypedExpressionSyntax
+public partial interface IInvocationExpressionSyntax : IDataTypedExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
     IFixedList<IExpressionSyntax> Arguments { get; }
@@ -929,7 +929,7 @@ public partial interface ISimpleNameSyntax : INameExpressionSyntax
 [Closed(
     typeof(IIdentifierNameExpressionSyntax),
     typeof(IGenericNameExpressionSyntax))]
-public partial interface IStandardNameExpressionSyntax : IHasContainingLexicalScope, INameExpressionSyntax
+public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax
 {
     StandardName Name { get; }
 }

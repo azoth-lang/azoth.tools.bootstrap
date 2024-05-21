@@ -1,10 +1,8 @@
-using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -15,22 +13,6 @@ internal class InvocationExpressionSyntax : DataTypedExpressionSyntax, IInvocati
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
     public IFixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
     public Promise<Symbol?> ReferencedSymbol { get; } = new Promise<Symbol?>();
-
-    private SymbolScope? containingLexicalScope;
-    public SymbolScope ContainingLexicalScope
-    {
-        [DebuggerStepThrough]
-        get =>
-            containingLexicalScope
-            ?? throw new InvalidOperationException($"{nameof(ContainingLexicalScope)} not yet assigned");
-        [DebuggerStepThrough]
-        set
-        {
-            if (containingLexicalScope is not null)
-                throw new InvalidOperationException($"Can't set {nameof(ContainingLexicalScope)} repeatedly");
-            containingLexicalScope = value;
-        }
-    }
 
     public InvocationExpressionSyntax(
         TextSpan span,
