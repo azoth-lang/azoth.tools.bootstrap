@@ -22,7 +22,7 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
     private ValueAttribute<SelfParameterSymbol?> referencedSymbol;
     public SelfParameterSymbol? ReferencedSymbol
         => referencedSymbol.TryGetValue(out var value) ? value
-        : referencedSymbol.GetValue(this, SymbolAttribute.SelfExpression_ReferencedSymbol);
+        : referencedSymbol.GetValue(this, SymbolAspect.SelfExpression_ReferencedSymbol);
 
     public SelfExpressionNode(ISelfExpressionSyntax syntax)
     {

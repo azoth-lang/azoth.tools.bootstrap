@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 using MoreLinq;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 public sealed class NamespaceScope : NamespaceSearchScope
 {

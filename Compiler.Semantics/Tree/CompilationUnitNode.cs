@@ -4,7 +4,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -26,7 +25,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     private ValueAttribute<INamespaceDefinitionNode> implicitNamespaceDeclaration;
     public INamespaceDefinitionNode ImplicitNamespace
         => implicitNamespaceDeclaration.TryGetValue(out var value) ? value
-            : implicitNamespaceDeclaration.GetValue(this, SymbolNodeAttributes.CompilationUnit_ImplicitNamespaceDeclaration);
+            : implicitNamespaceDeclaration.GetValue(this, SymbolNodeAspect.CompilationUnit_ImplicitNamespaceDeclaration);
     public NamespaceSymbol ImplicitNamespaceSymbol => ImplicitNamespace.Symbol;
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
@@ -51,10 +50,10 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     }
 
     internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant)
-        => SymbolNodeAttributes.CompilationUnit_InheritedContainingDeclaration(this);
+        => SymbolNodeAspect.CompilationUnit_InheritedContainingDeclaration(this);
 
     internal override CodeFile InheritedFile(IChildNode child, IChildNode descendant)
-        => FileAttribute.CompilationUnit_InheritedFile(this);
+        => FileAspect.CompilationUnit_InheritedFile(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => LexicalScope;
@@ -68,7 +67,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        DiagnosticsAttribute.CompilationUnit_ContributeDiagnostics(this, diagnostics);
+        DiagnosticsAspect.CompilationUnit_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

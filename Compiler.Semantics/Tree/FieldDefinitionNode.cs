@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -27,7 +27,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     private ValueAttribute<FieldSymbol> symbol;
     public override FieldSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAttribute.FieldDeclaration);
+            : symbol.GetValue(this, SymbolAspect.FieldDeclaration);
     public IAmbiguousExpressionNode? Initializer { get; }
 
     public FieldDefinitionNode(IFieldDefinitionSyntax syntax, ITypeNode type, IAmbiguousExpressionNode? initializer)

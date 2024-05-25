@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -25,7 +24,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     private ValueAttribute<UserTypeSymbol> symbol;
     public override UserTypeSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAttribute.TypeDeclaration);
+            : symbol.GetValue(this, SymbolAspect.TypeDeclaration);
     public IFixedList<IGenericParameterNode> GenericParameters { get; }
     private ValueAttribute<LexicalScope> supertypesLexicalScope;
     public LexicalScope SupertypesLexicalScope
@@ -55,10 +54,10 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     }
 
     internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant)
-        => SymbolNodeAttributes.TypeDeclaration_InheritedContainingDeclaration(this);
+        => SymbolNodeAspect.TypeDeclaration_InheritedContainingDeclaration(this);
 
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant)
-        => ContainingDeclaredTypeAttribute.TypeDeclaration_InheritedContainingDeclaredType(this);
+        => ContainingDeclaredTypeAspect.TypeDeclaration_InheritedContainingDeclaredType(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
     {
@@ -73,7 +72,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         => this;
 
     internal override bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
-        => SymbolNodeAttributes.TypeDeclaration_InheritedIsAttributeType(this);
+        => SymbolNodeAspect.TypeDeclaration_InheritedIsAttributeType(this);
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {

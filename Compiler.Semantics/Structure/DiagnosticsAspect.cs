@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
-internal static class DiagnosticsAttribute
+internal static class DiagnosticsAspect
 {
     public static IFixedList<Diagnostic> Package(IPackageNode node)
         => CollectForFacet(node.MainFacet).Concat(CollectForFacet(node.TestingFacet)).ToFixedList();

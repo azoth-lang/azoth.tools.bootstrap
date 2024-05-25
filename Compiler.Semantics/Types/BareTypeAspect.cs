@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
-internal static class BareTypeAttribute
+internal static class BareTypeAspect
 {
     public static BareType? IdentifierTypeName(IIdentifierTypeNameNode node)
         => BuildBareType(node.ReferencedSymbol, FixedList.Empty<DataType>());

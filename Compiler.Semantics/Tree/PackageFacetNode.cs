@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -20,14 +20,14 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
     private ValueAttribute<INamespaceDefinitionNode> globalNamespace;
     public INamespaceDefinitionNode GlobalNamespace
         => globalNamespace.TryGetValue(out var value) ? value
-            : globalNamespace.GetValue(this, SymbolNodeAttributes.PackageFacet_GlobalNamespace);
+            : globalNamespace.GetValue(this, SymbolNodeAspect.PackageFacet_GlobalNamespace);
     public PackageSymbol PackageSymbol => Package.Symbol;
     public IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
 
     private ValueAttribute<IFixedSet<IPackageMemberDefinitionNode>> definitions;
     public IFixedSet<IPackageMemberDefinitionNode> Definitions
         => definitions.TryGetValue(out var value) ? value
-            : definitions.GetValue(this, DeclarationsAttribute.PackageFacet);
+            : definitions.GetValue(this, DeclarationsAspect.PackageFacet);
 
     private ValueAttribute<PackageNameScope> packageNameScope;
     public PackageNameScope PackageNameScope

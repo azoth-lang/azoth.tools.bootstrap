@@ -29,7 +29,7 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     private ValueAttribute<NamedVariableSymbol> symbol;
     public NamedVariableSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAttribute.NamedParameter_Symbol);
+            : symbol.GetValue(this, SymbolAspect.NamedParameter_Symbol);
 
     public NamedParameterNode(INamedParameterSyntax syntax, ITypeNode type)
     {
@@ -39,7 +39,7 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        SymbolAttribute.NamedParameter_ContributeDiagnostics(this, diagnostics);
+        SymbolAspect.NamedParameter_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

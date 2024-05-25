@@ -3,7 +3,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -25,7 +24,7 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
     private ValueAttribute<FunctionSymbol> symbol;
     public override FunctionSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAttribute.AssociatedFunctionDeclaration);
+            : symbol.GetValue(this, SymbolAspect.AssociatedFunctionDeclaration);
     private ValueAttribute<FunctionType> type;
     public FunctionType Type
         => type.TryGetValue(out var value) ? value

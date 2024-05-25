@@ -21,14 +21,14 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
     private ValueAttribute<ITypeDeclarationNode?> referencedDeclaration;
     public ITypeDeclarationNode? ReferencedDeclaration
         => referencedDeclaration.TryGetValue(out var value) ? value
-            : referencedDeclaration.GetValue(this, SymbolNodeAttributes.StandardTypeName_ReferencedDeclaration);
+            : referencedDeclaration.GetValue(this, SymbolNodeAspect.StandardTypeName_ReferencedDeclaration);
     public override TypeSymbol? ReferencedSymbol
-        => SymbolAttribute.StandardTypeName(this);
+        => SymbolAspect.StandardTypeName(this);
 
     private ValueAttribute<BareType?> bareType;
     public override BareType? BareType
         => bareType.TryGetValue(out var value) ? value
-            : bareType.GetValue(this, BareTypeAttribute.IdentifierTypeName);
+            : bareType.GetValue(this, BareTypeAspect.IdentifierTypeName);
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value
@@ -41,7 +41,7 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        SymbolNodeAttributes.StandardTypeName_ContributeDiagnostics(this, diagnostics);
+        SymbolNodeAspect.StandardTypeName_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

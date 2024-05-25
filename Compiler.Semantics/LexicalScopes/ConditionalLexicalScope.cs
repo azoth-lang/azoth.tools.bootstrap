@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 public readonly record struct ConditionalLexicalScope(LexicalScope True, LexicalScope False)
 {

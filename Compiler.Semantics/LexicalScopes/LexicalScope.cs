@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 /// <summary>
 /// A lexical scope that supports lookup of symbol nodes by name.

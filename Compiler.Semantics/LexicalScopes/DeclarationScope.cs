@@ -3,7 +3,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 /// <summary>
 /// A scope defined by a declaration other than a namespace or using directive.

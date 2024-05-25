@@ -14,6 +14,6 @@ internal abstract class ChildSymbolNode : ChildNode, IChildDeclarationNode
     protected IEnumerable<IChildDeclarationNode> GetMembers()
     {
         var symbolTree = Parent.InheritedSymbolTree(this, this);
-        return symbolTree.GetChildrenOf(Symbol).Select(SymbolNodeAttributes.Symbol);
+        return symbolTree.GetChildrenOf(Symbol).Select(SymbolNodeAspect.Symbol);
     }
 }

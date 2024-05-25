@@ -17,5 +17,5 @@ internal abstract class SelfParameterNode : ParameterNode, ISelfParameterNode
     private ValueAttribute<SelfParameterSymbol> symbol;
     public SelfParameterSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAttribute.SelfParameter_Symbol);
+            : symbol.GetValue(this, SymbolAspect.SelfParameter_Symbol);
 }

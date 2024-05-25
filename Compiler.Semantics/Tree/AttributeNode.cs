@@ -13,7 +13,7 @@ internal sealed class AttributeNode : CodeNode, IAttributeNode
     private ValueAttribute<ConstructorSymbol?> referencedSymbol;
     public ConstructorSymbol? ReferencedSymbol
         => referencedSymbol.TryGetValue(out var value) ? value
-            : referencedSymbol.GetValue(this, SymbolAttribute.Attribute_ReferencedSymbol);
+            : referencedSymbol.GetValue(this, SymbolAspect.Attribute_ReferencedSymbol);
 
     public AttributeNode(IAttributeSyntax syntax, IStandardTypeNameNode typeName)
     {
@@ -24,13 +24,13 @@ internal sealed class AttributeNode : CodeNode, IAttributeNode
     internal override bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
     {
         if (descendant == TypeName)
-            return SymbolNodeAttributes.Attribute_InheritedIsAttributeType_Child(this);
+            return SymbolNodeAspect.Attribute_InheritedIsAttributeType_Child(this);
         return base.InheritedIsAttributeType(child, descendant);
     }
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        SymbolAttribute.Attribute_ContributeDiagnostics(this, diagnostics);
+        SymbolAspect.Attribute_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

@@ -20,16 +20,16 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
         => attributeType.TryGetValue(out var value) ? value
             : attributeType.GetValue(InheritedIsAttributeType);
     public override GenericName Name => Syntax.Name;
-    public override TypeSymbol? ReferencedSymbol => SymbolAttribute.StandardTypeName(this);
+    public override TypeSymbol? ReferencedSymbol => SymbolAspect.StandardTypeName(this);
     public IFixedList<ITypeNode> TypeArguments { get; }
     private ValueAttribute<ITypeDeclarationNode?> referencedDeclaration;
     public ITypeDeclarationNode? ReferencedDeclaration
         => referencedDeclaration.TryGetValue(out var value) ? value
-            : referencedDeclaration.GetValue(this, SymbolNodeAttributes.StandardTypeName_ReferencedDeclaration);
+            : referencedDeclaration.GetValue(this, SymbolNodeAspect.StandardTypeName_ReferencedDeclaration);
     private ValueAttribute<BareType?> bareType;
     public override BareType? BareType
         => bareType.TryGetValue(out var value) ? value
-            : bareType.GetValue(this, BareTypeAttribute.GenericTypeName);
+            : bareType.GetValue(this, BareTypeAspect.GenericTypeName);
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value
@@ -43,7 +43,7 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        SymbolNodeAttributes.StandardTypeName_ContributeDiagnostics(this, diagnostics);
+        SymbolNodeAspect.StandardTypeName_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

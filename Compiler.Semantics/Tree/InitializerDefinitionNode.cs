@@ -3,7 +3,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
@@ -25,7 +24,7 @@ internal sealed class InitializerDefinitionNode : TypeMemberDefinitionNode, IIni
     private ValueAttribute<InitializerSymbol> symbol;
     public override InitializerSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAttribute.InitializerDeclaration);
+            : symbol.GetValue(this, SymbolAspect.InitializerDeclaration);
 
     public InitializerDefinitionNode(
         IInitializerDefinitionSyntax syntax,

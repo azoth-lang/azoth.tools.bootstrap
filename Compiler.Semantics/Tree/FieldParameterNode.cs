@@ -19,7 +19,7 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
     private ValueAttribute<IFieldDefinitionNode?> referencedField;
     public IFieldDefinitionNode? ReferencedField
         => referencedField.TryGetValue(out var value) ? value
-            : referencedField.GetValue(this, SymbolNodeAttributes.FieldParameter_ReferencedField);
+            : referencedField.GetValue(this, SymbolNodeAspect.FieldParameter_ReferencedField);
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value

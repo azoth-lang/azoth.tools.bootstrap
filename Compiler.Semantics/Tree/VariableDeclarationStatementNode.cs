@@ -2,7 +2,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -28,7 +27,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     private ValueAttribute<NamedVariableSymbol> symbol;
     public NamedVariableSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAttribute.VariableDeclarationStatement_Symbol);
+            : symbol.GetValue(this, SymbolAspect.VariableDeclarationStatement_Symbol);
     public int? DeclarationNumber => Syntax.DeclarationNumber.Result;
 
     public VariableDeclarationStatementNode(

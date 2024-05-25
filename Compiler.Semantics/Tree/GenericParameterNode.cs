@@ -37,7 +37,7 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     private ValueAttribute<GenericParameterTypeSymbol> symbol;
     public GenericParameterTypeSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAttribute.GenericParameter);
+            : symbol.GetValue(this, SymbolAspect.GenericParameter);
 
     public GenericParameterNode(IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint)
     {

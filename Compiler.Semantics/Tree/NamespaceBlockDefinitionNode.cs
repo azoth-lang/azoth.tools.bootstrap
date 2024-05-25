@@ -4,7 +4,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
@@ -21,14 +20,14 @@ internal class NamespaceBlockDefinitionNode : DefinitionNode, INamespaceBlockDef
     private ValueAttribute<INamespaceDefinitionNode> containingNamespace;
     public INamespaceDefinitionNode ContainingNamespace
         => containingNamespace.TryGetValue(out var value) ? value
-            : containingNamespace.GetValue(this, SymbolNodeAttributes.NamespaceBlockDefinition_ContainingDeclaration);
+            : containingNamespace.GetValue(this, SymbolNodeAspect.NamespaceBlockDefinition_ContainingDeclaration);
     public override NamespaceSymbol ContainingSymbol => ContainingDeclaration.Symbol;
     public override NamespaceSearchScope ContainingLexicalScope
         => (NamespaceSearchScope)base.ContainingLexicalScope;
     private ValueAttribute<INamespaceDefinitionNode> definition;
     public INamespaceDefinitionNode Definition
         => definition.TryGetValue(out var value) ? value
-            : definition.GetValue(this, SymbolNodeAttributes.NamespaceBlockDefinition_Declaration);
+            : definition.GetValue(this, SymbolNodeAspect.NamespaceBlockDefinition_Declaration);
     public override NamespaceSymbol Symbol => Definition.Symbol;
 
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
@@ -49,7 +48,7 @@ internal class NamespaceBlockDefinitionNode : DefinitionNode, INamespaceBlockDef
     }
 
     internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant)
-        => SymbolNodeAttributes.NamespaceBlockDefinition_InheritedContainingDeclaration(this);
+        => SymbolNodeAspect.NamespaceBlockDefinition_InheritedContainingDeclaration(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => LexicalScope;

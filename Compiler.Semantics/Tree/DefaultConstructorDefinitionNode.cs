@@ -13,7 +13,7 @@ internal sealed class DefaultConstructorDefinitionNode : ConstructorDefinitionNo
     public override ConstructorSymbol Symbol
         => symbol.TryGetValue(out var value)
             ? value
-            : symbol.GetValue(this, SymbolAttribute.DefaultConstructorDefinition);
+            : symbol.GetValue(this, SymbolAspect.DefaultConstructorDefinition);
     public DefaultConstructorDefinitionNode()
         : base(FixedList.Empty<IConstructorOrInitializerParameterNode>())
     { }

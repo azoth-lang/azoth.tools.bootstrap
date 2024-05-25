@@ -4,7 +4,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes.Model;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -22,22 +21,22 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
 
     private ValueAttribute<PackageSymbol> symbol;
     public PackageSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolAttribute.Package);
+        => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolAspect.Package);
     private ValueAttribute<FixedDictionary<IdentifierName, IPackageDeclarationNode>> packageDeclarations;
     public FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations
         => packageDeclarations.TryGetValue(out var value) ? value
-            : packageDeclarations.GetValue(this, SymbolNodeAttributes.Package_PackageDeclarations);
+            : packageDeclarations.GetValue(this, SymbolNodeAspect.Package_PackageDeclarations);
 
     private ValueAttribute<IFixedList<Diagnostic>> diagnostics;
     public IFixedList<Diagnostic> Diagnostics
         => diagnostics.TryGetValue(out var value) ? value
-            : diagnostics.GetValue(this, DiagnosticsAttribute.Package);
+            : diagnostics.GetValue(this, DiagnosticsAspect.Package);
 
     public IFixedSet<IPackageReferenceNode> References { get; }
     private ValueAttribute<IPackageReferenceNode> intrinsicsReference;
     public IPackageReferenceNode IntrinsicsReference
         => intrinsicsReference.TryGetValue(out var value) ? value
-            : intrinsicsReference.GetValue(this, IntrinsicsReferenceAttribute.Package);
+            : intrinsicsReference.GetValue(this, IntrinsicsReferenceAspect.Package);
     public IPackageFacetNode MainFacet { get; }
     public IPackageFacetNode TestingFacet { get; }
 

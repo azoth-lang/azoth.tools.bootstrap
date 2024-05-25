@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
-internal static class IntrinsicsReferenceAttribute
+internal static class IntrinsicsReferenceAspect
 {
     // If there is already a reference to the intrinsics package, use it. Otherwise, create a new one.
     public static IPackageReferenceNode Package(IPackageNode node)

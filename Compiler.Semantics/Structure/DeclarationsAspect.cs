@@ -5,7 +5,7 @@ using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
-internal static class DeclarationsAttribute
+internal static class DeclarationsAspect
 {
     public static IFixedSet<IPackageMemberDefinitionNode> PackageFacet(IPackageFacetNode node)
     {
