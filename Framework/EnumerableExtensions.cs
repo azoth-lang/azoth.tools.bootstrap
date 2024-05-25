@@ -59,6 +59,9 @@ public static class EnumerableExtensions
     public static Queue<T> ToQueue<T>(this IEnumerable<T> source) => new(source);
 
     [DebuggerStepThrough]
+    public static Buffer<T> ToBuffer<T>(this IEnumerable<T> source) => new(source.ToArray());
+
+    [DebuggerStepThrough]
     public static IEnumerable<T> SelectMany<T>(this IEnumerable<IEnumerable<T>> source)
         => source.SelectMany(items => items);
 

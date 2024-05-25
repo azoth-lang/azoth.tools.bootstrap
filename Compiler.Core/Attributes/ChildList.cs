@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -9,30 +8,28 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 public sealed class ChildList<T> : IFixedList<T>
     where T : class, IChild
 {
-    private readonly Child<T>[] children;
+    // Due to Child<T> being a mutable struct, we use Buffer<T> to force always getting a reference
+    // to the struct when accessing it.
+    private readonly Buffer<Child<T>> children;
 
     internal ChildList(IEnumerable<T> initialValues)
     {
-        // Use an array to avoid allocating any more memory than necessary and because we need to
+        // Use a buffer to avoid allocating any more memory than necessary and because we need to
         // get a reference to the Child<T> struct when accessing it.
-        children = initialValues.Select(x => new Child<T>(x)).ToArray();
+        children = initialValues.Select(x => new Child<T>(x)).ToBuffer();
     }
 
-    public int Count => children.Length;
+    public int Count => children.Count;
 
     public T this[int index]
-        // Due to Child<T> being a mutable struct, we must use GetRefToChild() to get a
-        // reference that can mutate the original struct.
-        => GetRefToChild(index).Value;
+        => children[index].Value;
 
     public IEnumerable<T> Final
     {
         get
         {
-            // Due to Child<T> being a mutable struct, we must use GetRefToChild() to get a
-            // reference that can mutate the original struct.
-            for (int i = 0; i < children.Length; i++)
-                yield return GetRefToChild(i).FinalValue;
+            for (int i = 0; i < children.Count; i++)
+                yield return children[i].FinalValue;
         }
     }
 
@@ -40,28 +37,18 @@ public sealed class ChildList<T> : IFixedList<T>
     {
         get
         {
-            // Due to Child<T> being a mutable struct, we must use GetRefToChild() to get a
-            // reference that can mutate the original struct. This is true even for CurrentValue
-            // because it does a volatile read.
-            for (int i = 0; i < children.Length; i++)
-                yield return GetRefToChild(i).CurrentValue;
+            for (int i = 0; i < children.Count; i++)
+                yield return children[i].CurrentValue;
         }
     }
 
     public IEnumerator<T> GetEnumerator()
     {
-        // Due to Child<T> being a mutable struct, we must use GetRefToChild() to get a
-        // reference that can mutate the original struct.
-        for (int i = 0; i < children.Length; i++)
-            yield return GetRefToChild(i).FinalValue;
+        for (int i = 0; i < children.Count; i++)
+            yield return children[i].FinalValue;
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-    /// <remarks>Because <see cref="Child{T}"/> is a mutable struct, we must get a reference to it
-    /// when accessing it from the array. </remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private ref Child<T> GetRefToChild(int index) => ref children[index];
 }
 
 public static class ChildList

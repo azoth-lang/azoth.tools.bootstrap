@@ -6,9 +6,9 @@ namespace Azoth.Tools.Bootstrap.Framework;
 
 /// <summary>
 /// Generates an infinite <see cref="IEnumerable{T}"/> by repeatedly calling
-/// a generator function
+/// a generator function.
 /// </summary>
-public class Generator<T> : IEnumerable<T>
+public readonly struct Generator<T> : IEnumerable<T>
 {
     private readonly Func<T> generator;
 
@@ -19,12 +19,9 @@ public class Generator<T> : IEnumerable<T>
 
     public IEnumerator<T> GetEnumerator()
     {
-        for (; ; )
+        while (true)
             yield return generator();
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

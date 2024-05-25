@@ -13,18 +13,11 @@ public class TypeSet<TBase>
 
     public bool Add<T>()
         where T : TBase
-    {
-        return types.Add(typeof(T));
-    }
+        => types.Add(typeof(T));
 
     public bool Contains<T>()
         where T : TBase
-    {
-        return types.Contains(typeof(T));
-    }
+        => types.Contains(typeof(T));
 
-    public bool Contains(Type type)
-    {
-        return types.Contains(type);
-    }
+    public bool Contains(Type type) => types.Contains(type);
 }
