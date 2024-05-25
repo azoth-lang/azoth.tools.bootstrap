@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
 /// <summary>
 /// The index of a type argument in a type.

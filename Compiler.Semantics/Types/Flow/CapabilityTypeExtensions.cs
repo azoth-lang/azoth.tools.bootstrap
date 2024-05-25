@@ -1,7 +1,8 @@
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
 internal static class CapabilityTypeExtensions
 {

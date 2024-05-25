@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
 /// <summary>
 /// Tracks the original and modified capability for part of a reference.

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 

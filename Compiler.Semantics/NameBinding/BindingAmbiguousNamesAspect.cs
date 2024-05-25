@@ -120,7 +120,6 @@ internal static class BindingAmbiguousNamesAspect
         return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDeclarationNode>());
     }
 
-
     public static void UnknownMemberAccessExpression_ContributeDiagnostics(
         IUnknownMemberAccessExpressionNode node,
         Diagnostics diagnostics)
