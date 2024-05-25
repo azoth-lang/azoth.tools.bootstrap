@@ -572,7 +572,7 @@ public class BasicBodyAnalyzer
                 var rightResult = InferType(rightOperand, flow);
                 var resultVariable = flow.Combine(leftResult.Variable, rightResult.Variable, exp);
 
-                // If either is unknown, then we can't know whether there is a a problem.
+                // If either is unknown, then we can't know whether there is a problem.
                 // Note that the operator could be overloaded
                 if (!leftResult.Type.IsFullyKnown || !rightResult.Type.IsFullyKnown)
                 {
