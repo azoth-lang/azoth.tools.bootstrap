@@ -4,6 +4,7 @@
     <AssemblyName>Azoth.Tools.Bootstrap.Framework</AssemblyName>
     <RootNamespace>Azoth.Tools.Bootstrap.Framework</RootNamespace>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
   </PropertyGroup>
