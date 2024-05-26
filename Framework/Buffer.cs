@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
@@ -26,5 +27,35 @@ public readonly struct Buffer<T>
             var nonEmptyValues = values ?? throw new ArgumentOutOfRangeException(nameof(index));
             return ref nonEmptyValues[index];
         }
+    }
+
+    public ref T this[uint index]
+    {
+        get
+        {
+            var nonEmptyValues = values ?? throw new ArgumentOutOfRangeException(nameof(index));
+            return ref nonEmptyValues[index];
+        }
+    }
+
+    public Buffer<T> Copy()
+    {
+        if (values is null)
+            return Empty;
+
+        var copy = new T[Count];
+        values.CopyTo(copy.AsSpan());
+        return new(copy);
+    }
+
+    public Buffer<T> CopyAndAdd(T value)
+    {
+        if (values is null)
+            return new([value]);
+
+        var copy = new T[Count + 1];
+        values.CopyTo(copy.AsSpan());
+        copy[Count] = value;
+        return new(copy);
     }
 }
