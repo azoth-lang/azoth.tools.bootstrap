@@ -9,6 +9,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -170,7 +171,8 @@ CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint
 Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability`;
 
 // ---------- Parameters
-Parameter <: Code, Binding = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool` Type:`Pseudotype`;
+Parameter <: Code, Binding = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
+    Type:`Pseudotype` ValueId:`ValueId`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax` Type:`DataType` ParameterType:`Parameter`;
 NamedParameter <: ConstructorOrInitializerParameter, NamedBinding = Syntax:`INamedParameterSyntax`

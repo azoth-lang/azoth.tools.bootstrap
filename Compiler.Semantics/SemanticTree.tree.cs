@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -758,6 +759,7 @@ public partial interface IParameterNode : ISemanticNode, IBindingNode
     IdentifierName? Name { get; }
     bool Unused { get; }
     Pseudotype Type { get; }
+    ValueId ValueId { get; }
 }
 
 [Closed(

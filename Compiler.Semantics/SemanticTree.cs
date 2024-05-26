@@ -29,11 +29,21 @@ public partial interface IClassDefinitionNode
         => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
 }
 
+#region Capabilities
 public partial interface ICapabilityNode
 {
     // TODO some way to code gen this hiding
     ICapabilityConstraint ICapabilityConstraintNode.Constraint => Capability;
 }
+#endregion
+
+#region Parameters
+
+public partial interface IParameterNode
+{
+    IParameterNode? Predecessor();
+}
+#endregion
 
 #region Statements
 public partial interface IStatementNode

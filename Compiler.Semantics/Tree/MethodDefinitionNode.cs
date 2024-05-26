@@ -40,4 +40,14 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
         TypeMemberDeclarationsAspect.MethodDeclaration_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
+
+    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    {
+        if (descendant == SelfParameter) return null;
+        if (descendant is INamedParameterNode parameter
+            && Parameters.IndexOf(parameter) is int index)
+            return index == 0 ? SelfParameter : Parameters[index - 1];
+
+        return base.InheritedPredecessor(child, descendant);
+    }
 }

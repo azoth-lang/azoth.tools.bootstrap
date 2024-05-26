@@ -13,6 +13,7 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
     public abstract override IConstructorDefinitionSyntax? Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public override IdentifierName? Name => Syntax?.Name;
+    public abstract IConstructorSelfParameterNode? SelfParameter { get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
 
     private ValueAttribute<LexicalScope> lexicalScope;
@@ -25,5 +26,15 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
         IEnumerable<IConstructorOrInitializerParameterNode> parameters)
     {
         Parameters = ChildList.Attach(this, parameters);
+    }
+
+    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    {
+        if (descendant == SelfParameter) return null;
+        if (descendant is IConstructorOrInitializerParameterNode parameter
+            && Parameters.IndexOf(parameter) is int index)
+            return index == 0 ? SelfParameter : Parameters[index - 1];
+
+        return base.InheritedPredecessor(child, descendant);
     }
 }

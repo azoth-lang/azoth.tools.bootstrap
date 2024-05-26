@@ -33,6 +33,11 @@ internal class SemanticTreeValidator
             _ = type.Type;
         }
 
+        if (node is IParameterNode parameter)
+        {
+            _ = parameter.ValueId;
+        }
+
         // Validate Concrete Node Attributes
         switch (node)
         {

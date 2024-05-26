@@ -52,4 +52,12 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
         if (child == Body) return LexicalScope;
         return base.InheritedContainingLexicalScope(child, descendant);
     }
+
+    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    {
+        if (descendant is INamedParameterNode parameter && Parameters.IndexOf(parameter) is int index)
+            return index == 0 ? null : Parameters[index - 1];
+
+        return base.InheritedPredecessor(child, descendant);
+    }
 }

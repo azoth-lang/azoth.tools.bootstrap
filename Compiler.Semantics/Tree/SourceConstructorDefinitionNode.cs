@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class SourceConstructorDefinitionNode : ConstructorDefinitionNode, ISourceConstructorDefinitionNode
 {
     public override IConstructorDefinitionSyntax Syntax { get; }
-    public IConstructorSelfParameterNode SelfParameter { get; }
+    public override IConstructorSelfParameterNode SelfParameter { get; }
     public IBlockBodyNode Body { get; }
     private ValueAttribute<ConstructorSymbol> symbol;
     public override ConstructorSymbol Symbol

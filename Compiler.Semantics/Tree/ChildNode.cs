@@ -89,4 +89,8 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     internal override ISymbolTree InheritedSymbolTree(IChildNode child, IChildNode descendant)
         => Parent.InheritedSymbolTree(this, descendant);
+
+    // InheritedPredecessor intentionally not overridden because it should not broadcast to descendants
+
+    protected ISemanticNode? InheritedPredecessor() => Parent.InheritedPredecessor(this, this);
 }
