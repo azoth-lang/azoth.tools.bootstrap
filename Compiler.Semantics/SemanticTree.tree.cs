@@ -1173,6 +1173,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
     typeof(IAwaitExpressionNode))]
 public partial interface IExpressionNode : IAmbiguousExpressionNode
 {
+    ValueId ValueId { get; }
 }
 
 [Closed(

@@ -34,4 +34,11 @@ internal class UnknownMemberAccessExpressionNode : UnknownNameExpressionNode, IU
         BindingAmbiguousNamesAspect.UnknownMemberAccessExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
+
+    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    {
+        if (descendant == Context)
+            return Predecessor();
+        return base.InheritedPredecessor(child, descendant);
+    }
 }

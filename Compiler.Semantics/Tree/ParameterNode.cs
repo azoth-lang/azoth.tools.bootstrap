@@ -13,7 +13,6 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
     public abstract IdentifierName? Name { get; }
     public bool Unused => Syntax.Unused;
     public abstract Pseudotype Type { get; }
-
     private ValueAttribute<ValueId> valueId;
     public ValueId ValueId
         => valueId.TryGetValue(out var value) ? value

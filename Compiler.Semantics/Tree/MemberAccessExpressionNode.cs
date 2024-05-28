@@ -35,4 +35,11 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
         ?? BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_UnknownNameExpressionContext(this);
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Context.GetFlowLexicalScope();
+
+    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    {
+        if (descendant == Context)
+            return Predecessor();
+        return base.InheritedPredecessor(child, descendant);
+    }
 }

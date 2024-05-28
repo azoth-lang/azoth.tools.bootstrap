@@ -3,6 +3,7 @@ using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -91,6 +92,11 @@ internal abstract class ChildNode : SemanticNode, IChildNode
         => Parent.InheritedSymbolTree(this, descendant);
 
     // InheritedPredecessor intentionally not overridden because it should not broadcast to descendants
+
+    internal override ValueIdScope InheritedValueIdScope(IChildNode child, IChildNode descendant)
+        => Parent.InheritedValueIdScope(child, descendant);
+
+    protected ValueIdScope InheritedValueIdScope() => Parent.InheritedValueIdScope(this, this);
 
     protected ISemanticNode? InheritedPredecessor() => Parent.InheritedPredecessor(this, this);
 }

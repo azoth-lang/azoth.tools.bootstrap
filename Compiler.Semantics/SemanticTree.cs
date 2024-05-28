@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
@@ -12,11 +13,13 @@ public partial interface IBodyOrBlockNode
     LexicalScope GetContainingLexicalScope();
 }
 
+#region Facets
 public partial interface IPackageFacetNode
 {
     // TODO some way to code gen this hiding
     PackageSymbol IPackageFacetDeclarationNode.Symbol => PackageSymbol;
 }
+#endregion
 
 public partial interface ITypeDefinitionNode
 {
@@ -55,6 +58,10 @@ public partial interface IBodyNode
 public partial interface IStatementNode
 {
     LexicalScope GetLexicalScope();
+
+    IExpressionNode? Predecessor();
+
+    IExpressionNode? LastExpression();
 }
 #endregion
 
@@ -66,12 +73,20 @@ public partial interface IPatternNode
 }
 #endregion
 
+#region Expressions
 public partial interface IAmbiguousExpressionNode
 {
     LexicalScope GetContainingLexicalScope();
     // TODO it is strange that this is always a conditional scope. Instead use conditional only where it makes sense?
     ConditionalLexicalScope GetFlowLexicalScope();
+    ValueIdScope ValueIdScope();
 }
+
+public partial interface IExpressionNode
+{
+    IExpressionNode? Predecessor();
+}
+#endregion
 
 public partial interface IForeachExpressionNode
 {
@@ -85,8 +100,11 @@ public partial interface IUserTypeDeclarationNode
     IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
 }
 
+#region Namespace Declarations
 public partial interface INamespaceDeclarationNode
 {
     IEnumerable<INamespaceMemberDeclarationNode> MembersNamed(StandardName named);
     IEnumerable<INamespaceMemberDeclarationNode> NestedMembersNamed(StandardName named);
 }
+#endregion
+

@@ -29,4 +29,15 @@ internal sealed class BlockBodyNode : CodeNode, IBlockBodyNode
         => LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, Statements.IndexOf(child)!.Value);
 
     public IParameterNode? Predecessor() => (IParameterNode?)InheritedPredecessor();
+
+    internal override ValueIdScope InheritedValueIdScope(IChildNode child, IChildNode descendant)
+        => ValueIdScope;
+
+    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    {
+        if (Statements.IndexOf(descendant) is int index)
+            return index > 0 ? Statements[index - 1].LastExpression() : null;
+
+        return base.InheritedPredecessor(child, descendant);
+    }
 }

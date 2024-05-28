@@ -14,4 +14,10 @@ internal sealed class AsyncStartExpressionNode : ExpressionNode, IAsyncStartExpr
         Syntax = syntax;
         Expression = Child.Attach(this, expression);
     }
+
+    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    {
+        if (descendant == Expression) return Predecessor();
+        return base.InheritedPredecessor(child, descendant);
+    }
 }

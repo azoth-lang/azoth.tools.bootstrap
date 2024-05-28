@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class StandardTypeNameExpressionNode : AmbiguousExpressionNode, IStandardTypeNameExpressionNode
+internal sealed class StandardTypeNameExpressionNode : AmbiguousNameExpressionNode, IStandardTypeNameExpressionNode
 {
     public override IStandardNameExpressionSyntax Syntax { get; }
     public StandardName Name => Syntax.Name;

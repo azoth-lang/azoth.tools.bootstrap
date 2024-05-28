@@ -28,10 +28,24 @@ internal sealed class InvocationExpressionNode : ExpressionNode, IInvocationExpr
     {
         if (child == Expression)
             return GetContainingLexicalScope();
-        var argumentIndex = Arguments.IndexOf(child) ?? throw new ArgumentException("Is not a child of this node.", nameof(child));
-        if (argumentIndex == 0)
-            return Expression.GetFlowLexicalScope().True;
+        if (Arguments.IndexOf(child) is int argumentIndex)
+        {
+            if (argumentIndex == 0)
+                return Expression.GetFlowLexicalScope().True;
 
-        return Arguments[argumentIndex - 1].GetFlowLexicalScope().True;
+            return Arguments[argumentIndex - 1].GetFlowLexicalScope().True;
+        }
+        return base.InheritedContainingLexicalScope(child, descendant);
+    }
+
+    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    {
+        if (descendant == Expression)
+            return Predecessor();
+
+        if (Arguments.IndexOf(descendant) is int argumentIndex)
+            return argumentIndex == 0 ? Expression : Arguments[argumentIndex - 1];
+
+        return base.InheritedPredecessor(child, descendant);
     }
 }

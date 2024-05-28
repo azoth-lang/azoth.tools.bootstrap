@@ -43,4 +43,14 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     }
 
     public override LexicalScope GetLexicalScope() => LexicalScope;
+
+    public override IExpressionNode? LastExpression()
+        => (IExpressionNode?)Initializer ?? Predecessor();
+
+    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    {
+        if (descendant == Initializer)
+            return Predecessor();
+        return base.InheritedPredecessor(child, descendant);
+    }
 }

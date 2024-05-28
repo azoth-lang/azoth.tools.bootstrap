@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using ExhaustiveMatching;
@@ -8,6 +9,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 public static class ExpressionTypesAspect
 {
+    public static ValueId Expression_ValueId(IExpressionNode node)
+    {
+        if (node is ITypeNameExpressionNode or IFunctionGroupNameNode or INamespaceNameNode)
+            // TODO remove this hack, these names shouldn't have value ids
+            return node.ValueIdScope().CreateValueId();
+
+        return (node.Predecessor()?.ValueId.Scope ?? node.ValueIdScope()).CreateValueId();
+    }
+
     public static void NewObjectExpression_ContributeDiagnostics(INewObjectExpressionNode node, Diagnostics diagnostics)
         => CheckConstructingType(node.Type, diagnostics);
 

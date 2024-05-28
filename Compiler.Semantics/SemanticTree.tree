@@ -236,7 +236,7 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 
 // ---------- Expressions
 AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
-Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax`;
+Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax` ValueId:`ValueId`;
 AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax` Type:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression* ReferencedSymbol:`ConstructorSymbol?`;

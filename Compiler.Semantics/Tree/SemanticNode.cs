@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -60,6 +61,9 @@ internal abstract class SemanticNode : ISemanticNode
 
     internal virtual ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(Child.InheritFailedMessage(nameof(InheritedPredecessor), child, descendant));
+
+    internal virtual ValueIdScope InheritedValueIdScope(IChildNode child, IChildNode descendant)
+        => throw new NotImplementedException(Child.InheritFailedMessage(nameof(InheritedValueIdScope), child, descendant));
 
     protected virtual void CollectDiagnostics(Diagnostics diagnostics)
     {

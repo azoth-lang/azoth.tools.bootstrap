@@ -35,4 +35,15 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
     }
 
     public IParameterNode? Predecessor() => (IParameterNode?)InheritedPredecessor();
+
+    internal override ValueIdScope InheritedValueIdScope(IChildNode child, IChildNode descendant)
+        => ValueIdScope;
+
+    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    {
+        if (descendant == ResultStatement)
+            // The result statement is the first expression in the body.
+            return null;
+        return base.InheritedPredecessor(child, descendant);
+    }
 }

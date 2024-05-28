@@ -17,4 +17,11 @@ internal sealed class FreezeExpressionNode : ExpressionNode, IFreezeExpressionNo
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Referent.GetFlowLexicalScope();
+
+    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    {
+        if (descendant == Referent)
+            return Predecessor();
+        return base.InheritedPredecessor(child, descendant);
+    }
 }

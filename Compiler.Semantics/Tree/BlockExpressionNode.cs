@@ -19,4 +19,12 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, Statements.IndexOf(child)!.Value);
+
+    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    {
+        if (Statements.IndexOf(descendant) is int index)
+            return index > 0 ? Statements[index - 1].LastExpression() : Predecessor();
+
+        return base.InheritedPredecessor(child, descendant);
+    }
 }

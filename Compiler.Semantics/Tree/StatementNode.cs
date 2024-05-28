@@ -13,4 +13,8 @@ internal abstract class StatementNode : CodeNode, IStatementNode
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => GetLexicalScope();
+
+    public IExpressionNode? Predecessor() => (IExpressionNode?)InheritedPredecessor();
+
+    public abstract IExpressionNode? LastExpression();
 }

@@ -40,6 +40,10 @@ internal class SemanticTreeValidator
         {
             _ = body.ValueIdScope;
         }
+        if (node is IExpressionNode expression)
+        {
+            _ = expression.ValueId;
+        }
 
         // Validate Concrete Node Attributes
         switch (node)

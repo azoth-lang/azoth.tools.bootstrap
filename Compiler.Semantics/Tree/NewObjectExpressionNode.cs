@@ -46,4 +46,12 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
 
         return Arguments[argumentIndex - 1].GetFlowLexicalScope().True;
     }
+
+    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    {
+        if (Arguments.IndexOf(descendant) is int argumentIndex)
+            return argumentIndex == 0 ? Predecessor() : Arguments[argumentIndex - 1];
+
+        return base.InheritedPredecessor(child, descendant);
+    }
 }
