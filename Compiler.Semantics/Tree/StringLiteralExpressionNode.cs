@@ -12,7 +12,7 @@ internal sealed class StringLiteralExpressionNode : ExpressionNode, IStringLiter
     public override IStringLiteralExpressionSyntax Syntax { get; }
     public string Value => Syntax.Value;
     private ValueAttribute<DataType> type;
-    public DataType Type
+    public override DataType Type
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, TypeExpressionsAspect.StringLiteralExpression_Type);
     private ValueAttribute<LexicalScope> containingLexicalScope;

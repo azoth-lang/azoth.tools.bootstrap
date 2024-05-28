@@ -236,10 +236,10 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 
 // ---------- Expressions
 AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
-Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax` ValueId:`ValueId`;
+Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax` ValueId:`ValueId` Type:`DataType`;
 AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
-NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax` Type:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression* ReferencedSymbol:`ConstructorSymbol?`;
+NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax` ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression* ReferencedSymbol:`ConstructorSymbol?`;
 UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression;
 NeverTypedExpression <: Expression = Syntax:`INeverTypedExpressionSyntax` Type:`NeverType`;
 
@@ -264,7 +264,7 @@ IfExpression <: Expression, ElseClause = Syntax:`IIfExpressionSyntax` Condition:
 LoopExpression <: Expression = Syntax:`ILoopExpressionSyntax` Block:BlockExpression;
 WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax` Condition:AmbiguousExpression Block:BlockExpression;
 ForeachExpression <: Expression, NamedBinding = Syntax:`IForeachExpressionSyntax`
-    IsMutableBinding:`bool` VariableName:`IdentifierName` InExpression:AmbiguousExpression Type? Block:BlockExpression
+    IsMutableBinding:`bool` VariableName:`IdentifierName` InExpression:AmbiguousExpression DeclaredType:Type? Block:BlockExpression
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
 BreakExpression <: NeverTypedExpression = Syntax:`IBreakExpressionSyntax` Value:AmbiguousExpression?;
 NextExpression <: NeverTypedExpression = Syntax:`INextExpressionSyntax`;

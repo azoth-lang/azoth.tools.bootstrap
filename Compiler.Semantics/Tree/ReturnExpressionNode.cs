@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNode
 {
     public override IReturnExpressionSyntax Syntax { get; }
-    public NeverType Type => DataType.Never;
+    public override NeverType Type => DataType.Never;
     private Child<IAmbiguousExpressionNode?> value;
     public IAmbiguousExpressionNode? Value => value.Value;
 

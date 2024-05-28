@@ -19,7 +19,7 @@ public static class ExpressionTypesAspect
     }
 
     public static void NewObjectExpression_ContributeDiagnostics(INewObjectExpressionNode node, Diagnostics diagnostics)
-        => CheckConstructingType(node.Type, diagnostics);
+        => CheckConstructingType(node.ConstructingType, diagnostics);
 
     private static void CheckConstructingType(ITypeNameNode node, Diagnostics diagnostics)
     {

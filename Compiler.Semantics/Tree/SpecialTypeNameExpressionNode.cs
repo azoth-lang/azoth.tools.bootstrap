@@ -11,7 +11,7 @@ internal sealed class SpecialTypeNameExpressionNode : AmbiguousNameExpressionNod
     public override ISpecialTypeNameExpressionSyntax Syntax { get; }
     public SpecialTypeName Name => Syntax.Name;
     public TypeSymbol ReferencedSymbol => throw new NotImplementedException();
-    public UnknownType Type => (UnknownType)DataType.Unknown;
+    public override UnknownType Type => (UnknownType)DataType.Unknown;
 
     public SpecialTypeNameExpressionNode(ISpecialTypeNameExpressionSyntax syntax)
     {

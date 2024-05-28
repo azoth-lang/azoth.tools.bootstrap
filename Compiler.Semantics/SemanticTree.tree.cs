@@ -1174,6 +1174,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
 public partial interface IExpressionNode : IAmbiguousExpressionNode
 {
     ValueId ValueId { get; }
+    DataType Type { get; }
 }
 
 [Closed(
@@ -1204,7 +1205,7 @@ public partial interface INewObjectExpressionNode : ISemanticNode, IExpressionNo
     new INewObjectExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    ITypeNameNode Type { get; }
+    ITypeNameNode ConstructingType { get; }
     IdentifierName? ConstructorName { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     ConstructorSymbol? ReferencedSymbol { get; }
@@ -1227,7 +1228,8 @@ public partial interface INeverTypedExpressionNode : ISemanticNode, IExpressionN
     new INeverTypedExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    NeverType Type { get; }
+    new NeverType Type { get; }
+    DataType IExpressionNode.Type => Type;
 }
 
 [Closed(
@@ -1247,7 +1249,8 @@ public partial interface IBoolLiteralExpressionNode : ILiteralExpressionNode
     new IBoolLiteralExpressionSyntax Syntax { get; }
     ILiteralExpressionSyntax ILiteralExpressionNode.Syntax => Syntax;
     bool Value { get; }
-    BoolConstValueType Type { get; }
+    new BoolConstValueType Type { get; }
+    DataType IExpressionNode.Type => Type;
 }
 
 public partial interface IIntegerLiteralExpressionNode : ILiteralExpressionNode
@@ -1255,14 +1258,16 @@ public partial interface IIntegerLiteralExpressionNode : ILiteralExpressionNode
     new IIntegerLiteralExpressionSyntax Syntax { get; }
     ILiteralExpressionSyntax ILiteralExpressionNode.Syntax => Syntax;
     BigInteger Value { get; }
-    IntegerConstValueType Type { get; }
+    new IntegerConstValueType Type { get; }
+    DataType IExpressionNode.Type => Type;
 }
 
 public partial interface INoneLiteralExpressionNode : ILiteralExpressionNode
 {
     new INoneLiteralExpressionSyntax Syntax { get; }
     ILiteralExpressionSyntax ILiteralExpressionNode.Syntax => Syntax;
-    OptionalType Type { get; }
+    new OptionalType Type { get; }
+    DataType IExpressionNode.Type => Type;
 }
 
 public partial interface IStringLiteralExpressionNode : ILiteralExpressionNode
@@ -1270,7 +1275,6 @@ public partial interface IStringLiteralExpressionNode : ILiteralExpressionNode
     new IStringLiteralExpressionSyntax Syntax { get; }
     ILiteralExpressionSyntax ILiteralExpressionNode.Syntax => Syntax;
     string Value { get; }
-    DataType Type { get; }
     LexicalScope ContainingLexicalScope { get; }
 }
 
@@ -1369,7 +1373,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, INamedBinding
     bool IsMutableBinding { get; }
     IdentifierName VariableName { get; }
     IAmbiguousExpressionNode InExpression { get; }
-    ITypeNode? Type { get; }
+    ITypeNode? DeclaredType { get; }
     IBlockExpressionNode Block { get; }
     LexicalScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
@@ -1503,7 +1507,8 @@ public partial interface INameExpressionNode : ISemanticNode, IExpressionNode, I
     typeof(IQualifiedNamespaceNameNode))]
 public partial interface INamespaceNameNode : INameExpressionNode
 {
-    UnknownType Type { get; }
+    new UnknownType Type { get; }
+    DataType IExpressionNode.Type => Type;
     IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { get; }
 }
 
@@ -1596,7 +1601,8 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     SpecialTypeName Name { get; }
     TypeSymbol ReferencedSymbol { get; }
-    UnknownType Type { get; }
+    new UnknownType Type { get; }
+    DataType IExpressionNode.Type => Type;
 }
 
 [Closed(
@@ -1626,7 +1632,8 @@ public partial interface IMissingNameExpressionNode : INameExpressionNode, ISimp
     ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
     IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    UnknownType Type { get; }
+    new UnknownType Type { get; }
+    DataType IExpressionNode.Type => Type;
 }
 
 [Closed(
@@ -1638,7 +1645,8 @@ public partial interface IUnknownNameExpressionNode : INameExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    UnknownType Type { get; }
+    new UnknownType Type { get; }
+    DataType IExpressionNode.Type => Type;
 }
 
 [Closed(

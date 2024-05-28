@@ -12,7 +12,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public IdentifierName VariableName => Syntax.VariableName;
     private Child<IAmbiguousExpressionNode> inExpression;
     public IAmbiguousExpressionNode InExpression => inExpression.Value;
-    public ITypeNode? Type { get; }
+    public ITypeNode? DeclaredType { get; }
     public IBlockExpressionNode Block { get; }
     private ValueAttribute<LexicalScope> containingLexicalScope;
     public LexicalScope ContainingLexicalScope
@@ -31,7 +31,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     {
         Syntax = syntax;
         this.inExpression = Child.Create(this, inExpression);
-        Type = Child.Attach(this, type);
+        DeclaredType = Child.Attach(this, type);
         Block = Child.Attach(this, block);
     }
 

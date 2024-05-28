@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class NextExpressionNode : ExpressionNode, INextExpressionNode
 {
     public override INextExpressionSyntax Syntax { get; }
-    public NeverType Type => DataType.Never;
+    public override NeverType Type => DataType.Never;
 
     public NextExpressionNode(INextExpressionSyntax syntax)
     {

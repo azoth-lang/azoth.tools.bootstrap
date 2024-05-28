@@ -11,7 +11,7 @@ internal sealed class IntegerLiteralExpressionNode : ExpressionNode, IIntegerLit
     public override IIntegerLiteralExpressionSyntax Syntax { get; }
     public BigInteger Value => Syntax.Value;
     private ValueAttribute<IntegerConstValueType> type;
-    public IntegerConstValueType Type
+    public override IntegerConstValueType Type
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, TypeExpressionsAspect.IntegerLiteralExpression_Type);
 

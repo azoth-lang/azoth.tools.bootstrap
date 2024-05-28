@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class NoneLiteralExpressionNode : ExpressionNode, INoneLiteralExpressionNode
 {
     public override INoneLiteralExpressionSyntax Syntax { get; }
-    public OptionalType Type => TypeExpressionsAspect.NoneLiteralExpression_Type(this);
+    public override OptionalType Type => TypeExpressionsAspect.NoneLiteralExpression_Type(this);
     public NoneLiteralExpressionNode(INoneLiteralExpressionSyntax syntax)
     {
         Syntax = syntax;

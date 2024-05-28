@@ -239,7 +239,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case INewObjectExpressionNode n:
-                yield return n.Type;
+                yield return n.ConstructingType;
                 foreach (var child in n.Arguments)
                     yield return child;
                 yield break;
@@ -291,8 +291,8 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IForeachExpressionNode n:
                 yield return n.InExpression;
-                if (n.Type is not null)
-                    yield return n.Type;
+                if (n.DeclaredType is not null)
+                    yield return n.DeclaredType;
                 yield return n.Block;
                 yield break;
             case IBreakExpressionNode n:

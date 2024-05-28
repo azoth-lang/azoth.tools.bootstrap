@@ -8,7 +8,7 @@ internal sealed class BreakExpressionNode : ExpressionNode, IBreakExpressionNode
 {
     public override IBreakExpressionSyntax Syntax { get; }
     public IAmbiguousExpressionNode? Value { get; }
-    public NeverType Type => DataType.Never;
+    public override NeverType Type => DataType.Never;
 
     public BreakExpressionNode(IBreakExpressionSyntax syntax, IAmbiguousExpressionNode? value)
     {

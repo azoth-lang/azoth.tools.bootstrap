@@ -653,7 +653,7 @@ internal class SemanticsApplier
 
     private static void NewObjectExpression(INewObjectExpressionNode node)
     {
-        TypeName(node.Type);
+        TypeName(node.ConstructingType);
         AmbiguousExpressions(node.Arguments);
     }
 
@@ -780,7 +780,7 @@ internal class SemanticsApplier
 
     private static void ForeachExpression(IForeachExpressionNode node)
     {
-        Type(node.Type);
+        Type(node.DeclaredType);
         AmbiguousExpression(node.InExpression);
         BlockExpression(node.Block);
     }
