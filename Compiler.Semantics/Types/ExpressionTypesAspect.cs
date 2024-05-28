@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -51,4 +52,25 @@ public static class ExpressionTypesAspect
                 diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(node.File, node.Syntax,
                     arg.Parameter, arg.Argument));
     }
+
+    public static DataType IdExpression_Type(IIdExpressionNode node)
+    {
+        var referentType = ((IExpressionNode)node.Referent).Type;
+        if (referentType is CapabilityType capabilityType)
+            return capabilityType.With(Capability.Identity);
+        return DataType.Unknown;
+    }
+
+    public static void IdExpression_ContributeDiagnostics(IIdExpressionNode node, Diagnostics diagnostics)
+    {
+        //if (node.Type is not UnknownType)
+        //    return;
+
+        //var referentType = ((IExpressionNode)node.Referent).Type;
+        //if (referentType is not CapabilityType)
+        //    diagnostics.Add(TypeError.CannotIdNonReferenceType(node.File, node.Syntax.Span, referentType));
+    }
+
+    public static DataType VariableNameExpression_Type(IVariableNameExpressionNode node)
+        => throw new System.NotImplementedException();
 }
