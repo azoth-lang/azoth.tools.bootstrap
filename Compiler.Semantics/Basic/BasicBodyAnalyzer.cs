@@ -140,7 +140,7 @@ public class BasicBodyAnalyzer
 
     public void ResolveTypes(IBodySyntax body)
     {
-        var flow = new FlowState(diagnostics, file, parameterSharing);
+        var flow = new FlowStateMutable(diagnostics, file, parameterSharing);
         switch (body)
         {
             default:
@@ -154,13 +154,13 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private void ResolveTypes(IBlockBodySyntax body, FlowState flow)
+    private void ResolveTypes(IBlockBodySyntax body, FlowStateMutable flow)
     {
         foreach (var statement in body.Statements)
             ResolveTypes(statement, StatementContext.BodyLevel, flow);
     }
 
-    private void ResolveTypes(IExpressionBodySyntax body, FlowState flow)
+    private void ResolveTypes(IExpressionBodySyntax body, FlowStateMutable flow)
     {
         if (returnType is not { } expectedReturnType)
             throw new NotImplementedException("Expression body in field initializer.");
@@ -179,7 +179,7 @@ public class BasicBodyAnalyzer
     private ExpressionResult? ResolveTypes(
         IStatementSyntax statement,
         StatementContext context,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         if (context == StatementContext.AfterResult)
             diagnostics.Add(OtherSemanticError.StatementAfterResult(file, statement.Span));
@@ -213,7 +213,7 @@ public class BasicBodyAnalyzer
 
     private void ResolveTypes(
         IVariableDeclarationStatementSyntax variableDeclaration,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         var initializerResult = InferType(variableDeclaration.Initializer, flow);
         DataType variableType;
@@ -283,7 +283,7 @@ public class BasicBodyAnalyzer
 
     public void CheckFieldInitializerType(IExpressionSyntax expression, DataType expectedType)
     {
-        var flow = new FlowState(diagnostics, file);
+        var flow = new FlowStateMutable(diagnostics, file);
         CheckIndependentExpressionType(expression, expectedType, flow);
     }
 
@@ -294,7 +294,7 @@ public class BasicBodyAnalyzer
     private void CheckIndependentExpressionType(
         IExpressionSyntax expression,
         DataType expectedType,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         var result = InferType(expression, flow);
         result = AddImplicitConversionIfNeeded(result, expectedType, flow);
@@ -308,7 +308,7 @@ public class BasicBodyAnalyzer
     private ExpressionResult AddImplicitConversionIfNeeded(
         ExpressionResult expression,
         Parameter expectedType,
-        FlowState flow)
+        FlowStateMutable flow)
         => AddImplicitConversionIfNeeded(expression, expectedType.Type, flow);
 
     /// <summary>
@@ -317,7 +317,7 @@ public class BasicBodyAnalyzer
     private ExpressionResult AddImplicitConversionIfNeeded(
         ExpressionResult expression,
         DataType expectedType,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         ResolveFunctionAndMethodGroups(expression, expectedType);
         var syntax = expression.Syntax;
@@ -362,7 +362,7 @@ public class BasicBodyAnalyzer
         DataType fromType,
         ResultVariable? fromResult,
         Conversion priorConversion,
-        FlowState flow,
+        FlowStateMutable flow,
         out ResultVariable? newResult,
         bool enact = true)
     {
@@ -451,7 +451,7 @@ public class BasicBodyAnalyzer
     /// </summary>
     [return: NotNullIfNotNull(nameof(expression))]
     private ExpressionResult? InferType(
-        IExpressionSyntax? expression, FlowState flow)
+        IExpressionSyntax? expression, FlowStateMutable flow)
     {
         switch (expression)
         {
@@ -828,7 +828,7 @@ public class BasicBodyAnalyzer
                 CheckIndependentExpressionType(exp.Condition, DataType.Bool, flow);
                 var elseClause = exp.ElseClause;
                 // Even if there is no else clause, the if could be skipped. Still need to join
-                FlowState elseFlow = flow.Fork();
+                FlowStateMutable elseFlow = flow.Fork();
                 var thenResult = InferBlockType(exp.ThenBlock, flow);
                 ExpressionResult? elseResult = null;
                 switch (elseClause)
@@ -1004,7 +1004,7 @@ public class BasicBodyAnalyzer
     private ExpressionResult InferMoveExpressionType(
         IMoveExpressionSyntax exp,
         VariableNameSyntax semantics,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         var symbol = semantics.Symbol;
         var type = flow.Type(symbol);
@@ -1041,7 +1041,7 @@ public class BasicBodyAnalyzer
     private ExpressionResult InferFreezeExpressionType(
         IFreezeExpressionSyntax exp,
         VariableNameSyntax semantics,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         var symbol = semantics.Symbol;
         var type = flow.Type(symbol);
@@ -1078,7 +1078,7 @@ public class BasicBodyAnalyzer
         IPatternSyntax pattern,
         DataType valueType,
         ResultVariable? resultVariable,
-        FlowState flow,
+        FlowStateMutable flow,
         bool? isMutableBinding = false)
     {
         switch (pattern)
@@ -1116,13 +1116,13 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private ArgumentResults InferArgumentTypes(IFixedList<IExpressionSyntax> arguments, FlowState flow)
+    private ArgumentResults InferArgumentTypes(IFixedList<IExpressionSyntax> arguments, FlowStateMutable flow)
         => InferArgumentTypes(null, arguments, flow);
 
     private ArgumentResults InferArgumentTypes(
         ExpressionResult? selfArgument,
         IFixedList<IExpressionSyntax> arguments,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         // Give each argument a distinct result
         var inferences = new List<ExpressionResult>();
@@ -1135,7 +1135,7 @@ public class BasicBodyAnalyzer
         return new ArgumentResults(selfArgument, inferences);
     }
 
-    private void CheckTypes(ArgumentResults arguments, IEnumerable<Parameter> expectedTypes, FlowState flow)
+    private void CheckTypes(ArgumentResults arguments, IEnumerable<Parameter> expectedTypes, FlowStateMutable flow)
     {
         foreach (var (arg, parameter) in arguments.Arguments.EquiZip(expectedTypes))
         {
@@ -1145,7 +1145,7 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private static bool TypesAreCompatible(ArgumentResults arguments, IEnumerable<Parameter> expectedTypes, FlowState flow)
+    private static bool TypesAreCompatible(ArgumentResults arguments, IEnumerable<Parameter> expectedTypes, FlowStateMutable flow)
     {
         foreach (var (arg, parameter) in arguments.Arguments.EquiZip(expectedTypes))
             if (!TypesAreCompatible(arg, parameter, flow))
@@ -1154,7 +1154,7 @@ public class BasicBodyAnalyzer
         return true;
     }
 
-    private static bool TypesAreCompatible(ExpressionResult arg, Parameter parameter, FlowState flow, bool isSelf = false)
+    private static bool TypesAreCompatible(ExpressionResult arg, Parameter parameter, FlowStateMutable flow, bool isSelf = false)
     {
         var argType = arg.Type;
         var priorConversion = arg.Syntax.ImplicitConversion;
@@ -1190,7 +1190,7 @@ public class BasicBodyAnalyzer
     private static ResultVariable? CombineResults<TSymbol>(
         Contextualized<TSymbol>? invocable,
         ArgumentResults results,
-        FlowState flow)
+        FlowStateMutable flow)
         where TSymbol : InvocableSymbol
         => CombineResults(invocable?.SelfParameterType, invocable?.ParameterTypes, invocable?.ReturnType, results, flow);
 
@@ -1198,7 +1198,7 @@ public class BasicBodyAnalyzer
     private static ResultVariable? CombineResults(
         FunctionType? function,
         ArgumentResults results,
-        FlowState flow)
+        FlowStateMutable flow)
         => CombineResults(null, function?.Parameters, function?.Return, results, flow);
 
     private static ResultVariable? CombineResults(
@@ -1206,7 +1206,7 @@ public class BasicBodyAnalyzer
         IFixedList<Parameter>? parameterTypes,
         Return? returnType,
         ArgumentResults results,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         var resultsToDrop = new List<ResultVariable>();
         var resultType = returnType?.Type;
@@ -1233,7 +1233,7 @@ public class BasicBodyAnalyzer
         TParameterType? parameterType,
         ResultVariable? returnResult,
         List<ResultVariable> resultsToDrop,
-        FlowState flow)
+        FlowStateMutable flow)
         where TParameterType : struct, IParameter
     {
         if (argument.Variable is null)
@@ -1253,7 +1253,7 @@ public class BasicBodyAnalyzer
 
     private ExpressionResult InferAssignmentTargetType(
         IAssignableExpressionSyntax expression,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         switch (expression)
         {
@@ -1328,7 +1328,7 @@ public class BasicBodyAnalyzer
 
     private ExpressionResult InferInvocationType(
         IInvocationExpressionSyntax invocation,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         // This could actually be any of the following since the parser can't distinguish them:
         // * Regular function invocation
@@ -1469,7 +1469,7 @@ public class BasicBodyAnalyzer
         Promise<DataType> returnType,
         Contextualized<MethodSymbol>? method,
         ArgumentResults arguments,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         if (method is not null)
         {
@@ -1499,7 +1499,7 @@ public class BasicBodyAnalyzer
         INewObjectExpressionSyntax invocation,
         Contextualized<ConstructorSymbol>? constructor,
         ArgumentResults arguments,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         if (constructor is not null)
         {
@@ -1519,7 +1519,7 @@ public class BasicBodyAnalyzer
     private static void AddImplicitMoveIfNeeded(
         ExpressionResult selfArg,
         SelfParameter selfParamType,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         var conversion = CreateImplicitMoveConversion(selfArg.Type, selfArg.Syntax, selfArg.Variable,
             selfParamType.ToUpperBound(), flow, enact: true, selfArg.Syntax.ImplicitConversion);
@@ -1532,7 +1532,7 @@ public class BasicBodyAnalyzer
         IExpressionSyntax selfArgSyntax,
         ResultVariable? selfArgVariable,
         Parameter selfParam,
-        FlowState flow,
+        FlowStateMutable flow,
         bool enact,
         Conversion priorConversion)
     {
@@ -1559,7 +1559,7 @@ public class BasicBodyAnalyzer
     private static void AddImplicitFreezeIfNeeded(
         ExpressionResult selfArg,
         SelfParameter selfParamType,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         var conversion = CreateImplicitFreezeConversion(selfArg.Type, selfArg.Syntax, selfArg.Variable,
             selfParamType.ToUpperBound(), flow, enact: true, selfArg.Syntax.ImplicitConversion);
@@ -1572,7 +1572,7 @@ public class BasicBodyAnalyzer
         IExpressionSyntax selfArgSyntax,
         ResultVariable? selfArgVariable,
         Parameter selfParam,
-        FlowState flow,
+        FlowStateMutable flow,
         bool enact,
         Conversion priorConversion)
     {
@@ -1600,7 +1600,7 @@ public class BasicBodyAnalyzer
         IInvocationExpressionSyntax invocation,
         FunctionType? functionType,
         ArgumentResults arguments,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         if (functionType is not null)
         {
@@ -1622,7 +1622,7 @@ public class BasicBodyAnalyzer
 
     private ExpressionResult InferBlockType(
         IBlockOrResultSyntax blockOrResult,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         switch (blockOrResult)
         {
@@ -1755,7 +1755,7 @@ public class BasicBodyAnalyzer
         Promise<TSymbol?> promise,
         IFixedSet<TSymbol> matchingSymbols,
         ArgumentResults arguments,
-        FlowState flow)
+        FlowStateMutable flow)
         where TSymbol : FunctionOrInitializerSymbol
     {
         var validOverloads = SelectOverload(null, matchingSymbols, arguments, flow);
@@ -1784,7 +1784,7 @@ public class BasicBodyAnalyzer
         IInvocationExpressionSyntax invocation,
         IFixedSet<MethodSymbol> methodSymbols,
         ArgumentResults arguments,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         var selfResult = arguments.Self.Assigned();
         var selfArgumentType = selfResult.Type;
@@ -1814,7 +1814,7 @@ public class BasicBodyAnalyzer
         INewObjectExpressionSyntax invocation,
         IFixedSet<ConstructorSymbol>? constructorSymbols,
         ArgumentResults arguments,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         Contextualized<ConstructorSymbol>? constructor = null;
         if (constructorSymbols is not null)
@@ -1851,7 +1851,7 @@ public class BasicBodyAnalyzer
     private (ExpressionResult, DataType) CheckForeachInType(
         DataType? declaredType,
         IForeachExpressionSyntax exp,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         var inExpression = exp.InExpression;
         var result = InferType(inExpression, flow);
@@ -1921,7 +1921,7 @@ public class BasicBodyAnalyzer
     private DataType InferNumericOperatorType(
         ExpressionResult leftOperand,
         ExpressionResult rightOperand,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         var leftType = leftOperand.Type.Assigned();
         var rightType = rightOperand.Type.Assigned();
@@ -1936,7 +1936,7 @@ public class BasicBodyAnalyzer
     private DataType InferComparisonOperatorType(
         ExpressionResult leftOperand,
         ExpressionResult rightOperand,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         var leftType = leftOperand.Type.Assigned();
         var rightType = rightOperand.Type.Assigned();
@@ -1965,7 +1965,7 @@ public class BasicBodyAnalyzer
     private DataType InferRangeOperatorType(
         ExpressionResult leftOperand,
         ExpressionResult rightOperand,
-        FlowState flow)
+        FlowStateMutable flow)
     {
         AddImplicitConversionIfNeeded(leftOperand, DataType.Int, flow);
         AddImplicitConversionIfNeeded(rightOperand, DataType.Int, flow);
@@ -1997,7 +1997,7 @@ public class BasicBodyAnalyzer
         DataType? contextType,
         IFixedSet<TSymbol> symbols,
         ArgumentResults arguments,
-        FlowState flow)
+        FlowStateMutable flow)
         where TSymbol : InvocableSymbol
     {
         var contextualizedSymbols = CompatibleOverloads(contextType, symbols, arguments, flow).ToFixedSet();
@@ -2009,7 +2009,7 @@ public class BasicBodyAnalyzer
         DataType? contextType,
         IFixedSet<TSymbol> symbols,
         ArgumentResults arguments,
-        FlowState flow)
+        FlowStateMutable flow)
         where TSymbol : InvocableSymbol
     {
         var contextualizedSymbols = Contextualize(contextType, symbols);

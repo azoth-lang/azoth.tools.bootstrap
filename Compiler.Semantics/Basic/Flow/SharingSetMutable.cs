@@ -8,7 +8,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 
-public class SharingSet : IReadOnlySharingSet
+public class SharingSetMutable : IReadOnlySharingSet
 {
     /// <summary>
     /// Whether this sharing set contains lent references that must not be mixed with other sharing
@@ -22,19 +22,19 @@ public class SharingSet : IReadOnlySharingSet
     public bool IsIsolated => variables.Count == 1;
     public bool IsAlive => variables.Any(v => v.KeepsSetAlive);
 
-    public SharingSet(bool isLent, IFixedSet<ISharingVariable> variables)
+    public SharingSetMutable(bool isLent, IFixedSet<ISharingVariable> variables)
     {
         IsLent = isLent;
         this.variables = variables.ToHashSet();
     }
 
-    public SharingSet(IReadOnlySharingSet set)
+    public SharingSetMutable(IReadOnlySharingSet set)
     {
         IsLent = set.IsLent;
         variables = set.ToHashSet();
     }
 
-    public SharingSet(ISharingVariable variable, bool isLent)
+    public SharingSetMutable(ISharingVariable variable, bool isLent)
     {
         IsLent = isLent;
         variables = new HashSet<ISharingVariable> { variable };
@@ -66,7 +66,7 @@ public class SharingSet : IReadOnlySharingSet
     /// </summary>
     /// <returns>Whether the union was allowed. If these sets are not allowed to be unioned,
     /// <see langword="false"/> will be returned.</returns>
-    public bool UnionWith(SharingSet smallerSet)
+    public bool UnionWith(SharingSetMutable smallerSet)
     {
         if ((IsLent && !smallerSet.IsIsolated)
             || (smallerSet.IsLent && !IsIsolated))
@@ -80,16 +80,16 @@ public class SharingSet : IReadOnlySharingSet
     public void Clear() => variables.Clear();
 
     #region Equals
-    public bool Equals(SharingSet? other)
+    public bool Equals(SharingSetMutable? other)
         => other is not null && IsLent == other.IsLent && variables.Equals(other.variables);
 
-    public override bool Equals(object? obj) => obj is SharingSet other && Equals(other);
+    public override bool Equals(object? obj) => obj is SharingSetMutable other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(IsLent, variables);
 
-    public static bool operator ==(SharingSet left, SharingSet right) => left.Equals(right);
+    public static bool operator ==(SharingSetMutable left, SharingSetMutable right) => left.Equals(right);
 
-    public static bool operator !=(SharingSet left, SharingSet right) => !left.Equals(right);
+    public static bool operator !=(SharingSetMutable left, SharingSetMutable right) => !left.Equals(right);
     #endregion
 
     public override string ToString()

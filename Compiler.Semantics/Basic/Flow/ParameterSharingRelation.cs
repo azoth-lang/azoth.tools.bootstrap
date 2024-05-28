@@ -29,9 +29,9 @@ public sealed class ParameterSharingRelation
     #region Static Sharing Sets Builder Methods
     private static IFixedSet<SharingSetSnapshot> BuildSharingSets(IFixedList<BindingSymbol> parameterSymbols)
     {
-        var sharingSets = new HashSet<SharingSet>();
+        var sharingSets = new HashSet<SharingSetMutable>();
         uint lentParameterNumber = 0;
-        SharingSet? nonLentParametersSet = null;
+        SharingSetMutable? nonLentParametersSet = null;
         foreach (var parameterSymbol in parameterSymbols)
         {
             var setForParameter = DeclareVariable(sharingSets, parameterSymbol);
@@ -60,7 +60,7 @@ public sealed class ParameterSharingRelation
         return sharingSets.Select(s => s.Snapshot()).ToFixedSet();
     }
 
-    private static SharingSet? DeclareVariable(HashSet<SharingSet> sets, BindingSymbol symbol)
+    private static SharingSetMutable? DeclareVariable(HashSet<SharingSetMutable> sets, BindingSymbol symbol)
     {
         // Other types don't participate in sharing
         if (!symbol.SharingIsTracked()) return null;
@@ -69,14 +69,14 @@ public sealed class ParameterSharingRelation
         return DeclareVariable(sets, variable, variable.IsLent);
     }
 
-    private static SharingSet DeclareVariable(HashSet<SharingSet> sets, ISharingVariable variable, bool isLent)
+    private static SharingSetMutable DeclareVariable(HashSet<SharingSetMutable> sets, ISharingVariable variable, bool isLent)
     {
-        var set = new SharingSet(variable, isLent);
+        var set = new SharingSetMutable(variable, isLent);
         sets.Add(set);
         return set;
     }
 
-    public static void DeclareLentParameterReference(SharingSet set, uint lentParameterNumber)
+    public static void DeclareLentParameterReference(SharingSetMutable set, uint lentParameterNumber)
         => set.Declare(ExternalReference.CreateLentParameter(lentParameterNumber));
     #endregion
 }

@@ -14,7 +14,7 @@ public class SharingSetSnapshot
         Variables = variables;
     }
 
-    public SharingSet MutableCopy() => new(IsLent, Variables);
+    public SharingSetMutable MutableCopy() => new(IsLent, Variables);
 
     public override string ToString()
     {

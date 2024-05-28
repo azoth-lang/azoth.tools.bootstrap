@@ -20,7 +20,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// </summary>
 /// <remarks>Flow is based of of <see cref="BindingSymbol"/> because you can do things like change
 /// the type of <s>self</s> if it started out isolated.</remarks>
-public sealed class FlowState
+public sealed class FlowStateMutable
 {
     private readonly Diagnostics diagnostics;
     private readonly CodeFile file;
@@ -32,14 +32,14 @@ public sealed class FlowState
     /// <summary>
     /// All the distinct subsets of variables
     /// </summary>
-    private readonly HashSet<SharingSet> sets;
+    private readonly HashSet<SharingSetMutable> sets;
 
     /// <summary>
     /// This is a lookup of what set each variable is contained in.
     /// </summary>
-    private readonly Dictionary<ISharingVariable, SharingSet> subsetFor;
+    private readonly Dictionary<ISharingVariable, SharingSetMutable> subsetFor;
 
-    public FlowState(
+    public FlowStateMutable(
         Diagnostics diagnostics,
         CodeFile file,
         ParameterSharingRelation parameterSharing)
@@ -49,16 +49,16 @@ public sealed class FlowState
             TrackCapabilities(symbol);
     }
 
-    public FlowState(Diagnostics diagnostics, CodeFile file)
-        : this(diagnostics, file, new(), Enumerable.Empty<SharingSet>(), new(), new())
+    public FlowStateMutable(Diagnostics diagnostics, CodeFile file)
+        : this(diagnostics, file, new(), Enumerable.Empty<SharingSetMutable>(), new(), new())
     {
     }
 
-    private FlowState(
+    private FlowStateMutable(
         Diagnostics diagnostics,
         CodeFile file,
         Dictionary<ICapabilitySharingVariable, FlowCapabilities> capabilities,
-        IEnumerable<SharingSet> sharing,
+        IEnumerable<SharingSetMutable> sharing,
         ResultVariableFactory resultVariableFactory,
         TempConversionFactory tempConversionFactory)
     {
@@ -74,8 +74,8 @@ public sealed class FlowState
         this.tempConversionFactory = tempConversionFactory;
     }
 
-    public FlowState Fork()
-        => new(diagnostics, file, capabilities, sets.Select(s => new SharingSet(s)), resultVariableFactory, tempConversionFactory);
+    public FlowStateMutable Fork()
+        => new(diagnostics, file, capabilities, sets.Select(s => new SharingSetMutable(s)), resultVariableFactory, tempConversionFactory);
 
     /// <summary>
     /// Declare the given symbol and combine it with the result variable.
@@ -344,7 +344,7 @@ public sealed class FlowState
         }
     }
 
-    public void Merge(FlowState other)
+    public void Merge(FlowStateMutable other)
     {
         foreach (var set in (IEnumerable<IReadOnlySharingSet>)other.sets)
         {
@@ -352,7 +352,7 @@ public sealed class FlowState
             if (representative is null)
             {
                 // Whole set is missing, copy and add it
-                var newSet = new SharingSet(set);
+                var newSet = new SharingSetMutable(set);
                 sets.Add(newSet);
                 foreach (var variable in newSet)
                     subsetFor.Add(variable, newSet);
@@ -388,9 +388,9 @@ public sealed class FlowState
         => capabilities.Add(result, flowCapabilities);
 
     #region Sharing Management
-    private SharingSet SharingSet(BindingVariable variable) => SharingSet((ISharingVariable)variable);
+    private SharingSetMutable SharingSet(BindingVariable variable) => SharingSet((ISharingVariable)variable);
 
-    private SharingSet SharingSet(ISharingVariable variable)
+    private SharingSetMutable SharingSet(ISharingVariable variable)
     {
         if (!subsetFor.TryGetValue(variable, out var set))
             throw new InvalidOperationException($"Sharing variable {variable} no longer declared.");
@@ -400,7 +400,7 @@ public sealed class FlowState
 
     private void SharingDeclare(ISharingVariable variable, bool isLent)
     {
-        var set = new SharingSet(variable, isLent);
+        var set = new SharingSetMutable(variable, isLent);
         sets.Add(set);
         subsetFor.Add(variable, set);
     }
