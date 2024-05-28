@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -52,6 +53,9 @@ internal static class TypeMemberDeclarationsAspect
         if (!returnType.IsOutputSafe(nonwritableSelf))
             diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(node.File, node.Return!.Syntax, returnType));
     }
+
+    public static ValueId Parameter_ValueId(IParameterNode node)
+        => (node.Predecessor()?.ValueId.Scope ?? new ValueIdScope()).CreateValueId();
 
     public static Parameter NamedParameter_ParameterType(INamedParameterNode node)
         => new(node.IsLentBinding, node.Type);
@@ -217,4 +221,7 @@ internal static class TypeMemberDeclarationsAspect
 
     public static FunctionType AssociatedFunctionDeclaration_Type(IAssociatedFunctionDefinitionNode node)
         => FunctionType(node.Parameters, node.Return);
+
+    public static ValueIdScope Body_ValueIdScope(IBodyNode node)
+        => node.Predecessor()?.ValueId.Scope ?? new ValueIdScope();
 }

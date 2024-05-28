@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -19,6 +20,7 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
     StandardName INamedDeclarationNode.Name => Name;
     public IMethodSelfParameterNode SelfParameter { get; }
     public IFixedList<INamedParameterNode> Parameters { get; }
+    public abstract IBodyNode? Body { get; }
     public virtual ITypeNode? Return { get; }
     private ValueAttribute<MethodSymbol> symbol;
     public override MethodSymbol Symbol
@@ -47,6 +49,8 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
         if (descendant is INamedParameterNode parameter
             && Parameters.IndexOf(parameter) is int index)
             return index == 0 ? SelfParameter : Parameters[index - 1];
+        if (descendant == Body && Body is not null)
+            return Parameters.LastOrDefault();
 
         return base.InheritedPredecessor(child, descendant);
     }

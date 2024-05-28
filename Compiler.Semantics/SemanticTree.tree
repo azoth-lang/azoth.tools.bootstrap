@@ -191,7 +191,7 @@ FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyn
     ContainingTypeDefinition:`ITypeDefinitionNode` ReferencedField:`IFieldDefinitionNode`?;
 
 // ---------- Function Parts
-Body: BodyOrBlock;
+Body: BodyOrBlock = ValueIdScope:`ValueIdScope`;
 BlockBody: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
 ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 

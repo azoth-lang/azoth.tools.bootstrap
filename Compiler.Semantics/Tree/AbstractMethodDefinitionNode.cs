@@ -12,6 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class AbstractMethodDefinitionNode : MethodDefinitionNode, IAbstractMethodDefinitionNode
 {
     public override IAbstractMethodDefinitionSyntax Syntax { get; }
+    public override IBodyNode? Body => null;
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     private ValueAttribute<ObjectType> containingDeclaredType;
     public ObjectType ContainingDeclaredType

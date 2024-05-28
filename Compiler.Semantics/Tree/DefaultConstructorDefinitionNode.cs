@@ -10,6 +10,7 @@ internal sealed class DefaultConstructorDefinitionNode : ConstructorDefinitionNo
 {
     public override IConstructorDefinitionSyntax? Syntax => null;
     public override IConstructorSelfParameterNode? SelfParameter => null;
+    public override IBodyNode? Body => null;
     private ValueAttribute<ConstructorSymbol> symbol;
     public override ConstructorSymbol Symbol
         => symbol.TryGetValue(out var value) ? value

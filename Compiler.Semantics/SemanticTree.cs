@@ -38,8 +38,14 @@ public partial interface ICapabilityNode
 #endregion
 
 #region Parameters
-
 public partial interface IParameterNode
+{
+    IParameterNode? Predecessor();
+}
+#endregion
+
+#region Function Parts
+public partial interface IBodyNode
 {
     IParameterNode? Predecessor();
 }

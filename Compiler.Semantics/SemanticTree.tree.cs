@@ -859,6 +859,7 @@ public partial interface IFieldParameterNode : ISemanticNode, IConstructorOrInit
     typeof(IExpressionBodyNode))]
 public partial interface IBodyNode : IBodyOrBlockNode
 {
+    ValueIdScope ValueIdScope { get; }
 }
 
 public partial interface IBlockBodyNode : IBodyNode

@@ -9,7 +9,7 @@ internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetter
 {
     public override IGetterMethodDefinitionSyntax Syntax { get; }
     public override ITypeNode Return => base.Return!;
-    public IBodyNode Body { get; }
+    public override IBodyNode Body { get; }
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value

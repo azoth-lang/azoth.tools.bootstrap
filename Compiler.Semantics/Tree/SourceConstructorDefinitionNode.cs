@@ -11,7 +11,7 @@ internal sealed class SourceConstructorDefinitionNode : ConstructorDefinitionNod
 {
     public override IConstructorDefinitionSyntax Syntax { get; }
     public override IConstructorSelfParameterNode SelfParameter { get; }
-    public IBlockBodyNode Body { get; }
+    public override IBlockBodyNode Body { get; }
     private ValueAttribute<ConstructorSymbol> symbol;
     public override ConstructorSymbol Symbol
         => symbol.TryGetValue(out var value) ? value

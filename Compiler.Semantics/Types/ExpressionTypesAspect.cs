@@ -1,6 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using ExhaustiveMatching;
@@ -42,7 +41,4 @@ public static class ExpressionTypesAspect
                 diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(node.File, node.Syntax,
                     arg.Parameter, arg.Argument));
     }
-
-    public static ValueId Parameter_ValueId(IParameterNode node)
-        => (node.Predecessor()?.ValueId.Scope ?? new ValueIdScope()).CreateValueId();
 }

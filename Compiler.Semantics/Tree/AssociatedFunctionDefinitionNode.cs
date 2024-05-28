@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -57,6 +58,8 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
     {
         if (descendant is INamedParameterNode parameter && Parameters.IndexOf(parameter) is int index)
             return index == 0 ? null : Parameters[index - 1];
+        if (descendant == Body)
+            return Parameters.LastOrDefault();
 
         return base.InheritedPredecessor(child, descendant);
     }

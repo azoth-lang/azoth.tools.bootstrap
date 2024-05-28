@@ -2,6 +2,8 @@ using System;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -12,6 +14,10 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
     public IResultStatementNode ResultStatement { get; }
     private readonly IFixedList<IStatementNode> statements;
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements => statements;
+    private ValueAttribute<ValueIdScope> valueIdScope;
+    public ValueIdScope ValueIdScope
+        => valueIdScope.TryGetValue(out var value) ? value
+            : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.Body_ValueIdScope);
 
     public ExpressionBodyNode(IExpressionBodySyntax syntax, IResultStatementNode resultStatement)
     {
@@ -27,4 +33,6 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
         var statementIndex = child == ResultStatement ? 0 : throw new InvalidOperationException("Caller is not a child");
         return LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, statementIndex);
     }
+
+    public IParameterNode? Predecessor() => (IParameterNode?)InheritedPredecessor();
 }

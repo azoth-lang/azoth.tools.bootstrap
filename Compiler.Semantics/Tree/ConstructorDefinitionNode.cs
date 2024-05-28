@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -15,7 +16,7 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
     public override IdentifierName? Name => Syntax?.Name;
     public abstract IConstructorSelfParameterNode? SelfParameter { get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
-
+    public abstract IBodyNode? Body { get; }
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
@@ -34,6 +35,8 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
         if (descendant is IConstructorOrInitializerParameterNode parameter
             && Parameters.IndexOf(parameter) is int index)
             return index == 0 ? SelfParameter : Parameters[index - 1];
+        if (descendant == Body)
+            return Parameters.LastOrDefault();
 
         return base.InheritedPredecessor(child, descendant);
     }

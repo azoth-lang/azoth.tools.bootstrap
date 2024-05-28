@@ -17,8 +17,7 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
     private ValueAttribute<ValueId> valueId;
     public ValueId ValueId
         => valueId.TryGetValue(out var value) ? value
-            : valueId.GetValue(this, ExpressionTypesAspect.Parameter_ValueId);
-
+            : valueId.GetValue(this, TypeMemberDeclarationsAspect.Parameter_ValueId);
 
     private protected ParameterNode() { }
 
