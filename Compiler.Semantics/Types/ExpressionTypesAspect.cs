@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -79,4 +80,12 @@ public static class ExpressionTypesAspect
 
     public static DataType UnsafeExpression_Type(IUnsafeExpressionNode node)
         => node.FinalExpression.Type;
+
+    public static IChildNode? InvocationExpression_Rewrite_FunctionGroupNameExpression(IInvocationExpressionNode node)
+    {
+        if (node.Expression is not IFunctionGroupNameNode function)
+            return null;
+
+        return new FunctionInvocationExpressionNode(node.Syntax, function, node.CurrentArguments);
+    }
 }

@@ -33,7 +33,7 @@ public sealed class ChildList<T> : IFixedList<T>
         }
     }
 
-    internal IEnumerable<T> Current
+    public IEnumerable<T> Current
     {
         get
         {

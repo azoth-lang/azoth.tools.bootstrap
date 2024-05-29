@@ -2,6 +2,7 @@
 ◊root Semantic;
 ◊prefix I;
 ◊suffix Node;
+◊using System.Collections.Generic;
 ◊using System.Numerics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -272,7 +273,8 @@ NextExpression <: NeverTypedExpression = Syntax:`INextExpressionSyntax`;
 ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax` Value:AmbiguousExpression?;
 
 // ---------- Invocation Expressions
-InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax` Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
+InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
+    Expression:AmbiguousExpression Arguments:AmbiguousExpression* CurrentArguments:`IEnumerable<IAmbiguousExpressionNode>`;
 FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax` Function:FunctionGroupName Arguments:AmbiguousExpression*;
 
 // ---------- Ambiguous Name Expressions

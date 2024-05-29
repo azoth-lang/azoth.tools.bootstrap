@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -1414,6 +1415,7 @@ public partial interface IInvocationExpressionNode : IAmbiguousExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IEnumerable<IAmbiguousExpressionNode> CurrentArguments { get; }
 }
 
 public partial interface IFunctionInvocationExpressionNode : ISemanticNode, IExpressionNode

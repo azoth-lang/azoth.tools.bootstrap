@@ -7,11 +7,12 @@ internal sealed class AsyncStartExpressionNode : ExpressionNode, IAsyncStartExpr
 {
     public override IAsyncStartExpressionSyntax Syntax { get; }
     public bool Scheduled => Syntax.Scheduled;
-    public IAmbiguousExpressionNode Expression { get; }
+    private Child<IAmbiguousExpressionNode> expression;
+    public IAmbiguousExpressionNode Expression => expression.Value;
 
     public AsyncStartExpressionNode(IAsyncStartExpressionSyntax syntax, IAmbiguousExpressionNode expression)
     {
         Syntax = syntax;
-        Expression = Child.Attach(this, expression);
+        this.expression = Child.Create(this, expression);
     }
 }
