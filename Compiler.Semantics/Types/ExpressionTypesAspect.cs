@@ -76,4 +76,7 @@ public static class ExpressionTypesAspect
 
     public static ValueId BindingPattern_ValueId(IBindingPatternNode node)
         => node.PreviousValueId().CreateNext();
+
+    public static DataType UnsafeExpression_Type(IUnsafeExpressionNode node)
+        => node.FinalExpression.Type;
 }

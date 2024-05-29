@@ -1223,6 +1223,7 @@ public partial interface IUnsafeExpressionNode : ISemanticNode, IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
+    IExpressionNode FinalExpression { get; }
 }
 
 [Closed(
