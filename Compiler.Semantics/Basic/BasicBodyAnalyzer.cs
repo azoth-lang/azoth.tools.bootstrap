@@ -168,7 +168,7 @@ public class BasicBodyAnalyzer
         var result = ResolveTypes(body.ResultStatement, StatementContext.BeforeResult, flow)!;
         // local variables are no longer in scope and isolated parameters have no external references
         flow.DropBindingsForReturn();
-        result = AddImplicitConversionIfNeeded(result, expectedType, flow);
+        result = AddImplicitConversionIfNeeded(result, expectedType, allowMoveOrFreeze: true, flow);
         CheckTypeCompatibility(expectedType, result.Syntax);
     }
 
@@ -232,7 +232,7 @@ public class BasicBodyAnalyzer
 
         if (initializerResult is not null)
         {
-            initializerResult = AddImplicitConversionIfNeeded(initializerResult, variableType, flow);
+            initializerResult = AddImplicitConversionIfNeeded(initializerResult, variableType, allowMoveOrFreeze: true, flow);
             if (!variableType.IsAssignableFrom(initializerResult.Type))
                 diagnostics.Add(TypeError.CannotImplicitlyConvert(file, initializerResult.Syntax, initializerResult.Type, variableType));
         }
@@ -284,7 +284,7 @@ public class BasicBodyAnalyzer
     public void CheckFieldInitializerType(IExpressionSyntax expression, DataType expectedType)
     {
         var flow = new FlowStateMutable(diagnostics, file);
-        CheckIndependentExpressionType(expression, expectedType, flow);
+        CheckIndependentExpressionType(expression, expectedType, allowMoveOrFreeze: true, flow);
     }
 
     /// <summary>
@@ -294,10 +294,11 @@ public class BasicBodyAnalyzer
     private void CheckIndependentExpressionType(
         IExpressionSyntax expression,
         DataType expectedType,
+        bool allowMoveOrFreeze,
         FlowStateMutable flow)
     {
         var result = InferType(expression, flow);
-        result = AddImplicitConversionIfNeeded(result, expectedType, flow);
+        result = AddImplicitConversionIfNeeded(result, expectedType, allowMoveOrFreeze, flow);
         CheckTypeCompatibility(expectedType, expression);
         flow.Drop(result.Variable);
     }
@@ -308,8 +309,9 @@ public class BasicBodyAnalyzer
     private ExpressionResult AddImplicitConversionIfNeeded(
         ExpressionResult expression,
         Parameter expectedType,
+        bool allowMoveOrFreeze,
         FlowStateMutable flow)
-        => AddImplicitConversionIfNeeded(expression, expectedType.Type, flow);
+        => AddImplicitConversionIfNeeded(expression, expectedType.Type, allowMoveOrFreeze, flow);
 
     /// <summary>
     /// Create an implicit conversion if needed and allowed.
@@ -317,12 +319,13 @@ public class BasicBodyAnalyzer
     private ExpressionResult AddImplicitConversionIfNeeded(
         ExpressionResult expression,
         DataType expectedType,
+        bool allowMoveOrFreeze,
         FlowStateMutable flow)
     {
         ResolveFunctionAndMethodGroups(expression, expectedType);
         var syntax = expression.Syntax;
         var conversion = CreateImplicitConversion(expectedType,
-            expression.Type, expression.Variable, syntax.ImplicitConversion, flow, out var newResult);
+            expression.Type, expression.Variable, allowMoveOrFreeze, syntax.ImplicitConversion, flow, out var newResult);
         if (conversion is not null) syntax.AddConversion(conversion);
         return expression with { Variable = newResult };
     }
@@ -361,6 +364,7 @@ public class BasicBodyAnalyzer
         DataType toType,
         DataType fromType,
         ResultVariable? fromResult,
+        bool allowMoveOrFreeze,
         Conversion priorConversion,
         FlowStateMutable flow,
         out ResultVariable? newResult,
@@ -375,12 +379,12 @@ public class BasicBodyAnalyzer
                 // Direct subtype
                 if (to.IsAssignableFrom(from))
                     return null;
-                var liftedConversion = CreateImplicitConversion(to, from, fromResult, IdentityConversion.Instance, flow, out newResult);
+                var liftedConversion = CreateImplicitConversion(to, from, fromResult, allowMoveOrFreeze, IdentityConversion.Instance, flow, out newResult);
                 return liftedConversion is null ? null : new LiftedConversion(liftedConversion, priorConversion);
             case (OptionalType { Referent: var to }, not OptionalType):
                 if (!to.IsAssignableFrom(fromType))
                 {
-                    var conversion = CreateImplicitConversion(to, fromType, fromResult, priorConversion, flow, out newResult);
+                    var conversion = CreateImplicitConversion(to, fromType, fromResult, allowMoveOrFreeze, priorConversion, flow, out newResult);
                     if (conversion is null) return null; // Not able to convert to the referent type
                     priorConversion = conversion;
                 }
@@ -414,13 +418,15 @@ public class BasicBodyAnalyzer
                 return !requireSigned || to.DeclaredType.IsSigned ? new SimpleTypeConversion(to.DeclaredType, priorConversion) : null;
             }
             case (ReferenceType { IsTemporarilyConstantReference: true } to, ReferenceType { AllowsFreeze: true } from)
-                when to.BareType.IsAssignableFrom(targetAllowsWrite: false, from.BareType):
+                when to.BareType.IsAssignableFrom(targetAllowsWrite: false, from.BareType)
+                     && allowMoveOrFreeze:
             {
                 if (enact) newResult = flow.TempFreeze(fromResult!);
                 return new FreezeConversion(priorConversion, ConversionKind.Temporary);
             }
             case (ReferenceType { IsConstantReference: true } to, ReferenceType { AllowsFreeze: true } from)
-                when to.BareType.IsAssignableFrom(targetAllowsWrite: false, from.BareType):
+                when to.BareType.IsAssignableFrom(targetAllowsWrite: false, from.BareType)
+                     && allowMoveOrFreeze:
             {
                 // Try to recover const. Note a variable name can never be frozen because the result is an alias.
                 if (flow.CanFreeze(fromResult))
@@ -428,13 +434,15 @@ public class BasicBodyAnalyzer
                 return null;
             }
             case (ReferenceType { IsTemporarilyIsolatedReference: true } to, ReferenceType { AllowsRecoverIsolation: true } from)
-                when to.BareType.IsAssignableFrom(targetAllowsWrite: true, from.BareType):
+                when to.BareType.IsAssignableFrom(targetAllowsWrite: true, from.BareType)
+                     && allowMoveOrFreeze:
             {
                 if (enact) newResult = flow.TempMove(fromResult!);
                 return new MoveConversion(priorConversion, ConversionKind.Temporary);
             }
             case (ReferenceType { IsIsolatedReference: true } to, ReferenceType { AllowsRecoverIsolation: true } from)
-                when to.BareType.IsAssignableFrom(targetAllowsWrite: true, from.BareType):
+                when to.BareType.IsAssignableFrom(targetAllowsWrite: true, from.BareType)
+                    && allowMoveOrFreeze:
             {
                 // Try to recover isolation. Note a variable name is never isolated because the result is an alias.
                 if (flow.IsIsolated(fromResult))
@@ -535,7 +543,7 @@ public class BasicBodyAnalyzer
                     var result = InferType(exp.Value, flow);
                     // local variables are no longer in scope and isolated parameters have no external references
                     flow.DropBindingsForReturn();
-                    result = AddImplicitConversionIfNeeded(result, expectedType, flow);
+                    result = AddImplicitConversionIfNeeded(result, expectedType, allowMoveOrFreeze: true, flow);
                     CheckTypeCompatibility(expectedType, exp.Value);
                     // TODO use proper check instead of `is not ValueType`
                     if (flow.IsLent(result.Variable) && expectedReturnType.Type is not ValueType)
@@ -692,7 +700,7 @@ public class BasicBodyAnalyzer
                         else
                         {
                             expType = DataType.Bool;
-                            result = AddImplicitConversionIfNeeded(result, expType, flow);
+                            result = AddImplicitConversionIfNeeded(result, expType, allowMoveOrFreeze: false, flow);
                             CheckTypeCompatibility(expType, exp.Operand);
                             flow.Drop(result.Variable);
                             resultVariable = null;
@@ -802,7 +810,7 @@ public class BasicBodyAnalyzer
             }
             case IWhileExpressionSyntax exp:
             {
-                CheckIndependentExpressionType(exp.Condition, DataType.Bool, flow);
+                CheckIndependentExpressionType(exp.Condition, DataType.Bool, allowMoveOrFreeze: false, flow);
                 var result = InferBlockType(exp.Block, flow);
                 // TODO assign correct type to the expression
                 exp.DataType.Fulfill(DataType.Void);
@@ -825,7 +833,7 @@ public class BasicBodyAnalyzer
             }
             case IIfExpressionSyntax exp:
             {
-                CheckIndependentExpressionType(exp.Condition, DataType.Bool, flow);
+                CheckIndependentExpressionType(exp.Condition, DataType.Bool, allowMoveOrFreeze: false, flow);
                 var elseClause = exp.ElseClause;
                 // Even if there is no else clause, the if could be skipped. Still need to join
                 FlowStateMutable elseFlow = flow.Fork();
@@ -915,7 +923,7 @@ public class BasicBodyAnalyzer
             {
                 var left = InferAssignmentTargetType(exp.LeftOperand, flow);
                 var right = InferType(exp.RightOperand, flow);
-                right = AddImplicitConversionIfNeeded(right, left.Type, flow);
+                right = AddImplicitConversionIfNeeded(right, left.Type, allowMoveOrFreeze: false, flow);
                 if (!left.Type.IsAssignableFrom(right.Type))
                     diagnostics.Add(TypeError.CannotImplicitlyConvert(file,
                         exp.RightOperand, right.Type, left.Type));
@@ -1139,7 +1147,7 @@ public class BasicBodyAnalyzer
     {
         foreach (var (arg, parameter) in arguments.Arguments.EquiZip(expectedTypes))
         {
-            AddImplicitConversionIfNeeded(arg, parameter, flow);
+            AddImplicitConversionIfNeeded(arg, parameter, allowMoveOrFreeze: false, flow);
             CheckTypeCompatibility(parameter.Type, arg.Syntax);
             // TODO update the expression result
         }
@@ -1158,7 +1166,7 @@ public class BasicBodyAnalyzer
     {
         var argType = arg.Type;
         var priorConversion = arg.Syntax.ImplicitConversion;
-        var conversion = CreateImplicitConversion(parameter.Type, arg.Type, arg.Variable,
+        var conversion = CreateImplicitConversion(parameter.Type, arg.Type, arg.Variable, allowMoveOrFreeze: isSelf,
             priorConversion, flow, out _, enact: false);
         if (conversion is not null)
         {
@@ -1476,7 +1484,7 @@ public class BasicBodyAnalyzer
             var selfParamType = method.SelfParameterType!.Value;
             var selfParamUpperBound = selfParamType.ToUpperBound();
             var selfResult = arguments.Self.Assigned();
-            selfResult = AddImplicitConversionIfNeeded(selfResult, selfParamUpperBound, flow);
+            selfResult = AddImplicitConversionIfNeeded(selfResult, selfParamUpperBound, allowMoveOrFreeze: true, flow);
             AddImplicitMoveIfNeeded(selfResult, selfParamType, flow);
             AddImplicitFreezeIfNeeded(selfResult, selfParamType, flow);
             CheckTypeCompatibility(selfParamUpperBound.Type, selfResult.Syntax);
@@ -1885,7 +1893,8 @@ public class BasicBodyAnalyzer
 
         if (declaredType is not null)
         {
-            var conversion = CreateImplicitConversion(declaredType, iteratedType, null, inExpression.ImplicitConversion, flow,
+            var conversion = CreateImplicitConversion(declaredType, iteratedType, null, allowMoveOrFreeze: false,
+                inExpression.ImplicitConversion, flow,
                 out _, enact: false);
             iteratedType = conversion is null ? iteratedType : conversion.Apply(iteratedType);
             if (!declaredType.IsAssignableFrom(iteratedType))
@@ -1920,8 +1929,8 @@ public class BasicBodyAnalyzer
         var commonType = leftType.NumericOperatorCommonType(rightType);
         if (commonType is null) return DataType.Unknown;
 
-        AddImplicitConversionIfNeeded(leftOperand, commonType, flow);
-        AddImplicitConversionIfNeeded(rightOperand, commonType, flow);
+        AddImplicitConversionIfNeeded(leftOperand, commonType, allowMoveOrFreeze: false, flow);
+        AddImplicitConversionIfNeeded(rightOperand, commonType, allowMoveOrFreeze: false, flow);
         return commonType;
     }
 
@@ -1935,8 +1944,8 @@ public class BasicBodyAnalyzer
         var commonType = leftType.NumericOperatorCommonType(rightType);
         if (commonType is null) return DataType.Unknown;
 
-        AddImplicitConversionIfNeeded(leftOperand, commonType, flow);
-        AddImplicitConversionIfNeeded(rightOperand, commonType, flow);
+        AddImplicitConversionIfNeeded(leftOperand, commonType, allowMoveOrFreeze: false, flow);
+        AddImplicitConversionIfNeeded(rightOperand, commonType, allowMoveOrFreeze: false, flow);
         return DataType.Bool;
     }
 
@@ -1959,8 +1968,8 @@ public class BasicBodyAnalyzer
         ExpressionResult rightOperand,
         FlowStateMutable flow)
     {
-        AddImplicitConversionIfNeeded(leftOperand, DataType.Int, flow);
-        AddImplicitConversionIfNeeded(rightOperand, DataType.Int, flow);
+        AddImplicitConversionIfNeeded(leftOperand, DataType.Int, allowMoveOrFreeze: false, flow);
+        AddImplicitConversionIfNeeded(rightOperand, DataType.Int, allowMoveOrFreeze: false, flow);
         return rangeSymbol?.DeclaresType.With(Capability.Constant, FixedList.Empty<DataType>())
                ?? DataType.Unknown;
     }
