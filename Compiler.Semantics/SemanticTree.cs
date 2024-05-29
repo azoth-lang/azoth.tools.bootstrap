@@ -62,11 +62,6 @@ public partial interface IStatementNode
 {
     LexicalScope GetLexicalScope();
     /// <summary>
-    /// The predecessor of the whole statement as given by the parent of this statement.
-    /// </summary>
-    /// <returns></returns>
-    IFlowNode InheritedPredecessor();
-    /// <summary>
     /// The flow node that executes before this statement completes in the flow.
     /// </summary>
     IFlowNode Predecessor();

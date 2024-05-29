@@ -105,6 +105,9 @@ internal class SemanticTreeValidator
                 _ = n.Referent;
                 //_ = n.Type;
                 break;
+            case IVariableDeclarationStatementNode n:
+                _ = n.ValueId;
+                break;
         }
 
         foreach (var child in node.Children())
