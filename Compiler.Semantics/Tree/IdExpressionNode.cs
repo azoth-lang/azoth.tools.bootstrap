@@ -12,6 +12,7 @@ internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
     public override IIdExpressionSyntax Syntax { get; }
     private Child<IAmbiguousExpressionNode> referent;
     public IAmbiguousExpressionNode Referent => referent.Value;
+    public IExpressionNode FinalReferent => (IExpressionNode)referent.FinalValue;
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value

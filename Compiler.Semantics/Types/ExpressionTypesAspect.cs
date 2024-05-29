@@ -49,7 +49,7 @@ public static class ExpressionTypesAspect
 
     public static DataType IdExpression_Type(IIdExpressionNode node)
     {
-        var referentType = ((IExpressionNode)node.Referent).Type;
+        var referentType = node.FinalReferent.Type;
         if (referentType is CapabilityType capabilityType)
             return capabilityType.With(Capability.Identity);
         return DataType.Unknown;

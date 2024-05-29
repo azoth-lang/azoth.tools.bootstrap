@@ -1320,6 +1320,7 @@ public partial interface IIdExpressionNode : ISemanticNode, IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Referent { get; }
+    IExpressionNode FinalReferent { get; }
 }
 
 public partial interface IConversionExpressionNode : ISemanticNode, IExpressionNode

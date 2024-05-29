@@ -256,7 +256,7 @@ StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionS
 AssignmentExpression <: Expression = Syntax:`IAssignmentExpressionSyntax` LeftOperand:AssignableExpression Operator:`AssignmentOperator` RightOperand:AmbiguousExpression;
 BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax` LeftOperand:AmbiguousExpression Operator:`BinaryOperator` RightOperand:AmbiguousExpression;
 UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax` Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:AmbiguousExpression;
-IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression;
+IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression FinalReferent:`IExpressionNode`;
 ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax` Referent:AmbiguousExpression Operator:`ConversionOperator` ConvertToType:Type;
 PatternMatchExpression <: Expression = Syntax:`IPatternMatchExpressionSyntax` Referent:AmbiguousExpression Pattern;
 
