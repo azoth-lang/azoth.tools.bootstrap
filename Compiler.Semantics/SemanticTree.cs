@@ -42,14 +42,6 @@ public partial interface ICapabilityNode
 }
 #endregion
 
-#region Flow
-public partial interface IFlowNode
-{
-    IFlowNode Predecessor();
-    FlowState FlowStateBefore();
-}
-#endregion
-
 #region Parameters
 public partial interface IParameterNode
 {
@@ -61,10 +53,6 @@ public partial interface IParameterNode
 public partial interface IStatementNode
 {
     LexicalScope GetLexicalScope();
-    /// <summary>
-    /// The flow node that executes before this statement completes in the flow.
-    /// </summary>
-    IFlowNode Predecessor();
     IPreviousValueId PreviousValueId();
 }
 #endregion

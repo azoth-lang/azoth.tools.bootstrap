@@ -69,7 +69,8 @@ public static class ExpressionTypesAspect
         => throw new System.NotImplementedException();
 
     public static FlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node)
-        => node.FlowStateBefore().Alias(node.ReferencedDeclaration.ValueId, node.ValueId);
+        => throw new System.NotImplementedException();
+        //=> node.FlowStateBefore().Alias(node.ReferencedDeclaration.ValueId, node.ValueId);
 
     public static ValueId VariableDeclarationStatement_ValueId(IVariableDeclarationStatementNode node)
         => node.PreviousValueId().CreateNext();

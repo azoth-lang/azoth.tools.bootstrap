@@ -37,14 +37,4 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => child == Block ? LexicalScope : ContainingLexicalScope;
-
-    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (child == InExpression)
-            return base.InheritedPredecessor(child, descendant);
-        if (child == Block)
-            return (IFlowNode)InExpression;
-
-        return base.InheritedPredecessor(child, descendant);
-    }
 }

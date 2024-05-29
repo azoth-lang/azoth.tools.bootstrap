@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -65,19 +64,6 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
             return LexicalScope;
         return base.InheritedContainingLexicalScope(child, descendant);
     }
-
-    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (child is INamedParameterNode parameter && Parameters.IndexOf(parameter) is int index)
-            return index == 0 ? this : Parameters[index - 1];
-        if (child == Body)
-            return Parameters.LastOrDefault() ?? (IFlowNode)this;
-
-        return base.InheritedPredecessor(child, descendant);
-    }
-
-    public IFlowNode Predecessor()
-        => TypeMemberDeclarationsAspect.ConcreteInvocable_Predecessor(this);
 
     public FlowState FlowStateBefore()
         => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore(this);

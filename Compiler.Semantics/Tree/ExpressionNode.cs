@@ -24,8 +24,7 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
 
     private protected ExpressionNode() { }
 
-    public virtual IFlowNode Predecessor() => throw new NotImplementedException();
-    public FlowState FlowStateBefore() => Predecessor().FlowStateAfter;
+    public FlowState FlowStateBefore() => throw new NotImplementedException();
 
     public new IPreviousValueId PreviousValueId() => base.PreviousValueId();
 

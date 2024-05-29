@@ -71,7 +71,7 @@ Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? F
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol` ValueIdScope:`ValueIdScope`;
 ExecutableDefinition <: Definition = ValueIdScope:`ValueIdScope`;
-ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition, Flow
+ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition
     = Parameters:ConstructorOrInitializerParameter*;
 
 // ---------- Namespace Definitions
@@ -171,12 +171,9 @@ CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`
 CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint:`CapabilitySet`;
 Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability`;
 
-// ---------- Flow
-Flow <: Code = ValueId:`ValueId`? FlowStateAfter:`FlowState`;
-
 // ---------- Parameters
-Parameter <: Code, Binding, Flow = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
-    Type:`Pseudotype` ValueId:`ValueId`;
+Parameter <: Code, Binding = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
+    Type:`Pseudotype` ValueId:`ValueId` FlowStateAfter:`FlowState`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax` Type:`DataType` ParameterType:`Parameter`;
 NamedParameter <: ConstructorOrInitializerParameter, NamedBinding = Syntax:`INamedParameterSyntax`
@@ -195,7 +192,7 @@ FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyn
     ContainingTypeDefinition:`ITypeDefinitionNode` ReferencedField:`IFieldDefinitionNode`?;
 
 // ---------- Function Parts
-Body: BodyOrBlock <: Flow;
+Body: BodyOrBlock = FlowStateAfter:`FlowState`;
 BlockBody: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
 ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 
@@ -231,16 +228,16 @@ VariableDeclarationStatement <: BodyStatement, NamedBinding = Syntax:`IVariableD
 ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax` Expression:AmbiguousExpression;
 
 // ---------- Patterns
-Pattern <: Code, Flow = Syntax:`IPatternSyntax`;
+Pattern <: Code = Syntax:`IPatternSyntax`;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
 BindingPattern <: OptionalOrBindingPattern, NamedBinding = Syntax:`IBindingPatternSyntax`
-    IsMutableBinding:`bool` Name:`IdentifierName` ContainingLexicalScope:`LexicalScope`;
+    IsMutableBinding:`bool` Name:`IdentifierName` ContainingLexicalScope:`LexicalScope` ValueId:`ValueId`;
 OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
 AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
-Expression <: AmbiguousExpression, Flow = Syntax:`IExpressionSyntax` ValueId:`ValueId` Type:`DataType` FlowStateAfter:`FlowState`;
+Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax` ValueId:`ValueId` Type:`DataType` FlowStateAfter:`FlowState`;
 AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax` ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression* ReferencedSymbol:`ConstructorSymbol?`;

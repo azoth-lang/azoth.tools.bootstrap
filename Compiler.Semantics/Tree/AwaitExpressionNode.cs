@@ -17,10 +17,4 @@ internal sealed class AwaitExpressionNode : ExpressionNode, IAwaitExpressionNode
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Expression.GetFlowLexicalScope();
-
-    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (descendant == Expression) return Predecessor();
-        return base.InheritedPredecessor(child, descendant);
-    }
 }

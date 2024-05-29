@@ -36,13 +36,4 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
             return LexicalScopingAspect.BinaryOperatorExpression_InheritedContainingLexicalScope_RightOperand(this);
         throw new ArgumentException("Not a child of this node.", nameof(child));
     }
-
-    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (child == LeftOperand)
-            return base.InheritedPredecessor(child, descendant);
-        if (child == RightOperand)
-            return (IFlowNode)LeftOperand;
-        return base.InheritedPredecessor(child, descendant);
-    }
 }

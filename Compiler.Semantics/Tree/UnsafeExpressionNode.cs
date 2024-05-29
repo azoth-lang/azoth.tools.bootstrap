@@ -16,6 +16,4 @@ internal sealed class UnsafeExpressionNode : ExpressionNode, IUnsafeExpressionNo
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Expression.GetFlowLexicalScope();
-
-    public override IFlowNode Predecessor() => (IFlowNode)Expression;
 }

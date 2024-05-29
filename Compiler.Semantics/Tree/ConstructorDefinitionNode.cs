@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -36,21 +35,6 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
     {
         Parameters = ChildList.Attach(this, parameters);
     }
-
-    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (child == SelfParameter) return this;
-        if (child is IConstructorOrInitializerParameterNode parameter
-            && Parameters.IndexOf(parameter) is int index)
-            return index == 0 ? SelfParameter ?? (IFlowNode)this : Parameters[index - 1];
-        if (child == Body)
-            return Parameters.LastOrDefault() ?? SelfParameter ?? (IFlowNode)this;
-
-        return base.InheritedPredecessor(child, descendant);
-    }
-
-    public IFlowNode Predecessor()
-        => TypeMemberDeclarationsAspect.ConcreteInvocable_Predecessor(this);
 
     public FlowState FlowStateBefore()
         => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore(this);

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -226,9 +225,6 @@ internal static class TypeMemberDeclarationsAspect
 
     public static FlowState ConcreteInvocable_FlowStateBefore(IConcreteInvocableDefinitionNode node)
         => FlowState.Empty;
-
-    public static IFlowNode ConcreteInvocable_Predecessor(IConcreteInvocableDefinitionNode node)
-        => throw new NotSupportedException($"{nameof(IConcreteInvocableDefinitionNode)} has no predecessor.");
 
     public static ValueIdScope Invocable_ValueIdScope(IInvocableDefinitionNode _)
         => new ValueIdScope();

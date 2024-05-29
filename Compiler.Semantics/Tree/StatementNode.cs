@@ -15,7 +15,5 @@ internal abstract class StatementNode : CodeNode, IStatementNode
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => GetLexicalScope();
 
-    public abstract IFlowNode Predecessor();
-
     public new IPreviousValueId PreviousValueId() => base.PreviousValueId();
 }

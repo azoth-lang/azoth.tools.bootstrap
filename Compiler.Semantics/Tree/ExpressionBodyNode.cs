@@ -31,6 +31,5 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
         return LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, statementIndex);
     }
 
-    public IFlowNode Predecessor() => (IFlowNode)ResultStatement.Expression;
     public FlowState FlowStateBefore() => throw new NotImplementedException();
 }

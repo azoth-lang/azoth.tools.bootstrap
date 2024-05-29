@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -18,10 +17,9 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
         => containingLexicalScope.TryGetValue(out var value) ? value
             : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
     private ValueAttribute<ValueId> valueId;
-    public override ValueId? ValueId
+    public ValueId ValueId
         => valueId.TryGetValue(out var value) ? value
             : valueId.GetValue(this, ExpressionTypesAspect.BindingPattern_ValueId);
-    ValueId INamedBindingNode.ValueId => ValueId ?? throw new UnreachableException();
 
     public BindingPatternNode(IBindingPatternSyntax syntax)
     {
@@ -36,4 +34,6 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
         var variableScope = new DeclarationScope(containingLexicalScope, this);
         return new(variableScope, containingLexicalScope);
     }
+
+    internal override IPreviousValueId PreviousValueId(IChildNode before) => ValueId;
 }

@@ -26,16 +26,4 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
 
     public override ConditionalLexicalScope GetFlowLexicalScope()
         => LexicalScopingAspect.AssignmentExpression_GetFlowLexicalScope(this);
-
-    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (child == LeftOperand)
-            return base.InheritedPredecessor(child, descendant);
-        if (child == RightOperand)
-            return LeftOperand;
-
-        return base.InheritedPredecessor(child, descendant);
-    }
-
-    public override IFlowNode Predecessor() => (IFlowNode)RightOperand;
 }

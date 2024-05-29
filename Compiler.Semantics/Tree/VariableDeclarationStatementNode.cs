@@ -50,7 +50,5 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
 
     public override LexicalScope GetLexicalScope() => LexicalScope;
 
-    public override IFlowNode Predecessor() => (IFlowNode?)Initializer ?? InheritedPredecessor();
-
     internal override IPreviousValueId PreviousValueId(IChildNode before) => ValueId;
 }

@@ -27,13 +27,4 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
             return Condition.GetFlowLexicalScope().True;
         return base.InheritedContainingLexicalScope(child, descendant);
     }
-
-    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (descendant == Condition)
-            return base.InheritedPredecessor(child, descendant);
-        if (descendant == Block)
-            return (IFlowNode)Condition;
-        return base.InheritedPredecessor(child, descendant);
-    }
 }

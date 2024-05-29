@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -49,22 +48,6 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
         TypeMemberDeclarationsAspect.MethodDeclaration_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
-
-    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (descendant == SelfParameter) return (IFlowNode)this;
-        if (descendant is INamedParameterNode parameter
-            && Parameters.IndexOf(parameter) is int index)
-            return index == 0 ? SelfParameter : Parameters[index - 1];
-        if (descendant == Body && Body is not null)
-            return Parameters.LastOrDefault() ?? (IFlowNode)SelfParameter;
-
-        return base.InheritedPredecessor(child, descendant);
-    }
-
-
-    public IFlowNode Predecessor()
-        => TypeMemberDeclarationsAspect.ConcreteInvocable_Predecessor((IConcreteInvocableDefinitionNode)this);
 
     public FlowState FlowStateBefore()
         => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore((IConcreteInvocableDefinitionNode)this);

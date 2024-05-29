@@ -17,6 +17,4 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
     }
 
     public override LexicalScope GetLexicalScope() => InheritedContainingLexicalScope();
-
-    public override IFlowNode Predecessor() => (IFlowNode)Expression;
 }

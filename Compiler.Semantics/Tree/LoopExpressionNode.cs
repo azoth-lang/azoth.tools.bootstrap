@@ -13,11 +13,4 @@ internal sealed class LoopExpressionNode : ExpressionNode, ILoopExpressionNode
         Syntax = syntax;
         Block = Child.Attach(this, block);
     }
-
-    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (descendant == Block)
-            return Predecessor();
-        return base.InheritedPredecessor(child, descendant);
-    }
 }

@@ -29,11 +29,4 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Pattern.GetFlowLexicalScope();
-
-    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (descendant == Referent)
-            return Predecessor();
-        return base.InheritedPredecessor(child, descendant);
-    }
 }
