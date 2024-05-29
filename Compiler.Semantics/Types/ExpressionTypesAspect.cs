@@ -88,4 +88,7 @@ public static class ExpressionTypesAspect
 
         return new FunctionInvocationExpressionNode(node.Syntax, function, node.CurrentArguments);
     }
+
+    public static DataType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
+        => node.ReferencedDeclaration?.Type.Return.Type ?? DataType.Unknown;
 }

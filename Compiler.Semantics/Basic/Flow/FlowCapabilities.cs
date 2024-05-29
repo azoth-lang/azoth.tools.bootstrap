@@ -50,7 +50,7 @@ public readonly struct FlowCapabilities
         var joinedTypeArguments = type.BareType.GenericParameterArguments.Enumerate();
         var independentTypeArguments = joinedTypeArguments.Where((p, _) => p.ParameterHasIndependence);
         var independentReferenceTypeArguments = independentTypeArguments.Select((p, i) => (i, p.Argument as ReferenceType))
-                                                                        .Where((int _, ReferenceType? arg) => arg is not null);
+                                                                        .Where((_, arg) => arg is not null);
 
         foreach (var (i, arg) in independentReferenceTypeArguments)
         {

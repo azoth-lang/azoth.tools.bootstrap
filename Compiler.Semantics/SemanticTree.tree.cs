@@ -1425,6 +1425,7 @@ public partial interface IFunctionInvocationExpressionNode : ISemanticNode, IExp
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IFunctionGroupNameNode Function { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
 }
 
 [Closed(

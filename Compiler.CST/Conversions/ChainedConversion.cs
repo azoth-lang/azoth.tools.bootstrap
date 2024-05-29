@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 
 /// <summary>
 /// A chained conversion is one that is applied after another conversion, even if
-/// that is only is only the identity conversion.
+/// that is only the identity conversion.
 /// </summary>
 [Closed(
     typeof(OptionalConversion),
