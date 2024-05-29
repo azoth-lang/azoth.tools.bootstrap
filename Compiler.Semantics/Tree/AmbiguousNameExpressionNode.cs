@@ -25,8 +25,6 @@ internal abstract class AmbiguousNameExpressionNode : AmbiguousExpressionNode, I
 
     private protected AmbiguousNameExpressionNode() { }
 
-    public FlowState FlowStateBefore() => throw new NotImplementedException();
-
     public new IPreviousValueId PreviousValueId() => base.PreviousValueId();
 
     internal override IPreviousValueId PreviousValueId(IChildNode before)

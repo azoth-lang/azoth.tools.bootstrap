@@ -1,6 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -31,5 +32,12 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         if (child == ElseClause)
             return Condition.GetFlowLexicalScope().False;
         return base.InheritedContainingLexicalScope(child, descendant);
+    }
+
+    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    {
+        if (child == ThenBlock || child == ElseClause)
+            return ((IExpressionNode)Condition).FlowStateAfter;
+        return base.InheritedFlowStateBefore(child, descendant);
     }
 }

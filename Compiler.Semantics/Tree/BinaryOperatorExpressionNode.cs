@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -35,5 +36,12 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         if (child == RightOperand)
             return LexicalScopingAspect.BinaryOperatorExpression_InheritedContainingLexicalScope_RightOperand(this);
         throw new ArgumentException("Not a child of this node.", nameof(child));
+    }
+
+    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    {
+        if (child == RightOperand)
+            return ((IExpressionNode)LeftOperand).FlowStateAfter;
+        return base.InheritedFlowStateBefore(child, descendant);
     }
 }

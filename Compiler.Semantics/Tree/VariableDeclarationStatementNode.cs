@@ -35,6 +35,8 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public ValueId ValueId
         => valueId.TryGetValue(out var value) ? value
             : valueId.GetValue(this, ExpressionTypesAspect.VariableDeclarationStatement_ValueId);
+    public override FlowState FlowStateAfter
+        => ((IExpressionNode?)Initializer)?.FlowStateAfter ?? InheritedFlowStateBefore();
 
     public VariableDeclarationStatementNode(
         IVariableDeclarationStatementSyntax syntax,

@@ -1047,6 +1047,7 @@ public partial interface IStatementNode : ISemanticNode, ICodeNode
     new IStatementSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
+    FlowState FlowStateAfter { get; }
 }
 
 public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNode

@@ -80,17 +80,29 @@ public partial interface IExpressionNode
 }
 #endregion
 
+#region Control Flow Expressions
 public partial interface IForeachExpressionNode
 {
     // TODO some way to code gen this hiding
     IdentifierName INamedBindingDeclarationNode.Name => VariableName;
 }
+#endregion
 
+#region Name Expressions
+
+public partial interface IVariableNameExpressionNode
+{
+    FlowState FlowStateBefore();
+}
+#endregion
+
+#region Type Declarations
 public partial interface IUserTypeDeclarationNode
 {
     IEnumerable<IInstanceMemberDeclarationNode> InstanceMembersNamed(StandardName named);
     IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
 }
+#endregion
 
 #region Namespace Declarations
 public partial interface INamespaceDeclarationNode

@@ -7,6 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal abstract class StatementNode : CodeNode, IStatementNode
 {
     public abstract override IStatementSyntax Syntax { get; }
+    public abstract FlowState FlowStateAfter { get; }
 
     private protected StatementNode() { }
 

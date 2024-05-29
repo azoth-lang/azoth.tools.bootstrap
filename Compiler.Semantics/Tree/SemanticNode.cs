@@ -62,8 +62,8 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedFacet), child, descendant));
 
-    internal virtual FlowState InheritedInitialFlowState(IChildNode child, IChildNode descendant)
-        => throw new NotImplementedException(Child.InheritFailedMessage(nameof(InheritedInitialFlowState), child, descendant));
+    internal virtual FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+        => throw new NotImplementedException(Child.InheritFailedMessage(nameof(InheritedFlowStateBefore), child, descendant));
 
     internal virtual IPreviousValueId PreviousValueId(IChildNode before)
         => throw Child.PreviousFailed(nameof(PreviousValueId), before);

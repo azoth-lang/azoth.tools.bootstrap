@@ -26,4 +26,6 @@ internal sealed class VariableNameExpressionNode : AmbiguousNameExpressionNode, 
         Syntax = syntax;
         ReferencedDeclaration = referencedDeclaration;
     }
+
+    public FlowState FlowStateBefore() => InheritedFlowStateBefore();
 }

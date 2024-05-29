@@ -223,7 +223,8 @@ internal static class TypeMemberDeclarationsAspect
     public static FunctionType AssociatedFunctionDeclaration_Type(IAssociatedFunctionDefinitionNode node)
         => FunctionType(node.Parameters, node.Return);
 
-    public static FlowState ConcreteInvocable_FlowStateBefore(IConcreteInvocableDefinitionNode node)
+    // TODO maybe this should be initial flow state?
+    public static FlowState ConcreteInvocable_FlowStateBefore(IConcreteInvocableDefinitionNode _)
         => FlowState.Empty;
 
     public static ValueIdScope Invocable_ValueIdScope(IInvocableDefinitionNode _)

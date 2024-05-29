@@ -1,3 +1,5 @@
+using Azoth.Tools.Bootstrap.Compiler.Types;
+
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
 /// <summary>
@@ -12,4 +14,9 @@ public sealed class FlowState
 
     public FlowState Alias(ValueId valueToAlias, ValueId alias)
         => throw new System.NotImplementedException();
+
+    /// <summary>
+    /// Get the current type of the given value as determined by flow typing.
+    /// </summary>
+    public DataType Type(ValueId value) => throw new System.NotImplementedException();
 }

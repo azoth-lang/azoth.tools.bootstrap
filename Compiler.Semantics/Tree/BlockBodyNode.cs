@@ -26,5 +26,10 @@ internal sealed class BlockBodyNode : CodeNode, IBlockBodyNode
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, Statements.IndexOf(child)!.Value);
 
-    public FlowState FlowStateBefore() => throw new System.NotImplementedException();
+    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    {
+        if (Statements.IndexOf(child) is int index and > 0)
+            return Statements[index - 1].FlowStateAfter;
+        return base.InheritedFlowStateBefore(child, descendant);
+    }
 }
