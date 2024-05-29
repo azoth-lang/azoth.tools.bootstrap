@@ -1610,9 +1610,7 @@ public class BasicBodyAnalyzer
             invocation.DataType.Fulfill(returnType);
         }
         else
-        {
             invocation.DataType.Fulfill(DataType.Unknown);
-        }
 
         var resultVariable = CombineResults(functionType, arguments, flow);
         flow.Restrict(resultVariable, invocation.DataType.Assigned());
@@ -2008,7 +2006,7 @@ public class BasicBodyAnalyzer
     {
         var contextualizedSymbols = Contextualize(contextType, symbols);
 
-        // Filter down to symbols that could possible match
+        // Filter down to symbols that could possibly match
         contextualizedSymbols = contextualizedSymbols.Where(s =>
         {
             // Arity depends on the contextualized symbols because parameters can drop out with `void`

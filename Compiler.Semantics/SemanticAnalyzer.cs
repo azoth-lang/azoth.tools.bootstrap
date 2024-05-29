@@ -97,6 +97,9 @@ public class SemanticAnalyzer
         // Basic Analysis includes: Name Binding, Type Checking, Constant Folding
         BasicAnalyzer.Check(packageSyntax, rangeSymbol);
 
+        // Validate that types computed on the semantic tree match the types computed on the syntax tree
+        SemanticTreeTypeValidator.Validate(packageNode);
+
         // If there are errors from the basic analysis phase, don't continue on
         // The syntax diagnostics are already included in the packageSyntax.Diagnostics
         packageSyntax.Diagnostics.Add(packageNode.Diagnostics.Except(packageSyntax.Diagnostics));
