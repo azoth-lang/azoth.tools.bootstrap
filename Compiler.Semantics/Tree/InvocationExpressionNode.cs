@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class InvocationExpressionNode : ExpressionNode, IInvocationExpressionNode
+internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvocationExpressionNode
 {
     public override IInvocationExpressionSyntax Syntax { get; }
     private Child<IAmbiguousExpressionNode> expression;

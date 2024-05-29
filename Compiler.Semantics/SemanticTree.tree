@@ -272,7 +272,8 @@ NextExpression <: NeverTypedExpression = Syntax:`INextExpressionSyntax`;
 ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax` Value:AmbiguousExpression?;
 
 // ---------- Invocation Expressions
-InvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax` Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
+InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax` Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
+FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax` Function:FunctionGroupName Arguments:AmbiguousExpression*;
 
 // ---------- Ambiguous Name Expressions
 AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;

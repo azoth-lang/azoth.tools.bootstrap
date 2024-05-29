@@ -69,7 +69,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IPatternMatchExpressionNode),
     typeof(ILoopExpressionNode),
     typeof(IWhileExpressionNode),
-    typeof(IInvocationExpressionNode),
+    typeof(IFunctionInvocationExpressionNode),
     typeof(IAmbiguousNameNode),
     typeof(IGenericNameExpressionNode),
     typeof(INameExpressionNode),
@@ -1144,6 +1144,7 @@ public partial interface IOptionalPatternNode : ISemanticNode, IOptionalOrBindin
 
 [Closed(
     typeof(IExpressionNode),
+    typeof(IInvocationExpressionNode),
     typeof(IAmbiguousNameExpressionNode))]
 public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
 {
@@ -1169,7 +1170,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
     typeof(ILoopExpressionNode),
     typeof(IWhileExpressionNode),
     typeof(IForeachExpressionNode),
-    typeof(IInvocationExpressionNode),
+    typeof(IFunctionInvocationExpressionNode),
     typeof(INameExpressionNode),
     typeof(IMoveExpressionNode),
     typeof(IFreezeExpressionNode),
@@ -1407,12 +1408,20 @@ public partial interface IReturnExpressionNode : INeverTypedExpressionNode
     IAmbiguousExpressionNode? Value { get; }
 }
 
-public partial interface IInvocationExpressionNode : ISemanticNode, IExpressionNode
+public partial interface IInvocationExpressionNode : IAmbiguousExpressionNode
+{
+    new IInvocationExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    IAmbiguousExpressionNode Expression { get; }
+    IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+}
+
+public partial interface IFunctionInvocationExpressionNode : ISemanticNode, IExpressionNode
 {
     new IInvocationExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    IAmbiguousExpressionNode Expression { get; }
+    IFunctionGroupNameNode Function { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
 }
 

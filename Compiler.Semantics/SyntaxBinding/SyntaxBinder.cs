@@ -194,7 +194,7 @@ internal static class SyntaxBinder
         => new InitializerDefinitionNode(syntax, InitializerSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
 
     private static IFieldDefinitionNode FieldDefinition(IFieldDefinitionSyntax syntax)
-        => new FieldDefinitionNode(syntax, Type(syntax.Type), UntypedExpression(syntax.Initializer));
+        => new FieldDefinitionNode(syntax, Type(syntax.Type), AmbiguousExpression(syntax.Initializer));
     private static IAssociatedFunctionDefinitionNode AssociatedFunctionDefinition(IAssociatedFunctionDefinitionSyntax syntax)
         => new AssociatedFunctionDefinitionNode(syntax, NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
     #endregion
@@ -383,14 +383,14 @@ internal static class SyntaxBinder
         };
 
     private static IResultStatementNode ResultStatement(IResultStatementSyntax syntax)
-        => new ResultStatementNode(syntax, UntypedExpression(syntax.Expression));
+        => new ResultStatementNode(syntax, AmbiguousExpression(syntax.Expression));
 
     private static IVariableDeclarationStatementNode VariableDeclarationStatement(
         IVariableDeclarationStatementSyntax syntax)
-        => new VariableDeclarationStatementNode(syntax, Capability(syntax.Capability), Type(syntax.Type), UntypedExpression(syntax.Initializer));
+        => new VariableDeclarationStatementNode(syntax, Capability(syntax.Capability), Type(syntax.Type), AmbiguousExpression(syntax.Initializer));
 
     private static IExpressionStatementNode ExpressionStatement(IExpressionStatementSyntax syntax)
-        => new ExpressionStatementNode(syntax, UntypedExpression(syntax.Expression));
+        => new ExpressionStatementNode(syntax, AmbiguousExpression(syntax.Expression));
     #endregion
 
     #region Patterns
@@ -422,20 +422,20 @@ internal static class SyntaxBinder
     #endregion
 
     #region Expressions
-    private static IEnumerable<IAmbiguousExpressionNode> UntypedExpressions(IEnumerable<IExpressionSyntax> syntax)
-        => syntax.Select(syn => UntypedExpression(syn));
+    private static IEnumerable<IAmbiguousExpressionNode> AmbiguousExpressions(IEnumerable<IExpressionSyntax> syntax)
+        => syntax.Select(syn => AmbiguousExpression(syn));
 
     [return: NotNullIfNotNull(nameof(syntax))]
-    private static IAmbiguousExpressionNode? UntypedExpression(IExpressionSyntax? syntax)
+    private static IAmbiguousExpressionNode? AmbiguousExpression(IExpressionSyntax? syntax)
         => syntax switch
         {
             null => null,
-            ITypedExpressionSyntax syn => Expression(syn),
+            ITypedExpressionSyntax syn => AmbiguousExpression(syn),
             INameExpressionSyntax syn => NameExpression(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IExpressionNode Expression(ITypedExpressionSyntax syntax)
+    private static IAmbiguousExpressionNode AmbiguousExpression(ITypedExpressionSyntax syntax)
         => syntax switch
         {
             IAssignableExpressionSyntax syn => AssignableExpression(syn),
@@ -478,10 +478,10 @@ internal static class SyntaxBinder
         => new BlockExpressionNode(syntax, Statements(syntax.Statements));
 
     private static INewObjectExpressionNode NewObjectExpression(INewObjectExpressionSyntax syntax)
-        => new NewObjectExpressionNode(syntax, TypeName(syntax.Type), UntypedExpressions(syntax.Arguments));
+        => new NewObjectExpressionNode(syntax, TypeName(syntax.Type), AmbiguousExpressions(syntax.Arguments));
 
     private static IUnsafeExpressionNode UnsafeExpression(IUnsafeExpressionSyntax syntax)
-        => new UnsafeExpressionNode(syntax, UntypedExpression(syntax.Expression));
+        => new UnsafeExpressionNode(syntax, AmbiguousExpression(syntax.Expression));
 
     private static IExpressionNode NeverTypedExpression(INeverTypedExpressionSyntax syntax)
         => syntax switch
@@ -519,50 +519,50 @@ internal static class SyntaxBinder
 
     #region Operator Expressions
     private static IAssignmentExpressionNode AssignmentExpression(IAssignmentExpressionSyntax syntax)
-        => new AssignmentExpressionNode(syntax, AssignableExpression(syntax.LeftOperand), UntypedExpression(syntax.RightOperand));
+        => new AssignmentExpressionNode(syntax, AssignableExpression(syntax.LeftOperand), AmbiguousExpression(syntax.RightOperand));
 
     private static IBinaryOperatorExpressionNode BinaryOperatorExpression(IBinaryOperatorExpressionSyntax syntax)
-        => new BinaryOperatorExpressionNode(syntax, UntypedExpression(syntax.LeftOperand), UntypedExpression(syntax.RightOperand));
+        => new BinaryOperatorExpressionNode(syntax, AmbiguousExpression(syntax.LeftOperand), AmbiguousExpression(syntax.RightOperand));
 
     private static IUnaryOperatorExpressionNode UnaryOperatorExpression(IUnaryOperatorExpressionSyntax syntax)
-        => new UnaryOperatorExpressionNode(syntax, UntypedExpression(syntax.Operand));
+        => new UnaryOperatorExpressionNode(syntax, AmbiguousExpression(syntax.Operand));
 
     private static IIdExpressionNode IdExpression(IIdExpressionSyntax syntax)
-        => new IdExpressionNode(syntax, UntypedExpression(syntax.Referent));
+        => new IdExpressionNode(syntax, AmbiguousExpression(syntax.Referent));
 
     private static IConversionExpressionNode ConversionExpression(IConversionExpressionSyntax syntax)
-        => new ConversionExpressionNode(syntax, UntypedExpression(syntax.Referent), Type(syntax.ConvertToType));
+        => new ConversionExpressionNode(syntax, AmbiguousExpression(syntax.Referent), Type(syntax.ConvertToType));
 
     private static IPatternMatchExpressionNode PatternMatchExpression(IPatternMatchExpressionSyntax syntax)
-        => new PatternMatchExpressionNode(syntax, UntypedExpression(syntax.Referent), Pattern(syntax.Pattern));
+        => new PatternMatchExpressionNode(syntax, AmbiguousExpression(syntax.Referent), Pattern(syntax.Pattern));
     #endregion
 
     #region Control Flow Expressions
     private static IIfExpressionNode IfExpression(IIfExpressionSyntax syntax)
-        => new IfExpressionNode(syntax, UntypedExpression(syntax.Condition), BlockOrResult(syntax.ThenBlock), ElseClause(syntax.ElseClause));
+        => new IfExpressionNode(syntax, AmbiguousExpression(syntax.Condition), BlockOrResult(syntax.ThenBlock), ElseClause(syntax.ElseClause));
 
     private static ILoopExpressionNode LoopExpression(ILoopExpressionSyntax syntax)
         => new LoopExpressionNode(syntax, BlockExpression(syntax.Block));
 
     private static IWhileExpressionNode WhileExpression(IWhileExpressionSyntax syntax)
-        => new WhileExpressionNode(syntax, UntypedExpression(syntax.Condition), BlockExpression(syntax.Block));
+        => new WhileExpressionNode(syntax, AmbiguousExpression(syntax.Condition), BlockExpression(syntax.Block));
 
     private static IForeachExpressionNode ForeachExpression(IForeachExpressionSyntax syntax)
-        => new ForeachExpressionNode(syntax, UntypedExpression(syntax.InExpression), Type(syntax.Type), BlockExpression(syntax.Block));
+        => new ForeachExpressionNode(syntax, AmbiguousExpression(syntax.InExpression), Type(syntax.Type), BlockExpression(syntax.Block));
 
     private static IBreakExpressionNode BreakExpression(IBreakExpressionSyntax syntax)
-        => new BreakExpressionNode(syntax, UntypedExpression(syntax.Value));
+        => new BreakExpressionNode(syntax, AmbiguousExpression(syntax.Value));
 
     private static INextExpressionNode NextExpression(INextExpressionSyntax syntax)
         => new NextExpressionNode(syntax);
 
     private static IReturnExpressionNode ReturnExpression(IReturnExpressionSyntax syntax)
-        => new ReturnExpressionNode(syntax, UntypedExpression(syntax.Value));
+        => new ReturnExpressionNode(syntax, AmbiguousExpression(syntax.Value));
     #endregion
 
     #region Invocation Expressions
     private static IInvocationExpressionNode InvocationExpression(IInvocationExpressionSyntax syntax)
-        => new InvocationExpressionNode(syntax, UntypedExpression(syntax.Expression), UntypedExpressions(syntax.Arguments));
+        => new InvocationExpressionNode(syntax, AmbiguousExpression(syntax.Expression), AmbiguousExpressions(syntax.Arguments));
     #endregion
 
     #region Name Expressions
@@ -597,7 +597,7 @@ internal static class SyntaxBinder
         => new GenericNameExpressionNode(syntax, Types(syntax.TypeArguments));
 
     private static IMemberAccessExpressionNode MemberAccessExpression(IMemberAccessExpressionSyntax syntax)
-        => new MemberAccessExpressionNode(syntax, UntypedExpression(syntax.Context), Types(syntax.TypeArguments));
+        => new MemberAccessExpressionNode(syntax, AmbiguousExpression(syntax.Context), Types(syntax.TypeArguments));
 
     private static ISelfExpressionNode SelfExpression(ISelfExpressionSyntax syntax)
         => new SelfExpressionNode(syntax);
@@ -619,9 +619,9 @@ internal static class SyntaxBinder
         => new AsyncBlockExpressionNode(syntax, BlockExpression(syntax.Block));
 
     private static IAsyncStartExpressionNode AsyncStartExpression(IAsyncStartExpressionSyntax syntax)
-        => new AsyncStartExpressionNode(syntax, UntypedExpression(syntax.Expression));
+        => new AsyncStartExpressionNode(syntax, AmbiguousExpression(syntax.Expression));
 
     private static IAwaitExpressionNode AwaitExpression(IAwaitExpressionSyntax syntax)
-        => new AwaitExpressionNode(syntax, UntypedExpression(syntax.Expression));
+        => new AwaitExpressionNode(syntax, AmbiguousExpression(syntax.Expression));
     #endregion
 }
