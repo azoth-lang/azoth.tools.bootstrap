@@ -19,8 +19,17 @@ internal abstract class AmbiguousNameExpressionNode : AmbiguousExpressionNode, I
     // TODO make this abstract once all expressions have type implemented (also, not all names should have types)
     public virtual DataType Type
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(Type)} not implemented.");
+    // TODO make this abstract once all expressions have flow state implemented (also, not all names should have flow state)
+    public virtual FlowState FlowStateAfter
+        => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
 
     private protected AmbiguousNameExpressionNode() { }
 
-    public IExpressionNode? Predecessor() => (IExpressionNode?)InheritedPredecessor();
+    public IFlowNode Predecessor() => InheritedPredecessor();
+    public FlowState FlowStateBefore() => Predecessor()?.FlowStateAfter ?? InheritedInitialFlowState();
+
+    public new IPreviousValueId PreviousValueId() => base.PreviousValueId();
+
+    internal override IPreviousValueId PreviousValueId(IChildNode before)
+        => ValueId;
 }

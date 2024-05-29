@@ -17,8 +17,14 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
     public ValueId ValueId
         => valueId.TryGetValue(out var value) ? value
             : valueId.GetValue(this, TypeMemberDeclarationsAspect.Parameter_ValueId);
+    public abstract FlowState FlowStateAfter { get; }
 
     private protected ParameterNode() { }
 
-    public IParameterNode? Predecessor() => (IParameterNode?)InheritedPredecessor();
+    public IFlowNode Predecessor() => InheritedPredecessor();
+    public FlowState FlowStateBefore() => Predecessor().FlowStateAfter;
+
+    public new IPreviousValueId PreviousValueId() => base.PreviousValueId();
+
+    internal override IPreviousValueId PreviousValueId(IChildNode before) => ValueId;
 }

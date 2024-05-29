@@ -8,10 +8,12 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
+#region Special Parts
 public partial interface IBodyOrBlockNode
 {
     LexicalScope GetContainingLexicalScope();
 }
+#endregion
 
 #region Facets
 public partial interface IPackageFacetNode
@@ -40,17 +42,18 @@ public partial interface ICapabilityNode
 }
 #endregion
 
-#region Parameters
-public partial interface IParameterNode
+#region Flow
+public partial interface IFlowNode
 {
-    IParameterNode? Predecessor();
+    IFlowNode Predecessor();
+    FlowState FlowStateBefore();
 }
 #endregion
 
-#region Function Parts
-public partial interface IBodyNode
+#region Parameters
+public partial interface IParameterNode
 {
-    IParameterNode? Predecessor();
+    IPreviousValueId PreviousValueId();
 }
 #endregion
 
@@ -58,10 +61,16 @@ public partial interface IBodyNode
 public partial interface IStatementNode
 {
     LexicalScope GetLexicalScope();
-
-    IExpressionNode? Predecessor();
-
-    IExpressionNode? LastExpression();
+    /// <summary>
+    /// The predecessor of the whole statement as given by the parent of this statement.
+    /// </summary>
+    /// <returns></returns>
+    IFlowNode InheritedPredecessor();
+    /// <summary>
+    /// The flow node that executes before this statement completes in the flow.
+    /// </summary>
+    IFlowNode Predecessor();
+    IPreviousValueId PreviousValueId();
 }
 #endregion
 
@@ -70,6 +79,7 @@ public partial interface IPatternNode
 {
     LexicalScope GetContainingLexicalScope();
     ConditionalLexicalScope GetFlowLexicalScope();
+    IPreviousValueId PreviousValueId();
 }
 #endregion
 
@@ -77,14 +87,13 @@ public partial interface IPatternNode
 public partial interface IAmbiguousExpressionNode
 {
     LexicalScope GetContainingLexicalScope();
-    // TODO it is strange that this is always a conditional scope. Instead use conditional only where it makes sense?
+    // TODO it is strange that this is always a conditional scope. Instead, use conditional only where it makes sense?
     ConditionalLexicalScope GetFlowLexicalScope();
-    ValueIdScope ValueIdScope();
 }
 
 public partial interface IExpressionNode
 {
-    IExpressionNode? Predecessor();
+    IPreviousValueId PreviousValueId();
 }
 #endregion
 

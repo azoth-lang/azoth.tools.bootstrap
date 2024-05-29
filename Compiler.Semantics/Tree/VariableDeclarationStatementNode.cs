@@ -3,6 +3,8 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -29,6 +31,10 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAspect.VariableDeclarationStatement_Symbol);
     public int? DeclarationNumber => Syntax.DeclarationNumber.Result;
+    private ValueAttribute<ValueId> valueId;
+    public ValueId ValueId
+        => valueId.TryGetValue(out var value) ? value
+            : valueId.GetValue(this, ExpressionTypesAspect.VariableDeclarationStatement_ValueId);
 
     public VariableDeclarationStatementNode(
         IVariableDeclarationStatementSyntax syntax,
@@ -44,13 +50,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
 
     public override LexicalScope GetLexicalScope() => LexicalScope;
 
-    public override IExpressionNode? LastExpression()
-        => (IExpressionNode?)Initializer ?? Predecessor();
+    public override IFlowNode Predecessor() => (IFlowNode?)Initializer ?? InheritedPredecessor();
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (descendant == Initializer)
-            return Predecessor();
-        return base.InheritedPredecessor(child, descendant);
-    }
+    internal override IPreviousValueId PreviousValueId(IChildNode before) => ValueId;
 }

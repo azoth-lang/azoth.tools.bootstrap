@@ -126,4 +126,7 @@ public static class Child
 
     private static string ChildMayHaveRewriteMessage(IChild child)
         => $"{child.GetType().GetFriendlyName()} may have rewrites and cannot be used as a fixed child.";
+
+    public static NotImplementedException PreviousFailed(string attribute, IChild before)
+        => new($"Previous {attribute} of {before.GetType().GetFriendlyName()} not implemented.");
 }

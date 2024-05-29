@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class IntegerLiteralExpressionNode : ExpressionNode, IIntegerLiteralExpressionNode
+internal sealed class IntegerLiteralExpressionNode : LiteralExpressionNode, IIntegerLiteralExpressionNode
 {
     public override IIntegerLiteralExpressionSyntax Syntax { get; }
     public BigInteger Value => Syntax.Value;

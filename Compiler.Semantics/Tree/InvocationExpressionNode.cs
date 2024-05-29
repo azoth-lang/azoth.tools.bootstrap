@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -38,14 +39,16 @@ internal sealed class InvocationExpressionNode : ExpressionNode, IInvocationExpr
         return base.InheritedContainingLexicalScope(child, descendant);
     }
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
-        if (descendant == Expression)
-            return Predecessor();
+        if (child == Expression)
+            return base.InheritedPredecessor(child, descendant);
 
-        if (Arguments.IndexOf(descendant) is int argumentIndex)
-            return argumentIndex == 0 ? Expression : Arguments[argumentIndex - 1];
+        if (Arguments.IndexOf(child) is int argumentIndex)
+            return (IFlowNode)(argumentIndex == 0 ? Expression : Arguments[argumentIndex - 1]);
 
         return base.InheritedPredecessor(child, descendant);
     }
+
+    public override IFlowNode Predecessor() => (IFlowNode)(Arguments.LastOrDefault() ?? Expression);
 }

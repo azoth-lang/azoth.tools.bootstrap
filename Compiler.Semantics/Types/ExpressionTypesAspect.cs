@@ -11,13 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 public static class ExpressionTypesAspect
 {
     public static ValueId Expression_ValueId(IExpressionNode node)
-    {
-        if (node is ITypeNameExpressionNode or IFunctionGroupNameNode or INamespaceNameNode)
-            // TODO remove this hack, these names shouldn't have value ids
-            return node.ValueIdScope().CreateValueId();
-
-        return (node.Predecessor()?.ValueId.Scope ?? node.ValueIdScope()).CreateValueId();
-    }
+        => node.PreviousValueId().CreateNext();
 
     public static void NewObjectExpression_ContributeDiagnostics(INewObjectExpressionNode node, Diagnostics diagnostics)
         => CheckConstructingType(node.ConstructingType, diagnostics);
@@ -73,4 +67,13 @@ public static class ExpressionTypesAspect
 
     public static DataType VariableNameExpression_Type(IVariableNameExpressionNode node)
         => throw new System.NotImplementedException();
+
+    public static FlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node)
+        => node.FlowStateBefore().Alias(node.ReferencedDeclaration.ValueId, node.ValueId);
+
+    public static ValueId VariableDeclarationStatement_ValueId(IVariableDeclarationStatementNode node)
+        => node.PreviousValueId().CreateNext();
+
+    public static ValueId BindingPattern_ValueId(IBindingPatternNode node)
+        => node.PreviousValueId().CreateNext();
 }

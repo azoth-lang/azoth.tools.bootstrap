@@ -33,15 +33,19 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         return base.InheritedContainingLexicalScope(child, descendant);
     }
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
-        if (descendant == Condition)
-            return Predecessor();
-        if (descendant == ThenBlock)
-            return Condition;
-        if (descendant == ElseClause)
-            return Condition;
+        if (child == Condition)
+            return base.InheritedPredecessor(child, descendant);
+        if (child == ThenBlock)
+            return (IFlowNode)Condition;
+        if (child == ElseClause)
+            return (IFlowNode)Condition;
 
         return base.InheritedPredecessor(child, descendant);
     }
+
+    public override IFlowNode Predecessor()
+        // TODO Need multiple predecessors, both ThenBlock and ElseClause
+        => (IFlowNode)ThenBlock;
 }

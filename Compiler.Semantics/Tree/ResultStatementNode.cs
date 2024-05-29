@@ -18,15 +18,5 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
 
     public override LexicalScope GetLexicalScope() => InheritedContainingLexicalScope();
 
-    public override IExpressionNode? LastExpression()
-        // Nothing should follow a result statement, thus there is no last expression for it.
-        => null;
-
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (descendant == Expression)
-            return Predecessor();
-
-        return base.InheritedPredecessor(child, descendant);
-    }
+    public override IFlowNode Predecessor() => (IFlowNode)Expression;
 }

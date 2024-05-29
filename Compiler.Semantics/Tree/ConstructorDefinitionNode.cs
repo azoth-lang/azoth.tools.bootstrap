@@ -4,6 +4,8 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -22,6 +24,12 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
         => lexicalScope.TryGetValue(out var value) ? value
             : lexicalScope.GetValue(this, LexicalScopingAspect.ConstructorDefinition_LexicalScope);
     public abstract override ConstructorSymbol Symbol { get; }
+    public ValueId? ValueId => null;
+    public FlowState FlowStateAfter => Body?.FlowStateAfter ?? SelfParameter!.FlowStateAfter;
+    private ValueAttribute<ValueIdScope> valueIdScope;
+    public ValueIdScope ValueIdScope
+        => valueIdScope.TryGetValue(out var value) ? value
+            : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.Invocable_ValueIdScope);
 
     private protected ConstructorDefinitionNode(
         IEnumerable<IConstructorOrInitializerParameterNode> parameters)
@@ -29,15 +37,24 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
         Parameters = ChildList.Attach(this, parameters);
     }
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
-        if (descendant == SelfParameter) return null;
-        if (descendant is IConstructorOrInitializerParameterNode parameter
+        if (child == SelfParameter) return this;
+        if (child is IConstructorOrInitializerParameterNode parameter
             && Parameters.IndexOf(parameter) is int index)
-            return index == 0 ? SelfParameter : Parameters[index - 1];
-        if (descendant == Body)
-            return Parameters.LastOrDefault();
+            return index == 0 ? SelfParameter ?? (IFlowNode)this : Parameters[index - 1];
+        if (child == Body)
+            return Parameters.LastOrDefault() ?? SelfParameter ?? (IFlowNode)this;
 
         return base.InheritedPredecessor(child, descendant);
     }
+
+    public IFlowNode Predecessor()
+        => TypeMemberDeclarationsAspect.ConcreteInvocable_Predecessor(this);
+
+    public FlowState FlowStateBefore()
+        => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore(this);
+
+    internal override IPreviousValueId PreviousValueId(IChildNode before)
+        => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
 }

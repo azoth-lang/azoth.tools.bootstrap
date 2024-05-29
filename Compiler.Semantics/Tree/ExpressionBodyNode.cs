@@ -2,7 +2,6 @@ using System;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -14,10 +13,8 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
     public IResultStatementNode ResultStatement { get; }
     private readonly IFixedList<IStatementNode> statements;
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements => statements;
-    private ValueAttribute<ValueIdScope> valueIdScope;
-    public ValueIdScope ValueIdScope
-        => valueIdScope.TryGetValue(out var value) ? value
-            : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.Body_ValueIdScope);
+    public ValueId? ValueId => throw new NotImplementedException();
+    public FlowState FlowStateAfter => throw new NotImplementedException();
 
     public ExpressionBodyNode(IExpressionBodySyntax syntax, IResultStatementNode resultStatement)
     {
@@ -34,16 +31,6 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
         return LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, statementIndex);
     }
 
-    public IParameterNode? Predecessor() => (IParameterNode?)InheritedPredecessor();
-
-    internal override ValueIdScope InheritedValueIdScope(IChildNode child, IChildNode descendant)
-        => ValueIdScope;
-
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (descendant == ResultStatement)
-            // The result statement is the first expression in the body.
-            return null;
-        return base.InheritedPredecessor(child, descendant);
-    }
+    public IFlowNode Predecessor() => (IFlowNode)ResultStatement.Expression;
+    public FlowState FlowStateBefore() => throw new NotImplementedException();
 }

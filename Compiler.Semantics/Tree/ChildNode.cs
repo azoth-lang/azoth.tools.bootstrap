@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -36,6 +38,23 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected virtual IChildNode? Rewrite() => throw Child.RewriteNotSupported(this);
 
     IChild? IChild.Rewrite() => Child.Attach(Parent, Rewrite());
+
+    /// <summary>
+    /// The previous node to this one in a preorder traversal of the tree.
+    /// </summary>
+    protected virtual SemanticNode Previous()
+    {
+        SemanticNode? previous = null;
+        foreach (var child in Parent.Children().Cast<SemanticNode>())
+        {
+            if (child == this)
+                // If this is the first child, return the parent without descending
+                return previous?.LastDescendant() ?? Parent;
+            previous = child;
+        }
+
+        throw new UnreachableException("Node is not a child of its parent.");
+    }
 
     internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant)
         => Parent.InheritedContainingDeclaration(this, descendant);
@@ -91,12 +110,19 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     internal override ISymbolTree InheritedSymbolTree(IChildNode child, IChildNode descendant)
         => Parent.InheritedSymbolTree(this, descendant);
 
-    // InheritedPredecessor intentionally not overridden because it should not broadcast to descendants
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
+        => Parent.InheritedPredecessor(this, descendant);
 
-    internal override ValueIdScope InheritedValueIdScope(IChildNode child, IChildNode descendant)
-        => Parent.InheritedValueIdScope(child, descendant);
+    protected IFlowNode InheritedPredecessor() => Parent.InheritedPredecessor(this, this);
 
-    protected ValueIdScope InheritedValueIdScope() => Parent.InheritedValueIdScope(this, this);
+    internal override FlowState InheritedInitialFlowState(IChildNode child, IChildNode descendant)
+        => Parent.InheritedInitialFlowState(this, descendant);
 
-    protected ISemanticNode? InheritedPredecessor() => Parent.InheritedPredecessor(this, this);
+    protected FlowState InheritedInitialFlowState() => Parent.InheritedInitialFlowState(this, this);
+
+    internal override IPreviousValueId PreviousValueId(IChildNode before)
+        => Previous().PreviousValueId(before);
+
+    protected IPreviousValueId PreviousValueId()
+        => Previous().PreviousValueId(this);
 }

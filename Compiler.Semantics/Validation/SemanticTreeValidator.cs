@@ -36,10 +36,6 @@ internal class SemanticTreeValidator
         {
             _ = parameter.ValueId;
         }
-        if (node is IBodyNode body)
-        {
-            _ = body.ValueIdScope;
-        }
         if (node is IExpressionNode expression)
         {
             _ = expression.ValueId;
@@ -104,6 +100,10 @@ internal class SemanticTreeValidator
                 break;
             case ISelfExpressionNode n:
                 _ = n.ContainingDeclaration;
+                break;
+            case IIdExpressionNode n:
+                _ = n.Referent;
+                //_ = n.Type;
                 break;
         }
 

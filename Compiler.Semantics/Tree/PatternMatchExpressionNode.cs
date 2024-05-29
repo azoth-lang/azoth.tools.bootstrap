@@ -30,7 +30,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Pattern.GetFlowLexicalScope();
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
         if (descendant == Referent)
             return Predecessor();

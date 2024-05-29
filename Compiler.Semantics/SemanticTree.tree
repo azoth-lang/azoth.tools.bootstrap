@@ -31,7 +31,7 @@ BlockOrResult: ElseClause;
 
 // ---------- Bindings
 Binding <: Code, BindingDeclaration;
-NamedBinding <: Binding, NamedBindingDeclaration = Syntax:`ILocalBindingSyntax`;
+NamedBinding <: Binding, NamedBindingDeclaration = Syntax:`ILocalBindingSyntax` ValueId:`ValueId`;
 
 // ---------- Packages
 Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
@@ -69,9 +69,10 @@ UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? Facet:`IPackageFacetNode`
     ContainingDeclaration:`ISymbolDeclarationNode` ContainingSymbol:`Symbol`
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
-InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol`;
-ExecutableDefinition <: Definition;
-ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition = Parameters:ConstructorOrInitializerParameter*;
+InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol` ValueIdScope:`ValueIdScope`;
+ExecutableDefinition <: Definition = ValueIdScope:`ValueIdScope`;
+ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition, Flow
+    = Parameters:ConstructorOrInitializerParameter*;
 
 // ---------- Namespace Definitions
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
@@ -170,8 +171,11 @@ CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`
 CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint:`CapabilitySet`;
 Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability`;
 
+// ---------- Flow
+Flow <: Code = ValueId:`ValueId`? FlowStateAfter:`FlowState`;
+
 // ---------- Parameters
-Parameter <: Code, Binding = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
+Parameter <: Code, Binding, Flow = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
     Type:`Pseudotype` ValueId:`ValueId`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax` Type:`DataType` ParameterType:`Parameter`;
@@ -191,7 +195,7 @@ FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyn
     ContainingTypeDefinition:`ITypeDefinitionNode` ReferencedField:`IFieldDefinitionNode`?;
 
 // ---------- Function Parts
-Body: BodyOrBlock = ValueIdScope:`ValueIdScope`;
+Body: BodyOrBlock <: Flow;
 BlockBody: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
 ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 
@@ -227,7 +231,7 @@ VariableDeclarationStatement <: BodyStatement, NamedBinding = Syntax:`IVariableD
 ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax` Expression:AmbiguousExpression;
 
 // ---------- Patterns
-Pattern <: Code = Syntax:`IPatternSyntax`;
+Pattern <: Code, Flow = Syntax:`IPatternSyntax`;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
 BindingPattern <: OptionalOrBindingPattern, NamedBinding = Syntax:`IBindingPatternSyntax`
@@ -236,7 +240,7 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 
 // ---------- Expressions
 AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
-Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax` ValueId:`ValueId` Type:`DataType`;
+Expression <: AmbiguousExpression, Flow = Syntax:`IExpressionSyntax` ValueId:`ValueId` Type:`DataType` FlowStateAfter:`FlowState`;
 AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax` ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression* ReferencedSymbol:`ConstructorSymbol?`;
@@ -287,7 +291,7 @@ MemberAccessExpression <: AmbiguousName, AssignableExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression MemberName:`StandardName` TypeArguments:Type*;
 
 // ---------- Name Expressions
-NameExpression <: Expression, AmbiguousNameExpression;
+NameExpression <: Expression, AmbiguousNameExpression = Syntax:`INameExpressionSyntax`;
 // TODO Name <: NameExpression
 NamespaceName <: NameExpression = Type:`UnknownType` ReferencedDeclarations:`INamespaceDeclarationNode`*;
 UnqualifiedNamespaceName <: NamespaceName = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;

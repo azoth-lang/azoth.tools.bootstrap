@@ -1,7 +1,10 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -14,6 +17,11 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     public LexicalScope ContainingLexicalScope
         => containingLexicalScope.TryGetValue(out var value) ? value
             : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
+    private ValueAttribute<ValueId> valueId;
+    public override ValueId? ValueId
+        => valueId.TryGetValue(out var value) ? value
+            : valueId.GetValue(this, ExpressionTypesAspect.BindingPattern_ValueId);
+    ValueId INamedBindingNode.ValueId => ValueId ?? throw new UnreachableException();
 
     public BindingPatternNode(IBindingPatternSyntax syntax)
     {

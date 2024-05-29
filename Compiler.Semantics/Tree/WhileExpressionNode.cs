@@ -28,12 +28,12 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
         return base.InheritedContainingLexicalScope(child, descendant);
     }
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
         if (descendant == Condition)
-            return Predecessor();
+            return base.InheritedPredecessor(child, descendant);
         if (descendant == Block)
-            return Condition;
+            return (IFlowNode)Condition;
         return base.InheritedPredecessor(child, descendant);
     }
 }

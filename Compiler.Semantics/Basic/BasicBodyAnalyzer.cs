@@ -1653,13 +1653,7 @@ public class BasicBodyAnalyzer
     }
 
     private ISimpleNameExpressionSyntaxSemantics InferSemantics(ISimpleNameSyntax expression)
-        => expression switch
-        {
-            IIdentifierNameExpressionSyntax exp => InferSemantics(exp),
-            ISelfExpressionSyntax exp => exp.Semantics.Result, // Semantics already assigned by SemanticsApplier
-            IMissingNameSyntax exp => exp.Semantics.Result, // semantics are already "Unknown"
-            _ => throw ExhaustiveMatch.Failed(expression)
-        };
+        => expression.Semantics.Result; // Semantics already assigned by SemanticsApplier
 
     private IIdentifierNameExpressionSyntaxSemantics InferSemantics(IIdentifierNameExpressionSyntax expression)
         // Semantics already assigned by SemanticsApplier

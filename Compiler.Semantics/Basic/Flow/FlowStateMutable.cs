@@ -18,7 +18,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// Wraps up all the state that changes with the flow of the code to make it easy to pass through
 /// the analysis.
 /// </summary>
-/// <remarks>Flow is based of of <see cref="BindingSymbol"/> because you can do things like change
+/// <remarks>Flow is based off of <see cref="BindingSymbol"/> because you can do things like change
 /// the type of <s>self</s> if it started out isolated.</remarks>
 public sealed class FlowStateMutable
 {

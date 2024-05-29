@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -26,6 +27,12 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
     public override MethodSymbol Symbol
     => symbol.TryGetValue(out var value) ? value
         : symbol.GetValue(this, SymbolAspect.MethodDeclaration);
+    public ValueId? ValueId => null;
+    public FlowState FlowStateAfter => Body?.FlowStateAfter ?? SelfParameter!.FlowStateAfter;
+    private ValueAttribute<ValueIdScope> valueIdScope;
+    public ValueIdScope ValueIdScope
+        => valueIdScope.TryGetValue(out var value) ? value
+            : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.Invocable_ValueIdScope);
 
     private protected MethodDefinitionNode(
         IMethodSelfParameterNode selfParameter,
@@ -43,15 +50,25 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
         base.CollectDiagnostics(diagnostics);
     }
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
-        if (descendant == SelfParameter) return null;
+        if (descendant == SelfParameter) return (IFlowNode)this;
         if (descendant is INamedParameterNode parameter
             && Parameters.IndexOf(parameter) is int index)
             return index == 0 ? SelfParameter : Parameters[index - 1];
         if (descendant == Body && Body is not null)
-            return Parameters.LastOrDefault();
+            return Parameters.LastOrDefault() ?? (IFlowNode)SelfParameter;
 
         return base.InheritedPredecessor(child, descendant);
     }
+
+
+    public IFlowNode Predecessor()
+        => TypeMemberDeclarationsAspect.ConcreteInvocable_Predecessor((IConcreteInvocableDefinitionNode)this);
+
+    public FlowState FlowStateBefore()
+        => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore((IConcreteInvocableDefinitionNode)this);
+
+    internal override IPreviousValueId PreviousValueId(IChildNode before)
+        => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
 }

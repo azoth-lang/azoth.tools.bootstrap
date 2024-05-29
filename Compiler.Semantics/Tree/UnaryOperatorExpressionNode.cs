@@ -22,7 +22,7 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
     public override ConditionalLexicalScope GetFlowLexicalScope()
         => LexicalScopingAspect.UnaryOperatorExpression_GetFlowLexicalScope(this);
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
         if (descendant == Operand) return Predecessor();
         return base.InheritedPredecessor(child, descendant);

@@ -35,7 +35,7 @@ internal class UnknownMemberAccessExpressionNode : UnknownNameExpressionNode, IU
         base.CollectDiagnostics(diagnostics);
     }
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
         if (descendant == Context)
             return Predecessor();

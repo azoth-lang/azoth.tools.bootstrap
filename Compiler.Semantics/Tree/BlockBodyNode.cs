@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -12,10 +12,9 @@ internal sealed class BlockBodyNode : CodeNode, IBlockBodyNode
 {
     public override IBlockBodySyntax Syntax { get; }
     public IFixedList<IBodyStatementNode> Statements { get; }
-    private ValueAttribute<ValueIdScope> valueIdScope;
-    public ValueIdScope ValueIdScope
-        => valueIdScope.TryGetValue(out var value) ? value
-            : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.Body_ValueIdScope);
+    public ValueId? ValueId => null;
+    public FlowState FlowStateAfter
+        => Statements.LastOrDefault()?.Predecessor().FlowStateAfter ?? FlowStateBefore();
 
     public BlockBodyNode(IBlockBodySyntax syntax, IEnumerable<IBodyStatementNode> statements)
     {
@@ -28,15 +27,16 @@ internal sealed class BlockBodyNode : CodeNode, IBlockBodyNode
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, Statements.IndexOf(child)!.Value);
 
-    public IParameterNode? Predecessor() => (IParameterNode?)InheritedPredecessor();
+    public IFlowNode Predecessor() => InheritedPredecessor();
+    public FlowState FlowStateBefore() => Predecessor().FlowStateAfter;
 
-    internal override ValueIdScope InheritedValueIdScope(IChildNode child, IChildNode descendant)
-        => ValueIdScope;
-
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
-        if (Statements.IndexOf(descendant) is int index)
-            return index > 0 ? Statements[index - 1].LastExpression() : null;
+        if (Statements.IndexOf(child) is int index)
+            if (index > 0)
+                return Statements[index - 1].Predecessor();
+            else
+                return base.InheritedPredecessor(child, descendant);
 
         return base.InheritedPredecessor(child, descendant);
     }

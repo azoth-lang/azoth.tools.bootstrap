@@ -1,9 +1,11 @@
+using System;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
@@ -22,6 +24,7 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     public override DataType Type
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, TypeMemberDeclarationsAspect.NamedParameterNode_Type);
+
     private ValueAttribute<Parameter> parameterType;
     public Parameter ParameterType
         => parameterType.TryGetValue(out var value) ? value
@@ -30,6 +33,7 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     public NamedVariableSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAspect.NamedParameter_Symbol);
+    public override FlowState FlowStateAfter => throw new NotImplementedException();
 
     public NamedParameterNode(INamedParameterSyntax syntax, ITypeNode type)
     {

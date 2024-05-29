@@ -17,7 +17,7 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
         this.value = Child.Create(this, value);
     }
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
         if (descendant == Value) return Predecessor();
         return base.InheritedPredecessor(child, descendant);

@@ -17,11 +17,5 @@ internal sealed class UnsafeExpressionNode : ExpressionNode, IUnsafeExpressionNo
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Expression.GetFlowLexicalScope();
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (descendant == Expression)
-            return Predecessor();
-
-        return base.InheritedPredecessor(child, descendant);
-    }
+    public override IFlowNode Predecessor() => (IFlowNode)Expression;
 }

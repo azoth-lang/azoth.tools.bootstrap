@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -14,7 +15,9 @@ internal abstract class StatementNode : CodeNode, IStatementNode
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => GetLexicalScope();
 
-    public IExpressionNode? Predecessor() => (IExpressionNode?)InheritedPredecessor();
+    public new IFlowNode InheritedPredecessor() => base.InheritedPredecessor();
 
-    public abstract IExpressionNode? LastExpression();
+    public abstract IFlowNode Predecessor();
+
+    public new IPreviousValueId PreviousValueId() => base.PreviousValueId();
 }

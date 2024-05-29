@@ -38,12 +38,12 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => child == Block ? LexicalScope : ContainingLexicalScope;
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
-        if (descendant == InExpression)
-            return Predecessor();
-        if (descendant == Block)
-            return InExpression;
+        if (child == InExpression)
+            return base.InheritedPredecessor(child, descendant);
+        if (child == Block)
+            return (IFlowNode)InExpression;
 
         return base.InheritedPredecessor(child, descendant);
     }

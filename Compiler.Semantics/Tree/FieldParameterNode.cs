@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 
@@ -24,10 +25,12 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
     public override DataType Type
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, TypeMemberDeclarationsAspect.FieldParameter_Type);
+
     private ValueAttribute<Parameter> parameterType;
     public Parameter ParameterType
         => parameterType.TryGetValue(out var value) ? value
             : parameterType.GetValue(this, TypeMemberDeclarationsAspect.FieldParameter_ParameterType);
+    public override FlowState FlowStateAfter => FlowStateBefore();
 
     public FieldParameterNode(IFieldParameterSyntax syntax)
     {

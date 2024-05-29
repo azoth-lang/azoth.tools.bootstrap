@@ -15,6 +15,9 @@ internal abstract class SemanticNode : ISemanticNode
 {
     public abstract ISyntax? Syntax { get; }
 
+    internal SemanticNode LastDescendant()
+        => ((SemanticNode?)this.Children().LastOrDefault())?.LastDescendant() ?? this;
+
     internal virtual ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedContainingDeclaration), child, descendant));
@@ -59,11 +62,14 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedFacet), child, descendant));
 
-    internal virtual ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal virtual IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(Child.InheritFailedMessage(nameof(InheritedPredecessor), child, descendant));
 
-    internal virtual ValueIdScope InheritedValueIdScope(IChildNode child, IChildNode descendant)
-        => throw new NotImplementedException(Child.InheritFailedMessage(nameof(InheritedValueIdScope), child, descendant));
+    internal virtual FlowState InheritedInitialFlowState(IChildNode child, IChildNode descendant)
+        => throw new NotImplementedException(Child.InheritFailedMessage(nameof(InheritedInitialFlowState), child, descendant));
+
+    internal virtual IPreviousValueId PreviousValueId(IChildNode before)
+        => throw Child.PreviousFailed(nameof(PreviousValueId), before);
 
     protected virtual void CollectDiagnostics(Diagnostics diagnostics)
     {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -47,11 +48,17 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         return Arguments[argumentIndex - 1].GetFlowLexicalScope().True;
     }
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
-        if (Arguments.IndexOf(descendant) is int argumentIndex)
-            return argumentIndex == 0 ? Predecessor() : Arguments[argumentIndex - 1];
+        if (Arguments.IndexOf(child) is int argumentIndex)
+            if (argumentIndex == 0)
+                return base.InheritedPredecessor(child, descendant);
+            else
+                return (IFlowNode)Arguments[argumentIndex - 1];
 
         return base.InheritedPredecessor(child, descendant);
     }
+
+    public override IFlowNode Predecessor()
+        => (IFlowNode?)Arguments.LastOrDefault() ?? InheritedPredecessor();
 }

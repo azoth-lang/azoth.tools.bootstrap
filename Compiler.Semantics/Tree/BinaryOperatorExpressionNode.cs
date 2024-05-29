@@ -30,19 +30,19 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
     {
-        if (ReferenceEquals(child, LeftOperand))
+        if (child == LeftOperand)
             return GetContainingLexicalScope();
-        if (ReferenceEquals(child, RightOperand))
+        if (child == RightOperand)
             return LexicalScopingAspect.BinaryOperatorExpression_InheritedContainingLexicalScope_RightOperand(this);
-        throw new ArgumentException("Note a child of this node.", nameof(child));
+        throw new ArgumentException("Not a child of this node.", nameof(child));
     }
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
-        if (descendant == LeftOperand)
-            return Predecessor();
-        if (descendant == RightOperand)
-            return LeftOperand;
+        if (child == LeftOperand)
+            return base.InheritedPredecessor(child, descendant);
+        if (child == RightOperand)
+            return (IFlowNode)LeftOperand;
         return base.InheritedPredecessor(child, descendant);
     }
 }

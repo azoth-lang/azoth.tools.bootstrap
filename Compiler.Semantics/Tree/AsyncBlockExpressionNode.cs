@@ -14,7 +14,7 @@ internal sealed class AsyncBlockExpressionNode : ExpressionNode, IAsyncBlockExpr
         Block = Child.Attach(this, block);
     }
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
         if (descendant == Block)
             return Predecessor();

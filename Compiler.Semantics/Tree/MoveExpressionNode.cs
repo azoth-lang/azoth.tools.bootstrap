@@ -18,7 +18,7 @@ internal sealed class MoveExpressionNode : ExpressionNode, IMoveExpressionNode
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Referent.GetFlowLexicalScope();
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
+    internal override IFlowNode InheritedPredecessor(IChildNode child, IChildNode descendant)
     {
         if (descendant == Referent) return Predecessor();
         return base.InheritedPredecessor(child, descendant);

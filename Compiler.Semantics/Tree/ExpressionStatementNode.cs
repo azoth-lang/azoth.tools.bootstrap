@@ -18,13 +18,5 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
 
     public override LexicalScope GetLexicalScope() => InheritedContainingLexicalScope();
 
-    internal override ISemanticNode? InheritedPredecessor(IChildNode child, IChildNode descendant)
-    {
-        if (descendant == Expression)
-            return Predecessor();
-
-        return base.InheritedPredecessor(child, descendant);
-    }
-
-    public override IExpressionNode? LastExpression() => (IExpressionNode?)Expression;
+    public override IFlowNode Predecessor() => (IFlowNode)Expression;
 }

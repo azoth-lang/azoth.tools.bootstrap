@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -12,6 +13,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -55,7 +57,7 @@ internal static class TypeMemberDeclarationsAspect
     }
 
     public static ValueId Parameter_ValueId(IParameterNode node)
-        => (node.Predecessor()?.ValueId.Scope ?? new ValueIdScope()).CreateValueId();
+        => node.PreviousValueId().CreateNext();
 
     public static Parameter NamedParameter_ParameterType(INamedParameterNode node)
         => new(node.IsLentBinding, node.Type);
@@ -222,6 +224,18 @@ internal static class TypeMemberDeclarationsAspect
     public static FunctionType AssociatedFunctionDeclaration_Type(IAssociatedFunctionDefinitionNode node)
         => FunctionType(node.Parameters, node.Return);
 
-    public static ValueIdScope Body_ValueIdScope(IBodyNode node)
-        => node.Predecessor()?.ValueId.Scope ?? new ValueIdScope();
+    public static FlowState ConcreteInvocable_FlowStateBefore(IConcreteInvocableDefinitionNode node)
+        => FlowState.Empty;
+
+    public static IFlowNode ConcreteInvocable_Predecessor(IConcreteInvocableDefinitionNode node)
+        => throw new NotSupportedException($"{nameof(IConcreteInvocableDefinitionNode)} has no predecessor.");
+
+    public static ValueIdScope Invocable_ValueIdScope(IInvocableDefinitionNode _)
+        => new ValueIdScope();
+
+    public static IPreviousValueId Invocable_PreviousValueId(IInvocableDefinitionNode node)
+        => new BeforeFirstValueId(node.ValueIdScope);
+
+    public static ValueIdScope FieldDefinition_ValueIdScope(IFieldDefinitionNode _)
+        => new ValueIdScope();
 }
