@@ -766,7 +766,7 @@ internal class SemanticsApplier
 
     private static void FunctionInvocationExpression(IFunctionInvocationExpressionNode node)
     {
-        FunctionGroupName(node.Function);
+        FunctionGroupName(node.FunctionGroup);
         AmbiguousExpressions(node.Arguments);
     }
     #endregion

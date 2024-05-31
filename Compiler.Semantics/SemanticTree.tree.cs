@@ -1423,8 +1423,9 @@ public partial interface IFunctionInvocationExpressionNode : ISemanticNode, IExp
     new IInvocationExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    IFunctionGroupNameNode Function { get; }
+    IFunctionGroupNameNode FunctionGroup { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations { get; }
     IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
 }
 

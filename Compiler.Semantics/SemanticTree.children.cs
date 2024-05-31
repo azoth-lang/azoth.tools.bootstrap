@@ -311,7 +311,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IFunctionInvocationExpressionNode n:
-                yield return n.Function;
+                yield return n.FunctionGroup;
                 foreach (var child in n.Arguments)
                     yield return child;
                 yield break;

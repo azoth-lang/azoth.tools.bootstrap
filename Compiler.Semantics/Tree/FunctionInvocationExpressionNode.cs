@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -11,8 +12,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFunctionInvocationExpressionNode
 {
     public override IInvocationExpressionSyntax Syntax { get; }
-    public IFunctionGroupNameNode Function { get; }
+    public IFunctionGroupNameNode FunctionGroup { get; }
     public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    private ValueAttribute<IFixedSet<IFunctionLikeDeclarationNode>> compatibleDeclarations;
+    public IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations
+        => compatibleDeclarations.TryGetValue(out var value) ? value
+            : compatibleDeclarations.GetValue(this, OverloadResolutionAspect.FunctionInvocationExpression_CompatibleDeclarations);
     private ValueAttribute<IFunctionLikeDeclarationNode?> referencedDeclaration;
     public IFunctionLikeDeclarationNode? ReferencedDeclaration
         => referencedDeclaration.TryGetValue(out var value) ? value
@@ -24,11 +29,11 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
 
     public FunctionInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
-        IFunctionGroupNameNode function,
+        IFunctionGroupNameNode functionGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
-        Function = Child.Attach(this, function);
+        FunctionGroup = Child.Attach(this, functionGroup);
         Arguments = ChildList.Create(this, arguments);
     }
 
@@ -42,5 +47,11 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
         }
 
         return base.InheritedContainingLexicalScope(child, descendant);
+    }
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        OverloadResolutionAspect.FunctionInvocationExpression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

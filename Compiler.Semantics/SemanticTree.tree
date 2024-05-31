@@ -276,7 +276,8 @@ ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax` Valu
 InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression* CurrentArguments:`IEnumerable<IAmbiguousExpressionNode>`;
 FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
-    Function:FunctionGroupName Arguments:AmbiguousExpression* ReferencedDeclaration:`IFunctionLikeDeclarationNode`?;
+    FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
+    CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?;
 
 // ---------- Ambiguous Name Expressions
 AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;

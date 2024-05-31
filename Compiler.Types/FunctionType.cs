@@ -18,6 +18,7 @@ public sealed class FunctionType : NonEmptyType
         IsFullyKnown = Parameters.All(p => p.IsFullyKnown) && @return.IsFullyKnown;
     }
 
+    public int Arity => Parameters.Count;
     public IFixedList<Parameter> Parameters { get; }
     public Return Return { get; }
 
