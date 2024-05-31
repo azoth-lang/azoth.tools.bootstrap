@@ -8,7 +8,10 @@ internal class SemanticTreeTypeValidator
 
     public static void Validate(ISemanticNode node)
     {
-        if (node is IExpressionNode expression && ValidateTypes)
+        if (node is IExpressionNode expression
+                and not INamespaceNameNode
+                and not IFunctionGroupNameNode
+            && ValidateTypes)
         {
             _ = expression.ValueId;
             var expectedExpType = expression.Syntax.DataType.Result;
