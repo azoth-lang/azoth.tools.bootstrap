@@ -13,13 +13,13 @@ public sealed class ConstructorSymbol : InvocableSymbol
     public override UserTypeSymbol ContainingSymbol { get; }
     public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public override IdentifierName? Name { get; }
-    public ReferenceType SelfParameterType { get; }
-    public ReferenceType ReturnType { get; }
+    public CapabilityType SelfParameterType { get; }
+    public CapabilityType ReturnType { get; }
 
     public ConstructorSymbol(
         UserTypeSymbol containingSymbol,
         IdentifierName? name,
-        ReferenceType selfParameterType,
+        CapabilityType selfParameterType,
         IFixedList<Parameter> parameterTypes)
         : base(parameterTypes,
             new Return(((ObjectType)containingSymbol.DeclaresType).ToConstructorReturn(selfParameterType, parameterTypes)))
@@ -27,7 +27,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
         ContainingSymbol = containingSymbol;
         Name = name;
         SelfParameterType = selfParameterType;
-        ReturnType = (ReferenceType)base.Return.Type;
+        ReturnType = (CapabilityType)Return.Type;
     }
 
     public static ConstructorSymbol CreateDefault(UserTypeSymbol containingSymbol)

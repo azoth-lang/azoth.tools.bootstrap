@@ -14,8 +14,8 @@ internal sealed class ConstructorSelfParameterNode : SelfParameterNode, IConstru
     public new ObjectType ContainingDeclaredType => (ObjectType)base.ContainingDeclaredType;
     public ICapabilityNode Capability { get; }
     public override IdentifierName? Name => Syntax.Name;
-    private ValueAttribute<ReferenceType> type;
-    public override ReferenceType Type
+    private ValueAttribute<CapabilityType> type;
+    public override CapabilityType Type
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, TypeMemberDeclarationsAspect.ConstructorSelfParameter_Type);
 

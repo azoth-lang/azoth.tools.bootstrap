@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -180,7 +181,7 @@ public class InterpreterProcess
 
     private async Task<AzothValue> ConstructMainParameterAsync(DataType parameterType)
     {
-        if (parameterType is not ReferenceType { TypeArguments.Count: 0 } type)
+        if (parameterType is not CapabilityType { TypeArguments.Count: 0 } type)
             throw new InvalidOperationException(
                 $"Parameter to main of type {parameterType.ToILString()} not supported");
 
@@ -367,9 +368,9 @@ public class InterpreterProcess
     {
         return selfType switch
         {
-            ReferenceType _ => await CallClassMethodAsync(methodSymbol, self, arguments),
             ValueType valueType => await CallStructMethod(methodSymbol, valueType, self, arguments),
-            _ => throw ExhaustiveMatch.Failed(selfType)
+            CapabilityType _ => await CallClassMethodAsync(methodSymbol, self, arguments),
+            _ => throw new UnreachableException(),
         };
     }
 
@@ -1037,7 +1038,7 @@ public class InterpreterProcess
 
     private async ValueTask<bool> EqualsAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
     {
-        if (leftExp.DataType != rightExp.DataType && leftExp.DataType is not ReferenceType { IsIdentityReference: true })
+        if (leftExp.DataType != rightExp.DataType && leftExp.DataType is not CapabilityType { IsIdentityReference: true })
             throw new InvalidOperationException(
                 $"Can't compare expressions of type {leftExp.DataType.ToILString()} and {rightExp.DataType.ToILString()} for equality.");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
@@ -1069,7 +1070,7 @@ public class InterpreterProcess
         if (type == DataType.Size) return left.SizeValue.Equals(right.SizeValue);
         if (type == DataType.NInt) return left.NIntValue.Equals(right.NIntValue);
         if (type == DataType.NUInt) return left.NUIntValue.Equals(right.NUIntValue);
-        if (type is ReferenceType { IsIdentityReference: true })
+        if (type is CapabilityType { IsIdentityReference: true })
             return ReferenceEquals(left.ObjectValue, right.ObjectValue);
         throw new NotImplementedException($"Compare equality of `{type.ToILString()}`.");
     }

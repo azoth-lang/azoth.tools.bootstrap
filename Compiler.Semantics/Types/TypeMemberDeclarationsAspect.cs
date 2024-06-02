@@ -113,7 +113,7 @@ internal static class TypeMemberDeclarationsAspect
             diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(node.File, node.Syntax));
     }
 
-    public static ReferenceType ConstructorSelfParameter_Type(IConstructorSelfParameterNode node)
+    public static CapabilityType ConstructorSelfParameter_Type(IConstructorSelfParameterNode node)
     {
         var declaredType = node.ContainingDeclaredType;
         var capability = node.Syntax.Capability.Declared.ToSelfParameterCapability();

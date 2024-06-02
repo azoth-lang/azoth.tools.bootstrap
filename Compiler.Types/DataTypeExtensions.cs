@@ -26,7 +26,7 @@ public static class DataTypeExtensions
                 => true,
             (ValueType t, ValueType s)
                 => IsAssignableFrom(t, s),
-            (ReferenceType targetReference, ReferenceType sourceReference)
+            (CapabilityType targetReference, CapabilityType sourceReference)
                 => IsAssignableFrom(targetReference, sourceReference),
             (OptionalType targetOptional, OptionalType sourceOptional)
                 => IsAssignableFrom(targetOptional.Referent, sourceOptional.Referent),
@@ -45,7 +45,7 @@ public static class DataTypeExtensions
         return IsAssignableFrom(target.BareType, target.AllowsWrite, source.BareType);
     }
 
-    public static bool IsAssignableFrom(this ReferenceType target, ReferenceType source)
+    public static bool IsAssignableFrom(this CapabilityType target, CapabilityType source)
     {
         if (!target.Capability.IsAssignableFrom(source.Capability)) return false;
 
@@ -190,7 +190,7 @@ public static class DataTypeExtensions
 
     public static DataType ReplaceSelfWith(this DataType type, DataType selfType)
     {
-        if (selfType is not ReferenceType selfReferenceType)
+        if (selfType is not CapabilityType selfReferenceType)
             return type;
         return type.ReplaceSelfWith(selfReferenceType.Capability);
     }
@@ -238,12 +238,12 @@ public static class DataTypeExtensions
     /// If this is a reference type or an optional reference type, the underlying reference type.
     /// Otherwise, <see langword="null"/>.
     /// </summary>
-    public static ReferenceType? UnderlyingReferenceType(this DataType type)
+    public static CapabilityType? UnderlyingReferenceType(this DataType type)
     {
         return type switch
         {
-            ReferenceType referenceType => referenceType,
-            OptionalType { Referent: ReferenceType referenceType } => referenceType,
+            CapabilityType referenceType => referenceType,
+            OptionalType { Referent: CapabilityType referenceType } => referenceType,
             _ => null
         };
     }

@@ -639,14 +639,14 @@ internal class ASTBuilder
         switch (conversion.Kind)
         {
             case ConversionKind.Recover:
-                return new RecoverIsolationExpression(expression.Span, (ReferenceType)convertToType, expression);
+                return new RecoverIsolationExpression(expression.Span, (CapabilityType)convertToType, expression);
             case ConversionKind.Implicit:
                 var variableNameExpression = (IVariableNameExpression)expression;
                 var referencedSymbol = variableNameExpression.ReferencedSymbol;
-                return new MoveExpression(expression.Span, (ReferenceType)convertToType, referencedSymbol,
+                return new MoveExpression(expression.Span, (CapabilityType)convertToType, referencedSymbol,
                     variableNameExpression);
             case ConversionKind.Temporary:
-                return new TempMoveExpression(expression.Span, (ReferenceType)convertToType, expression);
+                return new TempMoveExpression(expression.Span, (CapabilityType)convertToType, expression);
             default:
                 throw ExhaustiveMatch.Failed(conversion.Kind);
         }
@@ -660,14 +660,14 @@ internal class ASTBuilder
         switch (conversion.Kind)
         {
             case ConversionKind.Recover:
-                return new RecoverConstExpression(expression.Span, (ReferenceType)convertToType, expression);
+                return new RecoverConstExpression(expression.Span, (CapabilityType)convertToType, expression);
             case ConversionKind.Implicit:
                 var variableNameExpression = (IVariableNameExpression)expression;
                 var referencedSymbol = ((IVariableNameExpression)expression).ReferencedSymbol;
-                return new FreezeExpression(expression.Span, (ReferenceType)convertToType, referencedSymbol,
+                return new FreezeExpression(expression.Span, (CapabilityType)convertToType, referencedSymbol,
                     variableNameExpression);
             case ConversionKind.Temporary:
-                return new TempFreezeExpression(expression.Span, (ReferenceType)convertToType, expression);
+                return new TempFreezeExpression(expression.Span, (CapabilityType)convertToType, expression);
             default:
                 throw ExhaustiveMatch.Failed(conversion.Kind);
         }

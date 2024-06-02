@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax.Tree;
 
 internal class RecoverIsolationExpression : RecoverExpression, IRecoverIsolationExpression
 {
-    public RecoverIsolationExpression(TextSpan span, ReferenceType dataType, IExpression value)
+    public RecoverIsolationExpression(TextSpan span, CapabilityType dataType, IExpression value)
         : base(span, dataType, value) { }
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;

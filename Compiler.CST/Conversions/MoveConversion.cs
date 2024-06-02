@@ -17,7 +17,7 @@ public class MoveConversion : ChainedConversion
     public override DataType Apply(DataType type)
     {
         type = PriorConversion.Apply(type);
-        if (type is not ReferenceType { AllowsRecoverIsolation: true } referenceType)
+        if (type is not CapabilityType { AllowsRecoverIsolation: true } referenceType)
             throw new InvalidOperationException($"Cannot move type '{type.ToILString()}'");
         var capability = Kind == ConversionKind.Temporary
             ? Capability.TemporarilyIsolated

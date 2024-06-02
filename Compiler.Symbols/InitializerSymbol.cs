@@ -15,14 +15,14 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
     public override UserTypeSymbol ContextTypeSymbol { get; }
     public override UserTypeSymbol ContainingSymbol { get; }
     public override IdentifierName? Name { get; }
-    public ValueType SelfParameterType { get; }
+    public CapabilityType SelfParameterType { get; }
     public ValueType ReturnType { get; }
     public FunctionType InitializerGroupType { get; }
 
     public InitializerSymbol(
         UserTypeSymbol containingTypeSymbol,
         IdentifierName? initializerName,
-        ValueType selfParameterType,
+        CapabilityType selfParameterType,
         IFixedList<Parameter> parameterTypes)
         : base(parameterTypes,
             new Return(((StructType)containingTypeSymbol.DeclaresType).ToInitializerReturn(selfParameterType, parameterTypes)))

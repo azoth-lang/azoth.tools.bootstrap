@@ -17,7 +17,7 @@ public class FreezeConversion : ChainedConversion
     public override DataType Apply(DataType type)
     {
         type = PriorConversion.Apply(type);
-        if (type is not ReferenceType { AllowsFreeze: true } referenceType)
+        if (type is not CapabilityType { AllowsFreeze: true } referenceType)
             throw new InvalidOperationException($"Cannot freeze type '{type.ToILString()}'");
         var capability = Kind == ConversionKind.Temporary
             ? Capability.TemporarilyConstant

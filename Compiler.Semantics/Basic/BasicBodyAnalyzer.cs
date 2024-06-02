@@ -269,7 +269,7 @@ public class BasicBodyAnalyzer
                     type = type.WithoutWrite();
                 else
                 {
-                    if (type is not ReferenceType referenceType)
+                    if (type is not CapabilityType referenceType)
                         throw new NotImplementedException(
                             "Compile error: can't infer mutability for non reference type");
 
@@ -417,14 +417,14 @@ public class BasicBodyAnalyzer
                 var requireSigned = from.Value < 0;
                 return !requireSigned || to.DeclaredType.IsSigned ? new SimpleTypeConversion(to.DeclaredType, priorConversion) : null;
             }
-            case (ReferenceType { IsTemporarilyConstantReference: true } to, ReferenceType { AllowsFreeze: true } from)
+            case (CapabilityType { IsTemporarilyConstantReference: true } to, CapabilityType { AllowsFreeze: true } from)
                 when to.BareType.IsAssignableFrom(targetAllowsWrite: false, from.BareType)
                      && allowMoveOrFreeze:
             {
                 if (enact) newResult = flow.TempFreeze(fromResult!);
                 return new FreezeConversion(priorConversion, ConversionKind.Temporary);
             }
-            case (ReferenceType { IsConstantReference: true } to, ReferenceType { AllowsFreeze: true } from)
+            case (CapabilityType { IsConstantReference: true } to, CapabilityType { AllowsFreeze: true } from)
                 when to.BareType.IsAssignableFrom(targetAllowsWrite: false, from.BareType)
                      && allowMoveOrFreeze:
             {
@@ -433,14 +433,14 @@ public class BasicBodyAnalyzer
                     return new FreezeConversion(priorConversion, ConversionKind.Recover);
                 return null;
             }
-            case (ReferenceType { IsTemporarilyIsolatedReference: true } to, ReferenceType { AllowsRecoverIsolation: true } from)
+            case (CapabilityType { IsTemporarilyIsolatedReference: true } to, CapabilityType { AllowsRecoverIsolation: true } from)
                 when to.BareType.IsAssignableFrom(targetAllowsWrite: true, from.BareType)
                      && allowMoveOrFreeze:
             {
                 if (enact) newResult = flow.TempMove(fromResult!);
                 return new MoveConversion(priorConversion, ConversionKind.Temporary);
             }
-            case (ReferenceType { IsIsolatedReference: true } to, ReferenceType { AllowsRecoverIsolation: true } from)
+            case (CapabilityType { IsIsolatedReference: true } to, CapabilityType { AllowsRecoverIsolation: true } from)
                 when to.BareType.IsAssignableFrom(targetAllowsWrite: true, from.BareType)
                     && allowMoveOrFreeze:
             {
@@ -472,7 +472,7 @@ public class BasicBodyAnalyzer
                 // TODO do not allow `id mut T`
                 var result = InferType(exp.Referent, flow);
                 DataType type;
-                if (result.Type is ReferenceType referenceType)
+                if (result.Type is CapabilityType referenceType)
                     type = referenceType.With(Capability.Identity);
                 else
                 {
@@ -606,8 +606,8 @@ public class BasicBodyAnalyzer
                     (BoolConstValueType left, BinaryOperator.And, BoolConstValueType right) => left.And(right),
                     (BoolConstValueType left, BinaryOperator.Or, BoolConstValueType right) => left.Or(right),
 
-                    (ReferenceType, BinaryOperator.EqualsEquals, ReferenceType)
-                        or (ReferenceType, BinaryOperator.NotEqual, ReferenceType)
+                    (CapabilityType { BareType: BareReferenceType }, BinaryOperator.EqualsEquals, CapabilityType { BareType: BareReferenceType })
+                        or (CapabilityType { BareType: BareReferenceType }, BinaryOperator.NotEqual, CapabilityType { BareType: BareReferenceType })
                         => InferReferenceEqualityOperatorType(leftOperand, rightOperand),
 
                     (ValueType<BoolType>, BinaryOperator.EqualsEquals, ValueType<BoolType>)
@@ -886,7 +886,7 @@ public class BasicBodyAnalyzer
                             type = nonEmptyContext.ReplaceTypeParametersIn(type);
                         var resultVariable = flow.AccessMember(contextResult.Variable, type);
                         if (fieldSymbol.IsMutableBinding
-                            && contextType is ReferenceType { Capability: var contextCapability }
+                            && contextType is CapabilityType { Capability: var contextCapability }
                             && contextCapability == Capability.Identity)
                         {
                             diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(file, exp, contextType));
@@ -993,7 +993,7 @@ public class BasicBodyAnalyzer
             case IAwaitExpressionSyntax exp:
             {
                 var result = InferType(exp.Expression, flow);
-                if (result.Type is not ReferenceType { DeclaredType: { } declaredType } promiseType
+                if (result.Type is not CapabilityType { DeclaredType: { } declaredType } promiseType
                     || !declaredType.Equals(Intrinsic.PromiseType))
                 {
                     diagnostics.Add(TypeError.CannotAwaitType(file, exp.Span, result.Type));
@@ -1018,16 +1018,13 @@ public class BasicBodyAnalyzer
         var type = flow.Type(symbol);
         switch (type)
         {
-            case ReferenceType referenceType:
-                if (!referenceType.AllowsMove)
+            case CapabilityType capabilityType:
+                if (!capabilityType.AllowsMove)
                     diagnostics.Add(TypeError.NotImplemented(file, exp.Span, "Reference capability does not allow moving"));
                 else if (!flow.IsIsolated(symbol))
                     diagnostics.Add(FlowTypingError.CannotMoveValue(file, exp));
-                type = referenceType.IsTemporarilyIsolatedReference ? type : referenceType.With(Capability.Isolated);
+                type = capabilityType.IsTemporarilyIsolatedReference ? type : capabilityType.With(Capability.Isolated);
                 flow.Move(symbol);
-                break;
-            case ValueType valueType:
-                type = valueType;
                 break;
             case UnknownType:
                 type = DataType.Unknown;
@@ -1055,7 +1052,7 @@ public class BasicBodyAnalyzer
         var type = flow.Type(symbol);
         switch (type)
         {
-            case ReferenceType referenceType:
+            case CapabilityType referenceType:
                 if (!referenceType.AllowsFreeze)
                     diagnostics.Add(TypeError.NotImplemented(file, exp.Span,
                         "Reference capability does not allow freezing"));
@@ -1548,8 +1545,8 @@ public class BasicBodyAnalyzer
         // to force the caller to have `iso`.
         if (selfParam.IsLent) return null;
 
-        if (selfParam.Type is not ReferenceType { IsIsolatedReference: true } toType
-            || selfArgType is not ReferenceType { AllowsRecoverIsolation: true } fromType)
+        if (selfParam.Type is not CapabilityType { IsIsolatedReference: true } toType
+            || selfArgType is not CapabilityType { AllowsRecoverIsolation: true } fromType)
             return null;
 
         if (!toType.BareType.IsAssignableFrom(toType.AllowsWrite, fromType.BareType)) return null;
@@ -1588,8 +1585,8 @@ public class BasicBodyAnalyzer
         // to force the caller to have `const`
         if (selfParam.IsLent) return null;
 
-        if (selfParam.Type is not ReferenceType { IsConstantReference: true } toType
-            || selfArgType is not ReferenceType { AllowsFreeze: true } fromType)
+        if (selfParam.Type is not CapabilityType { IsConstantReference: true } toType
+            || selfArgType is not CapabilityType { AllowsFreeze: true } fromType)
             return null;
 
         if (!toType.BareType.IsAssignableFrom(toType.AllowsWrite, fromType.BareType)) return null;
@@ -1956,8 +1953,8 @@ public class BasicBodyAnalyzer
         IExpressionSyntax leftOperand,
         IExpressionSyntax rightOperand)
     {
-        if (leftOperand.ConvertedDataType is ReferenceType { IsIdentityReference: true } left
-           && rightOperand.ConvertedDataType is ReferenceType { IsIdentityReference: true } right
+        if (leftOperand.ConvertedDataType is CapabilityType { IsIdentityReference: true } left
+           && rightOperand.ConvertedDataType is CapabilityType { IsIdentityReference: true } right
            && (left.IsAssignableFrom(right) || right.IsAssignableFrom(left)))
             return DataType.Bool;
         return DataType.Unknown;

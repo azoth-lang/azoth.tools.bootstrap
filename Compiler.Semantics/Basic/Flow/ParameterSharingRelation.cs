@@ -36,7 +36,7 @@ public sealed class ParameterSharingRelation
         {
             var setForParameter = DeclareVariable(sharingSets, parameterSymbol);
             if (setForParameter is null) continue;
-            if (parameterSymbol.Type.ToUpperBound() is not ReferenceType { Capability: var capability }) continue;
+            if (parameterSymbol.Type.ToUpperBound() is not CapabilityType { Capability: var capability }) continue;
 
             // These capabilities don't have to worry about external references
             if (capability == Capability.Isolated || capability == Capability.TemporarilyIsolated

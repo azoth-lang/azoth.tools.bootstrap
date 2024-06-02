@@ -73,7 +73,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     /// Make a version of this type for use as the return type of the default constructor.
     /// </summary>
     /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
-    /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
+    /// with `const` because there are no parameters that could break the new object's isolation.</remarks>
     public ValueType<StructType> ToDefaultInitializerReturn()
         => With(IsDeclaredConst ? Capability.Constant : Capability.Isolated, GenericParameterTypes);
 
@@ -82,7 +82,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     /// </summary>
     /// <remarks>The capability of the return type is restricted by the parameter types because the
     /// newly constructed object could contain references to them.</remarks>
-    public ValueType<StructType> ToInitializerReturn(ValueType selfParameterType, IEnumerable<Parameter> parameterTypes)
+    public ValueType<StructType> ToInitializerReturn(CapabilityType selfParameterType, IEnumerable<Parameter> parameterTypes)
     {
         if (IsDeclaredConst) return With(Capability.Constant, GenericParameterTypes);
         // Read only self constructors cannot return `mut` or `iso`
@@ -91,12 +91,12 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         foreach (var parameterType in parameterTypes)
             switch (parameterType.Type)
             {
-                case ReferenceType when parameterType.IsLent:
-                case ReferenceType { IsConstantReference: true }:
-                case ReferenceType { IsIsolatedReference: true }:
-                case OptionalType { Referent: ReferenceType } when parameterType.IsLent:
-                case OptionalType { Referent: ReferenceType { IsConstantReference: true } }:
-                case OptionalType { Referent: ReferenceType { IsIsolatedReference: true } }:
+                case CapabilityType when parameterType.IsLent:
+                case CapabilityType { IsConstantReference: true }:
+                case CapabilityType { IsIsolatedReference: true }:
+                case OptionalType { Referent: CapabilityType } when parameterType.IsLent:
+                case OptionalType { Referent: CapabilityType { IsConstantReference: true } }:
+                case OptionalType { Referent: CapabilityType { IsIsolatedReference: true } }:
                 case ValueType:
                 case EmptyType:
                 case UnknownType:

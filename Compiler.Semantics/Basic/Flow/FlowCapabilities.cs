@@ -49,7 +49,7 @@ public readonly struct FlowCapabilities
 
         var joinedTypeArguments = type.BareType.GenericParameterArguments.Enumerate();
         var independentTypeArguments = joinedTypeArguments.Where((p, _) => p.ParameterHasIndependence);
-        var independentReferenceTypeArguments = independentTypeArguments.Select((p, i) => (i, p.Argument as ReferenceType))
+        var independentReferenceTypeArguments = independentTypeArguments.Select((p, i) => (i, p.Argument as CapabilityType))
                                                                         .Where((_, arg) => arg is not null);
 
         foreach (var (i, arg) in independentReferenceTypeArguments)
@@ -65,10 +65,10 @@ public readonly struct FlowCapabilities
         Stack<int> parentIndex)
     {
         var flowCapabilities = Enumerable.Empty<(TypeArgumentIndex, FlowCapability)>();
-        foreach (var (arg, i) in type.TypeArguments.Enumerate().Where(tuple => tuple.Value is ReferenceType))
+        foreach (var (arg, i) in type.TypeArguments.Enumerate().Where(tuple => tuple.Value is CapabilityType))
         {
             parentIndex.Push(i);
-            flowCapabilities = flowCapabilities.Concat(FlowCapabilitiesForTypeParameters((ReferenceType)arg, parentIndex));
+            flowCapabilities = flowCapabilities.Concat(FlowCapabilitiesForTypeParameters((CapabilityType)arg, parentIndex));
             parentIndex.Pop();
         }
 

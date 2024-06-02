@@ -21,7 +21,7 @@ public abstract class BareReferenceType : BareType
 
     public abstract override BareReferenceType With(IFixedList<DataType> typeArguments);
 
-    public abstract override ReferenceType With(Capability capability);
+    public abstract override CapabilityType With(Capability capability);
 }
 
 public sealed class BareReferenceType<TDeclared> : BareReferenceType

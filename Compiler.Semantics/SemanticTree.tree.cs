@@ -818,7 +818,7 @@ public partial interface IConstructorSelfParameterNode : ISemanticNode, ISelfPar
     ISelfParameterSyntax ISelfParameterNode.Syntax => Syntax;
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICapabilityNode Capability { get; }
-    new ReferenceType Type { get; }
+    new CapabilityType Type { get; }
     Pseudotype IParameterNode.Type => Type;
     new ObjectType ContainingDeclaredType { get; }
     IDeclaredUserType ISelfParameterNode.ContainingDeclaredType => ContainingDeclaredType;
@@ -831,7 +831,7 @@ public partial interface IInitializerSelfParameterNode : ISemanticNode, ISelfPar
     ISelfParameterSyntax ISelfParameterNode.Syntax => Syntax;
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICapabilityNode Capability { get; }
-    new ValueType Type { get; }
+    new CapabilityType Type { get; }
     Pseudotype IParameterNode.Type => Type;
     new StructType ContainingDeclaredType { get; }
     IDeclaredUserType ISelfParameterNode.ContainingDeclaredType => ContainingDeclaredType;

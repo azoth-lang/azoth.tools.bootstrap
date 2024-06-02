@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax.Tree;
 
 internal class RecoverConstExpression : RecoverExpression, IRecoverConstExpression
 {
-    public RecoverConstExpression(TextSpan span, ReferenceType dataType, IExpression value)
+    public RecoverConstExpression(TextSpan span, CapabilityType dataType, IExpression value)
         : base(span, dataType, value) { }
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
