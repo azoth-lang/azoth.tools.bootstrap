@@ -20,12 +20,12 @@ public sealed class UsingDirectivesScope : NamespaceSearchScope
         this.usingScopes = usingScopes.ToFixedSet();
     }
 
-    public override NamespaceScope? CreateChildNamespaceScope(IdentifierName namespaceName)
+    public override NamespaceScope? GetChildNamespaceScope(IdentifierName namespaceName)
     {
         // We don't bother to cache these as it is very unlikely that two namespaces with the same
         // name will be created in the same lexical scope.
 
-        var childScope = parent.CreateChildNamespaceScope(namespaceName);
+        var childScope = parent.GetChildNamespaceScope(namespaceName);
         if (childScope is null) return null;
         return new NamespaceScope(this, childScope);
     }

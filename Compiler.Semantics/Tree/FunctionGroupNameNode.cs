@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class FunctionGroupName : AmbiguousNameExpressionNode, IFunctionGroupNameNode
+internal sealed class FunctionGroupNameNode : AmbiguousNameExpressionNode, IFunctionGroupNameNode
 {
     public override INameExpressionSyntax Syntax { get; }
     public INameExpressionNode? Context { get; }
@@ -14,7 +14,7 @@ internal sealed class FunctionGroupName : AmbiguousNameExpressionNode, IFunction
     public IFixedList<ITypeNode> TypeArguments { get; }
     public IFixedSet<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; }
 
-    public FunctionGroupName(
+    public FunctionGroupNameNode(
         INameExpressionSyntax syntax,
         INameExpressionNode? context,
         StandardName functionName,

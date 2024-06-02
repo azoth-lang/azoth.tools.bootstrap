@@ -88,8 +88,14 @@ public partial interface IForeachExpressionNode
 }
 #endregion
 
-#region Name Expressions
+#region Ambiguous Name Expressions
+public partial interface IMemberAccessExpressionNode
+{
+    PackageNameScope InheritedPackageNameScope();
+}
+#endregion
 
+#region Name Expressions
 public partial interface IVariableNameExpressionNode
 {
     FlowState FlowStateBefore();

@@ -337,6 +337,12 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;
+            case IMethodGroupNameNode n:
+                if (n.Context is not null)
+                    yield return n.Context;
+                foreach (var child in n.TypeArguments)
+                    yield return child;
+                yield break;
             case IVariableNameExpressionNode n:
                 yield break;
             case IStandardTypeNameExpressionNode n:

@@ -35,7 +35,7 @@ internal static class LexicalScopingAspect
     {
         var lexicalScope = containingLexicalScope;
         foreach (var ns in namespaceName.Segments)
-            lexicalScope = lexicalScope.CreateChildNamespaceScope(ns)
+            lexicalScope = lexicalScope.GetChildNamespaceScope(ns)
                            ?? throw new UnreachableException("Should always be getting namespace names that correspond to definitions.");
         // Either CreateChildNamespaceScope was called, or this is a compilation unit and the
         // original containingLexicalScope was a NamespaceScope.

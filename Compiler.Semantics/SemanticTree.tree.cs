@@ -1512,6 +1512,7 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameNode, IAssi
 [Closed(
     typeof(INamespaceNameNode),
     typeof(IFunctionGroupNameNode),
+    typeof(IMethodGroupNameNode),
     typeof(IVariableNameExpressionNode),
     typeof(ITypeNameExpressionNode),
     typeof(IInitializerGroupNameNode),
@@ -1562,6 +1563,16 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
     StandardName FunctionName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; }
+}
+
+public partial interface IMethodGroupNameNode : INameExpressionNode
+{
+    new IMemberAccessExpressionSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    INameExpressionNode? Context { get; }
+    StandardName MethodName { get; }
+    IFixedList<ITypeNode> TypeArguments { get; }
+    IFixedSet<IMethodDeclarationNode> ReferencedDeclarations { get; }
 }
 
 public partial interface IVariableNameExpressionNode : INameExpressionNode, IAssignableExpressionNode, ISimpleNameNode

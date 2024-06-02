@@ -42,7 +42,7 @@ public sealed class NamespaceScope : NamespaceSearchScope
         namespaceDeclarations = copyFromScope.namespaceDeclarations;
     }
 
-    public override NamespaceScope? CreateChildNamespaceScope(IdentifierName namespaceName)
+    public override NamespaceScope? GetChildNamespaceScope(IdentifierName namespaceName)
     {
         if (childScopes.TryGetValue(namespaceName, out var childScope)) return childScope;
 

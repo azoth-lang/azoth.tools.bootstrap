@@ -866,6 +866,9 @@ internal class SemanticsApplier
             case IFunctionGroupNameNode n:
                 FunctionGroupName(n);
                 break;
+            case IMethodGroupNameNode n:
+                MethodGroupName(n);
+                break;
             case IVariableNameExpressionNode n:
                 VariableNameExpression(n);
                 break;
@@ -938,6 +941,14 @@ internal class SemanticsApplier
                 syntax.Semantics.Fulfill(semantics);
                 break;
         }
+        Expression(node.Context);
+    }
+
+    private static void MethodGroupName(IMethodGroupNameNode node)
+    {
+        var semantics = new MethodGroupNameSyntax(
+                       node.ReferencedDeclarations.Select(d => d.Symbol).ToFixedSet());
+        node.Syntax.Semantics.Fulfill(semantics);
         Expression(node.Context);
     }
 

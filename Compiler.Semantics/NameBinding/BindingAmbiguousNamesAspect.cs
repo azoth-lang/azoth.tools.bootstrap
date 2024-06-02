@@ -20,7 +20,7 @@ internal static class BindingAmbiguousNamesAspect
             return new UnqualifiedNamespaceNameNode(node.Syntax, referencedNamespaces);
 
         if (node.ReferencedDeclarations.TryAllOfType<IFunctionLikeDeclarationNode>(out var referencedFunctions))
-            return new FunctionGroupName(node.Syntax, null, node.Name, FixedList.Empty<ITypeNode>(), referencedFunctions);
+            return new FunctionGroupNameNode(node.Syntax, null, node.Name, FixedList.Empty<ITypeNode>(), referencedFunctions);
 
         if (node.ReferencedDeclarations.TrySingle() is not null and var referencedDeclaration)
             switch (referencedDeclaration)
@@ -53,17 +53,21 @@ internal static class BindingAmbiguousNamesAspect
         }
     }
 
-    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_FunctionGroupNameContext(IMemberAccessExpressionNode node)
+    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_FunctionOrMethodGroupNameContext(
+        IMemberAccessExpressionNode node)
     {
-        // TODO or MethodGroupName
-        if (node.Context is not FunctionGroupName functionGroupName)
+        if (node.Context is not IExpressionNode context)
             return null;
 
-        return new UnknownMemberAccessExpressionNode(node.Syntax, functionGroupName, node.TypeArguments,
+        if (context is not (IFunctionGroupNameNode or IMethodGroupNameNode))
+            return null;
+
+        return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments,
             FixedList.Empty<DefinitionNode>());
     }
 
-    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_NamespaceNameContext(IMemberAccessExpressionNode node)
+    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_NamespaceNameContext(
+        IMemberAccessExpressionNode node)
     {
         if (node.Context is not INamespaceNameNode context)
             return null;
@@ -78,7 +82,7 @@ internal static class BindingAmbiguousNamesAspect
 
         // TODO do the functions need to be in the same package?
         if (members.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
-            return new FunctionGroupName(node.Syntax, context, node.MemberName, node.TypeArguments,
+            return new FunctionGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments,
                 referencedFunctions);
 
         if (members.TrySingle() is not null and var referencedDeclaration)
@@ -92,7 +96,8 @@ internal static class BindingAmbiguousNamesAspect
         return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
     }
 
-    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_TypeNameExpressionContext(IMemberAccessExpressionNode node)
+    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_TypeNameExpressionContext(
+        IMemberAccessExpressionNode node)
     {
         if (node.Context is not ITypeNameExpressionNode { ReferencedDeclaration: IUserTypeDeclarationNode referencedDeclaration } context)
             return null;
@@ -102,7 +107,7 @@ internal static class BindingAmbiguousNamesAspect
             return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<DefinitionNode>());
 
         if (members.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
-            return new FunctionGroupName(node.Syntax, context, node.MemberName, node.TypeArguments,
+            return new FunctionGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments,
                 referencedFunctions);
 
         if (members.TryAllOfType<IInitializerDeclarationNode>(out var referencedInitializers))
@@ -110,6 +115,24 @@ internal static class BindingAmbiguousNamesAspect
             return new InitializerGroupNameNode(node.Syntax, context, referencedInitializers);
 
         return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
+    }
+
+    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_ExpressionContext(
+        IMemberAccessExpressionNode node)
+    {
+        if (node.Context is not IExpressionNode context)
+            return null;
+        // Ignore names that are still treated as expressions right now
+        if (context is INamespaceNameNode
+            or IFunctionGroupNameNode
+            or IMethodGroupNameNode
+            or ITypeNameExpressionNode
+            or IInitializerGroupNameNode)
+            return null;
+
+        // TODO lookup members of the type and rewrite accordingly
+        //var contextTypeDeclaration = node.InheritedPackageNameScope().Lookup(context.Type);
+        return null;
     }
 
     public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_UnknownNameExpressionContext(IMemberAccessExpressionNode node)
@@ -124,7 +147,7 @@ internal static class BindingAmbiguousNamesAspect
         IUnknownMemberAccessExpressionNode node,
         Diagnostics diagnostics)
     {
-        if (node.Context is FunctionGroupName)
+        if (node.Context is IFunctionGroupNameNode or IMethodGroupNameNode)
             diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "No member accessible from function or method."));
 
         if (node.Context is INamespaceNameNode)

@@ -48,4 +48,7 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
 
     internal override IPackageFacetDeclarationNode InheritedFacet(IChildNode child, IChildNode descendant)
         => this;
+
+    internal override PackageNameScope InheritedPackageNameScope(IChildNode child, IChildNode descendant)
+        => PackageNameScope;
 }
