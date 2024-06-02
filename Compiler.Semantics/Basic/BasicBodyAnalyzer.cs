@@ -1953,8 +1953,7 @@ public class BasicBodyAnalyzer
         IExpressionSyntax rightOperand)
     {
         if (leftOperand.ConvertedDataType is CapabilityType { IsIdentityReference: true } left
-           && rightOperand.ConvertedDataType is CapabilityType { IsIdentityReference: true } right
-           && (left.IsAssignableFrom(right) || right.IsAssignableFrom(left)))
+           && rightOperand.ConvertedDataType is CapabilityType { IsIdentityReference: true } right)
             return DataType.Bool;
         return DataType.Unknown;
     }
