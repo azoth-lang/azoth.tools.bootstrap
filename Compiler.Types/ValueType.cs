@@ -9,22 +9,6 @@ public abstract class ValueType : CapabilityType
 {
     private protected ValueType(Capability capability)
         : base(capability) { }
-
-    public abstract override ValueType With(Capability capability);
-
-    #region Equality
-    public override bool Equals(DataType? other)
-    {
-        if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-        return other is ValueType otherType
-               && Capability == otherType.Capability
-               && BareType == otherType.BareType;
-    }
-
-    public override int GetHashCode()
-        => HashCode.Combine(Capability, BareType);
-    #endregion
 }
 
 public sealed class ValueType<TDeclared> : ValueType

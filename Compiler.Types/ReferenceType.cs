@@ -11,22 +11,6 @@ public abstract class ReferenceType : CapabilityType
         : base(capability)
     {
     }
-
-    public abstract override ReferenceType With(Capability capability);
-
-    #region Equality
-    public override bool Equals(DataType? other)
-    {
-        if (other is null) return false;
-        if (ReferenceEquals(this, other)) return true;
-        return other is ReferenceType otherType
-               && Capability == otherType.Capability
-               && BareType.Equals(otherType.BareType);
-    }
-
-    public override int GetHashCode()
-        => HashCode.Combine(Capability, BareType);
-    #endregion
 }
 
 public sealed class ReferenceType<TDeclared> : ReferenceType

@@ -1,3 +1,4 @@
+using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -150,6 +151,20 @@ public abstract class CapabilityType : NonEmptyType
                 throw ExhaustiveMatch.Failed(capability);
         }
     }
+
+    #region Equality
+    public override bool Equals(DataType? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is CapabilityType otherType
+               && Capability == otherType.Capability
+               && BareType.Equals(otherType.BareType);
+    }
+
+    public override int GetHashCode()
+        => HashCode.Combine(Capability, BareType);
+    #endregion
 
     public sealed override string ToSourceCodeString()
     {
