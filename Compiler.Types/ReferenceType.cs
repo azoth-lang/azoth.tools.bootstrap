@@ -5,12 +5,10 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-public sealed class ReferenceType<TDeclared> : CapabilityType
+public sealed class ReferenceType<TDeclared> : CapabilityType<TDeclared>
     where TDeclared : DeclaredReferenceType
 {
     public override BareReferenceType<TDeclared> BareType { get; }
-
-    public override TDeclared DeclaredType => BareType.DeclaredType;
 
     internal ReferenceType(Capability capability, BareReferenceType<TDeclared> bareType)
         : base(capability)

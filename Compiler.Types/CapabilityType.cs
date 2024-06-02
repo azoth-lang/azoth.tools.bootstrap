@@ -12,7 +12,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// <summary>
 /// A type that has a capability applied.
 /// </summary>
-//[Closed(typeof(CapabilityType), typeof(ValueType))]
 public abstract class CapabilityType : NonEmptyType
 {
     /// <summary>
@@ -176,4 +175,17 @@ public abstract class CapabilityType : NonEmptyType
 
     public sealed override string ToILString()
         => $"{Capability.ToILString()} {BareType.ToILString()}";
+}
+
+public abstract class CapabilityType<TDeclared> : CapabilityType
+    where TDeclared : DeclaredType
+{
+    public override TDeclared DeclaredType => (TDeclared)BareType.DeclaredType;
+
+    private protected CapabilityType(Capability capability)
+        : base(capability)
+    {
+        if (typeof(TDeclared).IsAbstract)
+            throw new ArgumentException($"The type parameter must be a concrete {nameof(DeclaredType)}.", nameof(TDeclared));
+    }
 }
