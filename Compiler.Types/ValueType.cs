@@ -5,13 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-public abstract class ValueType : CapabilityType
-{
-    private protected ValueType(Capability capability)
-        : base(capability) { }
-}
-
-public sealed class ValueType<TDeclared> : ValueType
+public sealed class ValueType<TDeclared> : CapabilityType
     where TDeclared : DeclaredValueType
 {
     public override BareValueType<TDeclared> BareType { get; }

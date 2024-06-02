@@ -12,7 +12,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
-using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -136,7 +135,7 @@ internal static class TypeMemberDeclarationsAspect
     public static Parameter FieldParameter_ParameterType(IFieldParameterNode node)
         => new Parameter(false, node.Type);
 
-    public static ValueType InitializerSelfParameter_Type(InitializerSelfParameterNode node)
+    public static CapabilityType InitializerSelfParameter_Type(InitializerSelfParameterNode node)
     {
         var declaredType = node.ContainingDeclaredType;
         var capability = node.Syntax.Capability.Declared.ToSelfParameterCapability();

@@ -24,10 +24,8 @@ public static class DataTypeExtensions
             (_, _) when target.Equals(source) => true,
             (UnknownType, _) or (_, UnknownType) or (_, NeverType)
                 => true,
-            (ValueType t, ValueType s)
+            (CapabilityType t, CapabilityType s)
                 => IsAssignableFrom(t, s),
-            (CapabilityType targetReference, CapabilityType sourceReference)
-                => IsAssignableFrom(targetReference, sourceReference),
             (OptionalType targetOptional, OptionalType sourceOptional)
                 => IsAssignableFrom(targetOptional.Referent, sourceOptional.Referent),
             (OptionalType targetOptional, _)
@@ -36,13 +34,6 @@ public static class DataTypeExtensions
                 => IsAssignableFrom(targetFunction, sourceFunction),
             _ => false
         };
-    }
-
-    public static bool IsAssignableFrom(this ValueType target, ValueType source)
-    {
-        if (!target.Capability.IsAssignableFrom(source.Capability)) return false;
-
-        return IsAssignableFrom(target.BareType, target.AllowsWrite, source.BareType);
     }
 
     public static bool IsAssignableFrom(this CapabilityType target, CapabilityType source)
@@ -242,8 +233,8 @@ public static class DataTypeExtensions
     {
         return type switch
         {
-            CapabilityType referenceType => referenceType,
-            OptionalType { Referent: CapabilityType referenceType } => referenceType,
+            CapabilityType { BareType: BareReferenceType } referenceType => referenceType,
+            OptionalType { Referent: CapabilityType { BareType: BareReferenceType } referenceType } => referenceType,
             _ => null
         };
     }

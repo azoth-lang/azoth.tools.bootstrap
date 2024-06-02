@@ -34,7 +34,7 @@ public static partial class TypeOperations
     internal static INumericType? AsNumericType(this NonEmptyType type)
         => type switch
         {
-            ValueType { DeclaredType: NumericType t } => t,
+            CapabilityType { DeclaredType: NumericType t } => t,
             IntegerConstValueType t => t,
             _ => null,
         };

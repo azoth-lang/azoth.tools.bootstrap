@@ -5,7 +5,8 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
-using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
+using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Moves;
 
@@ -48,7 +49,7 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags<IVa
             case IVariableNameExpression identifierName:
                 // We are assigning into this variable so it definitely has a value now
                 var symbol = identifierName.ReferencedSymbol;
-                return symbol.Type is ValueType ? possiblyMoved.Set(symbol, false) : possiblyMoved;
+                return symbol.Type is CapabilityType { BareType: BareValueType } ? possiblyMoved.Set(symbol, false) : possiblyMoved;
             case IFieldAccessExpression _:
                 return possiblyMoved;
             default:
@@ -64,7 +65,7 @@ public class UseOfMovedValueAnalysis : IForwardDataFlowAnalysis<BindingFlags<IVa
         if (possiblyMoved[symbol])
             diagnostics.Add(FlowTypingError.UseOfPossiblyMovedValue(file, nameExpression.Span));
 
-        if (symbol.Type is not ValueType)
+        if (symbol.Type is not CapabilityType { BareType: BareValueType })
             return possiblyMoved;
 
         // TODO this isn't correct, but for now fields don't have proper move, borrow handling

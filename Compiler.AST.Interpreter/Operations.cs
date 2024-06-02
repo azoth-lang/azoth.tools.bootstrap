@@ -4,13 +4,12 @@ using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
-using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 
 internal static class Operations
 {
-    public static AzothValue Convert(this AzothValue value, DataType from, ValueType to, bool isOptional)
+    public static AzothValue Convert(this AzothValue value, DataType from, CapabilityType to, bool isOptional)
     {
         if (from is IntegerConstValueType)
         {

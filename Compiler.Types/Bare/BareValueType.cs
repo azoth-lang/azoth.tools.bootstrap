@@ -19,7 +19,7 @@ public abstract class BareValueType : BareType
 
     public abstract override BareValueType With(IFixedList<DataType> typeArguments);
 
-    public abstract override ValueType With(Capability capability);
+    public abstract override CapabilityType With(Capability capability);
 }
 
 public sealed class BareValueType<TDeclared> : BareValueType

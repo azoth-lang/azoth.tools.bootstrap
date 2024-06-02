@@ -26,7 +26,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using DataType = Azoth.Tools.Bootstrap.Compiler.Types.DataType;
-using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 
@@ -404,9 +403,9 @@ public class BasicBodyAnalyzer
 
                 return null;
             }
-            case (ValueType<BigIntegerType> { DeclaredType.IsSigned: true } to, ValueType { DeclaredType: IntegerType }):
+            case (ValueType<BigIntegerType> { DeclaredType.IsSigned: true } to, CapabilityType { DeclaredType: IntegerType }):
                 return new SimpleTypeConversion(to.DeclaredType, priorConversion);
-            case (ValueType<BigIntegerType> to, ValueType { DeclaredType: IntegerType { IsSigned: false } }):
+            case (ValueType<BigIntegerType> to, CapabilityType { DeclaredType: IntegerType { IsSigned: false } }):
                 return new SimpleTypeConversion(to.DeclaredType, priorConversion);
             case (ValueType<BigIntegerType> { DeclaredType.IsSigned: true } to, IntegerConstValueType):
                 return new SimpleTypeConversion(to.DeclaredType, priorConversion);
@@ -545,8 +544,8 @@ public class BasicBodyAnalyzer
                     flow.DropBindingsForReturn();
                     result = AddImplicitConversionIfNeeded(result, expectedType, allowMoveOrFreeze: true, flow);
                     CheckTypeCompatibility(expectedType, exp.Value);
-                    // TODO use proper check instead of `is not ValueType`
-                    if (flow.IsLent(result.Variable) && expectedReturnType.Type is not ValueType)
+                    // TODO aren't there other cases where this shouldn't be an error?
+                    if (flow.IsLent(result.Variable))
                         diagnostics.Add(FlowTypingError.CannotReturnLent(file, exp));
                     flow.Drop(result.Variable);
                 }
@@ -735,7 +734,7 @@ public class BasicBodyAnalyzer
                     case UnaryOperator.Plus:
                         switch (result.Type)
                         {
-                            case ValueType { DeclaredType: IntegerType }:
+                            case CapabilityType { DeclaredType: IntegerType }:
                             case IntegerConstValueType:
                             case UnknownType _:
                                 expType = result.Type;
@@ -1976,17 +1975,17 @@ public class BasicBodyAnalyzer
         return (expression.ConvertedDataType.Assigned(), convertToType) switch
         {
             // Safe conversions
-            (ValueType<BoolType>, ValueType { DeclaredType: IntegerType }) => true,
-            (BoolConstValueType, ValueType { DeclaredType: IntegerType }) => true,
-            (ValueType { DeclaredType: IntegerType { IsSigned: false } }, ValueType { DeclaredType: BigIntegerType }) => true,
-            (ValueType { DeclaredType: IntegerType }, ValueType { DeclaredType: BigIntegerType { IsSigned: true } }) => true,
+            (ValueType<BoolType>, CapabilityType { DeclaredType: IntegerType }) => true,
+            (BoolConstValueType, CapabilityType { DeclaredType: IntegerType }) => true,
+            (CapabilityType { DeclaredType: IntegerType { IsSigned: false } }, CapabilityType { DeclaredType: BigIntegerType }) => true,
+            (CapabilityType { DeclaredType: IntegerType }, CapabilityType { DeclaredType: BigIntegerType { IsSigned: true } }) => true,
             (ValueType<FixedSizeIntegerType> from, ValueType<FixedSizeIntegerType> to)
                 when from.DeclaredType.Bits < to.DeclaredType.Bits
                      || (from.DeclaredType.Bits == to.DeclaredType.Bits && from.DeclaredType.IsSigned == to.DeclaredType.IsSigned)
                 => true,
             // TODO conversions for constants
             // Unsafe conversions
-            (ValueType { DeclaredType: IntegerType }, ValueType { DeclaredType: IntegerType }) => !safeOnly,
+            (CapabilityType { DeclaredType: IntegerType }, CapabilityType { DeclaredType: IntegerType }) => !safeOnly,
             _ => convertToType.IsAssignableFrom(expression.ConvertedDataType),
         };
     }

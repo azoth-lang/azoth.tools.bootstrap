@@ -14,7 +14,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using Attribute = Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax.Tree.Attribute;
-using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax;
 
@@ -818,7 +817,7 @@ internal class ASTBuilder
         var referent = BuildExpression(syn.Referent);
 
         // TODO support non-numeric conversions
-        var convertToType = (ValueType)syn.ConvertToType.NamedType.Assigned();
+        var convertToType = (CapabilityType)syn.ConvertToType.NamedType.Assigned();
         var convertToSimpleType = (SimpleType)convertToType.DeclaredType;
 
         if (syn.Operator == ConversionOperator.Safe)

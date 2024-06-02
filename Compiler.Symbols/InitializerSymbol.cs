@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
-using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -16,7 +15,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
     public override UserTypeSymbol ContainingSymbol { get; }
     public override IdentifierName? Name { get; }
     public CapabilityType SelfParameterType { get; }
-    public ValueType ReturnType { get; }
+    public CapabilityType ReturnType { get; }
     public FunctionType InitializerGroupType { get; }
 
     public InitializerSymbol(
@@ -31,7 +30,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
         ContainingSymbol = containingTypeSymbol;
         Name = initializerName;
         SelfParameterType = selfParameterType;
-        ReturnType = (ValueType)Return.Type;
+        ReturnType = (CapabilityType)Return.Type;
         InitializerGroupType = new FunctionType(parameterTypes, Return);
     }
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,14 +13,12 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
-using MoreLinq;
-using MoreLinq.Extensions;
 using Return = Azoth.Tools.Bootstrap.Compiler.Types.Return;
-using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 
@@ -366,11 +363,11 @@ public class InterpreterProcess
         AzothValue self,
         IEnumerable<AzothValue> arguments)
     {
-        return selfType switch
+        return selfType.BareType switch
         {
-            ValueType valueType => await CallStructMethod(methodSymbol, valueType, self, arguments),
-            CapabilityType _ => await CallClassMethodAsync(methodSymbol, self, arguments),
-            _ => throw new UnreachableException(),
+            BareValueType _ => await CallStructMethod(methodSymbol, selfType, self, arguments),
+            BareReferenceType _ => await CallClassMethodAsync(methodSymbol, self, arguments),
+            _ => throw ExhaustiveMatch.Failed(selfType.BareType),
         };
     }
 
@@ -387,7 +384,7 @@ public class InterpreterProcess
 
     private async ValueTask<AzothValue> CallStructMethod(
         MethodSymbol methodSymbol,
-        ValueType selfType,
+        CapabilityType selfType,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
     {
@@ -771,7 +768,7 @@ public class InterpreterProcess
                 var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
                 if (value.IsNone) return value;
                 // TODO handle other lifted conversions
-                return value.Convert(exp.Expression.DataType, (ValueType)exp.ConvertToType.Referent, false);
+                return value.Convert(exp.Expression.DataType, (CapabilityType)exp.ConvertToType.Referent, false);
             }
             case IPatternMatchExpression exp:
             {
@@ -1132,7 +1129,7 @@ public class InterpreterProcess
     private static AzothValue Remainder(
         AzothValue dividend,
         AzothValue divisor,
-        ValueType type)
+        CapabilityType type)
     {
         if (type == DataType.Int) return AzothValue.Int(dividend.IntValue % divisor.IntValue);
         if (type == DataType.UInt) return AzothValue.Int(dividend.IntValue % divisor.IntValue);
@@ -1151,7 +1148,7 @@ public class InterpreterProcess
         throw new NotImplementedException($"Remainder {type.ToILString()}");
     }
 
-    private async ValueTask<AzothValue> ToDisplayStringAsync(AzothValue value, ValueType type)
+    private async ValueTask<AzothValue> ToDisplayStringAsync(AzothValue value, CapabilityType type)
     {
         string displayString;
         if (type == DataType.Int) displayString = value.IntValue.ToString();

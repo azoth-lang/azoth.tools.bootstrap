@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout.BoundedLists;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 
@@ -147,7 +146,7 @@ internal readonly struct AzothValue
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     #endregion
 
-    public AzothValue Increment(ValueType numberType)
+    public AzothValue Increment(CapabilityType numberType)
     {
         if (numberType == DataType.Int || numberType == DataType.UInt) return Int(IntValue + 1);
         if (numberType == DataType.Int8) return I8((sbyte)(I8Value + 1));
@@ -164,7 +163,7 @@ internal readonly struct AzothValue
         throw new NotImplementedException($"Increment of {numberType}");
     }
 
-    public AzothValue Decrement(ValueType numberType)
+    public AzothValue Decrement(CapabilityType numberType)
     {
         if (numberType == DataType.Int || numberType == DataType.UInt) return Int(IntValue - 1);
         if (numberType == DataType.Int8) return I8((sbyte)(I8Value - 1));
@@ -181,7 +180,7 @@ internal readonly struct AzothValue
         throw new NotImplementedException($"Decrement of {numberType.ToILString()}");
     }
 
-    public BigInteger ToBigInteger(ValueType numberType)
+    public BigInteger ToBigInteger(CapabilityType numberType)
     {
         if (numberType == DataType.Int || numberType == DataType.UInt) return IntValue;
         if (numberType == DataType.Int8) return I8Value;

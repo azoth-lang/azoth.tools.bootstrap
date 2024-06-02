@@ -162,7 +162,6 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
                 case OptionalType { Referent: CapabilityType } when parameterType.IsLent:
                 case OptionalType { Referent: CapabilityType { IsConstantReference: true } }:
                 case OptionalType { Referent: CapabilityType { IsIsolatedReference: true } }:
-                case ValueType:
                 case EmptyType:
                 case UnknownType:
                     continue;
