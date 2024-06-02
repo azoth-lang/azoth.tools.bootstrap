@@ -37,7 +37,8 @@ internal static class OverloadResolutionAspect
             case 1:
                 throw new UnreachableException("ReferencedDeclaration would not be null");
             default:
-                diagnostics.Add(NameBindingError.AmbiguousFunctionCall(node.File, node.Syntax));
+                // TODO add back when overloading is fixed
+                //diagnostics.Add(NameBindingError.AmbiguousFunctionCall(node.File, node.Syntax));
                 break;
         }
     }
