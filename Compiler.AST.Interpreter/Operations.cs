@@ -30,7 +30,7 @@ internal static class Operations
             if (to == DataType.NUInt) return AzothValue.NUInt((nuint)(ulong)value.IntValue);
         }
 
-        if (from is ValueType<BoolType> or BoolConstValueType)
+        if (from is CapabilityType<BoolType> or BoolConstValueType)
         {
             if (to == DataType.Int8) return AzothValue.I8((sbyte)(value.BoolValue ? 1 : 0));
             if (to == DataType.Byte) return AzothValue.Byte((byte)(value.BoolValue ? 1 : 0));
@@ -84,7 +84,7 @@ internal static class Operations
             if (to == DataType.Int) return value;
 
             var fromValue = value.IntValue;
-            if (to is ValueType<FixedSizeIntegerType> { DeclaredType: var fixedSizeIntegerType })
+            if (to is CapabilityType<FixedSizeIntegerType> { DeclaredType: var fixedSizeIntegerType })
             {
                 var isSigned = fromValue.Sign < 0;
                 if (isSigned && (!fixedSizeIntegerType.IsSigned

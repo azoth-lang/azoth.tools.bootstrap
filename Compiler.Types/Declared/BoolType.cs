@@ -20,7 +20,7 @@ public sealed class BoolType : SimpleType
 
     public override BareValueType<BoolType> BareType { get; }
 
-    public override ValueType<BoolType> Type { get; }
+    public override CapabilityType<BoolType> Type { get; }
 
     public override BareValueType<BoolType> With(IFixedList<DataType> typeArguments)
     {
@@ -28,9 +28,9 @@ public sealed class BoolType : SimpleType
         return BareType;
     }
 
-    public override ValueType<BoolType> With(Capability capability, IFixedList<DataType> typeArguments)
+    public override CapabilityType<BoolType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override ValueType<BoolType> With(Capability capability)
+    public override CapabilityType<BoolType> With(Capability capability)
         => BareType.With(capability);
 }

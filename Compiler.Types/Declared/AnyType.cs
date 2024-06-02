@@ -30,10 +30,10 @@ public sealed class AnyType : DeclaredReferenceType
         return BareType;
     }
 
-    public override ReferenceType<AnyType> With(Capability capability, IFixedList<DataType> typeArguments)
+    public override CapabilityType<AnyType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public ReferenceType<AnyType> With(Capability capability)
+    public CapabilityType<AnyType> With(Capability capability)
         => CapabilityType.Create(capability, BareType);
 
     #region Equals

@@ -17,7 +17,7 @@ public abstract class CapabilityType : NonEmptyType
     /// <summary>
     /// Create a reference type for a class.
     /// </summary>
-    public static ReferenceType<ObjectType> CreateClass(
+    public static CapabilityType<ObjectType> CreateClass(
         Capability capability,
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
@@ -30,7 +30,7 @@ public abstract class CapabilityType : NonEmptyType
     /// <summary>
     /// Create a reference type for a trait.
     /// </summary>
-    public static ReferenceType<ObjectType> CreateTrait(
+    public static CapabilityType<ObjectType> CreateTrait(
         Capability capability,
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
@@ -42,7 +42,7 @@ public abstract class CapabilityType : NonEmptyType
     /// <summary>
     /// Create a object type for a given class or trait.
     /// </summary>
-    public static ReferenceType<ObjectType> Create(
+    public static CapabilityType<ObjectType> Create(
         Capability capability,
         ObjectType declaredType,
         IFixedList<DataType> typeArguments)
@@ -51,14 +51,14 @@ public abstract class CapabilityType : NonEmptyType
     /// <summary>
     /// Create a object type for a given bare type.
     /// </summary>
-    public static ReferenceType<ObjectType> Create(Capability capability, BareReferenceType<ObjectType> bareType)
-        => new(capability, bareType);
+    public static CapabilityType<ObjectType> Create(Capability capability, BareReferenceType<ObjectType> bareType)
+        => CapabilityType<ObjectType>.Create(capability, bareType);
 
     /// <summary>
     /// Create an `Any` type for a given bare type.
     /// </summary>
-    public static ReferenceType<AnyType> Create(Capability capability, BareReferenceType<AnyType> bareType)
-        => new(capability, bareType);
+    public static CapabilityType<AnyType> Create(Capability capability, BareReferenceType<AnyType> bareType)
+        => CapabilityType<AnyType>.Create(capability, bareType);
 
     public Capability Capability { get; }
     public bool IsReadOnlyReference => Capability == Capability.Read;
@@ -177,14 +177,26 @@ public abstract class CapabilityType : NonEmptyType
         => $"{Capability.ToILString()} {BareType.ToILString()}";
 }
 
-public abstract class CapabilityType<TDeclared> : CapabilityType
+public sealed class CapabilityType<TDeclared> : CapabilityType
     where TDeclared : DeclaredType
 {
+    public static CapabilityType<TDeclaredReferenceType> Create<TDeclaredReferenceType>(
+        Capability capability,
+        BareReferenceType<TDeclaredReferenceType> bareType)
+        where TDeclaredReferenceType : DeclaredReferenceType, TDeclared
+        => new(capability, bareType);
+
+    public static CapabilityType<TDeclaredValueType> Create<TDeclaredValueType>(
+        Capability capability,
+        BareValueType<TDeclaredValueType> bareType)
+        where TDeclaredValueType : DeclaredValueType, TDeclared
+        => new(capability, bareType);
+
     public override BareType BareType { get; }
 
     public override TDeclared DeclaredType => (TDeclared)BareType.DeclaredType;
 
-    private protected CapabilityType(Capability capability, BareType bareType)
+    private CapabilityType(Capability capability, BareType bareType)
         : base(capability)
     {
         if (typeof(TDeclared).IsAbstract)
@@ -193,5 +205,9 @@ public abstract class CapabilityType<TDeclared> : CapabilityType
         BareType = bareType;
     }
 
-    public abstract override CapabilityType<TDeclared> With(Capability capability);
+    public override CapabilityType<TDeclared> With(Capability capability)
+    {
+        if (capability == Capability) return this;
+        return new(capability, BareType);
+    }
 }

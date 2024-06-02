@@ -93,7 +93,7 @@ public abstract class SymbolTestFixture
             @return ?? mother.Return);
     }
 
-    protected ReferenceType<ObjectType> DataType(
+    protected CapabilityType<ObjectType> DataType(
         string? name = null,
         IdentifierName? containingPackage = null,
         NamespaceName? containingNamespace = null,

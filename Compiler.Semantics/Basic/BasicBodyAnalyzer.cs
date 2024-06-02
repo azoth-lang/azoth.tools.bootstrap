@@ -388,13 +388,13 @@ public class BasicBodyAnalyzer
                     priorConversion = conversion;
                 }
                 return new OptionalConversion(priorConversion);
-            case (ValueType<BoolType> to, BoolConstValueType from):
+            case (CapabilityType<BoolType> to, BoolConstValueType from):
                 return new SimpleTypeConversion(to.DeclaredType, priorConversion);
-            case (ValueType<FixedSizeIntegerType> to, ValueType<FixedSizeIntegerType> from):
+            case (CapabilityType<FixedSizeIntegerType> to, CapabilityType<FixedSizeIntegerType> from):
                 if (to.DeclaredType.Bits > from.DeclaredType.Bits && (!from.DeclaredType.IsSigned || to.DeclaredType.IsSigned))
                     return new SimpleTypeConversion(to.DeclaredType, priorConversion);
                 return null;
-            case (ValueType<FixedSizeIntegerType> to, IntegerConstValueType from):
+            case (CapabilityType<FixedSizeIntegerType> to, IntegerConstValueType from):
             {
                 var requireSigned = from.Value < 0;
                 var bits = from.Value.GetByteCount(!to.DeclaredType.IsSigned) * 8;
@@ -403,15 +403,15 @@ public class BasicBodyAnalyzer
 
                 return null;
             }
-            case (ValueType<BigIntegerType> { DeclaredType.IsSigned: true } to, CapabilityType { DeclaredType: IntegerType }):
+            case (CapabilityType<BigIntegerType> { DeclaredType.IsSigned: true } to, CapabilityType { DeclaredType: IntegerType }):
                 return new SimpleTypeConversion(to.DeclaredType, priorConversion);
-            case (ValueType<BigIntegerType> to, CapabilityType { DeclaredType: IntegerType { IsSigned: false } }):
+            case (CapabilityType<BigIntegerType> to, CapabilityType { DeclaredType: IntegerType { IsSigned: false } }):
                 return new SimpleTypeConversion(to.DeclaredType, priorConversion);
-            case (ValueType<BigIntegerType> { DeclaredType.IsSigned: true } to, IntegerConstValueType):
+            case (CapabilityType<BigIntegerType> { DeclaredType.IsSigned: true } to, IntegerConstValueType):
                 return new SimpleTypeConversion(to.DeclaredType, priorConversion);
-            case (ValueType<BigIntegerType> to, IntegerConstValueType { IsSigned: false }):
+            case (CapabilityType<BigIntegerType> to, IntegerConstValueType { IsSigned: false }):
                 return new SimpleTypeConversion(to.DeclaredType, priorConversion);
-            case (ValueType<PointerSizedIntegerType> to, IntegerConstValueType from):
+            case (CapabilityType<PointerSizedIntegerType> to, IntegerConstValueType from):
             {
                 var requireSigned = from.Value < 0;
                 return !requireSigned || to.DeclaredType.IsSigned ? new SimpleTypeConversion(to.DeclaredType, priorConversion) : null;
@@ -609,10 +609,10 @@ public class BasicBodyAnalyzer
                         or (CapabilityType { BareType: BareReferenceType }, BinaryOperator.NotEqual, CapabilityType { BareType: BareReferenceType })
                         => InferReferenceEqualityOperatorType(leftOperand, rightOperand),
 
-                    (ValueType<BoolType>, BinaryOperator.EqualsEquals, ValueType<BoolType>)
-                        or (ValueType<BoolType>, BinaryOperator.NotEqual, ValueType<BoolType>)
-                        or (ValueType<BoolType>, BinaryOperator.And, ValueType<BoolType>)
-                        or (ValueType<BoolType>, BinaryOperator.Or, ValueType<BoolType>)
+                    (CapabilityType<BoolType>, BinaryOperator.EqualsEquals, CapabilityType<BoolType>)
+                        or (CapabilityType<BoolType>, BinaryOperator.NotEqual, CapabilityType<BoolType>)
+                        or (CapabilityType<BoolType>, BinaryOperator.And, CapabilityType<BoolType>)
+                        or (CapabilityType<BoolType>, BinaryOperator.Or, CapabilityType<BoolType>)
                         => DataType.Bool,
 
                     (NonEmptyType, BinaryOperator.Plus, NonEmptyType)
@@ -711,14 +711,14 @@ public class BasicBodyAnalyzer
                             case IntegerConstValueType integerType:
                                 expType = integerType.Negate();
                                 break;
-                            case ValueType<FixedSizeIntegerType> sizedIntegerType:
+                            case CapabilityType<FixedSizeIntegerType> sizedIntegerType:
                                 expType = sizedIntegerType.DeclaredType.WithSign().Type;
                                 break;
-                            case ValueType<BigIntegerType>:
+                            case CapabilityType<BigIntegerType>:
                                 // Even if unsigned before, it is signed now
                                 expType = DataType.Int;
                                 break;
-                            case ValueType<PointerSizedIntegerType> pointerSizedIntegerType:
+                            case CapabilityType<PointerSizedIntegerType> pointerSizedIntegerType:
                                 expType = pointerSizedIntegerType.DeclaredType.WithSign().Type;
                                 break;
                             case UnknownType:
@@ -1975,11 +1975,11 @@ public class BasicBodyAnalyzer
         return (expression.ConvertedDataType.Assigned(), convertToType) switch
         {
             // Safe conversions
-            (ValueType<BoolType>, CapabilityType { DeclaredType: IntegerType }) => true,
+            (CapabilityType<BoolType>, CapabilityType { DeclaredType: IntegerType }) => true,
             (BoolConstValueType, CapabilityType { DeclaredType: IntegerType }) => true,
             (CapabilityType { DeclaredType: IntegerType { IsSigned: false } }, CapabilityType { DeclaredType: BigIntegerType }) => true,
             (CapabilityType { DeclaredType: IntegerType }, CapabilityType { DeclaredType: BigIntegerType { IsSigned: true } }) => true,
-            (ValueType<FixedSizeIntegerType> from, ValueType<FixedSizeIntegerType> to)
+            (CapabilityType<FixedSizeIntegerType> from, CapabilityType<FixedSizeIntegerType> to)
                 when from.DeclaredType.Bits < to.DeclaredType.Bits
                      || (from.DeclaredType.Bits == to.DeclaredType.Bits && from.DeclaredType.IsSigned == to.DeclaredType.IsSigned)
                 => true,

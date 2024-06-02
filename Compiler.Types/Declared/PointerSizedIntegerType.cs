@@ -19,7 +19,7 @@ public sealed class PointerSizedIntegerType : IntegerType
 
     public override BareValueType<PointerSizedIntegerType> BareType { get; }
 
-    public override ValueType<PointerSizedIntegerType> Type { get; }
+    public override CapabilityType<PointerSizedIntegerType> Type { get; }
 
     private PointerSizedIntegerType(SpecialTypeName name, bool signed)
         : base(name, signed)
@@ -47,9 +47,9 @@ public sealed class PointerSizedIntegerType : IntegerType
         return BareType;
     }
 
-    public override ValueType<PointerSizedIntegerType> With(Capability capability, IFixedList<DataType> typeArguments)
+    public override CapabilityType<PointerSizedIntegerType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override ValueType<PointerSizedIntegerType> With(Capability capability)
+    public override CapabilityType<PointerSizedIntegerType> With(Capability capability)
         => BareType.With(capability);
 }
