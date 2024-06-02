@@ -129,6 +129,28 @@ public abstract class CapabilityType : NonEmptyType
 
     public abstract CapabilityType With(Capability capability);
 
+    /// <remarks>For constant types, there can still be read only references. For example, inside
+    /// the constructor.</remarks>
+    public override CapabilityType WithoutWrite() => With(Capability.WithoutWrite());
+
+    public override Type AccessedVia(ICapabilityConstraint capability)
+    {
+        switch (capability)
+        {
+            case Capability c:
+                var newCapability = Capability.AccessedVia(c);
+                var newBareType = BareType.AccessedVia(c);
+                if (ReferenceEquals(newBareType, BareType))
+                    return ReferenceEquals(newCapability, Capability) ? this : With(newCapability);
+
+                return newBareType.With(newCapability);
+            case CapabilitySet c:
+                return new SelfViewpointType(c, this);
+            default:
+                throw ExhaustiveMatch.Failed(capability);
+        }
+    }
+
     public sealed override string ToSourceCodeString()
     {
         if (Capability != Capability.Read)
