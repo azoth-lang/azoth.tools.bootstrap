@@ -14,6 +14,52 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 [Closed(typeof(ReferenceType), typeof(ValueType))]
 public abstract class CapabilityType : NonEmptyType
 {
+    /// <summary>
+    /// Create a reference type for a class.
+    /// </summary>
+    public static ReferenceType<ObjectType> CreateClass(
+        Capability capability,
+        IdentifierName containingPackage,
+        NamespaceName containingNamespace,
+        bool isAbstract,
+        bool isConst,
+        string name)
+        => Create(capability, ObjectType.CreateClass(containingPackage, containingNamespace, isAbstract, isConst, name),
+            FixedList.Empty<DataType>());
+
+    /// <summary>
+    /// Create a reference type for a trait.
+    /// </summary>
+    public static ReferenceType<ObjectType> CreateTrait(
+        Capability capability,
+        IdentifierName containingPackage,
+        NamespaceName containingNamespace,
+        bool isConst,
+        string name)
+        => Create(capability, ObjectType.CreateTrait(containingPackage, containingNamespace, isConst, name),
+            FixedList.Empty<DataType>());
+
+    /// <summary>
+    /// Create a object type for a given class or trait.
+    /// </summary>
+    public static ReferenceType<ObjectType> Create(
+        Capability capability,
+        ObjectType declaredType,
+        IFixedList<DataType> typeArguments)
+        => Create(capability, BareType.Create(declaredType, typeArguments));
+
+    /// <summary>
+    /// Create a object type for a given bare type.
+    /// </summary>
+    public static ReferenceType<ObjectType> Create(Capability capability, BareReferenceType<ObjectType> bareType)
+        => new(capability, bareType);
+
+    /// <summary>
+    /// Create an `Any` type for a given bare type.
+    /// </summary>
+    public static ReferenceType<AnyType> Create(Capability capability, BareReferenceType<AnyType> bareType)
+        => new(capability, bareType);
+
     public Capability Capability { get; }
     public bool IsReadOnlyReference => Capability == Capability.Read;
     public bool IsConstantReference => Capability == Capability.Constant;

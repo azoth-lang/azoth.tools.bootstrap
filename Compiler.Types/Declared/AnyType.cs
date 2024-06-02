@@ -34,7 +34,7 @@ public sealed class AnyType : DeclaredReferenceType
         => With(typeArguments).With(capability);
 
     public ReferenceType<AnyType> With(Capability capability)
-        => ReferenceType.Create(capability, BareType);
+        => CapabilityType.Create(capability, BareType);
 
     #region Equals
     public override bool Equals(DeclaredType? other) => ReferenceEquals(this, other);
