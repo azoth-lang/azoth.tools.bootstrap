@@ -42,7 +42,7 @@ public static class DataTypeExtensions
     {
         if (!target.Capability.IsAssignableFrom(source.Capability)) return false;
 
-        return IsAssignableFrom(target.BareType, source.BareType);
+        return IsAssignableFrom(target.BareType, target.AllowsWrite, source.BareType);
     }
 
     public static bool IsAssignableFrom(this ReferenceType target, ReferenceType source)
@@ -58,20 +58,10 @@ public static class DataTypeExtensions
             && source.ContainingNamespace == NamespaceName.Global;
     }
 
-    public static bool IsAssignableFrom(this BareType target, bool targetAllowsWrite, BareType source)
-    {
-        return target switch
-        {
-            BareReferenceType t => t.IsAssignableFrom(targetAllowsWrite, source),
-            BareValueType t => t.IsAssignableFrom(source),
-            _ => throw ExhaustiveMatch.Failed(target)
-        };
-    }
-
     /// <remarks>We currently support implicit boxing, so any bare type with the correct supertype
     /// is assignable.</remarks>
     public static bool IsAssignableFrom(
-        this BareReferenceType target,
+        this BareType target,
         bool targetAllowsWrite,
         BareType source)
     {
@@ -90,25 +80,8 @@ public static class DataTypeExtensions
         return false;
     }
 
-    public static bool IsAssignableFrom(this BareValueType target, BareType source)
-    {
-        // Because a value type is never the supertype, we only need to check for equality.
-        if (source.Equals(target)) return true;
-
-        //if (target.AllowsVariance)
-        //{
-        //    var declaredType = target.DeclaredType;
-        //    var matchingDeclaredType = source.Supertypes.Prepend(source).Where(t => t.DeclaredType == declaredType);
-        //    foreach (var sourceType in matchingDeclaredType)
-        //        if (IsAssignableFrom(declaredType, targetAllowsWrite, target.GenericTypeArguments,
-        //                sourceType.GenericTypeArguments))
-        //            return true;
-        //}
-        return false;
-    }
-
     private static bool IsAssignableFrom(
-        DeclaredReferenceType declaredType,
+        DeclaredType declaredType,
         bool targetAllowsWrite,
         IFixedList<DataType> target,
         IFixedList<DataType> source)

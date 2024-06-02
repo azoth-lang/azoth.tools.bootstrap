@@ -535,7 +535,7 @@ public partial interface IStandardTypeNameSyntax : ITypeNameSyntax
 {
     new StandardName Name { get; }
     TypeName ITypeNameSyntax.Name => Name;
-    BareReferenceType? NamedBareType { get; }
+    BareType? NamedBareType { get; }
 }
 
 [Closed(

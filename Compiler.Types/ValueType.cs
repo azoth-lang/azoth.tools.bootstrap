@@ -7,10 +7,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public abstract class ValueType : CapabilityType
 {
-    public abstract override BareValueType BareType { get; }
-
-    public override DeclaredValueType DeclaredType => BareType.DeclaredType;
-
     private protected ValueType(Capability capability)
         : base(capability) { }
 
@@ -21,10 +17,13 @@ public abstract class ValueType : CapabilityType
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is ValueType otherType && BareType == otherType.BareType;
+        return other is ValueType otherType
+               && Capability == otherType.Capability
+               && BareType == otherType.BareType;
     }
 
-    public override int GetHashCode() => HashCode.Combine(BareType);
+    public override int GetHashCode()
+        => HashCode.Combine(Capability, BareType);
     #endregion
 }
 

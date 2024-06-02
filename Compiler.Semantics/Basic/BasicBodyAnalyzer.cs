@@ -2067,19 +2067,25 @@ public class BasicBodyAnalyzer
             OptionalType _ => null,
             EmptyType _ => null,
             FunctionType _ => null,
-            ReferenceType t => LookupSymbolForType(t),
-            ValueType t => LookupSymbolForType(t),
+            CapabilityType t => LookupSymbolForType(t),
             GenericParameterType t => LookupSymbolForType(t),
             ViewpointType t => LookupSymbolForType(t.Referent),
             _ => throw ExhaustiveMatch.Failed(dataType),
         };
     }
 
-    private TypeSymbol LookupSymbolForType(ValueType type)
+    private TypeSymbol LookupSymbolForType(CapabilityType type)
         => LookupSymbolForType(type.DeclaredType);
 
-    private TypeSymbol LookupSymbolForType(ReferenceType type)
-        => LookupSymbolForType(type.DeclaredType);
+    private TypeSymbol LookupSymbolForType(DeclaredType type)
+    {
+        return type switch
+        {
+            DeclaredReferenceType t => LookupSymbolForType(t),
+            DeclaredValueType t => LookupSymbolForType(t),
+            _ => throw ExhaustiveMatch.Failed(type),
+        };
+    }
 
     private TypeSymbol LookupSymbolForType(DeclaredReferenceType type)
     {

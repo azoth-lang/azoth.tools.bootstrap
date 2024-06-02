@@ -10,10 +10,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public abstract class ReferenceType : CapabilityType
 {
-    public abstract override BareReferenceType BareType { get; }
-
-    public override DeclaredReferenceType DeclaredType => BareType.DeclaredType;
-
     /// <summary>
     /// Create a reference type for a class.
     /// </summary>

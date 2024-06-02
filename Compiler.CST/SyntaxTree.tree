@@ -117,7 +117,7 @@ ExpressionBody: Body = ResultStatement Statements:Statement*;
 // ---------- Types
 Type;
 TypeName: Type = Name:`TypeName` ReferencedSymbol:`Promise<TypeSymbol?>`;
-StandardTypeName: TypeName = Name:`StandardName` NamedBareType:`BareReferenceType`?;
+StandardTypeName: TypeName = Name:`StandardName` NamedBareType:`BareType`?;
 SimpleTypeName: TypeName;
 IdentifierTypeName: TypeName <: StandardTypeName, SimpleTypeName = Name:`IdentifierName`;
 SpecialTypeName: SimpleTypeName = Name:`SpecialTypeName`;

@@ -14,7 +14,7 @@ internal sealed class GenericTypeNameSyntax : TypeSyntax, IGenericTypeNameSyntax
     public GenericName Name { get; }
     public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
     public IFixedList<ITypeSyntax> TypeArguments { get; }
-    public BareReferenceType? NamedBareType => (NamedType as ReferenceType)?.BareType;
+    public BareType? NamedBareType => (NamedType as CapabilityType)?.BareType;
 
     public GenericTypeNameSyntax(TextSpan span, string name, IFixedList<ITypeSyntax> typeArguments)
         : base(span)

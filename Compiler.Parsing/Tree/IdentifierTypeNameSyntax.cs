@@ -15,7 +15,7 @@ internal sealed class IdentifierTypeNameSyntax : TypeSyntax, IIdentifierTypeName
 {
     public IdentifierName Name { get; }
     public Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
-    public BareReferenceType? NamedBareType => (NamedType as ReferenceType)?.BareType;
+    public BareType? NamedBareType => (NamedType as CapabilityType)?.BareType;
 
     public IdentifierTypeNameSyntax(TextSpan span, string name)
         : base(span)
