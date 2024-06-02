@@ -180,12 +180,18 @@ public abstract class CapabilityType : NonEmptyType
 public abstract class CapabilityType<TDeclared> : CapabilityType
     where TDeclared : DeclaredType
 {
+    public override BareType BareType { get; }
+
     public override TDeclared DeclaredType => (TDeclared)BareType.DeclaredType;
 
-    private protected CapabilityType(Capability capability)
+    private protected CapabilityType(Capability capability, BareType bareType)
         : base(capability)
     {
         if (typeof(TDeclared).IsAbstract)
             throw new ArgumentException($"The type parameter must be a concrete {nameof(DeclaredType)}.", nameof(TDeclared));
+
+        BareType = bareType;
     }
+
+    public abstract override CapabilityType<TDeclared> With(Capability capability);
 }
