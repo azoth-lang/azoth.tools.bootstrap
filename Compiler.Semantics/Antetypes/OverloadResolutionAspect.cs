@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
 internal static class OverloadResolutionAspect
 {
