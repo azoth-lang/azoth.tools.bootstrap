@@ -60,7 +60,7 @@ internal static class TypeMemberDeclarationsAspect
     public static Parameter NamedParameter_ParameterType(INamedParameterNode node)
         => new(node.IsLentBinding, node.Type);
 
-    public static IMaybeAntetype NamedParameter_BindingAntetype(INamedParameterNode node)
+    public static IMaybeAntetype NamedParameter_Antetype(INamedParameterNode node)
         => node.TypeNode.Antetype;
 
     public static DataType NamedParameterNode_Type(INamedParameterNode node)
@@ -71,6 +71,7 @@ internal static class TypeMemberDeclarationsAspect
         var declaredType = node.ContainingDeclaredType;
         var genericParameterTypes = declaredType.GenericParameterTypes;
         var capability = node.Capability;
+        // TODO shouldn't their be an overload of .With() that takes an ICapabilityConstraint (e.g. `capability.Constraint`)
         return capability switch
         {
             ICapabilityNode n => declaredType.With(n.Capability, genericParameterTypes),

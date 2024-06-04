@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -46,6 +47,11 @@ public partial interface ICapabilityNode
 public partial interface IParameterNode
 {
     IPreviousValueId PreviousValueId();
+}
+
+public partial interface INamedParameterNode
+{
+    IMaybeAntetype INamedBindingNode.BindingAntetype => Antetype;
 }
 #endregion
 

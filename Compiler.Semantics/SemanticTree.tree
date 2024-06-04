@@ -176,16 +176,17 @@ Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capa
 
 // ---------- Parameters
 Parameter <: Code, Binding = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
-    Type:`Pseudotype` ValueId:`ValueId` FlowStateAfter:`FlowState`;
+    Antetype:`IMaybeAntetype` Type:`Pseudotype` ValueId:`ValueId` FlowStateAfter:`FlowState`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`
-    BindingAntetype:`IMaybeAntetype` Type:`DataType` ParameterType:`Parameter`;
+    Type:`DataType` ParameterType:`Parameter`;
 NamedParameter <: ConstructorOrInitializerParameter, NamedBinding = Syntax:`INamedParameterSyntax`
     IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`?
     TypeNode:Type
     // TODO remove parameter symbols
     Symbol:`NamedVariableSymbol`;
-SelfParameter <: Parameter = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool` ContainingDeclaredType:`IDeclaredUserType`
+SelfParameter <: Parameter = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool`
+    ContainingTypeDefinition:`ITypeDefinitionNode` ContainingDeclaredType:`IDeclaredUserType`
     // TODO remove parameter symbols
     Symbol:`SelfParameterSymbol`;
 ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax` IsLentBinding:`bool` Capability Type:`CapabilityType` ContainingDeclaredType:`ObjectType`;
@@ -322,7 +323,7 @@ InstanceExpression <: NameExpression, SimpleName; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression
     = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype`
-    ContainingDeclaration:`IExecutableDefinitionNode` ReferencedSymbol:`SelfParameterSymbol`?;
+    ContainingDeclaration:`IExecutableDefinitionNode` ReferencedParameter:`ISelfParameterNode`? ReferencedSymbol:`SelfParameterSymbol`?;
 MissingNameExpression <: NameExpression, SimpleName, AssignableExpression
     = Syntax:`IMissingNameSyntax` Type:`UnknownType`;
 UnknownNameExpression <: NameExpression = Syntax:`INameExpressionSyntax` Type:`UnknownType`;

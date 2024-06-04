@@ -1,3 +1,5 @@
+using Azoth.Tools.Bootstrap.Framework;
+
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 
 /// <summary>
@@ -7,5 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 /// creating types.</remarks>
 public interface IDeclaredAntetype
 {
+    IFixedList<GenericParameterAntetype> GenericParameterAntetypes { get; }
+
     IAntetype With(IEnumerable<IAntetype> typeArguments);
 }

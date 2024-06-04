@@ -13,6 +13,10 @@ internal abstract class SelfParameterNode : ParameterNode, ISelfParameterNode
 {
     public abstract override ISelfParameterSyntax Syntax { get; }
     public bool IsLentBinding => Syntax.IsLentBinding;
+    private ValueAttribute<ITypeDefinitionNode> containingTypeDeclaration;
+    public ITypeDefinitionNode ContainingTypeDefinition
+        => containingTypeDeclaration.TryGetValue(out var value) ? value
+            : containingTypeDeclaration.GetValue(InheritedContainingTypeDefinition);
     private ValueAttribute<IDeclaredUserType> containingDeclaredType;
     public IDeclaredUserType ContainingDeclaredType
         => containingDeclaredType.TryGetValue(out var value) ? value
@@ -22,7 +26,7 @@ internal abstract class SelfParameterNode : ParameterNode, ISelfParameterNode
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAspect.SelfParameter_Symbol);
     private ValueAttribute<IMaybeAntetype> antetype;
-    public IMaybeAntetype Antetype
+    public override IMaybeAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, NameBindingAntetypesAspect.SelfParameter_Antetype);
 

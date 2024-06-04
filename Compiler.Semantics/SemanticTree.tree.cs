@@ -765,6 +765,7 @@ public partial interface IParameterNode : ISemanticNode, IBindingNode
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IdentifierName? Name { get; }
     bool Unused { get; }
+    IMaybeAntetype Antetype { get; }
     Pseudotype Type { get; }
     ValueId ValueId { get; }
     FlowState FlowStateAfter { get; }
@@ -777,7 +778,6 @@ public partial interface IConstructorOrInitializerParameterNode : IParameterNode
 {
     new IConstructorOrInitializerParameterSyntax Syntax { get; }
     IParameterSyntax IParameterNode.Syntax => Syntax;
-    IMaybeAntetype BindingAntetype { get; }
     new DataType Type { get; }
     Pseudotype IParameterNode.Type => Type;
     Parameter ParameterType { get; }
@@ -811,6 +811,7 @@ public partial interface ISelfParameterNode : IParameterNode
     new ISelfParameterSyntax Syntax { get; }
     IParameterSyntax IParameterNode.Syntax => Syntax;
     bool IsLentBinding { get; }
+    ITypeDefinitionNode ContainingTypeDefinition { get; }
     IDeclaredUserType ContainingDeclaredType { get; }
     SelfParameterSymbol Symbol { get; }
 }
@@ -1653,6 +1654,7 @@ public partial interface ISelfExpressionNode : ISemanticNode, IInstanceExpressio
     bool IsImplicit { get; }
     Pseudotype Pseudotype { get; }
     IExecutableDefinitionNode ContainingDeclaration { get; }
+    ISelfParameterNode? ReferencedParameter { get; }
     SelfParameterSymbol? ReferencedSymbol { get; }
 }
 

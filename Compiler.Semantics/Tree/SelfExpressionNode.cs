@@ -1,7 +1,9 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -18,11 +20,19 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
     public IExecutableDefinitionNode ContainingDeclaration
         => containingDeclaration.TryGetValue(out var value) ? value
         : containingDeclaration.GetValue(() => (IExecutableDefinitionNode)InheritedContainingDeclaration());
+    private ValueAttribute<ISelfParameterNode?> referencedParameter;
+    public ISelfParameterNode? ReferencedParameter
+        => referencedParameter.TryGetValue(out var value) ? value
+        : referencedParameter.GetValue(this, BindingNamesAspect.SelfExpression_ReferencedParameter);
     // TODO remove parameter symbols
     private ValueAttribute<SelfParameterSymbol?> referencedSymbol;
     public SelfParameterSymbol? ReferencedSymbol
         => referencedSymbol.TryGetValue(out var value) ? value
         : referencedSymbol.GetValue(this, SymbolAspect.SelfExpression_ReferencedSymbol);
+    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    public override IMaybeExpressionAntetype Antetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, ExpressionAntetypesAspect.SelfExpression_Antetype);
 
     public SelfExpressionNode(ISelfExpressionSyntax syntax)
     {
@@ -31,7 +41,7 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        BindingAmbiguousNamesAspect.SelfExpression_ContributeDiagnostics(this, diagnostics);
+        BindingNamesAspect.SelfExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

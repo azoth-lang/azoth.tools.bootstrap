@@ -22,9 +22,9 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     public int? DeclarationNumber => Syntax.DeclarationNumber.Result;
     public ITypeNode TypeNode { get; }
     private ValueAttribute<IMaybeAntetype> antetype;
-    public IMaybeAntetype BindingAntetype
+    public override IMaybeAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeMemberDeclarationsAspect.NamedParameter_BindingAntetype);
+            : antetype.GetValue(this, TypeMemberDeclarationsAspect.NamedParameter_Antetype);
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value

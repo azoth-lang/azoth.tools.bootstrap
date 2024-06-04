@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -33,4 +34,6 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
     CapabilityType With(Capability capability, IFixedList<DataType> typeArguments);
     CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<DataType> typeArguments);
     CapabilityType WithRead(IFixedList<DataType> typeArguments);
+
+    IDeclaredAntetype ToAntetype();
 }

@@ -46,9 +46,9 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedSelfType), child, descendant));
 
-    internal virtual ITypeDefinitionNode InheritedContainingTypeDeclaration(IChildNode child, IChildNode descendant)
+    internal virtual ITypeDefinitionNode InheritedContainingTypeDefinition(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedContainingTypeDeclaration), child, descendant));
+            Child.InheritFailedMessage(nameof(InheritedContainingTypeDefinition), child, descendant));
 
     internal virtual bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(

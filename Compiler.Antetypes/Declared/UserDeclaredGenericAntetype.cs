@@ -4,6 +4,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 
 public sealed class UserDeclaredGenericAntetype : IDeclaredAntetype
 {
+    public IFixedList<GenericParameterAntetype> GenericParameterAntetypes
+        => throw new NotImplementedException();
+
     public IAntetype With(IEnumerable<IAntetype> typeArguments)
     {
         var args = typeArguments.ToFixedList();

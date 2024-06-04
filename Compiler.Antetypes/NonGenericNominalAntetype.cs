@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
@@ -9,6 +10,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 public abstract class NonGenericNominalAntetype : NominalAntetype, IDeclaredAntetype
 {
     public override IDeclaredAntetype Declared => this;
+
+    IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes
+        => FixedList.Empty<GenericParameterAntetype>();
 
     public IAntetype With(IEnumerable<IAntetype> typeArguments)
     {

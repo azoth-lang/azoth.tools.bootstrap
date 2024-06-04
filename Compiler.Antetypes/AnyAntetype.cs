@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
@@ -11,6 +12,9 @@ public class AnyAntetype : INonVoidAntetype, IDeclaredAntetype
     {
     }
     #endregion
+
+    IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes
+        => FixedList.Empty<GenericParameterAntetype>();
 
     public IAntetype With(IEnumerable<IAntetype> typeArguments)
     {

@@ -4,11 +4,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
 internal static class NameBindingAntetypesAspect
 {
-    public static IMaybeAntetype FieldParameter_BindingAntetype(IFieldParameterNode node)
+    public static IMaybeAntetype FieldParameter_Antetype(IFieldParameterNode node)
         => node.ReferencedField?.Antetype ?? IAntetype.Unknown;
 
     public static IMaybeAntetype SelfParameter_Antetype(ISelfParameterNode node)
-        => throw new System.NotImplementedException();
+    {
+        var containingDeclaredAntetype = node.ContainingTypeDefinition.DeclaredType.ToAntetype();
+        return containingDeclaredAntetype.With(containingDeclaredAntetype.GenericParameterAntetypes);
+    }
 
     public static IMaybeAntetype BindingPattern_BindingAntetype(IBindingPatternNode node)
         => throw new System.NotImplementedException();

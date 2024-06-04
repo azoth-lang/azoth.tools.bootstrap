@@ -18,15 +18,15 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
     private ValueAttribute<ITypeDefinitionNode> containingTypeDeclaration;
     public ITypeDefinitionNode ContainingTypeDefinition
         => containingTypeDeclaration.TryGetValue(out var value) ? value
-            : containingTypeDeclaration.GetValue(InheritedContainingTypeDeclaration);
+            : containingTypeDeclaration.GetValue(InheritedContainingTypeDefinition);
     private ValueAttribute<IFieldDefinitionNode?> referencedField;
     public IFieldDefinitionNode? ReferencedField
         => referencedField.TryGetValue(out var value) ? value
             : referencedField.GetValue(this, SymbolNodeAspect.FieldParameter_ReferencedField);
-    private ValueAttribute<IMaybeAntetype> bindingAntetype;
-    public IMaybeAntetype BindingAntetype
-        => bindingAntetype.TryGetValue(out var value) ? value
-            : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.FieldParameter_BindingAntetype);
+    private ValueAttribute<IMaybeAntetype> antetype;
+    public override IMaybeAntetype Antetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, NameBindingAntetypesAspect.FieldParameter_Antetype);
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value
