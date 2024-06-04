@@ -338,10 +338,12 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IMethodGroupNameNode n:
-                if (n.Context is not null)
-                    yield return n.Context;
+                yield return n.Context;
                 foreach (var child in n.TypeArguments)
                     yield return child;
+                yield break;
+            case IFieldAccessExpressionNode n:
+                yield return n.Context;
                 yield break;
             case IVariableNameExpressionNode n:
                 yield break;
@@ -389,6 +391,12 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IAwaitExpressionNode n:
                 yield return n.Expression;
+                yield break;
+            case IStandardMethodDeclarationNode n:
+                yield break;
+            case IGetterMethodDeclarationNode n:
+                yield break;
+            case ISetterMethodDeclarationNode n:
                 yield break;
             case IPackageSymbolNode n:
                 yield return n.MainFacet;

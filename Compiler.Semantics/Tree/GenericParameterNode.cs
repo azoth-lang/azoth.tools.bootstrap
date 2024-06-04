@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -45,4 +46,12 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
         Syntax = syntax;
         Constraint = constraint;
     }
+
+    public IEnumerable<IInstanceMemberDeclarationNode> InstanceMembersNamed(StandardName named)
+        // TODO should look up members based on generic constraints
+        => throw new System.NotImplementedException();
+
+    public IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named)
+        // TODO should look up members based on generic constraints
+        => throw new System.NotImplementedException();
 }

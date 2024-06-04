@@ -131,6 +131,21 @@ internal static class BindingAmbiguousNamesAspect
 
         // TODO lookup members of the antetype and rewrite accordingly
         //var contextTypeDeclaration = node.InheritedPackageNameScope().Lookup(context.Antetype);
+        //var members = contextTypeDeclaration?.InstanceMembersNamed(node.MemberName).ToFixedSet()
+        //              ?? FixedSet.Empty<IInstanceMemberDeclarationNode>();
+        //if (members.Count == 0)
+        //    return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<DefinitionNode>());
+
+        //if (members.TryAllOfType<IStandardMethodDeclarationNode>(out var referencedMethods))
+        //    return new MethodGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments, referencedMethods);
+
+        //if (members.TrySingle() is not null and var referencedDeclaration)
+        //    switch (referencedDeclaration)
+        //    {
+        //        case IFieldDeclarationNode fieldDeclaration:
+        //            return new FieldAccessExpressionNode(node.Syntax, context, fieldDeclaration.Name, fieldDeclaration);
+        //    }
+
         return null;
     }
 

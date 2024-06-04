@@ -103,6 +103,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(ITraitMemberDeclarationNode),
     typeof(IStructMemberDeclarationNode),
     typeof(IInstanceMemberDeclarationNode),
+    typeof(IStandardMethodDeclarationNode),
+    typeof(IGetterMethodDeclarationNode),
+    typeof(ISetterMethodDeclarationNode),
     typeof(IInitializerDeclarationNode),
     typeof(IAssociatedFunctionDeclarationNode),
     typeof(IFunctionSymbolNode),
@@ -1195,6 +1198,7 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode
 [Closed(
     typeof(IIdentifierNameExpressionNode),
     typeof(IMemberAccessExpressionNode),
+    typeof(IFieldAccessExpressionNode),
     typeof(IVariableNameExpressionNode),
     typeof(IMissingNameExpressionNode),
     typeof(IUnknownIdentifierNameExpressionNode))]
@@ -1520,6 +1524,7 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameNode, IAssi
     typeof(INamespaceNameNode),
     typeof(IFunctionGroupNameNode),
     typeof(IMethodGroupNameNode),
+    typeof(IFieldAccessExpressionNode),
     typeof(IVariableNameExpressionNode),
     typeof(ITypeNameExpressionNode),
     typeof(IInitializerGroupNameNode),
@@ -1576,10 +1581,22 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
-    INameExpressionNode? Context { get; }
+    IExpressionNode Context { get; }
     StandardName MethodName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
-    IFixedSet<IMethodDeclarationNode> ReferencedDeclarations { get; }
+    IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
+}
+
+public partial interface IFieldAccessExpressionNode : INameExpressionNode, IAssignableExpressionNode
+{
+    new IMemberAccessExpressionSyntax Syntax { get; }
+    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    IExpressionNode Context { get; }
+    IdentifierName FieldName { get; }
+    IFieldDeclarationNode ReferencedDeclaration { get; }
 }
 
 public partial interface IVariableNameExpressionNode : INameExpressionNode, IAssignableExpressionNode, ISimpleNameNode
@@ -2006,6 +2023,9 @@ public partial interface IInstanceMemberDeclarationNode : ISemanticNode, ITypeMe
 
 [Closed(
     typeof(IMethodDefinitionNode),
+    typeof(IStandardMethodDeclarationNode),
+    typeof(IGetterMethodDeclarationNode),
+    typeof(ISetterMethodDeclarationNode),
     typeof(IMethodSymbolNode))]
 public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode, IInstanceMemberDeclarationNode
 {
@@ -2014,6 +2034,18 @@ public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, I
     StandardName INamedDeclarationNode.Name => Name;
     new MethodSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
+}
+
+public partial interface IStandardMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
+{
+}
+
+public partial interface IGetterMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
+{
+}
+
+public partial interface ISetterMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
+{
 }
 
 [Closed(

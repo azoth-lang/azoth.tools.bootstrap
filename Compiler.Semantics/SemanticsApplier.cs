@@ -643,6 +643,9 @@ internal class SemanticsApplier
             case IMemberAccessExpressionNode n:
                 MemberAccessExpression(n);
                 break;
+            case IFieldAccessExpressionNode n:
+                FieldAccessExpression(n);
+                break;
             case IMissingNameExpressionNode n:
                 MissingNameExpression(n);
                 break;
@@ -869,6 +872,9 @@ internal class SemanticsApplier
             case IMethodGroupNameNode n:
                 MethodGroupName(n);
                 break;
+            case IFieldAccessExpressionNode n:
+                FieldAccessExpression(n);
+                break;
             case IVariableNameExpressionNode n:
                 VariableNameExpression(n);
                 break;
@@ -948,6 +954,13 @@ internal class SemanticsApplier
     {
         var semantics = new MethodGroupNameSyntax(
                        node.ReferencedDeclarations.Select(d => d.Symbol).ToFixedSet());
+        node.Syntax.Semantics.Fulfill(semantics);
+        Expression(node.Context);
+    }
+
+    private static void FieldAccessExpression(IFieldAccessExpressionNode node)
+    {
+        var semantics = new FieldNameExpressionSyntax(node.ReferencedDeclaration.Symbol);
         node.Syntax.Semantics.Fulfill(semantics);
         Expression(node.Context);
     }

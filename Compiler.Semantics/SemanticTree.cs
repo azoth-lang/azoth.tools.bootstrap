@@ -109,7 +109,7 @@ public partial interface IVariableNameExpressionNode
 #endregion
 
 #region Type Declarations
-public partial interface IUserTypeDeclarationNode
+public partial interface ITypeDeclarationNode
 {
     IEnumerable<IInstanceMemberDeclarationNode> InstanceMembersNamed(StandardName named);
     IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);

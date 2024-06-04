@@ -305,8 +305,10 @@ UnqualifiedNamespaceName <: NamespaceName = Syntax:`IIdentifierNameExpressionSyn
 QualifiedNamespaceName <: NamespaceName = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName Name:`IdentifierName`;
 FunctionGroupName <: NameExpression = Context:NameExpression? FunctionName:`StandardName` TypeArguments:Type*
     ReferencedDeclarations:{`IFunctionLikeDeclarationNode`};
-MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax` Context:NameExpression? MethodName:`StandardName` TypeArguments:Type*
-    ReferencedDeclarations:{`IMethodDeclarationNode`};
+MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax` Context:Expression MethodName:`StandardName` TypeArguments:Type*
+    ReferencedDeclarations:{`IStandardMethodDeclarationNode`};
+FieldAccessExpression <: NameExpression, AssignableExpression = Syntax:`IMemberAccessExpressionSyntax`
+    Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
 VariableNameExpression <: NameExpression, AssignableExpression, SimpleName
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDeclaration:`INamedBindingNode`;
 TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
@@ -409,6 +411,9 @@ InstanceMemberDeclaration <: TypeMemberDeclaration;
 
 // ---------- Member Declarations
 MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, InstanceMemberDeclaration = Name:`IdentifierName` Symbol:`MethodSymbol`;
+StandardMethodDeclaration <: MethodDeclaration;
+GetterMethodDeclaration <: MethodDeclaration;
+SetterMethodDeclaration <: MethodDeclaration;
 ConstructorDeclaration <: ClassMemberDeclaration = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
 InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
 FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;
