@@ -1,9 +1,9 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
-using Compiler.Antetypes;
-using Compiler.Antetypes.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 

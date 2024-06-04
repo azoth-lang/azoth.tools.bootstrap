@@ -1,4 +1,4 @@
-namespace Compiler.Antetypes;
+namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 /// <remarks><para>An antetype is the type that exists before reference capabilities are accounted
 /// for. This is distinct from a <i>bare type</i>. A bare type lacks a reference capability at the

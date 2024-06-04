@@ -1,7 +1,7 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
-using Compiler.Antetypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 

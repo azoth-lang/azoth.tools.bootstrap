@@ -1,9 +1,9 @@
 using System;
 using System.Numerics;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
-using Compiler.Antetypes;
-using Compiler.Antetypes.ConstValue;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 

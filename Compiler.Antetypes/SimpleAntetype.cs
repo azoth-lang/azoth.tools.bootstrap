@@ -1,7 +1,7 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Compiler.Antetypes.Declared;
 
-namespace Compiler.Antetypes;
+namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype
 {

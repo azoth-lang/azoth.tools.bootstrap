@@ -1,6 +1,6 @@
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Compiler.Antetypes;
+namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 public sealed class FunctionAntetype : IAntetype
 {

@@ -1,6 +1,6 @@
-using Compiler.Antetypes.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 
-namespace Compiler.Antetypes;
+namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 public class AnyAntetype : INonVoidAntetype, IDeclaredAntetype
 {

@@ -1,6 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
-namespace Compiler.Antetypes;
+namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 /// <summary>
 /// The never or bottom type. That is a type with no values. A function

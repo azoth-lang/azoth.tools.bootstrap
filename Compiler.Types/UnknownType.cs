@@ -1,5 +1,5 @@
 using System;
-using Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 

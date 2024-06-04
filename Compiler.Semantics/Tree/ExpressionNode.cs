@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -15,6 +16,9 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     public ValueId ValueId
         => valueId.TryGetValue(out var value) ? value
             : valueId.GetValue((IExpressionNode)this, ExpressionTypesAspect.Expression_ValueId);
+    // TODO make this abstract once all expressions have type implemented
+    public virtual IExpressionAntetype Antetype
+        => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(Antetype)} not implemented.");
     // TODO make this abstract once all expressions have type implemented
     public virtual DataType Type
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(Type)} not implemented.");

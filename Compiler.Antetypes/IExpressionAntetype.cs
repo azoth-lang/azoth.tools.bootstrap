@@ -1,6 +1,6 @@
-using Compiler.Antetypes.ConstValue;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.ConstValue;
 
-namespace Compiler.Antetypes;
+namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 /// <summary>
 /// The antetype of an expression.

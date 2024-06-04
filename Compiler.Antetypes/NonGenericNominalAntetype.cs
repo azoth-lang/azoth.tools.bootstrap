@@ -1,6 +1,6 @@
-using Compiler.Antetypes.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 
-namespace Compiler.Antetypes;
+namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 /// <summary>
 /// An antetype that is not generic.

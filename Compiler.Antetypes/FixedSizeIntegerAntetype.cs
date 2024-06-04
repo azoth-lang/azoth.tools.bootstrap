@@ -1,7 +1,7 @@
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
-namespace Compiler.Antetypes;
+namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 public sealed class FixedSizeIntegerAntetype : IntegerAntetype
 {

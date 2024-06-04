@@ -1,6 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
-namespace Compiler.Antetypes.ConstValue;
+namespace Azoth.Tools.Bootstrap.Compiler.Antetypes.ConstValue;
 
 public sealed class BoolConstValueAntetype : ConstValueAntetype
 {

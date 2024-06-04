@@ -1,4 +1,4 @@
-namespace Compiler.Antetypes.Declared;
+namespace Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 
 public sealed class UserDeclaredGenericAntetype : IDeclaredAntetype
 {

@@ -1,6 +1,6 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Compiler.Antetypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 

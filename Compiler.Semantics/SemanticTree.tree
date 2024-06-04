@@ -4,6 +4,7 @@
 ◊suffix Node;
 ◊using System.Collections.Generic;
 ◊using System.Numerics;
+◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
@@ -238,7 +239,8 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 
 // ---------- Expressions
 AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
-Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax` ValueId:`ValueId` Type:`DataType` FlowStateAfter:`FlowState`;
+Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax` ValueId:`ValueId` Antetype:`IExpressionAntetype`
+    Type:`DataType` FlowStateAfter:`FlowState`;
 AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax` ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression* ReferencedSymbol:`ConstructorSymbol?`;

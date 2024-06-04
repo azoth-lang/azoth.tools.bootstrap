@@ -1,4 +1,4 @@
-namespace Compiler.Antetypes;
+namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 public sealed class OptionalAntetype : INonVoidAntetype
 {
