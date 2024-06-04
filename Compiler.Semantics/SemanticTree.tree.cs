@@ -167,6 +167,7 @@ public partial interface INamedBindingNode : ISemanticNode, IBindingNode, INamed
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     ValueId ValueId { get; }
+    IMaybeAntetype BindingAntetype { get; }
 }
 
 public partial interface IPackageNode : IPackageDeclarationNode
@@ -690,6 +691,7 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     IdentifierName IFieldDeclarationNode.Name => Name;
     StandardName INamedDeclarationNode.Name => Name;
     ITypeNode TypeNode { get; }
+    IMaybeAntetype Antetype { get; }
     new FieldSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FieldSymbol IFieldDeclarationNode.Symbol => Symbol;
@@ -775,6 +777,7 @@ public partial interface IConstructorOrInitializerParameterNode : IParameterNode
 {
     new IConstructorOrInitializerParameterSyntax Syntax { get; }
     IParameterSyntax IParameterNode.Syntax => Syntax;
+    IMaybeAntetype BindingAntetype { get; }
     new DataType Type { get; }
     Pseudotype IParameterNode.Type => Type;
     Parameter ParameterType { get; }
@@ -896,6 +899,7 @@ public partial interface ITypeNode : ISemanticNode, ICodeNode
     new ITypeSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
+    IMaybeAntetype Antetype { get; }
     DataType Type { get; }
 }
 

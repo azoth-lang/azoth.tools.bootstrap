@@ -1,6 +1,8 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -22,6 +24,10 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
             : lexicalScope.GetValue(this, LexicalScopingAspect.ForeachExpression_LexicalScope);
+    private ValueAttribute<IMaybeAntetype> bindingAntetype;
+    public IMaybeAntetype BindingAntetype
+        => bindingAntetype.TryGetValue(out var value) ? value
+            : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.ForeachExpression_BindingAntetype);
 
     public ForeachExpressionNode(
         IForeachExpressionSyntax syntax,

@@ -1,6 +1,8 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -21,6 +23,10 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
     public IFieldDefinitionNode? ReferencedField
         => referencedField.TryGetValue(out var value) ? value
             : referencedField.GetValue(this, SymbolNodeAspect.FieldParameter_ReferencedField);
+    private ValueAttribute<IMaybeAntetype> bindingAntetype;
+    public IMaybeAntetype BindingAntetype
+        => bindingAntetype.TryGetValue(out var value) ? value
+            : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.FieldParameter_BindingAntetype);
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value

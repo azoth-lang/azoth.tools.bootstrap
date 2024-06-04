@@ -1,6 +1,8 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -35,6 +37,11 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public ValueId ValueId
         => valueId.TryGetValue(out var value) ? value
             : valueId.GetValue(this, ExpressionTypesAspect.VariableDeclarationStatement_ValueId);
+    private ValueAttribute<IMaybeAntetype> bindingAntetype;
+    public IMaybeAntetype BindingAntetype
+        => bindingAntetype.TryGetValue(out var value) ? value
+            : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.VariableDeclarationStatement_BindingAntetype);
+
     public override FlowState FlowStateAfter
         => ((IExpressionNode?)Initializer)?.FlowStateAfter ?? InheritedFlowStateBefore();
 

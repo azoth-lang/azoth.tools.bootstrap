@@ -1,8 +1,10 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -20,6 +22,10 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     public override IdentifierName Name => Syntax.Name;
     StandardName INamedDeclarationNode.Name => Name;
     public ITypeNode TypeNode { get; }
+    private ValueAttribute<IMaybeAntetype> antetype;
+    public IMaybeAntetype Antetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, DeclarationsAntetypesAspect.FieldDefinition_Antetype);
     private ValueAttribute<DataType> type;
     public DataType Type
         => type.TryGetValue(out var value) ? value

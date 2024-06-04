@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -20,6 +21,10 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     public override IdentifierName Name => Syntax.Name;
     public int? DeclarationNumber => Syntax.DeclarationNumber.Result;
     public ITypeNode TypeNode { get; }
+    private ValueAttribute<IMaybeAntetype> antetype;
+    public IMaybeAntetype BindingAntetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, TypeMemberDeclarationsAspect.NamedParameter_BindingAntetype);
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value

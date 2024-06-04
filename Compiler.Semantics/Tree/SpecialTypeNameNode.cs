@@ -1,10 +1,11 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -17,15 +18,14 @@ internal sealed class SpecialTypeNameNode : TypeNameNode, ISpecialTypeNameNode
     public override TypeSymbol ReferencedSymbol
         => referencedSymbol.TryGetValue(out var value) ? value
             : referencedSymbol.GetValue(this, SymbolAspect.SpecialTypeName_ReferencedSymbol);
+    private ValueAttribute<IMaybeAntetype> antetype;
+    public override IMaybeAntetype Antetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.SpecialTypeName_Antetype);
     private ValueAttribute<BareType?> bareType;
     public override BareType? BareType
     => bareType.TryGetValue(out var value) ? value
         : bareType.GetValue(this, BareTypeAspect.SpecialTypeName);
-
-    private ValueAttribute<DataType> type;
-    public override DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.TypeName_Type);
 
     public SpecialTypeNameNode(ISpecialTypeNameSyntax syntax)
     {

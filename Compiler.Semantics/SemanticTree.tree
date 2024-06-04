@@ -33,7 +33,8 @@ BlockOrResult: ElseClause;
 
 // ---------- Bindings
 Binding <: Code, BindingDeclaration;
-NamedBinding <: Binding, NamedBindingDeclaration = Syntax:`ILocalBindingSyntax` ValueId:`ValueId`;
+NamedBinding <: Binding, NamedBindingDeclaration = Syntax:`ILocalBindingSyntax` ValueId:`ValueId`
+    BindingAntetype:`IMaybeAntetype`;
 
 // ---------- Packages
 Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
@@ -159,7 +160,7 @@ InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition
     = Syntax:`IInitializerDefinitionSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter*
     Symbol:`InitializerSymbol` Body:BlockBody;
 FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding, FieldDeclaration, ExecutableDefinition
-    = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type Type:`DataType`
+    = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type Antetype:`IMaybeAntetype` Type:`DataType`
     Symbol:`FieldSymbol` Initializer:AmbiguousExpression?;
 AssociatedFunctionDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
     = Syntax:`IAssociatedFunctionDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
@@ -177,7 +178,8 @@ Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capa
 Parameter <: Code, Binding = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
     Type:`Pseudotype` ValueId:`ValueId` FlowStateAfter:`FlowState`;
 /// A non-self parameter that can be declared in a constructor
-ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax` Type:`DataType` ParameterType:`Parameter`;
+ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`
+    BindingAntetype:`IMaybeAntetype` Type:`DataType` ParameterType:`Parameter`;
 NamedParameter <: ConstructorOrInitializerParameter, NamedBinding = Syntax:`INamedParameterSyntax`
     IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`?
     TypeNode:Type
@@ -199,7 +201,7 @@ BlockBody: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
 ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 
 // ---------- Types
-Type <: Code = Syntax:`ITypeSyntax` Type:`DataType`;
+Type <: Code = Syntax:`ITypeSyntax` Antetype:`IMaybeAntetype` Type:`DataType`;
 // TODO start from generalized names in syntax and rewrite to type names
 TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName` ContainingLexicalScope:`LexicalScope`
     ReferencedSymbol:`TypeSymbol`? BareType:`BareType`?;
@@ -347,8 +349,8 @@ AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax` Expression:Ambig
 // -------------------------------------------------------------------------------------------------
 // Declarations
 // -------------------------------------------------------------------------------------------------
-// Declarations are the abstractions of both definitions an symbols. They are used to represent what
-// a name can refer to.
+// Declarations are the abstractions of both definitions and symbols. They are used to represent
+// what a name can refer to.
 // -------------------------------------------------------------------------------------------------
 // TODO move into separate aspect
 

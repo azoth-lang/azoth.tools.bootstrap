@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -26,14 +27,14 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
     public ITypeDeclarationNode? ReferencedDeclaration
         => referencedDeclaration.TryGetValue(out var value) ? value
             : referencedDeclaration.GetValue(this, SymbolNodeAspect.StandardTypeName_ReferencedDeclaration);
+    private ValueAttribute<IMaybeAntetype> antetype;
+    public override IMaybeAntetype Antetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.GenericTypeName_Antetype);
     private ValueAttribute<BareType?> bareType;
     public override BareType? BareType
         => bareType.TryGetValue(out var value) ? value
             : bareType.GetValue(this, BareTypeAspect.GenericTypeName);
-    private ValueAttribute<DataType> type;
-    public override DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.TypeName_Type);
 
     public GenericTypeNameNode(IGenericTypeNameSyntax syntax, IEnumerable<ITypeNode> typeArguments)
     {

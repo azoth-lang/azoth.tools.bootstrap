@@ -80,7 +80,6 @@ internal static class BindingAmbiguousNamesAspect
         if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
             return new QualifiedNamespaceNameNode(node.Syntax, context, referencedNamespaces);
 
-        // TODO do the functions need to be in the same package?
         if (members.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
             return new FunctionGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments,
                 referencedFunctions);
@@ -130,7 +129,8 @@ internal static class BindingAmbiguousNamesAspect
             or IInitializerGroupNameNode)
             return null;
 
-        // TODO lookup members of the type and rewrite accordingly
+        // TODO lookup members of the antetype and rewrite accordingly
+        //_ = context.Antetype;
         //var contextTypeDeclaration = node.InheritedPackageNameScope().Lookup(context.Type);
         return null;
     }

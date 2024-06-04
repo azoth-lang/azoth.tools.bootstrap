@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -59,6 +59,9 @@ internal static class TypeMemberDeclarationsAspect
 
     public static Parameter NamedParameter_ParameterType(INamedParameterNode node)
         => new(node.IsLentBinding, node.Type);
+
+    public static IMaybeAntetype NamedParameter_BindingAntetype(INamedParameterNode node)
+        => node.TypeNode.Antetype;
 
     public static DataType NamedParameterNode_Type(INamedParameterNode node)
         => node.TypeNode.Type;
@@ -135,7 +138,7 @@ internal static class TypeMemberDeclarationsAspect
     public static Parameter FieldParameter_ParameterType(IFieldParameterNode node)
         => new Parameter(false, node.Type);
 
-    public static CapabilityType InitializerSelfParameter_Type(InitializerSelfParameterNode node)
+    public static CapabilityType InitializerSelfParameter_Type(IInitializerSelfParameterNode node)
     {
         var declaredType = node.ContainingDeclaredType;
         var capability = node.Syntax.Capability.Declared.ToSelfParameterCapability();

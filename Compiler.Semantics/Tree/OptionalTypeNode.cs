@@ -1,5 +1,7 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -9,6 +11,10 @@ internal sealed class OptionalTypeNode : TypeNode, IOptionalTypeNode
 {
     public override IOptionalTypeSyntax Syntax { get; }
     public ITypeNode Referent { get; }
+    private ValueAttribute<IMaybeAntetype> antetype;
+    public override IMaybeAntetype Antetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.OptionalType_Antetype);
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value
