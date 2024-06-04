@@ -2,6 +2,8 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
+using Compiler.Antetypes;
+using Compiler.Antetypes.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
@@ -35,6 +37,8 @@ public sealed class AnyType : DeclaredReferenceType
 
     public CapabilityType<AnyType> With(Capability capability)
         => CapabilityType.Create(capability, BareType);
+
+    public override IDeclaredAntetype ToAntetype() => IAntetype.Any;
 
     #region Equals
     public override bool Equals(DeclaredType? other) => ReferenceEquals(this, other);

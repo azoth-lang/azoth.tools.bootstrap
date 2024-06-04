@@ -2,6 +2,8 @@ using System;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Compiler.Antetypes;
+using Compiler.Antetypes.ConstValue;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 
@@ -83,6 +85,8 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
 
     public override int GetHashCode() => HashCode.Combine(Value);
     #endregion
+
+    public override IMaybeExpressionAntetype ToAntetype() => new IntegerConstValueAntetype(Value);
 
     public override string ToSourceCodeString()
         => throw new InvalidOperationException("Integer value type has no source code representation");

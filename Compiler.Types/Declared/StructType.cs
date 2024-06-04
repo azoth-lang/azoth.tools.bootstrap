@@ -8,6 +8,8 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
+using Compiler.Antetypes;
+using Compiler.Antetypes.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
@@ -116,6 +118,9 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
 
     public CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
+
+    public override IDeclaredAntetype ToAntetype()
+        => IsGeneric ? new UserDeclaredGenericAntetype() : new UserNonGenericNominalAntetype();
 
     #region Equals
     public override bool Equals(DeclaredType? other)

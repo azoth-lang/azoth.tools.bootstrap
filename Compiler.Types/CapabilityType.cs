@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
+using Compiler.Antetypes;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -120,6 +121,8 @@ public abstract class CapabilityType : NonEmptyType
     {
         Capability = capability;
     }
+
+    public sealed override IMaybeExpressionAntetype ToAntetype() => BareType.ToAntetype();
 
     public override DataType ReplaceTypeParametersIn(DataType type)
         => BareType.ReplaceTypeParametersIn(type);

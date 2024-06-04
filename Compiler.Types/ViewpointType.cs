@@ -1,4 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Framework;
+using Compiler.Antetypes;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -13,4 +15,6 @@ public abstract class ViewpointType : NonEmptyType
     public override bool IsFullyKnown => Referent.IsFullyKnown;
 
     private protected ViewpointType() { }
+
+    public sealed override IMaybeExpressionAntetype ToAntetype() => Referent.ToAntetype();
 }

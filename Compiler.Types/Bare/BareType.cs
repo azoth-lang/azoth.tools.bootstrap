@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
+using Compiler.Antetypes;
 using ExhaustiveMatching;
 using MoreLinq.Extensions;
 
@@ -84,6 +85,14 @@ public abstract class BareType : IEquatable<BareType>
 
         typeReplacements = new(GetTypeReplacements);
         supertypes = new(GetSupertypes);
+    }
+
+    public IMaybeAntetype ToAntetype()
+    {
+        var typeArguments = GenericTypeArguments.Select(a => a.ToAntetype()).OfType<IAntetype>().ToFixedList();
+        if (typeArguments.Count != GenericTypeArguments.Count)
+            return UnknownAntetype.Instance;
+        return DeclaredType.ToAntetype().With(typeArguments);
     }
 
     private TypeReplacements GetTypeReplacements() => new(DeclaredType, GenericTypeArguments);

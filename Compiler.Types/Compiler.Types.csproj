@@ -21,6 +21,7 @@
     <PackageReference Include="morelinq" Version="4.1.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Compiler.Antetypes\Compiler.Antetypes.csproj" />
     <ProjectReference Include="..\Framework\Framework.csproj" />
     <ProjectReference Include="..\Compiler.Names\Compiler.Names.csproj" />
   </ItemGroup>

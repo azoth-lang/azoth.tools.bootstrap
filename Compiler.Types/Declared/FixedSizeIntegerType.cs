@@ -1,9 +1,12 @@
 using System;
+using System.Diagnostics;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
+using Compiler.Antetypes;
+using Compiler.Antetypes.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
@@ -71,4 +74,14 @@ public sealed class FixedSizeIntegerType : IntegerType
 
     public override CapabilityType<FixedSizeIntegerType> With(Capability capability)
         => BareType.With(capability);
+
+    public override IDeclaredAntetype ToAntetype()
+        => Bits switch
+        {
+            8 => IsSigned ? IAntetype.Int8 : IAntetype.Byte,
+            16 => IsSigned ? IAntetype.Int16 : IAntetype.UInt16,
+            32 => IsSigned ? IAntetype.Int32 : IAntetype.UInt32,
+            64 => IsSigned ? IAntetype.Int64 : IAntetype.UInt64,
+            _ => throw new UnreachableException("Bits not an expected value"),
+        };
 }

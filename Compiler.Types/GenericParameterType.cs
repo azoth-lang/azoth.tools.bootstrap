@@ -2,6 +2,7 @@ using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Compiler.Antetypes;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -51,6 +52,8 @@ public sealed class GenericParameterType : NonEmptyType
     public override int GetHashCode()
         => HashCode.Combine(DeclaringType, Parameter);
     #endregion
+
+    public override IMaybeExpressionAntetype ToAntetype() => new GenericParameterAntetype();
 
     public override string ToSourceCodeString() => $"{DeclaringType}.{Parameter.Name}";
 

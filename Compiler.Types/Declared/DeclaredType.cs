@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
+using Compiler.Antetypes.Declared;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -71,6 +72,8 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     /// </summary>
     public CapabilityType WithRead(IFixedList<DataType> typeArguments)
         => With(typeArguments).WithRead();
+
+    public abstract IDeclaredAntetype ToAntetype();
 
     #region Equality
     public abstract bool Equals(DeclaredType? other);

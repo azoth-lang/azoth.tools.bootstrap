@@ -1,8 +1,11 @@
 using System;
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
+using Compiler.Antetypes;
+using Compiler.Antetypes.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
@@ -50,6 +53,16 @@ public sealed class PointerSizedIntegerType : IntegerType
     public override CapabilityType<PointerSizedIntegerType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
+
     public override CapabilityType<PointerSizedIntegerType> With(Capability capability)
         => BareType.With(capability);
+
+    public override IDeclaredAntetype ToAntetype()
+    {
+        if (this == Size) return IAntetype.Size;
+        if (this == Offset) return IAntetype.Offset;
+        if (this == NInt) return IAntetype.NInt;
+        if (this == NUInt) return IAntetype.NUInt;
+        throw new UnreachableException();
+    }
 }

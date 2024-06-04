@@ -1,4 +1,6 @@
 using System;
+using Azoth.Tools.Bootstrap.Framework;
+using Compiler.Antetypes;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -15,6 +17,11 @@ public abstract class Pseudotype
     /// Create a type with the upper bound of the capability constraint.
     /// </summary>
     public abstract DataType ToUpperBound();
+
+    /// <summary>
+    /// Convert this type to the equivalent antetype.
+    /// </summary>
+    public abstract IMaybeExpressionAntetype ToAntetype();
 
     public sealed override string ToString()
         => throw new NotSupportedException();

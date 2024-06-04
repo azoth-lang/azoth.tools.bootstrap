@@ -8,6 +8,8 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
+using Compiler.Antetypes;
+using Compiler.Antetypes.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
@@ -187,6 +189,9 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     /// </summary>
     public CapabilityType<ObjectType> WithMutate(IFixedList<DataType> typeArguments)
         => With(IsDeclaredConst ? Capability.Constant : Capability.Mutable, typeArguments);
+
+    public override IDeclaredAntetype ToAntetype()
+        => IsGeneric ? new UserDeclaredGenericAntetype() : new UserNonGenericNominalAntetype();
 
     #region Equals
     public override bool Equals(DeclaredType? other)

@@ -1,4 +1,5 @@
 using System;
+using Compiler.Antetypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -16,6 +17,8 @@ public sealed class UnknownType : DataType
     #endregion
 
     public override bool IsFullyKnown => false;
+
+    public override IMaybeExpressionAntetype ToAntetype() => UnknownAntetype.Instance;
 
     /// <remarks><see cref="ToSourceCodeString"/> is used to format error messages. As such, it
     /// is necessary to provide some output for the unknown type in case it appears in an error

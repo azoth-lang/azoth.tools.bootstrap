@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
+using Compiler.Antetypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -36,6 +37,19 @@ public sealed class FunctionType : NonEmptyType
 
     public override int GetHashCode() => HashCode.Combine(Parameters, Return);
     #endregion
+
+    public override IMaybeExpressionAntetype ToAntetype()
+    {
+        var parameters = Parameters.Select(p => p.Type.ToAntetype()).OfType<INonVoidAntetype>().ToFixedList();
+        if (parameters.Count != Parameters.Count)
+            // Not all parameters are known and non-void
+            return UnknownAntetype.Instance;
+
+        if (Return.Type.ToAntetype() is not IAntetype returnAntetype)
+            return UnknownAntetype.Instance;
+
+        return new FunctionAntetype(parameters, returnAntetype);
+    }
 
     public override string ToSourceCodeString()
         => $"({string.Join(", ", Parameters.Select(t => t.ToSourceCodeString()))}) -> {Return.ToSourceCodeString()}";

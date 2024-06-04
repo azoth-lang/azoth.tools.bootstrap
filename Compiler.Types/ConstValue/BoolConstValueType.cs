@@ -1,5 +1,6 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Compiler.Antetypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 
@@ -29,6 +30,9 @@ public sealed class BoolConstValueType : ConstValueType
     public static implicit operator BoolConstValueType(bool value) => value ? True : False;
 
     public override DataType ToNonConstantType() => Bool;
+
+    public override IMaybeExpressionAntetype ToAntetype()
+        => Value ? IExpressionAntetype.True : IExpressionAntetype.False;
 
     public override string ToSourceCodeString()
         => throw new InvalidOperationException("Bool value type has no source code representation");
