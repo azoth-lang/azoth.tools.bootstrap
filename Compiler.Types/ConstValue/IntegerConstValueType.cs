@@ -48,7 +48,7 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
     /// <remarks>It might be thought this should return the smallest integer type that contains
     /// the value. However, that would lead to unexpected behavior in some cases because small
     /// integer constants might produce small fixed size integers leading to overflow.</remarks>
-    public override DataType ToNonConstantType() => Int;
+    public override DataType ToNonConstValueType() => Int;
 
     public NumericType ToSmallestSignedIntegerType()
     {

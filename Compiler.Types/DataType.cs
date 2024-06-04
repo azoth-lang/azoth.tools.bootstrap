@@ -88,7 +88,7 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     /// <summary>
     /// Convert types for constant values to their corresponding types.
     /// </summary>
-    public virtual DataType ToNonConstantType() => this;
+    public virtual DataType ToNonConstValueType() => this;
 
     /// <summary>
     /// The same type except with any mutability removed.

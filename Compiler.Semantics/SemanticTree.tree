@@ -227,6 +227,7 @@ ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax` Ex
 BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;
 VariableDeclarationStatement <: BodyStatement, NamedBinding = Syntax:`IVariableDeclarationStatementSyntax`
     IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type? Initializer:AmbiguousExpression?
+    FinalInitializer:`IExpressionNode`?
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
     // TODO remove variable symbols
     Symbol:`NamedVariableSymbol` DeclarationNumber:`int`?;

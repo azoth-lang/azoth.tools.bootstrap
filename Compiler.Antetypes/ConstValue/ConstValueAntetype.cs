@@ -10,4 +10,6 @@ public abstract class ConstValueAntetype : IExpressionAntetype
     {
         Name = name;
     }
+
+    public abstract IMaybeAntetype ToNonConstValueType();
 }

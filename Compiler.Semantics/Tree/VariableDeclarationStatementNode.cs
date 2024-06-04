@@ -20,6 +20,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public ITypeNode? Type { get; }
     private Child<IAmbiguousExpressionNode?> initializer;
     public IAmbiguousExpressionNode? Initializer => initializer.Value;
+    public IExpressionNode? FinalInitializer => (IExpressionNode?)initializer.FinalValue;
     private ValueAttribute<LexicalScope> containingLexicalScope;
     public LexicalScope ContainingLexicalScope
         => containingLexicalScope.TryGetValue(out var value) ? value

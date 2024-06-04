@@ -12,7 +12,7 @@ public class ReferenceTypeTests
     {
         var type = CapabilityType.CreateClass(Isolated, "Package", "Foo", false, false, "Bar");
 
-        var nonConstant = type.ToNonConstantType();
+        var nonConstant = type.ToNonConstValueType();
 
         Assert.Same(type, nonConstant);
     }

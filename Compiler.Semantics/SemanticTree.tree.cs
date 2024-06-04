@@ -1090,6 +1090,7 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     ICapabilityNode? Capability { get; }
     ITypeNode? Type { get; }
     IAmbiguousExpressionNode? Initializer { get; }
+    IExpressionNode? FinalInitializer { get; }
     LexicalScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
     NamedVariableSymbol Symbol { get; }

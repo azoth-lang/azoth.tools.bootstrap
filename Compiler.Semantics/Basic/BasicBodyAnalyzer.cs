@@ -253,7 +253,7 @@ public class BasicBodyAnalyzer
     {
         var type = expression.DataType.Assigned();
         if (!type.IsFullyKnown) return DataType.Unknown;
-        type = type.ToNonConstantType();
+        type = type.ToNonConstValueType();
 
         switch (expression)
         {
@@ -1898,7 +1898,7 @@ public class BasicBodyAnalyzer
                 diagnostics.Add(TypeError.CannotImplicitlyConvert(file, inExpression, iteratedType, declaredType));
         }
 
-        var variableType = declaredType ?? iteratedType.ToNonConstantType();
+        var variableType = declaredType ?? iteratedType.ToNonConstValueType();
         return (result, variableType);
 
         (ExpressionResult, DataType) ForeachNoIterateOrNextMethod()

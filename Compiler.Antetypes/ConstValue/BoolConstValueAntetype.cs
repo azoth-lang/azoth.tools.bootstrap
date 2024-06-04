@@ -14,4 +14,6 @@ public sealed class BoolConstValueAntetype : ConstValueAntetype
     {
         Value = value;
     }
+
+    public override IMaybeAntetype ToNonConstValueType() => IAntetype.Bool;
 }

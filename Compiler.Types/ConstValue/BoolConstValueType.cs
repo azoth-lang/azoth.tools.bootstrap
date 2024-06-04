@@ -29,7 +29,7 @@ public sealed class BoolConstValueType : ConstValueType
 
     public static implicit operator BoolConstValueType(bool value) => value ? True : False;
 
-    public override DataType ToNonConstantType() => Bool;
+    public override DataType ToNonConstValueType() => Bool;
 
     public override IMaybeExpressionAntetype ToAntetype()
         => Value ? IExpressionAntetype.True : IExpressionAntetype.False;

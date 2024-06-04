@@ -17,7 +17,7 @@ internal static class NameBindingAntetypesAspect
         => throw new System.NotImplementedException();
 
     public static IMaybeAntetype VariableDeclarationStatement_BindingAntetype(IVariableDeclarationStatementNode node)
-        => throw new System.NotImplementedException();
+        => node.Type?.Antetype ?? node.FinalInitializer?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
 
     public static IMaybeAntetype ForeachExpression_BindingAntetype(IForeachExpressionNode node)
         => throw new System.NotImplementedException();
