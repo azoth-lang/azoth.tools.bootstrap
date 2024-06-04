@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
@@ -7,6 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 /// An antetype that is not generic.
 /// </summary>
 /// <remarks>Non-generic antetypes are both an antetype and their own declared antetype.</remarks>
+[Closed(typeof(EmptyAntetype), typeof(GenericParameterAntetype), typeof(UserNonGenericNominalAntetype))]
 public abstract class NonGenericNominalAntetype : NominalAntetype, IDeclaredAntetype
 {
     public override IDeclaredAntetype Declared => this;

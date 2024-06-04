@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.ConstValue;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
@@ -26,7 +29,10 @@ public sealed class PackageNameScope
     /// scope of all referenced packages.</remarks>
     public NamespaceScope PackageGlobalScope { get; }
 
-    private readonly FixedDictionary<IdentifierName, NamespaceScope> referencedGlobalScopes;
+    /// <summary>
+    /// The global scopes for each package.
+    /// </summary>
+    private readonly FixedDictionary<IdentifierName, NamespaceScope> packageGlobalScopes;
 
     internal PackageNameScope(IEnumerable<IPackageFacetNode> packageFacets, IEnumerable<IPackageFacetDeclarationNode> referencedFacets)
     {
@@ -40,21 +46,24 @@ public sealed class PackageNameScope
         var parent = new NamespaceScope(this, referencedGlobalNamespaces);
         PackageGlobalScope = new NamespaceScope(parent, packageGlobalNamespaces);
 
-        referencedGlobalScopes = referencedGlobalNamespaces.GroupBy(ns => ns.Package.Name)
+        packageGlobalScopes = packageGlobalNamespaces.Concat(referencedGlobalNamespaces)
+            .GroupBy(ns => ns.Package.Name)
             .ToFixedDictionary(g => g.Key, g => new NamespaceScope(this, g));
     }
 
     /// <summary>
     /// Get the global scope for a referenced package.
     /// </summary>
-    /// <remarks>This provides the root for names that are package qualified.</remarks>
-    public NamespaceScope GlobalScopeForReferencedPackage(IdentifierName packageName)
+    /// <remarks>This provides the root for names that are package qualified. Currently, this
+    /// includes the current package.</remarks>
+    public NamespaceScope GlobalScopeForPackage(IdentifierName packageName)
     {
-        if (referencedGlobalScopes.TryGetValue(packageName, out var scope))
+        if (packageGlobalScopes.TryGetValue(packageName, out var scope))
             return scope;
         throw new InvalidOperationException($"Package '{packageName}' is not referenced.");
     }
 
+    #region Loopkup(DataType)
     public ITypeDeclarationNode? Lookup(DataType type)
         => type switch
         {
@@ -91,11 +100,59 @@ public sealed class PackageNameScope
     private ITypeDeclarationNode Lookup(IDeclaredUserType declaredType)
     {
         // TODO is there a problem with types using package names and this using package aliases?
-        var globalNamespace = GlobalScopeForReferencedPackage(declaredType.ContainingPackage);
+        var globalNamespace = GlobalScopeForPackage(declaredType.ContainingPackage);
         var ns = globalNamespace;
         foreach (var name in declaredType.ContainingNamespace.Segments)
             ns = ns.GetChildNamespaceScope(name) ?? throw new UnreachableException("Type namespace must exist");
 
         return ns.Lookup(declaredType.Name).OfType<ITypeDeclarationNode>().Single();
     }
+    #endregion
+
+    #region Lookup(IMaybeExpressionAntetype)
+    public ITypeDeclarationNode? Lookup(IMaybeExpressionAntetype antetype)
+        => antetype switch
+        {
+            UnknownAntetype _ => null,
+            EmptyAntetype _ => null,
+            FunctionAntetype _ => null,
+            OptionalAntetype _ => throw new NotImplementedException(),
+            NominalAntetype t => Lookup(t.Declared),
+            AnyAntetype t => Lookup(t),
+            SimpleAntetype t => Lookup(t),
+            ConstValueAntetype _ => throw new NotImplementedException(),
+            _ => throw ExhaustiveMatch.Failed(antetype),
+        };
+
+    private ITypeDeclarationNode? Lookup(IDeclaredAntetype antetype)
+        => antetype switch
+        {
+            EmptyAntetype _ => null,
+            AnyAntetype t => Lookup(t),
+            SimpleAntetype t => Lookup(t),
+            GenericParameterAntetype t => Lookup(t),
+            IUserDeclaredAntetype t => Lookup(t),
+            _ => throw ExhaustiveMatch.Failed(antetype),
+        };
+
+    private ITypeDeclarationNode Lookup(IUserDeclaredAntetype antetype)
+    {
+        // TODO is there a problem with types using package names and this using package aliases?
+        var globalNamespace = GlobalScopeForPackage(antetype.ContainingPackage);
+        var ns = globalNamespace;
+        foreach (var name in antetype.ContainingNamespace.Segments)
+            ns = ns.GetChildNamespaceScope(name) ?? throw new UnreachableException("Type namespace must exist");
+
+        return ns.Lookup(antetype.Name).OfType<ITypeDeclarationNode>().Single();
+    }
+
+    private ITypeDeclarationNode? Lookup(SimpleAntetype antetype)
+        => throw new NotImplementedException();
+
+    private ITypeDeclarationNode? Lookup(AnyAntetype antetype)
+        => throw new NotImplementedException();
+
+    public ITypeDeclarationNode Lookup(GenericParameterAntetype antetype)
+        => throw new NotImplementedException();
+    #endregion
 }

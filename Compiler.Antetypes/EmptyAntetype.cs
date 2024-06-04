@@ -1,7 +1,9 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
+[Closed(typeof(NeverAntetype), typeof(VoidAntetype))]
 public abstract class EmptyAntetype : NonGenericNominalAntetype
 {
     public SpecialTypeName Name { get; }

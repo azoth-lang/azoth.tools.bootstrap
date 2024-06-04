@@ -50,7 +50,7 @@ internal static class DeclaredUserTypeExtensions
     {
         var antetypeGenericParameters = declaredType.GenericParameters.Select(p => new AntetypeGenericParameter(p.Name, p.Variance));
         return declaredType.IsGeneric
-            ? new UserDeclaredGenericAntetype(antetypeGenericParameters)
-            : new UserNonGenericNominalAntetype();
+            ? new UserDeclaredGenericAntetype(declaredType.ContainingPackage, declaredType.ContainingNamespace, declaredType.Name, antetypeGenericParameters)
+            : new UserNonGenericNominalAntetype(declaredType.ContainingPackage, declaredType.ContainingNamespace, (IdentifierName)declaredType.Name);
     }
 }

@@ -130,8 +130,7 @@ internal static class BindingAmbiguousNamesAspect
             return null;
 
         // TODO lookup members of the antetype and rewrite accordingly
-        //_ = context.Antetype;
-        //var contextTypeDeclaration = node.InheritedPackageNameScope().Lookup(context.Type);
+        //var contextTypeDeclaration = node.InheritedPackageNameScope().Lookup(context.Antetype);
         return null;
     }
 
@@ -181,13 +180,5 @@ internal static class BindingAmbiguousNamesAspect
         referencedNamespaces = declarations.OfType<T>().ToFixedList();
         // All of type T when counts match
         return referencedNamespaces.Count == declarations.Count;
-    }
-
-    public static void SelfExpression_ContributeDiagnostics(ISelfExpressionNode node, Diagnostics diagnostics)
-    {
-        if (node.ContainingDeclaration is not (IMethodDefinitionNode or ISourceConstructorDefinitionNode or IInitializerDeclarationNode))
-            diagnostics.Add(node.IsImplicit
-                ? OtherSemanticError.ImplicitSelfOutsideMethod(node.File, node.Syntax.Span)
-                : OtherSemanticError.SelfOutsideMethod(node.File, node.Syntax.Span));
     }
 }
