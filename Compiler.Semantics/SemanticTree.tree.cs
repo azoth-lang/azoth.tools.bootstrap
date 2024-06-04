@@ -2036,14 +2036,20 @@ public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, I
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
 }
 
+[Closed(
+    typeof(IStandardMethodSymbolNode))]
 public partial interface IStandardMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
 {
 }
 
+[Closed(
+    typeof(IGetterMethodSymbolNode))]
 public partial interface IGetterMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
 {
 }
 
+[Closed(
+    typeof(ISetterMethodSymbolNode))]
 public partial interface ISetterMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
 {
 }
@@ -2137,7 +2143,23 @@ public partial interface IGenericParameterSymbolNode : IGenericParameterDeclarat
 {
 }
 
+[Closed(
+    typeof(IStandardMethodSymbolNode),
+    typeof(IGetterMethodSymbolNode),
+    typeof(ISetterMethodSymbolNode))]
 public partial interface IMethodSymbolNode : ISemanticNode, IMethodDeclarationNode
+{
+}
+
+public partial interface IStandardMethodSymbolNode : IMethodSymbolNode, IStandardMethodDeclarationNode
+{
+}
+
+public partial interface IGetterMethodSymbolNode : IMethodSymbolNode, IGetterMethodDeclarationNode
+{
+}
+
+public partial interface ISetterMethodSymbolNode : IMethodSymbolNode, ISetterMethodDeclarationNode
 {
 }
 

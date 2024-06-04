@@ -392,12 +392,6 @@ public static class ISemanticNodeExtensions
             case IAwaitExpressionNode n:
                 yield return n.Expression;
                 yield break;
-            case IStandardMethodDeclarationNode n:
-                yield break;
-            case IGetterMethodDeclarationNode n:
-                yield break;
-            case ISetterMethodDeclarationNode n:
-                yield break;
             case IPackageSymbolNode n:
                 yield return n.MainFacet;
                 yield return n.TestingFacet;
@@ -429,7 +423,11 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IGenericParameterSymbolNode n:
                 yield break;
-            case IMethodSymbolNode n:
+            case IStandardMethodSymbolNode n:
+                yield break;
+            case IGetterMethodSymbolNode n:
+                yield break;
+            case ISetterMethodSymbolNode n:
                 yield break;
             case IConstructorSymbolNode n:
                 yield break;

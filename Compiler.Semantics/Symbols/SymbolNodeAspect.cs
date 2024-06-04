@@ -168,17 +168,27 @@ internal static class SymbolNodeAspect
             _ => throw ExhaustiveMatch.Failed(symbol.DeclaresType),
         };
 
-    private static IFunctionDeclarationNode InvocableSymbol(InvocableSymbol symbol)
+    private static IPackageFacetChildDeclarationNode InvocableSymbol(InvocableSymbol symbol)
         => symbol switch
         {
             FunctionSymbol sym => FunctionSymbol(sym),
+            ConstructorSymbol sym => ConstructorSymbol(sym),
+            MethodSymbol sym => MethodSymbol(sym),
             _ => throw new NotImplementedException(),
         };
-
     private static IFunctionDeclarationNode FunctionSymbol(FunctionSymbol sym)
         => new FunctionSymbolNode(sym);
 
     private static IConstructorDeclarationNode ConstructorSymbol(ConstructorSymbol sym)
         => new ConstructorSymbolNode(sym);
+
+    private static IMethodDeclarationNode MethodSymbol(MethodSymbol sym)
+        => sym.Kind switch
+        {
+            MethodKind.Standard => new StandardMethodSymbolNode(sym),
+            MethodKind.Getter => new GetterMethodSymbolNode(sym),
+            MethodKind.Setter => new SetterMethodSymbolNode(sym),
+            _ => throw ExhaustiveMatch.Failed(sym.Kind),
+        };
     #endregion
 }

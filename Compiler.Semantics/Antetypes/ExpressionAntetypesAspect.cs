@@ -16,4 +16,12 @@ internal static class ExpressionAntetypesAspect
 
     public static IMaybeExpressionAntetype SelfExpression_Antetype(ISelfExpressionNode node)
         => node.ReferencedParameter?.Antetype ?? IAntetype.Unknown;
+
+    public static IMaybeExpressionAntetype FieldAccessExpression_Antetype(IFieldAccessExpressionNode node)
+    {
+        // TODO should probably use Antetype on the declaration
+        var fieldAntetype = node.ReferencedDeclaration.Type.ToAntetype();
+        // TODO replace type parameters with actual types
+        return fieldAntetype;
+    }
 }

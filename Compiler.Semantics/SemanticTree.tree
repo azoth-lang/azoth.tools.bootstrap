@@ -453,6 +453,9 @@ GenericParameterSymbol <: GenericParameterDeclaration;
 
 // ---------- Member Declarations
 MethodSymbol <: MethodDeclaration;
+StandardMethodSymbol <: MethodSymbol, StandardMethodDeclaration;
+GetterMethodSymbol <: MethodSymbol, GetterMethodDeclaration;
+SetterMethodSymbol <: MethodSymbol, SetterMethodDeclaration;
 ConstructorSymbol <: ConstructorDeclaration;
 InitializerSymbol <: InitializerDeclaration;
 FieldSymbol <: FieldDeclaration;

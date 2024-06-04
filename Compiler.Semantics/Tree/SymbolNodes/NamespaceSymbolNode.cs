@@ -42,5 +42,4 @@ internal class NamespaceSymbolNode : PackageFacetChildSymbolNode, INamespaceSymb
 
     public IEnumerable<INamespaceMemberDeclarationNode> NestedMembersNamed(StandardName named)
         => NestedMembers.MembersNamed(ref nestedMembersByName, named);
-
 }
