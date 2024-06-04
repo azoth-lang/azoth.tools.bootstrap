@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -47,6 +46,8 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         Name = name;
         this.supertypes = supertypes;
         GenericParameterTypes = genericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList();
+
+        antetype = this.ConstructDeclaredAntetype();
     }
 
     public override IdentifierName ContainingPackage { get; }
@@ -60,6 +61,8 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     private readonly Lazy<IFixedSet<BareReferenceType>> supertypes;
     public override IFixedSet<BareReferenceType> Supertypes => supertypes.Value;
     public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
+
+    private readonly IDeclaredAntetype antetype;
 
     DeclaredType IDeclaredUserType.AsDeclaredType() => this;
 
@@ -119,8 +122,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     public CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override IDeclaredAntetype ToAntetype()
-        => IsGeneric ? new UserDeclaredGenericAntetype() : new UserNonGenericNominalAntetype();
+    public override IDeclaredAntetype ToAntetype() => antetype;
 
     #region Equals
     public override bool Equals(DeclaredType? other)

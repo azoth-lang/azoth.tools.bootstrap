@@ -13,6 +13,9 @@ public class AnyAntetype : INonVoidAntetype, IDeclaredAntetype
     }
     #endregion
 
+    IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
+        => FixedList.Empty<AntetypeGenericParameter>();
+
     IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes
         => FixedList.Empty<GenericParameterAntetype>();
 

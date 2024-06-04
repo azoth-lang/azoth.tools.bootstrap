@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -17,7 +19,7 @@ public sealed class GenericParameterType : NonEmptyType
 
     public GenericParameter Parameter { get; }
 
-    public StandardName Name => Parameter.Name;
+    public IdentifierName Name => Parameter.Name;
 
     public override bool IsFullyKnown => true;
 
@@ -53,7 +55,11 @@ public sealed class GenericParameterType : NonEmptyType
         => HashCode.Combine(DeclaringType, Parameter);
     #endregion
 
-    public override IMaybeExpressionAntetype ToAntetype() => new GenericParameterAntetype();
+    public override IMaybeExpressionAntetype ToAntetype()
+    {
+        var declaringAntetype = DeclaringType.ToAntetype();
+        return new GenericParameterAntetype((UserDeclaredGenericAntetype)declaringAntetype, declaringAntetype.GenericParameters.Single(p => p.Name == Name));
+    }
 
     public override string ToSourceCodeString() => $"{DeclaringType}.{Parameter.Name}";
 

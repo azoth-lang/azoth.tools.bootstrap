@@ -11,6 +11,9 @@ public abstract class NonGenericNominalAntetype : NominalAntetype, IDeclaredAnte
 {
     public override IDeclaredAntetype Declared => this;
 
+    IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
+        => FixedList.Empty<AntetypeGenericParameter>();
+
     IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes
         => FixedList.Empty<GenericParameterAntetype>();
 

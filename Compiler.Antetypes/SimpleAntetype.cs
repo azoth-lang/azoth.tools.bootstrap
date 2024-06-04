@@ -8,6 +8,9 @@ public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype
 {
     public SpecialTypeName Name { get; }
 
+    IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
+        => FixedList.Empty<AntetypeGenericParameter>();
+
     IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes
         => FixedList.Empty<GenericParameterAntetype>();
 

@@ -8,9 +8,13 @@ public sealed class UserGenericNominalAntetype : NominalAntetype, INonVoidAntety
     public override IDeclaredAntetype Declared { get; }
     public IFixedList<IAntetype> TypeArguments { get; }
 
-    public UserGenericNominalAntetype(IDeclaredAntetype declared, IEnumerable<IAntetype> typeArguments)
+    public UserGenericNominalAntetype(IDeclaredAntetype declaredAnteType, IEnumerable<IAntetype> typeArguments)
     {
-        Declared = declared;
+        Declared = declaredAnteType;
         TypeArguments = typeArguments.ToFixedList();
+        if (Declared.GenericParameters.Count != TypeArguments.Count)
+            throw new ArgumentException(
+                $"Number of type arguments must match. Given `[{string.Join(", ", TypeArguments)}]` for `{declaredAnteType}`.",
+                nameof(typeArguments));
     }
 }

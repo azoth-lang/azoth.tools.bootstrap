@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -36,4 +38,19 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
     CapabilityType WithRead(IFixedList<DataType> typeArguments);
 
     IDeclaredAntetype ToAntetype();
+}
+
+
+internal static class DeclaredUserTypeExtensions
+{
+    /// <remarks>Used inside of instances of <see cref="IDeclaredUserType"/> to construct the
+    /// equivalent <see cref="IDeclaredAntetype"/>. Do not use directly. Use
+    /// <see cref="IDeclaredUserType.ToAntetype"/> instead.</remarks>
+    internal static IDeclaredAntetype ConstructDeclaredAntetype(this IDeclaredUserType declaredType)
+    {
+        var antetypeGenericParameters = declaredType.GenericParameters.Select(p => new AntetypeGenericParameter(p.Name, p.Variance));
+        return declaredType.IsGeneric
+            ? new UserDeclaredGenericAntetype(antetypeGenericParameters)
+            : new UserNonGenericNominalAntetype();
+    }
 }

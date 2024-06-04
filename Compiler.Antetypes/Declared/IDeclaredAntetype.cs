@@ -9,6 +9,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 /// creating types.</remarks>
 public interface IDeclaredAntetype
 {
+    IFixedList<AntetypeGenericParameter> GenericParameters { get; }
+
     IFixedList<GenericParameterAntetype> GenericParameterAntetypes { get; }
 
     IAntetype With(IEnumerable<IAntetype> typeArguments);

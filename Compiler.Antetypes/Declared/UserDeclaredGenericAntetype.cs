@@ -4,13 +4,22 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 
 public sealed class UserDeclaredGenericAntetype : IDeclaredAntetype
 {
-    public IFixedList<GenericParameterAntetype> GenericParameterAntetypes
-        => throw new NotImplementedException();
+    public IFixedList<AntetypeGenericParameter> GenericParameters { get; }
+
+    public IFixedList<GenericParameterAntetype> GenericParameterAntetypes { get; }
+
+    public UserDeclaredGenericAntetype(IEnumerable<AntetypeGenericParameter> genericParameters)
+    {
+        GenericParameters = genericParameters.ToFixedList();
+        GenericParameterAntetypes = GenericParameters.Select(p => new GenericParameterAntetype(this, p))
+                                                     .ToFixedList();
+    }
 
     public IAntetype With(IEnumerable<IAntetype> typeArguments)
     {
         var args = typeArguments.ToFixedList();
-        // TODO if args length doesn't match throw invalid argument exception
+        if (args.Count != GenericParameters.Count)
+            throw new ArgumentException("Incorrect number of type arguments.");
         return new UserGenericNominalAntetype(this, args);
     }
 }

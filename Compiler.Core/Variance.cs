@@ -1,6 +1,6 @@
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Core;
 
 public enum Variance
 {
@@ -16,7 +16,7 @@ public static class VarianceExtensions
     /// </summary>
     /// <param name="nonwritableSelf">Whether the self parameter type is nonwriteable.
     /// <see langword="null"/> is used for base types to indicate that it could behave either way.</param>
-    internal static bool CompatibleWith(this Variance contextVariance, ParameterVariance parameterVariance, bool? nonwritableSelf)
+    public static bool CompatibleWith(this Variance contextVariance, ParameterVariance parameterVariance, bool? nonwritableSelf)
     {
         // if NonwritableCovariant could behave either way, then the most restrictive is used
         var variance = parameterVariance.ToVariance(nonwritableSelf) ?? Variance.Covariant;
@@ -29,6 +29,6 @@ public static class VarianceExtensions
         };
     }
 
-    internal static Variance Inverse(this Variance variance)
+    public static Variance Inverse(this Variance variance)
         => (Variance)(-(int)variance);
 }
