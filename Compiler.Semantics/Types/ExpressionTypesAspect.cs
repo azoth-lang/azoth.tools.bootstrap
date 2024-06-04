@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -78,6 +79,9 @@ public static class ExpressionTypesAspect
     public static ValueId BindingPattern_ValueId(IBindingPatternNode node)
         => node.PreviousValueId().CreateNext();
 
+    public static IMaybeExpressionAntetype UnsafeExpression_Antetype(IUnsafeExpressionNode node)
+        => node.FinalExpression.Antetype;
+
     public static DataType UnsafeExpression_Type(IUnsafeExpressionNode node)
         => node.FinalExpression.Type;
 
@@ -88,6 +92,9 @@ public static class ExpressionTypesAspect
 
         return new FunctionInvocationExpressionNode(node.Syntax, function, node.CurrentArguments);
     }
+
+    public static IMaybeExpressionAntetype FunctionInvocationExpression_Antetype(IFunctionInvocationExpressionNode node)
+        => node.ReferencedDeclaration?.Type.Return.Type.ToAntetype() ?? IAntetype.Unknown;
 
     public static DataType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
         => node.ReferencedDeclaration?.Type.Return.Type ?? DataType.Unknown;

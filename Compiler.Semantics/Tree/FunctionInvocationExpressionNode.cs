@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -22,6 +23,10 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     public IFunctionLikeDeclarationNode? ReferencedDeclaration
         => referencedDeclaration.TryGetValue(out var value) ? value
             : referencedDeclaration.GetValue(this, OverloadResolutionAspect.FunctionInvocationExpression_ReferencedDeclaration);
+    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    public override IMaybeExpressionAntetype Antetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, ExpressionTypesAspect.FunctionInvocationExpression_Antetype);
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value

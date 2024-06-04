@@ -1182,7 +1182,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
 public partial interface IExpressionNode : IAmbiguousExpressionNode
 {
     ValueId ValueId { get; }
-    IExpressionAntetype Antetype { get; }
+    IMaybeExpressionAntetype Antetype { get; }
     DataType Type { get; }
     FlowState FlowStateAfter { get; }
 }

@@ -7,5 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 /// </summary>
 public abstract class NominalAntetype : IAntetype
 {
-    public IDeclaredAntetype Declared { get; }
+    public abstract IDeclaredAntetype Declared { get; }
+
+    private protected NominalAntetype() { }
 }

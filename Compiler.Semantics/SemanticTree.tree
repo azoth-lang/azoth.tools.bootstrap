@@ -239,7 +239,7 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 
 // ---------- Expressions
 AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
-Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax` ValueId:`ValueId` Antetype:`IExpressionAntetype`
+Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax` ValueId:`ValueId` Antetype:`IMaybeExpressionAntetype`
     Type:`DataType` FlowStateAfter:`FlowState`;
 AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;

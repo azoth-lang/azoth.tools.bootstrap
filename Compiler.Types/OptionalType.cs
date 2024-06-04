@@ -41,7 +41,7 @@ public sealed class OptionalType : NonEmptyType
 
     public override IMaybeExpressionAntetype ToAntetype()
         => Referent.ToAntetype() is INonVoidAntetype referent
-            ? new OptionalAntetype(referent) : UnknownAntetype.Instance;
+            ? new OptionalAntetype(referent) : IAntetype.Unknown;
 
     #region Equals
     public override bool Equals(DataType? other)

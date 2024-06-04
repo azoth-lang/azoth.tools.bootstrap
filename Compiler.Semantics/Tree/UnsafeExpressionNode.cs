@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -12,6 +13,10 @@ internal sealed class UnsafeExpressionNode : ExpressionNode, IUnsafeExpressionNo
     private Child<IAmbiguousExpressionNode> expression;
     public IAmbiguousExpressionNode Expression => expression.Value;
     public IExpressionNode FinalExpression => (IExpressionNode)expression.FinalValue;
+    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    public override IMaybeExpressionAntetype Antetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, ExpressionTypesAspect.UnsafeExpression_Antetype);
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value

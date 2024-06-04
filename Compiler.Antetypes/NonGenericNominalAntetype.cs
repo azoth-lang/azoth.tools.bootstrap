@@ -8,6 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 /// <remarks>Non-generic antetypes are both an antetype and their own declared antetype.</remarks>
 public abstract class NonGenericNominalAntetype : NominalAntetype, IDeclaredAntetype
 {
+    public override IDeclaredAntetype Declared => this;
+
     public IAntetype With(IEnumerable<IAntetype> typeArguments)
     {
         if (typeArguments.Any())

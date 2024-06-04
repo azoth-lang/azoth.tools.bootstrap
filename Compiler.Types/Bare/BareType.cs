@@ -91,7 +91,7 @@ public abstract class BareType : IEquatable<BareType>
     {
         var typeArguments = GenericTypeArguments.Select(a => a.ToAntetype()).OfType<IAntetype>().ToFixedList();
         if (typeArguments.Count != GenericTypeArguments.Count)
-            return UnknownAntetype.Instance;
+            return IAntetype.Unknown;
         return DeclaredType.ToAntetype().With(typeArguments);
     }
 

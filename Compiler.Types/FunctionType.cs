@@ -43,10 +43,10 @@ public sealed class FunctionType : NonEmptyType
         var parameters = Parameters.Select(p => p.Type.ToAntetype()).OfType<INonVoidAntetype>().ToFixedList();
         if (parameters.Count != Parameters.Count)
             // Not all parameters are known and non-void
-            return UnknownAntetype.Instance;
+            return IAntetype.Unknown;
 
         if (Return.Type.ToAntetype() is not IAntetype returnAntetype)
-            return UnknownAntetype.Instance;
+            return IAntetype.Unknown;
 
         return new FunctionAntetype(parameters, returnAntetype);
     }

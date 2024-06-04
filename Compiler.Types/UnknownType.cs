@@ -18,7 +18,7 @@ public sealed class UnknownType : DataType
 
     public override bool IsFullyKnown => false;
 
-    public override IMaybeExpressionAntetype ToAntetype() => UnknownAntetype.Instance;
+    public override IMaybeExpressionAntetype ToAntetype() => IAntetype.Unknown;
 
     /// <remarks><see cref="ToSourceCodeString"/> is used to format error messages. As such, it
     /// is necessary to provide some output for the unknown type in case it appears in an error

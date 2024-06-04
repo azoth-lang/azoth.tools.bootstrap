@@ -18,7 +18,7 @@ internal abstract class AmbiguousNameExpressionNode : AmbiguousExpressionNode, I
         => valueId.TryGetValue(out var value) ? value
             : valueId.GetValue((IExpressionNode)this, ExpressionTypesAspect.Expression_ValueId);
     // TODO make this abstract once all expressions have type implemented (also, not all names should have types)
-    public virtual IExpressionAntetype Antetype
+    public virtual IMaybeExpressionAntetype Antetype
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(Antetype)} not implemented.");
     // TODO make this abstract once all expressions have type implemented (also, not all names should have types)
     public virtual DataType Type
