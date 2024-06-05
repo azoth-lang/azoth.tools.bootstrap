@@ -1706,6 +1706,15 @@ public class BasicBodyAnalyzer
         if (memberSymbols.All(s => s is MethodSymbol { Kind: MethodKind.Standard }))
         {
             var methodSymbols = memberSymbols.Cast<MethodSymbol>().ToFixedSet();
+            if (expression.Semantics.IsFulfilled)
+            {
+                // Fulfillment from the semantic tree is not consistent yet, but when present, it
+                // should be correct.
+                if (expression.Semantics.Result is not MethodGroupNameSyntax semantics
+                    || !semantics.Symbols.ItemsEqual<Symbol>(methodSymbols))
+                    throw new InvalidOperationException("Semantics should match symbol");
+                return expression.Semantics.Result;
+            }
             return expression.Semantics.Fulfill(new MethodGroupNameSyntax(methodSymbols));
         }
 
@@ -1727,6 +1736,15 @@ public class BasicBodyAnalyzer
             default:
                 throw ExhaustiveMatch.Failed(memberSymbol);
             case FieldSymbol sym:
+                if (expression.Semantics.IsFulfilled)
+                {
+                    // Fulfillment from the semantic tree is not consistent yet, but when present, it
+                    // should be correct.
+                    if (expression.Semantics.Result is not FieldNameExpressionSyntax semantics
+                        || semantics.Symbol != sym)
+                        throw new InvalidOperationException("Semantics should match symbol");
+                    return expression.Semantics.Result;
+                }
                 return expression.Semantics.Fulfill(new FieldNameExpressionSyntax(sym));
             case MethodSymbol sym:
                 if (sym.Kind == MethodKind.Getter)

@@ -20,7 +20,9 @@ internal static class TypeExpressionsAntetypesAspect
         => node.Referent.Antetype;
 
     public static IMaybeAntetype SpecialTypeName_Antetype(ISpecialTypeNameNode node)
-        => (IMaybeAntetype)node.ReferencedSymbol.GetDataType()!.ToAntetype();
+        => (IMaybeAntetype?)node.ReferencedSymbol.GetDataType()?.ToAntetype()
+           ?? (IMaybeAntetype?)node.ReferencedSymbol.GetDeclaredType()?.ToAntetype()
+           ?? IAntetype.Unknown;
 
     public static IMaybeAntetype FunctionType_Antetype(IFunctionTypeNode node)
     {
@@ -39,5 +41,13 @@ internal static class TypeExpressionsAntetypesAspect
            ?? IAntetype.Unknown;
 
     public static IMaybeAntetype GenericTypeName_Antetype(IGenericTypeNameNode node)
-        => throw new System.NotImplementedException();
+    {
+        var declaredAntetype = node.ReferencedDeclaration?.Symbol.GetDeclaredType()?.ToAntetype();
+        if (declaredAntetype is null)
+            return IAntetype.Unknown;
+        var antetypeArguments = node.TypeArguments.Select(a => a.Antetype).OfType<IAntetype>().ToFixedList();
+        if (antetypeArguments.Count != node.TypeArguments.Count)
+            return IAntetype.Unknown;
+        return declaredAntetype.With(antetypeArguments);
+    }
 }

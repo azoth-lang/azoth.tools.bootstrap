@@ -20,5 +20,5 @@ internal sealed class ClassSymbolNode : UserTypeSymbolNode, IClassSymbolNode
     }
 
     private new IFixedSet<IClassMemberDeclarationNode> GetMembers()
-        => ChildSet.Attach(this, base.GetMembers().Cast<IClassMemberDeclarationNode>());
+        => ChildSet.Attach(this, base.GetMembers().OfType<IClassMemberDeclarationNode>());
 }

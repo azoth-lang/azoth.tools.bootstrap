@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -9,6 +10,7 @@ public sealed class GenericParameterTypeSymbol : TypeSymbol
     public override UserTypeSymbol ContainingSymbol { get; }
     public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public GenericParameterType Type { get; }
+    public override IdentifierName Name => (IdentifierName)base.Name;
 
     public override DataType GetDataType() => Type;
 

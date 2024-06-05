@@ -133,22 +133,22 @@ internal static class SymbolNodeAspect
         => node.ContainingTypeDefinition.Members.OfType<IFieldDefinitionNode>().FirstOrDefault(f => f.Name == node.Name);
 
     #region Construct for Symbols
-    public static IPackageFacetChildDeclarationNode Symbol(Symbol symbol)
+    public static IChildDeclarationNode? Symbol(Symbol symbol)
         => symbol switch
         {
             NamespaceSymbol sym => new NamespaceSymbolNode(sym),
             TypeSymbol sym => TypeSymbol(sym),
             InvocableSymbol sym => InvocableSymbol(sym),
-            BindingSymbol sym => throw new NotImplementedException(),
+            FieldSymbol sym => FieldSymbol(sym),
+            BindingSymbol _ => null,
             _ => throw ExhaustiveMatch.Failed(symbol),
         };
-
-    private static IUserTypeDeclarationNode TypeSymbol(TypeSymbol symbol)
+    private static ITypeDeclarationNode TypeSymbol(TypeSymbol symbol)
         => symbol switch
         {
             UserTypeSymbol sym => UserTypeSymbol(sym),
             // These will be needed because the generic parameter type could be used in a type expression
-            GenericParameterTypeSymbol sym => throw new NotImplementedException(),
+            GenericParameterTypeSymbol sym => GenericParameterTypeSymbol(sym),
             EmptyTypeSymbol _
                 => throw new NotSupportedException("Symbol node for empty type not supported. Primitives not name bound through symbol nodes."),
             PrimitiveTypeSymbol _
@@ -167,6 +167,9 @@ internal static class SymbolNodeAspect
             },
             _ => throw ExhaustiveMatch.Failed(symbol.DeclaresType),
         };
+
+    private static IGenericParameterSymbolNode GenericParameterTypeSymbol(GenericParameterTypeSymbol sym)
+        => new GenericParameterSymbolNode(sym);
 
     private static IPackageFacetChildDeclarationNode InvocableSymbol(InvocableSymbol symbol)
         => symbol switch
@@ -190,5 +193,8 @@ internal static class SymbolNodeAspect
             MethodKind.Setter => new SetterMethodSymbolNode(sym),
             _ => throw ExhaustiveMatch.Failed(sym.Kind),
         };
+
+    private static IFieldSymbolNode FieldSymbol(FieldSymbol sym)
+        => new FieldSymbolNode(sym);
     #endregion
 }

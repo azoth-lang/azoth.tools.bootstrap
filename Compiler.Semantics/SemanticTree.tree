@@ -403,7 +403,7 @@ StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration};
 TraitDeclaration <: UserTypeDeclaration = Members:{TraitMemberDeclaration};
 
 // ---------- Type Declaration Parts
-GenericParameterDeclaration <: TypeDeclaration = Name:`IdentifierName` Members:{TypeMemberDeclaration};
+GenericParameterDeclaration <: TypeDeclaration = Name:`IdentifierName` Symbol:`GenericParameterTypeSymbol` Members:{TypeMemberDeclaration};
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration;

@@ -472,8 +472,6 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     GenericParameterType DeclaredType { get; }
     IUserTypeDeclarationNode ContainingDeclaration { get; }
     UserTypeSymbol ContainingSymbol { get; }
-    new GenericParameterTypeSymbol Symbol { get; }
-    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
 }
 
@@ -1967,6 +1965,8 @@ public partial interface IGenericParameterDeclarationNode : ISemanticNode, IType
 {
     new IdentifierName Name { get; }
     StandardName INamedDeclarationNode.Name => Name;
+    new GenericParameterTypeSymbol Symbol { get; }
+    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
 }
 
 [Closed(

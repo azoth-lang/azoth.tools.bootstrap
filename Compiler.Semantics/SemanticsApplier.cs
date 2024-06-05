@@ -1056,7 +1056,13 @@ internal class SemanticsApplier
 
     private static void UnknownMemberAccessExpression(IUnknownMemberAccessExpressionNode node)
     {
-        node.Syntax.Semantics.Fulfill(UnknownNameSyntax.Instance);
+        // Do not apply this in other contexts yet because the semantic tree cannot always properly
+        // resolve members
+        // TODO apply all the time once the semantic tree is more complete
+        if (node.Context is ITypeNameExpressionNode
+            or INamespaceNameNode
+            or IUnknownMemberAccessExpressionNode)
+            node.Syntax.Semantics.Fulfill(UnknownNameSyntax.Instance);
         Expression(node.Context);
     }
     #endregion
