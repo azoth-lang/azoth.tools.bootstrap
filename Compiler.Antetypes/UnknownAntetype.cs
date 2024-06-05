@@ -7,4 +7,13 @@ public sealed class UnknownAntetype : IMaybeAntetype
 
     private UnknownAntetype() { }
     #endregion
+
+    #region Equality
+    public bool Equals(IMaybeExpressionAntetype? other) => ReferenceEquals(this, other);
+
+    public override bool Equals(object? obj)
+        => obj is IMaybeExpressionAntetype other && Equals(other);
+
+    public override int GetHashCode() => HashCode.Combine(typeof(UnknownAntetype));
+    #endregion
 }

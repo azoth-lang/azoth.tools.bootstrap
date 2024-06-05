@@ -25,4 +25,7 @@ public abstract class NonGenericNominalAntetype : NominalAntetype, IDeclaredAnte
             throw new ArgumentException("Non-generic type cannot have type arguments", nameof(typeArguments));
         return this;
     }
+
+    public bool Equals(IDeclaredAntetype? other)
+        => other is IMaybeExpressionAntetype that && Equals(that);
 }

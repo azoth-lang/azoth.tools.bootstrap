@@ -18,7 +18,7 @@ internal class SemanticTreeTypeValidator
             {
                 var expectedAntetype = expression.Syntax.DataType.Result?.ToAntetype();
                 var antetype = expression.Antetype;
-                if (antetype != expectedAntetype)
+                if (!antetype.Equals(expectedAntetype))
                     throw new InvalidOperationException($"Expected antetype {expectedAntetype}, but got {antetype}");
             }
             if (ValidateTypes)

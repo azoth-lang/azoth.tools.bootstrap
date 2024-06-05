@@ -15,4 +15,12 @@ public sealed class VoidAntetype : EmptyAntetype
     private VoidAntetype()
         : base(SpecialTypeName.Void) { }
     #endregion
+
+    #region Equality
+    public override bool Equals(IMaybeExpressionAntetype? other)
+        // VoidAntetype is a singleton, so we can use reference equality.
+        => ReferenceEquals(this, other);
+
+    public override int GetHashCode() => HashCode.Combine(typeof(VoidAntetype));
+    #endregion
 }

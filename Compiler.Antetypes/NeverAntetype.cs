@@ -19,4 +19,12 @@ public sealed class NeverAntetype : EmptyAntetype, INonVoidAntetype
     private NeverAntetype()
         : base(SpecialTypeName.Never) { }
     #endregion
+
+    #region Equality
+    public override bool Equals(IMaybeExpressionAntetype? other)
+        // NeverAntetype is a singleton, so we can use reference equality.
+        => ReferenceEquals(this, other);
+
+    public override int GetHashCode() => HashCode.Combine(typeof(NeverAntetype));
+    #endregion
 }

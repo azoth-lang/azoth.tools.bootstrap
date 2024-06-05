@@ -21,4 +21,16 @@ public sealed class IntegerConstValueAntetype : ConstValueAntetype
     /// the value. However, that would lead to unexpected behavior in some cases because small
     /// integer constants might produce small fixed size integers leading to overflow.</remarks>
     public override IAntetype ToNonConstValueType() => IAntetype.Int;
+
+    #region Equality
+    public override bool Equals(IMaybeExpressionAntetype? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is IntegerConstValueAntetype that
+               && Value.Equals(that.Value);
+    }
+
+    public override int GetHashCode() => HashCode.Combine(Value);
+    #endregion
 }

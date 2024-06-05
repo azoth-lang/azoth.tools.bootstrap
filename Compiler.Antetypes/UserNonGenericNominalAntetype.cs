@@ -19,4 +19,19 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
         ContainingNamespace = containingNamespace;
         Name = name;
     }
+
+    #region Equality
+    public override bool Equals(IMaybeExpressionAntetype? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is UserNonGenericNominalAntetype that
+               && ContainingPackage.Equals(that.ContainingPackage)
+               && ContainingNamespace.Equals(that.ContainingNamespace)
+               && Name.Equals(that.Name);
+    }
+
+    public override int GetHashCode()
+        => HashCode.Combine(ContainingPackage, ContainingNamespace, Name);
+    #endregion
 }

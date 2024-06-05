@@ -16,4 +16,12 @@ public sealed class BoolConstValueAntetype : ConstValueAntetype
     }
 
     public override IMaybeAntetype ToNonConstValueType() => IAntetype.Bool;
+
+    #region Equality
+    public override bool Equals(IMaybeExpressionAntetype? other)
+        // Bool const values are singletons, so we can use reference equality.
+        => ReferenceEquals(this, other);
+
+    public override int GetHashCode() => HashCode.Combine(Value);
+    #endregion
 }

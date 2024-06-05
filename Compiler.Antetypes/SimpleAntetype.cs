@@ -25,4 +25,21 @@ public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype
             throw new ArgumentException("Simple type cannot have type arguments", nameof(typeArguments));
         return this;
     }
+
+    #region Equality
+    public bool Equals(IMaybeExpressionAntetype? other)
+        // All simple antetypes are singletons, so we can use reference equality.
+        => ReferenceEquals(this, other);
+
+    public bool Equals(IDeclaredAntetype? other)
+        // All simple antetypes are singletons, so we can use reference equality.
+        => ReferenceEquals(this, other);
+
+    public override bool Equals(object? obj)
+        => obj is IMaybeExpressionAntetype other && Equals(other);
+
+    public override int GetHashCode()
+        // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
+        => base.GetHashCode();
+    #endregion
 }

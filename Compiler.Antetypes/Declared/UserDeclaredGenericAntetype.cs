@@ -34,4 +34,21 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
             throw new ArgumentException("Incorrect number of type arguments.");
         return new UserGenericNominalAntetype(this, args);
     }
+
+    #region Equality
+    public bool Equals(IDeclaredAntetype? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is UserDeclaredGenericAntetype that
+               && ContainingPackage.Equals(that.ContainingPackage)
+               && ContainingNamespace.Equals(that.ContainingNamespace)
+               && Name.Equals(that.Name)
+               && GenericParameters.ItemsEqual(that.GenericParameters);
+        // GenericParameterAntetypes is derived from GenericParameters and doesn't need to be compared
+    }
+
+    public override int GetHashCode()
+        => HashCode.Combine(ContainingPackage, ContainingNamespace, Name, GenericParameters);
+    #endregion
 }

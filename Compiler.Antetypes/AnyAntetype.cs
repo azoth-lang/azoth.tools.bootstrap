@@ -28,4 +28,19 @@ public class AnyAntetype : INonVoidAntetype, IDeclaredAntetype
             throw new ArgumentException("Any type cannot have type arguments", nameof(typeArguments));
         return this;
     }
+
+    #region Equality
+    public bool Equals(IMaybeExpressionAntetype? other)
+        // AnyAntetype is a singleton, so we can use reference equality.
+        => ReferenceEquals(this, other);
+
+    public bool Equals(IDeclaredAntetype? other)
+        // AnyAntetype is a singleton, so we can use reference equality.
+        => ReferenceEquals(this, other);
+
+    public override bool Equals(object? obj)
+        => obj is IMaybeExpressionAntetype other && Equals(other);
+
+    public override int GetHashCode() => HashCode.Combine(typeof(AnyAntetype));
+    #endregion
 }

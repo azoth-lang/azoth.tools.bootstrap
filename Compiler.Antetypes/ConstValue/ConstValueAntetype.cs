@@ -12,4 +12,13 @@ public abstract class ConstValueAntetype : IExpressionAntetype
     }
 
     public abstract IMaybeAntetype ToNonConstValueType();
+
+    #region Equality
+    public abstract bool Equals(IMaybeExpressionAntetype? other);
+
+    public sealed override bool Equals(object? obj)
+        => obj is IMaybeExpressionAntetype other && Equals(other);
+
+    public abstract override int GetHashCode();
+    #endregion
 }

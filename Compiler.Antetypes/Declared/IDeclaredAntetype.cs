@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
     typeof(NonGenericNominalAntetype),
     typeof(IUserDeclaredAntetype),
     typeof(SimpleAntetype))]
-public interface IDeclaredAntetype
+public interface IDeclaredAntetype : IEquatable<IDeclaredAntetype>
 {
     IFixedList<AntetypeGenericParameter> GenericParameters { get; }
 

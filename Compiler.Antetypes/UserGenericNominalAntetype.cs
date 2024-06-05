@@ -17,4 +17,17 @@ public sealed class UserGenericNominalAntetype : NominalAntetype, INonVoidAntety
                 $"Number of type arguments must match. Given `[{string.Join(", ", TypeArguments)}]` for `{declaredAnteType}`.",
                 nameof(typeArguments));
     }
+
+    #region Equality
+    public override bool Equals(IMaybeExpressionAntetype? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is UserGenericNominalAntetype that
+               && Declared.Equals(that.Declared)
+               && TypeArguments.ItemsEqual<IMaybeExpressionAntetype>(that.TypeArguments);
+    }
+
+    public override int GetHashCode() => HashCode.Combine(Declared, TypeArguments);
+    #endregion
 }
