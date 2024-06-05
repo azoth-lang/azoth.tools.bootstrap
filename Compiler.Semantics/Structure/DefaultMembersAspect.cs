@@ -17,7 +17,7 @@ internal static class DefaultMembersAspect
 
     /// <remarks>This needs to be lazy computed because the
     /// <see cref="IClassDefinitionNode.DefaultConstructor"/> attribute must be computed.</remarks>
-    public static IFixedList<IClassMemberDefinitionNode> ClassDeclaration_Members(IClassDefinitionNode node)
+    public static IFixedSet<IClassMemberDefinitionNode> ClassDeclaration_Members(IClassDefinitionNode node)
     {
         var members = node.SourceMembers.AsEnumerable();
 
@@ -25,6 +25,6 @@ internal static class DefaultMembersAspect
         if (defaultConstructor is not null)
             members = members.Prepend(defaultConstructor);
 
-        return members.ToFixedList();
+        return members.ToFixedSet();
     }
 }

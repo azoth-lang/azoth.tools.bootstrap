@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
 internal sealed class StructSymbolNode : UserTypeSymbolNode, IStructSymbolNode
 {
-    public override IFixedList<IStructMemberDeclarationNode> Members
+    public override IFixedSet<IStructMemberDeclarationNode> Members
         => throw new NotImplementedException();
 
     internal StructSymbolNode(UserTypeSymbol symbol)

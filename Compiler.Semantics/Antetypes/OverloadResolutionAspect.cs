@@ -42,4 +42,14 @@ internal static class OverloadResolutionAspect
                 break;
         }
     }
+
+    public static IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(
+        INewObjectExpressionNode node)
+    {
+        var arity = node.Arguments.Count;
+        return node.ReferencedConstructors.Where(c => c.Symbol.Arity == arity).ToFixedSet();
+    }
+
+    public static IConstructorDeclarationNode? NewObjectExpression_ReferencedConstructor(INewObjectExpressionNode node)
+        => node.ReferencedConstructors.TrySingle();
 }

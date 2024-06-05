@@ -103,30 +103,30 @@ TypeDefinition <: PackageMemberDefinition, AssociatedMemberDefinition, UserTypeD
     DeclaredType:`IDeclaredUserType` Symbol:`UserTypeSymbol`
     GenericParameters:GenericParameter* SupertypesLexicalScope:`LexicalScope`
     SupertypeNames:StandardTypeName* Supertypes:`CompilerResult<IFixedSet<BareReferenceType>>`
-    Members:TypeMemberDefinition*;
+    Members:{TypeMemberDefinition};
 ClassDefinition <: TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSyntax`
     Attributes:Attribute* IsAbstract:`bool` GenericParameters:GenericParameter*
     BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName*
     DeclaredType:`ObjectType`
-    SourceMembers:`IClassMemberDefinitionNode`* Members:ClassMemberDefinition*
+    SourceMembers:`IClassMemberDefinitionNode`* Members:{ClassMemberDefinition}
     DefaultConstructor:`IDefaultConstructorDefinitionNode`?;
 StructDefinition <: TypeDefinition, StructDeclaration = Syntax:`IStructDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
     SupertypeNames:StandardTypeName*
     DeclaredType:`StructType`
-    Members:StructMemberDefinition*;
+    Members:{StructMemberDefinition};
 TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
     SupertypeNames:StandardTypeName*
     DeclaredType:`ObjectType`
-    Members:TraitMemberDefinition*;
+    Members:{TraitMemberDefinition};
 
 // ---------- Type Definition Parts
 GenericParameter <: Code, GenericParameterDeclaration = Syntax:`IGenericParameterSyntax`
     Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance`
     Parameter:`GenericParameter` ContainingDeclaredType:`IDeclaredUserType` DeclaredType:`GenericParameterType`
     ContainingDeclaration:`IUserTypeDeclarationNode` ContainingSymbol:`UserTypeSymbol`
-    Symbol:`GenericParameterTypeSymbol`;
+    Symbol:`GenericParameterTypeSymbol` Members:{TypeMemberDefinition};
 
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
 TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`ITypeMemberDefinitionSyntax`? AccessModifier:`AccessModifier`;
@@ -247,7 +247,10 @@ Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax` ValueId:`ValueId`
     Type:`DataType` FlowStateAfter:`FlowState`;
 AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
-NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax` ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression* ReferencedSymbol:`ConstructorSymbol?`;
+NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax`
+    ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression*
+    ConstructingAntetype:`IMaybeAntetype` ReferencedConstructors:{`IConstructorDeclarationNode`}
+    CompatibleConstructors:{`IConstructorDeclarationNode`} ReferencedConstructor:`IConstructorDeclarationNode`?;
 UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression FinalExpression:`IExpressionNode`;
 NeverTypedExpression <: Expression = Syntax:`INeverTypedExpressionSyntax` Type:`NeverType`;
 
@@ -394,13 +397,13 @@ FunctionDeclaration <: PackageMemberDeclaration, FunctionLikeDeclaration;
 
 // ---------- Type Declarations
 UserTypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
-    = Symbol:`UserTypeSymbol` Members:TypeMemberDeclaration*;
-ClassDeclaration <: UserTypeDeclaration = Members:ClassMemberDeclaration*;
-StructDeclaration <: UserTypeDeclaration = Members:StructMemberDeclaration*;
-TraitDeclaration <: UserTypeDeclaration = Members:TraitMemberDeclaration*;
+    = Symbol:`UserTypeSymbol` Members:{TypeMemberDeclaration};
+ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration};
+StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration};
+TraitDeclaration <: UserTypeDeclaration = Members:{TraitMemberDeclaration};
 
 // ---------- Type Declaration Parts
-GenericParameterDeclaration <: TypeDeclaration = Name:`IdentifierName`;
+GenericParameterDeclaration <: TypeDeclaration = Name:`IdentifierName` Members:{TypeMemberDeclaration};
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration;
@@ -415,13 +418,13 @@ MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMembe
 StandardMethodDeclaration <: MethodDeclaration;
 GetterMethodDeclaration <: MethodDeclaration;
 SetterMethodDeclaration <: MethodDeclaration;
-ConstructorDeclaration <: ClassMemberDeclaration = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
+ConstructorDeclaration <: ClassMemberDeclaration, AssociatedMemberDeclaration = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
 InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
 FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;
 AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionLikeDeclaration;
 
 // ---------- Can be Referenced by Type Name
-TypeDeclaration <: NamedDeclaration, SymbolDeclaration = Symbol:`TypeSymbol`;
+TypeDeclaration <: NamedDeclaration, SymbolDeclaration = Symbol:`TypeSymbol` Members:{TypeMemberDeclaration};
 
 // -------------------------------------------------------------------------------------------------
 // Symbol Nodes
@@ -444,13 +447,13 @@ NamespaceSymbol <: NamespaceDeclaration = Members:NamespaceMemberDeclaration*;
 FunctionSymbol <: FunctionDeclaration;
 
 // ---------- Type Declarations
-UserTypeSymbol <: UserTypeDeclaration = Members:TypeMemberDeclaration*;
-ClassSymbol <: ClassDeclaration = Members:ClassMemberDeclaration*;
-StructSymbol <: StructDeclaration = Members:StructMemberDeclaration*;
-TraitSymbol <: TraitDeclaration = Members:TraitMemberDeclaration*;
+UserTypeSymbol <: UserTypeDeclaration = Members:{TypeMemberDeclaration};
+ClassSymbol <: ClassDeclaration = Members:{ClassMemberDeclaration};
+StructSymbol <: StructDeclaration = Members:{StructMemberDeclaration};
+TraitSymbol <: TraitDeclaration = Members:{TraitMemberDeclaration};
 
 // ---------- Type Declaration Parts
-GenericParameterSymbol <: GenericParameterDeclaration;
+GenericParameterSymbol <: GenericParameterDeclaration = Members:{TypeMemberDeclaration};
 
 // ---------- Member Declarations
 MethodSymbol <: MethodDeclaration;

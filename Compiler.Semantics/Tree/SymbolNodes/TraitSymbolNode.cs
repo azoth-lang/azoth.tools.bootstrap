@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
 internal sealed class TraitSymbolNode : UserTypeSymbolNode, ITraitSymbolNode
 {
-    public override IFixedList<ITraitMemberDeclarationNode> Members
+    public override IFixedSet<ITraitMemberDeclarationNode> Members
         => throw new NotImplementedException();
 
     internal TraitSymbolNode(UserTypeSymbol symbol)

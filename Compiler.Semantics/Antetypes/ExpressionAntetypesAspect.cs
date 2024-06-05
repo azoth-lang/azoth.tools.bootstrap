@@ -24,4 +24,9 @@ internal static class ExpressionAntetypesAspect
         // TODO replace type parameters with actual types
         return fieldAntetype;
     }
+
+    public static IMaybeExpressionAntetype NewObjectExpression_Antetype(INewObjectExpressionNode node)
+        // TODO should probably use Antetype on the declaration
+        // TODO replace type parameters with actual types
+        => node.ReferencedConstructor?.Symbol.ReturnType.ToAntetype() ?? IAntetype.Unknown;
 }

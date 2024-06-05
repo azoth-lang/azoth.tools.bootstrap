@@ -12,7 +12,7 @@ internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserT
     public override StandardName Name => base.Name!;
 
     public override UserTypeSymbol Symbol { get; }
-    public abstract IFixedList<ITypeMemberDeclarationNode> Members { get; }
+    public abstract IFixedSet<ITypeMemberDeclarationNode> Members { get; }
     private MultiMapHashSet<StandardName, IInstanceMemberDeclarationNode>? instanceMembersByName;
     private MultiMapHashSet<StandardName, IAssociatedMemberDeclarationNode>? associatedMembersByName;
 

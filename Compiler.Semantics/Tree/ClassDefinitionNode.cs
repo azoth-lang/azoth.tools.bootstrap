@@ -21,8 +21,8 @@ internal sealed class ClassDefinitionNode : TypeDefinitionNode, IClassDefinition
             : declaredType.GetValue(this, TypeDeclarationsAspect.ClassDeclaration_DeclaredType);
 
     public IFixedList<IClassMemberDefinitionNode> SourceMembers { get; }
-    private ValueAttribute<IFixedList<IClassMemberDefinitionNode>> members;
-    public override IFixedList<IClassMemberDefinitionNode> Members
+    private ValueAttribute<IFixedSet<IClassMemberDefinitionNode>> members;
+    public override IFixedSet<IClassMemberDefinitionNode> Members
         => members.TryGetValue(out var value) ? value
             : members.GetValue(this, DefaultMembersAspect.ClassDeclaration_Members);
     private ValueAttribute<IDefaultConstructorDefinitionNode?> defaultConstructor;

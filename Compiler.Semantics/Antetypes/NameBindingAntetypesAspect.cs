@@ -21,4 +21,7 @@ internal static class NameBindingAntetypesAspect
 
     public static IMaybeAntetype ForeachExpression_BindingAntetype(IForeachExpressionNode node)
         => throw new System.NotImplementedException();
+
+    public static IMaybeAntetype NewObjectExpression_ConstructingAntetype(INewObjectExpressionNode node)
+        => node.ConstructingType.Antetype;
 }

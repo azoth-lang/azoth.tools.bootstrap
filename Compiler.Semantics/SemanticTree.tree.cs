@@ -39,7 +39,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(ITypeMemberDefinitionNode),
     typeof(IAbstractMethodDefinitionNode),
     typeof(IConcreteMethodDefinitionNode),
-    typeof(IConstructorDefinitionNode),
+    typeof(IDefaultConstructorDefinitionNode),
+    typeof(ISourceConstructorDefinitionNode),
     typeof(IAttributeNode),
     typeof(ICapabilityConstraintNode),
     typeof(IParameterNode),
@@ -106,12 +107,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IStandardMethodDeclarationNode),
     typeof(IGetterMethodDeclarationNode),
     typeof(ISetterMethodDeclarationNode),
+    typeof(IConstructorDeclarationNode),
     typeof(IInitializerDeclarationNode),
     typeof(IAssociatedFunctionDeclarationNode),
     typeof(IFunctionSymbolNode),
     typeof(IUserTypeSymbolNode),
     typeof(IMethodSymbolNode),
-    typeof(IConstructorSymbolNode),
     typeof(IFieldSymbolNode))]
 public partial interface ISemanticNode
 {
@@ -403,8 +404,7 @@ public partial interface ITypeDefinitionNode : ISemanticNode, IPackageMemberDefi
     LexicalScope SupertypesLexicalScope { get; }
     IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
     CompilerResult<IFixedSet<BareReferenceType>> Supertypes { get; }
-    new IFixedList<ITypeMemberDefinitionNode> Members { get; }
-    IFixedList<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
+    new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
 }
 
 public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDeclarationNode
@@ -421,10 +421,9 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     new ObjectType DeclaredType { get; }
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
     IFixedList<IClassMemberDefinitionNode> SourceMembers { get; }
-    new IFixedList<IClassMemberDefinitionNode> Members { get; }
-    IFixedList<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
-    IFixedList<IClassMemberDeclarationNode> IClassDeclarationNode.Members => Members;
-    IFixedList<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
+    new IFixedSet<IClassMemberDefinitionNode> Members { get; }
+    IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
+    IFixedSet<IClassMemberDeclarationNode> IClassDeclarationNode.Members => Members;
     IDefaultConstructorDefinitionNode? DefaultConstructor { get; }
 }
 
@@ -439,10 +438,9 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
     new StructType DeclaredType { get; }
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
-    new IFixedList<IStructMemberDefinitionNode> Members { get; }
-    IFixedList<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
-    IFixedList<IStructMemberDeclarationNode> IStructDeclarationNode.Members => Members;
-    IFixedList<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
+    new IFixedSet<IStructMemberDefinitionNode> Members { get; }
+    IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
+    IFixedSet<IStructMemberDeclarationNode> IStructDeclarationNode.Members => Members;
 }
 
 public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDeclarationNode
@@ -456,10 +454,9 @@ public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDecla
     IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
     new ObjectType DeclaredType { get; }
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
-    new IFixedList<ITraitMemberDefinitionNode> Members { get; }
-    IFixedList<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
-    IFixedList<ITraitMemberDeclarationNode> ITraitDeclarationNode.Members => Members;
-    IFixedList<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
+    new IFixedSet<ITraitMemberDefinitionNode> Members { get; }
+    IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
+    IFixedSet<ITraitMemberDeclarationNode> ITraitDeclarationNode.Members => Members;
 }
 
 public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDeclarationNode
@@ -477,6 +474,7 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     UserTypeSymbol ContainingSymbol { get; }
     new GenericParameterTypeSymbol Symbol { get; }
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
 }
 
 [Closed(
@@ -631,7 +629,7 @@ public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinition
 [Closed(
     typeof(IDefaultConstructorDefinitionNode),
     typeof(ISourceConstructorDefinitionNode))]
-public partial interface IConstructorDefinitionNode : ISemanticNode, IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IConstructorDeclarationNode
+public partial interface IConstructorDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IConstructorDeclarationNode
 {
     new IConstructorDefinitionSyntax? Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -648,14 +646,18 @@ public partial interface IConstructorDefinitionNode : ISemanticNode, IConcreteIn
     ConstructorSymbol IConstructorDeclarationNode.Symbol => Symbol;
 }
 
-public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinitionNode
+public partial interface IDefaultConstructorDefinitionNode : ISemanticNode, IConstructorDefinitionNode
 {
 }
 
-public partial interface ISourceConstructorDefinitionNode : IConstructorDefinitionNode
+public partial interface ISourceConstructorDefinitionNode : ISemanticNode, IConstructorDefinitionNode
 {
     new IConstructorDefinitionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IConstructorDefinitionSyntax? IConstructorDefinitionNode.Syntax => Syntax;
+    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
+    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IClassMemberDefinitionSyntax? IClassMemberDefinitionNode.Syntax => Syntax;
     IConstructorSelfParameterNode SelfParameter { get; }
     IBlockBodyNode Body { get; }
 }
@@ -1228,7 +1230,10 @@ public partial interface INewObjectExpressionNode : ISemanticNode, IExpressionNo
     ITypeNameNode ConstructingType { get; }
     IdentifierName? ConstructorName { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
-    ConstructorSymbol? ReferencedSymbol { get; }
+    IMaybeAntetype ConstructingAntetype { get; }
+    IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { get; }
+    IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; }
+    IConstructorDeclarationNode? ReferencedConstructor { get; }
 }
 
 public partial interface IUnsafeExpressionNode : ISemanticNode, IExpressionNode
@@ -1929,7 +1934,6 @@ public partial interface IUserTypeDeclarationNode : IPackageMemberDeclarationNod
     new UserTypeSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
-    IFixedList<ITypeMemberDeclarationNode> Members { get; }
 }
 
 [Closed(
@@ -1937,8 +1941,7 @@ public partial interface IUserTypeDeclarationNode : IPackageMemberDeclarationNod
     typeof(IClassSymbolNode))]
 public partial interface IClassDeclarationNode : ISemanticNode, IUserTypeDeclarationNode
 {
-    new IFixedList<IClassMemberDeclarationNode> Members { get; }
-    IFixedList<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
+    new IFixedSet<IClassMemberDeclarationNode> Members { get; }
 }
 
 [Closed(
@@ -1946,8 +1949,7 @@ public partial interface IClassDeclarationNode : ISemanticNode, IUserTypeDeclara
     typeof(IStructSymbolNode))]
 public partial interface IStructDeclarationNode : ISemanticNode, IUserTypeDeclarationNode
 {
-    new IFixedList<IStructMemberDeclarationNode> Members { get; }
-    IFixedList<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
+    new IFixedSet<IStructMemberDeclarationNode> Members { get; }
 }
 
 [Closed(
@@ -1955,8 +1957,7 @@ public partial interface IStructDeclarationNode : ISemanticNode, IUserTypeDeclar
     typeof(ITraitSymbolNode))]
 public partial interface ITraitDeclarationNode : ISemanticNode, IUserTypeDeclarationNode
 {
-    new IFixedList<ITraitMemberDeclarationNode> Members { get; }
-    IFixedList<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
+    new IFixedSet<ITraitMemberDeclarationNode> Members { get; }
 }
 
 [Closed(
@@ -1983,7 +1984,6 @@ public partial interface ITypeMemberDeclarationNode : IPackageFacetChildDeclarat
     typeof(IUserTypeDeclarationNode),
     typeof(IAssociatedMemberDeclarationNode),
     typeof(IMethodDeclarationNode),
-    typeof(IConstructorDeclarationNode),
     typeof(IFieldDeclarationNode))]
 public partial interface IClassMemberDeclarationNode : ISemanticNode, ITypeMemberDeclarationNode
 {
@@ -2009,6 +2009,7 @@ public partial interface IStructMemberDeclarationNode : ISemanticNode, ITypeMemb
 }
 
 [Closed(
+    typeof(IConstructorDeclarationNode),
     typeof(IInitializerDeclarationNode),
     typeof(IAssociatedFunctionDeclarationNode))]
 public partial interface IAssociatedMemberDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, ISymbolDeclarationNode
@@ -2058,7 +2059,7 @@ public partial interface ISetterMethodDeclarationNode : ISemanticNode, IMethodDe
 [Closed(
     typeof(IConstructorDefinitionNode),
     typeof(IConstructorSymbolNode))]
-public partial interface IConstructorDeclarationNode : IClassMemberDeclarationNode
+public partial interface IConstructorDeclarationNode : ISemanticNode, IAssociatedMemberDeclarationNode
 {
     new IdentifierName? Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
@@ -2104,6 +2105,7 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
 {
     new TypeSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    IFixedSet<ITypeMemberDeclarationNode> Members { get; }
 }
 
 public partial interface IPackageSymbolNode : IPackageDeclarationNode
@@ -2164,7 +2166,7 @@ public partial interface ISetterMethodSymbolNode : IMethodSymbolNode, ISetterMet
 {
 }
 
-public partial interface IConstructorSymbolNode : ISemanticNode, IConstructorDeclarationNode
+public partial interface IConstructorSymbolNode : IConstructorDeclarationNode
 {
 }
 

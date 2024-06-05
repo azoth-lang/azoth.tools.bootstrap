@@ -15,7 +15,7 @@ internal sealed class TraitDefinitionNode : TypeDefinitionNode, ITraitDefinition
         => declaredType.TryGetValue(out var value) ? value
             : declaredType.GetValue(this, TypeDeclarationsAspect.TraitDeclaration_DeclaredType);
 
-    public override IFixedList<ITraitMemberDefinitionNode> Members { get; }
+    public override IFixedSet<ITraitMemberDefinitionNode> Members { get; }
 
     public TraitDefinitionNode(
         ITraitDefinitionSyntax syntax,
@@ -25,6 +25,6 @@ internal sealed class TraitDefinitionNode : TypeDefinitionNode, ITraitDefinition
         : base(genericParameters, supertypeNames)
     {
         Syntax = syntax;
-        Members = ChildList.Attach(this, members);
+        Members = ChildSet.Attach(this, members);
     }
 }

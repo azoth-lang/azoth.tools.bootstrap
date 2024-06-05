@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -17,7 +19,26 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     public ITypeNameNode ConstructingType { get; }
     public IdentifierName? ConstructorName => Syntax.ConstructorName;
     public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
-    public ConstructorSymbol? ReferencedSymbol => throw new NotImplementedException();
+    private ValueAttribute<IMaybeAntetype> constructingAntetype;
+    public IMaybeAntetype ConstructingAntetype
+        => constructingAntetype.TryGetValue(out var value) ? value
+            : constructingAntetype.GetValue(this, NameBindingAntetypesAspect.NewObjectExpression_ConstructingAntetype);
+    private ValueAttribute<IFixedSet<IConstructorDeclarationNode>> referencedConstructors;
+    public IFixedSet<IConstructorDeclarationNode> ReferencedConstructors
+        => referencedConstructors.TryGetValue(out var value) ? value
+            : referencedConstructors.GetValue(this, BindingNamesAspect.NewObjectExpression_ReferencedConstructors);
+    private ValueAttribute<IFixedSet<IConstructorDeclarationNode>> compatibleConstructors;
+    public IFixedSet<IConstructorDeclarationNode> CompatibleConstructors
+        => compatibleConstructors.TryGetValue(out var value) ? value
+            : compatibleConstructors.GetValue(this, OverloadResolutionAspect.NewObjectExpression_CompatibleConstructors);
+    private ValueAttribute<IConstructorDeclarationNode?> referencedConstructor;
+    public IConstructorDeclarationNode? ReferencedConstructor
+        => referencedConstructor.TryGetValue(out var value) ? value
+            : referencedConstructor.GetValue(this, OverloadResolutionAspect.NewObjectExpression_ReferencedConstructor);
+    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    public override IMaybeExpressionAntetype Antetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, ExpressionAntetypesAspect.NewObjectExpression_Antetype);
 
     public NewObjectExpressionNode(
         INewObjectExpressionSyntax syntax,
@@ -46,4 +67,6 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
 
         return Arguments[argumentIndex - 1].GetFlowLexicalScope().True;
     }
+
+    public new PackageNameScope InheritedPackageNameScope() => base.InheritedPackageNameScope();
 }

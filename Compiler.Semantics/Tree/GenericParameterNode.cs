@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -40,6 +41,8 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     public GenericParameterTypeSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAspect.GenericParameter);
+    public IFixedSet<ITypeMemberDefinitionNode> Members => FixedSet.Empty<IAlwaysTypeMemberDefinitionNode>();
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 
     public GenericParameterNode(IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint)
     {

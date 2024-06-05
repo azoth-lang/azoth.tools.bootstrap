@@ -15,7 +15,7 @@ internal sealed class StructDefinitionNode : TypeDefinitionNode, IStructDefiniti
         => declaredType.TryGetValue(out var value) ? value
             : declaredType.GetValue(this, TypeDeclarationsAspect.StructDeclaration_DeclaredType);
 
-    public override IFixedList<IStructMemberDefinitionNode> Members { get; }
+    public override IFixedSet<IStructMemberDefinitionNode> Members { get; }
 
     public StructDefinitionNode(
         IStructDefinitionSyntax syntax,
@@ -25,6 +25,6 @@ internal sealed class StructDefinitionNode : TypeDefinitionNode, IStructDefiniti
         : base(genericParameters, supertypeNames)
     {
         Syntax = syntax;
-        Members = ChildList.Attach(this, members);
+        Members = ChildSet.Attach(this, members);
     }
 }

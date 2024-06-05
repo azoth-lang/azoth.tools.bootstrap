@@ -84,6 +84,11 @@ public partial interface IExpressionNode
 {
     IPreviousValueId PreviousValueId();
 }
+
+public partial interface INewObjectExpressionNode
+{
+    PackageNameScope InheritedPackageNameScope();
+}
 #endregion
 
 #region Control Flow Expressions

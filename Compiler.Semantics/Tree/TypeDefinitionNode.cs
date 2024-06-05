@@ -35,7 +35,8 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     public CompilerResult<IFixedSet<BareReferenceType>> Supertypes
         => supertypes.TryGetValue(out var value) ? value
             : supertypes.GetValue(this, TypeDeclarationsAspect.TypeDeclaration_Supertypes);
-    public abstract IFixedList<ITypeMemberDefinitionNode> Members { get; }
+    public abstract IFixedSet<ITypeMemberDefinitionNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     private MultiMapHashSet<StandardName, IInstanceMemberDeclarationNode>? instanceMembersByName;
     private MultiMapHashSet<StandardName, IAssociatedMemberDeclarationNode>? associatedMembersByName;
     private ValueAttribute<LexicalScope> lexicalScope;
