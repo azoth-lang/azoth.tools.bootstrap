@@ -7,6 +7,12 @@ internal static class ExpressionAntetypesAspect
     public static IMaybeExpressionAntetype UnsafeExpression_Antetype(IUnsafeExpressionNode node)
         => node.FinalExpression.Antetype;
 
+    public static IMaybeExpressionAntetype MoveExpression_Antetype(IMoveExpressionNode node)
+        => node.FinalReferent.Antetype;
+
+    public static IMaybeExpressionAntetype FreezeExpression_Antetype(IFreezeExpressionNode node)
+        => node.FinalReferent.Antetype;
+
     public static IMaybeExpressionAntetype FunctionInvocationExpression_Antetype(IFunctionInvocationExpressionNode node)
         // TODO should probably use Antetype on the declaration
         => node.ReferencedDeclaration?.Type.Return.Type.ToAntetype() ?? IAntetype.Unknown;

@@ -1753,6 +1753,7 @@ public partial interface IMoveExpressionNode : ISemanticNode, IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ISimpleNameNode Referent { get; }
+    INameExpressionNode FinalReferent { get; }
 }
 
 public partial interface IFreezeExpressionNode : ISemanticNode, IExpressionNode
@@ -1761,6 +1762,7 @@ public partial interface IFreezeExpressionNode : ISemanticNode, IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ISimpleNameNode Referent { get; }
+    INameExpressionNode FinalReferent { get; }
 }
 
 public partial interface IAsyncBlockExpressionNode : ISemanticNode, IExpressionNode

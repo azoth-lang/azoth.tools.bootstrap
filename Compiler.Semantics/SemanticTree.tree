@@ -345,8 +345,8 @@ UnknownMemberAccessExpression <: UnknownNameExpression
     ReferencedMembers:{`IDeclarationNode`};
 
 // ---------- Capability Expressions
-MoveExpression <: Expression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName;
-FreezeExpression <: Expression = Syntax:`IFreezeExpressionSyntax` Referent:SimpleName;
+MoveExpression <: Expression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName FinalReferent:`INameExpressionNode`;
+FreezeExpression <: Expression = Syntax:`IFreezeExpressionSyntax` Referent:SimpleName FinalReferent:`INameExpressionNode`;
 
 // ---------- Async Expressions
 AsyncBlockExpression <: Expression = Syntax:`IAsyncBlockExpressionSyntax` Block:BlockExpression;
