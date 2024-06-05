@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -42,5 +42,6 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
     }
 
     protected override IChildNode? Rewrite()
-        => ExpressionTypesAspect.InvocationExpression_Rewrite_FunctionGroupNameExpression(this);
+        => OverloadResolutionAspect.InvocationExpression_Rewrite_FunctionGroupNameExpression(this)
+           ?? OverloadResolutionAspect.InvocationExpression_Rewrite_MethodGroupNameExpression(this);
 }

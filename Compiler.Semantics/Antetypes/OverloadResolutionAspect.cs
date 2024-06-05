@@ -2,12 +2,20 @@ using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
 internal static class OverloadResolutionAspect
 {
+    public static IChildNode? InvocationExpression_Rewrite_FunctionGroupNameExpression(IInvocationExpressionNode node)
+    {
+        if (node.Expression is not IFunctionGroupNameNode function) return null;
+
+        return new FunctionInvocationExpressionNode(node.Syntax, function, node.CurrentArguments);
+    }
+
     public static IFixedSet<IFunctionLikeDeclarationNode> FunctionInvocationExpression_CompatibleDeclarations(
         IFunctionInvocationExpressionNode node)
     {
@@ -41,6 +49,13 @@ internal static class OverloadResolutionAspect
                 //diagnostics.Add(NameBindingError.AmbiguousFunctionCall(node.File, node.Syntax));
                 break;
         }
+    }
+
+    public static IChildNode? InvocationExpression_Rewrite_MethodGroupNameExpression(IInvocationExpressionNode node)
+    {
+        if (node.Expression is not IMethodGroupNameNode method) return null;
+
+        return new MethodInvocationExpressionNode(node.Syntax, method, node.CurrentArguments);
     }
 
     public static IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(

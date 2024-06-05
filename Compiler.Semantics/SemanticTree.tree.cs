@@ -73,6 +73,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(ILoopExpressionNode),
     typeof(IWhileExpressionNode),
     typeof(IFunctionInvocationExpressionNode),
+    typeof(IMethodInvocationExpressionNode),
     typeof(IAmbiguousNameNode),
     typeof(IGenericNameExpressionNode),
     typeof(INameExpressionNode),
@@ -608,23 +609,35 @@ public partial interface IConcreteMethodDefinitionNode : ISemanticNode, IMethodD
     IBodyNode Body { get; }
 }
 
-public partial interface IStandardMethodDefinitionNode : IConcreteMethodDefinitionNode
+public partial interface IStandardMethodDefinitionNode : IConcreteMethodDefinitionNode, IStandardMethodDeclarationNode
 {
     new IStandardMethodDefinitionSyntax Syntax { get; }
     IConcreteMethodDefinitionSyntax IConcreteMethodDefinitionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
+    IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
+    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
 }
 
-public partial interface IGetterMethodDefinitionNode : IConcreteMethodDefinitionNode
+public partial interface IGetterMethodDefinitionNode : IConcreteMethodDefinitionNode, IGetterMethodDeclarationNode
 {
     new IGetterMethodDefinitionSyntax Syntax { get; }
     IConcreteMethodDefinitionSyntax IConcreteMethodDefinitionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
+    IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
+    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     new ITypeNode Return { get; }
 }
 
-public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinitionNode
+public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinitionNode, ISetterMethodDeclarationNode
 {
     new ISetterMethodDefinitionSyntax Syntax { get; }
     IConcreteMethodDefinitionSyntax IConcreteMethodDefinitionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
+    IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
+    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
 }
 
 [Closed(
@@ -1185,6 +1198,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
     typeof(IWhileExpressionNode),
     typeof(IForeachExpressionNode),
     typeof(IFunctionInvocationExpressionNode),
+    typeof(IMethodInvocationExpressionNode),
     typeof(INameExpressionNode),
     typeof(IMoveExpressionNode),
     typeof(IFreezeExpressionNode),
@@ -1445,6 +1459,17 @@ public partial interface IFunctionInvocationExpressionNode : ISemanticNode, IExp
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations { get; }
     IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
+}
+
+public partial interface IMethodInvocationExpressionNode : ISemanticNode, IExpressionNode
+{
+    new IInvocationExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    IMethodGroupNameNode MethodGroup { get; }
+    IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
+    IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
 }
 
 [Closed(
@@ -2055,18 +2080,21 @@ public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, I
 }
 
 [Closed(
+    typeof(IStandardMethodDefinitionNode),
     typeof(IStandardMethodSymbolNode))]
 public partial interface IStandardMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
 {
 }
 
 [Closed(
+    typeof(IGetterMethodDefinitionNode),
     typeof(IGetterMethodSymbolNode))]
 public partial interface IGetterMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
 {
 }
 
 [Closed(
+    typeof(ISetterMethodDefinitionNode),
     typeof(ISetterMethodSymbolNode))]
 public partial interface ISetterMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
 {

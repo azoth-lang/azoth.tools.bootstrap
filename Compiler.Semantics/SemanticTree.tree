@@ -146,9 +146,9 @@ AbstractMethodDefinition <: MethodDefinition = Syntax:`IAbstractMethodDefinition
     ContainingDeclaredType:`ObjectType`;
 ConcreteMethodDefinition <: MethodDefinition, StructMemberDefinition, ConcreteInvocableDefinition
     = Syntax:`IConcreteMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
-StandardMethodDefinition <: ConcreteMethodDefinition = Syntax:`IStandardMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
-GetterMethodDefinition <: ConcreteMethodDefinition = Syntax:`IGetterMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type Body;
-SetterMethodDefinition <: ConcreteMethodDefinition = Syntax:`ISetterMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
+StandardMethodDefinition <: ConcreteMethodDefinition, StandardMethodDeclaration = Syntax:`IStandardMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
+GetterMethodDefinition <: ConcreteMethodDefinition, GetterMethodDeclaration = Syntax:`IGetterMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type Body;
+SetterMethodDefinition <: ConcreteMethodDefinition, SetterMethodDeclaration = Syntax:`ISetterMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
 ConstructorDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, ConstructorDeclaration
     = Syntax:`IConstructorDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*
     Symbol:`ConstructorSymbol`;
@@ -288,6 +288,9 @@ InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSynta
 FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
     CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?;
+MethodInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
+    MethodGroup:MethodGroupName Arguments:AmbiguousExpression*
+    CompatibleDeclarations:{`IStandardMethodDeclarationNode`} ReferencedDeclaration:`IStandardMethodDeclarationNode`?;
 
 // ---------- Ambiguous Name Expressions
 AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;

@@ -610,6 +610,9 @@ internal class SemanticsApplier
             case IFunctionInvocationExpressionNode n:
                 FunctionInvocationExpression(n);
                 break;
+            case IMethodInvocationExpressionNode n:
+                MethodInvocationExpression(n);
+                break;
             case IMoveExpressionNode n:
                 MoveExpression(n);
                 break;
@@ -770,6 +773,12 @@ internal class SemanticsApplier
     private static void FunctionInvocationExpression(IFunctionInvocationExpressionNode node)
     {
         FunctionGroupName(node.FunctionGroup);
+        AmbiguousExpressions(node.Arguments);
+    }
+
+    private static void MethodInvocationExpression(IMethodInvocationExpressionNode node)
+    {
+        MethodGroupName(node.MethodGroup);
         AmbiguousExpressions(node.Arguments);
     }
     #endregion
