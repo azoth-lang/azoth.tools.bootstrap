@@ -146,7 +146,10 @@ AbstractMethodDefinition <: MethodDefinition = Syntax:`IAbstractMethodDefinition
     ContainingDeclaredType:`ObjectType`;
 ConcreteMethodDefinition <: MethodDefinition, StructMemberDefinition, ConcreteInvocableDefinition
     = Syntax:`IConcreteMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
-StandardMethodDefinition <: ConcreteMethodDefinition, StandardMethodDeclaration = Syntax:`IStandardMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
+StandardMethodDefinition <: ConcreteMethodDefinition, StandardMethodDeclaration
+    = Syntax:`IStandardMethodDefinitionSyntax`
+    SelfParameter:MethodSelfParameter Parameters:NamedParameter*
+    Return:Type? Body;
 GetterMethodDefinition <: ConcreteMethodDefinition, GetterMethodDeclaration = Syntax:`IGetterMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type Body;
 SetterMethodDefinition <: ConcreteMethodDefinition, SetterMethodDeclaration = Syntax:`ISetterMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
 ConstructorDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, ConstructorDeclaration
@@ -343,7 +346,7 @@ UnknownIdentifierNameExpression <: UnknownStandardNameExpression, SimpleName, As
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 UnknownGenericNameExpression <: UnknownStandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
-UnknownMemberAccessExpression <: UnknownNameExpression
+UnknownMemberAccessExpression <: UnknownNameExpression, AssignableExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:Expression MemberName:`StandardName` TypeArguments:Type*
     ReferencedMembers:{`IDeclarationNode`};
 
@@ -402,13 +405,14 @@ FunctionDeclaration <: PackageMemberDeclaration, FunctionLikeDeclaration;
 // ---------- Type Declarations
 PrimitiveTypeDeclaration <: TypeDeclaration = Name:`SpecialTypeName` Members:{TypeMemberDeclaration};
 UserTypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
-    = Name:`StandardName` Symbol:`UserTypeSymbol` Members:{TypeMemberDeclaration};
+    = Name:`StandardName` GenericParameters:GenericParameterDeclaration* Symbol:`UserTypeSymbol` Members:{TypeMemberDeclaration};
 ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration};
 StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration};
 TraitDeclaration <: UserTypeDeclaration = Members:{TraitMemberDeclaration};
 
 // ---------- Type Declaration Parts
-GenericParameterDeclaration <: TypeDeclaration = Name:`IdentifierName` Symbol:`GenericParameterTypeSymbol` Members:{TypeMemberDeclaration};
+GenericParameterDeclaration <: TypeDeclaration, AssociatedMemberDeclaration
+    = Name:`IdentifierName` Symbol:`GenericParameterTypeSymbol` Members:{TypeMemberDeclaration};
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration;
@@ -420,7 +424,7 @@ InstanceMemberDeclaration <: TypeMemberDeclaration;
 
 // ---------- Member Declarations
 MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, InstanceMemberDeclaration = Name:`IdentifierName` Symbol:`MethodSymbol`;
-StandardMethodDeclaration <: MethodDeclaration;
+StandardMethodDeclaration <: MethodDeclaration = Arity:`int` MethodGroupType:`FunctionType`;
 GetterMethodDeclaration <: MethodDeclaration;
 SetterMethodDeclaration <: MethodDeclaration;
 ConstructorDeclaration <: ClassMemberDeclaration, AssociatedMemberDeclaration = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
@@ -429,7 +433,8 @@ FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclar
 AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionLikeDeclaration;
 
 // ---------- Can be Referenced by Type Name
-TypeDeclaration <: NamedDeclaration, SymbolDeclaration = Symbol:`TypeSymbol` Members:{TypeMemberDeclaration};
+TypeDeclaration <: NamedDeclaration, SymbolDeclaration
+    = Symbol:`TypeSymbol` Members:{TypeMemberDeclaration};
 
 // -------------------------------------------------------------------------------------------------
 // Symbol Nodes
@@ -453,10 +458,10 @@ FunctionSymbol <: FunctionDeclaration;
 
 // ---------- Type Declarations
 PrimitiveTypeSymbol <: PrimitiveTypeDeclaration = Members:{TypeMemberDeclaration};
-UserTypeSymbol <: UserTypeDeclaration = Members:{TypeMemberDeclaration};
-ClassSymbol <: ClassDeclaration = Members:{ClassMemberDeclaration};
-StructSymbol <: StructDeclaration = Members:{StructMemberDeclaration};
-TraitSymbol <: TraitDeclaration = Members:{TraitMemberDeclaration};
+UserTypeSymbol <: UserTypeDeclaration = GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
+ClassSymbol <: ClassDeclaration = GenericParameters:GenericParameterDeclaration* Members:{ClassMemberDeclaration};
+StructSymbol <: StructDeclaration = GenericParameters:GenericParameterDeclaration* Members:{StructMemberDeclaration};
+TraitSymbol <: TraitDeclaration = GenericParameters:GenericParameterDeclaration* Members:{TraitMemberDeclaration};
 
 // ---------- Type Declaration Parts
 GenericParameterSymbol <: GenericParameterDeclaration = Members:{TypeMemberDeclaration};

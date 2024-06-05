@@ -58,6 +58,17 @@ internal static class OverloadResolutionAspect
         return new MethodInvocationExpressionNode(node.Syntax, method, node.CurrentArguments);
     }
 
+    public static IFixedSet<IStandardMethodDeclarationNode> MethodInvocationExpression_CompatibleDeclarations(
+        IMethodInvocationExpressionNode node)
+    {
+        var arity = node.Arguments.Count;
+        return node.MethodGroup.ReferencedDeclarations.Where(d => d.Arity == arity).ToFixedSet();
+    }
+
+    public static IStandardMethodDeclarationNode? MethodInvocationExpression_ReferencedDeclaration(
+        IMethodInvocationExpressionNode node)
+        => node.CompatibleDeclarations.TrySingle();
+
     public static IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(
         INewObjectExpressionNode node)
     {

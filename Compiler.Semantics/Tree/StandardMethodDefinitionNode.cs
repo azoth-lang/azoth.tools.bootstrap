@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -10,6 +11,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStandardMethodDefinitionNode
 {
     public override IStandardMethodDefinitionSyntax Syntax { get; }
+    public int Arity => Parameters.Count;
+    public FunctionType MethodGroupType => Symbol.MethodGroupType;
     public override IBodyNode Body { get; }
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope

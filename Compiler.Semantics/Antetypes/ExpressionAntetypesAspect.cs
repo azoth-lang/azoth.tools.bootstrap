@@ -17,6 +17,10 @@ internal static class ExpressionAntetypesAspect
         // TODO should probably use Antetype on the declaration
         => node.ReferencedDeclaration?.Type.Return.Type.ToAntetype() ?? IAntetype.Unknown;
 
+    public static IMaybeExpressionAntetype MethodInvocationExpression_Antetype(IMethodInvocationExpressionNode node)
+        // TODO should probably use Antetype on the declaration
+        => node.ReferencedDeclaration?.MethodGroupType.Return.Type.ToAntetype() ?? IAntetype.Unknown;
+
     public static IMaybeExpressionAntetype VariableNameExpression_Antetype(IVariableNameExpressionNode node)
         => node.ReferencedDeclaration.BindingAntetype;
 

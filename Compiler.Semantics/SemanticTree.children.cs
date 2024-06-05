@@ -419,18 +419,26 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IUserTypeSymbolNode n:
+                foreach (var child in n.GenericParameters)
+                    yield return child;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case IClassSymbolNode n:
+                foreach (var child in n.GenericParameters)
+                    yield return child;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case IStructSymbolNode n:
+                foreach (var child in n.GenericParameters)
+                    yield return child;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;
             case ITraitSymbolNode n:
+                foreach (var child in n.GenericParameters)
+                    yield return child;
                 foreach (var child in n.Members)
                     yield return child;
                 yield break;

@@ -83,7 +83,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IQualifiedTypeNameExpressionNode),
     typeof(ISelfExpressionNode),
     typeof(IUnknownStandardNameExpressionNode),
-    typeof(IUnknownMemberAccessExpressionNode),
     typeof(IMoveExpressionNode),
     typeof(IFreezeExpressionNode),
     typeof(IAsyncBlockExpressionNode),
@@ -404,7 +403,8 @@ public partial interface ITypeDefinitionNode : ISemanticNode, IPackageMemberDefi
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     UserTypeSymbol IUserTypeDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
-    IFixedList<IGenericParameterNode> GenericParameters { get; }
+    new IFixedList<IGenericParameterNode> GenericParameters { get; }
+    IFixedList<IGenericParameterDeclarationNode> IUserTypeDeclarationNode.GenericParameters => GenericParameters;
     LexicalScope SupertypesLexicalScope { get; }
     IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
     CompilerResult<IFixedSet<BareReferenceType>> Supertypes { get; }
@@ -421,6 +421,9 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     ITraitMemberDefinitionSyntax ITraitMemberDefinitionNode.Syntax => Syntax;
     IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
     bool IsAbstract { get; }
+    new IFixedList<IGenericParameterNode> GenericParameters { get; }
+    IFixedList<IGenericParameterNode> ITypeDefinitionNode.GenericParameters => GenericParameters;
+    IFixedList<IGenericParameterDeclarationNode> IUserTypeDeclarationNode.GenericParameters => GenericParameters;
     IStandardTypeNameNode? BaseTypeName { get; }
     new ObjectType DeclaredType { get; }
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
@@ -440,6 +443,9 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     IClassMemberDefinitionSyntax? IClassMemberDefinitionNode.Syntax => Syntax;
     ITraitMemberDefinitionSyntax ITraitMemberDefinitionNode.Syntax => Syntax;
     IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
+    new IFixedList<IGenericParameterNode> GenericParameters { get; }
+    IFixedList<IGenericParameterNode> ITypeDefinitionNode.GenericParameters => GenericParameters;
+    IFixedList<IGenericParameterDeclarationNode> IUserTypeDeclarationNode.GenericParameters => GenericParameters;
     new StructType DeclaredType { get; }
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
     new IFixedSet<IStructMemberDefinitionNode> Members { get; }
@@ -456,6 +462,9 @@ public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDecla
     IClassMemberDefinitionSyntax? IClassMemberDefinitionNode.Syntax => Syntax;
     ITraitMemberDefinitionSyntax ITraitMemberDefinitionNode.Syntax => Syntax;
     IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
+    new IFixedList<IGenericParameterNode> GenericParameters { get; }
+    IFixedList<IGenericParameterNode> ITypeDefinitionNode.GenericParameters => GenericParameters;
+    IFixedList<IGenericParameterDeclarationNode> IUserTypeDeclarationNode.GenericParameters => GenericParameters;
     new ObjectType DeclaredType { get; }
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
     new IFixedSet<ITraitMemberDefinitionNode> Members { get; }
@@ -1219,7 +1228,8 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode
     typeof(IFieldAccessExpressionNode),
     typeof(IVariableNameExpressionNode),
     typeof(IMissingNameExpressionNode),
-    typeof(IUnknownIdentifierNameExpressionNode))]
+    typeof(IUnknownIdentifierNameExpressionNode),
+    typeof(IUnknownMemberAccessExpressionNode))]
 public partial interface IAssignableExpressionNode : ISemanticNode, IExpressionNode
 {
     new IAssignableExpressionSyntax Syntax { get; }
@@ -1761,11 +1771,12 @@ public partial interface IUnknownGenericNameExpressionNode : IUnknownStandardNam
     IFixedList<ITypeNode> TypeArguments { get; }
 }
 
-public partial interface IUnknownMemberAccessExpressionNode : ISemanticNode, IUnknownNameExpressionNode
+public partial interface IUnknownMemberAccessExpressionNode : IUnknownNameExpressionNode, IAssignableExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
+    IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     StandardName MemberName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
@@ -1970,6 +1981,7 @@ public partial interface IUserTypeDeclarationNode : IPackageMemberDeclarationNod
     new StandardName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
+    IFixedList<IGenericParameterDeclarationNode> GenericParameters { get; }
     new UserTypeSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
@@ -2002,12 +2014,14 @@ public partial interface ITraitDeclarationNode : ISemanticNode, IUserTypeDeclara
 [Closed(
     typeof(IGenericParameterNode),
     typeof(IGenericParameterSymbolNode))]
-public partial interface IGenericParameterDeclarationNode : ISemanticNode, ITypeDeclarationNode
+public partial interface IGenericParameterDeclarationNode : ISemanticNode, ITypeDeclarationNode, IAssociatedMemberDeclarationNode
 {
     new IdentifierName Name { get; }
     TypeName INamedDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     new GenericParameterTypeSymbol Symbol { get; }
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    Symbol ISymbolDeclarationNode.Symbol => Symbol;
 }
 
 [Closed(
@@ -2050,6 +2064,7 @@ public partial interface IStructMemberDeclarationNode : ISemanticNode, ITypeMemb
 }
 
 [Closed(
+    typeof(IGenericParameterDeclarationNode),
     typeof(IConstructorDeclarationNode),
     typeof(IInitializerDeclarationNode),
     typeof(IAssociatedFunctionDeclarationNode))]
@@ -2084,6 +2099,8 @@ public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, I
     typeof(IStandardMethodSymbolNode))]
 public partial interface IStandardMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
 {
+    int Arity { get; }
+    FunctionType MethodGroupType { get; }
 }
 
 [Closed(

@@ -160,6 +160,9 @@ public sealed class PackageNameScope
         => primitives[antetype.Name];
 
     public ITypeDeclarationNode Lookup(GenericParameterAntetype antetype)
-        => throw new NotImplementedException();
+    {
+        var declaringTypeNode = (IUserTypeDeclarationNode)Lookup(antetype.DeclaringAntetype);
+        return declaringTypeNode.GenericParameters.Single(p => p.Name == antetype.Name);
+    }
     #endregion
 }

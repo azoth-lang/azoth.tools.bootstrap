@@ -110,6 +110,9 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     internal override ISymbolTree InheritedSymbolTree(IChildNode child, IChildNode descendant)
         => Parent.InheritedSymbolTree(this, descendant);
 
+    protected ISymbolTree InheritedSymbolTree()
+        => Parent.InheritedSymbolTree(this, this);
+
     internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
         => Parent.InheritedFlowStateBefore(this, descendant);
 

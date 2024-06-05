@@ -24,7 +24,7 @@ internal abstract class BuiltInTypeSymbolNode : ChildSymbolNode, ITypeDeclaratio
     }
 
     private new IFixedSet<ITypeMemberDeclarationNode> GetMembers()
-        => ChildSet.Attach(this, base.GetMembers(Primitive.SymbolTree).OfType<ITypeMemberDeclarationNode>());
+        => ChildSet.Attach(this, GetMembers(Primitive.SymbolTree).OfType<ITypeMemberDeclarationNode>());
 
     public IEnumerable<IInstanceMemberDeclarationNode> InstanceMembersNamed(StandardName named)
         => Members.OfType<IInstanceMemberDeclarationNode>().MembersNamed(ref instanceMembersByName, named);

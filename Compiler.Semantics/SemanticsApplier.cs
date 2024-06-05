@@ -655,6 +655,9 @@ internal class SemanticsApplier
             case IUnknownIdentifierNameExpressionNode n:
                 UnknownIdentifierNameExpression(n);
                 break;
+            case IUnknownMemberAccessExpressionNode n:
+                UnknownMemberAccessExpression(n);
+                break;
         }
     }
 

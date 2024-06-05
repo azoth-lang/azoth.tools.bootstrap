@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -17,6 +18,10 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     public override IGenericParameterSyntax Syntax { get; }
     public ICapabilityConstraintNode Constraint { get; }
     public IdentifierName Name => Syntax.Name;
+    private ValueAttribute<IPackageFacetDeclarationNode> facet;
+    public IPackageFacetDeclarationNode Facet
+        => facet.TryGetValue(out var value) ? value
+            : facet.GetValue(InheritedFacet);
     public ParameterIndependence Independence => Syntax.Independence;
     public ParameterVariance Variance => Syntax.Variance;
     private ValueAttribute<GenericParameter> parameter;
@@ -52,9 +57,9 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
 
     public IEnumerable<IInstanceMemberDeclarationNode> InstanceMembersNamed(StandardName named)
         // TODO should look up members based on generic constraints
-        => throw new System.NotImplementedException();
+        => Enumerable.Empty<IInstanceMemberDeclarationNode>();
 
     public IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named)
         // TODO should look up members based on generic constraints
-        => throw new System.NotImplementedException();
+        => Enumerable.Empty<IAssociatedMemberDeclarationNode>();
 }

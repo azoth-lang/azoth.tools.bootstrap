@@ -14,11 +14,9 @@ internal abstract class ChildSymbolNode : ChildNode, IChildDeclarationNode
     public abstract Symbol Symbol { get; }
 
     protected IEnumerable<IChildDeclarationNode> GetMembers()
-    {
-        var symbolTree = Parent.InheritedSymbolTree(this, this);
-        return GetMembers(symbolTree);
-    }
+        => GetMembers(InheritedSymbolTree());
 
     protected IEnumerable<IChildDeclarationNode> GetMembers(ISymbolTree symbolTree)
-        => symbolTree.GetChildrenOf(Symbol).Select(SymbolNodeAspect.Symbol).WhereNotNull();
+        => symbolTree.GetChildrenOf(Symbol).Where(sym => sym is not GenericParameterTypeSymbol)
+                     .Select(SymbolNodeAspect.Symbol).WhereNotNull();
 }
