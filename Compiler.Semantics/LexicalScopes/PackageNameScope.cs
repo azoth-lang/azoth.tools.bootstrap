@@ -34,7 +34,12 @@ public sealed class PackageNameScope
     /// </summary>
     private readonly FixedDictionary<IdentifierName, NamespaceScope> packageGlobalScopes;
 
-    internal PackageNameScope(IEnumerable<IPackageFacetNode> packageFacets, IEnumerable<IPackageFacetDeclarationNode> referencedFacets)
+    private readonly FixedDictionary<TypeName, ITypeDeclarationNode> primitives;
+
+    internal PackageNameScope(
+        IEnumerable<IPackageFacetNode> packageFacets,
+        IEnumerable<IPackageFacetDeclarationNode> referencedFacets,
+        IFixedSet<ITypeDeclarationNode> primitivesDeclarations)
     {
         var packageGlobalNamespaces = packageFacets.Select(f => f.GlobalNamespace).ToFixedSet();
         var referencedGlobalNamespaces = referencedFacets.Select(f => f.GlobalNamespace).ToFixedSet();
@@ -49,6 +54,8 @@ public sealed class PackageNameScope
         packageGlobalScopes = packageGlobalNamespaces.Concat(referencedGlobalNamespaces)
             .GroupBy(ns => ns.Package.Name)
             .ToFixedDictionary(g => g.Key, g => new NamespaceScope(this, g));
+
+        primitives = primitivesDeclarations.ToFixedDictionary(p => p.Name);
     }
 
     /// <summary>
@@ -92,10 +99,10 @@ public sealed class PackageNameScope
         };
 
     private ITypeDeclarationNode Lookup(AnyType declaredType)
-        => throw new NotImplementedException();
+        => primitives[declaredType.Name];
 
     private ITypeDeclarationNode Lookup(SimpleType declaredType)
-        => throw new NotImplementedException();
+        => primitives[declaredType.Name];
 
     private ITypeDeclarationNode Lookup(IDeclaredUserType declaredType)
     {
@@ -146,11 +153,11 @@ public sealed class PackageNameScope
         return ns.Lookup(antetype.Name).OfType<ITypeDeclarationNode>().Single();
     }
 
-    private ITypeDeclarationNode? Lookup(SimpleAntetype antetype)
-        => throw new NotImplementedException();
+    private ITypeDeclarationNode Lookup(SimpleAntetype antetype)
+        => primitives[antetype.Name];
 
-    private ITypeDeclarationNode? Lookup(AnyAntetype antetype)
-        => throw new NotImplementedException();
+    private ITypeDeclarationNode Lookup(AnyAntetype antetype)
+        => primitives[antetype.Name];
 
     public ITypeDeclarationNode Lookup(GenericParameterAntetype antetype)
         => throw new NotImplementedException();

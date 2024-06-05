@@ -10,7 +10,7 @@ internal sealed class GenericParameterSymbolNode : PackageFacetChildSymbolNode, 
 {
     public override GenericParameterTypeSymbol Symbol { get; }
     public override IdentifierName Name => Symbol.Name;
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     public IFixedSet<ITypeMemberDeclarationNode> Members
         => FixedSet.Empty<ITypeMemberDeclarationNode>();
 

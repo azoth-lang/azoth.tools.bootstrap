@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
@@ -12,6 +13,8 @@ public class AnyAntetype : INonVoidAntetype, IDeclaredAntetype
     {
     }
     #endregion
+
+    public SpecialTypeName Name => SpecialTypeName.Any;
 
     IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
         => FixedList.Empty<AntetypeGenericParameter>();

@@ -149,24 +149,28 @@ internal static class SymbolNodeAspect
             UserTypeSymbol sym => UserTypeSymbol(sym),
             // These will be needed because the generic parameter type could be used in a type expression
             GenericParameterTypeSymbol sym => GenericParameterTypeSymbol(sym),
-            EmptyTypeSymbol _
-                => throw new NotSupportedException("Symbol node for empty type not supported. Primitives not name bound through symbol nodes."),
-            PrimitiveTypeSymbol _
-                => throw new NotSupportedException("Symbol node for primitive type not supported. Primitives not name bound through symbol nodes."),
+            EmptyTypeSymbol sym => EmptyTypeSymbol(sym),
+            PrimitiveTypeSymbol sym => PrimitiveTypeSymbol(sym),
             _ => throw ExhaustiveMatch.Failed(symbol),
         };
 
     private static IUserTypeDeclarationNode UserTypeSymbol(UserTypeSymbol symbol)
-        => symbol.DeclaresType switch
-        {
-            StructType _ => new StructSymbolNode(symbol),
-            ObjectType t => t.IsClass switch
-            {
-                true => new ClassSymbolNode(symbol),
-                false => new TraitSymbolNode(symbol),
-            },
-            _ => throw ExhaustiveMatch.Failed(symbol.DeclaresType),
-        };
+         => symbol.DeclaresType switch
+         {
+             StructType _ => new StructSymbolNode(symbol),
+             ObjectType t => t.IsClass switch
+             {
+                 true => new ClassSymbolNode(symbol),
+                 false => new TraitSymbolNode(symbol),
+             },
+             _ => throw ExhaustiveMatch.Failed(symbol.DeclaresType),
+         };
+
+    private static IPrimitiveTypeSymbolNode EmptyTypeSymbol(EmptyTypeSymbol sym)
+        => new EmptyTypeSymbolNode(sym);
+
+    private static IPrimitiveTypeSymbolNode PrimitiveTypeSymbol(PrimitiveTypeSymbol sym)
+        => new PrimitiveTypeSymbolNode(sym);
 
     private static IGenericParameterSymbolNode GenericParameterTypeSymbol(GenericParameterTypeSymbol sym)
         => new GenericParameterSymbolNode(sym);

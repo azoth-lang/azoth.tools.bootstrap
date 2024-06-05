@@ -10,12 +10,14 @@ internal static class LexicalScopingAspect
 {
     public static PackageNameScope Package_InheritedPackageNameScope_MainFacet(IPackageNode node)
         => new PackageNameScope(new[] { node.MainFacet },
-            node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode.MainFacet));
+            node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode.MainFacet),
+            node.PrimitivesDeclarations);
 
     public static PackageNameScope Package_InheritedPackageNameScope_TestingFacet(IPackageNode node)
         => new PackageNameScope(new[] { node.MainFacet, node.TestingFacet },
             node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode.MainFacet)
-                .Concat(node.References.Select(r => r.SymbolNode.TestingFacet)));
+                .Concat(node.References.Select(r => r.SymbolNode.TestingFacet)),
+            node.PrimitivesDeclarations);
 
     public static LexicalScope CompilationUnit_LexicalScope(ICompilationUnitNode node)
         => BuildNamespaceScope(node.ContainingLexicalScope, node.ImplicitNamespaceName, node.UsingDirectives);

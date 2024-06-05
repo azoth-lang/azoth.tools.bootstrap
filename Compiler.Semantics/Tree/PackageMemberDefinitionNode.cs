@@ -9,6 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class PackageMemberDefinitionNode : DefinitionNode, IPackageMemberDefinitionNode
 {
+    TypeName INamedDeclarationNode.Name => Name;
     public IFixedList<IAttributeNode> Attributes { get; }
     private ValueAttribute<AccessModifier> accessModifier;
     public AccessModifier AccessModifier

@@ -8,7 +8,7 @@ internal sealed class FieldSymbolNode : PackageFacetChildSymbolNode, IFieldSymbo
 {
     public override FieldSymbol Symbol { get; }
     public override IdentifierName Name => Symbol.Name;
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     public DataType Type => Symbol.Type;
 
     public FieldSymbolNode(FieldSymbol symbol)

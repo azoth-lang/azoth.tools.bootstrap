@@ -17,7 +17,7 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public MethodKind Kind => Syntax.Kind;
     public override IdentifierName Name => Syntax.Name;
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     public IMethodSelfParameterNode SelfParameter { get; }
     public IFixedList<INamedParameterNode> Parameters { get; }
     public abstract IBodyNode? Body { get; }

@@ -20,7 +20,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public bool IsMutableBinding => Syntax.IsMutableBinding;
     public override IdentifierName Name => Syntax.Name;
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     public ITypeNode TypeNode { get; }
     private ValueAttribute<IMaybeAntetype> antetype;
     public IMaybeAntetype Antetype

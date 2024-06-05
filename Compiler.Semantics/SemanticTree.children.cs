@@ -20,6 +20,8 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield return n.MainFacet;
                 yield return n.TestingFacet;
+                foreach (var child in n.PrimitivesDeclarations)
+                    yield return child;
                 yield break;
             case IPackageReferenceNode n:
                 yield break;
@@ -406,6 +408,10 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IFunctionSymbolNode n:
+                yield break;
+            case IPrimitiveTypeSymbolNode n:
+                foreach (var child in n.Members)
+                    yield return child;
                 yield break;
             case IUserTypeSymbolNode n:
                 foreach (var child in n.Members)

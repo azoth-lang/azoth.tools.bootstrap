@@ -31,12 +31,15 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public IFixedList<Diagnostic> Diagnostics
         => diagnostics.TryGetValue(out var value) ? value
             : diagnostics.GetValue(this, DiagnosticsAspect.Package);
-
+    private ValueAttribute<IFixedSet<ITypeDeclarationNode>> primitivesDeclarations;
+    public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations
+        => primitivesDeclarations.TryGetValue(out var value) ? value
+            : primitivesDeclarations.GetValue(this, BuiltInsAspect.Package_PrimitivesDeclarations);
     public IFixedSet<IPackageReferenceNode> References { get; }
     private ValueAttribute<IPackageReferenceNode> intrinsicsReference;
     public IPackageReferenceNode IntrinsicsReference
         => intrinsicsReference.TryGetValue(out var value) ? value
-            : intrinsicsReference.GetValue(this, IntrinsicsReferenceAspect.Package);
+            : intrinsicsReference.GetValue(this, BuiltInsAspect.Package_IntrinsicsReference);
     public IPackageFacetNode MainFacet { get; }
     public IPackageFacetNode TestingFacet { get; }
 

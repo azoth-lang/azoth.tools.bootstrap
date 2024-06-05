@@ -40,7 +40,8 @@ NamedBinding <: Binding, NamedBindingDeclaration = Syntax:`ILocalBindingSyntax` 
 Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
     References:{PackageReference} IntrinsicsReference:`IPackageReferenceNode`
     PackageDeclarations:`FixedDictionary<IdentifierName,IPackageDeclarationNode>`
-    MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`Diagnostic`*;
+    MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`Diagnostic`*
+    PrimitivesDeclarations:{TypeDeclaration};
 
 PackageReference <: Child = Syntax:`IPackageReferenceSyntax`? SymbolNode:`IPackageSymbolNode`
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
@@ -363,7 +364,7 @@ AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax` Expression:Ambig
 
 Declaration;
 ChildDeclaration <: Declaration, Child;
-NamedDeclaration <: ChildDeclaration = Name:`StandardName`;
+NamedDeclaration <: ChildDeclaration = Name:`TypeName`;
 SymbolDeclaration <: Declaration = Symbol:`Symbol`;
 
 // ---------- Bindings
@@ -396,8 +397,9 @@ FunctionLikeDeclaration <: NamedDeclaration = Symbol:`FunctionSymbol` Type:`Func
 FunctionDeclaration <: PackageMemberDeclaration, FunctionLikeDeclaration;
 
 // ---------- Type Declarations
+PrimitiveTypeDeclaration <: TypeDeclaration = Name:`SpecialTypeName` Members:{TypeMemberDeclaration};
 UserTypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
-    = Symbol:`UserTypeSymbol` Members:{TypeMemberDeclaration};
+    = Name:`StandardName` Symbol:`UserTypeSymbol` Members:{TypeMemberDeclaration};
 ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration};
 StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration};
 TraitDeclaration <: UserTypeDeclaration = Members:{TraitMemberDeclaration};
@@ -447,6 +449,7 @@ NamespaceSymbol <: NamespaceDeclaration = Members:NamespaceMemberDeclaration*;
 FunctionSymbol <: FunctionDeclaration;
 
 // ---------- Type Declarations
+PrimitiveTypeSymbol <: PrimitiveTypeDeclaration = Members:{TypeMemberDeclaration};
 UserTypeSymbol <: UserTypeDeclaration = Members:{TypeMemberDeclaration};
 ClassSymbol <: ClassDeclaration = Members:{ClassMemberDeclaration};
 StructSymbol <: StructDeclaration = Members:{StructMemberDeclaration};

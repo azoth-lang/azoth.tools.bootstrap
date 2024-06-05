@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal static class DeclarationsAspect
 {
-    public static IFixedSet<IPackageMemberDefinitionNode> PackageFacet(IPackageFacetNode node)
+    public static IFixedSet<IPackageMemberDefinitionNode> PackageFacet_Definitions(IPackageFacetNode node)
     {
         return node.CompilationUnits.SelectMany(n => n.Definitions)
                    .SelectMany(n => MoreEnumerable.TraverseDepthFirst(n, NamespaceChildren))

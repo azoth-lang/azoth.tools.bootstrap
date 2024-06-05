@@ -8,7 +8,7 @@ internal abstract class MethodSymbolNode : PackageFacetChildSymbolNode, IMethodS
     public override MethodSymbol Symbol { get; }
 
     public override IdentifierName Name => Symbol.Name;
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
 
     private protected MethodSymbolNode(MethodSymbol symbol)
     {

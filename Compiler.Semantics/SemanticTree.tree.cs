@@ -96,6 +96,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IPackageFacetDeclarationNode),
     typeof(IPackageFacetChildDeclarationNode),
     typeof(INamespaceDeclarationNode),
+    typeof(IPrimitiveTypeDeclarationNode),
     typeof(IClassDeclarationNode),
     typeof(IStructDeclarationNode),
     typeof(ITraitDeclarationNode),
@@ -186,6 +187,7 @@ public partial interface IPackageNode : IPackageDeclarationNode
     new IPackageFacetNode TestingFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
     IFixedList<Diagnostic> Diagnostics { get; }
+    IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
 }
 
 public partial interface IPackageReferenceNode : IChildNode
@@ -367,7 +369,7 @@ public partial interface IFunctionDefinitionNode : ISemanticNode, IPackageMember
     Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     new IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
     IBodyNode Body { get; }
@@ -394,7 +396,8 @@ public partial interface ITypeDefinitionNode : ISemanticNode, IPackageMemberDefi
     bool IsConst { get; }
     new StandardName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
+    StandardName IUserTypeDeclarationNode.Name => Name;
     IDeclaredUserType DeclaredType { get; }
     new UserTypeSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
@@ -561,7 +564,7 @@ public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName IMethodDeclarationNode.Name => Name;
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     IMethodSelfParameterNode SelfParameter { get; }
     new IFixedList<INamedParameterNode> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
@@ -692,7 +695,7 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName IFieldDeclarationNode.Name => Name;
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     ITypeNode TypeNode { get; }
     IMaybeAntetype Antetype { get; }
     new FieldSymbol Symbol { get; }
@@ -713,7 +716,7 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteInvocableD
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     new IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
     new FunctionSymbol Symbol { get; }
@@ -799,7 +802,7 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     new IdentifierName Name { get; }
     IdentifierName? IParameterNode.Name => Name;
     IdentifierName INamedBindingDeclarationNode.Name => Name;
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     int? DeclarationNumber { get; }
     ITypeNode TypeNode { get; }
     NamedVariableSymbol Symbol { get; }
@@ -1811,7 +1814,7 @@ public partial interface IChildDeclarationNode : IDeclarationNode, IChildNode
     typeof(ITypeDeclarationNode))]
 public partial interface INamedDeclarationNode : ISemanticNode, IChildDeclarationNode
 {
-    StandardName Name { get; }
+    TypeName Name { get; }
 }
 
 [Closed(
@@ -1838,7 +1841,7 @@ public partial interface IBindingDeclarationNode : ISemanticNode, IChildDeclarat
 public partial interface INamedBindingDeclarationNode : IBindingDeclarationNode, INamedDeclarationNode
 {
     new IdentifierName Name { get; }
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
 }
 
 [Closed(
@@ -1890,7 +1893,7 @@ public partial interface INamespaceDeclarationNode : ISemanticNode, INamespaceMe
 {
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     new NamespaceSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     IFixedList<INamespaceMemberDeclarationNode> Members { get; }
@@ -1922,6 +1925,14 @@ public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNod
 }
 
 [Closed(
+    typeof(IPrimitiveTypeSymbolNode))]
+public partial interface IPrimitiveTypeDeclarationNode : ISemanticNode, ITypeDeclarationNode
+{
+    new SpecialTypeName Name { get; }
+    TypeName INamedDeclarationNode.Name => Name;
+}
+
+[Closed(
     typeof(ITypeDefinitionNode),
     typeof(IClassDeclarationNode),
     typeof(IStructDeclarationNode),
@@ -1929,6 +1940,9 @@ public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNod
     typeof(IUserTypeSymbolNode))]
 public partial interface IUserTypeDeclarationNode : IPackageMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, ITypeDeclarationNode
 {
+    new StandardName Name { get; }
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     new UserTypeSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
@@ -1964,7 +1978,7 @@ public partial interface ITraitDeclarationNode : ISemanticNode, IUserTypeDeclara
 public partial interface IGenericParameterDeclarationNode : ISemanticNode, ITypeDeclarationNode
 {
     new IdentifierName Name { get; }
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     new GenericParameterTypeSymbol Symbol { get; }
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
 }
@@ -2033,7 +2047,7 @@ public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, I
 {
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     new MethodSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
 }
@@ -2084,7 +2098,7 @@ public partial interface IInitializerDeclarationNode : ISemanticNode, IAssociate
 public partial interface IFieldDeclarationNode : INamedDeclarationNode, IClassMemberDeclarationNode, IStructMemberDeclarationNode, IInstanceMemberDeclarationNode
 {
     new IdentifierName Name { get; }
-    StandardName INamedDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     DataType Type { get; }
     new FieldSymbol Symbol { get; }
@@ -2099,6 +2113,7 @@ public partial interface IAssociatedFunctionDeclarationNode : ISemanticNode, IAs
 }
 
 [Closed(
+    typeof(IPrimitiveTypeDeclarationNode),
     typeof(IUserTypeDeclarationNode),
     typeof(IGenericParameterDeclarationNode))]
 public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDeclarationNode
@@ -2123,6 +2138,10 @@ public partial interface INamespaceSymbolNode : INamespaceDeclarationNode
 }
 
 public partial interface IFunctionSymbolNode : ISemanticNode, IFunctionDeclarationNode
+{
+}
+
+public partial interface IPrimitiveTypeSymbolNode : IPrimitiveTypeDeclarationNode
 {
 }
 

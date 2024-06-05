@@ -12,7 +12,7 @@ internal class DeclarationScope : LexicalScope
 {
     public override PackageNameScope PackageNames { get; }
     private readonly LexicalScope parent;
-    private readonly FixedDictionary<StandardName, IFixedSet<INamedDeclarationNode>> declarations;
+    private readonly FixedDictionary<TypeName, IFixedSet<INamedDeclarationNode>> declarations;
 
     internal DeclarationScope(LexicalScope parent, IEnumerable<INamedDeclarationNode> declarations)
     {
