@@ -1,6 +1,8 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -13,6 +15,10 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     public AssignmentOperator Operator => Syntax.Operator;
     private Child<IAmbiguousExpressionNode> rightOperand;
     public IAmbiguousExpressionNode RightOperand => rightOperand.Value;
+    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    public override IMaybeExpressionAntetype Antetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, ExpressionAntetypesAspect.AssignmentExpression_Antetype);
 
     public AssignmentExpressionNode(
         IAssignmentExpressionSyntax syntax,

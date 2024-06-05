@@ -11,7 +11,8 @@ internal class SemanticTreeTypeValidator
     {
         if (node is IExpressionNode expression
             and not INamespaceNameNode
-            and not IFunctionGroupNameNode)
+            and not IFunctionGroupNameNode
+            and not IMethodGroupNameNode)
         {
 
             if (ValidateAntetypes)

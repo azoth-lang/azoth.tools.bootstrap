@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Framework;
@@ -37,8 +38,12 @@ internal static class TypeExpressionsAntetypesAspect
     }
 
     public static IMaybeAntetype IdentifierTypeName_Antetype(IIdentifierTypeNameNode node)
-        => (IMaybeAntetype?)node.ReferencedDeclaration?.Symbol.GetDeclaredType()?.ToAntetype()
-           ?? IAntetype.Unknown;
+    {
+        var referencedSymbol = node.ReferencedDeclaration?.Symbol;
+        return (IMaybeAntetype?)referencedSymbol?.GetDataType()?.ToAntetype()
+               ?? (IMaybeAntetype?)referencedSymbol?.GetDeclaredType()?.ToAntetype()
+               ?? IAntetype.Unknown;
+    }
 
     public static IMaybeAntetype GenericTypeName_Antetype(IGenericTypeNameNode node)
     {

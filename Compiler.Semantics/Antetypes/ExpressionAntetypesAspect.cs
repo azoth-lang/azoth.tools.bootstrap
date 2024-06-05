@@ -39,4 +39,7 @@ internal static class ExpressionAntetypesAspect
         // TODO should probably use Antetype on the declaration
         // TODO replace type parameters with actual types
         => node.ReferencedConstructor?.Symbol.ReturnType.ToAntetype() ?? IAntetype.Unknown;
+
+    public static IMaybeExpressionAntetype AssignmentExpression_Antetype(IAssignmentExpressionNode node)
+        => node.LeftOperand.Antetype;
 }
