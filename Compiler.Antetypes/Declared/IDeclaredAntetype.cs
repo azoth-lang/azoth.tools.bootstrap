@@ -20,4 +20,6 @@ public interface IDeclaredAntetype : IEquatable<IDeclaredAntetype>
     IFixedList<GenericParameterAntetype> GenericParameterAntetypes { get; }
 
     IAntetype With(IEnumerable<IAntetype> typeArguments);
+
+    string ToString();
 }

@@ -1,3 +1,4 @@
+using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
@@ -33,4 +34,13 @@ public sealed class AntetypeGenericParameter : IEquatable<AntetypeGenericParamet
 
     public override int GetHashCode() => HashCode.Combine(Name, Variance);
     #endregion
+
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+        builder.Append(Name);
+        var variance = Variance.ToSourceCodeString();
+        if (variance.Length != 0) builder.Append(' ').Append(variance);
+        return builder.ToString();
+    }
 }

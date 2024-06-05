@@ -1,3 +1,4 @@
+using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -7,14 +8,15 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
 {
     public IdentifierName ContainingPackage { get; }
     public NamespaceName ContainingNamespace { get; }
-    public StandardName Name { get; }
+    public GenericName Name { get; }
+    StandardName IUserDeclaredAntetype.Name => Name;
     public IFixedList<AntetypeGenericParameter> GenericParameters { get; }
     public IFixedList<GenericParameterAntetype> GenericParameterAntetypes { get; }
 
     public UserDeclaredGenericAntetype(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
-        StandardName name,
+        GenericName name,
         IEnumerable<AntetypeGenericParameter> genericParameters)
     {
         ContainingPackage = containingPackage;
@@ -51,4 +53,25 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
     public override int GetHashCode()
         => HashCode.Combine(ContainingPackage, ContainingNamespace, Name, GenericParameters);
     #endregion
+
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+        ToString(builder);
+        return builder.ToString();
+    }
+
+    public void ToString(StringBuilder builder)
+    {
+        builder.Append(ContainingPackage);
+        builder.Append("::.");
+        builder.Append(ContainingNamespace);
+        if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
+        builder.Append(Name.ToBareString());
+        if (!GenericParameters.Any()) return;
+
+        builder.Append('[');
+        builder.AppendJoin(", ", GenericParameters);
+        builder.Append(']');
+    }
 }

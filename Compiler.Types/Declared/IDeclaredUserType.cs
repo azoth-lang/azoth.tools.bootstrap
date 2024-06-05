@@ -40,7 +40,6 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
     IDeclaredAntetype ToAntetype();
 }
 
-
 internal static class DeclaredUserTypeExtensions
 {
     /// <remarks>Used inside of instances of <see cref="IDeclaredUserType"/> to construct the
@@ -49,8 +48,13 @@ internal static class DeclaredUserTypeExtensions
     internal static IDeclaredAntetype ConstructDeclaredAntetype(this IDeclaredUserType declaredType)
     {
         var antetypeGenericParameters = declaredType.GenericParameters.Select(p => new AntetypeGenericParameter(p.Name, p.Variance));
-        return declaredType.IsGeneric
-            ? new UserDeclaredGenericAntetype(declaredType.ContainingPackage, declaredType.ContainingNamespace, declaredType.Name, antetypeGenericParameters)
-            : new UserNonGenericNominalAntetype(declaredType.ContainingPackage, declaredType.ContainingNamespace, (IdentifierName)declaredType.Name);
+        return declaredType.Name switch
+        {
+            IdentifierName n
+                => new UserNonGenericNominalAntetype(declaredType.ContainingPackage, declaredType.ContainingNamespace, n),
+            GenericName n
+                => new UserDeclaredGenericAntetype(declaredType.ContainingPackage, declaredType.ContainingNamespace, n, antetypeGenericParameters),
+            _ => throw ExhaustiveMatch.Failed(declaredType.Name)
+        };
     }
 }

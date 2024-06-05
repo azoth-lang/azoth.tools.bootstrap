@@ -27,4 +27,6 @@ public sealed class GenericParameterAntetype : NonGenericNominalAntetype
 
     public override int GetHashCode() => HashCode.Combine(DeclaringAntetype, Name);
     #endregion
+
+    public override string ToString() => $"{DeclaringAntetype}.{Parameter.Name}";
 }

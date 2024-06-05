@@ -12,4 +12,6 @@ public abstract class EmptyAntetype : NonGenericNominalAntetype
     {
         Name = name;
     }
+
+    public sealed override string ToString() => Name.ToString();
 }

@@ -24,4 +24,6 @@ public sealed class BoolConstValueAntetype : ConstValueAntetype
 
     public override int GetHashCode() => HashCode.Combine(Value);
     #endregion
+
+    public override string ToString() => $"Value[{(Value ? "true" : "false")}]";
 }

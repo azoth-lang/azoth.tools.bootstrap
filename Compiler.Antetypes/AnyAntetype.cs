@@ -43,4 +43,6 @@ public class AnyAntetype : INonVoidAntetype, IDeclaredAntetype
 
     public override int GetHashCode() => HashCode.Combine(typeof(AnyAntetype));
     #endregion
+
+    public override string ToString() => Name.ToString();
 }

@@ -1,3 +1,4 @@
+using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
@@ -34,4 +35,20 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
     public override int GetHashCode()
         => HashCode.Combine(ContainingPackage, ContainingNamespace, Name);
     #endregion
+
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+        ToString(builder);
+        return builder.ToString();
+    }
+
+    public void ToString(StringBuilder builder)
+    {
+        builder.Append(ContainingPackage);
+        builder.Append("::.");
+        builder.Append(ContainingNamespace);
+        if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
+        builder.Append(Name.ToBareString());
+    }
 }

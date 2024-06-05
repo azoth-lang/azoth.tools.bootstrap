@@ -9,4 +9,6 @@ public interface IMaybeExpressionAntetype : IEquatable<IMaybeExpressionAntetype>
     /// Convert types for constant values to their corresponding types.
     /// </summary>
     IMaybeAntetype ToNonConstValueType();
+
+    string ToString();
 }

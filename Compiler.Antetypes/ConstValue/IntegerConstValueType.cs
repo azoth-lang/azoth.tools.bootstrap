@@ -33,4 +33,6 @@ public sealed class IntegerConstValueAntetype : ConstValueAntetype
 
     public override int GetHashCode() => HashCode.Combine(Value);
     #endregion
+
+    public override string ToString() => $"Value[{Value}]";
 }

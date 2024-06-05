@@ -21,4 +21,6 @@ public abstract class ConstValueAntetype : IExpressionAntetype
 
     public abstract override int GetHashCode();
     #endregion
+
+    public abstract override string ToString();
 }
