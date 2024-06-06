@@ -13,6 +13,9 @@ public sealed class FunctionAntetype : INonVoidAntetype
         Parameters = parameters.ToFixedList();
     }
 
+    public IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+        => antetype;
+
     #region Equality
     public bool Equals(IMaybeExpressionAntetype? other)
     {

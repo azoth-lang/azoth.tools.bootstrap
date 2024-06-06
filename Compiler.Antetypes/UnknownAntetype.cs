@@ -8,6 +8,9 @@ public sealed class UnknownAntetype : IMaybeAntetype
     private UnknownAntetype() { }
     #endregion
 
+    public IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+        => antetype;
+
     #region Equality
     public bool Equals(IMaybeExpressionAntetype? other) => ReferenceEquals(this, other);
 

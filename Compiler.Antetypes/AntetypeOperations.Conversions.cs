@@ -15,4 +15,16 @@ public static partial class AntetypeOperations
             INonVoidAntetype t => new OptionalAntetype(t),
             _ => throw new UnreachableException(),
         };
+
+    /// <summary>
+    /// Create an optional type for the given type (i.e. `T?` given `T`).
+    /// </summary>
+    /// <remarks>`void` and `never` types are not changed.</remarks>
+    public static IAntetype MakeOptional(this IAntetype antetype)
+        => antetype switch
+        {
+            NeverAntetype or VoidAntetype => antetype,
+            INonVoidAntetype t => new OptionalAntetype(t),
+            _ => throw new UnreachableException(),
+        };
 }

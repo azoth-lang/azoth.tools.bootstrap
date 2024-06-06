@@ -10,5 +10,7 @@ public interface IMaybeExpressionAntetype : IEquatable<IMaybeExpressionAntetype>
     /// </summary>
     IMaybeAntetype ToNonConstValueType();
 
+    IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype);
+
     string ToString();
 }

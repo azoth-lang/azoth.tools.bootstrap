@@ -13,6 +13,9 @@ public abstract class ConstValueAntetype : IExpressionAntetype
 
     public abstract IMaybeAntetype ToNonConstValueType();
 
+    public IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+        => antetype;
+
     #region Equality
     public abstract bool Equals(IMaybeExpressionAntetype? other);
 

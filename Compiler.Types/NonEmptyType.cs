@@ -82,5 +82,5 @@ public abstract class NonEmptyType : Type
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
     public Return ReplaceTypeParametersIn(Return @return)
-        => @return with { Type = ReplaceTypeParametersIn(@return.Type) };
+        => new(ReplaceTypeParametersIn(@return.Type));
 }

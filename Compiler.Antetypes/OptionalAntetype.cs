@@ -9,6 +9,9 @@ public sealed class OptionalAntetype : INonVoidAntetype
         Referent = referent;
     }
 
+    public IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+        => antetype;
+
     #region Equality
     public bool Equals(IMaybeExpressionAntetype? other)
     {

@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 [Closed(typeof(EmptyAntetype), typeof(GenericParameterAntetype), typeof(UserNonGenericNominalAntetype))]
 public abstract class NonGenericNominalAntetype : NominalAntetype, IDeclaredAntetype
 {
-    public override IDeclaredAntetype Declared => this;
+    public override IDeclaredAntetype DeclaredAntetype => this;
 
     IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
         => FixedList.Empty<AntetypeGenericParameter>();

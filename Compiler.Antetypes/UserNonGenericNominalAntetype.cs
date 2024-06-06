@@ -21,6 +21,9 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
         Name = name;
     }
 
+    public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+        => antetype;
+
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)
     {

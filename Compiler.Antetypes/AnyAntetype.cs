@@ -29,6 +29,9 @@ public class AnyAntetype : INonVoidAntetype, IDeclaredAntetype
         return this;
     }
 
+    public IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+        => antetype;
+
     #region Equality
     public bool Equals(IMaybeExpressionAntetype? other)
         // AnyAntetype is a singleton, so we can use reference equality.

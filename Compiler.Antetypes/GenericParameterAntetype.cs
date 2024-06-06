@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
-public sealed class GenericParameterAntetype : NonGenericNominalAntetype
+public sealed class GenericParameterAntetype : NonGenericNominalAntetype, INonVoidAntetype
 {
     public UserDeclaredGenericAntetype DeclaringAntetype { get; }
     public AntetypeGenericParameter Parameter { get; }
@@ -14,6 +14,9 @@ public sealed class GenericParameterAntetype : NonGenericNominalAntetype
         DeclaringAntetype = declaringAntetype;
         Parameter = parameter;
     }
+
+    public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+        => antetype;
 
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)

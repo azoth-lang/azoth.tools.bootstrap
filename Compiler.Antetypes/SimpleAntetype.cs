@@ -26,6 +26,9 @@ public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype
         return this;
     }
 
+    public IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+        => antetype;
+
     #region Equality
     public bool Equals(IMaybeExpressionAntetype? other)
         // All simple antetypes are singletons, so we can use reference equality.

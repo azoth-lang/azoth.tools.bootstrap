@@ -13,5 +13,8 @@ public abstract class EmptyAntetype : NonGenericNominalAntetype
         Name = name;
     }
 
+    public sealed override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+        => antetype;
+
     public sealed override string ToString() => Name.ToString();
 }

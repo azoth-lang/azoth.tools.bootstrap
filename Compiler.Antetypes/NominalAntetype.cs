@@ -9,9 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 [Closed(typeof(NonGenericNominalAntetype), typeof(UserGenericNominalAntetype))]
 public abstract class NominalAntetype : IAntetype
 {
-    public abstract IDeclaredAntetype Declared { get; }
+    public abstract IDeclaredAntetype DeclaredAntetype { get; }
 
     private protected NominalAntetype() { }
+
+    public abstract IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype);
 
     #region Equality
     public abstract bool Equals(IMaybeExpressionAntetype? other);

@@ -7,18 +7,24 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 public sealed class UserGenericNominalAntetype : NominalAntetype, INonVoidAntetype
 {
-    public override IUserDeclaredAntetype Declared { get; }
+    public override IUserDeclaredAntetype DeclaredAntetype { get; }
     public IFixedList<IAntetype> TypeArguments { get; }
+    private readonly AntetypeReplacements antetypeReplacements;
 
     public UserGenericNominalAntetype(IUserDeclaredAntetype declaredAnteType, IEnumerable<IAntetype> typeArguments)
     {
-        Declared = declaredAnteType;
+        DeclaredAntetype = declaredAnteType;
         TypeArguments = typeArguments.ToFixedList();
-        if (Declared.GenericParameters.Count != TypeArguments.Count)
+        if (DeclaredAntetype.GenericParameters.Count != TypeArguments.Count)
             throw new ArgumentException(
                 $"Number of type arguments must match. Given `[{string.Join(", ", TypeArguments)}]` for `{declaredAnteType}`.",
                 nameof(typeArguments));
+
+        antetypeReplacements = new(DeclaredAntetype, TypeArguments);
     }
+
+    public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+        => antetypeReplacements.ReplaceTypeParametersIn(antetype);
 
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)
@@ -26,11 +32,11 @@ public sealed class UserGenericNominalAntetype : NominalAntetype, INonVoidAntety
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is UserGenericNominalAntetype that
-               && Declared.Equals(that.Declared)
+               && DeclaredAntetype.Equals(that.DeclaredAntetype)
                && TypeArguments.ItemsEqual<IMaybeExpressionAntetype>(that.TypeArguments);
     }
 
-    public override int GetHashCode() => HashCode.Combine(Declared, TypeArguments);
+    public override int GetHashCode() => HashCode.Combine(DeclaredAntetype, TypeArguments);
     #endregion
 
     public override string ToString()
@@ -42,9 +48,9 @@ public sealed class UserGenericNominalAntetype : NominalAntetype, INonVoidAntety
 
     public void ToString(StringBuilder builder)
     {
-        builder.Append(Declared.ContainingNamespace);
-        if (Declared.ContainingNamespace != NamespaceName.Global) builder.Append('.');
-        builder.Append(Declared.Name.ToBareString());
+        builder.Append(DeclaredAntetype.ContainingNamespace);
+        if (DeclaredAntetype.ContainingNamespace != NamespaceName.Global) builder.Append('.');
+        builder.Append(DeclaredAntetype.Name.ToBareString());
         builder.Append('[');
         builder.AppendJoin(", ", TypeArguments);
         builder.Append(']');
