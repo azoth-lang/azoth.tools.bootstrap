@@ -22,7 +22,7 @@ public static partial class TypeOperations
     /// <remarks>Unknown and empty types (i.e. `void` and `never`) are not changed.</remarks>
     // TODO give a better name, this isn't really a conversion
     [return: NotNullIfNotNull(nameof(type))]
-    public static DataType? ToOptional(this DataType? type)
+    public static DataType? MakeOptional(this DataType? type)
         => type switch
         {
             null => null,

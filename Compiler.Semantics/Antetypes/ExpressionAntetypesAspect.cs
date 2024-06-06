@@ -1,4 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.ConstValue;
+using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
@@ -48,4 +50,79 @@ internal static class ExpressionAntetypesAspect
 
     public static IMaybeAntetype ResultStatement_Antetype(IResultStatementNode node)
         => node.FinalExpression.Antetype.ToNonConstValueType();
+
+    public static IMaybeExpressionAntetype BinaryOperatorExpression_Antetype(IBinaryOperatorExpressionNode node)
+    {
+        var leftAntetype = node.FinalLeftOperand.Antetype;
+        var rightAntetype = node.FinalRightOperand.Antetype;
+        return (leftAntetype, node.Operator, rightAntetype) switch
+        {
+            (IntegerConstValueAntetype left, BinaryOperator.Plus, IntegerConstValueAntetype right) => left.Add(right),
+            (IntegerConstValueAntetype left, BinaryOperator.Minus, IntegerConstValueAntetype right) => left.Subtract(right),
+            (IntegerConstValueAntetype left, BinaryOperator.Asterisk, IntegerConstValueAntetype right) => left.Multiply(right),
+            (IntegerConstValueAntetype left, BinaryOperator.Slash, IntegerConstValueAntetype right) => left.DivideBy(right),
+            (IntegerConstValueAntetype left, BinaryOperator.EqualsEquals, IntegerConstValueAntetype right) => left.Equals(right),
+            (IntegerConstValueAntetype left, BinaryOperator.NotEqual, IntegerConstValueAntetype right) => left.NotEquals(right),
+            (IntegerConstValueAntetype left, BinaryOperator.LessThan, IntegerConstValueAntetype right) => left.LessThan(right),
+            (IntegerConstValueAntetype left, BinaryOperator.LessThanOrEqual, IntegerConstValueAntetype right) => left.LessThanOrEqual(right),
+            (IntegerConstValueAntetype left, BinaryOperator.GreaterThan, IntegerConstValueAntetype right) => left.GreaterThan(right),
+            (IntegerConstValueAntetype left, BinaryOperator.GreaterThanOrEqual, IntegerConstValueAntetype right) => left.GreaterThanOrEqual(right),
+
+            (BoolConstValueAntetype left, BinaryOperator.EqualsEquals, BoolConstValueAntetype right) => left.Equals(right),
+            (BoolConstValueAntetype left, BinaryOperator.NotEqual, BoolConstValueAntetype right) => left.NotEquals(right),
+            (BoolConstValueAntetype left, BinaryOperator.And, BoolConstValueAntetype right) => left.And(right),
+            (BoolConstValueAntetype left, BinaryOperator.Or, BoolConstValueAntetype right) => left.Or(right),
+
+            // TODO implement the equivalent of this in the Antetype aspect
+            //(CapabilityType { BareType: BareReferenceType }, BinaryOperator.EqualsEquals, CapabilityType { BareType: BareReferenceType })
+            //    or (CapabilityType { BareType: BareReferenceType }, BinaryOperator.NotEqual, CapabilityType { BareType: BareReferenceType })
+            //    => InferReferenceEqualityOperatorType(leftOperand, rightOperand),
+
+            (BoolAntetype, BinaryOperator.EqualsEquals, BoolAntetype)
+                or (BoolAntetype, BinaryOperator.NotEqual, BoolAntetype)
+                or (BoolAntetype, BinaryOperator.And, BoolAntetype)
+                or (BoolAntetype, BinaryOperator.Or, BoolAntetype)
+                => IAntetype.Bool,
+
+            (IExpressionAntetype, BinaryOperator.Plus, IExpressionAntetype)
+                or (IExpressionAntetype, BinaryOperator.Minus, IExpressionAntetype)
+                or (IExpressionAntetype, BinaryOperator.Asterisk, IExpressionAntetype)
+                or (IExpressionAntetype, BinaryOperator.Slash, IExpressionAntetype)
+                => InferNumericOperatorType((IExpressionAntetype)leftAntetype, (IExpressionAntetype)rightAntetype),
+            (IExpressionAntetype, BinaryOperator.EqualsEquals, IExpressionAntetype)
+                or (IExpressionAntetype, BinaryOperator.NotEqual, IExpressionAntetype)
+                or (OptionalAntetype { Referent: IExpressionAntetype }, BinaryOperator.NotEqual, OptionalAntetype { Referent: IExpressionAntetype })
+                or (IExpressionAntetype, BinaryOperator.LessThan, IExpressionAntetype)
+                or (IExpressionAntetype, BinaryOperator.LessThanOrEqual, IExpressionAntetype)
+                or (IExpressionAntetype, BinaryOperator.GreaterThan, IExpressionAntetype)
+                or (IExpressionAntetype, BinaryOperator.GreaterThanOrEqual, IExpressionAntetype)
+                => InferComparisonOperatorType((IExpressionAntetype)leftAntetype, (IExpressionAntetype)rightAntetype),
+
+            (_, BinaryOperator.DotDot, _)
+                or (_, BinaryOperator.LessThanDotDot, _)
+                or (_, BinaryOperator.DotDotLessThan, _)
+                or (_, BinaryOperator.LessThanDotDotLessThan, _)
+                => InferRangeOperatorType(leftAntetype, rightAntetype),
+
+            (OptionalAntetype { Referent: var referentType }, BinaryOperator.QuestionQuestion, NeverAntetype)
+                => referentType,
+
+            _ => IAntetype.Unknown
+
+            // TODO optional types
+        };
+    }
+
+    private static IMaybeExpressionAntetype InferNumericOperatorType(IExpressionAntetype leftAntetype, IExpressionAntetype rightAntetype)
+        => throw new System.NotImplementedException();
+
+    private static IMaybeExpressionAntetype InferComparisonOperatorType(IExpressionAntetype leftAntetype, IExpressionAntetype rightAntetype)
+    {
+        var commonAntetype = leftAntetype.NumericOperatorCommonType(rightAntetype);
+        if (commonAntetype is null) return IAntetype.Unknown;
+        return IAntetype.Bool;
+    }
+
+    private static IMaybeExpressionAntetype InferRangeOperatorType(IMaybeExpressionAntetype leftAntetype, IMaybeExpressionAntetype rightAntetype)
+        => throw new System.NotImplementedException();
 }

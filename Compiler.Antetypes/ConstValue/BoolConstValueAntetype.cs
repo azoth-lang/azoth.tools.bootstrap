@@ -17,6 +17,18 @@ public sealed class BoolConstValueAntetype : ConstValueAntetype
 
     public override IMaybeAntetype ToNonConstValueType() => IAntetype.Bool;
 
+    public static implicit operator BoolConstValueAntetype(bool value) => value ? True : False;
+
+    #region Operations
+    public BoolConstValueAntetype Equals(BoolConstValueAntetype other) => Value == other.Value;
+
+    public BoolConstValueAntetype NotEquals(BoolConstValueAntetype other) => Value != other.Value;
+
+    public BoolConstValueAntetype And(BoolConstValueAntetype other) => Value && other.Value;
+
+    public BoolConstValueAntetype Or(BoolConstValueAntetype other) => Value || other.Value;
+    #endregion
+
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)
         // Bool const values are singletons, so we can use reference equality.

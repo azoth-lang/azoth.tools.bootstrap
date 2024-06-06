@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 
@@ -14,10 +15,10 @@ internal class SemanticTreeTypeValidator
             and not IFunctionGroupNameNode
             and not IMethodGroupNameNode)
         {
-
+            var expressionSyntax = expression.Syntax;
             if (ValidateAntetypes)
             {
-                var expectedAntetype = expression.Syntax.DataType.Result?.ToAntetype();
+                var expectedAntetype = expressionSyntax.DataType.Result?.ToAntetype();
                 var antetype = expression.Antetype;
                 if (!antetype.Equals(expectedAntetype))
                     throw new InvalidOperationException($"Expected antetype {expectedAntetype}, but got {antetype}");
@@ -25,7 +26,7 @@ internal class SemanticTreeTypeValidator
             if (ValidateTypes)
             {
                 _ = expression.ValueId;
-                var expectedExpType = expression.Syntax.DataType.Result;
+                var expectedExpType = expressionSyntax.DataType.Result;
                 var expType = expression.Type;
                 if (expType != expectedExpType)
                     throw new InvalidOperationException($"Expected type {expectedExpType}, but got {expType}");

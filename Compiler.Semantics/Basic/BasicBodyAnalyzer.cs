@@ -855,7 +855,7 @@ public class BasicBodyAnalyzer
                 }
                 DataType expType;
                 if (elseResult is null)
-                    expType = thenResult.Type.ToOptional();
+                    expType = thenResult.Type.MakeOptional();
                 else
                     // TODO unify the two types
                     expType = thenResult.Type;
@@ -963,7 +963,7 @@ public class BasicBodyAnalyzer
                 if (!ExplicitConversionTypesAreCompatible(exp.Referent, exp.Operator == ConversionOperator.Safe, convertToType))
                     diagnostics.Add(TypeError.CannotExplicitlyConvert(file, exp.Referent, result.Type, convertToType));
                 if (exp.Operator == ConversionOperator.Optional)
-                    convertToType = convertToType.ToOptional();
+                    convertToType = convertToType.MakeOptional();
                 exp.DataType.Fulfill(convertToType);
                 flow.Restrict(result.Variable, convertToType);
                 return new ExpressionResult(exp, result.Variable);

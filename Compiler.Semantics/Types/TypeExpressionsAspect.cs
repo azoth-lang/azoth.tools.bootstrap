@@ -36,7 +36,7 @@ internal static class TypeExpressionsAspect
     }
 
     public static DataType OptionalType_Type(IOptionalTypeNode node)
-        => node.Referent.Type.ToOptional();
+        => node.Referent.Type.MakeOptional();
 
     public static DataType FunctionType_Type(IFunctionTypeNode node)
         => new FunctionType(node.Parameters.Select(p => p.Parameter), new(node.Return.Type));

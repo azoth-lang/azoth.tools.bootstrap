@@ -246,14 +246,14 @@ public static class DataTypeExtensions
     public static DataType? NumericOperatorCommonType(this DataType leftType, DataType rightType)
         => (leftType, rightType) switch
         {
+            (_, NeverType) => DataType.Never,
+            (NeverType, _) => DataType.Never,
             ({ IsFullyKnown: false }, _) => DataType.Unknown,
             (_, { IsFullyKnown: false }) => DataType.Unknown,
-            (NonEmptyType left, NeverType) => left.AsNumericType()?.Type,
-            (NeverType, NonEmptyType right) => right.AsNumericType()?.Type,
             (OptionalType { Referent: var left }, OptionalType { Referent: var right })
-                => left.NumericOperatorCommonType(right).ToOptional(),
-            (OptionalType { Referent: var left }, _) => left.NumericOperatorCommonType(rightType).ToOptional(),
-            (_, OptionalType { Referent: var right }) => leftType.NumericOperatorCommonType(right).ToOptional(),
+                => left.NumericOperatorCommonType(right)?.MakeOptional(),
+            (OptionalType { Referent: var left }, _) => left.NumericOperatorCommonType(rightType)?.MakeOptional(),
+            (_, OptionalType { Referent: var right }) => leftType.NumericOperatorCommonType(right)?.MakeOptional(),
             (NonEmptyType left, NonEmptyType right)
                 => left.AsNumericType()?.NumericOperatorCommonType(right.AsNumericType()),
             _ => null,

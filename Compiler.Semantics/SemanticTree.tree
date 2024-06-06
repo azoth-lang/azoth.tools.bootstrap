@@ -269,7 +269,10 @@ StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionS
 
 // ---------- Operator Expressions
 AssignmentExpression <: Expression = Syntax:`IAssignmentExpressionSyntax` LeftOperand:AssignableExpression Operator:`AssignmentOperator` RightOperand:AmbiguousExpression;
-BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax` LeftOperand:AmbiguousExpression Operator:`BinaryOperator` RightOperand:AmbiguousExpression;
+BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax`
+    LeftOperand:AmbiguousExpression FinalLeftOperand:`IExpressionNode`
+    Operator:`BinaryOperator`
+    RightOperand:AmbiguousExpression FinalRightOperand:`IExpressionNode`;
 UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax` Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:AmbiguousExpression;
 IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression FinalReferent:`IExpressionNode`;
 ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax` Referent:AmbiguousExpression Operator:`ConversionOperator` ConvertToType:Type;

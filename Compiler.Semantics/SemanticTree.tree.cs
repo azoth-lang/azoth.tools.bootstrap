@@ -1347,8 +1347,10 @@ public partial interface IBinaryOperatorExpressionNode : ISemanticNode, IExpress
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode LeftOperand { get; }
+    IExpressionNode FinalLeftOperand { get; }
     BinaryOperator Operator { get; }
     IAmbiguousExpressionNode RightOperand { get; }
+    IExpressionNode FinalRightOperand { get; }
 }
 
 public partial interface IUnaryOperatorExpressionNode : ISemanticNode, IExpressionNode
