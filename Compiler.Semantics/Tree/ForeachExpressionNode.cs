@@ -28,6 +28,10 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
             : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.ForeachExpression_BindingAntetype);
+    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    public override IMaybeExpressionAntetype Antetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, ExpressionAntetypesAspect.ForeachExpression_Antetype);
 
     public ForeachExpressionNode(
         IForeachExpressionSyntax syntax,

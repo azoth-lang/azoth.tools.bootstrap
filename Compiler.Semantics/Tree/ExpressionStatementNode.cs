@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -10,6 +11,7 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
     public override IExpressionStatementSyntax Syntax { get; }
     private Child<IAmbiguousExpressionNode> expression;
     public IAmbiguousExpressionNode Expression => expression.Value;
+    public override IMaybeAntetype? ResultAntetype => null;
     public override FlowState FlowStateAfter => ((IExpressionNode)Expression).FlowStateAfter;
 
     public ExpressionStatementNode(IExpressionStatementSyntax syntax, IAmbiguousExpressionNode expression)

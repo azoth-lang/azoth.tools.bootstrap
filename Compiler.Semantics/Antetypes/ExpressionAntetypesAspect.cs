@@ -1,6 +1,9 @@
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
@@ -20,8 +23,12 @@ internal static class ExpressionAntetypesAspect
         => node.ReferencedDeclaration?.Type.Return.Type.ToAntetype() ?? IAntetype.Unknown;
 
     public static IMaybeExpressionAntetype MethodInvocationExpression_Antetype(IMethodInvocationExpressionNode node)
+    {
         // TODO should probably use Antetype on the declaration
-        => node.ReferencedDeclaration?.MethodGroupType.Return.Type.ToAntetype() ?? IAntetype.Unknown;
+        var unboundAntetype = node.ReferencedDeclaration?.MethodGroupType.Return.Type.ToAntetype() ?? IAntetype.Unknown;
+        var boundAntetype = node.MethodGroup.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
+        return boundAntetype;
+    }
 
     public static IMaybeExpressionAntetype VariableNameExpression_Antetype(IVariableNameExpressionNode node)
         => node.ReferencedDeclaration.BindingAntetype;
@@ -114,7 +121,10 @@ internal static class ExpressionAntetypesAspect
     }
 
     private static IMaybeExpressionAntetype InferNumericOperatorType(IExpressionAntetype leftAntetype, IExpressionAntetype rightAntetype)
-        => throw new System.NotImplementedException();
+    {
+        var commonAntetype = leftAntetype.NumericOperatorCommonType(rightAntetype);
+        return commonAntetype ?? IAntetype.UnknownMaybeAntetype;
+    }
 
     private static IMaybeExpressionAntetype InferComparisonOperatorType(IExpressionAntetype leftAntetype, IExpressionAntetype rightAntetype)
     {
@@ -124,5 +134,39 @@ internal static class ExpressionAntetypesAspect
     }
 
     private static IMaybeExpressionAntetype InferRangeOperatorType(IMaybeExpressionAntetype leftAntetype, IMaybeExpressionAntetype rightAntetype)
-        => throw new System.NotImplementedException();
+    {
+        //return rangeSymbol?.DeclaresType.With(Capability.Constant, FixedList.Empty<DataType>()) ?? DataType.Unknown;
+        throw new System.NotImplementedException();
+    }
+
+    public static IMaybeExpressionAntetype StringLiteralExpression_Antetype(IStringLiteralExpressionNode node)
+    {
+        var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName)
+                                 .OfType<ITypeDeclarationNode>().TrySingle();
+        return (IMaybeExpressionAntetype?)typeSymbolNode?.Symbol.GetDeclaredType()?.ToAntetype() ?? IAntetype.Unknown;
+    }
+
+    private static readonly IdentifierName StringTypeName = "String";
+
+    public static IMaybeExpressionAntetype WhileExpression_Antetype(IWhileExpressionNode _)
+        // TODO assign correct type to the expression
+        => IAntetype.Void;
+
+    public static IMaybeExpressionAntetype LoopExpression_Antetype(ILoopExpressionNode _)
+        // TODO assign correct type to the expression
+        => IAntetype.Void;
+
+    public static IMaybeExpressionAntetype ForeachExpression_Antetype(IForeachExpressionNode _)
+        // TODO assign correct type to the expression
+        => IAntetype.Void;
+
+    public static IMaybeAntetype BlockExpression_Antetype(IBlockExpressionNode node)
+    {
+        foreach (var statement in node.Statements)
+            if (statement.ResultAntetype is not null and var resultAntetype)
+                return resultAntetype;
+
+        // If there was no result expression, then the block type is void
+        return IAntetype.Void;
+    }
 }

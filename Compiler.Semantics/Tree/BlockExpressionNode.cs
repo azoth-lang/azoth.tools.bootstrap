@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -12,7 +13,10 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
 {
     public override IBlockExpressionSyntax Syntax { get; }
     public IFixedList<IStatementNode> Statements { get; }
-    public override IMaybeAntetype Antetype => throw new NotImplementedException();
+    private ValueAttribute<IMaybeAntetype> antetype;
+    public override IMaybeAntetype Antetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, ExpressionAntetypesAspect.BlockExpression_Antetype);
 
     public BlockExpressionNode(IBlockExpressionSyntax syntax, IEnumerable<IStatementNode> statements)
     {

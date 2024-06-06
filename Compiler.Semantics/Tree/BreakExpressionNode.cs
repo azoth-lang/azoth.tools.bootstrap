@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -8,6 +9,7 @@ internal sealed class BreakExpressionNode : ExpressionNode, IBreakExpressionNode
 {
     public override IBreakExpressionSyntax Syntax { get; }
     public IAmbiguousExpressionNode? Value { get; }
+    public override IMaybeExpressionAntetype Antetype => IAntetype.Never;
     public override NeverType Type => DataType.Never;
 
     public BreakExpressionNode(IBreakExpressionSyntax syntax, IAmbiguousExpressionNode? value)

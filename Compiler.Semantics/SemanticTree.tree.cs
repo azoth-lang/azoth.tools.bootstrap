@@ -1083,6 +1083,7 @@ public partial interface IStatementNode : ISemanticNode, ICodeNode
     new IStatementSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
+    IMaybeAntetype? ResultAntetype { get; }
     FlowState FlowStateAfter { get; }
 }
 

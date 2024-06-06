@@ -42,7 +42,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
             : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.VariableDeclarationStatement_BindingAntetype);
-
+    public override IMaybeAntetype? ResultAntetype => null;
     public override FlowState FlowStateAfter
         => ((IExpressionNode?)Initializer)?.FlowStateAfter ?? InheritedFlowStateBefore();
 

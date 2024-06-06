@@ -17,6 +17,7 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
     public IMaybeAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.ResultStatement_Antetype);
+    public override IMaybeAntetype ResultAntetype => Antetype;
     public override FlowState FlowStateAfter => ((IExpressionNode)Expression).FlowStateAfter;
 
     public ResultStatementNode(IResultStatementSyntax syntax, IAmbiguousExpressionNode expression)

@@ -1,5 +1,7 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -10,6 +12,10 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
     private Child<IAmbiguousExpressionNode> condition;
     public IAmbiguousExpressionNode Condition => condition.Value;
     public IBlockExpressionNode Block { get; }
+    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    public override IMaybeExpressionAntetype Antetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, ExpressionAntetypesAspect.WhileExpression_Antetype);
 
     public WhileExpressionNode(
         IWhileExpressionSyntax syntax,

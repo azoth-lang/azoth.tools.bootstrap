@@ -14,6 +14,7 @@ public interface IAntetype : IExpressionAntetype, IMaybeAntetype
 {
     #region Standard Types
     public static readonly UnknownAntetype Unknown = UnknownAntetype.Instance;
+    public static readonly IMaybeAntetype UnknownMaybeAntetype = UnknownAntetype.Instance;
     public static readonly VoidAntetype Void = VoidAntetype.Instance;
     public static readonly NeverAntetype Never = NeverAntetype.Instance;
     public static readonly AnyAntetype Any = AnyAntetype.Instance;
