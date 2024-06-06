@@ -1,5 +1,7 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
@@ -12,6 +14,10 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     public IAmbiguousExpressionNode Condition => condition.Value;
     public IBlockOrResultNode ThenBlock { get; }
     public IElseClauseNode? ElseClause { get; }
+    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    public override IMaybeExpressionAntetype Antetype
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.IfExpression_Antetype);
 
     public IfExpressionNode(
         IIfExpressionSyntax syntax,

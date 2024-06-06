@@ -1,5 +1,6 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.ConstValue;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
@@ -53,5 +54,20 @@ internal static class TypeExpressionsAntetypesAspect
         if (antetypeArguments.Count != node.TypeArguments.Count)
             return IAntetype.Unknown;
         return declaredAntetype.With(antetypeArguments);
+    }
+
+    public static IMaybeExpressionAntetype IntegerLiteralExpression_Antetype(IIntegerLiteralExpressionNode node)
+        => new IntegerConstValueAntetype(node.Value);
+
+    public static IMaybeExpressionAntetype BoolLiteralExpression_Antetype(IBoolLiteralExpressionNode node)
+        => node.Value ? IExpressionAntetype.True : IExpressionAntetype.False;
+
+    public static IMaybeExpressionAntetype IfExpression_Antetype(IIfExpressionNode node)
+    {
+        if (node.ElseClause is null)
+            return node.ThenBlock.Antetype.MakeOptional();
+
+        // TODO unify with else clause
+        return node.ThenBlock.Antetype;
     }
 }

@@ -29,7 +29,7 @@ Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPackageDecla
 // ---------- Special Parts
 BodyOrBlock <: Code = Statements:`IStatementNode`*;
 ElseClause <: Code;
-BlockOrResult: ElseClause;
+BlockOrResult: ElseClause = Antetype:`IMaybeAntetype`;
 
 // ---------- Bindings
 Binding <: Code, BindingDeclaration;
@@ -227,7 +227,8 @@ SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:
 
 // ---------- Statements
 Statement <: Code = Syntax:`IStatementSyntax` FlowStateAfter:`FlowState`;
-ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax` Expression:AmbiguousExpression;
+ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax` Expression:AmbiguousExpression
+    FinalExpression:`IExpressionNode`;
 BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;
 VariableDeclarationStatement <: BodyStatement, NamedBinding = Syntax:`IVariableDeclarationStatementSyntax`
     IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type? Initializer:AmbiguousExpression?

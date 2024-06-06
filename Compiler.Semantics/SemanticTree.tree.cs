@@ -151,6 +151,7 @@ public partial interface IElseClauseNode : ISemanticNode, ICodeNode
     typeof(IBlockExpressionNode))]
 public partial interface IBlockOrResultNode : IElseClauseNode
 {
+    IMaybeAntetype Antetype { get; }
 }
 
 [Closed(
@@ -1092,6 +1093,7 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
+    IExpressionNode FinalExpression { get; }
 }
 
 [Closed(

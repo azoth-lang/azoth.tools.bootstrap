@@ -45,4 +45,7 @@ internal static class ExpressionAntetypesAspect
 
     public static IMaybeExpressionAntetype AssignmentExpression_Antetype(IAssignmentExpressionNode node)
         => node.LeftOperand.Antetype;
+
+    public static IMaybeAntetype ResultStatement_Antetype(IResultStatementNode node)
+        => node.FinalExpression.Antetype.ToNonConstValueType();
 }
