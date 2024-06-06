@@ -19,6 +19,10 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
     private Child<IAmbiguousExpressionNode> rightOperand;
     public IAmbiguousExpressionNode RightOperand => rightOperand.Value;
     public IExpressionNode FinalRightOperand => (IExpressionNode)rightOperand.FinalValue;
+    private ValueAttribute<LexicalScope> containingLexicalScope;
+    public LexicalScope ContainingLexicalScope
+        => containingLexicalScope.TryGetValue(out var value) ? value
+            : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value

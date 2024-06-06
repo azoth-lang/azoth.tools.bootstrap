@@ -1352,6 +1352,7 @@ public partial interface IBinaryOperatorExpressionNode : ISemanticNode, IExpress
     BinaryOperator Operator { get; }
     IAmbiguousExpressionNode RightOperand { get; }
     IExpressionNode FinalRightOperand { get; }
+    LexicalScope ContainingLexicalScope { get; }
 }
 
 public partial interface IUnaryOperatorExpressionNode : ISemanticNode, IExpressionNode

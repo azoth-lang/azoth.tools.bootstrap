@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
@@ -109,7 +110,7 @@ internal static class ExpressionAntetypesAspect
                 or (_, BinaryOperator.LessThanDotDot, _)
                 or (_, BinaryOperator.DotDotLessThan, _)
                 or (_, BinaryOperator.LessThanDotDotLessThan, _)
-                => InferRangeOperatorType(leftAntetype, rightAntetype),
+                => InferRangeOperatorType(node.ContainingLexicalScope, leftAntetype, rightAntetype),
 
             (OptionalAntetype { Referent: var referentType }, BinaryOperator.QuestionQuestion, NeverAntetype)
                 => referentType,
@@ -133,10 +134,18 @@ internal static class ExpressionAntetypesAspect
         return IAntetype.Bool;
     }
 
-    private static IMaybeExpressionAntetype InferRangeOperatorType(IMaybeExpressionAntetype leftAntetype, IMaybeExpressionAntetype rightAntetype)
+    private static IMaybeExpressionAntetype InferRangeOperatorType(
+        LexicalScope containingLexicalScope,
+        IMaybeExpressionAntetype leftAntetype,
+        IMaybeExpressionAntetype rightAntetype)
     {
-        //return rangeSymbol?.DeclaresType.With(Capability.Constant, FixedList.Empty<DataType>()) ?? DataType.Unknown;
-        throw new System.NotImplementedException();
+        // TODO the left and right antetypes need to be compatible with the range type
+        var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
+            .OfType<INamespaceDeclarationNode>().SelectMany(ns => ns.MembersNamed("range"))
+            .OfType<ITypeDeclarationNode>().TrySingle();
+        var rangeAntetype = (IAntetype?)rangeTypeDeclaration?.Symbol.GetDeclaredType()?.ToAntetype()
+                            ?? IAntetype.UnknownMaybeAntetype;
+        return rangeAntetype;
     }
 
     public static IMaybeExpressionAntetype StringLiteralExpression_Antetype(IStringLiteralExpressionNode node)
@@ -168,5 +177,13 @@ internal static class ExpressionAntetypesAspect
 
         // If there was no result expression, then the block type is void
         return IAntetype.Void;
+    }
+
+    public static IMaybeExpressionAntetype ConversionExpression_Antetype(IConversionExpressionNode node)
+    {
+        var convertToAntetype = node.ConvertToType.Antetype;
+        if (node.Operator == ConversionOperator.Optional)
+            convertToAntetype = convertToAntetype.MakeOptional();
+        return convertToAntetype;
     }
 }

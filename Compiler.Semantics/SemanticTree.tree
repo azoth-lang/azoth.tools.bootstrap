@@ -272,7 +272,8 @@ AssignmentExpression <: Expression = Syntax:`IAssignmentExpressionSyntax` LeftOp
 BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax`
     LeftOperand:AmbiguousExpression FinalLeftOperand:`IExpressionNode`
     Operator:`BinaryOperator`
-    RightOperand:AmbiguousExpression FinalRightOperand:`IExpressionNode`;
+    RightOperand:AmbiguousExpression FinalRightOperand:`IExpressionNode`
+    ContainingLexicalScope:`LexicalScope`;
 UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax` Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:AmbiguousExpression;
 IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression FinalReferent:`IExpressionNode`;
 ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax` Referent:AmbiguousExpression Operator:`ConversionOperator` ConvertToType:Type;
