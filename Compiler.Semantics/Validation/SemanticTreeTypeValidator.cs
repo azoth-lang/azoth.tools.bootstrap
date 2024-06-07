@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 
@@ -19,9 +20,15 @@ internal class SemanticTreeTypeValidator
             if (ValidateAntetypes)
             {
                 var expectedAntetype = expressionSyntax.DataType.Result?.ToAntetype();
-                var antetype = expression.Antetype;
-                if (!antetype.Equals(expectedAntetype))
-                    throw new InvalidOperationException($"Expected antetype {expectedAntetype}, but got {antetype}");
+                // Sometimes the new analysis can come up with types when the old one couldn't. So
+                // if the expected antetype is UnknownAntetype, we don't care what the actual antetype is.
+                if (expectedAntetype is not UnknownAntetype)
+                {
+                    var antetype = expression.Antetype;
+                    if (!antetype.Equals(expectedAntetype))
+                        throw new InvalidOperationException(
+                            $"Expected antetype {expectedAntetype}, but got {antetype}");
+                }
             }
             if (ValidateTypes)
             {
