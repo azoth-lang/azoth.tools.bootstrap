@@ -59,6 +59,8 @@ public sealed class FixedSizeIntegerType : IntegerType
     public IntegerType WithSign()
     {
         if (IsSigned) return this;
+        // TODO this implementation doesn't match the description in the comment, but the comment
+        // sounds correct.
         if (this == Byte) return Int32;
         return Int;
     }

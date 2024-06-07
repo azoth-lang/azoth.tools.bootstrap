@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
@@ -14,4 +15,14 @@ public sealed class PointerSizedIntegerAntetype : IntegerAntetype
     {
     }
 
+    /// <summary>
+    /// The current type but signed.
+    /// </summary>
+    public IAntetype WithSign()
+    {
+        if (IsSigned) return this;
+        if (ReferenceEquals(this, Size)) return Offset;
+        if (ReferenceEquals(this, NUInt)) return NUInt;
+        throw new UnreachableException("All types should be covered");
+    }
 }

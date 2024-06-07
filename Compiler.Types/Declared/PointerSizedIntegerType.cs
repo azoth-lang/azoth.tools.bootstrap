@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
@@ -34,14 +33,12 @@ public sealed class PointerSizedIntegerType : IntegerType
     /// <summary>
     /// The current type but signed.
     /// </summary>
-    /// <remarks>If the current type is already signed then this doesn't change anything. If the
-    /// current type is unsigned, then this returns the next larger integer type.</remarks>
     public IntegerType WithSign()
     {
         if (IsSigned) return this;
         if (this == Size) return Offset;
         if (this == NUInt) return NInt;
-        throw new NotImplementedException();
+        throw new UnreachableException("All types should be covered");
     }
 
     public override BareValueType<PointerSizedIntegerType> With(IFixedList<DataType> typeArguments)

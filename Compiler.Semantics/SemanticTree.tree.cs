@@ -1363,6 +1363,7 @@ public partial interface IUnaryOperatorExpressionNode : ISemanticNode, IExpressi
     UnaryOperatorFixity Fixity { get; }
     UnaryOperator Operator { get; }
     IAmbiguousExpressionNode Operand { get; }
+    IExpressionNode FinalOperand { get; }
 }
 
 public partial interface IIdExpressionNode : ISemanticNode, IExpressionNode

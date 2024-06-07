@@ -59,6 +59,8 @@ public sealed class IntegerConstValueAntetype : ConstValueAntetype, INumericAnte
 
     public IntegerConstValueAntetype DivideBy(IntegerConstValueAntetype other) => new(Value / other.Value);
 
+    public IntegerConstValueAntetype Negate() => new(-Value);
+
     public BoolConstValueAntetype Equals(IntegerConstValueAntetype other) => Value == other.Value;
 
     public BoolConstValueAntetype NotEquals(IntegerConstValueAntetype other) => Value != other.Value;

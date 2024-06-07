@@ -27,6 +27,8 @@ public sealed class BoolConstValueAntetype : ConstValueAntetype
     public BoolConstValueAntetype And(BoolConstValueAntetype other) => Value && other.Value;
 
     public BoolConstValueAntetype Or(BoolConstValueAntetype other) => Value || other.Value;
+
+    public BoolConstValueAntetype Not() => Value ? False : True;
     #endregion
 
     #region Equality

@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
@@ -202,4 +203,37 @@ internal static class ExpressionAntetypesAspect
 
         return IAntetype.Unknown;
     }
+
+    public static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype(IUnaryOperatorExpressionNode node)
+        => node.Operator switch
+        {
+            UnaryOperator.Not => UnaryOperatorExpression_Antetype_Not(node),
+            UnaryOperator.Minus => UnaryOperatorExpression_Antetype_Minus(node),
+            UnaryOperator.Plus => UnaryOperatorExpression_Antetype_Plus(node),
+            _ => throw ExhaustiveMatch.Failed(node.Operator),
+        };
+
+    private static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype_Not(IUnaryOperatorExpressionNode node)
+    {
+        if (node.FinalOperand.Antetype is BoolConstValueAntetype antetype) return antetype.Not();
+        return IAntetype.Bool;
+    }
+
+    private static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype_Minus(IUnaryOperatorExpressionNode node)
+        => node.FinalOperand.Antetype switch
+        {
+            IntegerConstValueAntetype t => t.Negate(),
+            FixedSizeIntegerAntetype t => t.WithSign(),
+            PointerSizedIntegerAntetype t => t.WithSign(),
+            // Even if unsigned before, it is signed now
+            BigIntegerAntetype _ => IAntetype.Int,
+            _ => IAntetype.Unknown,
+        };
+
+    private static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype_Plus(IUnaryOperatorExpressionNode node)
+        => node.FinalOperand.Antetype switch
+        {
+            INumericAntetype t => t,
+            _ => IAntetype.Unknown,
+        };
 }

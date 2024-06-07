@@ -274,7 +274,8 @@ BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax
     Operator:`BinaryOperator`
     RightOperand:AmbiguousExpression FinalRightOperand:`IExpressionNode`
     ContainingLexicalScope:`LexicalScope`;
-UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax` Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:AmbiguousExpression;
+UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax` Fixity:`UnaryOperatorFixity`
+    Operator:`UnaryOperator` Operand:AmbiguousExpression FinalOperand:`IExpressionNode`;
 IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression FinalReferent:`IExpressionNode`;
 ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax` Referent:AmbiguousExpression Operator:`ConversionOperator` ConvertToType:Type;
 PatternMatchExpression <: Expression = Syntax:`IPatternMatchExpressionSyntax` Referent:AmbiguousExpression Pattern;
