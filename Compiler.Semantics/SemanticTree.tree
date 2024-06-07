@@ -306,6 +306,9 @@ FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax
 MethodInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     MethodGroup:MethodGroupName Arguments:AmbiguousExpression*
     CompatibleDeclarations:{`IStandardMethodDeclarationNode`} ReferencedDeclaration:`IStandardMethodDeclarationNode`?;
+GetterInvocationExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax`
+    Context:Expression PropertyName:`StandardName`
+    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`IGetterMethodDeclarationNode`?;
 
 // ---------- Ambiguous Name Expressions
 AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
@@ -319,6 +322,9 @@ GenericNameExpression <: AmbiguousName, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
 MemberAccessExpression <: AmbiguousName, AssignableExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression MemberName:`StandardName` TypeArguments:Type*;
+PropertyName <: AmbiguousName, AssignableExpression
+    = Syntax:`IMemberAccessExpressionSyntax` Context:Expression PropertyName:`StandardName`
+    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`};
 
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression = Syntax:`INameExpressionSyntax`;
@@ -441,8 +447,9 @@ InstanceMemberDeclaration <: TypeMemberDeclaration;
 MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, InstanceMemberDeclaration, InvocableDeclaration
     = Name:`IdentifierName` Symbol:`MethodSymbol`;
 StandardMethodDeclaration <: MethodDeclaration = Arity:`int` MethodGroupType:`FunctionType`;
-GetterMethodDeclaration <: MethodDeclaration;
-SetterMethodDeclaration <: MethodDeclaration;
+PropertyAccessorDeclaration <: MethodDeclaration;
+GetterMethodDeclaration <: PropertyAccessorDeclaration;
+SetterMethodDeclaration <: PropertyAccessorDeclaration;
 ConstructorDeclaration <: ClassMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration
     = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
 InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration

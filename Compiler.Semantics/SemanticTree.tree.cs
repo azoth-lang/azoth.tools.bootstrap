@@ -73,6 +73,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IWhileExpressionNode),
     typeof(IFunctionInvocationExpressionNode),
     typeof(IMethodInvocationExpressionNode),
+    typeof(IGetterInvocationExpressionNode),
     typeof(IAmbiguousNameNode),
     typeof(IGenericNameExpressionNode),
     typeof(INameExpressionNode),
@@ -106,8 +107,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IStructMemberDeclarationNode),
     typeof(IInstanceMemberDeclarationNode),
     typeof(IStandardMethodDeclarationNode),
-    typeof(IGetterMethodDeclarationNode),
-    typeof(ISetterMethodDeclarationNode),
+    typeof(IPropertyAccessorDeclarationNode),
     typeof(IAssociatedFunctionDeclarationNode),
     typeof(IFunctionSymbolNode),
     typeof(IUserTypeSymbolNode),
@@ -1212,6 +1212,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
     typeof(IForeachExpressionNode),
     typeof(IFunctionInvocationExpressionNode),
     typeof(IMethodInvocationExpressionNode),
+    typeof(IGetterInvocationExpressionNode),
     typeof(INameExpressionNode),
     typeof(IMoveExpressionNode),
     typeof(IFreezeExpressionNode),
@@ -1229,6 +1230,7 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode
 [Closed(
     typeof(IIdentifierNameExpressionNode),
     typeof(IMemberAccessExpressionNode),
+    typeof(IPropertyNameNode),
     typeof(IFieldAccessExpressionNode),
     typeof(IVariableNameExpressionNode),
     typeof(IMissingNameExpressionNode),
@@ -1497,6 +1499,17 @@ public partial interface IMethodInvocationExpressionNode : ISemanticNode, IExpre
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
 }
 
+public partial interface IGetterInvocationExpressionNode : ISemanticNode, IExpressionNode
+{
+    new IMemberAccessExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    IExpressionNode Context { get; }
+    StandardName PropertyName { get; }
+    IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
+    IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
+}
+
 [Closed(
     typeof(IAmbiguousNameNode),
     typeof(INameExpressionNode))]
@@ -1509,7 +1522,8 @@ public partial interface IAmbiguousNameExpressionNode : IAmbiguousExpressionNode
 [Closed(
     typeof(ISimpleNameNode),
     typeof(IStandardNameExpressionNode),
-    typeof(IMemberAccessExpressionNode))]
+    typeof(IMemberAccessExpressionNode),
+    typeof(IPropertyNameNode))]
 public partial interface IAmbiguousNameNode : ISemanticNode, IAmbiguousNameExpressionNode
 {
 }
@@ -1575,6 +1589,18 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameNode, IAssi
     IAmbiguousExpressionNode Context { get; }
     StandardName MemberName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
+}
+
+public partial interface IPropertyNameNode : IAmbiguousNameNode, IAssignableExpressionNode
+{
+    new IMemberAccessExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    IExpressionNode Context { get; }
+    StandardName PropertyName { get; }
+    IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
 }
 
 [Closed(
@@ -2113,8 +2139,7 @@ public partial interface IInstanceMemberDeclarationNode : ISemanticNode, ITypeMe
 [Closed(
     typeof(IMethodDefinitionNode),
     typeof(IStandardMethodDeclarationNode),
-    typeof(IGetterMethodDeclarationNode),
-    typeof(ISetterMethodDeclarationNode),
+    typeof(IPropertyAccessorDeclarationNode),
     typeof(IMethodSymbolNode))]
 public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode, IInstanceMemberDeclarationNode, IInvocableDeclarationNode
 {
@@ -2137,16 +2162,23 @@ public partial interface IStandardMethodDeclarationNode : ISemanticNode, IMethod
 }
 
 [Closed(
+    typeof(IGetterMethodDeclarationNode),
+    typeof(ISetterMethodDeclarationNode))]
+public partial interface IPropertyAccessorDeclarationNode : ISemanticNode, IMethodDeclarationNode
+{
+}
+
+[Closed(
     typeof(IGetterMethodDefinitionNode),
     typeof(IGetterMethodSymbolNode))]
-public partial interface IGetterMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
+public partial interface IGetterMethodDeclarationNode : IPropertyAccessorDeclarationNode
 {
 }
 
 [Closed(
     typeof(ISetterMethodDefinitionNode),
     typeof(ISetterMethodSymbolNode))]
-public partial interface ISetterMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
+public partial interface ISetterMethodDeclarationNode : IPropertyAccessorDeclarationNode
 {
 }
 

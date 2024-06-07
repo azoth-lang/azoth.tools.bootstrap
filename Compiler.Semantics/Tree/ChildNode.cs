@@ -37,7 +37,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected virtual IChildNode? Rewrite() => throw Child.RewriteNotSupported(this);
 
-    IChild? IChild.Rewrite() => Child.Attach(Parent, Rewrite());
+    IChild? IChild.Rewrite() => Child.AttachRewritten(Parent, Rewrite());
 
     /// <summary>
     /// The previous node to this one in a preorder traversal of the tree.

@@ -324,6 +324,9 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.Arguments)
                     yield return child;
                 yield break;
+            case IGetterInvocationExpressionNode n:
+                yield return n.Context;
+                yield break;
             case IIdentifierNameExpressionNode n:
                 yield break;
             case IGenericNameExpressionNode n:
@@ -334,6 +337,9 @@ public static class ISemanticNodeExtensions
                 yield return n.Context;
                 foreach (var child in n.TypeArguments)
                     yield return child;
+                yield break;
+            case IPropertyNameNode n:
+                yield return n.Context;
                 yield break;
             case IUnqualifiedNamespaceNameNode n:
                 yield break;

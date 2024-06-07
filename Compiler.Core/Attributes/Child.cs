@@ -104,6 +104,19 @@ public static class Child
         return child;
     }
 
+    /// <summary>
+    /// Attach a child that is the result of rewriting and hence may support rewriting.
+    /// </summary>
+    public static TChild AttachRewritten<TParent, TChild>(TParent parent, TChild child)
+        where TChild : class?, IChild<TParent>?
+    {
+        if (child is null)
+            return child;
+
+        child.SetParent(parent);
+        return child;
+    }
+
     public static Child<TChild> Create<TParent, TChild>(TParent parent, TChild initialValue)
         where TChild : class?, IChild<TParent>?
     {

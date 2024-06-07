@@ -613,6 +613,9 @@ internal class SemanticsApplier
             case IMethodInvocationExpressionNode n:
                 MethodInvocationExpression(n);
                 break;
+            case IGetterInvocationExpressionNode n:
+                GetterInvocationExpression(n);
+                break;
             case IMoveExpressionNode n:
                 MoveExpression(n);
                 break;
@@ -648,6 +651,9 @@ internal class SemanticsApplier
                 break;
             case IFieldAccessExpressionNode n:
                 FieldAccessExpression(n);
+                break;
+            case IPropertyNameNode n:
+                PropertyName(n);
                 break;
             case IMissingNameExpressionNode n:
                 MissingNameExpression(n);
@@ -784,6 +790,9 @@ internal class SemanticsApplier
         MethodGroupName(node.MethodGroup);
         AmbiguousExpressions(node.Arguments);
     }
+
+    private static void GetterInvocationExpression(IGetterInvocationExpressionNode node)
+        => Expression(node.Context);
     #endregion
 
     #region Control Flow Expressions
@@ -829,6 +838,9 @@ internal class SemanticsApplier
             case IMemberAccessExpressionNode n:
                 MemberAccessExpression(n);
                 break;
+            case IPropertyNameNode n:
+                PropertyName(n);
+                break;
         }
     }
 
@@ -866,6 +878,8 @@ internal class SemanticsApplier
         AmbiguousExpression(node.Context);
         Types(node.TypeArguments);
     }
+
+    private static void PropertyName(IPropertyNameNode node) => Expression(node.Context);
     #endregion
 
     #region Name Expressions

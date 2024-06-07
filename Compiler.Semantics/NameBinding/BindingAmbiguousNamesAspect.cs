@@ -130,6 +130,8 @@ internal static class BindingAmbiguousNamesAspect
             return null;
 
         // TODO lookup members of the antetype and rewrite accordingly
+        return null;
+
         //var contextTypeDeclaration = node.InheritedPackageNameScope().Lookup(context.Antetype);
         //var members = contextTypeDeclaration?.InstanceMembersNamed(node.MemberName).ToFixedSet()
         //              ?? FixedSet.Empty<IInstanceMemberDeclarationNode>();
@@ -139,6 +141,10 @@ internal static class BindingAmbiguousNamesAspect
         //if (members.TryAllOfType<IStandardMethodDeclarationNode>(out var referencedMethods))
         //    return new MethodGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments, referencedMethods);
 
+        //if (members.TryAllOfType<IPropertyAccessorDeclarationNode>(out var referencedProperties)
+        //    && node.TypeArguments.Count == 0)
+        //    return new PropertyNameNode(node.Syntax, context, node.MemberName, referencedProperties);
+
         //if (members.TrySingle() is not null and var referencedDeclaration)
         //    switch (referencedDeclaration)
         //    {
@@ -146,7 +152,7 @@ internal static class BindingAmbiguousNamesAspect
         //            return new FieldAccessExpressionNode(node.Syntax, context, fieldDeclaration.Name, fieldDeclaration);
         //    }
 
-        return null;
+        //return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
     }
 
     public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_UnknownNameExpressionContext(IMemberAccessExpressionNode node)
@@ -155,6 +161,20 @@ internal static class BindingAmbiguousNamesAspect
             return null;
 
         return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDeclarationNode>());
+    }
+
+    public static IExpressionNode? PropertyName_Rewrite(IPropertyNameNode node)
+    {
+        if (node.Parent is IAssignmentExpressionNode assignmentExpression
+            && assignmentExpression.LeftOperand == node)
+        {
+            // Property on left hand of assignment will be rewritten by the assignment expression
+            return null;
+        }
+
+        var getter = node.ReferencedPropertyAccessors.OfType<IGetterMethodDeclarationNode>().TrySingle();
+        return new GetterInvocationExpressionNode(node.Syntax, node.Context, node.PropertyName,
+            node.ReferencedPropertyAccessors, getter);
     }
 
     public static void UnknownMemberAccessExpression_ContributeDiagnostics(
