@@ -141,7 +141,8 @@ AssociatedMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, Stru
 MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition, MethodDeclaration
     = Syntax:`IMethodDefinitionSyntax` Kind:`MethodKind` Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
     Symbol:`MethodSymbol`;
-AbstractMethodDefinition <: MethodDefinition = Syntax:`IAbstractMethodDefinitionSyntax`
+// TODO getters and setters can be abstract too
+AbstractMethodDefinition <: MethodDefinition, StandardMethodDeclaration = Syntax:`IAbstractMethodDefinitionSyntax`
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
     ContainingDeclaredType:`ObjectType`;
 ConcreteMethodDefinition <: MethodDefinition, StructMemberDefinition, ConcreteInvocableDefinition

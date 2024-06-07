@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -13,6 +14,8 @@ internal sealed class AbstractMethodDefinitionNode : MethodDefinitionNode, IAbst
 {
     public override IAbstractMethodDefinitionSyntax Syntax { get; }
     public override IBodyNode? Body => null;
+    public int Arity => Parameters.Count;
+    public FunctionType MethodGroupType => Symbol.MethodGroupType;
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     private ValueAttribute<ObjectType> containingDeclaredType;
     public ObjectType ContainingDeclaredType

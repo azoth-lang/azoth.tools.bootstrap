@@ -37,7 +37,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IFunctionDefinitionNode),
     typeof(ITypeDefinitionNode),
     typeof(ITypeMemberDefinitionNode),
-    typeof(IAbstractMethodDefinitionNode),
     typeof(IConcreteMethodDefinitionNode),
     typeof(IConstructorDefinitionNode),
     typeof(IInitializerDefinitionNode),
@@ -589,11 +588,11 @@ public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 }
 
-public partial interface IAbstractMethodDefinitionNode : ISemanticNode, IMethodDefinitionNode
+public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, IStandardMethodDeclarationNode
 {
     new IAbstractMethodDefinitionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IClassMemberDefinitionSyntax? IClassMemberDefinitionNode.Syntax => Syntax;
     ITraitMemberDefinitionSyntax ITraitMemberDefinitionNode.Syntax => Syntax;
@@ -2128,6 +2127,7 @@ public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, I
 }
 
 [Closed(
+    typeof(IAbstractMethodDefinitionNode),
     typeof(IStandardMethodDefinitionNode),
     typeof(IStandardMethodSymbolNode))]
 public partial interface IStandardMethodDeclarationNode : ISemanticNode, IMethodDeclarationNode
