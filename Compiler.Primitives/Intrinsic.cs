@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -21,9 +23,16 @@ public static class Intrinsic
     public static readonly UserTypeSymbol Promise = Find<UserTypeSymbol>("Promise");
 
     public static readonly IDeclaredUserType PromiseType = Promise.DeclaresType;
+    public static readonly IDeclaredAntetype PromiseAntetype = PromiseType.ToAntetype();
 
     public static CapabilityType PromiseOf(DataType type)
         => PromiseType.WithRead(FixedList.Create(type));
+    public static IMaybeAntetype PromiseOf(IMaybeExpressionAntetype antetype)
+    {
+        if (antetype.ToNonConstValueType() is not IAntetype knownAntetype)
+            return IAntetype.Unknown;
+        return PromiseAntetype.With(FixedList.Create(knownAntetype));
+    }
 
     public static readonly UserTypeSymbol RawHybridBoundedList
         = Find<UserTypeSymbol>("Raw_Hybrid_Bounded_List");

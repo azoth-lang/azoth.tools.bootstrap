@@ -1829,6 +1829,7 @@ public partial interface IAsyncStartExpressionNode : ISemanticNode, IExpressionN
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     bool Scheduled { get; }
     IAmbiguousExpressionNode Expression { get; }
+    IExpressionNode FinalExpression { get; }
 }
 
 public partial interface IAwaitExpressionNode : ISemanticNode, IExpressionNode
@@ -1837,6 +1838,7 @@ public partial interface IAwaitExpressionNode : ISemanticNode, IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
+    IExpressionNode FinalExpression { get; }
 }
 
 [Closed(

@@ -85,6 +85,14 @@ public partial interface IExpressionNode
     IPreviousValueId PreviousValueId();
 }
 
+public partial interface IBlockExpressionNode
+{
+    new IMaybeAntetype Antetype { get; }
+    // TODO this ought to have been generated
+    IMaybeAntetype IBlockOrResultNode.Antetype => Antetype;
+    IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
+}
+
 public partial interface INewObjectExpressionNode
 {
     PackageNameScope InheritedPackageNameScope();

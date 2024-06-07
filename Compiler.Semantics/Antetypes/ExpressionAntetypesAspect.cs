@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -187,6 +188,18 @@ internal static class ExpressionAntetypesAspect
         return convertToAntetype;
     }
 
-    public static IMaybeExpressionAntetype NoneLiteralExpression_Antetype(INoneLiteralExpressionNode node)
+    public static IMaybeExpressionAntetype NoneLiteralExpression_Antetype(INoneLiteralExpressionNode _)
         => IAntetype.None;
+
+    public static IMaybeExpressionAntetype AsyncStartExpression_Antetype(IAsyncStartExpressionNode node)
+        => Intrinsic.PromiseOf(node.FinalExpression.Antetype);
+
+    public static IMaybeExpressionAntetype AwaitExpression_Antetype(IAwaitExpressionNode node)
+    {
+        if (node.FinalExpression.Antetype is UserGenericNominalAntetype { DeclaredAntetype: var declaredAntetype } antetype
+            && Intrinsic.PromiseAntetype.Equals(declaredAntetype))
+            return antetype.TypeArguments[0];
+
+        return IAntetype.Unknown;
+    }
 }

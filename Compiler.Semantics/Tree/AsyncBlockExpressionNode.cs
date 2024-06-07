@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 
@@ -7,6 +8,7 @@ internal sealed class AsyncBlockExpressionNode : ExpressionNode, IAsyncBlockExpr
 {
     public override IAsyncBlockExpressionSyntax Syntax { get; }
     public IBlockExpressionNode Block { get; }
+    public override IMaybeExpressionAntetype Antetype => Block.Antetype;
 
     public AsyncBlockExpressionNode(IAsyncBlockExpressionSyntax syntax, IBlockExpressionNode block)
     {

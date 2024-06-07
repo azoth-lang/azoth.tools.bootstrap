@@ -366,8 +366,10 @@ FreezeExpression <: Expression = Syntax:`IFreezeExpressionSyntax` Referent:Simpl
 
 // ---------- Async Expressions
 AsyncBlockExpression <: Expression = Syntax:`IAsyncBlockExpressionSyntax` Block:BlockExpression;
-AsyncStartExpression <: Expression = Syntax:`IAsyncStartExpressionSyntax` Scheduled:`bool` Expression:AmbiguousExpression;
-AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax` Expression:AmbiguousExpression;
+AsyncStartExpression <: Expression = Syntax:`IAsyncStartExpressionSyntax` Scheduled:`bool`
+    Expression:AmbiguousExpression FinalExpression:`IExpressionNode`;
+AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax`
+    Expression:AmbiguousExpression  FinalExpression:`IExpressionNode`;
 
 
 // -------------------------------------------------------------------------------------------------
