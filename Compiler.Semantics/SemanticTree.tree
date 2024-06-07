@@ -269,7 +269,10 @@ StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionS
     Value:`string` Type:`DataType` ContainingLexicalScope:`LexicalScope`;
 
 // ---------- Operator Expressions
-AssignmentExpression <: Expression = Syntax:`IAssignmentExpressionSyntax` LeftOperand:AssignableExpression Operator:`AssignmentOperator` RightOperand:AmbiguousExpression;
+AssignmentExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
+    LeftOperand:AssignableExpression IntermediateLeftOperand:`IAssignableExpressionNode`
+    Operator:`AssignmentOperator`
+    RightOperand:AmbiguousExpression CurrentRightOperand:`IAmbiguousExpressionNode`;
 BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax`
     LeftOperand:AmbiguousExpression FinalLeftOperand:`IExpressionNode`
     Operator:`BinaryOperator`
@@ -309,6 +312,9 @@ MethodInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
 GetterInvocationExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression PropertyName:`StandardName`
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`IGetterMethodDeclarationNode`?;
+SetterInvocationExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
+    Context:Expression PropertyName:`StandardName` Value:AmbiguousExpression
+    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`ISetterMethodDeclarationNode`?;
 
 // ---------- Ambiguous Name Expressions
 AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;

@@ -616,6 +616,9 @@ internal class SemanticsApplier
             case IGetterInvocationExpressionNode n:
                 GetterInvocationExpression(n);
                 break;
+            case ISetterInvocationExpressionNode n:
+                SetterInvocationExpression(n);
+                break;
             case IMoveExpressionNode n:
                 MoveExpression(n);
                 break;
@@ -793,6 +796,13 @@ internal class SemanticsApplier
 
     private static void GetterInvocationExpression(IGetterInvocationExpressionNode node)
         => Expression(node.Context);
+
+
+    private static void SetterInvocationExpression(ISetterInvocationExpressionNode node)
+    {
+        Expression(node.Context);
+        AmbiguousExpression(node.Value);
+    }
     #endregion
 
     #region Control Flow Expressions

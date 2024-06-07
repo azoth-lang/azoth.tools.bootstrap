@@ -327,6 +327,10 @@ public static class ISemanticNodeExtensions
             case IGetterInvocationExpressionNode n:
                 yield return n.Context;
                 yield break;
+            case ISetterInvocationExpressionNode n:
+                yield return n.Context;
+                yield return n.Value;
+                yield break;
             case IIdentifierNameExpressionNode n:
                 yield break;
             case IGenericNameExpressionNode n:

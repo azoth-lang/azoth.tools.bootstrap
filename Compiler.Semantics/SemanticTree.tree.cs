@@ -74,6 +74,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IFunctionInvocationExpressionNode),
     typeof(IMethodInvocationExpressionNode),
     typeof(IGetterInvocationExpressionNode),
+    typeof(ISetterInvocationExpressionNode),
     typeof(IAmbiguousNameNode),
     typeof(IGenericNameExpressionNode),
     typeof(INameExpressionNode),
@@ -1213,6 +1214,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
     typeof(IFunctionInvocationExpressionNode),
     typeof(IMethodInvocationExpressionNode),
     typeof(IGetterInvocationExpressionNode),
+    typeof(ISetterInvocationExpressionNode),
     typeof(INameExpressionNode),
     typeof(IMoveExpressionNode),
     typeof(IFreezeExpressionNode),
@@ -1341,8 +1343,10 @@ public partial interface IAssignmentExpressionNode : ISemanticNode, IExpressionN
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAssignableExpressionNode LeftOperand { get; }
+    IAssignableExpressionNode IntermediateLeftOperand { get; }
     AssignmentOperator Operator { get; }
     IAmbiguousExpressionNode RightOperand { get; }
+    IAmbiguousExpressionNode CurrentRightOperand { get; }
 }
 
 public partial interface IBinaryOperatorExpressionNode : ISemanticNode, IExpressionNode
@@ -1508,6 +1512,18 @@ public partial interface IGetterInvocationExpressionNode : ISemanticNode, IExpre
     StandardName PropertyName { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
+}
+
+public partial interface ISetterInvocationExpressionNode : ISemanticNode, IExpressionNode
+{
+    new IAssignmentExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    IExpressionNode Context { get; }
+    StandardName PropertyName { get; }
+    IAmbiguousExpressionNode Value { get; }
+    IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
+    ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
 }
 
 [Closed(

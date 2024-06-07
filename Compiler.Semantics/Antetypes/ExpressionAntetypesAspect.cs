@@ -243,4 +243,11 @@ internal static class ExpressionAntetypesAspect
         var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
+
+    public static IMaybeExpressionAntetype SetterInvocationExpression_Antetype(ISetterInvocationExpressionNode node)
+    {
+        var unboundAntetype = node.ReferencedDeclaration?.Symbol.Parameters[0].Type.ToAntetype() ?? IAntetype.Unknown;
+        var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
+        return boundAntetype;
+    }
 }

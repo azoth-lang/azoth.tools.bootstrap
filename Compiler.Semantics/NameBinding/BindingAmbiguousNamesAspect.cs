@@ -177,6 +177,17 @@ internal static class BindingAmbiguousNamesAspect
             node.ReferencedPropertyAccessors, getter);
     }
 
+    public static IChildNode? AssignmentExpression_Rewrite_PropertyNameLeftOperand(IAssignmentExpressionNode node)
+    {
+        if (node.IntermediateLeftOperand is not IPropertyNameNode propertyName)
+            return null;
+
+        var setter = propertyName.ReferencedPropertyAccessors.OfType<ISetterMethodDeclarationNode>().TrySingle();
+        return new SetterInvocationExpressionNode(node.Syntax, propertyName.Context,
+            propertyName.PropertyName, node.CurrentRightOperand,
+            propertyName.ReferencedPropertyAccessors, setter);
+    }
+
     public static void UnknownMemberAccessExpression_ContributeDiagnostics(
         IUnknownMemberAccessExpressionNode node,
         Diagnostics diagnostics)

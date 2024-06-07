@@ -27,7 +27,7 @@ public struct Child<T>
     /// </summary>
     /// <remarks>This isn't marked <see langword="readonly"/> because it does a volatile read so we
     /// don't want people to think it is ok to copy the struct before accessing it.</remarks>
-    internal T CurrentValue => Volatile.Read(in value);
+    public T CurrentValue => Volatile.Read(in value);
 
     public T Value
     {
