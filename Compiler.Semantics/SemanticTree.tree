@@ -385,6 +385,7 @@ Declaration;
 ChildDeclaration <: Declaration, Child;
 NamedDeclaration <: ChildDeclaration = Name:`TypeName`;
 SymbolDeclaration <: Declaration = Symbol:`Symbol`;
+InvocableDeclaration <: SymbolDeclaration, ChildDeclaration = Symbol:`InvocableSymbol`;
 
 // ---------- Bindings
 BindingDeclaration <: ChildDeclaration;
@@ -412,7 +413,7 @@ NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, Sy
 
 // ---------- Function Declaration
 // TODO better name for this or perhaps just merge AssociatedFunctionDeclaration into FunctionDeclaration
-FunctionLikeDeclaration <: NamedDeclaration = Symbol:`FunctionSymbol` Type:`FunctionType`;
+FunctionLikeDeclaration <: NamedDeclaration, InvocableDeclaration = Symbol:`FunctionSymbol` Type:`FunctionType`;
 FunctionDeclaration <: PackageMemberDeclaration, FunctionLikeDeclaration;
 
 // ---------- Type Declarations
@@ -436,14 +437,17 @@ AssociatedMemberDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, S
 InstanceMemberDeclaration <: TypeMemberDeclaration;
 
 // ---------- Member Declarations
-MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, InstanceMemberDeclaration = Name:`IdentifierName` Symbol:`MethodSymbol`;
+MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, InstanceMemberDeclaration, InvocableDeclaration
+    = Name:`IdentifierName` Symbol:`MethodSymbol`;
 StandardMethodDeclaration <: MethodDeclaration = Arity:`int` MethodGroupType:`FunctionType`;
 GetterMethodDeclaration <: MethodDeclaration;
 SetterMethodDeclaration <: MethodDeclaration;
-ConstructorDeclaration <: ClassMemberDeclaration, AssociatedMemberDeclaration = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
-InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
+ConstructorDeclaration <: ClassMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration
+    = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
+InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration
+    = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
 FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;
-AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionLikeDeclaration;
+AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionLikeDeclaration, InvocableDeclaration;
 
 // ---------- Can be Referenced by Type Name
 TypeDeclaration <: NamedDeclaration, SymbolDeclaration

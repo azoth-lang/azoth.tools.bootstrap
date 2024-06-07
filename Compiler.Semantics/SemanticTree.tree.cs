@@ -39,8 +39,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(ITypeMemberDefinitionNode),
     typeof(IAbstractMethodDefinitionNode),
     typeof(IConcreteMethodDefinitionNode),
-    typeof(IDefaultConstructorDefinitionNode),
-    typeof(ISourceConstructorDefinitionNode),
+    typeof(IConstructorDefinitionNode),
+    typeof(IInitializerDefinitionNode),
     typeof(IAttributeNode),
     typeof(ICapabilityConstraintNode),
     typeof(IParameterNode),
@@ -90,6 +90,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IAwaitExpressionNode),
     typeof(IDeclarationNode),
     typeof(INamedDeclarationNode),
+    typeof(IInvocableDeclarationNode),
     typeof(IBindingDeclarationNode),
     typeof(IPackageDeclarationNode),
     typeof(IPackageMemberDeclarationNode),
@@ -108,12 +109,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IStandardMethodDeclarationNode),
     typeof(IGetterMethodDeclarationNode),
     typeof(ISetterMethodDeclarationNode),
-    typeof(IConstructorDeclarationNode),
-    typeof(IInitializerDeclarationNode),
     typeof(IAssociatedFunctionDeclarationNode),
     typeof(IFunctionSymbolNode),
     typeof(IUserTypeSymbolNode),
     typeof(IMethodSymbolNode),
+    typeof(IConstructorSymbolNode),
+    typeof(IInitializerSymbolNode),
     typeof(IFieldSymbolNode))]
 public partial interface ISemanticNode
 {
@@ -378,6 +379,7 @@ public partial interface IFunctionDefinitionNode : ISemanticNode, IPackageMember
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 }
 
 [Closed(
@@ -584,6 +586,7 @@ public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
     MethodSymbol IMethodDeclarationNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 }
 
 public partial interface IAbstractMethodDefinitionNode : ISemanticNode, IMethodDefinitionNode
@@ -653,7 +656,7 @@ public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinition
 [Closed(
     typeof(IDefaultConstructorDefinitionNode),
     typeof(ISourceConstructorDefinitionNode))]
-public partial interface IConstructorDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IConstructorDeclarationNode
+public partial interface IConstructorDefinitionNode : ISemanticNode, IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IConstructorDeclarationNode
 {
     new IConstructorDefinitionSyntax? Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -668,25 +671,22 @@ public partial interface IConstructorDefinitionNode : IConcreteInvocableDefiniti
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     ConstructorSymbol IConstructorDeclarationNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 }
 
-public partial interface IDefaultConstructorDefinitionNode : ISemanticNode, IConstructorDefinitionNode
+public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinitionNode
 {
 }
 
-public partial interface ISourceConstructorDefinitionNode : ISemanticNode, IConstructorDefinitionNode
+public partial interface ISourceConstructorDefinitionNode : IConstructorDefinitionNode
 {
     new IConstructorDefinitionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IConstructorDefinitionSyntax? IConstructorDefinitionNode.Syntax => Syntax;
-    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    IClassMemberDefinitionSyntax? IClassMemberDefinitionNode.Syntax => Syntax;
     IConstructorSelfParameterNode SelfParameter { get; }
     IBlockBodyNode Body { get; }
 }
 
-public partial interface IInitializerDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IStructMemberDefinitionNode, IInitializerDeclarationNode
+public partial interface IInitializerDefinitionNode : ISemanticNode, IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IStructMemberDefinitionNode, IInitializerDeclarationNode
 {
     new IInitializerDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -702,6 +702,7 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     InitializerSymbol IInitializerDeclarationNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
     IBlockBodyNode Body { get; }
 }
 
@@ -746,6 +747,7 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteInvocableD
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
     IBodyNode Body { get; }
 }
 
@@ -1851,6 +1853,7 @@ public partial interface IDeclarationNode : ISemanticNode
 
 [Closed(
     typeof(INamedDeclarationNode),
+    typeof(IInvocableDeclarationNode),
     typeof(IBindingDeclarationNode),
     typeof(IPackageFacetDeclarationNode),
     typeof(IPackageFacetChildDeclarationNode))]
@@ -1872,6 +1875,7 @@ public partial interface INamedDeclarationNode : ISemanticNode, IChildDeclaratio
 }
 
 [Closed(
+    typeof(IInvocableDeclarationNode),
     typeof(IPackageDeclarationNode),
     typeof(IPackageFacetDeclarationNode),
     typeof(INamespaceMemberDeclarationNode),
@@ -1881,6 +1885,17 @@ public partial interface INamedDeclarationNode : ISemanticNode, IChildDeclaratio
 public partial interface ISymbolDeclarationNode : IDeclarationNode
 {
     Symbol Symbol { get; }
+}
+
+[Closed(
+    typeof(IFunctionLikeDeclarationNode),
+    typeof(IMethodDeclarationNode),
+    typeof(IConstructorDeclarationNode),
+    typeof(IInitializerDeclarationNode))]
+public partial interface IInvocableDeclarationNode : ISemanticNode, ISymbolDeclarationNode, IChildDeclarationNode
+{
+    new InvocableSymbol Symbol { get; }
+    Symbol ISymbolDeclarationNode.Symbol => Symbol;
 }
 
 [Closed(
@@ -1965,9 +1980,10 @@ public partial interface INamespaceMemberDeclarationNode : IPackageFacetChildDec
 [Closed(
     typeof(IFunctionDeclarationNode),
     typeof(IAssociatedFunctionDeclarationNode))]
-public partial interface IFunctionLikeDeclarationNode : INamedDeclarationNode
+public partial interface IFunctionLikeDeclarationNode : INamedDeclarationNode, IInvocableDeclarationNode
 {
-    FunctionSymbol Symbol { get; }
+    new FunctionSymbol Symbol { get; }
+    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
     FunctionType Type { get; }
 }
 
@@ -2101,13 +2117,14 @@ public partial interface IInstanceMemberDeclarationNode : ISemanticNode, ITypeMe
     typeof(IGetterMethodDeclarationNode),
     typeof(ISetterMethodDeclarationNode),
     typeof(IMethodSymbolNode))]
-public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode, IInstanceMemberDeclarationNode
+public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode, IInstanceMemberDeclarationNode, IInvocableDeclarationNode
 {
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
     new MethodSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 }
 
 [Closed(
@@ -2136,23 +2153,25 @@ public partial interface ISetterMethodDeclarationNode : ISemanticNode, IMethodDe
 [Closed(
     typeof(IConstructorDefinitionNode),
     typeof(IConstructorSymbolNode))]
-public partial interface IConstructorDeclarationNode : ISemanticNode, IAssociatedMemberDeclarationNode
+public partial interface IConstructorDeclarationNode : IAssociatedMemberDeclarationNode, IInvocableDeclarationNode
 {
     new IdentifierName? Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     new ConstructorSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 }
 
 [Closed(
     typeof(IInitializerDefinitionNode),
     typeof(IInitializerSymbolNode))]
-public partial interface IInitializerDeclarationNode : ISemanticNode, IAssociatedMemberDeclarationNode
+public partial interface IInitializerDeclarationNode : IAssociatedMemberDeclarationNode, IInvocableDeclarationNode
 {
     new IdentifierName? Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     new InitializerSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 }
 
 [Closed(
@@ -2248,11 +2267,11 @@ public partial interface ISetterMethodSymbolNode : IMethodSymbolNode, ISetterMet
 {
 }
 
-public partial interface IConstructorSymbolNode : IConstructorDeclarationNode
+public partial interface IConstructorSymbolNode : ISemanticNode, IConstructorDeclarationNode
 {
 }
 
-public partial interface IInitializerSymbolNode : IInitializerDeclarationNode
+public partial interface IInitializerSymbolNode : ISemanticNode, IInitializerDeclarationNode
 {
 }
 

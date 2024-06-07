@@ -72,10 +72,14 @@ internal static class OverloadResolutionAspect
     public static IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(
         INewObjectExpressionNode node)
     {
+        var constructingAntetype = node.ConstructingAntetype;
         var arity = node.Arguments.Count;
-        return node.ReferencedConstructors.Where(c => c.Symbol.Arity == arity).ToFixedSet();
+        return node.ReferencedConstructors
+                   .Select(c => ContextualizedOverload.Create(constructingAntetype, c))
+                   .Where(c => c.Arity == arity)
+                   .Select(c => c.Declaration).ToFixedSet();
     }
 
     public static IConstructorDeclarationNode? NewObjectExpression_ReferencedConstructor(INewObjectExpressionNode node)
-        => node.ReferencedConstructors.TrySingle();
+        => node.CompatibleConstructors.TrySingle();
 }

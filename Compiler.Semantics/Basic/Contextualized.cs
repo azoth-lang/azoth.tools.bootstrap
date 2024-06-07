@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 /// A contextualized invokable symbol.
 /// </summary>
 /// <remarks>Contextualized symbols have type parameters replaced.</remarks>
-public class Contextualized<TSymbol>
+public sealed class Contextualized<TSymbol>
     where TSymbol : InvocableSymbol
 {
     public TSymbol Symbol { get; }
