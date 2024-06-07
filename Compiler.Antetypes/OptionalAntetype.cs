@@ -3,6 +3,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 public sealed class OptionalAntetype : INonVoidAntetype
 {
     public INonVoidAntetype Referent { get; }
+    public bool HasReferenceSemantics => Referent.HasReferenceSemantics;
 
     public OptionalAntetype(INonVoidAntetype referent)
     {

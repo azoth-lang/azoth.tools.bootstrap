@@ -9,4 +9,7 @@ public interface IUserDeclaredAntetype : IDeclaredAntetype
     IdentifierName ContainingPackage { get; }
     NamespaceName ContainingNamespace { get; }
     StandardName Name { get; }
+
+    // TODO this seems like the wrong way to do this and was introduced only for the legacy reference equality operator
+    bool HasReferenceSemantics { get; }
 }

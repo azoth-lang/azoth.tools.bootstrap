@@ -10,15 +10,18 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
     public NamespaceName ContainingNamespace { get; }
     public IdentifierName Name { get; }
     StandardName IUserDeclaredAntetype.Name => Name;
+    public bool HasReferenceSemantics { get; }
 
     public UserNonGenericNominalAntetype(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
-        IdentifierName name)
+        IdentifierName name,
+        bool hasReferenceSemantics)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
         Name = name;
+        HasReferenceSemantics = hasReferenceSemantics;
     }
 
     public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)

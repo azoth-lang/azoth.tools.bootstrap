@@ -8,6 +8,8 @@ public sealed class GenericParameterAntetype : NonGenericNominalAntetype, INonVo
     public UserDeclaredGenericAntetype DeclaringAntetype { get; }
     public AntetypeGenericParameter Parameter { get; }
     public IdentifierName Name => Parameter.Name;
+    // TODO is this right?
+    public bool HasReferenceSemantics => true;
 
     public GenericParameterAntetype(UserDeclaredGenericAntetype declaringAntetype, AntetypeGenericParameter parameter)
     {

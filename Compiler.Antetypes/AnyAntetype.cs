@@ -16,6 +16,8 @@ public class AnyAntetype : INonVoidAntetype, IDeclaredAntetype
 
     public SpecialTypeName Name => SpecialTypeName.Any;
 
+    public bool HasReferenceSemantics => true;
+
     IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
         => FixedList.Empty<AntetypeGenericParameter>();
 

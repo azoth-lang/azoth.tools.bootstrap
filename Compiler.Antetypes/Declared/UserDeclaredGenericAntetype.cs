@@ -12,12 +12,14 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
     StandardName IUserDeclaredAntetype.Name => Name;
     public IFixedList<AntetypeGenericParameter> GenericParameters { get; }
     public IFixedList<GenericParameterAntetype> GenericParameterAntetypes { get; }
+    public bool HasReferenceSemantics { get; }
 
     public UserDeclaredGenericAntetype(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         GenericName name,
-        IEnumerable<AntetypeGenericParameter> genericParameters)
+        IEnumerable<AntetypeGenericParameter> genericParameters,
+        bool hasReferenceSemantics)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
@@ -25,6 +27,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
         GenericParameters = genericParameters.ToFixedList();
         Requires.That(nameof(genericParameters), Name.GenericParameterCount == GenericParameters.Count,
             "Count must match name count");
+        HasReferenceSemantics = hasReferenceSemantics;
         GenericParameterAntetypes = GenericParameters.Select(p => new GenericParameterAntetype(this, p))
                                                      .ToFixedList();
     }

@@ -6,6 +6,7 @@ public sealed class FunctionAntetype : INonVoidAntetype
 {
     public IFixedList<INonVoidAntetype> Parameters { get; }
     public IAntetype Return { get; }
+    public bool HasReferenceSemantics => true;
 
     public FunctionAntetype(IEnumerable<INonVoidAntetype> parameters, IAntetype returnAntetype)
     {

@@ -13,4 +13,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
     typeof(GenericParameterAntetype))]
 public interface INonVoidAntetype : IAntetype, IMaybeNonVoidAntetype
 {
+    // TODO this seems like the wrong way to do this and was introduced only for the legacy reference equality operator
+    bool HasReferenceSemantics { get; }
 }

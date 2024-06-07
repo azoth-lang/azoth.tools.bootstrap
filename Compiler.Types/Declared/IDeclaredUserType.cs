@@ -48,12 +48,13 @@ internal static class DeclaredUserTypeExtensions
     internal static IDeclaredAntetype ConstructDeclaredAntetype(this IDeclaredUserType declaredType)
     {
         var antetypeGenericParameters = declaredType.GenericParameters.Select(p => new AntetypeGenericParameter(p.Name, p.Variance));
+        var hasReferenceSemantics = declaredType is ObjectType;
         return declaredType.Name switch
         {
             IdentifierName n
-                => new UserNonGenericNominalAntetype(declaredType.ContainingPackage, declaredType.ContainingNamespace, n),
+                => new UserNonGenericNominalAntetype(declaredType.ContainingPackage, declaredType.ContainingNamespace, n, hasReferenceSemantics),
             GenericName n
-                => new UserDeclaredGenericAntetype(declaredType.ContainingPackage, declaredType.ContainingNamespace, n, antetypeGenericParameters),
+                => new UserDeclaredGenericAntetype(declaredType.ContainingPackage, declaredType.ContainingNamespace, n, antetypeGenericParameters, hasReferenceSemantics),
             _ => throw ExhaustiveMatch.Failed(declaredType.Name)
         };
     }

@@ -8,6 +8,8 @@ public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype
 {
     public SpecialTypeName Name { get; }
 
+    public bool HasReferenceSemantics => false;
+
     IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
         => FixedList.Empty<AntetypeGenericParameter>();
 
@@ -45,4 +47,6 @@ public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype
         // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
         => base.GetHashCode();
     #endregion
+
+    public sealed override string ToString() => Name.ToString();
 }

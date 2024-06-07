@@ -10,6 +10,10 @@ internal class SemanticTreeTypeValidator
 
     public static void Validate(ISemanticNode node)
     {
+        // Validate children first since their antetypes are generally used to compute the parent's antetype
+        foreach (var child in node.Children())
+            Validate(child);
+
         if (node is IExpressionNode expression
             and not INamespaceNameNode
             and not IFunctionGroupNameNode
@@ -39,8 +43,5 @@ internal class SemanticTreeTypeValidator
                     throw new InvalidOperationException($"Expected type {expectedExpType}, but got {expType}");
             }
         }
-
-        foreach (var child in node.Children())
-            Validate(child);
     }
 }

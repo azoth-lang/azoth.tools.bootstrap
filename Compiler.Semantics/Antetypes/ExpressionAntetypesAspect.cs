@@ -83,10 +83,10 @@ internal static class ExpressionAntetypesAspect
             (BoolConstValueAntetype left, BinaryOperator.And, BoolConstValueAntetype right) => left.And(right),
             (BoolConstValueAntetype left, BinaryOperator.Or, BoolConstValueAntetype right) => left.Or(right),
 
-            // TODO implement the equivalent of this in the Antetype aspect
-            //(CapabilityType { BareType: BareReferenceType }, BinaryOperator.EqualsEquals, CapabilityType { BareType: BareReferenceType })
-            //    or (CapabilityType { BareType: BareReferenceType }, BinaryOperator.NotEqual, CapabilityType { BareType: BareReferenceType })
-            //    => InferReferenceEqualityOperatorType(leftOperand, rightOperand),
+            // TODO this is the legacy reference equality operator that needs to be changed
+            (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.EqualsEquals, INonVoidAntetype { HasReferenceSemantics: true })
+                or (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.NotEqual, INonVoidAntetype { HasReferenceSemantics: true })
+                => IAntetype.Bool,
 
             (BoolAntetype, BinaryOperator.EqualsEquals, BoolAntetype)
                 or (BoolAntetype, BinaryOperator.NotEqual, BoolAntetype)

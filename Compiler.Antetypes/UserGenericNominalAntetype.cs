@@ -8,6 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 public sealed class UserGenericNominalAntetype : NominalAntetype, INonVoidAntetype
 {
     public override IUserDeclaredAntetype DeclaredAntetype { get; }
+    public bool HasReferenceSemantics => DeclaredAntetype.HasReferenceSemantics;
     public IFixedList<IAntetype> TypeArguments { get; }
     private readonly AntetypeReplacements antetypeReplacements;
 

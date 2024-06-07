@@ -20,6 +20,9 @@ public sealed class NeverAntetype : EmptyAntetype, INonVoidAntetype
         : base(SpecialTypeName.Never) { }
     #endregion
 
+    // TODO this is especially strange because it is a subtype of reference types
+    public bool HasReferenceSemantics => false;
+
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)
         // NeverAntetype is a singleton, so we can use reference equality.
