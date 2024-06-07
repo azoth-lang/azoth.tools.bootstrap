@@ -27,4 +27,6 @@ public sealed class OptionalAntetype : INonVoidAntetype
 
     public override int GetHashCode() => HashCode.Combine(Referent);
     #endregion
+
+    public override string ToString() => $"{Referent}?";
 }

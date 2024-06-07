@@ -19,4 +19,6 @@ public sealed class UnknownAntetype : IMaybeNonVoidAntetype
 
     public override int GetHashCode() => HashCode.Combine(typeof(UnknownAntetype));
     #endregion
+
+    public override string ToString() => "⧼unknown⧽";
 }

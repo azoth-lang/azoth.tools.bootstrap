@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -180,14 +179,19 @@ internal static class SymbolNodeAspect
         {
             FunctionSymbol sym => FunctionSymbol(sym),
             ConstructorSymbol sym => ConstructorSymbol(sym),
+            InitializerSymbol sym => InitializerSymbol(sym),
             MethodSymbol sym => MethodSymbol(sym),
-            _ => throw new NotImplementedException(),
+            _ => throw ExhaustiveMatch.Failed(symbol),
         };
+
     private static IFunctionDeclarationNode FunctionSymbol(FunctionSymbol sym)
-        => new FunctionSymbolNode(sym);
+         => new FunctionSymbolNode(sym);
 
     private static IConstructorDeclarationNode ConstructorSymbol(ConstructorSymbol sym)
         => new ConstructorSymbolNode(sym);
+
+    private static IInitializerSymbolNode InitializerSymbol(InitializerSymbol sym)
+        => new InitializerSymbolNode(sym);
 
     private static IMethodDeclarationNode MethodSymbol(MethodSymbol sym)
         => sym.Kind switch

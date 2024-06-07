@@ -31,4 +31,7 @@ public sealed class FunctionAntetype : INonVoidAntetype
 
     public override int GetHashCode() => HashCode.Combine(Parameters, Return);
     #endregion
+
+    public override string ToString()
+        => $"({string.Join(", ", Parameters)}) -> {Return}";
 }
