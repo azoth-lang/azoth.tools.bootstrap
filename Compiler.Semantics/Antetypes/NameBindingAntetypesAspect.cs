@@ -20,7 +20,7 @@ internal static class NameBindingAntetypesAspect
         => node.Type?.Antetype ?? node.FinalInitializer?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
 
     public static IMaybeAntetype ForeachExpression_BindingAntetype(IForeachExpressionNode node)
-        => node.DeclaredType?.Antetype ?? throw new System.NotImplementedException();
+        => node.DeclaredType?.Antetype ?? node.IteratedAntetype;
 
     public static IMaybeAntetype NewObjectExpression_ConstructingAntetype(INewObjectExpressionNode node)
         => node.ConstructingType.Antetype;

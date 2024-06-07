@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -10,6 +11,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     private Child<IAmbiguousExpressionNode> referent;
     public IAmbiguousExpressionNode Referent => referent.Value;
     public IPatternNode Pattern { get; }
+    public override IMaybeExpressionAntetype Antetype => IAntetype.Bool;
 
     public PatternMatchExpressionNode(
         IPatternMatchExpressionSyntax syntax,

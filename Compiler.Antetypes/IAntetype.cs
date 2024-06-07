@@ -33,5 +33,10 @@ public interface IAntetype : IExpressionAntetype, IMaybeAntetype
     public static readonly PointerSizedIntegerAntetype Offset = PointerSizedIntegerAntetype.Offset;
     public static readonly PointerSizedIntegerAntetype NInt = PointerSizedIntegerAntetype.NInt;
     public static readonly PointerSizedIntegerAntetype NUInt = PointerSizedIntegerAntetype.NUInt;
+
+    /// <summary>
+    /// The value `none` has this type, which is `never?`.
+    /// </summary>
+    public static readonly OptionalAntetype None = new(Never);
     #endregion
 }

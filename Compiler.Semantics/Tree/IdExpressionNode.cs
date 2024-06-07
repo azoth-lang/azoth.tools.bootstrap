@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -13,6 +14,7 @@ internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
     private Child<IAmbiguousExpressionNode> referent;
     public IAmbiguousExpressionNode Referent => referent.Value;
     public IExpressionNode FinalReferent => (IExpressionNode)referent.FinalValue;
+    public override IMaybeExpressionAntetype Antetype => FinalReferent.Antetype;
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value

@@ -186,4 +186,7 @@ internal static class ExpressionAntetypesAspect
             convertToAntetype = convertToAntetype.MakeOptional();
         return convertToAntetype;
     }
+
+    public static IMaybeExpressionAntetype NoneLiteralExpression_Antetype(INoneLiteralExpressionNode node)
+        => IAntetype.None;
 }

@@ -284,8 +284,13 @@ IfExpression <: Expression, ElseClause = Syntax:`IIfExpressionSyntax` Condition:
 LoopExpression <: Expression = Syntax:`ILoopExpressionSyntax` Block:BlockExpression;
 WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax` Condition:AmbiguousExpression Block:BlockExpression;
 ForeachExpression <: Expression, NamedBinding = Syntax:`IForeachExpressionSyntax`
-    IsMutableBinding:`bool` VariableName:`IdentifierName` InExpression:AmbiguousExpression DeclaredType:Type? Block:BlockExpression
-    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
+    IsMutableBinding:`bool` VariableName:`IdentifierName` InExpression:AmbiguousExpression
+    FinalInExpression:`IExpressionNode` DeclaredType:Type? Block:BlockExpression
+    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
+    ReferencedIterableDeclaration:`ITypeDeclarationNode`? ReferencedIterateMethod:`IStandardMethodDeclarationNode`?
+    IteratorAntetype:`IMaybeExpressionAntetype`
+    ReferencedIteratorDeclaration:`ITypeDeclarationNode`? ReferencedNextMethod:`IStandardMethodDeclarationNode`?
+    IteratedAntetype:`IMaybeAntetype`;
 BreakExpression <: NeverTypedExpression = Syntax:`IBreakExpressionSyntax` Value:AmbiguousExpression?;
 NextExpression <: NeverTypedExpression = Syntax:`INextExpressionSyntax`;
 ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax` Value:AmbiguousExpression?;

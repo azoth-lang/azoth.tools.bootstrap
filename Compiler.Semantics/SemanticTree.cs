@@ -96,6 +96,8 @@ public partial interface IForeachExpressionNode
 {
     // TODO some way to code gen this hiding
     IdentifierName INamedBindingDeclarationNode.Name => VariableName;
+
+    PackageNameScope InheritedPackageNameScope();
 }
 #endregion
 

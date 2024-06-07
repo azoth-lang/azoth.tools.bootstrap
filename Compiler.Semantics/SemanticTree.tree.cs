@@ -1431,10 +1431,17 @@ public partial interface IForeachExpressionNode : IExpressionNode, INamedBinding
     bool IsMutableBinding { get; }
     IdentifierName VariableName { get; }
     IAmbiguousExpressionNode InExpression { get; }
+    IExpressionNode FinalInExpression { get; }
     ITypeNode? DeclaredType { get; }
     IBlockExpressionNode Block { get; }
     LexicalScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
+    ITypeDeclarationNode? ReferencedIterableDeclaration { get; }
+    IStandardMethodDeclarationNode? ReferencedIterateMethod { get; }
+    IMaybeExpressionAntetype IteratorAntetype { get; }
+    ITypeDeclarationNode? ReferencedIteratorDeclaration { get; }
+    IStandardMethodDeclarationNode? ReferencedNextMethod { get; }
+    IMaybeAntetype IteratedAntetype { get; }
 }
 
 public partial interface IBreakExpressionNode : INeverTypedExpressionNode
