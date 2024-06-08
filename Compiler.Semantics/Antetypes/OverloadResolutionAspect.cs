@@ -77,10 +77,10 @@ internal static class OverloadResolutionAspect
         if (!SemanticTreeTypeValidator.Validating)
             return null;
 
-        if (node.FinalExpression.Antetype is not FunctionAntetype)
+        if (node.IntermediateExpression is not IExpressionNode { Antetype: FunctionAntetype } expression)
             return null;
 
-        return new FunctionReferenceInvocationNode(node.Syntax, node.FinalExpression, node.CurrentArguments);
+        return new FunctionReferenceInvocationNode(node.Syntax, expression, node.CurrentArguments);
     }
 
     public static IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(

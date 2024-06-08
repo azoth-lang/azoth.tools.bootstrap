@@ -13,7 +13,7 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
     public override IInvocationExpressionSyntax Syntax { get; }
     private Child<IAmbiguousExpressionNode> expression;
     public IAmbiguousExpressionNode Expression => expression.Value;
-    public IExpressionNode FinalExpression => (IExpressionNode)expression.FinalValue;
+    public IAmbiguousExpressionNode IntermediateExpression => expression.FinalValue;
     private readonly ChildList<IAmbiguousExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     public IEnumerable<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;

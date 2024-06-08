@@ -1479,7 +1479,7 @@ public partial interface IInvocationExpressionNode : IAmbiguousExpressionNode
     new IInvocationExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
-    IExpressionNode FinalExpression { get; }
+    IAmbiguousExpressionNode IntermediateExpression { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     IEnumerable<IAmbiguousExpressionNode> CurrentArguments { get; }
 }

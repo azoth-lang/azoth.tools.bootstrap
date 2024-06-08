@@ -303,7 +303,7 @@ ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax` Valu
 
 // ---------- Invocation Expressions
 InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
-    Expression:AmbiguousExpression FinalExpression:`IExpressionNode` Arguments:AmbiguousExpression* CurrentArguments:`IEnumerable<IAmbiguousExpressionNode>`;
+    Expression:AmbiguousExpression IntermediateExpression:`IAmbiguousExpressionNode` Arguments:AmbiguousExpression* CurrentArguments:`IEnumerable<IAmbiguousExpressionNode>`;
 FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
     CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?;
