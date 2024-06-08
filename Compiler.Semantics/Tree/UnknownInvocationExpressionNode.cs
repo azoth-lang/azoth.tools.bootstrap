@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Framework;
@@ -11,6 +12,7 @@ internal sealed class UnknownInvocationExpressionNode : ExpressionNode, IUnknown
     private Child<IAmbiguousExpressionNode> expression;
     public IAmbiguousExpressionNode Expression => expression.Value;
     public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    public override IMaybeExpressionAntetype Antetype => IAntetype.Unknown;
 
     public UnknownInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
