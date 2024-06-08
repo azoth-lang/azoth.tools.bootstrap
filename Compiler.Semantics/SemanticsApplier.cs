@@ -622,6 +622,9 @@ internal class SemanticsApplier
             case IFunctionReferenceInvocationNode n:
                 FunctionReferenceInvocation(n);
                 break;
+            case IInitializerInvocationExpressionNode n:
+                InitializerInvocationExpression(n);
+                break;
             case IUnknownInvocationExpressionNode n:
                 UnknownInvocationExpression(n);
                 break;
@@ -813,6 +816,12 @@ internal class SemanticsApplier
     private static void FunctionReferenceInvocation(IFunctionReferenceInvocationNode node)
     {
         Expression(node.Expression);
+        AmbiguousExpressions(node.Arguments);
+    }
+
+    private static void InitializerInvocationExpression(IInitializerInvocationExpressionNode node)
+    {
+        InitializeGroupName(node.InitializerGroup);
         AmbiguousExpressions(node.Arguments);
     }
 
@@ -1051,7 +1060,8 @@ internal class SemanticsApplier
     private static void InitializeGroupName(IInitializerGroupNameNode node)
     {
         var symbols = node.ReferencedDeclarations.Select(d => d.Symbol).ToFixedSet();
-        node.Syntax.Semantics.Fulfill(new InitializerGroupNameSyntax(symbols));
+        if (node.Syntax is IMemberAccessExpressionSyntax memberAccess)
+            memberAccess.Semantics.Fulfill(new InitializerGroupNameSyntax(symbols));
         Expression(node.Context);
     }
 

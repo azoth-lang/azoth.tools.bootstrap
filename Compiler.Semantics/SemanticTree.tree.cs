@@ -75,6 +75,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IMethodInvocationExpressionNode),
     typeof(IGetterInvocationExpressionNode),
     typeof(ISetterInvocationExpressionNode),
+    typeof(IFunctionReferenceInvocationNode),
+    typeof(IInitializerInvocationExpressionNode),
     typeof(IAmbiguousNameNode),
     typeof(IGenericNameExpressionNode),
     typeof(INameExpressionNode),
@@ -931,7 +933,7 @@ public partial interface ITypeNode : ISemanticNode, ICodeNode
     new ITypeSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    IMaybeAntetype Antetype { get; }
+    IMaybeAntetype NamedAntetype { get; }
     DataType Type { get; }
 }
 
@@ -1216,6 +1218,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
     typeof(IGetterInvocationExpressionNode),
     typeof(ISetterInvocationExpressionNode),
     typeof(IFunctionReferenceInvocationNode),
+    typeof(IInitializerInvocationExpressionNode),
     typeof(IUnknownInvocationExpressionNode),
     typeof(INameExpressionNode),
     typeof(IMoveExpressionNode),
@@ -1531,12 +1534,25 @@ public partial interface ISetterInvocationExpressionNode : ISemanticNode, IExpre
     ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
 }
 
-public partial interface IFunctionReferenceInvocationNode : IExpressionNode
+public partial interface IFunctionReferenceInvocationNode : ISemanticNode, IExpressionNode
 {
     new IInvocationExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IExpressionNode Expression { get; }
     FunctionAntetype FunctionAntetype { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+}
+
+public partial interface IInitializerInvocationExpressionNode : ISemanticNode, IExpressionNode
+{
+    new IInvocationExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    IInitializerGroupNameNode InitializerGroup { get; }
+    IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; }
+    IInitializerDeclarationNode? ReferencedDeclaration { get; }
 }
 
 public partial interface IUnknownInvocationExpressionNode : IExpressionNode
@@ -1738,6 +1754,7 @@ public partial interface ITypeNameExpressionNode : INameExpressionNode
     StandardName Name { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     ITypeDeclarationNode ReferencedDeclaration { get; }
+    IMaybeAntetype NamedAntetype { get; }
 }
 
 public partial interface IStandardTypeNameExpressionNode : ISemanticNode, ITypeNameExpressionNode
@@ -1757,10 +1774,9 @@ public partial interface IQualifiedTypeNameExpressionNode : ISemanticNode, IType
 
 public partial interface IInitializerGroupNameNode : INameExpressionNode
 {
-    new IMemberAccessExpressionSyntax Syntax { get; }
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
-    ITypeNameExpressionNode? Context { get; }
-    StandardName InitializerName { get; }
+    ITypeNameExpressionNode Context { get; }
+    StandardName? InitializerName { get; }
+    IMaybeAntetype InitializingAntetype { get; }
     IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { get; }
 }
 

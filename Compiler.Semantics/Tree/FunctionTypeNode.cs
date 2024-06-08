@@ -15,9 +15,9 @@ internal sealed class FunctionTypeNode : TypeNode, IFunctionTypeNode
     public IFixedList<IParameterTypeNode> Parameters { get; }
     public ITypeNode Return { get; }
     private ValueAttribute<IMaybeAntetype> antetype;
-    public override IMaybeAntetype Antetype
+    public override IMaybeAntetype NamedAntetype
         => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.FunctionType_Antetype);
+            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.FunctionType_NamedAntetype);
     private ValueAttribute<DataType> type;
     public override DataType Type
     => type.TryGetValue(out var value) ? value

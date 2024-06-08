@@ -13,7 +13,7 @@ internal static class OverloadResolutionAspect
 {
     public static IExpressionNode? InvocationExpression_Rewrite_FunctionGroupNameExpression(IInvocationExpressionNode node)
     {
-        if (node.Expression is not IFunctionGroupNameNode function) return null;
+        if (node.IntermediateExpression is not IFunctionGroupNameNode function) return null;
 
         return new FunctionInvocationExpressionNode(node.Syntax, function, node.CurrentArguments);
     }
@@ -55,7 +55,7 @@ internal static class OverloadResolutionAspect
 
     public static IExpressionNode? InvocationExpression_Rewrite_MethodGroupNameExpression(IInvocationExpressionNode node)
     {
-        if (node.Expression is not IMethodGroupNameNode method) return null;
+        if (node.IntermediateExpression is not IMethodGroupNameNode method) return null;
 
         return new MethodInvocationExpressionNode(node.Syntax, method, node.CurrentArguments);
     }
@@ -69,6 +69,45 @@ internal static class OverloadResolutionAspect
 
     public static IStandardMethodDeclarationNode? MethodInvocationExpression_ReferencedDeclaration(
         IMethodInvocationExpressionNode node)
+        => node.CompatibleDeclarations.TrySingle();
+
+    public static IAmbiguousExpressionNode? InvocationExpression_Rewrite_TypeNameExpression(
+        IInvocationExpressionNode node)
+    {
+        if (node.IntermediateExpression is not ITypeNameExpressionNode context) return null;
+
+        // Rewrite to insert an initializer group name node between the type name expression and the
+        // invocation expression.
+        var referencedDeclarations = context.ReferencedDeclaration.Members.OfType<IInitializerDeclarationNode>()
+                                            .Where(c => c.Name is null).ToFixedSet();
+
+        var initializerGroupName = new InitializerGroupNameNode(context.Syntax, context, null, referencedDeclarations);
+        return new InvocationExpressionNode(node.Syntax, initializerGroupName, node.CurrentArguments);
+    }
+
+    public static IAmbiguousExpressionNode? InvocationExpression_Rewrite_InitializerGroupNameExpression(
+        IInvocationExpressionNode node)
+    {
+        if (node.IntermediateExpression is not IInitializerGroupNameNode initializer)
+            return null;
+
+        return new InitializerInvocationExpressionNode(node.Syntax, initializer, node.CurrentArguments);
+    }
+
+
+    public static IFixedSet<IInitializerDeclarationNode> InitializerInvocationExpression_CompatibleDeclarations(
+        IInitializerInvocationExpressionNode node)
+    {
+        var initializingAntetype = node.InitializerGroup.InitializingAntetype;
+        var arity = node.Arguments.Count;
+        return node.InitializerGroup.ReferencedDeclarations
+                   .Select(i => ContextualizedOverload.Create(initializingAntetype, i))
+                   .Where(d => d.Arity == arity)
+                   .Select(c => c.Declaration).ToFixedSet();
+    }
+
+    public static IInitializerDeclarationNode? InitializerInvocationExpression_ReferencedDeclaration(
+        IInitializerInvocationExpressionNode node)
         => node.CompatibleDeclarations.TrySingle();
 
     public static IExpressionNode? InvocationExpression_Rewrite_FunctionReferenceExpression(IInvocationExpressionNode node)

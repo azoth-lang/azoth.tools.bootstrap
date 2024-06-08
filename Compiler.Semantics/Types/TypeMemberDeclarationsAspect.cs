@@ -61,7 +61,7 @@ internal static class TypeMemberDeclarationsAspect
         => new(node.IsLentBinding, node.Type);
 
     public static IMaybeAntetype NamedParameter_Antetype(INamedParameterNode node)
-        => node.TypeNode.Antetype;
+        => node.TypeNode.NamedAntetype;
 
     public static DataType NamedParameterNode_Type(INamedParameterNode node)
         => node.TypeNode.Type;

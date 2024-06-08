@@ -28,9 +28,9 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
         => referencedDeclaration.TryGetValue(out var value) ? value
             : referencedDeclaration.GetValue(this, SymbolNodeAspect.StandardTypeName_ReferencedDeclaration);
     private ValueAttribute<IMaybeAntetype> antetype;
-    public override IMaybeAntetype Antetype
+    public override IMaybeAntetype NamedAntetype
         => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.GenericTypeName_Antetype);
+            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.GenericTypeName_NamedAntetype);
     private ValueAttribute<BareType?> bareType;
     public override BareType? BareType
         => bareType.TryGetValue(out var value) ? value

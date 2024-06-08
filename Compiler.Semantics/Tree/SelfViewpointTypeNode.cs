@@ -15,9 +15,9 @@ internal sealed class SelfViewpointTypeNode : TypeNode, ISelfViewpointTypeNode
 
     public ITypeNode Referent { get; }
     private ValueAttribute<IMaybeAntetype> antetype;
-    public override IMaybeAntetype Antetype
+    public override IMaybeAntetype NamedAntetype
         => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.ViewpointType_Antetype);
+            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.ViewpointType_NamedAntetype);
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value

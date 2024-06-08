@@ -13,8 +13,8 @@ internal sealed class BoolLiteralExpressionNode : LiteralExpressionNode, IBoolLi
     public bool Value => Syntax.Value;
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value)? value
-            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.BoolLiteralExpression_Antetype);
+        => antetype.TryGetValue(out var value) ? value
+            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.BoolLiteralExpression_NamedAntetype);
     public override BoolConstValueType Type => TypeExpressionsAspect.BoolLiteralExpression_Type(this);
 
     public BoolLiteralExpressionNode(IBoolLiteralExpressionSyntax syntax)

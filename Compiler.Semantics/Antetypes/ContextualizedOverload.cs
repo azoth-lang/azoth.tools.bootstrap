@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -35,16 +37,44 @@ internal static class ContextualizedOverload
         IConstructorDeclarationNode constructor)
     {
         var symbol = constructor.Symbol;
-        var selfParameterAntetype = constructingAntetype.ReplaceTypeParametersIn(symbol.SelfParameterType.ToAntetype())
-                                                        .ToNonConstValueType();
-
-        var parameterAntetypes = symbol.Parameters.Select(p => ParameterAntetype(constructingAntetype, p))
-                                       .OfType<IMaybeNonVoidAntetype>().ToFixedList();
-        var returnAntetype = constructingAntetype.ReplaceTypeParametersIn(symbol.ReturnType.ToAntetype())
-                                                 .ToNonConstValueType();
-        return new(constructor, selfParameterAntetype, parameterAntetypes, returnAntetype);
+        return Create(constructingAntetype, constructor, symbol, symbol.SelfParameterType);
     }
+
+    public static ContextualizedOverload<IInitializerDeclarationNode> Create(
+        IMaybeAntetype initializingAntetype, IInitializerDeclarationNode initializer)
+    {
+        var symbol = initializer.Symbol;
+        return Create(initializingAntetype, initializer, symbol, symbol.SelfParameterType);
+    }
+
+    private static ContextualizedOverload<TDeclaration> Create<TDeclaration>(
+        IMaybeAntetype contextAntetype,
+        TDeclaration declaration,
+        InvocableSymbol symbol,
+        CapabilityType selfParameterType)
+        where TDeclaration : IInvocableDeclarationNode
+    {
+        var selfParameterAntetype = SelfParameterAntetype(contextAntetype, selfParameterType);
+        var parameterAntetypes = ParameterAntetypes(contextAntetype, symbol);
+        var returnAntetype = ReturnAntetype(contextAntetype, symbol);
+        return new(declaration, selfParameterAntetype, parameterAntetypes, returnAntetype);
+    }
+
+    private static IMaybeAntetype SelfParameterAntetype(
+        IMaybeAntetype contextAntetype,
+        CapabilityType symbolSelfParameterType)
+        => contextAntetype.ReplaceTypeParametersIn(symbolSelfParameterType.ToAntetype())
+                               .ToNonConstValueType();
+
+    private static IFixedList<IMaybeNonVoidAntetype> ParameterAntetypes(
+        IMaybeAntetype contextAntetype,
+        InvocableSymbol symbol)
+        => symbol.Parameters.Select(p => ParameterAntetype(contextAntetype, p))
+                 .OfType<IMaybeNonVoidAntetype>().ToFixedList();
 
     private static IMaybeAntetype ParameterAntetype(IMaybeAntetype context, Parameter parameter)
         => context.ReplaceTypeParametersIn(parameter.Type.ToAntetype()).ToNonConstValueType();
+
+    private static IMaybeAntetype ReturnAntetype(IMaybeAntetype contextAntetype, InvocableSymbol symbol)
+        => contextAntetype.ReplaceTypeParametersIn(symbol.Return.Type.ToAntetype()).ToNonConstValueType();
 }

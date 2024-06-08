@@ -17,7 +17,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.IfExpression_Antetype);
+            : antetype.GetValue(this, ExpressionAntetypesAspect.IfExpression_Antetype);
 
     public IfExpressionNode(
         IIfExpressionSyntax syntax,

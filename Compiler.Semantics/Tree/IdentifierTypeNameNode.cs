@@ -26,9 +26,9 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
     public override TypeSymbol? ReferencedSymbol
         => SymbolAspect.StandardTypeName(this);
     private ValueAttribute<IMaybeAntetype> antetype;
-    public override IMaybeAntetype Antetype
+    public override IMaybeAntetype NamedAntetype
         => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.IdentifierTypeName_Antetype);
+            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.IdentifierTypeName_NamedAntetype);
     private ValueAttribute<BareType?> bareType;
     public override BareType? BareType
         => bareType.TryGetValue(out var value) ? value

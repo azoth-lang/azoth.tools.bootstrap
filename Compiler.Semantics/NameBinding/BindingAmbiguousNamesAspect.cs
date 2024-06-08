@@ -112,7 +112,7 @@ internal static class BindingAmbiguousNamesAspect
 
         if (members.TryAllOfType<IInitializerDeclarationNode>(out var referencedInitializers))
             // TODO handle type arguments (which are not allowed for initializers)
-            return new InitializerGroupNameNode(node.Syntax, context, referencedInitializers);
+            return new InitializerGroupNameNode(node.Syntax, context, context.Name, referencedInitializers);
 
         return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
     }

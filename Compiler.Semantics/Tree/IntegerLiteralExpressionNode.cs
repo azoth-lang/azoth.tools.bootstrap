@@ -15,7 +15,7 @@ internal sealed class IntegerLiteralExpressionNode : LiteralExpressionNode, IInt
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.IntegerLiteralExpression_Antetype);
+            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.IntegerLiteralExpression_NamedAntetype);
     private ValueAttribute<IntegerConstValueType> type;
     public override IntegerConstValueType Type
         => type.TryGetValue(out var value) ? value

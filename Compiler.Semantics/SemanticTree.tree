@@ -194,8 +194,10 @@ SelfParameter <: Parameter = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool`
     ContainingTypeDefinition:`ITypeDefinitionNode` ContainingDeclaredType:`IDeclaredUserType`
     // TODO remove parameter symbols
     Symbol:`SelfParameterSymbol`;
-ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax` IsLentBinding:`bool` Capability Type:`CapabilityType` ContainingDeclaredType:`ObjectType`;
-InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax` IsLentBinding:`bool` Capability Type:`CapabilityType` ContainingDeclaredType:`StructType`;
+ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax`
+    IsLentBinding:`bool` Capability Type:`CapabilityType` ContainingDeclaredType:`ObjectType`;
+InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax`
+    IsLentBinding:`bool` Capability Type:`CapabilityType` ContainingDeclaredType:`StructType`;
 MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` IsLentBinding:`bool` Capability:CapabilityConstraint
     ParameterType:`SelfParameter`;
 FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax` Name:`IdentifierName`
@@ -207,7 +209,7 @@ BlockBody: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
 ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 
 // ---------- Types
-Type <: Code = Syntax:`ITypeSyntax` Antetype:`IMaybeAntetype` Type:`DataType`;
+Type <: Code = Syntax:`ITypeSyntax` NamedAntetype:`IMaybeAntetype` Type:`DataType`;
 // TODO start from generalized names in syntax and rewrite to type names
 TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName` ContainingLexicalScope:`LexicalScope`
     ReferencedSymbol:`TypeSymbol`? BareType:`BareType`?;
@@ -317,8 +319,11 @@ GetterInvocationExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax
 SetterInvocationExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
     Context:Expression PropertyName:`StandardName` Value:AmbiguousExpression
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`ISetterMethodDeclarationNode`?;
-FunctionReferenceInvocation: Expression = Syntax:`IInvocationExpressionSyntax`
+FunctionReferenceInvocation <: Expression = Syntax:`IInvocationExpressionSyntax`
     Expression:Expression FunctionAntetype:`FunctionAntetype` Arguments:AmbiguousExpression*;
+InitializerInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
+    InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression*
+    CompatibleDeclarations:{`IInitializerDeclarationNode`} ReferencedDeclaration:`IInitializerDeclarationNode`?;
 UnknownInvocationExpression: Expression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 
@@ -353,11 +358,12 @@ FieldAccessExpression <: NameExpression, AssignableExpression = Syntax:`IMemberA
 VariableNameExpression <: NameExpression, AssignableExpression, SimpleName
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDeclaration:`INamedBindingNode`;
 TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
-    Name:`StandardName` TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
+    Name:`StandardName` TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode` NamedAntetype:`IMaybeAntetype`;
 StandardTypeNameExpression <: TypeNameExpression = Syntax:`IStandardNameExpressionSyntax` TypeArguments:Type*;
 QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:NamespaceName TypeArguments:Type*;
-InitializerGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax` Context:TypeNameExpression? InitializerName:`StandardName`
+InitializerGroupName <: NameExpression = Syntax:`INameExpressionSyntax`
+    Context:TypeNameExpression InitializerName:`StandardName`? InitializingAntetype:`IMaybeAntetype`
     ReferencedDeclarations:{`IInitializerDeclarationNode`};
 // TODO merge with SpecialTypeName and keep the name "SpecialTypeName" because it really isn't an expression
 SpecialTypeNameExpression <: NameExpression

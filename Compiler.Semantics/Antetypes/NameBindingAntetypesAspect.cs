@@ -17,7 +17,7 @@ internal static class NameBindingAntetypesAspect
         => node.FinalReferent.Antetype.ToNonConstValueType();
 
     public static IMaybeAntetype BindingContextPattern_InheritedBindingAntetype_Pattern(IBindingContextPatternNode node)
-        => node.Type?.Antetype ?? node.InheritedBindingAntetype();
+        => node.Type?.NamedAntetype ?? node.InheritedBindingAntetype();
 
     public static IMaybeAntetype OptionalPattern_InheritedBindingAntetype_Pattern(
         IOptionalPatternNode node)
@@ -32,11 +32,11 @@ internal static class NameBindingAntetypesAspect
         => node.InheritedBindingAntetype();
 
     public static IMaybeAntetype VariableDeclarationStatement_BindingAntetype(IVariableDeclarationStatementNode node)
-        => node.Type?.Antetype ?? node.FinalInitializer?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
+        => node.Type?.NamedAntetype ?? node.FinalInitializer?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
 
     public static IMaybeAntetype ForeachExpression_BindingAntetype(IForeachExpressionNode node)
-        => node.DeclaredType?.Antetype ?? node.IteratedAntetype;
+        => node.DeclaredType?.NamedAntetype ?? node.IteratedAntetype;
 
     public static IMaybeAntetype NewObjectExpression_ConstructingAntetype(INewObjectExpressionNode node)
-        => node.ConstructingType.Antetype;
+        => node.ConstructingType.NamedAntetype;
 }

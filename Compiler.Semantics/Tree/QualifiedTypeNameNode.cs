@@ -15,7 +15,7 @@ internal sealed class QualifiedTypeNameNode : TypeNameNode, IQualifiedTypeNameNo
     public IStandardTypeNameNode QualifiedName { get; }
 
     public override TypeName Name => Syntax.Name;
-    public override IMaybeAntetype Antetype => throw new NotImplementedException();
+    public override IMaybeAntetype NamedAntetype => throw new NotImplementedException();
     public override BareType? BareType => throw new NotImplementedException();
     public override TypeSymbol? ReferencedSymbol => throw new NotImplementedException();
 

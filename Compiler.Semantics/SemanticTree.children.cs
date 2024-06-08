@@ -336,6 +336,11 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.Arguments)
                     yield return child;
                 yield break;
+            case IInitializerInvocationExpressionNode n:
+                yield return n.InitializerGroup;
+                foreach (var child in n.Arguments)
+                    yield return child;
+                yield break;
             case IUnknownInvocationExpressionNode n:
                 yield return n.Expression;
                 foreach (var child in n.Arguments)
@@ -386,8 +391,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IInitializerGroupNameNode n:
-                if (n.Context is not null)
-                    yield return n.Context;
+                yield return n.Context;
                 yield break;
             case ISpecialTypeNameExpressionNode n:
                 yield break;

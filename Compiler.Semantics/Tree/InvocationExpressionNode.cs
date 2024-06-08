@@ -46,6 +46,8 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
     protected override IAmbiguousExpressionNode? Rewrite()
         => OverloadResolutionAspect.InvocationExpression_Rewrite_FunctionGroupNameExpression(this)
            ?? OverloadResolutionAspect.InvocationExpression_Rewrite_MethodGroupNameExpression(this)
+           ?? OverloadResolutionAspect.InvocationExpression_Rewrite_InitializerGroupNameExpression(this)
+           ?? OverloadResolutionAspect.InvocationExpression_Rewrite_TypeNameExpression(this)
            ?? OverloadResolutionAspect.InvocationExpression_Rewrite_FunctionReferenceExpression(this)
            ?? OverloadResolutionAspect.InvocationExpression_Rewrite_ToUnknown(this);
 }

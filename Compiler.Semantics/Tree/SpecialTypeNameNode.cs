@@ -19,9 +19,9 @@ internal sealed class SpecialTypeNameNode : TypeNameNode, ISpecialTypeNameNode
         => referencedSymbol.TryGetValue(out var value) ? value
             : referencedSymbol.GetValue(this, SymbolAspect.SpecialTypeName_ReferencedSymbol);
     private ValueAttribute<IMaybeAntetype> antetype;
-    public override IMaybeAntetype Antetype
+    public override IMaybeAntetype NamedAntetype
         => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.SpecialTypeName_Antetype);
+            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.SpecialTypeName_NamedAntetype);
     private ValueAttribute<BareType?> bareType;
     public override BareType? BareType
     => bareType.TryGetValue(out var value) ? value

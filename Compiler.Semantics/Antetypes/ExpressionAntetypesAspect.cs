@@ -159,6 +159,14 @@ internal static class ExpressionAntetypesAspect
 
     private static readonly IdentifierName StringTypeName = "String";
 
+    public static IMaybeExpressionAntetype IfExpression_Antetype(IIfExpressionNode node)
+    {
+        if (node.ElseClause is null) return node.ThenBlock.Antetype.MakeOptional();
+
+        // TODO unify with else clause
+        return node.ThenBlock.Antetype;
+    }
+
     public static IMaybeExpressionAntetype WhileExpression_Antetype(IWhileExpressionNode _)
         // TODO assign correct type to the expression
         => IAntetype.Void;
@@ -183,7 +191,7 @@ internal static class ExpressionAntetypesAspect
 
     public static IMaybeExpressionAntetype ConversionExpression_Antetype(IConversionExpressionNode node)
     {
-        var convertToAntetype = node.ConvertToType.Antetype;
+        var convertToAntetype = node.ConvertToType.NamedAntetype;
         if (node.Operator == ConversionOperator.Optional)
             convertToAntetype = convertToAntetype.MakeOptional();
         return convertToAntetype;
@@ -253,4 +261,12 @@ internal static class ExpressionAntetypesAspect
 
     public static IMaybeExpressionAntetype FunctionReferenceInvocation_Antetype(IFunctionReferenceInvocationNode node)
         => node.FunctionAntetype.Return;
+
+    public static IMaybeExpressionAntetype InitializerInvocationExpression_Antetype(
+        IInitializerInvocationExpressionNode node)
+    {
+        var unboundAntetype = node.ReferencedDeclaration?.Symbol.Return.Type.ToAntetype() ?? IAntetype.Unknown;
+        var boundAntetype = node.InitializerGroup.InitializingAntetype.ReplaceTypeParametersIn(unboundAntetype);
+        return boundAntetype;
+    }
 }
