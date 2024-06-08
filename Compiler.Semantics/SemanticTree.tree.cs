@@ -1398,6 +1398,7 @@ public partial interface IPatternMatchExpressionNode : ISemanticNode, IExpressio
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Referent { get; }
+    IExpressionNode FinalReferent { get; }
     IPatternNode Pattern { get; }
 }
 

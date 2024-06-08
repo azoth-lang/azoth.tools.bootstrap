@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -118,6 +119,12 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected FlowState InheritedFlowStateBefore()
         => Parent.InheritedFlowStateBefore(this, this);
+
+    internal override IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
+        => Parent.InheritedBindingAntetype(this, descendant);
+
+    protected IMaybeAntetype InheritedBindingAntetype()
+        => Parent.InheritedBindingAntetype(this, this);
 
     internal override IPreviousValueId PreviousValueId(IChildNode before)
         => Previous().PreviousValueId(before);

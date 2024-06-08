@@ -1,5 +1,7 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -22,4 +24,11 @@ internal sealed class BindingContextPatternNode : PatternNode, IBindingContextPa
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Pattern.GetFlowLexicalScope();
+
+    internal override IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
+    {
+        if (descendant == Pattern)
+            return NameBindingAntetypesAspect.BindingContextPattern_InheritedBindingAntetype_Pattern(this);
+        return base.InheritedBindingAntetype(child, descendant);
+    }
 }

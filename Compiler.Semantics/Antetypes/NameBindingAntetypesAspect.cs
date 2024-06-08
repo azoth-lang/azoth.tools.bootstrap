@@ -13,8 +13,23 @@ internal static class NameBindingAntetypesAspect
         return containingDeclaredAntetype.With(containingDeclaredAntetype.GenericParameterAntetypes);
     }
 
+    public static IMaybeAntetype PatternMatchExpression_InheritedBindingAntetype_Pattern(IPatternMatchExpressionNode node)
+        => node.FinalReferent.Antetype.ToNonConstValueType();
+
+    public static IMaybeAntetype BindingContextPattern_InheritedBindingAntetype_Pattern(IBindingContextPatternNode node)
+        => node.Type?.Antetype ?? node.InheritedBindingAntetype();
+
+    public static IMaybeAntetype OptionalPattern_InheritedBindingAntetype_Pattern(
+        IOptionalPatternNode node)
+    {
+        var inheritedBindingAntetype = node.InheritedBindingAntetype();
+        if (inheritedBindingAntetype is OptionalAntetype optionalAntetype)
+            return optionalAntetype.Referent;
+        return inheritedBindingAntetype;
+    }
+
     public static IMaybeAntetype BindingPattern_BindingAntetype(IBindingPatternNode node)
-        => throw new System.NotImplementedException();
+        => node.InheritedBindingAntetype();
 
     public static IMaybeAntetype VariableDeclarationStatement_BindingAntetype(IVariableDeclarationStatementNode node)
         => node.Type?.Antetype ?? node.FinalInitializer?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;

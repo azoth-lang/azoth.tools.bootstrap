@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -64,6 +65,9 @@ internal abstract class SemanticNode : ISemanticNode
 
     internal virtual FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
         => throw new NotImplementedException(Child.InheritFailedMessage(nameof(InheritedFlowStateBefore), child, descendant));
+
+    internal virtual IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
+        => throw new NotImplementedException(Child.InheritFailedMessage(nameof(InheritedBindingAntetype), child, descendant));
 
     internal virtual IPreviousValueId PreviousValueId(IChildNode before)
         => throw Child.PreviousFailed(nameof(PreviousValueId), before);

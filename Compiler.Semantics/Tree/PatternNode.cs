@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -18,4 +19,6 @@ internal abstract class PatternNode : CodeNode, IPatternNode
     public FlowState FlowStateBefore() => throw new System.NotImplementedException();
 
     public new IPreviousValueId PreviousValueId() => base.PreviousValueId();
+
+    public new IMaybeAntetype InheritedBindingAntetype() => base.InheritedBindingAntetype();
 }

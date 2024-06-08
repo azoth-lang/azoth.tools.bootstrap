@@ -1,6 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -10,6 +11,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     public override IPatternMatchExpressionSyntax Syntax { get; }
     private Child<IAmbiguousExpressionNode> referent;
     public IAmbiguousExpressionNode Referent => referent.Value;
+    public IExpressionNode FinalReferent => (IExpressionNode)referent.FinalValue;
     public IPatternNode Pattern { get; }
     public override IMaybeExpressionAntetype Antetype => IAntetype.Bool;
 
@@ -31,4 +33,11 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Pattern.GetFlowLexicalScope();
+
+    internal override IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
+    {
+        if (descendant == Pattern)
+            return NameBindingAntetypesAspect.PatternMatchExpression_InheritedBindingAntetype_Pattern(this);
+        return base.InheritedBindingAntetype(child, descendant);
+    }
 }

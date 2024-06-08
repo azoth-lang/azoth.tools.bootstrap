@@ -69,6 +69,7 @@ public partial interface IPatternNode
     LexicalScope GetContainingLexicalScope();
     ConditionalLexicalScope GetFlowLexicalScope();
     IPreviousValueId PreviousValueId();
+    IMaybeAntetype InheritedBindingAntetype();
 }
 #endregion
 

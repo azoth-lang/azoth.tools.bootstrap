@@ -282,7 +282,8 @@ UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax` 
     Operator:`UnaryOperator` Operand:AmbiguousExpression FinalOperand:`IExpressionNode`;
 IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression FinalReferent:`IExpressionNode`;
 ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax` Referent:AmbiguousExpression Operator:`ConversionOperator` ConvertToType:Type;
-PatternMatchExpression <: Expression = Syntax:`IPatternMatchExpressionSyntax` Referent:AmbiguousExpression Pattern;
+PatternMatchExpression <: Expression = Syntax:`IPatternMatchExpressionSyntax`
+    Referent:AmbiguousExpression FinalReferent:`IExpressionNode` Pattern;
 
 // ---------- Control Flow Expressions
 IfExpression <: Expression, ElseClause = Syntax:`IIfExpressionSyntax` Condition:AmbiguousExpression ThenBlock:BlockOrResult ElseClause?;
