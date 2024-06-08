@@ -1216,6 +1216,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
     typeof(IGetterInvocationExpressionNode),
     typeof(ISetterInvocationExpressionNode),
     typeof(IFunctionReferenceInvocationNode),
+    typeof(IUnknownInvocationExpressionNode),
     typeof(INameExpressionNode),
     typeof(IMoveExpressionNode),
     typeof(IFreezeExpressionNode),
@@ -1479,6 +1480,7 @@ public partial interface IInvocationExpressionNode : IAmbiguousExpressionNode
     new IInvocationExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
+    IAmbiguousExpressionNode CurrentExpression { get; }
     IAmbiguousExpressionNode IntermediateExpression { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     IEnumerable<IAmbiguousExpressionNode> CurrentArguments { get; }
@@ -1534,6 +1536,13 @@ public partial interface IFunctionReferenceInvocationNode : IExpressionNode
     new IInvocationExpressionSyntax Syntax { get; }
     IExpressionNode Expression { get; }
     FunctionAntetype FunctionAntetype { get; }
+    IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+}
+
+public partial interface IUnknownInvocationExpressionNode : IExpressionNode
+{
+    new IInvocationExpressionSyntax Syntax { get; }
+    IAmbiguousExpressionNode Expression { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
 }
 

@@ -622,6 +622,9 @@ internal class SemanticsApplier
             case IFunctionReferenceInvocationNode n:
                 FunctionReferenceInvocation(n);
                 break;
+            case IUnknownInvocationExpressionNode n:
+                UnknownInvocationExpression(n);
+                break;
             case IMoveExpressionNode n:
                 MoveExpression(n);
                 break;
@@ -810,6 +813,12 @@ internal class SemanticsApplier
     private static void FunctionReferenceInvocation(IFunctionReferenceInvocationNode node)
     {
         Expression(node.Expression);
+        AmbiguousExpressions(node.Arguments);
+    }
+
+    private static void UnknownInvocationExpression(IUnknownInvocationExpressionNode node)
+    {
+        AmbiguousExpression(node.Expression);
         AmbiguousExpressions(node.Arguments);
     }
     #endregion

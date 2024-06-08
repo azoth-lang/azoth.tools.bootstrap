@@ -13,6 +13,7 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
     public override IInvocationExpressionSyntax Syntax { get; }
     private Child<IAmbiguousExpressionNode> expression;
     public IAmbiguousExpressionNode Expression => expression.Value;
+    public IAmbiguousExpressionNode CurrentExpression => expression.CurrentValue;
     public IAmbiguousExpressionNode IntermediateExpression => expression.FinalValue;
     private readonly ChildList<IAmbiguousExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
@@ -45,5 +46,6 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
     protected override IAmbiguousExpressionNode? Rewrite()
         => OverloadResolutionAspect.InvocationExpression_Rewrite_FunctionGroupNameExpression(this)
            ?? OverloadResolutionAspect.InvocationExpression_Rewrite_MethodGroupNameExpression(this)
-           ?? OverloadResolutionAspect.InvocationExpression_Rewrite_FunctionReferenceExpression(this);
+           ?? OverloadResolutionAspect.InvocationExpression_Rewrite_FunctionReferenceExpression(this)
+           ?? OverloadResolutionAspect.InvocationExpression_Rewrite_ToUnknown(this);
 }

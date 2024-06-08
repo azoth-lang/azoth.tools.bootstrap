@@ -83,6 +83,9 @@ internal static class OverloadResolutionAspect
         return new FunctionReferenceInvocationNode(node.Syntax, expression, node.CurrentArguments);
     }
 
+    public static IAmbiguousExpressionNode InvocationExpression_Rewrite_ToUnknown(IInvocationExpressionNode node)
+        => new UnknownInvocationExpressionNode(node.Syntax, node.CurrentExpression, node.CurrentArguments);
+
     public static IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(
         INewObjectExpressionNode node)
     {
