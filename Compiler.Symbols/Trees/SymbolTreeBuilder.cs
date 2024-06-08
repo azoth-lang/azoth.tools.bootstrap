@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
@@ -13,7 +12,7 @@ public class SymbolTreeBuilder : ISymbolTreeBuilder
     public static SymbolTreeBuilder CreateForPrimitives() => new();
 
     public PackageSymbol? Package { get; }
-    private readonly IDictionary<Symbol, ISet<Symbol>> symbolChildren = new Dictionary<Symbol, ISet<Symbol>>();
+    private readonly Dictionary<Symbol, ISet<Symbol>> symbolChildren = new Dictionary<Symbol, ISet<Symbol>>();
     public IEnumerable<Symbol> Symbols => symbolChildren.Keys;
 
     private SymbolTreeBuilder()
@@ -34,7 +33,7 @@ public class SymbolTreeBuilder : ISymbolTreeBuilder
     {
         RequireForPackage(symbol);
         return symbolChildren.TryGetValue(symbol, out var children)
-            ? children : Enumerable.Empty<Symbol>();
+            ? children : [];
     }
 
     public void Add(Symbol symbol)
