@@ -331,6 +331,11 @@ public static class ISemanticNodeExtensions
                 yield return n.Context;
                 yield return n.Value;
                 yield break;
+            case IFunctionReferenceInvocationNode n:
+                yield return n.Expression;
+                foreach (var child in n.Arguments)
+                    yield return child;
+                yield break;
             case IIdentifierNameExpressionNode n:
                 yield break;
             case IGenericNameExpressionNode n:

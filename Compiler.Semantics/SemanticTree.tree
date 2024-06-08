@@ -303,7 +303,7 @@ ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax` Valu
 
 // ---------- Invocation Expressions
 InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
-    Expression:AmbiguousExpression Arguments:AmbiguousExpression* CurrentArguments:`IEnumerable<IAmbiguousExpressionNode>`;
+    Expression:AmbiguousExpression FinalExpression:`IExpressionNode` Arguments:AmbiguousExpression* CurrentArguments:`IEnumerable<IAmbiguousExpressionNode>`;
 FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
     CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?;
@@ -316,6 +316,8 @@ GetterInvocationExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax
 SetterInvocationExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
     Context:Expression PropertyName:`StandardName` Value:AmbiguousExpression
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`ISetterMethodDeclarationNode`?;
+FunctionReferenceInvocation: Expression = Syntax:`IInvocationExpressionSyntax`
+    Expression:Expression FunctionAntetype:`FunctionAntetype` Arguments:AmbiguousExpression*;
 
 // ---------- Ambiguous Name Expressions
 AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;

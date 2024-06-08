@@ -250,4 +250,7 @@ internal static class ExpressionAntetypesAspect
         var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
+
+    public static IMaybeExpressionAntetype FunctionReferenceInvocation_Antetype(IFunctionReferenceInvocationNode node)
+        => node.FunctionAntetype.Return;
 }

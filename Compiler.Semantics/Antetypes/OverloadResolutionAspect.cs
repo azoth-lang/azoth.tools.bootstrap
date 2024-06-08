@@ -1,15 +1,17 @@
 using System.Diagnostics;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
 internal static class OverloadResolutionAspect
 {
-    public static IChildNode? InvocationExpression_Rewrite_FunctionGroupNameExpression(IInvocationExpressionNode node)
+    public static IExpressionNode? InvocationExpression_Rewrite_FunctionGroupNameExpression(IInvocationExpressionNode node)
     {
         if (node.Expression is not IFunctionGroupNameNode function) return null;
 
@@ -51,7 +53,7 @@ internal static class OverloadResolutionAspect
         }
     }
 
-    public static IChildNode? InvocationExpression_Rewrite_MethodGroupNameExpression(IInvocationExpressionNode node)
+    public static IExpressionNode? InvocationExpression_Rewrite_MethodGroupNameExpression(IInvocationExpressionNode node)
     {
         if (node.Expression is not IMethodGroupNameNode method) return null;
 
@@ -68,6 +70,18 @@ internal static class OverloadResolutionAspect
     public static IStandardMethodDeclarationNode? MethodInvocationExpression_ReferencedDeclaration(
         IMethodInvocationExpressionNode node)
         => node.CompatibleDeclarations.TrySingle();
+
+    public static IExpressionNode? InvocationExpression_Rewrite_FunctionReferenceExpression(IInvocationExpressionNode node)
+    {
+        // TODO remove condition once all cases are handled
+        if (!SemanticTreeTypeValidator.Validating)
+            return null;
+
+        if (node.FinalExpression.Antetype is not FunctionAntetype)
+            return null;
+
+        return new FunctionReferenceInvocationNode(node.Syntax, node.FinalExpression, node.CurrentArguments);
+    }
 
     public static IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(
         INewObjectExpressionNode node)

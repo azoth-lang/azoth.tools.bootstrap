@@ -4,6 +4,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
@@ -129,30 +130,31 @@ internal static class BindingAmbiguousNamesAspect
             or IInitializerGroupNameNode)
             return null;
 
-        // TODO lookup members of the antetype and rewrite accordingly
-        return null;
+        // TODO remove condition once all cases are handled
+        if (!SemanticTreeTypeValidator.Validating)
+            return null;
 
-        //var contextTypeDeclaration = node.InheritedPackageNameScope().Lookup(context.Antetype);
-        //var members = contextTypeDeclaration?.InstanceMembersNamed(node.MemberName).ToFixedSet()
-        //              ?? FixedSet.Empty<IInstanceMemberDeclarationNode>();
-        //if (members.Count == 0)
-        //    return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<DefinitionNode>());
+        var contextTypeDeclaration = node.InheritedPackageNameScope().Lookup(context.Antetype);
+        var members = contextTypeDeclaration?.InstanceMembersNamed(node.MemberName).ToFixedSet()
+                      ?? FixedSet.Empty<IInstanceMemberDeclarationNode>();
+        if (members.Count == 0)
+            return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<DefinitionNode>());
 
-        //if (members.TryAllOfType<IStandardMethodDeclarationNode>(out var referencedMethods))
-        //    return new MethodGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments, referencedMethods);
+        if (members.TryAllOfType<IStandardMethodDeclarationNode>(out var referencedMethods))
+            return new MethodGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments, referencedMethods);
 
-        //if (members.TryAllOfType<IPropertyAccessorDeclarationNode>(out var referencedProperties)
-        //    && node.TypeArguments.Count == 0)
-        //    return new PropertyNameNode(node.Syntax, context, node.MemberName, referencedProperties);
+        if (members.TryAllOfType<IPropertyAccessorDeclarationNode>(out var referencedProperties)
+            && node.TypeArguments.Count == 0)
+            return new PropertyNameNode(node.Syntax, context, node.MemberName, referencedProperties);
 
-        //if (members.TrySingle() is not null and var referencedDeclaration)
-        //    switch (referencedDeclaration)
-        //    {
-        //        case IFieldDeclarationNode fieldDeclaration:
-        //            return new FieldAccessExpressionNode(node.Syntax, context, fieldDeclaration.Name, fieldDeclaration);
-        //    }
+        if (members.TrySingle() is not null and var referencedDeclaration)
+            switch (referencedDeclaration)
+            {
+                case IFieldDeclarationNode fieldDeclaration:
+                    return new FieldAccessExpressionNode(node.Syntax, context, fieldDeclaration.Name, fieldDeclaration);
+            }
 
-        //return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
+        return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
     }
 
     public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_UnknownNameExpressionContext(IMemberAccessExpressionNode node)

@@ -1,5 +1,6 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 
@@ -8,6 +9,7 @@ internal class SemanticTreeTypeValidator
     private static readonly bool ValidateNotAmbiguous = false;
     private static readonly bool ValidateAntetypes = false;
     private static readonly bool ValidateTypes = false;
+    public static readonly bool Validating = ValidateNotAmbiguous | ValidateAntetypes | ValidateTypes;
 
     public static void Validate(ISemanticNode node)
     {
@@ -17,9 +19,10 @@ internal class SemanticTreeTypeValidator
 
         if (node is not IExpressionNode expression)
         {
+            var nodeSyntax = node.Syntax;
             if (node is IAmbiguousExpressionNode
                 && ValidateNotAmbiguous)
-                throw new InvalidOperationException("Ambiguous expression node found in semantic tree");
+                throw new InvalidOperationException($"Ambiguous expression node {node.GetType().GetFriendlyName()}: `{nodeSyntax}` found in semantic tree");
             return;
         }
 
