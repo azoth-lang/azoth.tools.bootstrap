@@ -2102,6 +2102,7 @@ public partial interface IUserTypeDeclarationNode : IPackageMemberDeclarationNod
 public partial interface IClassDeclarationNode : ISemanticNode, IUserTypeDeclarationNode
 {
     new IFixedSet<IClassMemberDeclarationNode> Members { get; }
+    new IFixedSet<IClassMemberDeclarationNode> InclusiveMembers { get; }
 }
 
 [Closed(
@@ -2110,6 +2111,7 @@ public partial interface IClassDeclarationNode : ISemanticNode, IUserTypeDeclara
 public partial interface IStructDeclarationNode : ISemanticNode, IUserTypeDeclarationNode
 {
     new IFixedSet<IStructMemberDeclarationNode> Members { get; }
+    new IFixedSet<IStructMemberDeclarationNode> InclusiveMembers { get; }
 }
 
 [Closed(
@@ -2118,6 +2120,7 @@ public partial interface IStructDeclarationNode : ISemanticNode, IUserTypeDeclar
 public partial interface ITraitDeclarationNode : ISemanticNode, IUserTypeDeclarationNode
 {
     new IFixedSet<ITraitMemberDeclarationNode> Members { get; }
+    new IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers { get; }
 }
 
 [Closed(
@@ -2287,6 +2290,7 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
     new TypeSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     IFixedSet<ITypeMemberDeclarationNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
 }
 
 public partial interface IPackageSymbolNode : IPackageDeclarationNode

@@ -13,13 +13,15 @@ internal sealed class GenericParameterSymbolNode : PackageFacetChildSymbolNode, 
     TypeName INamedDeclarationNode.Name => Name;
     public IFixedSet<ITypeMemberDeclarationNode> Members
         => FixedSet.Empty<ITypeMemberDeclarationNode>();
+    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers
+        => FixedSet.Empty<ITypeMemberDefinitionNode>();
 
     public GenericParameterSymbolNode(GenericParameterTypeSymbol symbol)
     {
         Symbol = symbol;
     }
 
-    public IEnumerable<IInstanceMemberDeclarationNode> InstanceMembersNamed(StandardName named)
+    public IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named)
         => Enumerable.Empty<IInstanceMemberDeclarationNode>();
 
     public IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named)

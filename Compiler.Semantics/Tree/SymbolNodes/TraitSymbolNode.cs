@@ -12,6 +12,9 @@ internal sealed class TraitSymbolNode : UserTypeSymbolNode, ITraitSymbolNode
     public override IFixedSet<ITraitMemberDeclarationNode> Members
         => members.TryGetValue(out var value) ? value
             : members.GetValue(GetMembers);
+    public override IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers
+        // For now, the symbol tree already includes all inherited members.
+        => Members;
 
     internal TraitSymbolNode(UserTypeSymbol symbol)
         : base(symbol)

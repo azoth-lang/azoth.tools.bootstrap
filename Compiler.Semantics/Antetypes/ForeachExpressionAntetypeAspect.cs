@@ -10,7 +10,7 @@ internal static class ForeachExpressionAntetypeAspect
         => node.InheritedPackageNameScope().Lookup(node.FinalInExpression.Antetype);
 
     public static IStandardMethodDeclarationNode? ForeachExpression_ReferencedIterateMethod(IForeachExpressionNode node)
-        => node.ReferencedIterableDeclaration?.InstanceMembersNamed("iterate").OfType<IStandardMethodDeclarationNode>()
+        => node.ReferencedIterableDeclaration?.InclusiveInstanceMembersNamed("iterate").OfType<IStandardMethodDeclarationNode>()
                .Where(m => m.Arity == 0 && m.MethodGroupType.Return.Type.ToAntetype() is INonVoidAntetype)
                .TrySingle();
 
@@ -28,7 +28,7 @@ internal static class ForeachExpressionAntetypeAspect
         => node.InheritedPackageNameScope().Lookup(node.IteratorAntetype);
 
     public static IStandardMethodDeclarationNode? ForeachExpression_ReferencedNextMethod(IForeachExpressionNode node)
-        => node.ReferencedIteratorDeclaration?.InstanceMembersNamed("next").OfType<IStandardMethodDeclarationNode>()
+        => node.ReferencedIteratorDeclaration?.InclusiveInstanceMembersNamed("next").OfType<IStandardMethodDeclarationNode>()
                .Where(m => m.Arity == 0 && m.MethodGroupType.Return.Type.ToAntetype() is OptionalAntetype)
                .TrySingle();
 

@@ -12,6 +12,9 @@ internal sealed class StructSymbolNode : UserTypeSymbolNode, IStructSymbolNode
     public override IFixedSet<IStructMemberDeclarationNode> Members
         => members.TryGetValue(out var value) ? value
             : members.GetValue(GetMembers);
+    public override IFixedSet<IStructMemberDeclarationNode> InclusiveMembers
+        // For now, the symbol tree already includes all inherited members.
+        => Members;
 
     internal StructSymbolNode(UserTypeSymbol symbol)
         : base(symbol)

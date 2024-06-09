@@ -147,6 +147,7 @@ AbstractMethodDefinition <: MethodDefinition, StandardMethodDeclaration = Syntax
     ContainingDeclaredType:`ObjectType`;
 ConcreteMethodDefinition <: MethodDefinition, StructMemberDefinition, ConcreteInvocableDefinition
     = Syntax:`IConcreteMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Body;
+// TODO rename to Ordinary or Normal
 StandardMethodDefinition <: ConcreteMethodDefinition, StandardMethodDeclaration
     = Syntax:`IStandardMethodDefinitionSyntax`
     SelfParameter:MethodSelfParameter Parameters:NamedParameter*
@@ -444,10 +445,10 @@ FunctionDeclaration <: PackageMemberDeclaration, FunctionLikeDeclaration;
 // ---------- Type Declarations
 PrimitiveTypeDeclaration <: TypeDeclaration = Name:`SpecialTypeName` Members:{TypeMemberDeclaration};
 UserTypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
-    = Name:`StandardName` GenericParameters:GenericParameterDeclaration* Symbol:`UserTypeSymbol` Members:{TypeMemberDeclaration};
-ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration};
-StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration};
-TraitDeclaration <: UserTypeDeclaration = Members:{TraitMemberDeclaration};
+    = Name:`StandardName` GenericParameters:GenericParameterDeclaration* Symbol:`UserTypeSymbol` Members:{TypeMemberDeclaration} InclusiveMembers:{`ITypeMemberDeclarationNode`};
+ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration} InclusiveMembers:{`IClassMemberDeclarationNode`};
+StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration} InclusiveMembers:{`IStructMemberDeclarationNode`};
+TraitDeclaration <: UserTypeDeclaration = Members:{TraitMemberDeclaration} InclusiveMembers:{`ITraitMemberDeclarationNode`};
 
 // ---------- Type Declaration Parts
 GenericParameterDeclaration <: TypeDeclaration, AssociatedMemberDeclaration
@@ -477,7 +478,7 @@ AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionLikeDeclar
 
 // ---------- Can be Referenced by Type Name
 TypeDeclaration <: NamedDeclaration, SymbolDeclaration
-    = Symbol:`TypeSymbol` Members:{TypeMemberDeclaration};
+    = Symbol:`TypeSymbol` Members:{TypeMemberDeclaration} InclusiveMembers:{`ITypeMemberDeclarationNode`};
 
 // -------------------------------------------------------------------------------------------------
 // Symbol Nodes

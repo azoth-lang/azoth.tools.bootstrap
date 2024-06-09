@@ -46,8 +46,11 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     public GenericParameterTypeSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAspect.GenericParameter);
-    public IFixedSet<ITypeMemberDefinitionNode> Members => FixedSet.Empty<IAlwaysTypeMemberDefinitionNode>();
+    public IFixedSet<ITypeMemberDefinitionNode> Members
+        => FixedSet.Empty<ITypeMemberDefinitionNode>();
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers
+        => FixedSet.Empty<ITypeMemberDefinitionNode>();
 
     public GenericParameterNode(IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint)
     {
@@ -55,7 +58,7 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
         Constraint = constraint;
     }
 
-    public IEnumerable<IInstanceMemberDeclarationNode> InstanceMembersNamed(StandardName named)
+    public IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named)
         // TODO should look up members based on generic constraints
         => Enumerable.Empty<IInstanceMemberDeclarationNode>();
 

@@ -127,7 +127,11 @@ public partial interface IVariableNameExpressionNode
 #region Type Declarations
 public partial interface ITypeDeclarationNode
 {
-    IEnumerable<IInstanceMemberDeclarationNode> InstanceMembersNamed(StandardName named);
+    /// <summary>
+    /// All members of the type with the given name along with inherited members with the given name
+    /// if they are not hidden by a member in the type itself.
+    /// </summary>
+    IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named);
     IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
 }
 #endregion

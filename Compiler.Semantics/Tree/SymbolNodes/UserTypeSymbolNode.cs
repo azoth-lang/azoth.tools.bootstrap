@@ -21,6 +21,7 @@ internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserT
     public abstract IFixedSet<ITypeMemberDeclarationNode> Members { get; }
     private MultiMapHashSet<StandardName, IInstanceMemberDeclarationNode>? instanceMembersByName;
     private MultiMapHashSet<StandardName, IAssociatedMemberDeclarationNode>? associatedMembersByName;
+    public abstract IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
 
     private protected UserTypeSymbolNode(UserTypeSymbol symbol)
     {
@@ -35,7 +36,7 @@ internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserT
         return ChildList.Attach(this, declarationNodes);
     }
 
-    public IEnumerable<IInstanceMemberDeclarationNode> InstanceMembersNamed(StandardName named)
+    public IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named)
         => Members.OfType<IInstanceMemberDeclarationNode>().MembersNamed(ref instanceMembersByName, named);
 
     public IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named)

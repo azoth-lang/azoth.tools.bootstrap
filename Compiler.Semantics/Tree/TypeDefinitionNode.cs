@@ -37,8 +37,9 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
             : supertypes.GetValue(this, TypeDeclarationsAspect.TypeDeclaration_Supertypes);
     public abstract IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
-    private MultiMapHashSet<StandardName, IInstanceMemberDeclarationNode>? instanceMembersByName;
     private MultiMapHashSet<StandardName, IAssociatedMemberDeclarationNode>? associatedMembersByName;
+    public abstract IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
+    private MultiMapHashSet<StandardName, IInstanceMemberDeclarationNode>? inclusiveInstanceMembersByName;
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
@@ -81,8 +82,8 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         base.CollectDiagnostics(diagnostics);
     }
 
-    public IEnumerable<IInstanceMemberDeclarationNode> InstanceMembersNamed(StandardName named)
-        => Members.OfType<IInstanceMemberDeclarationNode>().MembersNamed(ref instanceMembersByName, named);
+    public IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named)
+        => InclusiveMembers.OfType<IInstanceMemberDeclarationNode>().MembersNamed(ref inclusiveInstanceMembersByName, named);
 
     public IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named)
         => Members.OfType<IAssociatedMemberDeclarationNode>().MembersNamed(ref associatedMembersByName, named);

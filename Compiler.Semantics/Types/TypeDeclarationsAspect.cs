@@ -16,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static class TypeDeclarationsAspect
 {
-    public static ObjectType ClassDeclaration_DeclaredType(IClassDefinitionNode node)
+    public static ObjectType ClassDefinition_DeclaredType(IClassDefinitionNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
@@ -50,7 +50,7 @@ internal static class TypeDeclarationsAspect
             diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(node.File, typeName.Syntax));
     }
 
-    public static StructType StructDeclaration_DeclaredType(IStructDefinitionNode node)
+    public static StructType StructDefinition_DeclaredType(IStructDefinitionNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
@@ -59,7 +59,7 @@ internal static class TypeDeclarationsAspect
             GetGenericParameters(node), LazySupertypes(node));
     }
 
-    public static ObjectType TraitDeclaration_DeclaredType(ITraitDefinitionNode node)
+    public static ObjectType TraitDefinition_DeclaredType(ITraitDefinitionNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);

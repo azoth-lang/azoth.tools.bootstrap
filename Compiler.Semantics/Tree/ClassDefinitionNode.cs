@@ -18,13 +18,17 @@ internal sealed class ClassDefinitionNode : TypeDefinitionNode, IClassDefinition
     private ValueAttribute<ObjectType> declaredType;
     public override ObjectType DeclaredType
         => declaredType.TryGetValue(out var value) ? value
-            : declaredType.GetValue(this, TypeDeclarationsAspect.ClassDeclaration_DeclaredType);
+            : declaredType.GetValue(this, TypeDeclarationsAspect.ClassDefinition_DeclaredType);
 
     public IFixedList<IClassMemberDefinitionNode> SourceMembers { get; }
     private ValueAttribute<IFixedSet<IClassMemberDefinitionNode>> members;
     public override IFixedSet<IClassMemberDefinitionNode> Members
         => members.TryGetValue(out var value) ? value
             : members.GetValue(this, DefaultMembersAspect.ClassDeclaration_Members);
+    private ValueAttribute<IFixedSet<IClassMemberDeclarationNode>> inclusiveMembers;
+    public override IFixedSet<IClassMemberDeclarationNode> InclusiveMembers
+        => inclusiveMembers.TryGetValue(out var value) ? value
+            : inclusiveMembers.GetValue(this, InheritanceAspect.ClassDefinition_InclusiveMembers);
     private ValueAttribute<IDefaultConstructorDefinitionNode?> defaultConstructor;
     public IDefaultConstructorDefinitionNode? DefaultConstructor
         => defaultConstructor.TryGetValue(out var value) ? value
