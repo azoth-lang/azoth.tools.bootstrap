@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
-public class AnyAntetype : INonVoidAntetype, IDeclaredAntetype
+public class AnyAntetype : NonGenericNominalAntetype, INonVoidAntetype, IDeclaredAntetype
 {
     #region Singleton
     internal static readonly AnyAntetype Instance = new();
@@ -14,8 +14,7 @@ public class AnyAntetype : INonVoidAntetype, IDeclaredAntetype
     }
     #endregion
 
-    public SpecialTypeName Name => SpecialTypeName.Any;
-
+    public override SpecialTypeName Name => SpecialTypeName.Any;
     public bool HasReferenceSemantics => true;
 
     IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
@@ -24,27 +23,10 @@ public class AnyAntetype : INonVoidAntetype, IDeclaredAntetype
     IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes
         => FixedList.Empty<GenericParameterAntetype>();
 
-    public IAntetype With(IEnumerable<IAntetype> typeArguments)
-    {
-        if (typeArguments.Any())
-            throw new ArgumentException("Any type cannot have type arguments", nameof(typeArguments));
-        return this;
-    }
-
-    public IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
-        => antetype;
-
     #region Equality
-    public bool Equals(IMaybeExpressionAntetype? other)
+    public override bool Equals(IMaybeExpressionAntetype? other)
         // AnyAntetype is a singleton, so we can use reference equality.
         => ReferenceEquals(this, other);
-
-    public bool Equals(IDeclaredAntetype? other)
-        // AnyAntetype is a singleton, so we can use reference equality.
-        => ReferenceEquals(this, other);
-
-    public override bool Equals(object? obj)
-        => obj is IMaybeExpressionAntetype other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(typeof(AnyAntetype));
     #endregion

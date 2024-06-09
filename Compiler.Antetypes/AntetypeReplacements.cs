@@ -17,21 +17,21 @@ internal sealed class AntetypeReplacements
     {
         replacements = declaredType.GenericParameterAntetypes.EquiZip(typeArguments)
                                    .ToDictionary(t => t.Item1, t => t.Item2);
-        //foreach (var supertype in declaredType.Supertypes)
-        //    foreach (var (typeArg, i) in supertype.GenericTypeArguments.Enumerate())
-        //    {
-        //        var genericParameterType = supertype.DeclaredType.GenericParameterTypes[i];
-        //        if (typeArg is GenericParameterAntetype genericTypeArg)
-        //        {
-        //            if (replacements.TryGetValue(genericTypeArg, out var replacement))
-        //                replacements.Add(genericParameterType, replacement);
-        //            else
-        //                throw new InvalidOperationException(
-        //                                               $"Could not find replacement for `{typeArg}` in type `{declaredType}` with arguments `{typeArguments}`.");
-        //        }
-        //        else
-        //            replacements.Add(genericParameterType, ReplaceTypeParametersIn(typeArg));
-        //    }
+        foreach (var supertype in declaredType.Supertypes)
+            foreach (var (antetypeArg, i) in supertype.TypeArguments.Enumerate())
+            {
+                var genericParameterAnteype = supertype.DeclaredAntetype.GenericParameterAntetypes[i];
+                if (antetypeArg is GenericParameterAntetype genericAntetypeArg)
+                {
+                    if (replacements.TryGetValue(genericAntetypeArg, out var replacement))
+                        replacements.Add(genericParameterAnteype, replacement);
+                    else
+                        throw new InvalidOperationException(
+                            $"Could not find replacement for `{antetypeArg}` in antetype `{declaredType}` with arguments `{typeArguments}`.");
+                }
+                else
+                    replacements.Add(genericParameterAnteype, ReplaceTypeParametersIn(antetypeArg));
+            }
     }
 
     public IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)

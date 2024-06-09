@@ -8,14 +8,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 /// An antetype that is not generic.
 /// </summary>
 /// <remarks>Non-generic antetypes are both an antetype and their own declared antetype.</remarks>
-[Closed(typeof(EmptyAntetype), typeof(GenericParameterAntetype), typeof(UserNonGenericNominalAntetype))]
+[Closed(
+    typeof(EmptyAntetype),
+    typeof(AnyAntetype),
+    typeof(GenericParameterAntetype),
+    typeof(UserNonGenericNominalAntetype))]
 public abstract class NonGenericNominalAntetype : NominalAntetype, IDeclaredAntetype
 {
-    public override IDeclaredAntetype DeclaredAntetype => this;
-
+    public sealed override IDeclaredAntetype DeclaredAntetype => this;
     IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
         => FixedList.Empty<AntetypeGenericParameter>();
-
     IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes
         => FixedList.Empty<GenericParameterAntetype>();
 
@@ -25,6 +27,9 @@ public abstract class NonGenericNominalAntetype : NominalAntetype, IDeclaredAnte
             throw new ArgumentException("Non-generic type cannot have type arguments", nameof(typeArguments));
         return this;
     }
+
+    public sealed override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+        => antetype;
 
     public bool Equals(IDeclaredAntetype? other)
         => other is IMaybeExpressionAntetype that && Equals(that);

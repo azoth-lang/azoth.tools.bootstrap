@@ -7,7 +7,7 @@ public sealed class GenericParameterAntetype : NonGenericNominalAntetype, INonVo
 {
     public UserDeclaredGenericAntetype DeclaringAntetype { get; }
     public AntetypeGenericParameter Parameter { get; }
-    public IdentifierName Name => Parameter.Name;
+    public override IdentifierName Name => Parameter.Name;
     // TODO is this right?
     public bool HasReferenceSemantics => true;
 
@@ -16,9 +16,6 @@ public sealed class GenericParameterAntetype : NonGenericNominalAntetype, INonVo
         DeclaringAntetype = declaringAntetype;
         Parameter = parameter;
     }
-
-    public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
-        => antetype;
 
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)

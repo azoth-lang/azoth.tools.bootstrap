@@ -7,12 +7,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 public sealed class UserGenericNominalAntetype : NominalAntetype, INonVoidAntetype
 {
-    public override IUserDeclaredAntetype DeclaredAntetype { get; }
+    public override UserDeclaredGenericAntetype DeclaredAntetype { get; }
+    public override StandardName Name => DeclaredAntetype.Name;
     public bool HasReferenceSemantics => DeclaredAntetype.HasReferenceSemantics;
-    public IFixedList<IAntetype> TypeArguments { get; }
+    public override IFixedList<IAntetype> TypeArguments { get; }
     private readonly AntetypeReplacements antetypeReplacements;
 
-    public UserGenericNominalAntetype(IUserDeclaredAntetype declaredAnteType, IEnumerable<IAntetype> typeArguments)
+    public UserGenericNominalAntetype(UserDeclaredGenericAntetype declaredAnteType, IEnumerable<IAntetype> typeArguments)
     {
         DeclaredAntetype = declaredAnteType;
         TypeArguments = typeArguments.ToFixedList();

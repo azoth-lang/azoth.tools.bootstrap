@@ -125,7 +125,6 @@ public sealed class PackageNameScope
             FunctionAntetype _ => null,
             OptionalAntetype _ => throw new NotImplementedException(),
             NominalAntetype t => Lookup(t.DeclaredAntetype),
-            AnyAntetype t => Lookup(t),
             SimpleAntetype t => Lookup(t),
             ConstValueAntetype _ => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(antetype),

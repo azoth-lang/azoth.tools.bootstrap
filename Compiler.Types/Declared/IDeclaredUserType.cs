@@ -49,12 +49,17 @@ internal static class DeclaredUserTypeExtensions
     {
         var antetypeGenericParameters = declaredType.GenericParameters.Select(p => new AntetypeGenericParameter(p.Name, p.Variance));
         var hasReferenceSemantics = declaredType is ObjectType;
+
+        var supertypes = declaredType.Supertypes.Select(t => t.ToAntetype())
+                                     .Cast<NominalAntetype>();
         return declaredType.Name switch
         {
             IdentifierName n
-                => new UserNonGenericNominalAntetype(declaredType.ContainingPackage, declaredType.ContainingNamespace, n, hasReferenceSemantics),
+                => new UserNonGenericNominalAntetype(declaredType.ContainingPackage,
+                    declaredType.ContainingNamespace, n, supertypes, hasReferenceSemantics),
             GenericName n
-                => new UserDeclaredGenericAntetype(declaredType.ContainingPackage, declaredType.ContainingNamespace, n, antetypeGenericParameters, hasReferenceSemantics),
+                => new UserDeclaredGenericAntetype(declaredType.ContainingPackage,
+                    declaredType.ContainingNamespace, n, antetypeGenericParameters, supertypes, hasReferenceSemantics),
             _ => throw ExhaustiveMatch.Failed(declaredType.Name)
         };
     }

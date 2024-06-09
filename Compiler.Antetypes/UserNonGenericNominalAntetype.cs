@@ -1,6 +1,7 @@
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
@@ -8,24 +9,24 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
 {
     public IdentifierName ContainingPackage { get; }
     public NamespaceName ContainingNamespace { get; }
-    public IdentifierName Name { get; }
+    public override IdentifierName Name { get; }
     StandardName IUserDeclaredAntetype.Name => Name;
+    public IFixedSet<NominalAntetype> Supertypes { get; }
     public bool HasReferenceSemantics { get; }
 
     public UserNonGenericNominalAntetype(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         IdentifierName name,
+        IEnumerable<NominalAntetype> supertypes,
         bool hasReferenceSemantics)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
         Name = name;
+        Supertypes = supertypes.ToFixedSet();
         HasReferenceSemantics = hasReferenceSemantics;
     }
-
-    public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
-        => antetype;
 
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)

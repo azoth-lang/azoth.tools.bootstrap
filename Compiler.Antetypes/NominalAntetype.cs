@@ -1,4 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
@@ -10,6 +12,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 public abstract class NominalAntetype : IAntetype
 {
     public abstract IDeclaredAntetype DeclaredAntetype { get; }
+    public abstract TypeName Name { get; }
+    public virtual IFixedList<IAntetype> TypeArguments => FixedList.Empty<IAntetype>();
 
     private protected NominalAntetype() { }
 

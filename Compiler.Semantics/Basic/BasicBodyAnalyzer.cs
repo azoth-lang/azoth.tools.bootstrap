@@ -1693,7 +1693,18 @@ public class BasicBodyAnalyzer
         var contextType = contextResult.Type;
         var contextTypeSymbol = LookupSymbolForType(contextType);
         if (contextTypeSymbol is null)
+        {
+            if (expression.Semantics.IsFulfilled)
+            {
+                // Fulfillment from the semantic tree is not consistent yet, but when present, it
+                // should be correct.
+                if (expression.Semantics.Result is not UnknownNameSyntax)
+                    throw new InvalidOperationException("Semantics should match symbol");
+                return expression.Semantics.Result;
+            }
+
             return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+        }
 
 
         var memberSymbols = symbolTrees.Children(contextTypeSymbol).Where(s => s.Name == memberName).ToFixedSet();

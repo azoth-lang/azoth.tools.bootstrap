@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -113,8 +114,6 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         Name = name;
         this.supertypes = supertypes;
         GenericParameterTypes = GenericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList();
-
-        antetype = this.ConstructDeclaredAntetype();
     }
 
     public override IdentifierName ContainingPackage { get; }
@@ -127,7 +126,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     public override IFixedSet<BareReferenceType> Supertypes => supertypes.Value;
     public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
 
-    private readonly IDeclaredAntetype antetype;
+    private IDeclaredAntetype? antetype;
 
     DeclaredType IDeclaredUserType.AsDeclaredType() => this;
 
@@ -193,7 +192,9 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     public CapabilityType<ObjectType> WithMutate(IFixedList<DataType> typeArguments)
         => With(IsDeclaredConst ? Capability.Constant : Capability.Mutable, typeArguments);
 
-    public override IDeclaredAntetype ToAntetype() => antetype;
+    public override IDeclaredAntetype ToAntetype()
+        // Lazy initialize to prevent evaluation of lazy supertypes when constructing ObjectType
+        => LazyInitializer.EnsureInitialized(ref antetype, this.ConstructDeclaredAntetype);
 
     #region Equals
     public override bool Equals(DeclaredType? other)
