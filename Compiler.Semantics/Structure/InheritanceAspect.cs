@@ -1,4 +1,5 @@
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 using DotNet.Collections.Generic;
@@ -8,13 +9,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 internal static class InheritanceAspect
 {
     public static IFixedSet<IClassMemberDeclarationNode> ClassDefinition_InclusiveMembers(IClassDefinitionNode node)
-        => InclusiveMembers(node, node.Members);
+        // Explicit type argument requires because it is used as a filter and would otherwise be too specific
+        => InclusiveMembers<IClassMemberDeclarationNode>(node, node.Members);
 
     public static IFixedSet<IStructMemberDeclarationNode> StructDefinition_InclusiveMembers(IStructDefinitionNode node)
-        => InclusiveMembers(node, node.Members);
+        // Explicit type argument requires because it is used as a filter and would otherwise be too specific
+        => InclusiveMembers<IStructMemberDeclarationNode>(node, node.Members);
 
     public static IFixedSet<ITraitMemberDeclarationNode> TraitDefinition_InclusiveMembers(ITraitDefinitionNode node)
-        => InclusiveMembers(node, node.Members);
+        // Explicit type argument requires because it is used as a filter and would otherwise be too specific
+        => InclusiveMembers<ITraitMemberDeclarationNode>(node, node.Members);
 
     private static IFixedSet<TMemberDeclaration> InclusiveMembers<TMemberDeclaration>(
         ITypeDefinitionNode node,
@@ -25,7 +29,10 @@ internal static class InheritanceAspect
                                                     .ToMultiMapHashSet(m => m.Name!);
         foreach (var supertype in node.AllSupertypeNames.Select(t => t.ReferencedDeclaration))
             AddInheritedMembers(inclusiveMembers, supertype);
-        return inclusiveMembers.Values.SelectMany().Concat(memberDefinitionNodes.Where(m => m.Name is null)).ToFixedSet();
+        var anyType = node.ContainingLexicalScope.PackageNames.Lookup(IAntetype.Any);
+        AddInheritedMembers(inclusiveMembers, anyType);
+        return inclusiveMembers.Values.SelectMany().Concat(memberDefinitionNodes.Where(m => m.Name is null))
+                               .ToFixedSet();
     }
 
     private static void AddInheritedMembers<TMemberDeclaration>(
