@@ -11,20 +11,21 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
     public NamespaceName ContainingNamespace { get; }
     public override IdentifierName Name { get; }
     StandardName IUserDeclaredAntetype.Name => Name;
-    public IFixedSet<NominalAntetype> Supertypes { get; }
+    private readonly Lazy<IFixedSet<NominalAntetype>> lazySupertypes;
+    public IFixedSet<NominalAntetype> Supertypes => lazySupertypes.Value;
     public bool HasReferenceSemantics { get; }
 
     public UserNonGenericNominalAntetype(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         IdentifierName name,
-        IEnumerable<NominalAntetype> supertypes,
+        Lazy<IFixedSet<NominalAntetype>> lazySupertypes,
         bool hasReferenceSemantics)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
         Name = name;
-        Supertypes = supertypes.ToFixedSet();
+        this.lazySupertypes = lazySupertypes;
         HasReferenceSemantics = hasReferenceSemantics;
     }
 

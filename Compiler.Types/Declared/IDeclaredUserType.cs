@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -49,18 +50,22 @@ internal static class DeclaredUserTypeExtensions
     {
         var antetypeGenericParameters = declaredType.GenericParameters.Select(p => new AntetypeGenericParameter(p.Name, p.Variance));
         var hasReferenceSemantics = declaredType is ObjectType;
-
-        var supertypes = declaredType.Supertypes.Select(t => t.ToAntetype())
-                                     .Cast<NominalAntetype>();
+        var lazySupertypes = declaredType.LazySupertypes();
         return declaredType.Name switch
         {
             IdentifierName n
                 => new UserNonGenericNominalAntetype(declaredType.ContainingPackage,
-                    declaredType.ContainingNamespace, n, supertypes, hasReferenceSemantics),
+                    declaredType.ContainingNamespace, n, lazySupertypes, hasReferenceSemantics),
             GenericName n
                 => new UserDeclaredGenericAntetype(declaredType.ContainingPackage,
-                    declaredType.ContainingNamespace, n, antetypeGenericParameters, supertypes, hasReferenceSemantics),
+                    declaredType.ContainingNamespace, n, antetypeGenericParameters, lazySupertypes, hasReferenceSemantics),
             _ => throw ExhaustiveMatch.Failed(declaredType.Name)
         };
     }
+
+    private static Lazy<IFixedSet<NominalAntetype>> LazySupertypes(this IDeclaredUserType declaredType)
+        // Use PublicationOnly so that initialization cycles are detected and thrown by the attributes
+        => new(() => declaredType.Supertypes.Select(t => t.ToAntetype())
+                                                    .Cast<NominalAntetype>().ToFixedSet(),
+                       LazyThreadSafetyMode.PublicationOnly);
 }

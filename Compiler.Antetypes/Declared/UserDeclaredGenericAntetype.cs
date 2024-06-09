@@ -12,7 +12,8 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
     StandardName IUserDeclaredAntetype.Name => Name;
     public IFixedList<AntetypeGenericParameter> GenericParameters { get; }
     public IFixedList<GenericParameterAntetype> GenericParameterAntetypes { get; }
-    public IFixedSet<NominalAntetype> Supertypes { get; }
+    private readonly Lazy<IFixedSet<NominalAntetype>> lazySupertypes;
+    public IFixedSet<NominalAntetype> Supertypes => lazySupertypes.Value;
     public bool HasReferenceSemantics { get; }
 
     public UserDeclaredGenericAntetype(
@@ -20,7 +21,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
         NamespaceName containingNamespace,
         GenericName name,
         IEnumerable<AntetypeGenericParameter> genericParameters,
-        IEnumerable<NominalAntetype> supertypes,
+        Lazy<IFixedSet<NominalAntetype>> lazySupertypes,
         bool hasReferenceSemantics)
     {
         ContainingPackage = containingPackage;
@@ -30,7 +31,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
         Requires.That(nameof(genericParameters), Name.GenericParameterCount == GenericParameters.Count,
             "Count must match name count");
         HasReferenceSemantics = hasReferenceSemantics;
-        Supertypes = supertypes.ToFixedSet();
+        this.lazySupertypes = lazySupertypes;
         GenericParameterAntetypes = GenericParameters.Select(p => new GenericParameterAntetype(this, p))
                                                      .ToFixedList();
     }

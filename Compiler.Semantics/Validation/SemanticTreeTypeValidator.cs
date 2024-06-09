@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 
 internal class SemanticTreeTypeValidator
 {
-    private static readonly bool ValidateNotAmbiguous = false;
+    private static readonly bool ValidateNotAmbiguous = true;
     private static readonly bool ValidateAntetypes = false;
     private static readonly bool ValidateTypes = false;
     public static readonly bool Validating = ValidateNotAmbiguous | ValidateAntetypes | ValidateTypes;
