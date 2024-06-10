@@ -1659,6 +1659,7 @@ public partial interface IPropertyNameNode : IAmbiguousNameNode, IAssignableExpr
 [Closed(
     typeof(INamespaceNameNode),
     typeof(IFunctionGroupNameNode),
+    typeof(IFunctionNameNode),
     typeof(IMethodGroupNameNode),
     typeof(IFieldAccessExpressionNode),
     typeof(IVariableNameExpressionNode),
@@ -1711,6 +1712,14 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
     StandardName FunctionName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; }
+}
+
+public partial interface IFunctionNameNode : INameExpressionNode
+{
+    IFunctionGroupNameNode FunctionGroup { get; }
+    StandardName FunctionName { get; }
+    IFixedList<ITypeNode> TypeArguments { get; }
+    IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
 }
 
 public partial interface IMethodGroupNameNode : INameExpressionNode

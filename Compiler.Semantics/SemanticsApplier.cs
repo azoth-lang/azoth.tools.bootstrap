@@ -932,6 +932,9 @@ internal class SemanticsApplier
             case IFunctionGroupNameNode n:
                 FunctionGroupName(n);
                 break;
+            case IFunctionNameNode n:
+                FunctionName(n);
+                break;
             case IMethodGroupNameNode n:
                 MethodGroupName(n);
                 break;
@@ -1012,6 +1015,9 @@ internal class SemanticsApplier
         }
         Expression(node.Context);
     }
+
+    private static void FunctionName(IFunctionNameNode node)
+        => FunctionGroupName(node.FunctionGroup);
 
     private static void MethodGroupName(IMethodGroupNameNode node)
     {

@@ -352,6 +352,8 @@ UnqualifiedNamespaceName <: NamespaceName = Syntax:`IIdentifierNameExpressionSyn
 QualifiedNamespaceName <: NamespaceName = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName Name:`IdentifierName`;
 FunctionGroupName <: NameExpression = Context:NameExpression? FunctionName:`StandardName` TypeArguments:Type*
     ReferencedDeclarations:{`IFunctionLikeDeclarationNode`};
+FunctionName <: NameExpression = FunctionGroup:FunctionGroupName FunctionName:`StandardName` TypeArguments:`ITypeNode`*
+    ReferencedDeclaration:`IFunctionLikeDeclarationNode`?;
 MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax` Context:Expression MethodName:`StandardName` TypeArguments:Type*
     ReferencedDeclarations:{`IStandardMethodDeclarationNode`};
 FieldAccessExpression <: NameExpression, AssignableExpression = Syntax:`IMemberAccessExpressionSyntax`

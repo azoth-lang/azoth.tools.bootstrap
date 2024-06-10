@@ -179,7 +179,7 @@ internal static class BindingAmbiguousNamesAspect
             node.ReferencedPropertyAccessors, getter);
     }
 
-    public static IChildNode? AssignmentExpression_Rewrite_PropertyNameLeftOperand(IAssignmentExpressionNode node)
+    public static IExpressionNode? AssignmentExpression_Rewrite_PropertyNameLeftOperand(IAssignmentExpressionNode node)
     {
         if (node.IntermediateLeftOperand is not IPropertyNameNode propertyName)
             return null;
@@ -188,6 +188,17 @@ internal static class BindingAmbiguousNamesAspect
         return new SetterInvocationExpressionNode(node.Syntax, propertyName.Context,
             propertyName.PropertyName, node.CurrentRightOperand,
             propertyName.ReferencedPropertyAccessors, setter);
+    }
+
+    public static IAmbiguousExpressionNode? FunctionGroupName_Rewrite(IFunctionGroupNameNode node)
+    {
+        // TODO develop a better check for names that don't need resolved
+        if (node.Parent is IFunctionNameNode or IInvocationExpressionNode or IFunctionInvocationExpressionNode
+           || node.ReferencedDeclarations.Count > 1)
+            return null;
+
+        // if there is only one declaration, then it isn't ambiguous
+        return new FunctionNameNode(node.Syntax, node, node.ReferencedDeclarations.TrySingle());
     }
 
     public static void UnknownMemberAccessExpression_ContributeDiagnostics(

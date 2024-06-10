@@ -2,12 +2,15 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class FunctionGroupNameNode : AmbiguousNameExpressionNode, IFunctionGroupNameNode
 {
+    protected override bool MayHaveRewrite => true;
+
     public override INameExpressionSyntax Syntax { get; }
     public INameExpressionNode? Context { get; }
     public StandardName FunctionName { get; }
@@ -27,4 +30,7 @@ internal sealed class FunctionGroupNameNode : AmbiguousNameExpressionNode, IFunc
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
+
+    protected override IAmbiguousExpressionNode? Rewrite()
+        => BindingAmbiguousNamesAspect.FunctionGroupName_Rewrite(this);
 }

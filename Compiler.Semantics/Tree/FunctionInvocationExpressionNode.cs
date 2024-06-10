@@ -14,7 +14,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFunctionInvocationExpressionNode
 {
     public override IInvocationExpressionSyntax Syntax { get; }
-    public IFunctionGroupNameNode FunctionGroup { get; }
+    private Child<IFunctionGroupNameNode> functionGroup;
+    public IFunctionGroupNameNode FunctionGroup => functionGroup.Value;
     public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     private ValueAttribute<IFixedSet<IFunctionLikeDeclarationNode>> compatibleDeclarations;
     public IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations
@@ -39,7 +40,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
-        FunctionGroup = Child.Attach(this, functionGroup);
+        this.functionGroup = Child.Create(this, functionGroup);
         Arguments = ChildList.Create(this, arguments);
     }
 

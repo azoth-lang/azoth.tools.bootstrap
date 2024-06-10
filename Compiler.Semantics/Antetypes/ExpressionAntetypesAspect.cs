@@ -269,4 +269,8 @@ internal static class ExpressionAntetypesAspect
         var boundAntetype = node.InitializerGroup.InitializingAntetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
+
+    public static IMaybeExpressionAntetype FunctionName_Antetype(IFunctionNameNode node)
+        // TODO should probably use Antetype on the declaration
+        => node.ReferencedDeclaration?.Type.ToAntetype() ?? IAntetype.Unknown;
 }
