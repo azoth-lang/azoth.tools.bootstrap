@@ -26,7 +26,7 @@ public sealed class UserGenericNominalAntetype : NominalAntetype, INonVoidAntety
 
         antetypeReplacements = new(DeclaredAntetype, TypeArguments);
 
-        Supertypes = declaredAnteType.Supertypes.Select(s => (NominalAntetype)ReplaceTypeParametersIn(this)).ToFixedSet();
+        Supertypes = declaredAnteType.Supertypes.Select(s => (NominalAntetype)ReplaceTypeParametersIn(s)).ToFixedSet();
     }
 
     public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
