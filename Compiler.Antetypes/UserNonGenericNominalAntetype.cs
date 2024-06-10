@@ -13,6 +13,7 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
     StandardName IUserDeclaredAntetype.Name => Name;
     private readonly Lazy<IFixedSet<NominalAntetype>> lazySupertypes;
     public override IFixedSet<NominalAntetype> Supertypes => lazySupertypes.Value;
+    private readonly AntetypeReplacements antetypeReplacements;
     public bool HasReferenceSemantics { get; }
 
     public UserNonGenericNominalAntetype(
@@ -27,7 +28,12 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
         Name = name;
         this.lazySupertypes = lazySupertypes;
         HasReferenceSemantics = hasReferenceSemantics;
+        antetypeReplacements = new(this, TypeArguments);
     }
+
+    public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+        // A non-generic antetype can have replacements if it inherits from a generic antetype.
+        => antetypeReplacements.ReplaceTypeParametersIn(antetype);
 
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)

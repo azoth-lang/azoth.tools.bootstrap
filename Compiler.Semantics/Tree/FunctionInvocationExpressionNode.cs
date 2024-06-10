@@ -16,7 +16,9 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     public override IInvocationExpressionSyntax Syntax { get; }
     private Child<IFunctionGroupNameNode> functionGroup;
     public IFunctionGroupNameNode FunctionGroup => functionGroup.Value;
-    public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    private readonly ChildList<IAmbiguousExpressionNode> arguments;
+    public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IEnumerable<IAmbiguousExpressionNode> IntermediateArguments => arguments.Final;
     private ValueAttribute<IFixedSet<IFunctionLikeDeclarationNode>> compatibleDeclarations;
     public IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations
         => compatibleDeclarations.TryGetValue(out var value) ? value
@@ -41,7 +43,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     {
         Syntax = syntax;
         this.functionGroup = Child.Create(this, functionGroup);
-        Arguments = ChildList.Create(this, arguments);
+        this.arguments = ChildList.Create(this, arguments);
     }
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)

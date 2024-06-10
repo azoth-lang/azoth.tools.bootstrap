@@ -29,7 +29,7 @@ public abstract class NonGenericNominalAntetype : NominalAntetype, IDeclaredAnte
         return this;
     }
 
-    public sealed override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
+    public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
         => antetype;
 
     public bool Equals(IDeclaredAntetype? other)

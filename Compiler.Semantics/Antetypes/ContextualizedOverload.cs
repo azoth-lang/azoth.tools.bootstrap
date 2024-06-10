@@ -19,7 +19,7 @@ internal sealed class ContextualizedOverload<TDeclaration>
 
     internal ContextualizedOverload(
         TDeclaration declaration,
-        IMaybeAntetype selfParameterAntetype,
+        IMaybeAntetype? selfParameterAntetype,
         IEnumerable<IMaybeNonVoidAntetype> parameterAntetypes,
         IMaybeAntetype returnAntetype)
     {
@@ -48,6 +48,16 @@ internal sealed class ContextualizedOverload<TDeclaration>
 
 internal static class ContextualizedOverload
 {
+    public static ContextualizedOverload<IFunctionLikeDeclarationNode> Create(
+        IFunctionLikeDeclarationNode function)
+    {
+        var symbol = function.Symbol;
+        var parameterAntetypes = symbol.Parameters.Select(p => p.Type.ToAntetype().ToNonConstValueType())
+                                       .Cast<IMaybeNonVoidAntetype>().ToFixedList();
+        var returnAntetype = symbol.Return.Type.ToAntetype().ToNonConstValueType();
+        return new(function, null, parameterAntetypes, returnAntetype);
+    }
+
     public static ContextualizedOverload<IConstructorDeclarationNode> Create(
         IMaybeAntetype constructingAntetype,
         IConstructorDeclarationNode constructor)

@@ -257,7 +257,7 @@ Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax` ValueId:`ValueId`
 AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax`
-    ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression*
+    ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression* IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>`
     ConstructingAntetype:`IMaybeAntetype` ReferencedConstructors:{`IConstructorDeclarationNode`}
     CompatibleConstructors:{`IConstructorDeclarationNode`} ReferencedConstructor:`IConstructorDeclarationNode`?;
 UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression FinalExpression:`IExpressionNode`;
@@ -309,7 +309,7 @@ InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSynta
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode` IntermediateExpression:`IAmbiguousExpressionNode`
     Arguments:AmbiguousExpression* CurrentArguments:`IEnumerable<IAmbiguousExpressionNode>`;
 FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
-    FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
+    FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression* IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>`
     CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?;
 MethodInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     MethodGroup:MethodGroupName Arguments:AmbiguousExpression* IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>`
@@ -323,7 +323,7 @@ SetterInvocationExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
 FunctionReferenceInvocation <: Expression = Syntax:`IInvocationExpressionSyntax`
     Expression:Expression FunctionAntetype:`FunctionAntetype` Arguments:AmbiguousExpression*;
 InitializerInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
-    InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression*
+    InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression* IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>`
     CompatibleDeclarations:{`IInitializerDeclarationNode`} ReferencedDeclaration:`IInitializerDeclarationNode`?;
 UnknownInvocationExpression: Expression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;

@@ -18,7 +18,9 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     public override INewObjectExpressionSyntax Syntax { get; }
     public ITypeNameNode ConstructingType { get; }
     public IdentifierName? ConstructorName => Syntax.ConstructorName;
-    public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    private readonly ChildList<IAmbiguousExpressionNode> arguments;
+    public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IEnumerable<IAmbiguousExpressionNode> IntermediateArguments => arguments.Final;
     private ValueAttribute<IMaybeAntetype> constructingAntetype;
     public IMaybeAntetype ConstructingAntetype
         => constructingAntetype.TryGetValue(out var value) ? value
@@ -47,7 +49,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     {
         Syntax = syntax;
         ConstructingType = Child.Attach(this, type);
-        Arguments = ChildList.Create(this, arguments);
+        this.arguments = ChildList.Create(this, arguments);
     }
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)

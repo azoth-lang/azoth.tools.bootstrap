@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 using Azoth.Tools.Bootstrap.Framework;
@@ -21,11 +20,12 @@ internal static class OverloadResolutionAspect
     public static IFixedSet<IFunctionLikeDeclarationNode> FunctionInvocationExpression_CompatibleDeclarations(
         IFunctionInvocationExpressionNode node)
     {
-        // For now, overload resolution is based on number of arguments only, not their types. This
-        // avoids the issues with flow typing interacting with overload resolution. In the future,
-        // we may want to revisit this and implement a more sophisticated overload resolution algorithm.
-        var arity = node.Arguments.Count;
-        return node.FunctionGroup.ReferencedDeclarations.Where(d => d.Type.Arity == arity).ToFixedSet();
+        var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
+        var argumentAntetypes = ArgumentAntetypes.ForFunction(arguments);
+        return node.FunctionGroup.ReferencedDeclarations
+                   .Select(ContextualizedOverload.Create)
+                   .Where(o => o.CompatibleWith(argumentAntetypes))
+                   .Select(o => o.Declaration).ToFixedSet();
     }
 
     public static IFunctionLikeDeclarationNode? FunctionInvocationExpression_ReferencedDeclaration(
@@ -42,7 +42,8 @@ internal static class OverloadResolutionAspect
         switch (node.CompatibleDeclarations.Count)
         {
             case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindFunction(node.File, node.Syntax));
+                // TODO add back when overloading is fixed
+                //diagnostics.Add(NameBindingError.CouldNotBindFunction(node.File, node.Syntax));
                 break;
             case 1:
                 throw new UnreachableException("ReferencedDeclaration would not be null");
@@ -65,7 +66,7 @@ internal static class OverloadResolutionAspect
     {
         var contextAntetype = node.MethodGroup.Context.Antetype;
         var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
-        var argumentAntetypes = new ArgumentAntetypes(contextAntetype, arguments);
+        var argumentAntetypes = ArgumentAntetypes.ForMethod(contextAntetype, arguments);
         return node.MethodGroup.ReferencedDeclarations
                    .Select(d => ContextualizedOverload.Create(contextAntetype, d))
                    .Where(o => o.CompatibleWith(argumentAntetypes))
@@ -110,10 +111,11 @@ internal static class OverloadResolutionAspect
         IInitializerInvocationExpressionNode node)
     {
         var initializingAntetype = node.InitializerGroup.InitializingAntetype;
-        var arity = node.Arguments.Count;
+        var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
+        var argumentAntetypes = ArgumentAntetypes.ForInitializer(arguments);
         return node.InitializerGroup.ReferencedDeclarations
                    .Select(d => ContextualizedOverload.Create(initializingAntetype, d))
-                   .Where(o => o.Arity == arity)
+                   .Where(o => o.CompatibleWith(argumentAntetypes))
                    .Select(o => o.Declaration).ToFixedSet();
     }
 
@@ -140,10 +142,11 @@ internal static class OverloadResolutionAspect
         INewObjectExpressionNode node)
     {
         var constructingAntetype = node.ConstructingAntetype;
-        var arity = node.Arguments.Count;
+        var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
+        var argumentAntetypes = ArgumentAntetypes.ForConstructor(arguments);
         return node.ReferencedConstructors
                    .Select(d => ContextualizedOverload.Create(constructingAntetype, d))
-                   .Where(o => o.Arity == arity)
+                   .Where(o => o.CompatibleWith(argumentAntetypes))
                    .Select(o => o.Declaration).ToFixedSet();
     }
 

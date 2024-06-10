@@ -1268,6 +1268,7 @@ public partial interface INewObjectExpressionNode : ISemanticNode, IExpressionNo
     ITypeNameNode ConstructingType { get; }
     IdentifierName? ConstructorName { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IEnumerable<IAmbiguousExpressionNode> IntermediateArguments { get; }
     IMaybeAntetype ConstructingAntetype { get; }
     IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { get; }
     IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; }
@@ -1496,6 +1497,7 @@ public partial interface IFunctionInvocationExpressionNode : ISemanticNode, IExp
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IFunctionGroupNameNode FunctionGroup { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IEnumerable<IAmbiguousExpressionNode> IntermediateArguments { get; }
     IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations { get; }
     IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
 }
@@ -1552,6 +1554,7 @@ public partial interface IInitializerInvocationExpressionNode : ISemanticNode, I
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IInitializerGroupNameNode InitializerGroup { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IEnumerable<IAmbiguousExpressionNode> IntermediateArguments { get; }
     IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; }
     IInitializerDeclarationNode? ReferencedDeclaration { get; }
 }
