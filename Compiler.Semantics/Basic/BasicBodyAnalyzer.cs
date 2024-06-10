@@ -867,7 +867,7 @@ public class BasicBodyAnalyzer
             case IMemberAccessExpressionSyntax exp:
             {
                 var contextResult = InferType(exp.Context, flow);
-                var semantics = InferSemantics(exp, contextResult);
+                var semantics = InferSemantics(exp);
                 switch (semantics)
                 {
                     default:
@@ -1266,7 +1266,7 @@ public class BasicBodyAnalyzer
             case IMemberAccessExpressionSyntax exp:
             {
                 var contextResult = InferType(exp.Context, flow);
-                var semantics = InferSemantics(exp, contextResult);
+                var semantics = InferSemantics(exp);
                 switch (semantics)
                 {
                     default:
@@ -1349,7 +1349,7 @@ public class BasicBodyAnalyzer
             case IMemberAccessExpressionSyntax exp:
             {
                 var contextResult = InferType(exp.Context, flow);
-                var semantics = InferSemantics(exp, contextResult);
+                var semantics = InferSemantics(exp);
 
                 switch (semantics)
                 {
@@ -1661,119 +1661,9 @@ public class BasicBodyAnalyzer
         // Semantics already assigned by SemanticsApplier
         => expression.Semantics.Result;
 
-    private IMemberAccessSyntaxSemantics InferSemantics(IMemberAccessExpressionSyntax expression, ExpressionResult contextResult)
-    {
-        var memberName = expression.MemberName;
-        if (expression.Context is INameExpressionSyntax contextExp)
-        {
-            switch (contextExp.Semantics.Result)
-            {
-                default:
-                    throw ExhaustiveMatch.Failed(contextExp.Semantics.Result);
-                case FunctionGroupNameSyntax _:
-                case MethodGroupNameSyntax _:
-                case TypeNameSyntax _:
-                case NamespaceNameSyntax _:
-                case InitializerGroupNameSyntax _:
-                case SetterGroupNameSyntax _:
-                case UnknownNameSyntax _:
-                    // Semantics already assigned by SemanticsApplier
-                    return expression.Semantics.Result;
-                case FieldNameExpressionSyntax _:
-                case NamedVariableNameSyntax _:
-                case SelfExpressionSyntax _:
-                case GetterNameSyntax _:
-                    // Context should be treated as a typical expression
-                    break;
-            }
-        }
-
-        // Context can be treated as an expression
-
-        var contextType = contextResult.Type;
-        var contextTypeSymbol = LookupSymbolForType(contextType);
-        if (contextTypeSymbol is null)
-        {
-            // Semantics already assigned by SemanticsApplier
-            if (expression.Semantics.Result is not UnknownNameSyntax)
-                throw new InvalidOperationException("Semantics should match symbol");
-            return expression.Semantics.Result;
-        }
-
-        var memberSymbols = symbolTrees.Children(contextTypeSymbol).Where(s => s.Name == memberName).ToFixedSet();
-        if (memberSymbols.Count == 0)
-        {
-            diagnostics.Add(NameBindingError.CouldNotBindMember(file, expression.MemberNameSpan));
-            // Semantics already assigned by SemanticsApplier
-            if (expression.Semantics.Result is not UnknownNameSyntax)
-                throw new InvalidOperationException("Semantics should match symbol");
-            return expression.Semantics.Result;
-        }
-
-        if (memberSymbols.All(s => s is MethodSymbol { Kind: MethodKind.Standard }))
-        {
-            var methodSymbols = memberSymbols.Cast<MethodSymbol>().ToFixedSet();
-            // Semantics already assigned by SemanticsApplier
-            if (expression.Semantics.Result is not MethodGroupNameSyntax semantics
-                || !semantics.Symbols.ItemsEqual<Symbol>(methodSymbols))
-                throw new InvalidOperationException("Semantics should match symbol");
-            return expression.Semantics.Result;
-        }
-
-        if (memberSymbols.All(s => s is MethodSymbol { Kind: MethodKind.Setter }))
-        {
-            var setterSymbols = memberSymbols.Cast<MethodSymbol>().ToFixedSet();
-            // Semantics already assigned by SemanticsApplier
-            if (expression.Semantics.Result is not SetterGroupNameSyntax semantics
-                || !semantics.Symbols.ItemsEqual<Symbol>(setterSymbols))
-                throw new InvalidOperationException("Semantics should match symbol");
-            return expression.Semantics.Result;
-        }
-
-        if (memberSymbols.Count > 1)
-        {
-            diagnostics.Add(NameBindingError.AmbiguousName(file, expression.MemberNameSpan));
-            // Semantics already assigned by SemanticsApplier
-            if (expression.Semantics.Result is not UnknownNameSyntax)
-                throw new InvalidOperationException("Semantics should match symbol");
-            return expression.Semantics.Result;
-        }
-
-        var memberSymbol = memberSymbols.Single();
-        switch (memberSymbol)
-        {
-            default:
-                throw ExhaustiveMatch.Failed(memberSymbol);
-            case FieldSymbol sym:
-            {
-                // Semantics already assigned by SemanticsApplier
-                if (expression.Semantics.Result is not FieldNameExpressionSyntax semantics || semantics.Symbol != sym)
-                    throw new InvalidOperationException("Semantics should match symbol");
-                return expression.Semantics.Result;
-            }
-            case MethodSymbol sym:
-                if (sym.Kind == MethodKind.Getter)
-                {
-                    // Semantics already assigned by SemanticsApplier
-                    if (expression.Semantics.Result is not GetterNameSyntax semantics
-                        || semantics.Symbol.Result != sym)
-                        throw new InvalidOperationException("Semantics should match symbol");
-                    return expression.Semantics.Result;
-                }
-                throw new UnreachableException();
-            case UserTypeSymbol _:
-            case GenericParameterTypeSymbol _:
-            case InitializerSymbol _:
-            case SelfParameterSymbol _:
-            case NamedVariableSymbol _:
-            case EmptyTypeSymbol _:
-            case PrimitiveTypeSymbol _:
-            case NamespaceSymbol _:
-            case FunctionSymbol _:
-            case ConstructorSymbol _:
-                throw new UnreachableException();
-        }
-    }
+    private IMemberAccessSyntaxSemantics InferSemantics(IMemberAccessExpressionSyntax expression)
+        // Semantics already assigned by SemanticsApplier
+        => expression.Semantics.Result;
 
     private FunctionType? InferSymbol<TSymbol>(
         IInvocationExpressionSyntax invocation,
