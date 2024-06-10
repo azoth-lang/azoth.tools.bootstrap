@@ -6,10 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 
 internal class SemanticTreeTypeValidator
 {
-    private static readonly bool ValidateNotAmbiguous = true;
-    private static readonly bool ValidateAntetypes = false;
     private static readonly bool ValidateTypes = false;
-    public static readonly bool Validating = ValidateNotAmbiguous | ValidateAntetypes | ValidateTypes;
 
     public static void Validate(ISemanticNode node)
     {
@@ -20,8 +17,7 @@ internal class SemanticTreeTypeValidator
         if (node is not IExpressionNode expression)
         {
             var nodeSyntax = node.Syntax;
-            if (node is IAmbiguousExpressionNode
-                && ValidateNotAmbiguous)
+            if (node is IAmbiguousExpressionNode)
                 throw new InvalidOperationException($"Ambiguous expression node {node.GetType().GetFriendlyName()}: `{nodeSyntax}` found in semantic tree");
             return;
         }
@@ -31,19 +27,17 @@ internal class SemanticTreeTypeValidator
             return;
 
         var expressionSyntax = expression.Syntax;
-        if (ValidateAntetypes)
+        var expectedAntetype = expressionSyntax.DataType.Result?.ToAntetype();
+        // Sometimes the new analysis can come up with types when the old one couldn't. So
+        // if the expected antetype is UnknownAntetype, we don't care what the actual antetype is.
+        if (expectedAntetype is not UnknownAntetype)
         {
-            var expectedAntetype = expressionSyntax.DataType.Result?.ToAntetype();
-            // Sometimes the new analysis can come up with types when the old one couldn't. So
-            // if the expected antetype is UnknownAntetype, we don't care what the actual antetype is.
-            if (expectedAntetype is not UnknownAntetype)
-            {
-                var antetype = expression.Antetype;
-                if (!antetype.Equals(expectedAntetype))
-                    throw new InvalidOperationException(
-                        $"Expected antetype {expectedAntetype}, but got {antetype}");
-            }
+            var antetype = expression.Antetype;
+            if (!antetype.Equals(expectedAntetype))
+                throw new InvalidOperationException(
+                    $"Expected antetype {expectedAntetype}, but got {antetype}");
         }
+
         if (ValidateTypes)
         {
             _ = expression.ValueId;

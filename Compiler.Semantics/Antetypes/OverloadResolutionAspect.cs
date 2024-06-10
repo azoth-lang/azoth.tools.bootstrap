@@ -3,7 +3,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
@@ -125,10 +124,6 @@ internal static class OverloadResolutionAspect
 
     public static IExpressionNode? InvocationExpression_Rewrite_FunctionReferenceExpression(IInvocationExpressionNode node)
     {
-        // TODO remove condition once all cases are handled
-        if (!SemanticTreeTypeValidator.Validating)
-            return null;
-
         if (node.IntermediateExpression is not IExpressionNode { Antetype: FunctionAntetype } expression)
             return null;
 

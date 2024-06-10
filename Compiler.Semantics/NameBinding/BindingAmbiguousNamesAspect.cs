@@ -4,7 +4,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
@@ -128,10 +127,6 @@ internal static class BindingAmbiguousNamesAspect
             or IMethodGroupNameNode
             or ITypeNameExpressionNode
             or IInitializerGroupNameNode)
-            return null;
-
-        // TODO remove condition once all cases are handled
-        if (!SemanticTreeTypeValidator.Validating)
             return null;
 
         var contextTypeDeclaration = node.InheritedPackageNameScope().Lookup(context.Antetype);
