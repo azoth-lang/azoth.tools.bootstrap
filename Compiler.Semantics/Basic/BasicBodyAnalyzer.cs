@@ -756,10 +756,13 @@ public class BasicBodyAnalyzer
                 var arguments = InferArgumentTypes(exp.Arguments, flow);
                 // Type already set by semantic tree
                 var constructingType = (exp.Type.NamedType as CapabilityType)?.BareType;
-                ResultVariable? resultVariable = null;
+                ResultVariable? resultVariable;
                 if (constructingType is null)
                 {
-                    exp.ReferencedSymbol.Fulfill(null);
+                    // Symbol already assigned by SemanticsApplier
+                    if (exp.ReferencedSymbol.Result is not null)
+                        throw new InvalidOperationException("Symbol should match expected");
+                    //exp.ReferencedSymbol.Fulfill(null);
                     exp.DataType.Fulfill(DataType.Unknown);
                     resultVariable = CombineResults<ConstructorSymbol>(null, arguments, flow);
                     return new ExpressionResult(exp, resultVariable);
@@ -768,7 +771,10 @@ public class BasicBodyAnalyzer
                 if (!constructingType.IsFullyKnown)
                 {
                     diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
-                    exp.ReferencedSymbol.Fulfill(null);
+                    // Symbol already assigned by SemanticsApplier
+                    if (exp.ReferencedSymbol.Result is not null)
+                        throw new InvalidOperationException("Symbol should match expected");
+                    //exp.ReferencedSymbol.Fulfill(null);
                     exp.DataType.Fulfill(DataType.Unknown);
                     resultVariable = CombineResults<ConstructorSymbol>(null, arguments, flow);
                     return new ExpressionResult(exp, resultVariable);
@@ -777,7 +783,8 @@ public class BasicBodyAnalyzer
                 if (constructingType is BareReferenceType { DeclaredType.IsAbstract: true })
                 {
                     diagnostics.Add(OtherSemanticError.CannotConstructAbstractType(file, exp.Type));
-                    exp.ReferencedSymbol.Fulfill(null);
+                    // Symbol already assigned by SemanticsApplier
+                    // Note: it may actually pick a constructor on the abstract type, so the symbol may not be null
                     exp.DataType.Fulfill(DataType.Unknown);
                     resultVariable = CombineResults<ConstructorSymbol>(null, arguments, flow);
                     return new ExpressionResult(exp, resultVariable);
@@ -1654,14 +1661,15 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private ISimpleNameExpressionSyntaxSemantics InferSemantics(ISimpleNameSyntax expression)
-        => expression.Semantics.Result; // Semantics already assigned by SemanticsApplier
-
-    private IIdentifierNameExpressionSyntaxSemantics InferSemantics(IIdentifierNameExpressionSyntax expression)
+    private static ISimpleNameExpressionSyntaxSemantics InferSemantics(ISimpleNameSyntax expression)
         // Semantics already assigned by SemanticsApplier
         => expression.Semantics.Result;
 
-    private IMemberAccessSyntaxSemantics InferSemantics(IMemberAccessExpressionSyntax expression)
+    private static IIdentifierNameExpressionSyntaxSemantics InferSemantics(IIdentifierNameExpressionSyntax expression)
+        // Semantics already assigned by SemanticsApplier
+        => expression.Semantics.Result;
+
+    private static IMemberAccessSyntaxSemantics InferSemantics(IMemberAccessExpressionSyntax expression)
         // Semantics already assigned by SemanticsApplier
         => expression.Semantics.Result;
 
@@ -1739,20 +1747,34 @@ public class BasicBodyAnalyzer
             {
                 case 0:
                     diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, invocation.Span));
-                    invocation.ReferencedSymbol.Fulfill(null);
+                    // Symbol already assigned by SemanticsApplier
+                    if (invocation.ReferencedSymbol.Result is not null)
+                        throw new InvalidOperationException("Symbol should match expected");
+                    //invocation.ReferencedSymbol.Fulfill(null);
                     break;
                 case 1:
                     constructor = validOverloads.Single();
-                    invocation.ReferencedSymbol.Fulfill(constructor.Symbol);
+                    // Symbol already assigned by SemanticsApplier
+                    if (invocation.ReferencedSymbol.Result != constructor.Symbol)
+                        throw new InvalidOperationException("Symbol should match expected");
+                    //invocation.ReferencedSymbol.Fulfill(constructor.Symbol);
                     break;
                 default:
                     diagnostics.Add(NameBindingError.AmbiguousConstructorCall(file, invocation.Span));
-                    invocation.ReferencedSymbol.Fulfill(null);
+                    // Symbol already assigned by SemanticsApplier
+                    if (invocation.ReferencedSymbol.Result is not null)
+                        throw new InvalidOperationException("Symbol should match expected");
+                    //invocation.ReferencedSymbol.Fulfill(null);
                     break;
             }
         }
         else
+        {
+            // Symbol already assigned by SemanticsApplier
+            if (invocation.ReferencedSymbol.Result is not null)
+                throw new InvalidOperationException("Symbol should match expected");
             invocation.ReferencedSymbol.Fulfill(null);
+        }
 
         return constructor;
     }

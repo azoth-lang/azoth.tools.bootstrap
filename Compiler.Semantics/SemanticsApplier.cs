@@ -683,6 +683,7 @@ internal class SemanticsApplier
 
     private static void NewObjectExpression(INewObjectExpressionNode node)
     {
+        node.Syntax.ReferencedSymbol.Fulfill(node.ReferencedConstructor?.Symbol);
         TypeName(node.ConstructingType);
         AmbiguousExpressions(node.Arguments);
     }
