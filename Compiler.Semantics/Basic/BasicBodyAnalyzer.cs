@@ -1694,51 +1694,49 @@ public class BasicBodyAnalyzer
         var contextTypeSymbol = LookupSymbolForType(contextType);
         if (contextTypeSymbol is null)
         {
-            if (expression.Semantics.IsFulfilled)
-            {
-                // Fulfillment from the semantic tree is not consistent yet, but when present, it
-                // should be correct.
-                if (expression.Semantics.Result is not UnknownNameSyntax)
-                    throw new InvalidOperationException("Semantics should match symbol");
-                return expression.Semantics.Result;
-            }
-
-            return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+            // Semantics already assigned by SemanticsApplier
+            if (expression.Semantics.Result is not UnknownNameSyntax)
+                throw new InvalidOperationException("Semantics should match symbol");
+            return expression.Semantics.Result;
         }
-
 
         var memberSymbols = symbolTrees.Children(contextTypeSymbol).Where(s => s.Name == memberName).ToFixedSet();
         if (memberSymbols.Count == 0)
         {
             diagnostics.Add(NameBindingError.CouldNotBindMember(file, expression.MemberNameSpan));
-            return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+            // Semantics already assigned by SemanticsApplier
+            if (expression.Semantics.Result is not UnknownNameSyntax)
+                throw new InvalidOperationException("Semantics should match symbol");
+            return expression.Semantics.Result;
         }
 
         if (memberSymbols.All(s => s is MethodSymbol { Kind: MethodKind.Standard }))
         {
             var methodSymbols = memberSymbols.Cast<MethodSymbol>().ToFixedSet();
-            if (expression.Semantics.IsFulfilled)
-            {
-                // Fulfillment from the semantic tree is not consistent yet, but when present, it
-                // should be correct.
-                if (expression.Semantics.Result is not MethodGroupNameSyntax semantics
-                    || !semantics.Symbols.ItemsEqual<Symbol>(methodSymbols))
-                    throw new InvalidOperationException("Semantics should match symbol");
-                return expression.Semantics.Result;
-            }
-            return expression.Semantics.Fulfill(new MethodGroupNameSyntax(methodSymbols));
+            // Semantics already assigned by SemanticsApplier
+            if (expression.Semantics.Result is not MethodGroupNameSyntax semantics
+                || !semantics.Symbols.ItemsEqual<Symbol>(methodSymbols))
+                throw new InvalidOperationException("Semantics should match symbol");
+            return expression.Semantics.Result;
         }
 
         if (memberSymbols.All(s => s is MethodSymbol { Kind: MethodKind.Setter }))
         {
             var setterSymbols = memberSymbols.Cast<MethodSymbol>().ToFixedSet();
-            return expression.Semantics.Fulfill(new SetterGroupNameSyntax(setterSymbols));
+            // Semantics already assigned by SemanticsApplier
+            if (expression.Semantics.Result is not SetterGroupNameSyntax semantics
+                || !semantics.Symbols.ItemsEqual<Symbol>(setterSymbols))
+                throw new InvalidOperationException("Semantics should match symbol");
+            return expression.Semantics.Result;
         }
 
         if (memberSymbols.Count > 1)
         {
             diagnostics.Add(NameBindingError.AmbiguousName(file, expression.MemberNameSpan));
-            return expression.Semantics.Fulfill(UnknownNameSyntax.Instance);
+            // Semantics already assigned by SemanticsApplier
+            if (expression.Semantics.Result is not UnknownNameSyntax)
+                throw new InvalidOperationException("Semantics should match symbol");
+            return expression.Semantics.Result;
         }
 
         var memberSymbol = memberSymbols.Single();
@@ -1747,19 +1745,21 @@ public class BasicBodyAnalyzer
             default:
                 throw ExhaustiveMatch.Failed(memberSymbol);
             case FieldSymbol sym:
-                if (expression.Semantics.IsFulfilled)
+            {
+                // Semantics already assigned by SemanticsApplier
+                if (expression.Semantics.Result is not FieldNameExpressionSyntax semantics || semantics.Symbol != sym)
+                    throw new InvalidOperationException("Semantics should match symbol");
+                return expression.Semantics.Result;
+            }
+            case MethodSymbol sym:
+                if (sym.Kind == MethodKind.Getter)
                 {
-                    // Fulfillment from the semantic tree is not consistent yet, but when present, it
-                    // should be correct.
-                    if (expression.Semantics.Result is not FieldNameExpressionSyntax semantics
-                        || semantics.Symbol != sym)
+                    // Semantics already assigned by SemanticsApplier
+                    if (expression.Semantics.Result is not GetterNameSyntax semantics
+                        || semantics.Symbol.Result != sym)
                         throw new InvalidOperationException("Semantics should match symbol");
                     return expression.Semantics.Result;
                 }
-                return expression.Semantics.Fulfill(new FieldNameExpressionSyntax(sym));
-            case MethodSymbol sym:
-                if (sym.Kind == MethodKind.Getter)
-                    return expression.Semantics.Fulfill(new GetterNameSyntax(sym));
                 throw new UnreachableException();
             case UserTypeSymbol _:
             case GenericParameterTypeSymbol _:

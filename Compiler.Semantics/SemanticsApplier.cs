@@ -804,11 +804,20 @@ internal class SemanticsApplier
     }
 
     private static void GetterInvocationExpression(IGetterInvocationExpressionNode node)
-        => Expression(node.Context);
+    {
+        var semantics = new GetterNameSyntax(node.ReferencedPropertyAccessors
+                                                 .OfType<IGetterMethodDeclarationNode>().Select(d => d.Symbol)
+                                                 .First());
+        node.Syntax.Semantics.Fulfill(semantics);
+        Expression(node.Context);
+    }
 
 
     private static void SetterInvocationExpression(ISetterInvocationExpressionNode node)
     {
+        var semantics = new SetterGroupNameSyntax(node.ReferencedPropertyAccessors.OfType<ISetterMethodDeclarationNode>().Select(d => d.Symbol).ToFixedSet());
+        var syntax = (IMemberAccessExpressionSyntax)node.Syntax.LeftOperand;
+        syntax.Semantics.Fulfill(semantics);
         Expression(node.Context);
         AmbiguousExpression(node.Value);
     }
