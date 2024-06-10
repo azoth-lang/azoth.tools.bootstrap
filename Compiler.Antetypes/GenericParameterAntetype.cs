@@ -9,6 +9,7 @@ public sealed class GenericParameterAntetype : NonGenericNominalAntetype, INonVo
     public UserDeclaredGenericAntetype DeclaringAntetype { get; }
     public AntetypeGenericParameter Parameter { get; }
     public override IdentifierName Name => Parameter.Name;
+    public override bool IsAbstract => true;
     // TODO this should be based on generic constraints
     public override IFixedSet<NominalAntetype> Supertypes => FixedSet.Empty<NominalAntetype>();
 

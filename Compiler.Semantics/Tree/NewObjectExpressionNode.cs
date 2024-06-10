@@ -54,6 +54,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
+        OverloadResolutionAspect.NewObjectExpression_ContributeDiagnostics(this, diagnostics);
         ExpressionTypesAspect.NewObjectExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }

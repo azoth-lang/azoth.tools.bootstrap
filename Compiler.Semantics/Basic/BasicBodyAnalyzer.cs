@@ -1733,7 +1733,7 @@ public class BasicBodyAnalyzer
         return method;
     }
 
-    private Contextualized<ConstructorSymbol>? InferSymbol(
+    private static Contextualized<ConstructorSymbol>? InferSymbol(
         INewObjectExpressionSyntax invocation,
         IFixedSet<ConstructorSymbol>? constructorSymbols,
         ArgumentResults arguments,
@@ -1745,26 +1745,16 @@ public class BasicBodyAnalyzer
             var validOverloads = SelectOverload(invocation.Type.NamedType.Assigned(), constructorSymbols, arguments, flow);
             switch (validOverloads.Count)
             {
-                case 0:
-                    diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, invocation.Span));
-                    // Symbol already assigned by SemanticsApplier
-                    if (invocation.ReferencedSymbol.Result is not null)
-                        throw new InvalidOperationException("Symbol should match expected");
-                    //invocation.ReferencedSymbol.Fulfill(null);
-                    break;
                 case 1:
                     constructor = validOverloads.Single();
                     // Symbol already assigned by SemanticsApplier
                     if (invocation.ReferencedSymbol.Result != constructor.Symbol)
                         throw new InvalidOperationException("Symbol should match expected");
-                    //invocation.ReferencedSymbol.Fulfill(constructor.Symbol);
                     break;
                 default:
-                    diagnostics.Add(NameBindingError.AmbiguousConstructorCall(file, invocation.Span));
                     // Symbol already assigned by SemanticsApplier
                     if (invocation.ReferencedSymbol.Result is not null)
                         throw new InvalidOperationException("Symbol should match expected");
-                    //invocation.ReferencedSymbol.Fulfill(null);
                     break;
             }
         }

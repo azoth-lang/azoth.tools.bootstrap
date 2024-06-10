@@ -9,6 +9,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
 {
     public IdentifierName ContainingPackage { get; }
     public NamespaceName ContainingNamespace { get; }
+    public bool IsAbstract { get; }
     public GenericName Name { get; }
     StandardName IUserDeclaredAntetype.Name => Name;
     public IFixedList<AntetypeGenericParameter> GenericParameters { get; }
@@ -21,6 +22,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
     public UserDeclaredGenericAntetype(
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
+        bool isAbstract,
         GenericName name,
         IEnumerable<AntetypeGenericParameter> genericParameters,
         Lazy<IFixedSet<NominalAntetype>> lazySupertypes,
@@ -34,6 +36,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
             "Count must match name count");
         AllowsVariance = GenericParameters.Any(p => p.Variance != Variance.Invariant);
         HasReferenceSemantics = hasReferenceSemantics;
+        IsAbstract = isAbstract;
         this.lazySupertypes = lazySupertypes;
         GenericParameterAntetypes = GenericParameters.Select(p => new GenericParameterAntetype(this, p))
                                                      .ToFixedList();

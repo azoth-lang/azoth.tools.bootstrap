@@ -24,6 +24,7 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
     NamespaceName ContainingNamespace { get; }
     bool IsDeclaredConst { get; }
     bool IsClass { get; }
+    bool IsAbstract { get; }
     StandardName Name { get; }
     IFixedList<GenericParameter> GenericParameters { get; }
     bool HasIndependentGenericParameters { get; }
@@ -49,6 +50,7 @@ internal static class DeclaredUserTypeExtensions
     /// <see cref="IDeclaredUserType.ToAntetype"/> instead.</remarks>
     internal static IDeclaredAntetype ConstructDeclaredAntetype(this IDeclaredUserType declaredType)
     {
+        var isAbstract = declaredType.IsAbstract;
         var antetypeGenericParameters = declaredType.GenericParameters
             // Treat self as non-writeable because antetypes should permit anything that could possibly be allowed by the types
             .Select(p => new AntetypeGenericParameter(p.Name, p.Variance.ToVariance(true)));
@@ -58,10 +60,11 @@ internal static class DeclaredUserTypeExtensions
         {
             IdentifierName n
                 => new UserNonGenericNominalAntetype(declaredType.ContainingPackage,
-                    declaredType.ContainingNamespace, n, lazySupertypes, hasReferenceSemantics),
+                    declaredType.ContainingNamespace, isAbstract, n, lazySupertypes, hasReferenceSemantics),
             GenericName n
                 => new UserDeclaredGenericAntetype(declaredType.ContainingPackage,
-                    declaredType.ContainingNamespace, n, antetypeGenericParameters, lazySupertypes, hasReferenceSemantics),
+                    declaredType.ContainingNamespace, isAbstract, n, antetypeGenericParameters,
+                    lazySupertypes, hasReferenceSemantics),
             _ => throw ExhaustiveMatch.Failed(declaredType.Name)
         };
     }

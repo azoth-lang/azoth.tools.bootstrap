@@ -54,6 +54,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     public override NamespaceName ContainingNamespace { get; }
 
     bool IDeclaredUserType.IsClass => false;
+    bool IDeclaredUserType.IsAbstract => false;
 
     public override StandardName Name { get; }
 

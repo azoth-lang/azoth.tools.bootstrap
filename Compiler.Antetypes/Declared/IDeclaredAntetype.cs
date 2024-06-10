@@ -15,6 +15,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
     typeof(SimpleAntetype))]
 public interface IDeclaredAntetype : IEquatable<IDeclaredAntetype>
 {
+    bool IsAbstract { get; }
+
     IFixedList<AntetypeGenericParameter> GenericParameters { get; }
 
     bool AllowsVariance { get; }

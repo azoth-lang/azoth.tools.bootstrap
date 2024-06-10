@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -147,4 +148,30 @@ internal static class OverloadResolutionAspect
 
     public static IConstructorDeclarationNode? NewObjectExpression_ReferencedConstructor(INewObjectExpressionNode node)
         => node.CompatibleConstructors.TrySingle();
+
+    public static void NewObjectExpression_ContributeDiagnostics(INewObjectExpressionNode node, Diagnostics diagnostics)
+    {
+        if (node.ConstructingAntetype is UnknownAntetype
+            || node.ReferencedConstructor is not null)
+            return;
+
+        if (node.ConstructingAntetype is NominalAntetype { DeclaredAntetype.IsAbstract: true })
+        {
+            // TODO uncomment once semantic tree can provide type for this error
+            //diagnostics.Add(OtherSemanticError.CannotConstructAbstractType(node.File, exp.Type));
+            return;
+        }
+
+        switch (node.CompatibleConstructors.Count)
+        {
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindConstructor(node.File, node.Syntax.Span));
+                break;
+            case 1:
+                throw new UnreachableException("ReferencedConstructor would not be null");
+            default:
+                diagnostics.Add(NameBindingError.AmbiguousConstructorCall(node.File, node.Syntax.Span));
+                break;
+        }
+    }
 }

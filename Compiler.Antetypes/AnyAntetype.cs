@@ -14,6 +14,8 @@ public class AnyAntetype : NonGenericNominalAntetype, INonVoidAntetype, IDeclare
     }
     #endregion
 
+    public override bool IsAbstract => true;
+
     public override SpecialTypeName Name => SpecialTypeName.Any;
 
     IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters

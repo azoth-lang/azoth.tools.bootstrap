@@ -10,6 +10,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
     typeof(NumericAntetype))]
 public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype
 {
+    public bool IsAbstract => false;
+
     public SpecialTypeName Name { get; }
 
     public bool HasReferenceSemantics => false;
