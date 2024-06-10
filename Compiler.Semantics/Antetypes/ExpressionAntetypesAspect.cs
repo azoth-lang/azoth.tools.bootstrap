@@ -42,9 +42,9 @@ internal static class ExpressionAntetypesAspect
     public static IMaybeExpressionAntetype FieldAccessExpression_Antetype(IFieldAccessExpressionNode node)
     {
         // TODO should probably use Antetype on the declaration
-        var fieldAntetype = node.ReferencedDeclaration.Type.ToAntetype();
-        // TODO replace type parameters with actual types
-        return fieldAntetype;
+        var unboundAntetype = node.ReferencedDeclaration.Type.ToAntetype();
+        var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
+        return boundAntetype;
     }
 
     public static IMaybeExpressionAntetype NewObjectExpression_Antetype(INewObjectExpressionNode node)
