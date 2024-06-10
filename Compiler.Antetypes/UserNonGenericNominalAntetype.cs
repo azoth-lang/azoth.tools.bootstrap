@@ -12,7 +12,7 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
     public override IdentifierName Name { get; }
     StandardName IUserDeclaredAntetype.Name => Name;
     private readonly Lazy<IFixedSet<NominalAntetype>> lazySupertypes;
-    public IFixedSet<NominalAntetype> Supertypes => lazySupertypes.Value;
+    public override IFixedSet<NominalAntetype> Supertypes => lazySupertypes.Value;
     public bool HasReferenceSemantics { get; }
 
     public UserNonGenericNominalAntetype(

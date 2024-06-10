@@ -1,4 +1,5 @@
 using System.Text;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -11,6 +12,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
     public GenericName Name { get; }
     StandardName IUserDeclaredAntetype.Name => Name;
     public IFixedList<AntetypeGenericParameter> GenericParameters { get; }
+    public bool AllowsVariance { get; }
     public IFixedList<GenericParameterAntetype> GenericParameterAntetypes { get; }
     private readonly Lazy<IFixedSet<NominalAntetype>> lazySupertypes;
     public IFixedSet<NominalAntetype> Supertypes => lazySupertypes.Value;
@@ -30,6 +32,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
         GenericParameters = genericParameters.ToFixedList();
         Requires.That(nameof(genericParameters), Name.GenericParameterCount == GenericParameters.Count,
             "Count must match name count");
+        AllowsVariance = GenericParameters.Any(p => p.Variance != Variance.Invariant);
         HasReferenceSemantics = hasReferenceSemantics;
         this.lazySupertypes = lazySupertypes;
         GenericParameterAntetypes = GenericParameters.Select(p => new GenericParameterAntetype(this, p))

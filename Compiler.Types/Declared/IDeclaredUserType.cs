@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -48,7 +49,9 @@ internal static class DeclaredUserTypeExtensions
     /// <see cref="IDeclaredUserType.ToAntetype"/> instead.</remarks>
     internal static IDeclaredAntetype ConstructDeclaredAntetype(this IDeclaredUserType declaredType)
     {
-        var antetypeGenericParameters = declaredType.GenericParameters.Select(p => new AntetypeGenericParameter(p.Name, p.Variance));
+        var antetypeGenericParameters = declaredType.GenericParameters
+            // Treat self as non-writeable because antetypes should permit anything that could possibly be allowed by the types
+            .Select(p => new AntetypeGenericParameter(p.Name, p.Variance.ToVariance(true)));
         var hasReferenceSemantics = declaredType is ObjectType;
         var lazySupertypes = declaredType.LazySupertypes();
         return declaredType.Name switch

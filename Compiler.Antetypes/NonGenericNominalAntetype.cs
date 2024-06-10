@@ -16,6 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 public abstract class NonGenericNominalAntetype : NominalAntetype, IDeclaredAntetype
 {
     public sealed override IDeclaredAntetype DeclaredAntetype => this;
+    public sealed override bool AllowsVariance => false;
     IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
         => FixedList.Empty<AntetypeGenericParameter>();
     IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes

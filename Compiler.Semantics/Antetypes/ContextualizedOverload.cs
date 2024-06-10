@@ -31,19 +31,18 @@ internal sealed class ContextualizedOverload<TDeclaration>
 
     public bool CompatibleWith(ArgumentAntetypes arguments)
     {
-        if (Arity != arguments.Arity
-            || SelfParameterAntetype is not null != arguments.Self is not null)
+        if (Arity != arguments.Arity)
             return false;
 
-        if (SelfParameterAntetype is not null)
+        if (SelfParameterAntetype is not null
+            // Self is null for constructors and initializers where the type is definitely compatible
+            && arguments.Self is not null)
         {
-            // TODO check is assignable from
+            if (!arguments.Self.IsAssignableTo(SelfParameterAntetype))
+                return false;
         }
 
-        //return ParameterAntetypes.Zip(arguments.Arguments, (p, a) => p.IsAssignableFrom(a))
-        //                         .All(b => b);
-
-        return true;
+        return ParameterAntetypes.EquiZip(arguments.Arguments).All((p, a) => a.IsAssignableTo(p));
     }
 }
 

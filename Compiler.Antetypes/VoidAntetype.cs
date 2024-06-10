@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
@@ -15,6 +16,8 @@ public sealed class VoidAntetype : EmptyAntetype
     private VoidAntetype()
         : base(SpecialTypeName.Void) { }
     #endregion
+
+    public override IFixedSet<NominalAntetype> Supertypes => FixedSet.Empty<NominalAntetype>();
 
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)

@@ -12,8 +12,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 public abstract class NominalAntetype : IAntetype
 {
     public abstract IDeclaredAntetype DeclaredAntetype { get; }
+    public abstract bool AllowsVariance { get; }
     public abstract TypeName Name { get; }
     public virtual IFixedList<IAntetype> TypeArguments => FixedList.Empty<IAntetype>();
+    public abstract IFixedSet<NominalAntetype> Supertypes { get; }
 
     private protected NominalAntetype() { }
 

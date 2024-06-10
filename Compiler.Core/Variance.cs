@@ -31,4 +31,14 @@ public static class VarianceExtensions
 
     public static Variance Inverse(this Variance variance)
         => (Variance)(-(int)variance);
+
+    public static string ToSourceCodeString(this Variance variance)
+        => variance switch
+        {
+            Variance.Contravariant => "in",
+            Variance.Invariant => "",
+            Variance.Covariant => "out",
+            _ => throw ExhaustiveMatch.Failed(variance),
+        };
+
 }

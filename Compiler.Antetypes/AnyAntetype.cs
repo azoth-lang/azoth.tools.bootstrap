@@ -15,13 +15,16 @@ public class AnyAntetype : NonGenericNominalAntetype, INonVoidAntetype, IDeclare
     #endregion
 
     public override SpecialTypeName Name => SpecialTypeName.Any;
-    public bool HasReferenceSemantics => true;
 
     IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
         => FixedList.Empty<AntetypeGenericParameter>();
 
     IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes
         => FixedList.Empty<GenericParameterAntetype>();
+
+    public override IFixedSet<NominalAntetype> Supertypes => FixedSet.Empty<NominalAntetype>();
+
+    public bool HasReferenceSemantics => true;
 
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)

@@ -17,6 +17,8 @@ public interface IDeclaredAntetype : IEquatable<IDeclaredAntetype>
 {
     IFixedList<AntetypeGenericParameter> GenericParameters { get; }
 
+    bool AllowsVariance { get; }
+
     IFixedList<GenericParameterAntetype> GenericParameterAntetypes { get; }
 
     IAntetype With(IEnumerable<IAntetype> typeArguments);

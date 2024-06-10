@@ -388,7 +388,7 @@ public class BasicBodyAnalyzer
                     priorConversion = conversion;
                 }
                 return new OptionalConversion(priorConversion);
-            case (CapabilityType<BoolType> to, BoolConstValueType from):
+            case (CapabilityType<BoolType> to, BoolConstValueType _):
                 return new SimpleTypeConversion(to.DeclaredType, priorConversion);
             case (CapabilityType<FixedSizeIntegerType> to, CapabilityType<FixedSizeIntegerType> from):
                 if (to.DeclaredType.Bits > from.DeclaredType.Bits && (!from.DeclaredType.IsSigned || to.DeclaredType.IsSigned))

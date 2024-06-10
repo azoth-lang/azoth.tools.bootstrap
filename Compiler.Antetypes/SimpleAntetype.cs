@@ -1,9 +1,13 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
+[Closed(
+    typeof(BoolAntetype),
+    typeof(NumericAntetype))]
 public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype
 {
     public SpecialTypeName Name { get; }
@@ -12,6 +16,8 @@ public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype
 
     IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
         => FixedList.Empty<AntetypeGenericParameter>();
+
+    public bool AllowsVariance => false;
 
     IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes
         => FixedList.Empty<GenericParameterAntetype>();

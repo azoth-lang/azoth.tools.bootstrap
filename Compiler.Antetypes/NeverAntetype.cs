@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
@@ -19,6 +20,10 @@ public sealed class NeverAntetype : EmptyAntetype, INonVoidAntetype
     private NeverAntetype()
         : base(SpecialTypeName.Never) { }
     #endregion
+
+    /// <remarks>Even though <see cref="NeverAntetype"/> is a subtype of all types, this property
+    /// returns an empty set because it is not declared with any supertypes.</remarks>
+    public override IFixedSet<NominalAntetype> Supertypes => FixedSet.Empty<NominalAntetype>();
 
     // TODO this is especially strange because it is a subtype of reference types
     public bool HasReferenceSemantics => false;
