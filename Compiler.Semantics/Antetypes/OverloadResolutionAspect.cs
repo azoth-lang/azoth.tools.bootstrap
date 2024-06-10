@@ -63,8 +63,20 @@ internal static class OverloadResolutionAspect
     public static IFixedSet<IStandardMethodDeclarationNode> MethodInvocationExpression_CompatibleDeclarations(
         IMethodInvocationExpressionNode node)
     {
-        var arity = node.Arguments.Count;
-        return node.MethodGroup.ReferencedDeclarations.Where(d => d.Arity == arity).ToFixedSet();
+        var contextAntetype = node.MethodGroup.Context.Antetype;
+        var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
+        var argumentAntetypes = new ArgumentAntetypes(contextAntetype, arguments);
+        return node.MethodGroup.ReferencedDeclarations
+                   .Select(d => ContextualizedOverload.Create(contextAntetype, d))
+                   .Where(o => o.CompatibleWith(argumentAntetypes))
+                   .Select(o => o.Declaration).ToFixedSet();
+    }
+
+    private static IMaybeExpressionAntetype AntetypeIfKnown(IAmbiguousExpressionNode node)
+    {
+        if (node is IExpressionNode expression && !expression.ShouldNotBeExpression())
+            return expression.Antetype;
+        return IAntetype.Unknown;
     }
 
     public static IStandardMethodDeclarationNode? MethodInvocationExpression_ReferencedDeclaration(
@@ -94,16 +106,15 @@ internal static class OverloadResolutionAspect
         return new InitializerInvocationExpressionNode(node.Syntax, initializer, node.CurrentArguments);
     }
 
-
     public static IFixedSet<IInitializerDeclarationNode> InitializerInvocationExpression_CompatibleDeclarations(
         IInitializerInvocationExpressionNode node)
     {
         var initializingAntetype = node.InitializerGroup.InitializingAntetype;
         var arity = node.Arguments.Count;
         return node.InitializerGroup.ReferencedDeclarations
-                   .Select(i => ContextualizedOverload.Create(initializingAntetype, i))
-                   .Where(d => d.Arity == arity)
-                   .Select(c => c.Declaration).ToFixedSet();
+                   .Select(d => ContextualizedOverload.Create(initializingAntetype, d))
+                   .Where(o => o.Arity == arity)
+                   .Select(o => o.Declaration).ToFixedSet();
     }
 
     public static IInitializerDeclarationNode? InitializerInvocationExpression_ReferencedDeclaration(
@@ -131,9 +142,9 @@ internal static class OverloadResolutionAspect
         var constructingAntetype = node.ConstructingAntetype;
         var arity = node.Arguments.Count;
         return node.ReferencedConstructors
-                   .Select(c => ContextualizedOverload.Create(constructingAntetype, c))
-                   .Where(c => c.Arity == arity)
-                   .Select(c => c.Declaration).ToFixedSet();
+                   .Select(d => ContextualizedOverload.Create(constructingAntetype, d))
+                   .Where(o => o.Arity == arity)
+                   .Select(o => o.Declaration).ToFixedSet();
     }
 
     public static IConstructorDeclarationNode? NewObjectExpression_ReferencedConstructor(INewObjectExpressionNode node)

@@ -1507,6 +1507,7 @@ public partial interface IMethodInvocationExpressionNode : ISemanticNode, IExpre
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IMethodGroupNameNode MethodGroup { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IEnumerable<IAmbiguousExpressionNode> IntermediateArguments { get; }
     IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
 }

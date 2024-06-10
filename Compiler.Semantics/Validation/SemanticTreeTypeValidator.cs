@@ -26,11 +26,7 @@ internal class SemanticTreeTypeValidator
             return;
         }
 
-        if (expression is INamespaceNameNode
-            or IFunctionGroupNameNode
-            or IMethodGroupNameNode
-            or IInitializerGroupNameNode
-            or ITypeNameExpressionNode)
+        if (expression.ShouldNotBeExpression())
             // These nodes should not be expressions and should not have types
             return;
 

@@ -312,7 +312,7 @@ FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax
     FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
     CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?;
 MethodInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
-    MethodGroup:MethodGroupName Arguments:AmbiguousExpression*
+    MethodGroup:MethodGroupName Arguments:AmbiguousExpression* IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>`
     CompatibleDeclarations:{`IStandardMethodDeclarationNode`} ReferencedDeclaration:`IStandardMethodDeclarationNode`?;
 GetterInvocationExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression PropertyName:`StandardName`

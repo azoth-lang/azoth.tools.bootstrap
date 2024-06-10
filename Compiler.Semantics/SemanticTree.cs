@@ -84,6 +84,11 @@ public partial interface IAmbiguousExpressionNode
 public partial interface IExpressionNode
 {
     IPreviousValueId PreviousValueId();
+
+    // TODO change inheritance so these are not expressions
+    public bool ShouldNotBeExpression()
+        => this is INamespaceNameNode or IFunctionGroupNameNode or IMethodGroupNameNode
+            or IInitializerGroupNameNode or ITypeNameExpressionNode;
 }
 
 public partial interface IBlockExpressionNode

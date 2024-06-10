@@ -11,7 +11,9 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
 {
     public override IInvocationExpressionSyntax Syntax { get; }
     public IMethodGroupNameNode MethodGroup { get; }
-    public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    private readonly ChildList<IAmbiguousExpressionNode> arguments;
+    public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IEnumerable<IAmbiguousExpressionNode> IntermediateArguments => arguments.Final;
     private ValueAttribute<IFixedSet<IStandardMethodDeclarationNode>> compatibleDeclarations;
     public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations
         => compatibleDeclarations.TryGetValue(out var value) ? value
@@ -32,6 +34,6 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     {
         Syntax = syntax;
         MethodGroup = Child.Attach(this, methodGroup);
-        Arguments = ChildList.Create(this, arguments);
+        this.arguments = ChildList.Create(this, arguments);
     }
 }
