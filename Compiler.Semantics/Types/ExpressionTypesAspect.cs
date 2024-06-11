@@ -1,9 +1,13 @@
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -87,4 +91,29 @@ public static class ExpressionTypesAspect
 
     public static DataType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
         => node.ReferencedDeclaration?.Type.Return.Type ?? DataType.Unknown;
+
+    public static BoolConstValueType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node)
+        => node.Value ? DataType.True : DataType.False;
+
+    public static IntegerConstValueType IntegerLiteralExpression_Type(IIntegerLiteralExpressionNode node)
+        => new IntegerConstValueType(node.Value);
+
+    public static OptionalType NoneLiteralExpression_Type(INoneLiteralExpressionNode _)
+        => DataType.None;
+
+    public static DataType StringLiteralExpression_Type(IStringLiteralExpressionNode node)
+    {
+        var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName).OfType<ITypeDeclarationNode>().TrySingle();
+        return typeSymbolNode?.Symbol.GetDeclaredType()?.With(Capability.Constant, FixedList.Empty<DataType>()) ?? DataType.Unknown;
+    }
+
+    public static void StringLiteralExpression_ContributeDiagnostics(
+        IStringLiteralExpressionNode node,
+        Diagnostics diagnostics)
+    {
+        if (node.Type is UnknownType)
+            diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Could not find string type for string literal."));
+    }
+
+    private static readonly IdentifierName StringTypeName = "String";
 }

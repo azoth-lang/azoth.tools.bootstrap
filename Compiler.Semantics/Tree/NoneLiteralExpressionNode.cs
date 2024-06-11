@@ -11,7 +11,7 @@ internal sealed class NoneLiteralExpressionNode : LiteralExpressionNode, INoneLi
     public override INoneLiteralExpressionSyntax Syntax { get; }
     public override IMaybeExpressionAntetype Antetype
         => ExpressionAntetypesAspect.NoneLiteralExpression_Antetype(this);
-    public override OptionalType Type => TypeExpressionsAspect.NoneLiteralExpression_Type(this);
+    public override OptionalType Type => ExpressionTypesAspect.NoneLiteralExpression_Type(this);
 
     public NoneLiteralExpressionNode(INoneLiteralExpressionSyntax syntax)
     {

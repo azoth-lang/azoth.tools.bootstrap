@@ -19,7 +19,7 @@ internal sealed class IntegerLiteralExpressionNode : LiteralExpressionNode, IInt
     private ValueAttribute<IntegerConstValueType> type;
     public override IntegerConstValueType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.IntegerLiteralExpression_Type);
+            : type.GetValue(this, ExpressionTypesAspect.IntegerLiteralExpression_Type);
 
     public IntegerLiteralExpressionNode(IIntegerLiteralExpressionSyntax syntax)
     {

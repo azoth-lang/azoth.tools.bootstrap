@@ -24,7 +24,7 @@ internal sealed class StringLiteralExpressionNode : LiteralExpressionNode, IStri
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.StringLiteralExpression_Type);
+            : type.GetValue(this, ExpressionTypesAspect.StringLiteralExpression_Type);
 
     public StringLiteralExpressionNode(IStringLiteralExpressionSyntax syntax)
     {
@@ -33,7 +33,7 @@ internal sealed class StringLiteralExpressionNode : LiteralExpressionNode, IStri
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        TypeExpressionsAspect.StringLiteralExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.StringLiteralExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }
