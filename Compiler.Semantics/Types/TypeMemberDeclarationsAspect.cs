@@ -24,7 +24,7 @@ internal static class TypeMemberDeclarationsAspect
     {
         var parameterTypes = parameters.Select(p => p.ParameterType).ToFixedList();
         var returnType = @return?.NamedType ?? DataType.Void;
-        return new FunctionType(parameterTypes, new Return(returnType));
+        return new FunctionType(parameterTypes, new ReturnType(returnType));
     }
 
     public static void MethodDeclaration_ContributeDiagnostics(IMethodDefinitionNode node, Diagnostics diagnostics)

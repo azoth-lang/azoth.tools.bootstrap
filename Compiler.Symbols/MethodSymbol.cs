@@ -21,8 +21,8 @@ public sealed class MethodSymbol : InvocableSymbol
         IdentifierName name,
         SelfParameterType selfParameterType,
         IFixedList<ParameterType> parameters,
-        Return @return)
-        : this(containingSymbol, MethodKind.Standard, name, selfParameterType, parameters, @return)
+        ReturnType returnType)
+        : this(containingSymbol, MethodKind.Standard, name, selfParameterType, parameters, returnType)
     { }
 
     public MethodSymbol(
@@ -31,14 +31,14 @@ public sealed class MethodSymbol : InvocableSymbol
         IdentifierName name,
         SelfParameterType selfParameterType,
         IFixedList<ParameterType> parameters,
-        Return @return)
-        : base(parameters, @return)
+        ReturnType returnType)
+        : base(parameters, returnType)
     {
         ContainingSymbol = containingSymbol;
         Name = name;
         SelfParameterType = selfParameterType;
         Kind = kind;
-        MethodGroupType = new FunctionType(parameters, @return);
+        MethodGroupType = new FunctionType(parameters, returnType);
     }
 
     public override bool Equals(Symbol? other)

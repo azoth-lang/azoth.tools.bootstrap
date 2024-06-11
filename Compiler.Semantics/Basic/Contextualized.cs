@@ -16,17 +16,17 @@ public sealed class Contextualized<TSymbol>
     public SelfParameterType? SelfParameterType { get; }
     public IFixedList<ParameterType> ParameterTypes { get; }
     public int Arity => ParameterTypes.Count;
-    public Return ReturnType { get; }
+    public ReturnType ReturnType { get; }
 
     public Contextualized(
         TSymbol symbol,
         SelfParameterType? effectiveSelfType,
         IFixedList<ParameterType> parameterTypes,
-        Return @return)
+        ReturnType returnType)
     {
         Symbol = symbol;
         SelfParameterType = effectiveSelfType;
         ParameterTypes = parameterTypes;
-        ReturnType = @return;
+        ReturnType = returnType;
     }
 }

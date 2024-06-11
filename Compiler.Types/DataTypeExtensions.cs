@@ -176,7 +176,7 @@ public static class DataTypeExtensions
         return source.Type.IsAssignableFrom(target.Type);
     }
 
-    public static bool IsAssignableFrom(this Return target, Return source)
+    public static bool IsAssignableFrom(this ReturnType target, ReturnType source)
         // Return types need to be more general in the target than the source.
         => target.Type.IsAssignableFrom(source.Type);
 

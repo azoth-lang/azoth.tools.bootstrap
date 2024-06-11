@@ -17,13 +17,13 @@ public abstract class InvocableSymbol : Symbol
     public abstract override IdentifierName? Name { get; }
     public IFixedList<ParameterType> Parameters { get; }
     public int Arity => Parameters.Count;
-    public Return Return { get; }
+    public ReturnType Return { get; }
 
     private protected InvocableSymbol(
         IFixedList<ParameterType> parameters,
-        Return @return)
+        ReturnType returnType)
     {
         Parameters = parameters;
-        Return = @return;
+        Return = returnType;
     }
 }

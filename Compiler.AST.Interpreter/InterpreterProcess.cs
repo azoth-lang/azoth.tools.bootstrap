@@ -18,7 +18,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
-using Return = Azoth.Tools.Bootstrap.Compiler.Types.Return;
 
 namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 
@@ -115,7 +114,7 @@ public class InterpreterProcess
             // Flush any buffered output
             await standardOutputWriter.FlushAsync().ConfigureAwait(false);
             var returnType = entryPoint.Symbol.Return;
-            if (returnType == Return.Void)
+            if (returnType == ReturnType.Void)
                 exitCode = 0;
             else if (returnType.Type == DataType.Byte)
                 exitCode = returnValue.ByteValue;

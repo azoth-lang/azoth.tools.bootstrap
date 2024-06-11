@@ -12,19 +12,19 @@ internal class MethodSignature : IEquatable<MethodSignature>
     public IdentifierName Name { get; }
     public SelfParameterType SelfType { get; }
     public IFixedList<ParameterType> ParameterTypes { get; }
-    public Return ReturnType { get; }
+    public ReturnType ReturnType { get; }
     private readonly int hashCode;
 
     public MethodSignature(
         IdentifierName name,
         SelfParameterType selfType,
         IFixedList<ParameterType> parameterTypes,
-        Return @return)
+        ReturnType returnType)
     {
         Name = name;
         SelfType = selfType;
         ParameterTypes = parameterTypes;
-        ReturnType = @return;
+        ReturnType = returnType;
         hashCode = HashCode.Combine(Name, SelfType, ParameterTypes, ReturnType);
     }
 

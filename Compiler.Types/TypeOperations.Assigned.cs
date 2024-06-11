@@ -50,6 +50,6 @@ public static partial class TypeOperations
     /// Validates that a type as been assigned.
     /// </summary>
     [DebuggerHidden]
-    public static Return Assigned([NotNull] this Return? returnType)
+    public static ReturnType Assigned([NotNull] this ReturnType? returnType)
         => returnType ?? throw new InvalidOperationException("ReturnType not assigned.");
 }

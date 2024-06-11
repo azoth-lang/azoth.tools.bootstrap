@@ -31,7 +31,7 @@ public static partial class TypeOperations
     }
 
     [DebuggerHidden]
-    public static Return Known(this Return @return)
+    public static ReturnType Known(this ReturnType @return)
     {
         if (!@return.Type.IsFullyKnown)
             throw new InvalidOperationException($"Type {@return.ToILString()} not fully known.");
@@ -40,7 +40,7 @@ public static partial class TypeOperations
     }
 
     [DebuggerHidden]
-    public static Return Known(this Return? returnType) => returnType.Assigned().Known();
+    public static ReturnType Known(this ReturnType? returnType) => returnType.Assigned().Known();
 
     [DebuggerHidden]
     public static DataType Known(this IPromise<DataType> promise)

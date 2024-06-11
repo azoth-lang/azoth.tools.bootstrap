@@ -14,11 +14,11 @@ internal static class SymbolBuilder
     public static IFixedList<ParameterType> Params(params DataType[] types)
         => types.Select(t => new ParameterType(false, t)).ToFixedList();
 
-    public static Return Return(DataType type) => new(type);
+    public static ReturnType Return(DataType type) => new(type);
 
     public static FunctionSymbol Function(Symbol containingSymbol, IdentifierName name, IFixedList<ParameterType> @params)
-        => new(containingSymbol, name, new FunctionType(@params, Types.Return.Void));
+        => new(containingSymbol, name, new FunctionType(@params, Types.ReturnType.Void));
 
-    public static FunctionSymbol Function(Symbol containingSymbol, IdentifierName name, IFixedList<ParameterType> @params, Return @return)
+    public static FunctionSymbol Function(Symbol containingSymbol, IdentifierName name, IFixedList<ParameterType> @params, ReturnType @return)
         => new(containingSymbol, name, new FunctionType(@params, @return));
 }

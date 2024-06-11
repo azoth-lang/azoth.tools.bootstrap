@@ -143,7 +143,7 @@ internal sealed class TypeReplacements
     public ParameterType ReplaceTypeParametersIn(ParameterType type)
         => type with { Type = ReplaceTypeParametersIn(type.Type) };
 
-    public Return ReplaceTypeParametersIn(Return @return)
+    public ReturnType ReplaceTypeParametersIn(ReturnType @return)
         => @return with { Type = ReplaceTypeParametersIn(@return.Type) };
 
     private IFixedList<DataType> ReplaceTypeParametersIn(IFixedList<DataType> types)

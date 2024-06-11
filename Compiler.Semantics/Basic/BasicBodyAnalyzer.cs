@@ -44,7 +44,7 @@ public class BasicBodyAnalyzer
     private readonly SymbolForest symbolTrees;
     private readonly UserTypeSymbol? rangeSymbol;
     private readonly Diagnostics diagnostics;
-    private readonly Return? returnType;
+    private readonly ReturnType? returnType;
     private readonly ParameterSharingRelation parameterSharing;
 
     public BasicBodyAnalyzer(
@@ -53,9 +53,9 @@ public class BasicBodyAnalyzer
         SymbolForest symbolTrees,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
-        Return @return)
+        ReturnType returnType)
         : this(containingDefinition, containingDefinition.Parameters.Select(p => p.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, @return)
+            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, returnType)
     { }
     public BasicBodyAnalyzer(
         IAssociatedFunctionDefinitionSyntax containingDefinition,
@@ -63,9 +63,9 @@ public class BasicBodyAnalyzer
         SymbolForest symbolTrees,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
-        Return @return)
+        ReturnType returnType)
         : this(containingDefinition, containingDefinition.Parameters.Select(p => p.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, @return)
+            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, returnType)
     { }
 
     public BasicBodyAnalyzer(
@@ -74,12 +74,12 @@ public class BasicBodyAnalyzer
         SymbolForest symbolTrees,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
-        Return @return)
+        ReturnType returnType)
         : this(containingDefinition,
             containingDefinition.Parameters.OfType<INamedParameterSyntax>()
                                  .Select(p => p.Symbol.Result)
                                  .Prepend<BindingSymbol>(containingDefinition.SelfParameter.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, @return)
+            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, returnType)
     { }
 
     public BasicBodyAnalyzer(
@@ -88,12 +88,12 @@ public class BasicBodyAnalyzer
         SymbolForest symbolTrees,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
-        Return @return)
+        ReturnType returnType)
         : this(containingDefinition,
             containingDefinition.Parameters.OfType<INamedParameterSyntax>()
                                  .Select(p => p.Symbol.Result)
                                  .Prepend<BindingSymbol>(containingDefinition.SelfParameter.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, @return)
+            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, returnType)
     { }
 
     public BasicBodyAnalyzer(
@@ -102,10 +102,10 @@ public class BasicBodyAnalyzer
         SymbolForest symbolTrees,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
-        Return @return)
+        ReturnType returnType)
         : this(containingDefinition,
             containingDefinition.Parameters.Select(p => p.Symbol.Result).Prepend<BindingSymbol>(containingDefinition.SelfParameter.Symbol.Result),
-            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, @return)
+            symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, returnType)
     { }
 
     public BasicBodyAnalyzer(
@@ -125,7 +125,7 @@ public class BasicBodyAnalyzer
         SymbolForest symbolTrees,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics,
-        Return? returnType)
+        ReturnType? returnType)
     {
         file = containingDefinition.File;
         containingSymbol = (InvocableSymbol)containingDefinition.Symbol.Result;
@@ -1215,7 +1215,7 @@ public class BasicBodyAnalyzer
     private static ResultVariable? CombineResults(
         SelfParameterType? selfParameterType,
         IFixedList<ParameterType>? parameterTypes,
-        Return? returnType,
+        ReturnType? returnType,
         ArgumentResults results,
         FlowStateMutable flow)
     {

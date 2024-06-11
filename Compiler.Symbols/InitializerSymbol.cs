@@ -24,7 +24,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
         CapabilityType selfParameterType,
         IFixedList<ParameterType> parameterTypes)
         : base(parameterTypes,
-            new Return(((StructType)containingTypeSymbol.DeclaresType).ToInitializerReturn(selfParameterType, parameterTypes)))
+            new ReturnType(((StructType)containingTypeSymbol.DeclaresType).ToInitializerReturn(selfParameterType, parameterTypes)))
     {
         ContextTypeSymbol = containingTypeSymbol;
         ContainingSymbol = containingTypeSymbol;

@@ -40,7 +40,7 @@ public abstract class SymbolTestFixture
         string? name = null,
         NamespaceSymbol? ns = null,
         IFixedList<ParameterType>? @params = null,
-        Return? @return = null)
+        ReturnType? @return = null)
     {
         return new FunctionSymbol(
             ns ?? Namespace(),
@@ -53,7 +53,7 @@ public abstract class SymbolTestFixture
         string? name = null,
         NamespaceSymbol? ns = null,
         IFixedList<ParameterType>? @params = null,
-        Return? @return = null)
+        ReturnType? @return = null)
     {
         return new FunctionSymbol(
             ns ?? mother.ContainingSymbol,
@@ -66,7 +66,7 @@ public abstract class SymbolTestFixture
         UserTypeSymbol? containing = null,
         SelfParameterType? self = null,
         IFixedList<ParameterType>? @params = null,
-        Return? @return = null)
+        ReturnType? @return = null)
     {
         containing ??= Type();
         return new MethodSymbol(
@@ -83,7 +83,7 @@ public abstract class SymbolTestFixture
         UserTypeSymbol? containing = null,
         SelfParameterType? self = null,
         IFixedList<ParameterType>? @params = null,
-        Return? @return = null)
+        ReturnType? @return = null)
     {
         return new MethodSymbol(
             containing ?? mother.ContainingSymbol,
@@ -110,14 +110,14 @@ public abstract class SymbolTestFixture
             finalName.Text);
     }
 
-    protected Return ReturnType(
+    protected ReturnType ReturnType(
         string? name = null,
         IdentifierName? containingPackage = null,
         NamespaceName? containingNamespace = null,
         bool? isConst = null,
         Capability? referenceCapability = null)
     {
-        return new Return(DataType(name, containingPackage, containingNamespace, isConst, referenceCapability));
+        return new ReturnType(DataType(name, containingPackage, containingNamespace, isConst, referenceCapability));
     }
 
     protected UserTypeSymbol Type(

@@ -24,7 +24,7 @@ internal sealed class StandardMethodDeclaration : ConcreteMethodDeclaration, ISt
 
     public override string ToString()
     {
-        var returnType = Symbol.Return != Return.Void ? " -> " + Symbol.Return.ToILString() : "";
+        var returnType = Symbol.Return != ReturnType.Void ? " -> " + Symbol.Return.ToILString() : "";
         return
             $"fn {Symbol.ContainingSymbol}::{Symbol.Name}({string.Join(", ", Parameters.Prepend<IParameter>(SelfParameter))}){returnType} {Body}";
     }
