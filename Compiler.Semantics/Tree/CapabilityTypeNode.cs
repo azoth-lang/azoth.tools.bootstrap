@@ -18,9 +18,9 @@ internal sealed class CapabilityTypeNode : TypeNode, ICapabilityTypeNode
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, TypeExpressionsAntetypesAspect.CapabilityType_NamedAntetype);
     private ValueAttribute<DataType> type;
-    public override DataType Type
+    public override DataType NamedType
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.CapabilityType_Type);
+            : type.GetValue(this, TypeExpressionsAspect.CapabilityType_NamedType);
 
     public CapabilityTypeNode(ICapabilityTypeSyntax syntax, ICapabilityNode capability, ITypeNode referent)
     {

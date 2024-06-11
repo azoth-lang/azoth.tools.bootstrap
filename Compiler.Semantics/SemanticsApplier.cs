@@ -380,37 +380,37 @@ internal class SemanticsApplier
     private static void IdentifierTypeName(IIdentifierTypeNameNode node)
     {
         node.Syntax.ReferencedSymbol.Fulfill(node.ReferencedSymbol);
-        node.Syntax.NamedType = node.Type;
+        node.Syntax.NamedType = node.NamedType;
     }
 
     private static void GenericTypeName(IGenericTypeNameNode node)
     {
         node.Syntax.ReferencedSymbol.Fulfill(node.ReferencedSymbol);
-        node.Syntax.NamedType = node.Type;
+        node.Syntax.NamedType = node.NamedType;
         Types(node.TypeArguments);
     }
 
     private static void SpecialTypeName(ISpecialTypeNameNode node)
     {
         node.Syntax.ReferencedSymbol.Fulfill(node.ReferencedSymbol);
-        node.Syntax.NamedType = node.Type;
+        node.Syntax.NamedType = node.NamedType;
     }
 
     private static void OptionalType(IOptionalTypeNode node)
     {
-        node.Syntax.NamedType = node.Type;
+        node.Syntax.NamedType = node.NamedType;
         Type(node.Referent);
     }
 
     private static void CapabilityType(ICapabilityTypeNode node)
     {
-        node.Syntax.NamedType = node.Type;
+        node.Syntax.NamedType = node.NamedType;
         Type(node.Referent);
     }
 
     private static void FunctionType(IFunctionTypeNode node)
     {
-        node.Syntax.NamedType = node.Type;
+        node.Syntax.NamedType = node.NamedType;
         ParameterTypes(node.Parameters);
         Type(node.Return);
     }
@@ -423,7 +423,7 @@ internal class SemanticsApplier
 
     private static void ViewpointType(IViewpointTypeNode node)
     {
-        node.Syntax.NamedType = node.Type;
+        node.Syntax.NamedType = node.NamedType;
         Type(node.Referent);
     }
     #endregion

@@ -30,9 +30,9 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, TypeExpressionsAntetypesAspect.IdentifierTypeName_NamedAntetype);
     private ValueAttribute<BareType?> bareType;
-    public override BareType? BareType
+    public override BareType? NamedBareType
         => bareType.TryGetValue(out var value) ? value
-            : bareType.GetValue(this, BareTypeAspect.IdentifierTypeName);
+            : bareType.GetValue(this, BareTypeAspect.IdentifierTypeName_NamedBareType);
 
     public IdentifierTypeNameNode(IIdentifierTypeNameSyntax syntax)
     {

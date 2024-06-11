@@ -38,7 +38,7 @@ public static class ExpressionTypesAspect
         IStandardTypeNameNode node,
         Diagnostics diagnostics)
     {
-        var bareType = node.BareType;
+        var bareType = node.NamedBareType;
         if (bareType is null) return;
 
         foreach (GenericParameterArgument arg in bareType.GenericParameterArguments)

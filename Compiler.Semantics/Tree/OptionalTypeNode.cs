@@ -16,9 +16,9 @@ internal sealed class OptionalTypeNode : TypeNode, IOptionalTypeNode
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, TypeExpressionsAntetypesAspect.OptionalType_NamedAntetype);
     private ValueAttribute<DataType> type;
-    public override DataType Type
+    public override DataType NamedType
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.OptionalType_Type);
+            : type.GetValue(this, TypeExpressionsAspect.OptionalType_NamedType);
 
     public OptionalTypeNode(IOptionalTypeSyntax syntax, ITypeNode referent)
     {

@@ -934,7 +934,7 @@ public partial interface ITypeNode : ISemanticNode, ICodeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IMaybeAntetype NamedAntetype { get; }
-    DataType Type { get; }
+    DataType NamedType { get; }
 }
 
 [Closed(
@@ -948,7 +948,7 @@ public partial interface ITypeNameNode : ITypeNode
     TypeName Name { get; }
     LexicalScope ContainingLexicalScope { get; }
     TypeSymbol? ReferencedSymbol { get; }
-    BareType? BareType { get; }
+    BareType? NamedBareType { get; }
 }
 
 [Closed(
@@ -1076,7 +1076,7 @@ public partial interface ISelfViewpointTypeNode : ISemanticNode, IViewpointTypeN
     ISyntax? ISemanticNode.Syntax => Syntax;
     IViewpointTypeSyntax IViewpointTypeNode.Syntax => Syntax;
     ITypeSyntax ITypeNode.Syntax => Syntax;
-    Pseudotype? SelfType { get; }
+    Pseudotype? NamedSelfType { get; }
 }
 
 [Closed(

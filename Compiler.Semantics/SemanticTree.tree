@@ -210,10 +210,10 @@ BlockBody: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
 ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 
 // ---------- Types
-Type <: Code = Syntax:`ITypeSyntax` NamedAntetype:`IMaybeAntetype` Type:`DataType`;
+Type <: Code = Syntax:`ITypeSyntax` NamedAntetype:`IMaybeAntetype` NamedType:`DataType`;
 // TODO start from generalized names in syntax and rewrite to type names
 TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName` ContainingLexicalScope:`LexicalScope`
-    ReferencedSymbol:`TypeSymbol`? BareType:`BareType`?;
+    ReferencedSymbol:`TypeSymbol`? NamedBareType:`BareType`?;
 StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` IsAttributeType:`bool` Name:`StandardName` ReferencedDeclaration:`ITypeDeclarationNode`?;
 SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
 IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax` Name:`IdentifierName`;
@@ -227,7 +227,7 @@ FunctionType <: Type = Syntax:`IFunctionTypeSyntax` Parameters:ParameterType* Re
 ParameterType <: Code = Syntax:`IParameterTypeSyntax` IsLent:`bool` Referent:Type Parameter:`Parameter`;
 ViewpointType <: Type = Syntax:`IViewpointTypeSyntax` Referent:Type;
 CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSyntax` Capability Referent:Type;
-SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type SelfType:`Pseudotype`?;
+SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type NamedSelfType:`Pseudotype`?;
 
 // ---------- Statements
 Statement <: Code = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`? FlowStateAfter:`FlowState`;

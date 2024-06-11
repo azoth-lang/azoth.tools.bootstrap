@@ -34,7 +34,7 @@ internal static class SymbolAspect
         => new MethodSymbol(node.ContainingSymbol, node.Kind, node.Name,
             node.SelfParameter.ParameterType,
             node.Parameters.Select(p => p.ParameterType).ToFixedList(),
-            new(node.Return?.Type ?? DataType.Void));
+            new(node.Return?.NamedType ?? DataType.Void));
 
     public static ConstructorSymbol SourceConstructorDefinition(ISourceConstructorDefinitionNode node)
         => new ConstructorSymbol(node.ContainingSymbol, node.Name, node.SelfParameter.Type,

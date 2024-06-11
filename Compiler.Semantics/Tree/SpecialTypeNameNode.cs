@@ -23,9 +23,9 @@ internal sealed class SpecialTypeNameNode : TypeNameNode, ISpecialTypeNameNode
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, TypeExpressionsAntetypesAspect.SpecialTypeName_NamedAntetype);
     private ValueAttribute<BareType?> bareType;
-    public override BareType? BareType
+    public override BareType? NamedBareType
     => bareType.TryGetValue(out var value) ? value
-        : bareType.GetValue(this, BareTypeAspect.SpecialTypeName);
+        : bareType.GetValue(this, BareTypeAspect.SpecialTypeName_NamedBareType);
 
     public SpecialTypeNameNode(ISpecialTypeNameSyntax syntax)
     {

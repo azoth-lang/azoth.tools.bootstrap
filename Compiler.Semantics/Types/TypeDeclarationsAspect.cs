@@ -46,7 +46,7 @@ internal static class TypeDeclarationsAspect
         if (!declaresType.HasIndependentGenericParameters) return;
 
         if (node.BaseTypeName is not null and var typeName
-            && (!typeName.BareType?.SupertypeMaintainsIndependence(exact: true) ?? false))
+            && (!typeName.NamedBareType?.SupertypeMaintainsIndependence(exact: true) ?? false))
             diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(node.File, typeName.Syntax));
     }
 
@@ -105,7 +105,7 @@ internal static class TypeDeclarationsAspect
             // errors to. (Could possibly use type arguments in the future.)
             foreach (var supertypeName in node.AllSupertypeNames)
             {
-                if (supertypeName.BareType is not BareReferenceType bareSupertype)
+                if (supertypeName.NamedBareType is not BareReferenceType bareSupertype)
                     // A diagnostic will be generated elsewhere for this case
                     continue;
 
@@ -171,7 +171,7 @@ internal static class TypeDeclarationsAspect
         var nonwritableSelf = declaresType.IsDeclaredConst ? true : (bool?)null;
         foreach (var typeName in node.AllSupertypeNames)
         {
-            var type = typeName.BareType;
+            var type = typeName.NamedBareType;
             if (type is not null && !type.IsSupertypeOutputSafe(nonwritableSelf))
                 diagnostics.Add(TypeError.SupertypeMustBeOutputSafe(node.File, typeName.Syntax));
         }
@@ -186,7 +186,7 @@ internal static class TypeDeclarationsAspect
         if (!declaresType.HasIndependentGenericParameters) return;
 
         foreach (var typeName in typeDefinition.SupertypeNames)
-            if (!typeName.BareType?.SupertypeMaintainsIndependence(exact: false) ?? false)
+            if (!typeName.NamedBareType?.SupertypeMaintainsIndependence(exact: false) ?? false)
                 diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(typeDefinition.File, typeName.Syntax));
     }
 }

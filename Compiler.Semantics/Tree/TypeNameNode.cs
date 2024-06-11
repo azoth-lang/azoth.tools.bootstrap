@@ -17,10 +17,10 @@ internal abstract class TypeNameNode : TypeNode, ITypeNameNode
     public virtual LexicalScope ContainingLexicalScope
         => containingLexicalScope.TryGetValue(out var value) ? value
             : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
-    public abstract BareType? BareType { get; }
+    public abstract BareType? NamedBareType { get; }
     public abstract TypeSymbol? ReferencedSymbol { get; }
     private ValueAttribute<DataType> type;
-    public sealed override DataType Type
+    public sealed override DataType NamedType
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.TypeName_Type);
+            : type.GetValue(this, TypeExpressionsAspect.TypeName_NamedType);
 }

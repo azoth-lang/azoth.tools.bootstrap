@@ -23,7 +23,7 @@ internal static class TypeMemberDeclarationsAspect
     private static FunctionType FunctionType(IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
     {
         var parameterTypes = parameters.Select(p => p.ParameterType).ToFixedList();
-        var returnType = @return?.Type ?? DataType.Void;
+        var returnType = @return?.NamedType ?? DataType.Void;
         return new FunctionType(parameterTypes, new Return(returnType));
     }
 
@@ -64,7 +64,7 @@ internal static class TypeMemberDeclarationsAspect
         => node.TypeNode.NamedAntetype;
 
     public static DataType NamedParameterNode_Type(INamedParameterNode node)
-        => node.TypeNode.Type;
+        => node.TypeNode.NamedType;
 
     public static Pseudotype MethodSelfParameter_Type(IMethodSelfParameterNode node)
     {
@@ -180,7 +180,7 @@ internal static class TypeMemberDeclarationsAspect
         }
     }
 
-    public static DataType FieldDeclaration_Type(IFieldDefinitionNode node) => node.TypeNode.Type;
+    public static DataType FieldDeclaration_Type(IFieldDefinitionNode node) => node.TypeNode.NamedType;
 
     public static void FieldDeclaration_ContributeDiagnostics(IFieldDefinitionNode node, Diagnostics diagnostics)
     {

@@ -16,52 +16,52 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 /// </summary>
 internal static class TypeExpressionsAspect
 {
-    public static DataType TypeName_Type(ITypeNameNode node)
-        => (node.BareType?.WithRead() ?? node.ReferencedSymbol?.GetDataType()) ?? DataType.Unknown;
+    public static DataType TypeName_NamedType(ITypeNameNode node)
+        => (node.NamedBareType?.WithRead() ?? node.ReferencedSymbol?.GetDataType()) ?? DataType.Unknown;
 
-    public static DataType CapabilityType_Type(ICapabilityTypeNode node)
-        => (node.Referent as ITypeNameNode)?.BareType?.With(node.Capability.Capability) ?? node.Referent.Type;
+    public static DataType CapabilityType_NamedType(ICapabilityTypeNode node)
+        => (node.Referent as ITypeNameNode)?.NamedBareType?.With(node.Capability.Capability) ?? node.Referent.NamedType;
 
     public static void CapabilityType_ContributeDiagnostics(ICapabilityTypeNode node, Diagnostics diagnostics)
     {
         var capability = node.Capability.Capability;
-        if (capability.AllowsWrite && node.Type is CapabilityType { IsDeclaredConst: true } capabilityType)
+        if (capability.AllowsWrite && node.NamedType is CapabilityType { IsDeclaredConst: true } capabilityType)
             diagnostics.Add(TypeError.CannotApplyCapabilityToConstantType(node.File, node.Syntax, capability,
                 capabilityType.DeclaredType));
-        if (node.Referent.Type is GenericParameterType)
+        if (node.Referent.NamedType is GenericParameterType)
             diagnostics.Add(TypeError.CapabilityAppliedToTypeParameter(node.File, node.Syntax));
-        if (node.Referent.Type is EmptyType)
+        if (node.Referent.NamedType is EmptyType)
             diagnostics.Add(TypeError.CapabilityAppliedToEmptyType(node.File, node.Syntax));
         // TODO I think there are more errors that can happen
     }
 
-    public static DataType OptionalType_Type(IOptionalTypeNode node)
-        => node.Referent.Type.MakeOptional();
+    public static DataType OptionalType_NamedType(IOptionalTypeNode node)
+        => node.Referent.NamedType.MakeOptional();
 
-    public static DataType FunctionType_Type(IFunctionTypeNode node)
-        => new FunctionType(node.Parameters.Select(p => p.Parameter), new(node.Return.Type));
+    public static DataType FunctionType_NamedType(IFunctionTypeNode node)
+        => new FunctionType(node.Parameters.Select(p => p.Parameter), new(node.Return.NamedType));
 
     public static Parameter ParameterType_Parameter(IParameterTypeNode node)
-        => new(node.IsLent, node.Referent.Type);
+        => new(node.IsLent, node.Referent.NamedType);
 
-    public static DataType CapabilityViewpointType_Type(ICapabilityViewpointTypeNode node)
-        => CapabilityViewpointType.Create(node.Capability.Capability, node.Referent.Type);
+    public static DataType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node)
+        => CapabilityViewpointType.Create(node.Capability.Capability, node.Referent.NamedType);
 
     public static void CapabilityViewpointType_ContributeDiagnostics(
         ICapabilityViewpointTypeNode node,
         Diagnostics diagnostics)
     {
-        if (node.Referent.Type is not GenericParameterType)
+        if (node.Referent.NamedType is not GenericParameterType)
             diagnostics.Add(TypeError.CapabilityViewpointNotAppliedToTypeParameter(node.File, node.Syntax));
     }
 
     public static Pseudotype ConcreteMethodDeclaration_InheritedSelfType(IConcreteMethodDefinitionNode node)
         => node.SelfParameter.Type;
 
-    public static DataType SelfViewpointType_Type(ISelfViewpointTypeNode node)
+    public static DataType SelfViewpointType_NamedType(ISelfViewpointTypeNode node)
     {
-        var selfType = node.SelfType;
-        var referentType = node.Referent.Type;
+        var selfType = node.NamedSelfType;
+        var referentType = node.Referent.NamedType;
         if (selfType is CapabilityType { Capability: var capability }
             && referentType is GenericParameterType genericParameterType)
             return CapabilityViewpointType.Create(capability, genericParameterType);
@@ -76,10 +76,10 @@ internal static class TypeExpressionsAspect
 
     public static void SelfViewpointType_ContributeDiagnostics(ISelfViewpointTypeNode node, Diagnostics diagnostics)
     {
-        if (node.SelfType is not (CapabilityType or CapabilityTypeConstraint))
+        if (node.NamedSelfType is not (CapabilityType or CapabilityTypeConstraint))
             diagnostics.Add(TypeError.SelfViewpointNotAvailable(node.File, node.Syntax));
 
-        if (node.Referent.Type is not GenericParameterType)
+        if (node.Referent.NamedType is not GenericParameterType)
             diagnostics.Add(TypeError.SelfViewpointNotAppliedToTypeParameter(node.File, node.Syntax));
     }
 

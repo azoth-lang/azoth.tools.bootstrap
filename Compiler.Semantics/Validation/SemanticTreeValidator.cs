@@ -21,8 +21,8 @@ internal class SemanticTreeValidator
         {
             _ = typeName.ContainingLexicalScope;
             _ = typeName.ReferencedSymbol;
-            _ = typeName.BareType;
-            _ = typeName.Type;
+            _ = typeName.NamedBareType;
+            _ = typeName.NamedType;
         }
         if (node is IStandardTypeNameNode standardTypeName)
         {
@@ -30,7 +30,7 @@ internal class SemanticTreeValidator
         }
         if (node is ITypeNode type)
         {
-            _ = type.Type;
+            _ = type.NamedType;
         }
         if (node is IParameterNode parameter)
         {

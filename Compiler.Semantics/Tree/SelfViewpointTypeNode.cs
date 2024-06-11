@@ -19,11 +19,11 @@ internal sealed class SelfViewpointTypeNode : TypeNode, ISelfViewpointTypeNode
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, TypeExpressionsAntetypesAspect.ViewpointType_NamedAntetype);
     private ValueAttribute<DataType> type;
-    public override DataType Type
+    public override DataType NamedType
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.SelfViewpointType_Type);
+            : type.GetValue(this, TypeExpressionsAspect.SelfViewpointType_NamedType);
     private ValueAttribute<Pseudotype?> selfType;
-    public Pseudotype? SelfType
+    public Pseudotype? NamedSelfType
         => selfType.TryGetValue(out var value) ? value
             : selfType.GetValue(InheritedSelfType);
 

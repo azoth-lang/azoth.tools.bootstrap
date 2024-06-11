@@ -19,9 +19,9 @@ internal sealed class FunctionTypeNode : TypeNode, IFunctionTypeNode
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, TypeExpressionsAntetypesAspect.FunctionType_NamedAntetype);
     private ValueAttribute<DataType> type;
-    public override DataType Type
+    public override DataType NamedType
     => type.TryGetValue(out var value) ? value
-        : type.GetValue(this, TypeExpressionsAspect.FunctionType_Type);
+        : type.GetValue(this, TypeExpressionsAspect.FunctionType_NamedType);
 
     public FunctionTypeNode(
         IFunctionTypeSyntax syntax,
