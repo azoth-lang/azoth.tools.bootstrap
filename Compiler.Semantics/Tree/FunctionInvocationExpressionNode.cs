@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -62,5 +63,14 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     {
         OverloadResolutionAspect.FunctionInvocationExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
+    }
+
+    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    {
+        if (child is IAmbiguousExpressionNode ambiguousExpression
+            && arguments.IndexOfCurrent(ambiguousExpression) is int index and > 0)
+            return ((IExpressionNode)arguments.FinalAt(index - 1)).FlowStateAfter;
+
+        return base.InheritedFlowStateBefore(child, descendant);
     }
 }

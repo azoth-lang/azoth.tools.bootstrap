@@ -1,4 +1,3 @@
-using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -38,7 +37,10 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     public NamedVariableSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAspect.NamedParameter_Symbol);
-    public override FlowState FlowStateAfter => throw new NotImplementedException();
+    private ValueAttribute<FlowState> flowStateAfter;
+    public override FlowState FlowStateAfter
+        => flowStateAfter.TryGetValue(out var value) ? value
+            : flowStateAfter.GetValue(this, ExpressionTypesAspect.NamedParameter_FlowStateAfter);
 
     public NamedParameterNode(INamedParameterSyntax syntax, ITypeNode type)
     {

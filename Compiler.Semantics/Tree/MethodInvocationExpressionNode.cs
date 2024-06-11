@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -35,5 +36,17 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         Syntax = syntax;
         MethodGroup = Child.Attach(this, methodGroup);
         this.arguments = ChildList.Create(this, arguments);
+    }
+
+    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    {
+        if (child is IAmbiguousExpressionNode ambiguousExpression
+            && arguments.IndexOfCurrent(ambiguousExpression) is int index)
+        {
+            if (index == 0)
+                return MethodGroup.FlowStateAfter;
+            return ((IExpressionNode)arguments.FinalAt(index - 1)).FlowStateAfter;
+        }
+        return base.InheritedFlowStateBefore(child, descendant);
     }
 }

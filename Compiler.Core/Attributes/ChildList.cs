@@ -49,6 +49,17 @@ public sealed class ChildList<T> : IFixedList<T>
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public int? IndexOfCurrent(T item)
+    {
+        for (int i = 0; i < children.Count; i++)
+            if (children[i].CurrentValue == item)
+                return i;
+
+        return null;
+    }
+
+    public T FinalAt(int index) => children[index].FinalValue;
 }
 
 public static class ChildList

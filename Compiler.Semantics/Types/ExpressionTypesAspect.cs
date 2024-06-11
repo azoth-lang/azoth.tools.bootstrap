@@ -1,6 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -70,7 +69,12 @@ public static class ExpressionTypesAspect
         => node.FlowStateAfter.Type(node.ValueId);
 
     public static FlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node)
-        => node.FlowStateBefore().Alias(node.ReferencedDeclaration.ValueId, node.ValueId);
+        // TODO add alias here
+        => node.FlowStateBefore();//.Alias(node.ReferencedDeclaration.ValueId, node.ValueId);
+
+    public static FlowState NamedParameter_FlowStateAfter(INamedParameterNode node)
+        // TODO implement
+        => node.FlowStateBefore();
 
     public static ValueId VariableDeclarationStatement_ValueId(IVariableDeclarationStatementNode node)
         => node.PreviousValueId().CreateNext();

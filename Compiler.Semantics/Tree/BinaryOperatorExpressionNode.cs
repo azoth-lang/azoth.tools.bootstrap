@@ -14,10 +14,12 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
     public override IBinaryOperatorExpressionSyntax Syntax { get; }
     private Child<IAmbiguousExpressionNode> leftOperand;
     public IAmbiguousExpressionNode LeftOperand => leftOperand.Value;
+    public IAmbiguousExpressionNode CurrentLeftOperand => leftOperand.CurrentValue;
     public IExpressionNode FinalLeftOperand => (IExpressionNode)leftOperand.FinalValue;
     public BinaryOperator Operator => Syntax.Operator;
     private Child<IAmbiguousExpressionNode> rightOperand;
     public IAmbiguousExpressionNode RightOperand => rightOperand.Value;
+    public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.CurrentValue;
     public IExpressionNode FinalRightOperand => (IExpressionNode)rightOperand.FinalValue;
     private ValueAttribute<LexicalScope> containingLexicalScope;
     public LexicalScope ContainingLexicalScope
@@ -43,17 +45,17 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
     {
-        if (child == LeftOperand)
+        if (child == CurrentLeftOperand)
             return GetContainingLexicalScope();
-        if (child == RightOperand)
+        if (child == CurrentRightOperand)
             return LexicalScopingAspect.BinaryOperatorExpression_InheritedContainingLexicalScope_RightOperand(this);
         throw new ArgumentException("Not a child of this node.", nameof(child));
     }
 
     internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
     {
-        if (child == RightOperand)
-            return ((IExpressionNode)LeftOperand).FlowStateAfter;
+        if (child == CurrentRightOperand)
+            return FinalLeftOperand.FlowStateAfter;
         return base.InheritedFlowStateBefore(child, descendant);
     }
 }

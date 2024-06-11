@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -70,4 +71,17 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
 
     internal override IPreviousValueId PreviousValueId(IChildNode before)
         => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
+
+    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    {
+        if (child == Body)
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? FlowStateBefore();
+        if (Parameters.IndexOf(child) is int index)
+        {
+            if (index == 0)
+                return FlowStateBefore();
+            return Parameters[index - 1].FlowStateAfter;
+        }
+        return base.InheritedFlowStateBefore(child, descendant);
+    }
 }

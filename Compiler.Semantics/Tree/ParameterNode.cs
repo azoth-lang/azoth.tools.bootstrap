@@ -23,7 +23,7 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
 
     private protected ParameterNode() { }
 
-    public FlowState FlowStateBefore() => throw new System.NotImplementedException();
+    public FlowState FlowStateBefore() => InheritedFlowStateBefore();
 
     public new IPreviousValueId PreviousValueId() => base.PreviousValueId();
 

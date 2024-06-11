@@ -19,9 +19,14 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     bool IChild.MayHaveRewrite => MayHaveRewrite;
 
     private SemanticNode? parent;
+
     protected SemanticNode Parent
+    {
+        [DebuggerStepThrough]
         // Use volatile read to ensure order of operations as seen by other threads
-        => Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
+        get => Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
+    }
+
     ISemanticNode IChildNode.Parent => Parent;
 
     public IPackageDeclarationNode Package => Parent.InheritedPackage(this, this);

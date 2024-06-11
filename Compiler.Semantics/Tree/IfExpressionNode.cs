@@ -12,6 +12,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     public override IIfExpressionSyntax Syntax { get; }
     private Child<IAmbiguousExpressionNode> condition;
     public IAmbiguousExpressionNode Condition => condition.Value;
+    public IExpressionNode FinalCondition => (IExpressionNode)condition.FinalValue;
     public IBlockOrResultNode ThenBlock { get; }
     public IElseClauseNode? ElseClause { get; }
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
@@ -43,7 +44,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
     {
         if (child == ThenBlock || child == ElseClause)
-            return ((IExpressionNode)Condition).FlowStateAfter;
+            return FinalCondition.FlowStateAfter;
         return base.InheritedFlowStateBefore(child, descendant);
     }
 }

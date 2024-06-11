@@ -47,6 +47,7 @@ public partial interface ICapabilityNode
 public partial interface IParameterNode
 {
     IPreviousValueId PreviousValueId();
+    FlowState FlowStateBefore();
 }
 
 public partial interface INamedParameterNode
