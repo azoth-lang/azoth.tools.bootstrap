@@ -29,8 +29,8 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, TypeMemberDeclarationsAspect.NamedParameterNode_Type);
 
-    private ValueAttribute<Parameter> parameterType;
-    public Parameter ParameterType
+    private ValueAttribute<ParameterType> parameterType;
+    public ParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value
             : parameterType.GetValue(this, TypeMemberDeclarationsAspect.NamedParameter_ParameterType);
     private ValueAttribute<NamedVariableSymbol> symbol;

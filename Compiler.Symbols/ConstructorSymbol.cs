@@ -20,7 +20,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
         UserTypeSymbol containingSymbol,
         IdentifierName? name,
         CapabilityType selfParameterType,
-        IFixedList<Parameter> parameterTypes)
+        IFixedList<ParameterType> parameterTypes)
         : base(parameterTypes,
             new Return(((ObjectType)containingSymbol.DeclaresType).ToConstructorReturn(selfParameterType, parameterTypes)))
     {
@@ -33,7 +33,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
     public static ConstructorSymbol CreateDefault(UserTypeSymbol containingSymbol)
         => new(containingSymbol, null,
             ((ObjectType)containingSymbol.DeclaresType).ToDefaultConstructorSelf(),
-            FixedList.Empty<Parameter>());
+            FixedList.Empty<ParameterType>());
 
     public override bool Equals(Symbol? other)
     {
@@ -51,7 +51,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
     public override string ToILString()
     {
         var name = Name is null ? $".{Name}" : "";
-        var selfParameterType = new Parameter(false, SelfParameterType);
+        var selfParameterType = new ParameterType(false, SelfParameterType);
         return $"{ContainingSymbol}::new{name}({string.Join(", ", Parameters.Prepend(selfParameterType).Select(d => d.ToILString()))})";
     }
 }

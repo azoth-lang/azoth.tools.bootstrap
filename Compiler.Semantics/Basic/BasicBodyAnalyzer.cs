@@ -307,7 +307,7 @@ public class BasicBodyAnalyzer
     /// </summary>
     private ExpressionResult AddImplicitConversionIfNeeded(
         ExpressionResult expression,
-        Parameter expectedType,
+        ParameterType expectedType,
         bool allowMoveOrFreeze,
         FlowStateMutable flow)
         => AddImplicitConversionIfNeeded(expression, expectedType.Type, allowMoveOrFreeze, flow);
@@ -1146,7 +1146,7 @@ public class BasicBodyAnalyzer
         return new ArgumentResults(selfArgument, inferences);
     }
 
-    private void CheckTypes(ArgumentResults arguments, IEnumerable<Parameter> expectedTypes, FlowStateMutable flow)
+    private void CheckTypes(ArgumentResults arguments, IEnumerable<ParameterType> expectedTypes, FlowStateMutable flow)
     {
         foreach (var (arg, parameter) in arguments.Arguments.EquiZip(expectedTypes))
         {
@@ -1156,7 +1156,7 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private static bool TypesAreCompatible(ArgumentResults arguments, IEnumerable<Parameter> expectedTypes, FlowStateMutable flow)
+    private static bool TypesAreCompatible(ArgumentResults arguments, IEnumerable<ParameterType> expectedTypes, FlowStateMutable flow)
     {
         foreach (var (arg, parameter) in arguments.Arguments.EquiZip(expectedTypes))
             if (!TypesAreCompatible(arg, parameter, flow))
@@ -1165,7 +1165,7 @@ public class BasicBodyAnalyzer
         return true;
     }
 
-    private static bool TypesAreCompatible(ExpressionResult arg, Parameter parameter, FlowStateMutable flow, bool isSelf = false)
+    private static bool TypesAreCompatible(ExpressionResult arg, ParameterType parameter, FlowStateMutable flow, bool isSelf = false)
     {
         var argType = arg.Type;
         var priorConversion = arg.Syntax.ImplicitConversion;
@@ -1213,8 +1213,8 @@ public class BasicBodyAnalyzer
         => CombineResults(null, function?.Parameters, function?.Return, results, flow);
 
     private static ResultVariable? CombineResults(
-        SelfParameter? selfParameterType,
-        IFixedList<Parameter>? parameterTypes,
+        SelfParameterType? selfParameterType,
+        IFixedList<ParameterType>? parameterTypes,
         Return? returnType,
         ArgumentResults results,
         FlowStateMutable flow)
@@ -1245,7 +1245,7 @@ public class BasicBodyAnalyzer
         ResultVariable? returnResult,
         List<ResultVariable> resultsToDrop,
         FlowStateMutable flow)
-        where TParameterType : struct, IParameter
+        where TParameterType : struct, IParameterType
     {
         if (argument.Variable is null)
             return;
@@ -1529,7 +1529,7 @@ public class BasicBodyAnalyzer
 
     private static void AddImplicitMoveIfNeeded(
         ExpressionResult selfArg,
-        SelfParameter selfParamType,
+        SelfParameterType selfParamType,
         FlowStateMutable flow)
     {
         var conversion = CreateImplicitMoveConversion(selfArg.Type, selfArg.Syntax, selfArg.Variable,
@@ -1542,7 +1542,7 @@ public class BasicBodyAnalyzer
         DataType selfArgType,
         IExpressionSyntax selfArgSyntax,
         ResultVariable? selfArgVariable,
-        Parameter selfParam,
+        ParameterType selfParam,
         FlowStateMutable flow,
         bool enact,
         Conversion priorConversion)
@@ -1569,7 +1569,7 @@ public class BasicBodyAnalyzer
 
     private static void AddImplicitFreezeIfNeeded(
         ExpressionResult selfArg,
-        SelfParameter selfParamType,
+        SelfParameterType selfParamType,
         FlowStateMutable flow)
     {
         var conversion = CreateImplicitFreezeConversion(selfArg.Type, selfArg.Syntax, selfArg.Variable,
@@ -1582,7 +1582,7 @@ public class BasicBodyAnalyzer
         DataType selfArgType,
         IExpressionSyntax selfArgSyntax,
         ResultVariable? selfArgVariable,
-        Parameter selfParam,
+        ParameterType selfParam,
         FlowStateMutable flow,
         bool enact,
         Conversion priorConversion)
@@ -1947,7 +1947,7 @@ public class BasicBodyAnalyzer
             // Arity depends on the contextualized symbols because parameters can drop out with `void`
             if (s.Arity != arguments.Arity) return false;
             // Is self arg compatible?
-            if (s.SelfParameterType is SelfParameter selfParameterType
+            if (s.SelfParameterType is SelfParameterType selfParameterType
                 && (arguments.Self is null || !TypesAreCompatible(arguments.Self, selfParameterType.ToUpperBound(), flow, isSelf: true)))
                 return false;
             // Are arguments compatible?
@@ -1975,7 +1975,7 @@ public class BasicBodyAnalyzer
         return symbols.Select(s => new Contextualized<TSymbol>(s, SelfParameterTypeOrNull(s), s.Parameters, s.Return));
     }
 
-    private static SelfParameter? SelfParameterTypeOrNull(InvocableSymbol symbol)
+    private static SelfParameterType? SelfParameterTypeOrNull(InvocableSymbol symbol)
     {
         if (symbol is MethodSymbol { SelfParameterType: var selfType })
             return selfType;

@@ -140,7 +140,7 @@ internal sealed class TypeReplacements
         return type.With(replacementTypes);
     }
 
-    public Parameter ReplaceTypeParametersIn(Parameter type)
+    public ParameterType ReplaceTypeParametersIn(ParameterType type)
         => type with { Type = ReplaceTypeParametersIn(type.Type) };
 
     public Return ReplaceTypeParametersIn(Return @return)
@@ -160,9 +160,9 @@ internal sealed class TypeReplacements
         return typesReplaced ? replacementTypes.ToFixedList() : types;
     }
 
-    private IFixedList<Parameter> ReplaceTypeParametersIn(IFixedList<Parameter> types)
+    private IFixedList<ParameterType> ReplaceTypeParametersIn(IFixedList<ParameterType> types)
     {
-        var replacementTypes = new List<Parameter>();
+        var replacementTypes = new List<ParameterType>();
         var typesReplaced = false;
         foreach (var type in types)
         {

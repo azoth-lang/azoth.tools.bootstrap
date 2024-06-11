@@ -15,12 +15,12 @@ public abstract class InvocableSymbol : Symbol
     public override PackageSymbol? Package => ContainingSymbol.Package;
     public abstract override Symbol ContainingSymbol { get; }
     public abstract override IdentifierName? Name { get; }
-    public IFixedList<Parameter> Parameters { get; }
+    public IFixedList<ParameterType> Parameters { get; }
     public int Arity => Parameters.Count;
     public Return Return { get; }
 
     private protected InvocableSymbol(
-        IFixedList<Parameter> parameters,
+        IFixedList<ParameterType> parameters,
         Return @return)
     {
         Parameters = parameters;

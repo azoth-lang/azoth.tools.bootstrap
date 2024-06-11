@@ -151,7 +151,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     /// </summary>
     /// <remarks>The capability of the return type is restricted by the parameter types because the
     /// newly constructed object could contain references to them.</remarks>
-    public CapabilityType<ObjectType> ToConstructorReturn(CapabilityType selfParameterType, IEnumerable<Parameter> parameterTypes)
+    public CapabilityType<ObjectType> ToConstructorReturn(CapabilityType selfParameterType, IEnumerable<ParameterType> parameterTypes)
     {
         if (IsDeclaredConst) return With(Capability.Constant, GenericParameterTypes);
         // Read only self constructors cannot return `mut` or `iso`

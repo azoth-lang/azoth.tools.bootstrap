@@ -13,14 +13,14 @@ public sealed class MethodSymbol : InvocableSymbol
     public override TypeSymbol ContextTypeSymbol => ContainingSymbol;
     public MethodKind Kind { get; }
     public override IdentifierName Name { get; }
-    public SelfParameter SelfParameterType { get; }
+    public SelfParameterType SelfParameterType { get; }
     public FunctionType MethodGroupType { get; }
 
     public MethodSymbol(
         TypeSymbol containingSymbol,
         IdentifierName name,
-        SelfParameter selfParameterType,
-        IFixedList<Parameter> parameters,
+        SelfParameterType selfParameterType,
+        IFixedList<ParameterType> parameters,
         Return @return)
         : this(containingSymbol, MethodKind.Standard, name, selfParameterType, parameters, @return)
     { }
@@ -29,8 +29,8 @@ public sealed class MethodSymbol : InvocableSymbol
         TypeSymbol containingSymbol,
         MethodKind kind,
         IdentifierName name,
-        SelfParameter selfParameterType,
-        IFixedList<Parameter> parameters,
+        SelfParameterType selfParameterType,
+        IFixedList<ParameterType> parameters,
         Return @return)
         : base(parameters, @return)
     {

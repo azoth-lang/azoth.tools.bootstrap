@@ -813,7 +813,7 @@ public partial interface IConstructorOrInitializerParameterNode : IParameterNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     new DataType Type { get; }
     Pseudotype IParameterNode.Type => Type;
-    Parameter ParameterType { get; }
+    ParameterType ParameterType { get; }
 }
 
 public partial interface INamedParameterNode : IConstructorOrInitializerParameterNode, INamedBindingNode
@@ -882,7 +882,7 @@ public partial interface IMethodSelfParameterNode : ISemanticNode, ISelfParamete
     ISelfParameterSyntax ISelfParameterNode.Syntax => Syntax;
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICapabilityConstraintNode Capability { get; }
-    SelfParameter ParameterType { get; }
+    SelfParameterType ParameterType { get; }
 }
 
 public partial interface IFieldParameterNode : ISemanticNode, IConstructorOrInitializerParameterNode
@@ -1048,7 +1048,7 @@ public partial interface IParameterTypeNode : ISemanticNode, ICodeNode
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     bool IsLent { get; }
     ITypeNode Referent { get; }
-    Parameter Parameter { get; }
+    ParameterType Parameter { get; }
 }
 
 [Closed(

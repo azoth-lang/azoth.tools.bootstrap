@@ -22,7 +22,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
         UserTypeSymbol containingTypeSymbol,
         IdentifierName? initializerName,
         CapabilityType selfParameterType,
-        IFixedList<Parameter> parameterTypes)
+        IFixedList<ParameterType> parameterTypes)
         : base(parameterTypes,
             new Return(((StructType)containingTypeSymbol.DeclaresType).ToInitializerReturn(selfParameterType, parameterTypes)))
     {
@@ -37,7 +37,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
     public static InitializerSymbol CreateDefault(UserTypeSymbol containingTypeSymbol)
         => new(containingTypeSymbol, null,
             ((StructType)containingTypeSymbol.DeclaresType).ToDefaultInitializerSelf(),
-            FixedList.Empty<Parameter>());
+            FixedList.Empty<ParameterType>());
 
     public override bool Equals(Symbol? other)
     {
@@ -55,7 +55,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
     public override string ToILString()
     {
         var name = Name is not null ? $".{Name}" : "";
-        var selfParameterType = new Parameter(false, SelfParameterType);
+        var selfParameterType = new ParameterType(false, SelfParameterType);
         return $"{ContextTypeSymbol}::init{name}({string.Join(", ", Parameters.Prepend(selfParameterType).Select(d => d.ToILString()))})";
     }
 }

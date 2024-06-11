@@ -57,7 +57,7 @@ internal static class TypeMemberDeclarationsAspect
     public static ValueId Parameter_ValueId(IParameterNode node)
         => node.PreviousValueId().CreateNext();
 
-    public static Parameter NamedParameter_ParameterType(INamedParameterNode node)
+    public static ParameterType NamedParameter_ParameterType(INamedParameterNode node)
         => new(node.IsLentBinding, node.Type);
 
     public static IMaybeAntetype NamedParameter_Antetype(INamedParameterNode node)
@@ -80,10 +80,10 @@ internal static class TypeMemberDeclarationsAspect
         };
     }
 
-    public static SelfParameter MethodSelfParameter_ParameterType(IMethodSelfParameterNode node)
+    public static SelfParameterType MethodSelfParameter_ParameterType(IMethodSelfParameterNode node)
     {
         bool isLent = node.IsLentBinding && node.Type.CanBeLent();
-        return new SelfParameter(isLent, node.Type);
+        return new SelfParameterType(isLent, node.Type);
     }
 
     public static void MethodSelfParameter_ContributeDiagnostics(IMethodSelfParameterNode node, Diagnostics diagnostics)
@@ -136,8 +136,8 @@ internal static class TypeMemberDeclarationsAspect
     internal static DataType FieldParameter_Type(IFieldParameterNode node)
         => node.ReferencedField?.Type ?? DataType.Unknown;
 
-    public static Parameter FieldParameter_ParameterType(IFieldParameterNode node)
-        => new Parameter(false, node.Type);
+    public static ParameterType FieldParameter_ParameterType(IFieldParameterNode node)
+        => new ParameterType(false, node.Type);
 
     public static CapabilityType InitializerSelfParameter_Type(IInitializerSelfParameterNode node)
     {

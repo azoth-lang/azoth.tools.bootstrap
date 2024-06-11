@@ -106,7 +106,7 @@ internal static class ContextualizedOverload
         => symbol.Parameters.Select(p => ParameterAntetype(contextAntetype, p))
                  .OfType<IMaybeNonVoidAntetype>().ToFixedList();
 
-    private static IMaybeAntetype ParameterAntetype(IMaybeExpressionAntetype context, Parameter parameter)
+    private static IMaybeAntetype ParameterAntetype(IMaybeExpressionAntetype context, ParameterType parameter)
         => context.ReplaceTypeParametersIn(parameter.Type.ToAntetype()).ToNonConstValueType();
 
     private static IMaybeAntetype ReturnAntetype(IMaybeExpressionAntetype contextAntetype, InvocableSymbol symbol)

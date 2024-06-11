@@ -185,7 +185,7 @@ Parameter <: Code, Binding = Syntax:`IParameterSyntax` Name:`IdentifierName`? Un
     Antetype:`IMaybeAntetype` Type:`Pseudotype` ValueId:`ValueId` FlowStateAfter:`FlowState`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`
-    Type:`DataType` ParameterType:`Parameter`;
+    Type:`DataType` ParameterType:`ParameterType`;
 NamedParameter <: ConstructorOrInitializerParameter, NamedBinding = Syntax:`INamedParameterSyntax`
     IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`?
     TypeNode:Type
@@ -199,8 +199,8 @@ ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyn
     IsLentBinding:`bool` Capability Type:`CapabilityType` ContainingDeclaredType:`ObjectType`;
 InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax`
     IsLentBinding:`bool` Capability Type:`CapabilityType` ContainingDeclaredType:`StructType`;
-MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` IsLentBinding:`bool` Capability:CapabilityConstraint
-    ParameterType:`SelfParameter`;
+MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` IsLentBinding:`bool`
+    Capability:CapabilityConstraint ParameterType:`SelfParameterType`;
 FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax` Name:`IdentifierName`
     ContainingTypeDefinition:`ITypeDefinitionNode` ReferencedField:`IFieldDefinitionNode`?;
 
@@ -224,7 +224,7 @@ QualifiedTypeName <: TypeName = Syntax:`IQualifiedTypeNameSyntax` Context:TypeNa
 OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;
 CapabilityType <: Type = Syntax:`ICapabilityTypeSyntax` Capability Referent:Type;
 FunctionType <: Type = Syntax:`IFunctionTypeSyntax` Parameters:ParameterType* Return:Type;
-ParameterType <: Code = Syntax:`IParameterTypeSyntax` IsLent:`bool` Referent:Type Parameter:`Parameter`;
+ParameterType <: Code = Syntax:`IParameterTypeSyntax` IsLent:`bool` Referent:Type Parameter:`ParameterType`;
 ViewpointType <: Type = Syntax:`IViewpointTypeSyntax` Referent:Type;
 CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSyntax` Capability Referent:Type;
 SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type NamedSelfType:`Pseudotype`?;

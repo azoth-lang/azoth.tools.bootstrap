@@ -39,7 +39,7 @@ public abstract class NonEmptyType : Type
     /// with the type arguments from this type (assuming it has them).
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
-    public Parameter ReplaceTypeParametersIn(Parameter type)
+    public ParameterType ReplaceTypeParametersIn(ParameterType type)
         => type with { Type = ReplaceTypeParametersIn(type.Type) };
 
     /// <summary>
@@ -48,9 +48,9 @@ public abstract class NonEmptyType : Type
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
     [return: NotNullIfNotNull(nameof(type))]
-    public Parameter? ReplaceTypeParametersIn(Parameter? type)
+    public ParameterType? ReplaceTypeParametersIn(ParameterType? type)
     {
-        if (type is Parameter parameterType)
+        if (type is ParameterType parameterType)
             return ReplaceTypeParametersIn(parameterType);
         return null;
     }
@@ -60,7 +60,7 @@ public abstract class NonEmptyType : Type
     /// with the type arguments from this type (assuming it has them).
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
-    public SelfParameter ReplaceTypeParametersIn(SelfParameter type)
+    public SelfParameterType ReplaceTypeParametersIn(SelfParameterType type)
         => type with { Type = ReplaceTypeParametersIn(type.Type) };
 
     /// <summary>
@@ -69,9 +69,9 @@ public abstract class NonEmptyType : Type
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
     [return: NotNullIfNotNull(nameof(type))]
-    public SelfParameter? ReplaceTypeParametersIn(SelfParameter? type)
+    public SelfParameterType? ReplaceTypeParametersIn(SelfParameterType? type)
     {
-        if (type is SelfParameter parameterType)
+        if (type is SelfParameterType parameterType)
             return ReplaceTypeParametersIn(parameterType);
         return null;
     }

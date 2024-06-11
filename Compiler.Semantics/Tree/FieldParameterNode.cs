@@ -32,8 +32,8 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, TypeMemberDeclarationsAspect.FieldParameter_Type);
 
-    private ValueAttribute<Parameter> parameterType;
-    public Parameter ParameterType
+    private ValueAttribute<ParameterType> parameterType;
+    public ParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value
             : parameterType.GetValue(this, TypeMemberDeclarationsAspect.FieldParameter_ParameterType);
     public override FlowState FlowStateAfter => FlowStateBefore();

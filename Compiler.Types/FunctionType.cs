@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class FunctionType : NonEmptyType
 {
-    public FunctionType(IEnumerable<Parameter> parameters, Return @return)
+    public FunctionType(IEnumerable<ParameterType> parameters, Return @return)
     {
         Parameters = parameters.ToFixedList();
         Return = @return;
@@ -20,7 +20,7 @@ public sealed class FunctionType : NonEmptyType
     }
 
     public int Arity => Parameters.Count;
-    public IFixedList<Parameter> Parameters { get; }
+    public IFixedList<ParameterType> Parameters { get; }
     public Return Return { get; }
 
     public override bool IsFullyKnown { get; }

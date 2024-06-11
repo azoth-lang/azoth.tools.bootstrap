@@ -167,7 +167,7 @@ public static class DataTypeExtensions
         return IsAssignableFrom(target.Return, source.Return);
     }
 
-    public static bool IsAssignableFrom(this Parameter target, Parameter source)
+    public static bool IsAssignableFrom(this ParameterType target, ParameterType source)
     {
         // TODO add more flexibility in lent
         if (target.IsLent != source.IsLent) return false;

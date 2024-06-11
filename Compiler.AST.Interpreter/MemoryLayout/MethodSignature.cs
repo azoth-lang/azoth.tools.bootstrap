@@ -10,15 +10,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.AST.Interpreter.MemoryLayout;
 internal class MethodSignature : IEquatable<MethodSignature>
 {
     public IdentifierName Name { get; }
-    public SelfParameter SelfType { get; }
-    public IFixedList<Parameter> ParameterTypes { get; }
+    public SelfParameterType SelfType { get; }
+    public IFixedList<ParameterType> ParameterTypes { get; }
     public Return ReturnType { get; }
     private readonly int hashCode;
 
     public MethodSignature(
         IdentifierName name,
-        SelfParameter selfType,
-        IFixedList<Parameter> parameterTypes,
+        SelfParameterType selfType,
+        IFixedList<ParameterType> parameterTypes,
         Return @return)
     {
         Name = name;

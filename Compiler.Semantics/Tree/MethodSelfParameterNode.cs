@@ -17,8 +17,8 @@ internal sealed class MethodSelfParameterNode : SelfParameterNode, IMethodSelfPa
     public override Pseudotype Type
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, TypeMemberDeclarationsAspect.MethodSelfParameter_Type);
-    private ValueAttribute<SelfParameter> parameterType;
-    public SelfParameter ParameterType
+    private ValueAttribute<SelfParameterType> parameterType;
+    public SelfParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value
             : parameterType.GetValue(this, TypeMemberDeclarationsAspect.MethodSelfParameter_ParameterType);
 
