@@ -20,15 +20,14 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     public override IdentifierName Name => Syntax.Name;
     public int? DeclarationNumber => Syntax.DeclarationNumber.Result;
     public ITypeNode TypeNode { get; }
-    private ValueAttribute<IMaybeAntetype> antetype;
-    public override IMaybeAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeMemberDeclarationsAspect.NamedParameter_Antetype);
-    private ValueAttribute<DataType> type;
-    public override DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeMemberDeclarationsAspect.NamedParameterNode_Type);
-
+    private ValueAttribute<IMaybeAntetype> bindingAntetype;
+    public override IMaybeAntetype BindingAntetype
+        => bindingAntetype.TryGetValue(out var value) ? value
+            : bindingAntetype.GetValue(this, TypeMemberDeclarationsAspect.NamedParameter_BindingAntetype);
+    private ValueAttribute<DataType> bindingType;
+    public override DataType BindingType
+        => bindingType.TryGetValue(out var value) ? value
+            : bindingType.GetValue(this, TypeMemberDeclarationsAspect.NamedParameterNode_BindingType);
     private ValueAttribute<ParameterType> parameterType;
     public ParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value

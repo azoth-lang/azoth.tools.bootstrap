@@ -25,10 +25,10 @@ internal abstract class SelfParameterNode : ParameterNode, ISelfParameterNode
     public SelfParameterSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAspect.SelfParameter_Symbol);
-    private ValueAttribute<IMaybeAntetype> antetype;
-    public override IMaybeAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, NameBindingAntetypesAspect.SelfParameter_Antetype);
+    private ValueAttribute<IMaybeAntetype> bindingAntetype;
+    public override IMaybeAntetype BindingAntetype
+        => bindingAntetype.TryGetValue(out var value) ? value
+            : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.SelfParameter_BindingAntetype);
 
     public override FlowState FlowStateAfter => throw new System.NotImplementedException();
 }

@@ -18,18 +18,19 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
 {
     public override IFieldDefinitionSyntax Syntax { get; }
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
+    bool IBindingNode.IsLentBinding => false;
     public bool IsMutableBinding => Syntax.IsMutableBinding;
     public override IdentifierName Name => Syntax.Name;
     TypeName INamedDeclarationNode.Name => Name;
     public ITypeNode TypeNode { get; }
-    private ValueAttribute<IMaybeAntetype> antetype;
-    public IMaybeAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, DeclarationsAntetypesAspect.FieldDefinition_Antetype);
-    private ValueAttribute<DataType> type;
-    public DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeMemberDeclarationsAspect.FieldDeclaration_Type);
+    private ValueAttribute<IMaybeAntetype> bindingAntetype;
+    public IMaybeAntetype BindingAntetype
+        => bindingAntetype.TryGetValue(out var value) ? value
+            : bindingAntetype.GetValue(this, DeclarationsAntetypesAspect.FieldDefinition_BindingAntetype);
+    private ValueAttribute<DataType> bindingType;
+    public DataType BindingType
+        => bindingType.TryGetValue(out var value) ? value
+            : bindingType.GetValue(this, TypeMemberDeclarationsAspect.FieldDeclaration_BindingType);
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     private ValueAttribute<FieldSymbol> symbol;
     public override FieldSymbol Symbol
@@ -40,6 +41,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value
             : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.FieldDefinition_ValueIdScope);
+    public ValueId ValueId => throw new NotImplementedException();
 
     public FieldDefinitionNode(IFieldDefinitionSyntax syntax, ITypeNode type, IAmbiguousExpressionNode? initializer)
     {

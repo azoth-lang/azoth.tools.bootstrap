@@ -23,14 +23,16 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
     public IFieldDefinitionNode? ReferencedField
         => referencedField.TryGetValue(out var value) ? value
             : referencedField.GetValue(this, SymbolNodeAspect.FieldParameter_ReferencedField);
-    private ValueAttribute<IMaybeAntetype> antetype;
-    public override IMaybeAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, NameBindingAntetypesAspect.FieldParameter_Antetype);
-    private ValueAttribute<DataType> type;
-    public override DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeMemberDeclarationsAspect.FieldParameter_Type);
+    // TODO this is strange because this isn't a binding
+    private ValueAttribute<IMaybeAntetype> bindingAntetype;
+    public override IMaybeAntetype BindingAntetype
+        => bindingAntetype.TryGetValue(out var value) ? value
+            : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.FieldParameter_BindingAntetype);
+    // TODO this is strange because this isn't a binding
+    private ValueAttribute<DataType> bindingType;
+    public override DataType BindingType
+        => bindingType.TryGetValue(out var value) ? value
+            : bindingType.GetValue(this, TypeMemberDeclarationsAspect.FieldParameter_BindingType);
 
     private ValueAttribute<ParameterType> parameterType;
     public ParameterType ParameterType

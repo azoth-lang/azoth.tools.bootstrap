@@ -1,3 +1,4 @@
+using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -8,12 +9,14 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class VariableDeclarationStatementNode : StatementNode, IVariableDeclarationStatementNode
 {
     public override IVariableDeclarationStatementSyntax Syntax { get; }
+    bool IBindingNode.IsLentBinding => false;
     public bool IsMutableBinding => Syntax.IsMutableBinding;
     public IdentifierName Name => Syntax.Name;
     public ICapabilityNode? Capability { get; }
@@ -42,6 +45,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
             : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.VariableDeclarationStatement_BindingAntetype);
+    public DataType BindingType => throw new NotImplementedException();
     public override IMaybeAntetype? ResultAntetype => null;
     public override FlowState FlowStateAfter
         => ((IExpressionNode?)Initializer)?.FlowStateAfter ?? InheritedFlowStateBefore();

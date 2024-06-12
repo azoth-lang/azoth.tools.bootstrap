@@ -13,10 +13,10 @@ internal sealed class MethodSelfParameterNode : SelfParameterNode, IMethodSelfPa
     public override IMethodSelfParameterSyntax Syntax { get; }
     public override IdentifierName? Name => Syntax.Name;
     public ICapabilityConstraintNode Capability { get; }
-    private ValueAttribute<Pseudotype> type;
-    public override Pseudotype Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeMemberDeclarationsAspect.MethodSelfParameter_Type);
+    private ValueAttribute<Pseudotype> bindingType;
+    public override Pseudotype BindingType
+        => bindingType.TryGetValue(out var value) ? value
+            : bindingType.GetValue(this, TypeMemberDeclarationsAspect.MethodSelfParameter_BindingType);
     private ValueAttribute<SelfParameterType> parameterType;
     public SelfParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value

@@ -70,15 +70,13 @@ public static class ExpressionTypesAspect
     }
 
     public static DataType VariableNameExpression_Type(IVariableNameExpressionNode node)
-        => node.FlowStateAfter.Type(node.ValueId);
+        => node.FlowStateAfter.AliasType(node.ReferencedDeclaration);
 
     public static FlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node)
-        // TODO add alias here
-        => node.FlowStateBefore();//.Alias(node.ReferencedDeclaration.ValueId, node.ValueId);
+        => node.FlowStateBefore().Alias(node.ReferencedDeclaration, node.ValueId);
 
     public static FlowState NamedParameter_FlowStateAfter(INamedParameterNode node)
-        // TODO implement
-        => node.FlowStateBefore();
+        => node.FlowStateBefore().Declare(node);
 
     public static ValueId VariableDeclarationStatement_ValueId(IVariableDeclarationStatementNode node)
         => node.PreviousValueId().CreateNext();

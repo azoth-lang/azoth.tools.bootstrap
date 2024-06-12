@@ -388,7 +388,8 @@ public sealed class FlowStateMutable
         => capabilities.Add(result, flowCapabilities);
 
     #region Sharing Management
-    private SharingSetMutable SharingSet(BindingVariable variable) => SharingSet((ISharingVariable)variable);
+    private SharingSetMutable SharingSet(BindingVariable variable)
+        => SharingSet((ISharingVariable)variable);
 
     private SharingSetMutable SharingSet(ISharingVariable variable)
     {

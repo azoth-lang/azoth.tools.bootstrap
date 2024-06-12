@@ -52,7 +52,7 @@ internal static class TypeExpressionsAspect
     }
 
     public static Pseudotype ConcreteMethodDeclaration_InheritedSelfType(IConcreteMethodDefinitionNode node)
-        => node.SelfParameter.Type;
+        => node.SelfParameter.BindingType;
 
     public static DataType SelfViewpointType_NamedType(ISelfViewpointTypeNode node)
     {

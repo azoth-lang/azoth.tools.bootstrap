@@ -5,7 +5,9 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
@@ -52,7 +54,20 @@ public partial interface IParameterNode
 
 public partial interface INamedParameterNode
 {
-    IMaybeAntetype INamedBindingNode.BindingAntetype => Antetype;
+    new DataType BindingType { get; }
+    new ValueId ValueId { get; }
+    ValueId IParameterNode.ValueId => ValueId;
+    ValueId IBindingNode.ValueId => ValueId;
+}
+
+public partial interface ISelfParameterNode
+{
+    new IMaybeAntetype BindingAntetype { get; }
+    IMaybeAntetype IBindingNode.BindingAntetype => BindingAntetype;
+    IMaybeAntetype IParameterNode.BindingAntetype => BindingAntetype;
+    new Pseudotype BindingType { get; }
+    Pseudotype IBindingNode.BindingType => BindingType;
+    Pseudotype IParameterNode.BindingType => BindingType;
 }
 #endregion
 

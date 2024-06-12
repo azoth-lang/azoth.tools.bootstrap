@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
@@ -17,15 +18,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public readonly struct CapabilityIndex : IEquatable<CapabilityIndex>
 {
+    public static readonly CapabilityIndex TopLevel = new(FixedList.Empty<int>());
+
     public IFixedList<int> TreeIndex { get; }
 
-    public CapabilityIndex(IFixedList<int> treeIndex)
+    public CapabilityIndex(IEnumerable<int> treeIndex)
     {
-        TreeIndex = treeIndex;
+        TreeIndex = treeIndex.ToFixedList();
     }
 
     #region Equality
-    public bool Equals(CapabilityIndex other) => TreeIndex.Equals(other.TreeIndex);
+    public bool Equals(CapabilityIndex other) => TreeIndex.ItemsEqual(other.TreeIndex);
 
     public override bool Equals(object? obj) => obj is CapabilityIndex other && Equals(other);
 

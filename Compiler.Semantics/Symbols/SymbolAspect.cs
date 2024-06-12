@@ -37,17 +37,17 @@ internal static class SymbolAspect
             new(node.Return?.NamedType ?? DataType.Void));
 
     public static ConstructorSymbol SourceConstructorDefinition(ISourceConstructorDefinitionNode node)
-        => new ConstructorSymbol(node.ContainingSymbol, node.Name, node.SelfParameter.Type,
+        => new ConstructorSymbol(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType,
             node.Parameters.Select(p => p.ParameterType).ToFixedList());
 
     public static ConstructorSymbol DefaultConstructorDefinition(IDefaultConstructorDefinitionNode node)
         => ConstructorSymbol.CreateDefault(node.ContainingSymbol);
 
     public static FieldSymbol FieldDeclaration(IFieldDefinitionNode node)
-        => new FieldSymbol(node.ContainingSymbol, node.Name, node.IsMutableBinding, node.Type);
+        => new FieldSymbol(node.ContainingSymbol, node.Name, node.IsMutableBinding, ((IFieldDeclarationNode)node).BindingType);
 
     public static InitializerSymbol InitializerDeclaration(IInitializerDefinitionNode node)
-        => new InitializerSymbol(node.ContainingSymbol, node.Name, node.SelfParameter.Type,
+        => new InitializerSymbol(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType,
             node.Parameters.Select(p => p.ParameterType).ToFixedList());
 
     public static FunctionSymbol AssociatedFunctionDeclaration(IAssociatedFunctionDefinitionNode node)
@@ -74,21 +74,21 @@ internal static class SymbolAspect
     {
         var parent = (IInvocableDefinitionNode)node.Parent;
         var isConstructor = node.Parent is IConstructorDefinitionNode or IInitializerDefinitionNode;
-        return new SelfParameterSymbol(parent.Symbol, node.IsLentBinding && !isConstructor, node.Type);
+        return new SelfParameterSymbol(parent.Symbol, node.IsLentBinding && !isConstructor, ((IParameterNode)node).BindingType);
     }
 
     // TODO remove parameter symbols
     public static NamedVariableSymbol NamedParameter_Symbol(INamedParameterNode node)
     {
         var parent = (IInvocableDefinitionNode)node.Parent;
-        var isLent = node.IsLentBinding && node.Type.CanBeLent();
+        var isLent = node.IsLentBinding && node.BindingType.CanBeLent();
         return NamedVariableSymbol.CreateParameter(parent.Symbol, node.Name,
-            node.DeclarationNumber, node.IsMutableBinding, isLent, node.Type);
+            node.DeclarationNumber, node.IsMutableBinding, isLent, node.BindingType);
     }
 
     public static void NamedParameter_ContributeDiagnostics(INamedParameterNode node, Diagnostics diagnostics)
     {
-        var type = node.Type;
+        var type = node.BindingType;
         if (node.IsLentBinding && !type.CanBeLent())
             diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, type));
     }

@@ -14,10 +14,10 @@ internal sealed class InitializerSelfParameterNode : SelfParameterNode, IInitial
     public new StructType ContainingDeclaredType => (StructType)base.ContainingDeclaredType;
     public ICapabilityNode Capability { get; }
     public override IdentifierName? Name => Syntax.Name;
-    private ValueAttribute<CapabilityType> type;
-    public override CapabilityType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeMemberDeclarationsAspect.InitializerSelfParameter_Type);
+    private ValueAttribute<CapabilityType> bindingType;
+    public override CapabilityType BindingType
+        => bindingType.TryGetValue(out var value) ? value
+            : bindingType.GetValue(this, TypeMemberDeclarationsAspect.InitializerSelfParameter_BindingType);
 
     public InitializerSelfParameterNode(IInitializerSelfParameterSyntax syntax, ICapabilityNode capability)
     {

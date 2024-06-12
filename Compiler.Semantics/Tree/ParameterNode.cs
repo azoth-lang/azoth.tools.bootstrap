@@ -13,8 +13,8 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
     public abstract override IParameterSyntax Syntax { get; }
     public abstract IdentifierName? Name { get; }
     public bool Unused => Syntax.Unused;
-    public abstract IMaybeAntetype Antetype { get; }
-    public abstract Pseudotype Type { get; }
+    public abstract IMaybeAntetype BindingAntetype { get; }
+    public abstract Pseudotype BindingType { get; }
     private ValueAttribute<ValueId> valueId;
     public ValueId ValueId
         => valueId.TryGetValue(out var value) ? value

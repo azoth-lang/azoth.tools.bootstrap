@@ -160,9 +160,13 @@ public partial interface IBlockOrResultNode : IElseClauseNode
 [Closed(
     typeof(INamedBindingNode),
     typeof(IFieldDefinitionNode),
-    typeof(IParameterNode))]
+    typeof(ISelfParameterNode))]
 public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 {
+    bool IsLentBinding { get; }
+    ValueId ValueId { get; }
+    IMaybeAntetype BindingAntetype { get; }
+    Pseudotype BindingType { get; }
 }
 
 [Closed(
@@ -175,8 +179,8 @@ public partial interface INamedBindingNode : ISemanticNode, IBindingNode, INamed
     new ILocalBindingSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    ValueId ValueId { get; }
-    IMaybeAntetype BindingAntetype { get; }
+    new DataType BindingType { get; }
+    Pseudotype IBindingNode.BindingType => BindingType;
 }
 
 public partial interface IPackageNode : IPackageDeclarationNode
@@ -235,6 +239,7 @@ public partial interface IPackageMemberDefinitionNode : INamespaceBlockMemberDef
     typeof(IGenericParameterNode),
     typeof(IAttributeNode),
     typeof(ICapabilityConstraintNode),
+    typeof(IParameterNode),
     typeof(ITypeNode),
     typeof(IParameterTypeNode),
     typeof(IStatementNode),
@@ -723,7 +728,9 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     IdentifierName IFieldDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
     ITypeNode TypeNode { get; }
-    IMaybeAntetype Antetype { get; }
+    new DataType BindingType { get; }
+    Pseudotype IBindingNode.BindingType => BindingType;
+    DataType IFieldDeclarationNode.BindingType => BindingType;
     new FieldSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FieldSymbol IFieldDeclarationNode.Symbol => Symbol;
@@ -791,15 +798,15 @@ public partial interface ICapabilityNode : ICapabilityConstraintNode
 [Closed(
     typeof(IConstructorOrInitializerParameterNode),
     typeof(ISelfParameterNode))]
-public partial interface IParameterNode : ISemanticNode, IBindingNode
+public partial interface IParameterNode : ISemanticNode, ICodeNode
 {
     new IParameterSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IdentifierName? Name { get; }
     bool Unused { get; }
-    IMaybeAntetype Antetype { get; }
-    Pseudotype Type { get; }
+    IMaybeAntetype BindingAntetype { get; }
+    Pseudotype BindingType { get; }
     ValueId ValueId { get; }
     FlowState FlowStateAfter { get; }
 }
@@ -811,8 +818,8 @@ public partial interface IConstructorOrInitializerParameterNode : IParameterNode
 {
     new IConstructorOrInitializerParameterSyntax Syntax { get; }
     IParameterSyntax IParameterNode.Syntax => Syntax;
-    new DataType Type { get; }
-    Pseudotype IParameterNode.Type => Type;
+    new DataType BindingType { get; }
+    Pseudotype IParameterNode.BindingType => BindingType;
     ParameterType ParameterType { get; }
 }
 
@@ -825,7 +832,6 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     bool IsMutableBinding { get; }
-    bool IsLentBinding { get; }
     new IdentifierName Name { get; }
     IdentifierName? IParameterNode.Name => Name;
     IdentifierName INamedBindingDeclarationNode.Name => Name;
@@ -839,11 +845,12 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     typeof(IConstructorSelfParameterNode),
     typeof(IInitializerSelfParameterNode),
     typeof(IMethodSelfParameterNode))]
-public partial interface ISelfParameterNode : IParameterNode
+public partial interface ISelfParameterNode : IParameterNode, IBindingNode
 {
     new ISelfParameterSyntax Syntax { get; }
     IParameterSyntax IParameterNode.Syntax => Syntax;
-    bool IsLentBinding { get; }
+    IConcreteSyntax? ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     IDeclaredUserType ContainingDeclaredType { get; }
     SelfParameterSymbol Symbol { get; }
@@ -855,9 +862,11 @@ public partial interface IConstructorSelfParameterNode : ISemanticNode, ISelfPar
     ISyntax? ISemanticNode.Syntax => Syntax;
     ISelfParameterSyntax ISelfParameterNode.Syntax => Syntax;
     IParameterSyntax IParameterNode.Syntax => Syntax;
+    IConcreteSyntax? ICodeNode.Syntax => Syntax;
     ICapabilityNode Capability { get; }
-    new CapabilityType Type { get; }
-    Pseudotype IParameterNode.Type => Type;
+    new CapabilityType BindingType { get; }
+    Pseudotype IParameterNode.BindingType => BindingType;
+    Pseudotype IBindingNode.BindingType => BindingType;
     new ObjectType ContainingDeclaredType { get; }
     IDeclaredUserType ISelfParameterNode.ContainingDeclaredType => ContainingDeclaredType;
 }
@@ -868,9 +877,11 @@ public partial interface IInitializerSelfParameterNode : ISemanticNode, ISelfPar
     ISyntax? ISemanticNode.Syntax => Syntax;
     ISelfParameterSyntax ISelfParameterNode.Syntax => Syntax;
     IParameterSyntax IParameterNode.Syntax => Syntax;
+    IConcreteSyntax? ICodeNode.Syntax => Syntax;
     ICapabilityNode Capability { get; }
-    new CapabilityType Type { get; }
-    Pseudotype IParameterNode.Type => Type;
+    new CapabilityType BindingType { get; }
+    Pseudotype IParameterNode.BindingType => BindingType;
+    Pseudotype IBindingNode.BindingType => BindingType;
     new StructType ContainingDeclaredType { get; }
     IDeclaredUserType ISelfParameterNode.ContainingDeclaredType => ContainingDeclaredType;
 }
@@ -881,6 +892,7 @@ public partial interface IMethodSelfParameterNode : ISemanticNode, ISelfParamete
     ISyntax? ISemanticNode.Syntax => Syntax;
     ISelfParameterSyntax ISelfParameterNode.Syntax => Syntax;
     IParameterSyntax IParameterNode.Syntax => Syntax;
+    IConcreteSyntax? ICodeNode.Syntax => Syntax;
     ICapabilityConstraintNode Capability { get; }
     SelfParameterType ParameterType { get; }
 }
@@ -2282,7 +2294,7 @@ public partial interface IFieldDeclarationNode : INamedDeclarationNode, IClassMe
     new IdentifierName Name { get; }
     TypeName INamedDeclarationNode.Name => Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    DataType Type { get; }
+    DataType BindingType { get; }
     new FieldSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
 }

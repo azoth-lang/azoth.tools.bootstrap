@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public record struct ValueId(ValueIdScope Scope, ulong Value) : IPreviousValueId
 {
     public readonly ValueId CreateNext()

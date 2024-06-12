@@ -44,7 +44,7 @@ internal static class TypeMemberDeclarationsAspect
         // the original type so it is safe.
         foreach (var parameter in node.Parameters)
         {
-            var type = parameter.Type;
+            var type = parameter.BindingType;
             if (!type.IsInputSafe(nonwritableSelf))
                 diagnostics.Add(TypeError.ParameterMustBeInputSafe(node.File, parameter.Syntax, type));
         }
@@ -57,16 +57,16 @@ internal static class TypeMemberDeclarationsAspect
     public static ValueId Parameter_ValueId(IParameterNode node)
         => node.PreviousValueId().CreateNext();
 
-    public static ParameterType NamedParameter_ParameterType(INamedParameterNode node)
-        => new(node.IsLentBinding, node.Type);
-
-    public static IMaybeAntetype NamedParameter_Antetype(INamedParameterNode node)
+    public static IMaybeAntetype NamedParameter_BindingAntetype(INamedParameterNode node)
         => node.TypeNode.NamedAntetype;
 
-    public static DataType NamedParameterNode_Type(INamedParameterNode node)
+    public static DataType NamedParameterNode_BindingType(INamedParameterNode node)
         => node.TypeNode.NamedType;
 
-    public static Pseudotype MethodSelfParameter_Type(IMethodSelfParameterNode node)
+    public static ParameterType NamedParameter_ParameterType(INamedParameterNode node)
+        => new(node.IsLentBinding, node.BindingType);
+
+    public static Pseudotype MethodSelfParameter_BindingType(IMethodSelfParameterNode node)
     {
         var declaredType = node.ContainingDeclaredType;
         var genericParameterTypes = declaredType.GenericParameterTypes;
@@ -82,8 +82,8 @@ internal static class TypeMemberDeclarationsAspect
 
     public static SelfParameterType MethodSelfParameter_ParameterType(IMethodSelfParameterNode node)
     {
-        bool isLent = node.IsLentBinding && node.Type.CanBeLent();
-        return new SelfParameterType(isLent, node.Type);
+        bool isLent = node.IsLentBinding && node.BindingType.CanBeLent();
+        return new SelfParameterType(isLent, node.BindingType);
     }
 
     public static void MethodSelfParameter_ContributeDiagnostics(IMethodSelfParameterNode node, Diagnostics diagnostics)
@@ -96,7 +96,7 @@ internal static class TypeMemberDeclarationsAspect
     private static void CheckTypeCannotBeLent(IMethodSelfParameterNode node, Diagnostics diagnostics)
     {
         var isLent = node.IsLentBinding;
-        var selfType = node.Type;
+        var selfType = ((IParameterNode)node).BindingType;
         if (isLent && !selfType.CanBeLent())
             diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, selfType));
     }
@@ -116,7 +116,7 @@ internal static class TypeMemberDeclarationsAspect
             diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(node.File, node.Syntax));
     }
 
-    public static CapabilityType ConstructorSelfParameter_Type(IConstructorSelfParameterNode node)
+    public static CapabilityType ConstructorSelfParameter_BindingType(IConstructorSelfParameterNode node)
     {
         var declaredType = node.ContainingDeclaredType;
         var capability = node.Syntax.Capability.Declared.ToSelfParameterCapability();
@@ -133,13 +133,13 @@ internal static class TypeMemberDeclarationsAspect
         CheckInvalidConstructorSelfParameterCapability(node.Capability.Syntax, node.File, diagnostics);
     }
 
-    internal static DataType FieldParameter_Type(IFieldParameterNode node)
-        => node.ReferencedField?.Type ?? DataType.Unknown;
+    internal static DataType FieldParameter_BindingType(IFieldParameterNode node)
+        => node.ReferencedField?.BindingType ?? DataType.Unknown;
 
     public static ParameterType FieldParameter_ParameterType(IFieldParameterNode node)
-        => new ParameterType(false, node.Type);
+        => new ParameterType(false, node.BindingType);
 
-    public static CapabilityType InitializerSelfParameter_Type(IInitializerSelfParameterNode node)
+    public static CapabilityType InitializerSelfParameter_BindingType(IInitializerSelfParameterNode node)
     {
         var declaredType = node.ContainingDeclaredType;
         var capability = node.Syntax.Capability.Declared.ToSelfParameterCapability();
@@ -180,7 +180,7 @@ internal static class TypeMemberDeclarationsAspect
         }
     }
 
-    public static DataType FieldDeclaration_Type(IFieldDefinitionNode node) => node.TypeNode.NamedType;
+    public static DataType FieldDeclaration_BindingType(IFieldDefinitionNode node) => node.TypeNode.NamedType;
 
     public static void FieldDeclaration_ContributeDiagnostics(IFieldDefinitionNode node, Diagnostics diagnostics)
     {
@@ -191,7 +191,7 @@ internal static class TypeMemberDeclarationsAspect
 
     private static void CheckFieldIsVarianceSafe(IFieldDefinitionNode node, Diagnostics diagnostics)
     {
-        var type = node.Type;
+        var type = ((IFieldDeclarationNode)node).BindingType;
 
         // Check variance safety. Only public fields need their safety checked. Effectively, they
         // have getters and setters. Private and protected fields are only accessed from within the
@@ -217,7 +217,7 @@ internal static class TypeMemberDeclarationsAspect
 
     private static void CheckFieldMaintainsIndependence(IFieldDefinitionNode node, Diagnostics diagnostics)
     {
-        var type = node.Type;
+        var type = ((IFieldDeclarationNode)node).BindingType;
         // Fields must also maintain the independence of independent type parameters
         if (!type.FieldMaintainsIndependence())
             diagnostics.Add(TypeError.FieldMustMaintainIndependence(node.File, node.Syntax, type));

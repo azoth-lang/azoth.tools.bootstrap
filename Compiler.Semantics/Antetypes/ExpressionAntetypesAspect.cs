@@ -37,12 +37,12 @@ internal static class ExpressionAntetypesAspect
         => node.ReferencedDeclaration.BindingAntetype;
 
     public static IMaybeExpressionAntetype SelfExpression_Antetype(ISelfExpressionNode node)
-        => node.ReferencedParameter?.Antetype ?? IAntetype.Unknown;
+        => node.ReferencedParameter?.BindingAntetype ?? IAntetype.Unknown;
 
     public static IMaybeExpressionAntetype FieldAccessExpression_Antetype(IFieldAccessExpressionNode node)
     {
         // TODO should probably use Antetype on the declaration
-        var unboundAntetype = node.ReferencedDeclaration.Type.ToAntetype();
+        var unboundAntetype = node.ReferencedDeclaration.BindingType.ToAntetype();
         var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }

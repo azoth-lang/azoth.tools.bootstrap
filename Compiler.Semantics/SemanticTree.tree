@@ -32,9 +32,8 @@ ElseClause <: Code;
 BlockOrResult: ElseClause = Antetype:`IMaybeAntetype`;
 
 // ---------- Bindings
-Binding <: Code, BindingDeclaration;
-NamedBinding <: Binding, NamedBindingDeclaration = Syntax:`ILocalBindingSyntax` ValueId:`ValueId`
-    BindingAntetype:`IMaybeAntetype`;
+Binding <: Code, BindingDeclaration = IsLentBinding:`bool` ValueId:`ValueId` BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype`;
+NamedBinding <: Binding, NamedBindingDeclaration = Syntax:`ILocalBindingSyntax` BindingType:`DataType`;
 
 // ---------- Packages
 Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
@@ -166,7 +165,7 @@ InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition
     = Syntax:`IInitializerDefinitionSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter*
     Symbol:`InitializerSymbol` Body:BlockBody;
 FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding, FieldDeclaration, ExecutableDefinition
-    = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type Antetype:`IMaybeAntetype` Type:`DataType`
+    = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type BindingAntetype:`IMaybeAntetype` BindingType:`DataType`
     Symbol:`FieldSymbol` Initializer:AmbiguousExpression?;
 AssociatedFunctionDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
     = Syntax:`IAssociatedFunctionDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
@@ -181,24 +180,24 @@ CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint
 Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability`;
 
 // ---------- Parameters
-Parameter <: Code, Binding = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
-    Antetype:`IMaybeAntetype` Type:`Pseudotype` ValueId:`ValueId` FlowStateAfter:`FlowState`;
+Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
+    BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype` ValueId:`ValueId` FlowStateAfter:`FlowState`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`
-    Type:`DataType` ParameterType:`ParameterType`;
+    BindingType:`DataType` ParameterType:`ParameterType`;
 NamedParameter <: ConstructorOrInitializerParameter, NamedBinding = Syntax:`INamedParameterSyntax`
     IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`?
     TypeNode:Type
     // TODO remove parameter symbols
     Symbol:`NamedVariableSymbol`;
-SelfParameter <: Parameter = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool`
+SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool`
     ContainingTypeDefinition:`ITypeDefinitionNode` ContainingDeclaredType:`IDeclaredUserType`
     // TODO remove parameter symbols
     Symbol:`SelfParameterSymbol`;
 ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax`
-    IsLentBinding:`bool` Capability Type:`CapabilityType` ContainingDeclaredType:`ObjectType`;
+    IsLentBinding:`bool` Capability BindingType:`CapabilityType` ContainingDeclaredType:`ObjectType`;
 InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax`
-    IsLentBinding:`bool` Capability Type:`CapabilityType` ContainingDeclaredType:`StructType`;
+    IsLentBinding:`bool` Capability BindingType:`CapabilityType` ContainingDeclaredType:`StructType`;
 MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` IsLentBinding:`bool`
     Capability:CapabilityConstraint ParameterType:`SelfParameterType`;
 FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax` Name:`IdentifierName`
@@ -475,7 +474,8 @@ ConstructorDeclaration <: ClassMemberDeclaration, AssociatedMemberDeclaration, I
     = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
 InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration
     = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
-FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration = Name:`IdentifierName` Type:`DataType` Symbol:`FieldSymbol`;
+FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration
+    = Name:`IdentifierName` BindingType:`DataType` Symbol:`FieldSymbol`;
 AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionLikeDeclaration, InvocableDeclaration;
 
 // ---------- Can be Referenced by Type Name
