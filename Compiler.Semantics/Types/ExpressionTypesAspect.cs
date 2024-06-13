@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
@@ -11,6 +12,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -164,12 +166,18 @@ public static class ExpressionTypesAspect
         IEnumerable<IExpressionNode> arguments)
     {
         arguments = selfArgument.YieldValue().Concat(arguments);
-        return overload is null
-            ? arguments.Select(a => new ArgumentValueId(false, a.ValueId))
-            : (overload.SelfParameterType?.ToUpperBound()).YieldValue()
-                  .Concat(overload.ParameterTypes)
-                  .EquiZip(arguments)
-                  .Select((p, a) => new ArgumentValueId(p.IsLent, a.ValueId));
+        if (overload is null)
+            return arguments.Select(a => new ArgumentValueId(false, a.ValueId));
+
+        var parameterTypes = overload.ParameterTypes.AsEnumerable();
+        if (selfArgument is not null)
+        {
+            if (overload.SelfParameterType is not SelfParameterType selfParameterType)
+                throw new InvalidOperationException("Self argument provided for overload without self parameter");
+            parameterTypes = parameterTypes.Prepend(selfParameterType.ToUpperBound());
+        }
+        return parameterTypes.EquiZip(arguments)
+                             .Select((p, a) => new ArgumentValueId(p.IsLent, a.ValueId));
     }
 
     public static DataType FieldAccessExpression_Type(IFieldAccessExpressionNode node)

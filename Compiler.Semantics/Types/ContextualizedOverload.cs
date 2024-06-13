@@ -98,7 +98,8 @@ public abstract class ContextualizedOverload
     private static IFixedList<ParameterType> CreateParameterTypes(
         NonEmptyType contextType,
         InvocableSymbol symbol)
-        => symbol.Parameters.Select(p => CreateParameterType(contextType, p)).ToFixedList();
+        => symbol.Parameters.Select(p => CreateParameterType(contextType, p))
+                 .Where(p => p is not { Type: VoidType }).ToFixedList();
 
     private static ParameterType CreateParameterType(NonEmptyType contextType, ParameterType parameter)
         => contextType.ReplaceTypeParametersIn(parameter);
