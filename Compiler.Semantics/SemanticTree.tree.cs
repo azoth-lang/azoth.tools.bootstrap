@@ -1435,6 +1435,7 @@ public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Condition { get; }
+    IExpressionNode FinalCondition { get; }
     IBlockOrResultNode ThenBlock { get; }
     IElseClauseNode? ElseClause { get; }
 }

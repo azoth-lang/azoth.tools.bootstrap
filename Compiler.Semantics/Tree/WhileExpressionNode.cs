@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -15,7 +16,7 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
     private Child<IAmbiguousExpressionNode> condition;
     public IAmbiguousExpressionNode Condition => condition.Value;
     public IExpressionNode FinalCondition => (IExpressionNode)condition.FinalValue;
-    public IBlockExpressionNode Block { get; }
+    public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value

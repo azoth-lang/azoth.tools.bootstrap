@@ -13,6 +13,8 @@ internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<Shari
     {
         if (sets.Count == 0)
             throw new ArgumentException("Cannot union no sets");
+        if (sets.Count == 1)
+            return sets.First();
         SharingSet first = sets.First();
         bool isLent = first.IsLent;
         var values = first.values.ToBuilder();

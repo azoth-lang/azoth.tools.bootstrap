@@ -291,7 +291,8 @@ PatternMatchExpression <: Expression = Syntax:`IPatternMatchExpressionSyntax`
     Referent:AmbiguousExpression FinalReferent:`IExpressionNode` Pattern;
 
 // ---------- Control Flow Expressions
-IfExpression <: Expression, ElseClause = Syntax:`IIfExpressionSyntax` Condition:AmbiguousExpression ThenBlock:BlockOrResult ElseClause?;
+IfExpression <: Expression, ElseClause = Syntax:`IIfExpressionSyntax`
+    Condition:AmbiguousExpression FinalCondition:`IExpressionNode` ThenBlock:BlockOrResult ElseClause?;
 LoopExpression <: Expression = Syntax:`ILoopExpressionSyntax` Block:BlockExpression;
 WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax`
     Condition:AmbiguousExpression FinalCondition:`IExpressionNode` Block:BlockExpression;

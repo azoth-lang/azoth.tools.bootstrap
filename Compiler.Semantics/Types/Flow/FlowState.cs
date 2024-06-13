@@ -31,6 +31,10 @@ public sealed class FlowState
     /// </summary>
     private readonly ImmutableDictionary<IValue, SharingSet> setFor;
 
+    public bool IsEmpty
+        => ReferenceEquals(this, Empty)
+           || (capabilities.IsEmpty && sets.IsEmpty && setFor.IsEmpty);
+
     private FlowState()
     {
         capabilities = ImmutableDictionary<ICapabilityValue, FlowCapability>.Empty;
@@ -166,7 +170,7 @@ public sealed class FlowState
 
         var builder = ToBuilder();
         var existingSets = argumentResults.Where(a => !a.IsLent)
-                                          .Select(a => builder.TrySharingSet(a.Value))
+                                          .Select(a => builder.TrySetFor(a.Value))
                                           .WhereNotNull().ToList();
         var unionIsLent = existingSets.Any(s => s.IsLent);
         var values = existingSets.SelectMany(Functions.Identity).Append(ResultValue.Create(valueId))
@@ -202,8 +206,12 @@ public sealed class FlowState
 
     public FlowState Merge(FlowState? other)
     {
-        if (other is null)
+        if (other is null
+            || ReferenceEquals(this, other)
+            || other.IsEmpty)
             return this;
+        if (IsEmpty)
+            return other;
 
         var builder = ToBuilder();
         foreach (var otherSet in other.sets)
@@ -231,15 +239,26 @@ public sealed class FlowState
             // other flow state. (Doing this as a single operation is more efficient).
             builder.Union(setsToUnion);
         }
+
+        foreach (var (value, flowCapability) in other.capabilities)
+        {
+            var existingCapability = builder.TryCapabilityFor(value);
+            if (existingCapability is null)
+                builder.TrackFlowCapability(value, flowCapability);
+            else if (existingCapability != flowCapability)
+                throw new InvalidOperationException($"Flow capability for {value} changed from {existingCapability} to {flowCapability}.");
+        }
         return builder.ToFlowState();
     }
 
     public FlowState Combine(ValueId left, ValueId? right, ValueId intoValueId)
     {
         var resultValues = right.YieldValue().Prepend(left).Select(ResultValue.Create).ToFixedList();
+        var existingSets = resultValues.Select(TrySetFor).WhereNotNull().ToList();
+        if (existingSets.IsEmpty())
+            return this;
 
         var builder = ToBuilder();
-        var existingSets = resultValues.Select(builder.TrySharingSet).WhereNotNull().ToList();
         var unionIsLent = existingSets.Any(s => s.IsLent);
         var values = existingSets.SelectMany(Functions.Identity).Append(ResultValue.Create(intoValueId))
                                  .Except(resultValues);
@@ -252,6 +271,8 @@ public sealed class FlowState
 
     private Builder ToBuilder()
         => new Builder(capabilities.ToBuilder(), sets.ToBuilder(), setFor.ToBuilder());
+
+    private SharingSet? TrySetFor(IValue value) => setFor.GetValueOrDefault(value);
 
     private readonly struct Builder
     {
@@ -282,6 +303,16 @@ public sealed class FlowState
             return flowCapability;
         }
 
+        public FlowCapability CapabilityFor(ICapabilityValue value)
+        {
+            if (!capabilities.TryGetValue(value, out var capability))
+                throw new InvalidOperationException($"Flow capability for {value} no longer declared.");
+            return capability;
+        }
+
+        public FlowCapability? TryCapabilityFor(ICapabilityValue value)
+            => capabilities.TryGetValue(value, out var capability) ? capability : (FlowCapability?)null;
+
         public SharingSet SetFor(IValue value)
         {
             if (!setFor.TryGetValue(value, out var set))
@@ -290,7 +321,7 @@ public sealed class FlowState
             return set;
         }
 
-        public SharingSet? TrySharingSet(IValue value)
+        public SharingSet? TrySetFor(IValue value)
             => setFor.GetValueOrDefault(value);
 
         public bool Contains(IValue value)

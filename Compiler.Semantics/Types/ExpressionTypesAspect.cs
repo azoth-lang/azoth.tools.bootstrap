@@ -276,7 +276,9 @@ public static class ExpressionTypesAspect
 
     public static FlowState IfExpression_FlowStateAfter(IIfExpressionNode node)
     {
-        var flowState = node.ThenBlock.FlowStateAfter.Merge(node.ElseClause?.FlowStateAfter);
+        var thenPath = node.ThenBlock.FlowStateAfter;
+        var elsePath = node.ElseClause?.FlowStateAfter ?? node.FinalCondition.FlowStateAfter;
+        var flowState = thenPath.Merge(elsePath);
         return flowState.Combine(node.ThenBlock.ValueId, node.ElseClause?.ValueId, node.ValueId);
     }
 

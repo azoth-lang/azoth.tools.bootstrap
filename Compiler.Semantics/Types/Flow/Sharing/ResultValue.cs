@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 internal sealed class ResultValue : ICapabilityValue
 {
     #region Cache
