@@ -9,8 +9,30 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 
 internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<SharingSet>
 {
+    public static SharingSet Union(IReadOnlyCollection<SharingSet> sets)
+    {
+        if (sets.Count == 0)
+            throw new ArgumentException("Cannot union no sets");
+        SharingSet first = sets.First();
+        bool isLent = first.IsLent;
+        var values = first.values.ToBuilder();
+        foreach (var set in sets.Skip(1))
+        {
+            if (set.IsLent != isLent)
+                throw new ArgumentException("Cannot union sets with different lent status");
+            values.UnionWith(set.values);
+        }
+        return new SharingSet(isLent, values.ToImmutable());
+    }
+
     public bool IsLent { get; }
     private readonly ImmutableHashSet<IValue> values;
+
+    public SharingSet(bool isLent, IValue value)
+    {
+        IsLent = isLent;
+        values = [value];
+    }
 
     public SharingSet(bool isLent, IValue value, params IValue?[] values)
     {
@@ -23,8 +45,15 @@ internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<Shari
     {
     }
 
-    private SharingSet(bool isLent, ImmutableHashSet<IValue> values)
+    public SharingSet(SharingSet other)
+        : this(other.IsLent, other.values)
     {
+    }
+
+    public SharingSet(bool isLent, ImmutableHashSet<IValue> values)
+    {
+        if (values.IsEmpty)
+            throw new ArgumentException("Sharing set must contain at least one value", nameof(values));
         IsLent = isLent;
         this.values = values;
     }

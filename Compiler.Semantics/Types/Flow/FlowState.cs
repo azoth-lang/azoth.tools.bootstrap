@@ -119,7 +119,7 @@ public sealed class FlowState
 
         if (binding.SharingIsTracked(flowCapability))
         {
-            var set = builder.SharingSet(bindingValue);
+            var set = builder.SetFor(bindingValue);
 
             var result = ResultValue.Create(valueId);
             var newSet = set.Declare(result);
@@ -202,8 +202,36 @@ public sealed class FlowState
 
     public FlowState Merge(FlowState? other)
     {
-        if (other is null) return this;
-        throw new NotImplementedException();
+        if (other is null)
+            return this;
+
+        var builder = ToBuilder();
+        foreach (var otherSet in other.sets)
+        {
+            var valueLookup = otherSet.ToLookup(builder.Contains);
+            if (valueLookup[true].IsEmpty())
+            {
+                // Whole set is missing, add it to the flow state (safe because it is immutable)
+                builder.AddSet(otherSet);
+                continue;
+            }
+
+            var setsToUnion = valueLookup[true].Select(builder.SetFor);
+
+            var newValues = valueLookup[false].ToImmutableHashSet();
+            if (newValues.Any())
+            {
+                // Add all the values that are not already in the flow state at once to optimize
+                var newSet = new SharingSet(otherSet.IsLent, newValues);
+                builder.AddSet(newSet);
+                setsToUnion = setsToUnion.Append(newSet);
+            }
+
+            // Union all the sets together since they are all contain items in the same set in the
+            // other flow state. (Doing this as a single operation is more efficient).
+            builder.Union(setsToUnion);
+        }
+        return builder.ToFlowState();
     }
 
     public FlowState Combine(ValueId left, ValueId? right, ValueId intoValueId)
@@ -254,7 +282,7 @@ public sealed class FlowState
             return flowCapability;
         }
 
-        public SharingSet SharingSet(IValue value)
+        public SharingSet SetFor(IValue value)
         {
             if (!setFor.TryGetValue(value, out var set))
                 throw new InvalidOperationException($"Sharing value {value} no longer declared.");
@@ -264,6 +292,9 @@ public sealed class FlowState
 
         public SharingSet? TrySharingSet(IValue value)
             => setFor.GetValueOrDefault(value);
+
+        public bool Contains(IValue value)
+            => setFor.ContainsKey(value);
 
         public void UpdateSet(SharingSet oldSet, SharingSet newSet)
         {
@@ -289,7 +320,7 @@ public sealed class FlowState
                 setFor[value] = newSet;
         }
 
-        private void AddSet(SharingSet set)
+        public void AddSet(SharingSet set)
         {
             sets.Add(set);
             foreach (IValue value in set)
@@ -304,5 +335,18 @@ public sealed class FlowState
 
         public void TrackFlowCapability(ICapabilityValue value, FlowCapability flowCapability)
             => capabilities.Add(value, flowCapability);
+
+        public void Union(IEnumerable<SharingSet> setsToUnion)
+        {
+            var distinctSets = setsToUnion.Distinct().ToList();
+            var union = SharingSet.Union(distinctSets);
+
+            sets.ExceptWith(distinctSets);
+            sets.Add(union);
+
+            // Update all items in the union to point to the new set
+            foreach (IValue value in union)
+                setFor[value] = union;
+        }
     }
 }

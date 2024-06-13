@@ -148,4 +148,10 @@ public static class EnumerableExtensions
         foreach (var item in fallback())
             yield return item;
     }
+
+    public static bool IsEmpty<T>(this IEnumerable<T> source)
+    {
+        using var e = source.GetEnumerator();
+        return !e.MoveNext();
+    }
 }

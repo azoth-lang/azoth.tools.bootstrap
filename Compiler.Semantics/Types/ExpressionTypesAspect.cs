@@ -300,7 +300,8 @@ public static class ExpressionTypesAspect
 
     public static FlowState WhileExpression_FlowStateAfter(IWhileExpressionNode node)
         // TODO loop flow state
-        => node.Block.FlowStateAfter;
+        // Merge condition with block flow state because the body may not be executed
+        => node.FinalCondition.FlowStateAfter.Merge(node.Block.FlowStateAfter);
 
     public static DataType LoopExpression_Type(ILoopExpressionNode _)
         // TODO assign correct type to the expression
