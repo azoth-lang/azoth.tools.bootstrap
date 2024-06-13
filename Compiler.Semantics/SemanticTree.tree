@@ -29,8 +29,8 @@ Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPackageDecla
 
 // ---------- Special Parts
 BodyOrBlock <: Code = Statements:`IStatementNode`*;
-ElseClause <: Code;
-BlockOrResult: ElseClause = Antetype:`IMaybeAntetype`;
+ElseClause <: Code = FlowStateAfter:`FlowState` ValueId:`ValueId`;
+BlockOrResult: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 
 // ---------- Bindings
 Binding <: Code, BindingDeclaration = IsLentBinding:`bool` ValueId:`ValueId` BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype`;
@@ -277,7 +277,7 @@ StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionS
 AssignmentExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
     LeftOperand:AssignableExpression IntermediateLeftOperand:`IAssignableExpressionNode`
     Operator:`AssignmentOperator`
-    RightOperand:AmbiguousExpression CurrentRightOperand:`IAmbiguousExpressionNode`;
+    RightOperand:AmbiguousExpression CurrentRightOperand:`IAmbiguousExpressionNode` FinalRightOperand:`IExpressionNode`;
 BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax`
     LeftOperand:AmbiguousExpression FinalLeftOperand:`IExpressionNode`
     Operator:`BinaryOperator`

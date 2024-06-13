@@ -1,8 +1,12 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes.ConstValue;
 
-public abstract class ConstValueAntetype : IExpressionAntetype
+[Closed(
+       typeof(BoolConstValueAntetype),
+       typeof(IntegerConstValueAntetype))]
+public abstract class ConstValueAntetype : IExpressionAntetype, ISimpleOrConstValueAntetype
 {
     public SpecialTypeName Name { get; }
 

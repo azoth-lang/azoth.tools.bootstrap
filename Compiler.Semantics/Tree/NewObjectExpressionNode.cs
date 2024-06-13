@@ -89,6 +89,8 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
 
     public new PackageNameScope InheritedPackageNameScope() => base.InheritedPackageNameScope();
 
+    public FlowState FlowStateBefore() => InheritedFlowStateBefore();
+
     internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression

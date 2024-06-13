@@ -10,5 +10,5 @@ internal abstract class LiteralExpressionNode : ExpressionNode, ILiteralExpressi
     private ValueAttribute<FlowState> flowStateAfter;
     public override FlowState FlowStateAfter
         => flowStateAfter.TryGetValue(out var value) ? value
-            : flowStateAfter.GetValue(FlowStateBefore);
+            : flowStateAfter.GetValue(InheritedFlowStateBefore);
 }

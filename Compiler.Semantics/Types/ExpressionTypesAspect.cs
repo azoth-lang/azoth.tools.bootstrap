@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -196,4 +199,70 @@ public static class ExpressionTypesAspect
         => node.ReferencedConstructor is not null
             ? ContextualizedOverload.Create(node.ConstructingType.NamedType, node.ReferencedConstructor)
             : null;
+
+    public static DataType AssignmentExpression_Type(IAssignmentExpressionNode node)
+        => node.LeftOperand.Type;
+
+    public static FlowState AssignmentExpression_FlowStateAfter(IAssignmentExpressionNode node)
+        => node.FinalRightOperand.FlowStateAfter.Combine(node.LeftOperand.ValueId, node.FinalRightOperand.ValueId, node.ValueId);
+
+    public static DataType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node)
+    {
+        if (node.Antetype is ISimpleOrConstValueAntetype simpleOrConstValueAntetype)
+            return simpleOrConstValueAntetype.ToType();
+        if (node.Antetype is UnknownAntetype)
+            return DataType.Unknown;
+
+        var leftType = node.FinalLeftOperand.Type;
+        var rightType = node.FinalRightOperand.Type;
+        return (leftType, node.Operator, rightType) switch
+        {
+            (_, BinaryOperator.DotDot, _)
+                or (_, BinaryOperator.LessThanDotDot, _)
+                or (_, BinaryOperator.DotDotLessThan, _)
+                or (_, BinaryOperator.LessThanDotDotLessThan, _)
+                => InferRangeOperatorType(node.ContainingLexicalScope, leftType, rightType),
+
+            (OptionalType { Referent: var referentType }, BinaryOperator.QuestionQuestion, NeverType)
+                => referentType,
+
+            _ => DataType.Unknown
+
+            // TODO optional types
+        };
+    }
+
+    private static DataType InferRangeOperatorType(
+        LexicalScope containingLexicalScope,
+        DataType leftType,
+        DataType rightType)
+    {
+        // TODO the left and right types need to be compatible with the range type
+        var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
+            .OfType<INamespaceDeclarationNode>().SelectMany(ns => ns.MembersNamed("range"))
+            .OfType<ITypeDeclarationNode>().TrySingle();
+        var rangeAntetype = rangeTypeDeclaration?.Symbol.GetDeclaredType()?.With(Capability.Constant, FixedList.Empty<DataType>())
+                            ?? DataType.Unknown;
+        return rangeAntetype;
+    }
+
+    public static FlowState BinaryOperatorExpression_FlowStateAfter(IBinaryOperatorExpressionNode node)
+        => node.FinalRightOperand.FlowStateAfter;
+
+    public static DataType IfExpression_Type(IIfExpressionNode node)
+    {
+        if (node.ElseClause is null) return node.ThenBlock.Type.MakeOptional();
+
+        // TODO unify with else clause
+        return node.ThenBlock.Type;
+    }
+
+    public static DataType ResultStatement_Type(IResultStatementNode node)
+        => node.FinalExpression.Type.ToNonConstValueType();
+
+    public static FlowState IfExpression_FlowStateAfter(IIfExpressionNode node)
+    {
+        var flowState = node.ThenBlock.FlowStateAfter.Merge(node.ElseClause?.FlowStateAfter);
+        return flowState.Combine(node.ThenBlock.ValueId, node.ElseClause?.ValueId, node.ValueId);
+    }
 }

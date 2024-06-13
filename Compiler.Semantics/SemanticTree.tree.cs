@@ -148,6 +148,8 @@ public partial interface IBodyOrBlockNode : ISemanticNode, ICodeNode
     typeof(IIfExpressionNode))]
 public partial interface IElseClauseNode : ISemanticNode, ICodeNode
 {
+    FlowState FlowStateAfter { get; }
+    ValueId ValueId { get; }
 }
 
 [Closed(
@@ -156,6 +158,7 @@ public partial interface IElseClauseNode : ISemanticNode, ICodeNode
 public partial interface IBlockOrResultNode : IElseClauseNode
 {
     IMaybeAntetype Antetype { get; }
+    DataType Type { get; }
 }
 
 [Closed(
@@ -1368,6 +1371,7 @@ public partial interface IAssignmentExpressionNode : ISemanticNode, IExpressionN
     AssignmentOperator Operator { get; }
     IAmbiguousExpressionNode RightOperand { get; }
     IAmbiguousExpressionNode CurrentRightOperand { get; }
+    IExpressionNode FinalRightOperand { get; }
 }
 
 public partial interface IBinaryOperatorExpressionNode : ISemanticNode, IExpressionNode

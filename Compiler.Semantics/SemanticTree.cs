@@ -123,6 +123,13 @@ public partial interface INewObjectExpressionNode
 #endregion
 
 #region Control Flow Expressions
+public partial interface IIfExpressionNode
+{
+    new ValueId ValueId { get; }
+    ValueId IElseClauseNode.ValueId => ValueId;
+    ValueId IExpressionNode.ValueId => ValueId;
+}
+
 public partial interface IForeachExpressionNode
 {
     // TODO some way to code gen this hiding

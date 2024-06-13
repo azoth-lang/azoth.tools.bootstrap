@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 [Closed(
     typeof(BoolAntetype),
     typeof(NumericAntetype))]
-public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype
+public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype, ISimpleOrConstValueAntetype
 {
     public bool IsAbstract => false;
 

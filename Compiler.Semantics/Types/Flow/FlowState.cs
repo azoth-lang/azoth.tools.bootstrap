@@ -198,6 +198,28 @@ public sealed class FlowState
         return builder.ToFlowState();
     }
 
+    public FlowState Merge(FlowState? other)
+    {
+        if (other is null) return this;
+        throw new NotImplementedException();
+    }
+
+    public FlowState Combine(ValueId left, ValueId? right, ValueId intoValueId)
+    {
+        var resultValues = right.YieldValue().Prepend(left).Select(ResultValue.Create).ToFixedList();
+
+        var builder = ToBuilder();
+        var existingSets = resultValues.Select(builder.TrySharingSet).WhereNotNull().ToList();
+        var unionIsLent = existingSets.Any(s => s.IsLent);
+        var values = existingSets.SelectMany(Functions.Identity).Append(ResultValue.Create(intoValueId))
+                                 .Except(resultValues);
+        var combinedSet = new SharingSet(unionIsLent, values);
+
+        builder.ReplaceSets(existingSets, combinedSet);
+
+        return builder.ToFlowState();
+    }
+
     private Builder ToBuilder()
         => new Builder(capabilities.ToBuilder(), sets.ToBuilder(), setFor.ToBuilder());
 
@@ -237,6 +259,9 @@ public sealed class FlowState
 
             return set;
         }
+
+        public SharingSet? TrySharingSet(IValue value)
+            => setFor.GetValueOrDefault(value);
 
         public void UpdateSet(SharingSet oldSet, SharingSet newSet)
         {
