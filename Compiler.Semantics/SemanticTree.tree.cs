@@ -1590,6 +1590,7 @@ public partial interface IInitializerInvocationExpressionNode : ISemanticNode, I
     IEnumerable<IAmbiguousExpressionNode> IntermediateArguments { get; }
     IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; }
     IInitializerDeclarationNode? ReferencedDeclaration { get; }
+    ContextualizedOverload<IInitializerDeclarationNode>? ContextualizedOverload { get; }
 }
 
 public partial interface IUnknownInvocationExpressionNode : IExpressionNode
@@ -1801,6 +1802,7 @@ public partial interface ITypeNameExpressionNode : INameExpressionNode
     IFixedList<ITypeNode> TypeArguments { get; }
     ITypeDeclarationNode ReferencedDeclaration { get; }
     IMaybeAntetype NamedAntetype { get; }
+    BareType? NamedBareType { get; }
 }
 
 public partial interface IStandardTypeNameExpressionNode : ISemanticNode, ITypeNameExpressionNode

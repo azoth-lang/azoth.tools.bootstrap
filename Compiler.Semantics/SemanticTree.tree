@@ -338,7 +338,8 @@ FunctionReferenceInvocation <: Expression = Syntax:`IInvocationExpressionSyntax`
     FunctionAntetype:`FunctionAntetype` FunctionType:`FunctionType`;
 InitializerInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression* IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>`
-    CompatibleDeclarations:{`IInitializerDeclarationNode`} ReferencedDeclaration:`IInitializerDeclarationNode`?;
+    CompatibleDeclarations:{`IInitializerDeclarationNode`} ReferencedDeclaration:`IInitializerDeclarationNode`?
+    ContextualizedOverload:`ContextualizedOverload<IInitializerDeclarationNode>`?;
 UnknownInvocationExpression: Expression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 
@@ -375,7 +376,8 @@ FieldAccessExpression <: NameExpression, AssignableExpression = Syntax:`IMemberA
 VariableNameExpression <: NameExpression, AssignableExpression, SimpleName
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDeclaration:`INamedBindingNode`;
 TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
-    Name:`StandardName` TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode` NamedAntetype:`IMaybeAntetype`;
+    Name:`StandardName` TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`
+    NamedAntetype:`IMaybeAntetype` NamedBareType:`BareType`?;
 StandardTypeNameExpression <: TypeNameExpression = Syntax:`IStandardNameExpressionSyntax` TypeArguments:Type*;
 QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:NamespaceName TypeArguments:Type*;

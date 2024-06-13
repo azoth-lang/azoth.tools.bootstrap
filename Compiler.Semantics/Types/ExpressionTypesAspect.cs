@@ -249,15 +249,26 @@ public static class ExpressionTypesAspect
         return flowState.CombineArguments(argumentValueIds, node.ValueId);
     }
 
-    public static DataType NewObjectExpression_Type(INewObjectExpressionNode node)
-        // TODO does this need to be modified by flow typing?
-        => node.ContextualizedOverload?.ReturnType.Type ?? DataType.Unknown;
-
     public static ContextualizedOverload<IConstructorDeclarationNode>? NewObjectExpression_ContextualizedOverload(
         INewObjectExpressionNode node)
         => node.ReferencedConstructor is not null
             ? ContextualizedOverload.Create(node.ConstructingType.NamedType, node.ReferencedConstructor)
             : null;
+
+    public static DataType NewObjectExpression_Type(INewObjectExpressionNode node)
+        // TODO does this need to be modified by flow typing?
+        => node.ContextualizedOverload?.ReturnType.Type ?? DataType.Unknown;
+
+    public static ContextualizedOverload<IInitializerDeclarationNode>?
+        InitializerInvocationExpression_ContextualizedOverload(IInitializerInvocationExpressionNode node)
+        => node.ReferencedDeclaration is not null
+           && node.InitializerGroup.Context.NamedBareType is not null and var initializingType
+            ? ContextualizedOverload.Create(initializingType.With(Capability.Mutable), node.ReferencedDeclaration)
+            : null;
+
+    public static DataType InitializerInvocationExpression_Type(IInitializerInvocationExpressionNode node)
+        // TODO does this need to be modified by flow typing?
+        => node.ContextualizedOverload?.ReturnType.Type ?? DataType.Unknown;
 
     public static DataType AssignmentExpression_Type(IAssignmentExpressionNode node)
         => node.LeftOperand.Type;

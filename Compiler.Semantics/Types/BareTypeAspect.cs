@@ -29,4 +29,16 @@ internal static class BareTypeAspect
 
     public static BareType? SpecialTypeName_NamedBareType(ISpecialTypeNameNode node)
         => BuildBareType(node.ReferencedSymbol, FixedList.Empty<DataType>());
+
+    public static BareType? TypeNameExpression_NamedBareType(ITypeNameExpressionNode node)
+    {
+        var referencedSymbol = node.ReferencedDeclaration.Symbol;
+        var declaredType = referencedSymbol.GetDeclaredType();
+        if (declaredType is null)
+            return null;
+        var typeArguments = node.TypeArguments.Select(a => a.NamedType).ToFixedList();
+        if (typeArguments.Count != node.TypeArguments.Count)
+            return null;
+        return declaredType.With(typeArguments);
+    }
 }
