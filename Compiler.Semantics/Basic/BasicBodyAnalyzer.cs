@@ -268,11 +268,11 @@ public class BasicBodyAnalyzer
                     type = type.WithoutWrite();
                 else
                 {
-                    if (type is not CapabilityType referenceType)
+                    if (type is not CapabilityType capabilityType)
                         throw new NotImplementedException(
-                            "Compile error: can't infer mutability for non reference type");
+                            "Compile error: can't infer mutability for non-capability type.");
 
-                    type = referenceType.With(inferCapability.Declared.ToCapability());
+                    type = capabilityType.With(inferCapability.Declared.ToCapability());
                 }
 
                 return type;

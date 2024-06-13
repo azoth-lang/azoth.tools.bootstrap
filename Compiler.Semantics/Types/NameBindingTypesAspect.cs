@@ -1,3 +1,4 @@
+using System;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -6,8 +7,30 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static class NameBindingTypesAspect
 {
     public static DataType VariableDeclarationStatement_BindingType(IVariableDeclarationStatementNode node)
-        // TODO account for node.Capability
-        => node.Type?.NamedType ?? node.FinalInitializer?.Type.ToNonConstValueType() ?? DataType.Unknown;
+        => node.Type?.NamedType ?? InferDeclarationType(node, node.Capability) ?? DataType.Unknown;
+
+    private static DataType? InferDeclarationType(
+        IVariableDeclarationStatementNode node,
+        ICapabilityNode? capability)
+    {
+        if (node.FinalInitializer?.Type.ToNonConstValueType() is not NonEmptyType type)
+            return null;
+
+        if (capability is null)
+        {
+            if (node.FinalInitializer is IMoveExpressionNode)
+                // If no capability is specified and it is an explicit move, then take the mutable type.
+                return type;
+
+            // Assume read only on variables unless explicitly stated
+            return type.WithoutWrite();
+        }
+
+        if (type is not CapabilityType capabilityType)
+            throw new NotImplementedException("Compile error: can't infer mutability for non-capability type.");
+
+        return capabilityType.With(capability.Capability);
+    }
 
     public static FlowState VariableDeclarationStatement_FlowStateAfter(IVariableDeclarationStatementNode node)
     {
