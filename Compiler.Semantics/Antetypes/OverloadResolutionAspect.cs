@@ -23,7 +23,7 @@ internal static class OverloadResolutionAspect
         var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
         var argumentAntetypes = ArgumentAntetypes.ForFunction(arguments);
         return node.FunctionGroup.ReferencedDeclarations
-                   .Select(ContextualizedOverload.Create)
+                   .Select(AntetypeContextualizedOverload.Create)
                    .Where(o => o.CompatibleWith(argumentAntetypes))
                    .Select(o => o.Declaration).ToFixedSet();
     }
@@ -68,7 +68,7 @@ internal static class OverloadResolutionAspect
         var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
         var argumentAntetypes = ArgumentAntetypes.ForMethod(contextAntetype, arguments);
         return node.MethodGroup.ReferencedDeclarations
-                   .Select(d => ContextualizedOverload.Create(contextAntetype, d))
+                   .Select(d => AntetypeContextualizedOverload.Create(contextAntetype, d))
                    .Where(o => o.CompatibleWith(argumentAntetypes))
                    .Select(o => o.Declaration).ToFixedSet();
     }
@@ -114,7 +114,7 @@ internal static class OverloadResolutionAspect
         var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
         var argumentAntetypes = ArgumentAntetypes.ForInitializer(arguments);
         return node.InitializerGroup.ReferencedDeclarations
-                   .Select(d => ContextualizedOverload.Create(initializingAntetype, d))
+                   .Select(d => AntetypeContextualizedOverload.Create(initializingAntetype, d))
                    .Where(o => o.CompatibleWith(argumentAntetypes))
                    .Select(o => o.Declaration).ToFixedSet();
     }
@@ -141,7 +141,7 @@ internal static class OverloadResolutionAspect
         var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
         var argumentAntetypes = ArgumentAntetypes.ForConstructor(arguments);
         return node.ReferencedConstructors
-                   .Select(d => ContextualizedOverload.Create(constructingAntetype, d))
+                   .Select(d => AntetypeContextualizedOverload.Create(constructingAntetype, d))
                    .Where(o => o.CompatibleWith(argumentAntetypes))
                    .Select(o => o.Declaration).ToFixedSet();
     }

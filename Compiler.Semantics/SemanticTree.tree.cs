@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -1522,8 +1523,10 @@ public partial interface IMethodInvocationExpressionNode : ISemanticNode, IExpre
     IMethodGroupNameNode MethodGroup { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     IEnumerable<IAmbiguousExpressionNode> IntermediateArguments { get; }
+    IEnumerable<IExpressionNode> FinalArguments { get; }
     IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
+    ContextualizedOverload<IStandardMethodDeclarationNode>? ContextualizedOverload { get; }
 }
 
 public partial interface IGetterInvocationExpressionNode : ISemanticNode, IExpressionNode

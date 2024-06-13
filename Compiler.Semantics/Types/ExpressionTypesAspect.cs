@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -114,4 +115,40 @@ public static class ExpressionTypesAspect
     }
 
     private static readonly IdentifierName StringTypeName = "String";
+
+    public static DataType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
+    {
+        var selfType = node.MethodGroup.Context.Type;
+        // TODO can flow typing affect this?
+        return node.ReferencedDeclaration?.MethodGroupType.Return.Type.ReplaceSelfWith(selfType)
+               ?? DataType.Unknown;
+    }
+
+    public static ContextualizedOverload<IStandardMethodDeclarationNode>? MethodInvocationExpression_ContextualizedOverload(
+        IMethodInvocationExpressionNode node)
+        => node.ReferencedDeclaration is not null
+            ? ContextualizedOverload.Create(node.MethodGroup.Context.Type, node.ReferencedDeclaration)
+            : null;
+
+    public static FlowState MethodInvocationExpression_FlowStateAfter(IMethodInvocationExpressionNode node)
+    {
+        // The flow state just before the method is called is the state after all arguments have evaluated
+        var flowState = node.FinalArguments.LastOrDefault()?.FlowStateAfter ?? node.MethodGroup.Context.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.MethodGroup.Context, node.FinalArguments);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId);
+    }
+
+    private static IEnumerable<ArgumentValueId> ArgumentValueIds(
+        ContextualizedOverload? overload,
+        IExpressionNode? selfArgument,
+        IEnumerable<IExpressionNode> arguments)
+    {
+        arguments = selfArgument.YieldValue().Concat(arguments);
+        return overload is null
+            ? arguments.Select(a => new ArgumentValueId(false, a.ValueId))
+            : (overload.SelfParameterType?.ToUpperBound()).YieldValue()
+                  .Concat(overload.ParameterTypes)
+                  .EquiZip(arguments)
+                  .Select((p, a) => new ArgumentValueId(p.IsLent, a.ValueId));
+    }
 }

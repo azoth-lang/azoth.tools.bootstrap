@@ -11,6 +11,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -312,7 +313,9 @@ FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax
     CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?;
 MethodInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     MethodGroup:MethodGroupName Arguments:AmbiguousExpression* IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>`
-    CompatibleDeclarations:{`IStandardMethodDeclarationNode`} ReferencedDeclaration:`IStandardMethodDeclarationNode`?;
+    FinalArguments:`IEnumerable<IExpressionNode>`
+    CompatibleDeclarations:{`IStandardMethodDeclarationNode`} ReferencedDeclaration:`IStandardMethodDeclarationNode`?
+    ContextualizedOverload:`ContextualizedOverload<IStandardMethodDeclarationNode>`?;
 GetterInvocationExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression PropertyName:`StandardName`
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`IGetterMethodDeclarationNode`?;

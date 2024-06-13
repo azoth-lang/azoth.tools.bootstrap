@@ -192,6 +192,7 @@ public static class DataTypeExtensions
         return type switch
         {
             SelfViewpointType t => t.Referent.ReplaceSelfWith(capability).AccessedVia(capability),
+            // TODO doesn't this need to apply to type arguments?
             //ReferenceType t => ReplaceSelfWith(t, capability),
             //OptionalType t => ReplaceSelfWith(t, capability),
             _ => type,

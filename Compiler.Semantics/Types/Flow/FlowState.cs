@@ -138,14 +138,24 @@ public sealed class FlowState
         return ((CapabilityType)binding.BindingType.ToUpperBound()).With(transform(current));
     }
 
-    //private SharingSet SharingSet(BindingValue variable) => SharingSet((IValue)variable);
-
-    private SharingSet SharingSet(IValue variable)
+    /// <summary>
+    /// Combine the non-lent values representing the arguments into one sharing set with the return
+    /// value id and drop the values for all arguments.
+    /// </summary>
+    public FlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId valueId)
     {
-        if (!setFor.TryGetValue(variable, out var set))
-            throw new InvalidOperationException($"Sharing variable {variable} no longer declared.");
+        var argumentResults = arguments.Select(a => new ArgumentResultValue(a.IsLent, a.ValueId)).ToFixedList();
 
-        return set;
+        var builder = ToBuilder();
+        var existingSets = argumentResults.Where(a => !a.IsLent).Select(a => builder.SharingSet(a.Value)).ToList();
+        var unionIsLent = existingSets.Any(s => s.IsLent);
+        var values = existingSets.SelectMany(Functions.Identity).Append(ResultValue.Create(valueId))
+                                 .Except(argumentResults.Select(a => a.Value));
+        var combinedSet = new SharingSet(unionIsLent, values);
+
+        builder.ReplaceSets(existingSets, combinedSet);
+
+        return builder.ToFlowState();
     }
 
     private Builder ToBuilder()
@@ -181,13 +191,30 @@ public sealed class FlowState
         }
 
         public SharingSet SharingSet(IValue value)
-            => setFor[value];
+        {
+            if (!setFor.TryGetValue(value, out var set))
+                throw new InvalidOperationException($"Sharing value {value} no longer declared.");
+
+            return set;
+        }
 
         public void UpdateSet(SharingSet oldSet, SharingSet newSet)
         {
             sets.Remove(oldSet);
             // Remove items that have been removed from the set
             foreach (IValue value in oldSet.Except(newSet))
+                setFor.Remove(value);
+            sets.Add(newSet);
+            // Add or update items that have been added or updated
+            foreach (IValue value in newSet)
+                setFor[value] = newSet;
+        }
+
+        public void ReplaceSets(IReadOnlyCollection<SharingSet> oldSets, SharingSet newSet)
+        {
+            sets.ExceptWith(oldSets);
+            // Remove items that have been removed from the sets
+            foreach (IValue value in oldSets.SelectMany(Functions.Identity).Except(newSet))
                 setFor.Remove(value);
             sets.Add(newSet);
             // Add or update items that have been added or updated

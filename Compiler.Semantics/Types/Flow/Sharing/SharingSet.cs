@@ -18,6 +18,11 @@ internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<Shari
         this.values = ImmutableHashSet.Create(values.WhereNotNull().Append(value).ToArray());
     }
 
+    public SharingSet(bool isLent, IEnumerable<IValue> values)
+        : this(isLent, values.ToImmutableHashSet())
+    {
+    }
+
     private SharingSet(bool isLent, ImmutableHashSet<IValue> values)
     {
         IsLent = isLent;
