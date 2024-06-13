@@ -79,6 +79,9 @@ public static class ExpressionTypesAspect
     public static FlowState NamedParameter_FlowStateAfter(INamedParameterNode node)
         => node.FlowStateBefore().Declare(node);
 
+    public static FlowState SelfParameter_FlowStateAfter(ISelfParameterNode node)
+        => node.FlowStateBefore().Declare(node);
+
     public static ValueId VariableDeclarationStatement_ValueId(IVariableDeclarationStatementNode node)
         => node.PreviousValueId().CreateNext();
 

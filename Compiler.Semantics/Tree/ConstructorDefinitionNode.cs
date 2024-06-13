@@ -46,7 +46,8 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
     internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
     {
         if (child == Body)
-            return Parameters.LastOrDefault()?.FlowStateAfter ?? FlowStateBefore();
+            return Parameters.LastOrDefault()?.FlowStateAfter
+                   ?? SelfParameter?.FlowStateAfter ?? FlowStateBefore();
         if (Parameters.IndexOf(child) is int index)
         {
             if (index == 0)

@@ -854,6 +854,7 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     IDeclaredUserType ContainingDeclaredType { get; }
+    SelfParameterType ParameterType { get; }
     SelfParameterSymbol Symbol { get; }
 }
 
@@ -895,7 +896,6 @@ public partial interface IMethodSelfParameterNode : ISemanticNode, ISelfParamete
     IParameterSyntax IParameterNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     ICapabilityConstraintNode Capability { get; }
-    SelfParameterType ParameterType { get; }
 }
 
 public partial interface IFieldParameterNode : ISemanticNode, IConstructorOrInitializerParameterNode

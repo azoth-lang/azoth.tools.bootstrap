@@ -24,6 +24,16 @@ internal static class SharingIsTrackedExtensions
         return SharingIsTracked(parameter.Type);
     }
 
+    /// <summary>
+    /// Whether value sharing is tracked for this parameter type.
+    /// </summary>
+    public static bool SharingIsTracked(this SelfParameterType parameter)
+    {
+        // Any lent parameter needs tracked to prevent sharing with it
+        if (parameter.IsLent) return true;
+        return SharingIsTracked(parameter.Type);
+    }
+
     public static bool SharingIsTracked(this Pseudotype pseudotype)
         => pseudotype.ToUpperBound().SharingIsTracked();
 

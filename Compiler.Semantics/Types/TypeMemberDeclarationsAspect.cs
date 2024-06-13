@@ -64,7 +64,16 @@ internal static class TypeMemberDeclarationsAspect
         => node.TypeNode.NamedType;
 
     public static ParameterType NamedParameter_ParameterType(INamedParameterNode node)
-        => new(node.IsLentBinding, node.BindingType);
+    {
+        bool isLent = node.IsLentBinding && node.BindingType.CanBeLent();
+        return new(isLent, node.BindingType);
+    }
+
+    public static SelfParameterType SelfParameter_ParameterType(ISelfParameterNode node)
+    {
+        bool isLent = node.IsLentBinding && node.BindingType.CanBeLent();
+        return new(isLent, node.BindingType);
+    }
 
     public static Pseudotype MethodSelfParameter_BindingType(IMethodSelfParameterNode node)
     {
@@ -78,12 +87,6 @@ internal static class TypeMemberDeclarationsAspect
             ICapabilitySetNode n => declaredType.With(n.Constraint, genericParameterTypes),
             _ => throw ExhaustiveMatch.Failed(capability)
         };
-    }
-
-    public static SelfParameterType MethodSelfParameter_ParameterType(IMethodSelfParameterNode node)
-    {
-        bool isLent = node.IsLentBinding && node.BindingType.CanBeLent();
-        return new SelfParameterType(isLent, node.BindingType);
     }
 
     public static void MethodSelfParameter_ContributeDiagnostics(IMethodSelfParameterNode node, Diagnostics diagnostics)

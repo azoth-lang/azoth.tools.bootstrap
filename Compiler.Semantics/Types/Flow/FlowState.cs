@@ -5,6 +5,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using DataType = Azoth.Tools.Bootstrap.Compiler.Types.DataType;
 
@@ -52,20 +53,37 @@ public sealed class FlowState
     /// </summary>
     public FlowState Declare(INamedParameterNode parameter)
     {
+        var bindingType = parameter.BindingType;
+        bool sharingIsTracked = parameter.ParameterType.SharingIsTracked();
+
+        return Declare(parameter, bindingType, sharingIsTracked, parameter.IsLentBinding);
+    }
+
+    public FlowState Declare(ISelfParameterNode parameter)
+    {
+        var bindingType = parameter.BindingType;
+        bool sharingIsTracked = parameter.ParameterType.SharingIsTracked();
+
+        return Declare(parameter, bindingType, sharingIsTracked, parameter.IsLentBinding);
+    }
+
+    private FlowState Declare(
+        IParameterNode parameter,
+        Pseudotype bindingType,
+        bool sharingIsTracked, bool isLent)
+    {
         // TODO other types besides CapabilityType might participate in sharing
-        if (parameter.ParameterType.Type.ToUpperBound() is not CapabilityType capabilityType)
+        if (bindingType.ToUpperBound() is not CapabilityType capabilityType)
             return this;
 
         var bindingValuePairs = BindingValue.ForType(parameter.ValueId, capabilityType);
         var builder = ToBuilder();
         builder.AddFlowCapabilities(bindingValuePairs);
 
-        if (!parameter.ParameterType.SharingIsTracked())
+        if (!sharingIsTracked)
             return builder.ToFlowState();
 
         ExternalReference? externalReference = null;
-
-        bool isLent = parameter.IsLentBinding;
 
         var capability = capabilityType.Capability;
         // These capabilities don't have to worry about external references

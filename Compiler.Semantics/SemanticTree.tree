@@ -194,13 +194,13 @@ NamedParameter <: ConstructorOrInitializerParameter, NamedBinding = Syntax:`INam
 SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool`
     ContainingTypeDefinition:`ITypeDefinitionNode` ContainingDeclaredType:`IDeclaredUserType`
     // TODO remove parameter symbols
-    Symbol:`SelfParameterSymbol`;
+    ParameterType:`SelfParameterType` Symbol:`SelfParameterSymbol`;
 ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax`
     IsLentBinding:`bool` Capability BindingType:`CapabilityType` ContainingDeclaredType:`ObjectType`;
 InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax`
     IsLentBinding:`bool` Capability BindingType:`CapabilityType` ContainingDeclaredType:`StructType`;
 MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` IsLentBinding:`bool`
-    Capability:CapabilityConstraint ParameterType:`SelfParameterType`;
+    Capability:CapabilityConstraint ;
 FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax` Name:`IdentifierName`
     ContainingTypeDefinition:`ITypeDefinitionNode` ReferencedField:`IFieldDefinitionNode`?;
 
