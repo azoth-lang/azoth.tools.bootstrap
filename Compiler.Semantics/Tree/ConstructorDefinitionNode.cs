@@ -24,8 +24,6 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
         => lexicalScope.TryGetValue(out var value) ? value
             : lexicalScope.GetValue(this, LexicalScopingAspect.ConstructorDefinition_LexicalScope);
     public abstract override ConstructorSymbol Symbol { get; }
-    public ValueId? ValueId => null;
-    public FlowState FlowStateAfter => Body?.FlowStateAfter ?? SelfParameter!.FlowStateAfter;
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value

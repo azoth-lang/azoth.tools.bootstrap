@@ -27,8 +27,6 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
     public override MethodSymbol Symbol
     => symbol.TryGetValue(out var value) ? value
         : symbol.GetValue(this, SymbolAspect.MethodDeclaration);
-    public ValueId? ValueId => null;
-    public FlowState FlowStateAfter => Body?.FlowStateAfter ?? SelfParameter!.FlowStateAfter;
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value

@@ -35,8 +35,6 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
     public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
             : lexicalScope.GetValue(this, LexicalScopingAspect.AssociatedFunctionDefinition_LexicalScope);
-    public ValueId? ValueId => null;
-    public FlowState FlowStateAfter => Body.FlowStateAfter;
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value

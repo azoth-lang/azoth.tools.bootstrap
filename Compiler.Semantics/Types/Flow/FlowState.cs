@@ -87,19 +87,33 @@ public sealed class FlowState
         if (!sharingIsTracked)
             return builder.ToFlowState();
 
-        ExternalReference? externalReference = null;
-
         var capability = capabilityType.Capability;
         // These capabilities don't have to worry about external references
-        if (capability != Capability.Isolated && capability != Capability.TemporarilyIsolated
-            && capability != Capability.Constant && capability != Capability.Identity)
-            externalReference = isLent
-                ? ExternalReference.CreateLentParameter(parameter.ValueId.Value)
-                : ExternalReference.NonLentParameters;
-
-        // TODO is this correct? Went lent, doesn't each one need its own external reference?
-        var newSharingSets = bindingValuePairs.Select(p => new SharingSet(isLent, p.Key, externalReference)).ToFixedList();
-        builder.AddSets(newSharingSets);
+        var needsExternalReference = capability != Capability.Isolated
+                                     && capability != Capability.TemporarilyIsolated
+                                     && capability != Capability.Constant
+                                     && capability != Capability.Identity;
+        if (!needsExternalReference)
+        {
+            var newSharingSets = bindingValuePairs.Select(p => new SharingSet(isLent, p.Key))
+                                                  .ToFixedList();
+            builder.AddSets(newSharingSets);
+        }
+        else if (isLent)
+        {
+            // Lent parameters each have their own external reference
+            var newSharingSets = bindingValuePairs
+                .Select(p => new SharingSet(isLent, p.Key, ExternalReference.CreateLentParameter((BindingValue)p.Key)))
+                .ToFixedList();
+            builder.AddSets(newSharingSets);
+        }
+        else
+        {
+            // Non-lent parameters share the same external reference
+            var newSharingSet = new SharingSet(isLent, bindingValuePairs.Select(p => p.Key));
+            builder.AddSet(newSharingSet);
+            builder.Union([newSharingSet, builder.NonLentParametersSet()]);
+        }
 
         return builder.ToFlowState();
     }
@@ -343,6 +357,16 @@ public sealed class FlowState
 
         public SharingSet? TrySetFor(IValue value)
             => setFor.GetValueOrDefault(value);
+
+        public SharingSet NonLentParametersSet()
+        {
+            if (TrySetFor(ExternalReference.NonLentParameters) is not null and var set)
+                return set;
+
+            set = new(false, ExternalReference.NonLentParameters);
+            AddSet(set);
+            return set;
+        }
 
         public bool Contains(IValue value)
             => setFor.ContainsKey(value);

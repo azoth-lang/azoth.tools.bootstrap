@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -27,8 +28,6 @@ internal sealed class InitializerDefinitionNode : TypeMemberDefinitionNode, IIni
     public override InitializerSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAspect.InitializerDeclaration);
-    public ValueId? ValueId => null;
-    public FlowState FlowStateAfter => Body.FlowStateAfter;
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value
@@ -57,4 +56,21 @@ internal sealed class InitializerDefinitionNode : TypeMemberDefinitionNode, IIni
 
     internal override IPreviousValueId PreviousValueId(IChildNode before)
         => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
+
+    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    {
+        if (child == Body)
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
+        if (Parameters.IndexOf(child) is int index)
+        {
+            if (index == 0)
+                return SelfParameter.FlowStateAfter;
+            return Parameters[index - 1].FlowStateAfter;
+        }
+
+        if (child == SelfParameter)
+            return FlowStateBefore();
+
+        return base.InheritedFlowStateBefore(child, descendant);
+    }
 }

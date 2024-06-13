@@ -35,8 +35,6 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     public FunctionType Type
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, TypeMemberDeclarationsAspect.FunctionDeclaration_Type);
-    public ValueId? ValueId => null;
-    public FlowState FlowStateAfter => Body.FlowStateAfter;
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value
