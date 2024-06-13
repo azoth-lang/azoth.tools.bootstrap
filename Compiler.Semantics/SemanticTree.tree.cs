@@ -1282,10 +1282,12 @@ public partial interface INewObjectExpressionNode : ISemanticNode, IExpressionNo
     IdentifierName? ConstructorName { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     IEnumerable<IAmbiguousExpressionNode> IntermediateArguments { get; }
+    IEnumerable<IExpressionNode> FinalArguments { get; }
     IMaybeAntetype ConstructingAntetype { get; }
     IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { get; }
     IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; }
     IConstructorDeclarationNode? ReferencedConstructor { get; }
+    ContextualizedOverload<IConstructorDeclarationNode>? ContextualizedOverload { get; }
 }
 
 public partial interface IUnsafeExpressionNode : ISemanticNode, IExpressionNode

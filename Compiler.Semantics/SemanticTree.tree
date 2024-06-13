@@ -257,9 +257,11 @@ Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax` ValueId:`ValueId`
 AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax`
-    ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression* IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>`
+    ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression*
+    IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>` FinalArguments:`IEnumerable<IExpressionNode>`
     ConstructingAntetype:`IMaybeAntetype` ReferencedConstructors:{`IConstructorDeclarationNode`}
-    CompatibleConstructors:{`IConstructorDeclarationNode`} ReferencedConstructor:`IConstructorDeclarationNode`?;
+    CompatibleConstructors:{`IConstructorDeclarationNode`} ReferencedConstructor:`IConstructorDeclarationNode`?
+    ContextualizedOverload:`ContextualizedOverload<IConstructorDeclarationNode>`?;
 UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression FinalExpression:`IExpressionNode`;
 NeverTypedExpression <: Expression = Syntax:`INeverTypedExpressionSyntax` Type:`NeverType`;
 

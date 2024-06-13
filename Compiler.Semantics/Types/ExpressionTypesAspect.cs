@@ -178,4 +178,22 @@ public static class ExpressionTypesAspect
 
     public static DataType SelfExpression_Type(ISelfExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedParameter);
+
+    public static FlowState NewObjectExpression_FlowStateAfter(INewObjectExpressionNode node)
+    {
+        // The flow state just before the constructor is called is the state after all arguments have evaluated
+        var flowState = node.FinalArguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.FinalArguments);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId);
+    }
+
+    public static DataType NewObjectExpression_Type(INewObjectExpressionNode node)
+        // TODO does this need to be modified by flow typing?
+        => node.ContextualizedOverload?.ReturnType.Type ?? DataType.Unknown;
+
+    public static ContextualizedOverload<IConstructorDeclarationNode>? NewObjectExpression_ContextualizedOverload(
+        INewObjectExpressionNode node)
+        => node.ReferencedConstructor is not null
+            ? ContextualizedOverload.Create(node.ConstructingType.NamedType, node.ReferencedConstructor)
+            : null;
 }

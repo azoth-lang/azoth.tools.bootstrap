@@ -118,6 +118,7 @@ public partial interface IBlockExpressionNode
 public partial interface INewObjectExpressionNode
 {
     PackageNameScope InheritedPackageNameScope();
+    FlowState FlowStateBefore();
 }
 #endregion
 

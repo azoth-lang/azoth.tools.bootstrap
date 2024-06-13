@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -9,6 +10,8 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -21,6 +24,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     private readonly ChildList<IAmbiguousExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     public IEnumerable<IAmbiguousExpressionNode> IntermediateArguments => arguments.Final;
+    public IEnumerable<IExpressionNode> FinalArguments => arguments.Final.Cast<IExpressionNode>();
     private ValueAttribute<IMaybeAntetype> constructingAntetype;
     public IMaybeAntetype ConstructingAntetype
         => constructingAntetype.TryGetValue(out var value) ? value
@@ -37,10 +41,22 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     public IConstructorDeclarationNode? ReferencedConstructor
         => referencedConstructor.TryGetValue(out var value) ? value
             : referencedConstructor.GetValue(this, OverloadResolutionAspect.NewObjectExpression_ReferencedConstructor);
+    private ValueAttribute<ContextualizedOverload<IConstructorDeclarationNode>?> contextualizedOverload;
+    public ContextualizedOverload<IConstructorDeclarationNode>? ContextualizedOverload
+        => contextualizedOverload.TryGetValue(out var value) ? value
+            : contextualizedOverload.GetValue(this, ExpressionTypesAspect.NewObjectExpression_ContextualizedOverload);
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.NewObjectExpression_Antetype);
+    private ValueAttribute<FlowState> flowStateAfter;
+    public override FlowState FlowStateAfter
+        => flowStateAfter.TryGetValue(out var value) ? value
+            : flowStateAfter.GetValue(this, ExpressionTypesAspect.NewObjectExpression_FlowStateAfter);
+    private ValueAttribute<DataType> type;
+    public override DataType Type
+        => type.TryGetValue(out var value) ? value
+            : type.GetValue(this, ExpressionTypesAspect.NewObjectExpression_Type);
 
     public NewObjectExpressionNode(
         INewObjectExpressionSyntax syntax,
@@ -72,4 +88,12 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     }
 
     public new PackageNameScope InheritedPackageNameScope() => base.InheritedPackageNameScope();
+
+    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    {
+        if (child is IAmbiguousExpressionNode ambiguousExpression
+            && arguments.IndexOfCurrent(ambiguousExpression) is int index and > 0)
+            return ((IExpressionNode)arguments.FinalAt(index - 1)).FlowStateAfter;
+        return base.InheritedFlowStateBefore(child, descendant);
+    }
 }
