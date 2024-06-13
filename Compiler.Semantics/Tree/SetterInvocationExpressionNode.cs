@@ -4,6 +4,8 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -21,6 +23,14 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.SetterInvocationExpression_Antetype);
+    private ValueAttribute<ContextualizedOverload<ISetterMethodDeclarationNode>?> contextualizedOverload;
+    public ContextualizedOverload<ISetterMethodDeclarationNode>? ContextualizedOverload
+        => contextualizedOverload.TryGetValue(out var value) ? value
+            : contextualizedOverload.GetValue(this, ExpressionTypesAspect.SetterInvocationExpression_ContextualizedOverload);
+    private ValueAttribute<DataType> type;
+    public override DataType Type
+        => type.TryGetValue(out var value) ? value
+            : type.GetValue(this, ExpressionTypesAspect.SetterInvocationExpression_Type);
 
     public SetterInvocationExpressionNode(
         IAssignmentExpressionSyntax syntax,

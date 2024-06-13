@@ -1553,6 +1553,7 @@ public partial interface IGetterInvocationExpressionNode : ISemanticNode, IExpre
     StandardName PropertyName { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
+    ContextualizedOverload<IGetterMethodDeclarationNode>? ContextualizedOverload { get; }
 }
 
 public partial interface ISetterInvocationExpressionNode : ISemanticNode, IExpressionNode
@@ -1565,6 +1566,7 @@ public partial interface ISetterInvocationExpressionNode : ISemanticNode, IExpre
     IAmbiguousExpressionNode Value { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
+    ContextualizedOverload<ISetterMethodDeclarationNode>? ContextualizedOverload { get; }
 }
 
 public partial interface IFunctionReferenceInvocationNode : ISemanticNode, IExpressionNode

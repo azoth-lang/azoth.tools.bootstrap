@@ -148,19 +148,20 @@ public static class ExpressionTypesAspect
 
     private static readonly IdentifierName StringTypeName = "String";
 
-    public static DataType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
-    {
-        var selfType = node.MethodGroup.Context.Type;
-        // TODO does this need to be modified by flow typing?
-        return node.ContextualizedOverload?.ReturnType.Type.ReplaceSelfWith(selfType)
-               ?? DataType.Unknown;
-    }
-
     public static ContextualizedOverload<IStandardMethodDeclarationNode>? MethodInvocationExpression_ContextualizedOverload(
         IMethodInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
             ? ContextualizedOverload.Create(node.MethodGroup.Context.Type, node.ReferencedDeclaration)
             : null;
+
+    public static DataType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
+    {
+        var selfType = node.MethodGroup.Context.Type;
+        // TODO does this need to be modified by flow typing?
+        var unboundType = node.ContextualizedOverload?.ReturnType.Type;
+        var boundType = unboundType?.ReplaceSelfWith(selfType);
+        return boundType ?? DataType.Unknown;
+    }
 
     public static FlowState MethodInvocationExpression_FlowStateAfter(IMethodInvocationExpressionNode node)
     {
@@ -168,6 +169,32 @@ public static class ExpressionTypesAspect
         var flowState = node.FinalArguments.LastOrDefault()?.FlowStateAfter ?? node.MethodGroup.Context.FlowStateAfter;
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.MethodGroup.Context, node.FinalArguments);
         return flowState.CombineArguments(argumentValueIds, node.ValueId);
+    }
+
+    public static ContextualizedOverload<IGetterMethodDeclarationNode>? GetterInvocationExpression_ContextualizedOverload(
+        IGetterInvocationExpressionNode node)
+        => node.ReferencedDeclaration is not null
+            ? ContextualizedOverload.Create(node.Context.Type, node.ReferencedDeclaration)
+            : null;
+    public static DataType GetterInvocationExpression_Type(IGetterInvocationExpressionNode node)
+    {
+        var selfType = node.Context.Type;
+        var unboundType = node.ContextualizedOverload?.ReturnType.Type;
+        var boundType = unboundType?.ReplaceSelfWith(selfType);
+        return boundType ?? DataType.Unknown;
+    }
+
+    public static ContextualizedOverload<ISetterMethodDeclarationNode>? SetterInvocationExpression_ContextualizedOverload(ISetterInvocationExpressionNode node)
+        => node.ReferencedDeclaration is not null
+            ? ContextualizedOverload.Create(node.Context.Type, node.ReferencedDeclaration)
+            : null;
+
+    public static DataType SetterInvocationExpression_Type(ISetterInvocationExpressionNode node)
+    {
+        var selfType = node.Context.Type;
+        var unboundType = node.ContextualizedOverload?.ReturnType.Type;
+        var boundType = unboundType?.ReplaceSelfWith(selfType);
+        return boundType ?? DataType.Unknown;
     }
 
     private static IEnumerable<ArgumentValueId> ArgumentValueIds(

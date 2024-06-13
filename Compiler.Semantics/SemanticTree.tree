@@ -327,10 +327,12 @@ MethodInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     ContextualizedOverload:`ContextualizedOverload<IStandardMethodDeclarationNode>`?;
 GetterInvocationExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression PropertyName:`StandardName`
-    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`IGetterMethodDeclarationNode`?;
+    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`IGetterMethodDeclarationNode`?
+    ContextualizedOverload:`ContextualizedOverload<IGetterMethodDeclarationNode>`?;
 SetterInvocationExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
     Context:Expression PropertyName:`StandardName` Value:AmbiguousExpression
-    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`ISetterMethodDeclarationNode`?;
+    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`ISetterMethodDeclarationNode`?
+    ContextualizedOverload:`ContextualizedOverload<ISetterMethodDeclarationNode>`?;
 FunctionReferenceInvocation <: Expression = Syntax:`IInvocationExpressionSyntax`
     Expression:Expression Arguments:AmbiguousExpression*
     FunctionAntetype:`FunctionAntetype` FunctionType:`FunctionType`;

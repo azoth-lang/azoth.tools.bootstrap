@@ -73,6 +73,15 @@ public abstract class ContextualizedOverload
         return Create(contextType, method, symbol, symbol.SelfParameterType);
     }
 
+    public static ContextualizedOverload<T> Create<T>(
+        DataType contextType,
+        T propertyAccessor)
+        where T : IPropertyAccessorDeclarationNode
+    {
+        var symbol = propertyAccessor.Symbol;
+        return Create(contextType, propertyAccessor, symbol, symbol.SelfParameterType);
+    }
+
     private static ContextualizedOverload<TDeclaration> Create<TDeclaration>(
         DataType contextType,
         TDeclaration declaration,
