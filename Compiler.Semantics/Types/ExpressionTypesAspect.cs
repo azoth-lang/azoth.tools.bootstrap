@@ -66,6 +66,9 @@ public static class ExpressionTypesAspect
         return DataType.Unknown;
     }
 
+    public static FlowState IdExpression_FlowStateAfter(IIdExpressionNode node)
+        => node.FinalReferent.FlowStateAfter.Combine(node.FinalReferent.ValueId, null, node.ValueId);
+
     public static void IdExpression_ContributeDiagnostics(IIdExpressionNode node, Diagnostics diagnostics)
     {
         //if (node.Type is not UnknownType)
