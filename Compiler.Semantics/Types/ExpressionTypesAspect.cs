@@ -344,4 +344,15 @@ public static class ExpressionTypesAspect
 
     public static FlowState AwaitExpression_FlowStateAfter(IAwaitExpressionNode node)
         => node.FinalExpression.FlowStateAfter.Combine(node.FinalExpression.ValueId, null, node.ValueId);
+
+    public static DataType UnaryOperatorExpression_Type(IUnaryOperatorExpressionNode node)
+        => node.Antetype switch
+        {
+            ISimpleOrConstValueAntetype t => t.ToType(),
+            UnknownAntetype => DataType.Unknown,
+            _ => throw new InvalidOperationException($"Unexpected antetype {node.Antetype}")
+        };
+
+    public static FlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)
+        => node.FinalOperand.FlowStateAfter.Combine(node.FinalOperand.ValueId, null, node.ValueId);
 }
