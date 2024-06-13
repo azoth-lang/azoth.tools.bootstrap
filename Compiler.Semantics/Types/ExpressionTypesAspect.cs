@@ -119,7 +119,7 @@ public static class ExpressionTypesAspect
     public static DataType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
     {
         var selfType = node.MethodGroup.Context.Type;
-        // TODO can flow typing affect this?
+        // TODO does this need to be modified by flow typing?
         return node.ReferencedDeclaration?.MethodGroupType.Return.Type.ReplaceSelfWith(selfType)
                ?? DataType.Unknown;
     }
@@ -151,4 +151,28 @@ public static class ExpressionTypesAspect
                   .EquiZip(arguments)
                   .Select((p, a) => new ArgumentValueId(p.IsLent, a.ValueId));
     }
+
+    public static DataType FieldAccessExpression_Type(IFieldAccessExpressionNode node)
+    {
+        // TODO handle pseudotype of self access
+        var contextType = node.Context.Type;
+        var fieldType = node.ReferencedDeclaration.BindingType;
+        // Access must be applied first, so it can account for independent generic parameters.
+        var type = fieldType.AccessedVia(contextType);
+        // Then type parameters can be replaced now that they have the correct access
+        if (contextType is NonEmptyType nonEmptyContext)
+            // resolve generic type fields
+            type = nonEmptyContext.ReplaceTypeParametersIn(type);
+
+        return type;
+    }
+
+    public static FlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node)
+        => node.Context.FlowStateAfter.AccessMember(node.Context.ValueId, node.ValueId, node.Type);
+
+    public static FlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node)
+        => node.FlowStateBefore().Alias(node.ReferencedParameter, node.ValueId);
+
+    public static DataType SelfExpression_Type(ISelfExpressionNode node)
+        => node.FlowStateAfter.AliasType(node.ReferencedParameter);
 }

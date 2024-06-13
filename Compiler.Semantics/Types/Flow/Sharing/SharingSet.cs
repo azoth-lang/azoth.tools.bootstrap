@@ -29,8 +29,20 @@ internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<Shari
         this.values = values;
     }
 
-    public SharingSet Declare(ResultValue result)
-        => new(IsLent, values.Add(result));
+    public SharingSet Declare(ResultValue value)
+        => new(IsLent, values.Add(value));
+
+    public SharingSet Replace(IValue contextResultValue, IValue value)
+    {
+        var builder = values.ToBuilder();
+        builder.Remove(contextResultValue);
+        builder.Add(value);
+        return new(IsLent, builder.ToImmutable());
+    }
+
+    // TODO what if this eliminates the set?
+    public SharingSet Drop(IValue value)
+        => new(IsLent, values.Remove(value));
 
     public IEnumerator<IValue> GetEnumerator() => values.GetEnumerator();
 

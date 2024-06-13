@@ -6,7 +6,10 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -33,6 +36,14 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.SelfExpression_Antetype);
+    private ValueAttribute<FlowState> flowStateAfter;
+    public override FlowState FlowStateAfter
+        => flowStateAfter.TryGetValue(out var value) ? value
+            : flowStateAfter.GetValue(this, ExpressionTypesAspect.SelfExpression_FlowStateAfter);
+    private ValueAttribute<DataType> type;
+    public override DataType Type
+        => type.TryGetValue(out var value) ? value
+            : type.GetValue(this, ExpressionTypesAspect.SelfExpression_Type);
 
     public SelfExpressionNode(ISelfExpressionSyntax syntax)
     {
@@ -44,4 +55,6 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
         BindingNamesAspect.SelfExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
+
+    public FlowState FlowStateBefore() => InheritedFlowStateBefore();
 }

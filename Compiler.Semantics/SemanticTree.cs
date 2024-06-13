@@ -143,6 +143,11 @@ public partial interface IVariableNameExpressionNode
 {
     FlowState FlowStateBefore();
 }
+
+public partial interface ISelfExpressionNode
+{
+    FlowState FlowStateBefore();
+}
 #endregion
 
 #region Type Declarations

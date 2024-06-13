@@ -158,6 +158,28 @@ public sealed class FlowState
         return builder.ToFlowState();
     }
 
+    public FlowState AccessMember(ValueId contextValueId, ValueId valueId, DataType memberType)
+    {
+        var contextResultValue = ResultValue.Create(contextValueId);
+        // If accessing from non-tracked type, then it's not tracked
+        // TODO this might be bug prone if the value was accidentally not in the flow state
+        if (!setFor.TryGetValue(contextResultValue, out var set))
+            return this;
+
+        var builder = ToBuilder();
+        SharingSet newSet;
+        if (memberType.SharingIsTracked())
+        {
+            var resultValue = ResultValue.Create(valueId);
+            newSet = set.Replace(contextResultValue, resultValue);
+        }
+        else
+            newSet = set.Drop(contextResultValue);
+
+        builder.UpdateSet(set, newSet);
+        return builder.ToFlowState();
+    }
+
     private Builder ToBuilder()
         => new Builder(capabilities.ToBuilder(), sets.ToBuilder(), setFor.ToBuilder());
 
