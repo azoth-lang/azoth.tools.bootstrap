@@ -11,7 +11,8 @@ internal class SemanticTreeTypeValidator
 
     public static void Validate(ISemanticNode node)
     {
-        // Validate children first since their antetypes are generally used to compute the parent's antetype
+        // Validate children first since their antetypes are generally used to compute the parent's
+        // antetype.
         foreach (var child in node.Children())
             Validate(child);
 
@@ -39,7 +40,10 @@ internal class SemanticTreeTypeValidator
                     $"Expected antetype {expectedAntetype}, but got {antetype}");
         }
 
-        if (ValidateTypes)
+        // The handling of freeze and move expressions has changed. So skip validating their child
+        // expressions.
+        if (ValidateTypes
+            && node is not IChildNode { Parent: IFreezeExpressionNode or IMoveExpressionNode })
         {
             _ = expression.ValueId;
             var expectedType = expressionSyntax.DataType.Result;

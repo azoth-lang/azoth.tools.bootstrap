@@ -1058,14 +1058,14 @@ public class BasicBodyAnalyzer
         var type = flow.Type(symbol);
         switch (type)
         {
-            case CapabilityType referenceType:
-                if (!referenceType.AllowsFreeze)
+            case CapabilityType capabilityType:
+                if (!capabilityType.AllowsFreeze)
                     diagnostics.Add(TypeError.NotImplemented(file, exp.Span,
                         "Reference capability does not allow freezing"));
                 if (!flow.CanFreeze(symbol))
                     diagnostics.Add(FlowTypingError.CannotFreezeValue(file, exp));
 
-                type = referenceType.With(Capability.Constant);
+                type = capabilityType.With(Capability.Constant);
                 flow.Freeze(symbol);
                 break;
             case UnknownType:

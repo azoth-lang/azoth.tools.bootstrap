@@ -360,4 +360,17 @@ public static class ExpressionTypesAspect
 
     public static FlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)
         => node.FinalOperand.FlowStateAfter.Combine(node.FinalOperand.ValueId, null, node.ValueId);
+
+    public static DataType FreezeExpression_Type(IFreezeExpressionNode node)
+    {
+        if (node.FinalReferent.Type is not CapabilityType capabilityType)
+            return DataType.Unknown;
+
+        if (!capabilityType.AllowsFreeze) return capabilityType;
+
+        return capabilityType.With(Capability.Constant);
+    }
+
+    public static FlowState FreezeExpression_FlowStateAfter(IFreezeExpressionNode node)
+        => node.FinalReferent.FlowStateAfter.Freeze(node.FinalReferent.ValueId, node.ValueId);
 }

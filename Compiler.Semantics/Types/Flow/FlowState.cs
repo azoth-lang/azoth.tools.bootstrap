@@ -303,6 +303,24 @@ public sealed class FlowState
         return builder.ToFlowState();
     }
 
+    public FlowState Freeze(ValueId valueId, ValueId intoValueId)
+    {
+        var oldValue = ResultValue.Create(valueId);
+        if (TrySetFor(oldValue) is not SharingSet oldSet)
+            return this;
+
+        var builder = ToBuilder();
+        foreach (var bindingValue in oldSet.OfType<BindingValue>())
+            builder.SetFlowCapability(bindingValue, capabilities[bindingValue].AfterFreeze());
+
+        var newValue = ResultValue.Create(intoValueId);
+        // TODO is this needed? Can we just stop tracking the value? The old code has a comment about
+        // how it could reference `lent const` data but that doesn't seem right now that there is
+        // `temp const`.
+        builder.UpdateSet(oldSet, oldSet.Replace(oldValue, newValue));
+        return builder.ToFlowState();
+    }
+
     private Builder ToBuilder()
         => new Builder(capabilities.ToBuilder(), sets.ToBuilder(), setFor.ToBuilder());
 
