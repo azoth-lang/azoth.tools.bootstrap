@@ -118,6 +118,9 @@ public partial interface IBlockExpressionNode
     // TODO this ought to have been generated
     IMaybeAntetype IBlockOrResultNode.Antetype => Antetype;
     IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
+    new DataType Type { get; }
+    DataType IBlockOrResultNode.Type => Type;
+    DataType IExpressionNode.Type => Type;
     FlowState FlowStateBefore();
     new FlowState FlowStateAfter { get; }
 }

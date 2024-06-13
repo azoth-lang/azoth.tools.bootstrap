@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -324,4 +325,23 @@ public static class ExpressionTypesAspect
             convertToType = convertToType.MakeOptional();
         return convertToType;
     }
+
+    public static DataType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
+        => Intrinsic.PromiseOf(node.FinalExpression.Type);
+
+    public static FlowState AsyncStartExpression_FlowStateAfter(IAsyncStartExpressionNode node)
+        // TODO this isn't correct, async start can act like a delayed lambda
+        => node.FinalExpression.FlowStateAfter.Combine(node.FinalExpression.ValueId, null, node.ValueId);
+
+    public static DataType AwaitExpression_Type(IAwaitExpressionNode node)
+    {
+        if (node.FinalExpression.Type is CapabilityType { DeclaredType: var declaredType } type
+            && Intrinsic.PromiseType.Equals(declaredType))
+            return type.TypeArguments[0];
+
+        return DataType.Unknown;
+    }
+
+    public static FlowState AwaitExpression_FlowStateAfter(IAwaitExpressionNode node)
+        => node.FinalExpression.FlowStateAfter.Combine(node.FinalExpression.ValueId, null, node.ValueId);
 }
