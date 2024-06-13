@@ -180,6 +180,9 @@ public static class DataTypeExtensions
         // Return types need to be more general in the target than the source.
         => target.Type.IsAssignableFrom(source.Type);
 
+    /// <summary>
+    /// Replace self viewpoint types using the given type as self.
+    /// </summary>
     public static DataType ReplaceSelfWith(this DataType type, DataType selfType)
     {
         if (selfType is not CapabilityType selfReferenceType)
@@ -187,6 +190,9 @@ public static class DataTypeExtensions
         return type.ReplaceSelfWith(selfReferenceType.Capability);
     }
 
+    /// <summary>
+    /// Replace self viewpoint types using the given type as self.
+    /// </summary>
     public static DataType ReplaceSelfWith(this DataType type, Capability capability)
     {
         return type switch

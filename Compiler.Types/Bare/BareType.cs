@@ -155,8 +155,8 @@ public abstract class BareType : IEquatable<BareType>
     public sealed override string ToString()
         => throw new NotSupportedException();
 
-    public virtual string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
-    public virtual string ToILString() => ToString(t => t.ToILString());
+    public string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
+    public string ToILString() => ToString(t => t.ToILString());
 
     private string ToString(Func<DataType, string> toString)
     {

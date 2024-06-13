@@ -1104,6 +1104,7 @@ public partial interface IStatementNode : ISemanticNode, ICodeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IMaybeAntetype? ResultAntetype { get; }
+    DataType? ResultType { get; }
     FlowState FlowStateAfter { get; }
 }
 
@@ -1452,6 +1453,7 @@ public partial interface IWhileExpressionNode : ISemanticNode, IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Condition { get; }
+    IExpressionNode FinalCondition { get; }
     IBlockExpressionNode Block { get; }
 }
 
@@ -1517,8 +1519,10 @@ public partial interface IFunctionInvocationExpressionNode : ISemanticNode, IExp
     IFunctionGroupNameNode FunctionGroup { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     IEnumerable<IAmbiguousExpressionNode> IntermediateArguments { get; }
+    IEnumerable<IExpressionNode> FinalArguments { get; }
     IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations { get; }
     IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
+    ContextualizedOverload<IFunctionLikeDeclarationNode>? ContextualizedOverload { get; }
 }
 
 public partial interface IMethodInvocationExpressionNode : ISemanticNode, IExpressionNode

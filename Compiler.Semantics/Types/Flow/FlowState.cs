@@ -165,7 +165,9 @@ public sealed class FlowState
         var argumentResults = arguments.Select(a => new ArgumentResultValue(a.IsLent, a.ValueId)).ToFixedList();
 
         var builder = ToBuilder();
-        var existingSets = argumentResults.Where(a => !a.IsLent).Select(a => builder.SharingSet(a.Value)).ToList();
+        var existingSets = argumentResults.Where(a => !a.IsLent)
+                                          .Select(a => builder.TrySharingSet(a.Value))
+                                          .WhereNotNull().ToList();
         var unionIsLent = existingSets.Any(s => s.IsLent);
         var values = existingSets.SelectMany(Functions.Identity).Append(ResultValue.Create(valueId))
                                  .Except(argumentResults.Select(a => a.Value));

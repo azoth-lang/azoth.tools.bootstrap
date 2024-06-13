@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -20,6 +21,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     private readonly ChildList<IAmbiguousExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     public IEnumerable<IAmbiguousExpressionNode> IntermediateArguments => arguments.Final;
+    public IEnumerable<IExpressionNode> FinalArguments => arguments.Final.Cast<IExpressionNode>();
     private ValueAttribute<IFixedSet<IFunctionLikeDeclarationNode>> compatibleDeclarations;
     public IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations
         => compatibleDeclarations.TryGetValue(out var value) ? value
@@ -36,6 +38,14 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     public override DataType Type
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, ExpressionTypesAspect.FunctionInvocationExpression_Type);
+    private ValueAttribute<ContextualizedOverload<IFunctionLikeDeclarationNode>?> contextualizedOverload;
+    public ContextualizedOverload<IFunctionLikeDeclarationNode>? ContextualizedOverload
+        => contextualizedOverload.TryGetValue(out var value) ? value
+            : contextualizedOverload.GetValue(this, ExpressionTypesAspect.FunctionInvocationExpression_ContextualizedOverload);
+    private ValueAttribute<FlowState> flowStateAfter;
+    public override FlowState FlowStateAfter
+        => flowStateAfter.TryGetValue(out var value) ? value
+            : flowStateAfter.GetValue(this, ExpressionTypesAspect.FunctionInvocationExpression_FlowStateAfter);
 
     public FunctionInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
@@ -73,4 +83,6 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
 
         return base.InheritedFlowStateBefore(child, descendant);
     }
+
+    public FlowState FlowStateBefore() => InheritedFlowStateBefore();
 }

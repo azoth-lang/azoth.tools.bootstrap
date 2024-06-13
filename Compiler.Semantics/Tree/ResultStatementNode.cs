@@ -24,6 +24,7 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
     public DataType Type
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, ExpressionTypesAspect.ResultStatement_Type);
+    public override DataType ResultType => Type;
     public override FlowState FlowStateAfter => ((IExpressionNode)Expression).FlowStateAfter;
     public ValueId ValueId => FinalExpression.ValueId;
 

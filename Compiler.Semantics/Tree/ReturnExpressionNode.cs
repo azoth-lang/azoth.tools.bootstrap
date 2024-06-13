@@ -1,6 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -12,6 +13,7 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
     public IAmbiguousExpressionNode? Value => value.Value;
     public override IMaybeExpressionAntetype Antetype => IAntetype.Never;
     public override NeverType Type => DataType.Never;
+    public override FlowState FlowStateAfter => FlowState.Empty;
 
     public ReturnExpressionNode(IReturnExpressionSyntax syntax, IAmbiguousExpressionNode? value)
     {

@@ -41,10 +41,10 @@ internal class SemanticTreeTypeValidator
         if (ValidateTypes)
         {
             _ = expression.ValueId;
-            var expectedExpType = expressionSyntax.DataType.Result;
-            var expType = expression.Type;
-            if (expType != expectedExpType)
-                throw new InvalidOperationException($"Expected type {expectedExpType}, but got {expType}");
+            var expectedType = expressionSyntax.DataType.Result;
+            var type = expression.Type;
+            if (type != expectedType)
+                throw new InvalidOperationException($"Expected type {expectedType?.ToILString()}, but got {type.ToILString()}");
         }
     }
 }

@@ -230,7 +230,7 @@ CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSynta
 SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type NamedSelfType:`Pseudotype`?;
 
 // ---------- Statements
-Statement <: Code = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`? FlowStateAfter:`FlowState`;
+Statement <: Code = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`? ResultType:`DataType`? FlowStateAfter:`FlowState`;
 ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax` Expression:AmbiguousExpression
     FinalExpression:`IExpressionNode`;
 BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;
@@ -293,7 +293,8 @@ PatternMatchExpression <: Expression = Syntax:`IPatternMatchExpressionSyntax`
 // ---------- Control Flow Expressions
 IfExpression <: Expression, ElseClause = Syntax:`IIfExpressionSyntax` Condition:AmbiguousExpression ThenBlock:BlockOrResult ElseClause?;
 LoopExpression <: Expression = Syntax:`ILoopExpressionSyntax` Block:BlockExpression;
-WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax` Condition:AmbiguousExpression Block:BlockExpression;
+WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax`
+    Condition:AmbiguousExpression FinalCondition:`IExpressionNode` Block:BlockExpression;
 ForeachExpression <: Expression, NamedBinding = Syntax:`IForeachExpressionSyntax`
     IsMutableBinding:`bool` VariableName:`IdentifierName` InExpression:AmbiguousExpression
     FinalInExpression:`IExpressionNode` DeclaredType:Type? Block:BlockExpression
@@ -311,8 +312,10 @@ InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSynta
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode` IntermediateExpression:`IAmbiguousExpressionNode`
     Arguments:AmbiguousExpression* CurrentArguments:`IEnumerable<IAmbiguousExpressionNode>`;
 FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
-    FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression* IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>`
-    CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?;
+    FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
+    IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>` FinalArguments:`IEnumerable<IExpressionNode>`
+    CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?
+    ContextualizedOverload:`ContextualizedOverload<IFunctionLikeDeclarationNode>`?;
 MethodInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     MethodGroup:MethodGroupName Arguments:AmbiguousExpression* IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>`
     FinalArguments:`IEnumerable<IExpressionNode>`

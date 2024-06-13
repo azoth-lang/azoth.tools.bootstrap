@@ -97,6 +97,20 @@ public static class ExpressionTypesAspect
     public static DataType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
         => node.ReferencedDeclaration?.Type.Return.Type ?? DataType.Unknown;
 
+    public static ContextualizedOverload<IFunctionLikeDeclarationNode>? FunctionInvocationExpression_ContextualizedOverload(
+        IFunctionInvocationExpressionNode node)
+        => node.ReferencedDeclaration is not null
+            ? ContextualizedOverload.Create(node.ReferencedDeclaration)
+            : null;
+
+    public static FlowState FunctionInvocationExpression_FlowStateAfter(IFunctionInvocationExpressionNode node)
+    {
+        // The flow state just before the function is called is the state after all arguments have evaluated
+        var flowState = node.FinalArguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.FinalArguments);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId);
+    }
+
     public static BoolConstValueType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node)
         => node.Value ? DataType.True : DataType.False;
 
@@ -126,7 +140,7 @@ public static class ExpressionTypesAspect
     {
         var selfType = node.MethodGroup.Context.Type;
         // TODO does this need to be modified by flow typing?
-        return node.ReferencedDeclaration?.MethodGroupType.Return.Type.ReplaceSelfWith(selfType)
+        return node.ContextualizedOverload?.ReturnType.Type.ReplaceSelfWith(selfType)
                ?? DataType.Unknown;
     }
 
@@ -265,4 +279,34 @@ public static class ExpressionTypesAspect
         var flowState = node.ThenBlock.FlowStateAfter.Merge(node.ElseClause?.FlowStateAfter);
         return flowState.Combine(node.ThenBlock.ValueId, node.ElseClause?.ValueId, node.ValueId);
     }
+
+    public static DataType BlockExpression_Type(IBlockExpressionNode node)
+    {
+        // TODO what about blocks that contain a return etc. and never return?
+        foreach (var statement in node.Statements)
+            if (statement.ResultType is not null and var resultType)
+                return resultType;
+
+        // If there was no result expression, then the block type is void
+        return DataType.Void;
+    }
+
+    public static FlowState BlockExpression_FlowStateAfter(IBlockExpressionNode node)
+        => node.Statements.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+
+    public static DataType WhileExpression_Type(IWhileExpressionNode _)
+        // TODO assign correct type to the expression
+        => DataType.Void;
+
+    public static FlowState WhileExpression_FlowStateAfter(IWhileExpressionNode node)
+        // TODO loop flow state
+        => node.Block.FlowStateAfter;
+
+    public static DataType LoopExpression_Type(ILoopExpressionNode _)
+        // TODO assign correct type to the expression
+        => DataType.Void;
+
+    public static DataType ForeachExpression_Type(IForeachExpressionNode _)
+        // TODO assign correct type to the expression
+        => DataType.Void;
 }

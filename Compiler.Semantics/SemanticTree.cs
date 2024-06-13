@@ -113,6 +113,8 @@ public partial interface IBlockExpressionNode
     // TODO this ought to have been generated
     IMaybeAntetype IBlockOrResultNode.Antetype => Antetype;
     IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
+    FlowState FlowStateBefore();
+    new FlowState FlowStateAfter { get; }
 }
 
 public partial interface INewObjectExpressionNode
@@ -139,6 +141,12 @@ public partial interface IForeachExpressionNode
 }
 #endregion
 
+#region Invocation Expressions
+public partial interface IFunctionInvocationExpressionNode
+{
+    FlowState FlowStateBefore();
+}
+#endregion
 #region Ambiguous Name Expressions
 public partial interface IMemberAccessExpressionNode
 {

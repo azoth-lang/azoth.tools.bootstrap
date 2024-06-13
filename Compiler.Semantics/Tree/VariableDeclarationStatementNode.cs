@@ -1,4 +1,3 @@
-using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -45,8 +44,12 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
             : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.VariableDeclarationStatement_BindingAntetype);
-    public DataType BindingType => throw new NotImplementedException();
+    private ValueAttribute<DataType> bindingType;
+    public DataType BindingType
+        => bindingType.TryGetValue(out var value) ? value
+            : bindingType.GetValue(this, NameBindingTypesAspect.VariableDeclarationStatement_BindingType);
     public override IMaybeAntetype? ResultAntetype => null;
+    public override DataType? ResultType => null;
     public override FlowState FlowStateAfter
         => ((IExpressionNode?)Initializer)?.FlowStateAfter ?? InheritedFlowStateBefore();
 
