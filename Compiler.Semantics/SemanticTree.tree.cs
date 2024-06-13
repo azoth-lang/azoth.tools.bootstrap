@@ -1476,9 +1476,12 @@ public partial interface IForeachExpressionNode : IExpressionNode, INamedBinding
     ITypeDeclarationNode? ReferencedIterableDeclaration { get; }
     IStandardMethodDeclarationNode? ReferencedIterateMethod { get; }
     IMaybeExpressionAntetype IteratorAntetype { get; }
+    DataType IteratorType { get; }
     ITypeDeclarationNode? ReferencedIteratorDeclaration { get; }
     IStandardMethodDeclarationNode? ReferencedNextMethod { get; }
     IMaybeAntetype IteratedAntetype { get; }
+    DataType IteratedType { get; }
+    FlowState FlowStateBeforeBlock { get; }
 }
 
 public partial interface IBreakExpressionNode : INeverTypedExpressionNode

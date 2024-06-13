@@ -104,6 +104,26 @@ public sealed class FlowState
         return builder.ToFlowState();
     }
 
+    public FlowState Declare(INamedBindingNode binding)
+    {
+        // TODO other types besides CapabilityType might participate in sharing
+        if (binding.BindingType is not CapabilityType capabilityType)
+            return this;
+
+        var bindingValuePairs = BindingValue.ForType(binding.ValueId, capabilityType);
+        var builder = ToBuilder();
+        builder.AddFlowCapabilities(bindingValuePairs);
+
+        if (!binding.BindingType.SharingIsTracked())
+            return builder.ToFlowState();
+
+        var newSharingSets = bindingValuePairs.Select(p => new SharingSet(false, p.Key))
+                                              .ToFixedList();
+        builder.AddSets(newSharingSets);
+
+        return builder.ToFlowState();
+    }
+
     /// <summary>
     /// Make <paramref name="valueId"/> an alias to the <paramref name="binding"/>.
     /// </summary>

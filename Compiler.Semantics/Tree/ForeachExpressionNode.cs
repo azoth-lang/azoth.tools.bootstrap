@@ -1,4 +1,3 @@
-using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -6,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -41,6 +41,10 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public IMaybeExpressionAntetype IteratorAntetype
         => iteratorAntetype.TryGetValue(out var value) ? value
             : iteratorAntetype.GetValue(this, ForeachExpressionAntetypeAspect.ForeachExpression_IteratorAntetype);
+    private ValueAttribute<DataType> iteratorType;
+    public DataType IteratorType
+        => iteratorType.TryGetValue(out var value) ? value
+            : iteratorType.GetValue(this, ForeachExpressionTypeAspect.ForeachExpression_IteratorType);
     private ValueAttribute<ITypeDeclarationNode?> referencedIteratorDeclaration;
     public ITypeDeclarationNode? ReferencedIteratorDeclaration
         => referencedIteratorDeclaration.TryGetValue(out var value) ? value
@@ -53,11 +57,22 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public IMaybeAntetype IteratedAntetype
         => iteratedAntetype.TryGetValue(out var value) ? value
             : iteratedAntetype.GetValue(this, ForeachExpressionAntetypeAspect.ForeachExpression_IteratedAntetype);
+    private ValueAttribute<DataType> iteratedType;
+    public DataType IteratedType
+        => iteratedType.TryGetValue(out var value) ? value
+            : iteratedType.GetValue(this, ForeachExpressionTypeAspect.ForeachExpression_IteratedType);
     private ValueAttribute<IMaybeAntetype> bindingAntetype;
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
             : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.ForeachExpression_BindingAntetype);
-    public DataType BindingType => throw new NotImplementedException();
+    private ValueAttribute<DataType> bindingType;
+    public DataType BindingType
+        => bindingType.TryGetValue(out var value) ? value
+            : bindingType.GetValue(this, NameBindingTypesAspect.ForeachExpression_BindingType);
+    private ValueAttribute<FlowState> flowStateBeforeBlock;
+    public FlowState FlowStateBeforeBlock
+        => flowStateBeforeBlock.TryGetValue(out var value) ? value
+            : flowStateBeforeBlock.GetValue(this, ForeachExpressionTypeAspect.ForeachExpression_FlowStateBeforeBlock);
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
@@ -65,7 +80,11 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     private ValueAttribute<DataType> type;
     public override DataType Type
         => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, ExpressionTypesAspect.ForeachExpression_Type);
+            : type.GetValue(this, ForeachExpressionTypeAspect.ForeachExpression_Type);
+    private ValueAttribute<FlowState> flowStateAfter;
+    public override FlowState FlowStateAfter
+        => flowStateAfter.TryGetValue(out var value) ? value
+            : flowStateAfter.GetValue(this, ForeachExpressionTypeAspect.ForeachExpression_FlowStateAfter);
 
     public ForeachExpressionNode(
         IForeachExpressionSyntax syntax,
@@ -83,4 +102,11 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         => child == Block ? LexicalScope : ContainingLexicalScope;
 
     public new PackageNameScope InheritedPackageNameScope() => base.InheritedPackageNameScope();
+
+    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    {
+        if (child == Block)
+            return FlowStateBeforeBlock;
+        return base.InheritedFlowStateBefore(child, descendant);
+    }
 }

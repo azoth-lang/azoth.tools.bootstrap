@@ -301,9 +301,10 @@ ForeachExpression <: Expression, NamedBinding = Syntax:`IForeachExpressionSyntax
     FinalInExpression:`IExpressionNode` DeclaredType:Type? Block:BlockExpression
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
     ReferencedIterableDeclaration:`ITypeDeclarationNode`? ReferencedIterateMethod:`IStandardMethodDeclarationNode`?
-    IteratorAntetype:`IMaybeExpressionAntetype`
+    IteratorAntetype:`IMaybeExpressionAntetype` IteratorType:`DataType`
     ReferencedIteratorDeclaration:`ITypeDeclarationNode`? ReferencedNextMethod:`IStandardMethodDeclarationNode`?
-    IteratedAntetype:`IMaybeAntetype`;
+    IteratedAntetype:`IMaybeAntetype` IteratedType:`DataType`
+    FlowStateBeforeBlock:`FlowState`;
 BreakExpression <: NeverTypedExpression = Syntax:`IBreakExpressionSyntax` Value:AmbiguousExpression?;
 NextExpression <: NeverTypedExpression = Syntax:`INextExpressionSyntax`;
 ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax` Value:AmbiguousExpression?;

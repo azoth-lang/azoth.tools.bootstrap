@@ -77,6 +77,11 @@ public partial interface IStatementNode
     LexicalScope GetLexicalScope();
     IPreviousValueId PreviousValueId();
 }
+
+public partial interface IVariableDeclarationStatementNode
+{
+    FlowState FlowStateBefore();
+}
 #endregion
 
 #region Patterns

@@ -50,8 +50,10 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
             : bindingType.GetValue(this, NameBindingTypesAspect.VariableDeclarationStatement_BindingType);
     public override IMaybeAntetype? ResultAntetype => null;
     public override DataType? ResultType => null;
+    private ValueAttribute<FlowState> flowStateAfter;
     public override FlowState FlowStateAfter
-        => ((IExpressionNode?)Initializer)?.FlowStateAfter ?? InheritedFlowStateBefore();
+        => flowStateAfter.TryGetValue(out var value) ? value
+            : flowStateAfter.GetValue(this, NameBindingTypesAspect.VariableDeclarationStatement_FlowStateAfter);
 
     public VariableDeclarationStatementNode(
         IVariableDeclarationStatementSyntax syntax,
@@ -68,4 +70,6 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public override LexicalScope GetLexicalScope() => LexicalScope;
 
     internal override IPreviousValueId PreviousValueId(IChildNode before) => ValueId;
+
+    public FlowState FlowStateBefore() => InheritedFlowStateBefore();
 }

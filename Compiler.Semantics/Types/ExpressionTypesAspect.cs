@@ -316,8 +316,4 @@ public static class ExpressionTypesAspect
     public static DataType LoopExpression_Type(ILoopExpressionNode _)
         // TODO assign correct type to the expression
         => DataType.Void;
-
-    public static DataType ForeachExpression_Type(IForeachExpressionNode _)
-        // TODO assign correct type to the expression
-        => DataType.Void;
 }
