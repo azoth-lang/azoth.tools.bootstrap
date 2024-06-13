@@ -1564,6 +1564,7 @@ public partial interface ISetterInvocationExpressionNode : ISemanticNode, IExpre
     IExpressionNode Context { get; }
     StandardName PropertyName { get; }
     IAmbiguousExpressionNode Value { get; }
+    IExpressionNode FinalValue { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload<ISetterMethodDeclarationNode>? ContextualizedOverload { get; }

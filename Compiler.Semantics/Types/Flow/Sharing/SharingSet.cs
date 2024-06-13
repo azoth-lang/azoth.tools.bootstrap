@@ -63,11 +63,19 @@ internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<Shari
     public SharingSet Declare(ResultValue value)
         => new(IsLent, values.Add(value));
 
-    public SharingSet Replace(IValue contextResultValue, IValue value)
+    public SharingSet Replace(IValue oldValue, IValue newValue)
     {
         var builder = values.ToBuilder();
-        builder.Remove(contextResultValue);
-        builder.Add(value);
+        builder.Remove(oldValue);
+        builder.Add(newValue);
+        return new(IsLent, builder.ToImmutable());
+    }
+
+    public SharingSet Replace(IEnumerable<IValue> oldValues, IValue newValue)
+    {
+        var builder = values.ToBuilder();
+        builder.ExceptWith(oldValues);
+        builder.Add(newValue);
         return new(IsLent, builder.ToImmutable());
     }
 

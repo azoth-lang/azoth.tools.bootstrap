@@ -192,9 +192,17 @@ public static class ExpressionTypesAspect
     public static DataType SetterInvocationExpression_Type(ISetterInvocationExpressionNode node)
     {
         var selfType = node.Context.Type;
-        var unboundType = node.ContextualizedOverload?.ReturnType.Type;
+        var unboundType = node.ContextualizedOverload?.ParameterTypes[0].Type;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
         return boundType ?? DataType.Unknown;
+    }
+
+    public static FlowState SetterInvocationExpression_FlowStateAfter(ISetterInvocationExpressionNode node)
+    {
+        // The flow state just before the setter is called is the state after the argument has been evaluated
+        var flowState = node.FinalValue.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Context, [node.FinalValue]);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId);
     }
 
     private static IEnumerable<ArgumentValueId> ArgumentValueIds(
@@ -423,4 +431,18 @@ public static class ExpressionTypesAspect
 
     public static DataType FunctionName_Type(IFunctionNameNode node)
         => node.ReferencedDeclaration?.Type ?? DataType.Unknown;
+
+    public static DataType MoveExpression_Type(IMoveExpressionNode node)
+    {
+        if (node.FinalReferent.Type is not CapabilityType capabilityType)
+            return DataType.Unknown;
+
+        if (!capabilityType.AllowsMove)
+            return capabilityType;
+
+        return capabilityType.IsTemporarilyIsolatedReference ? capabilityType : capabilityType.With(Capability.Isolated);
+    }
+
+    public static FlowState MoveExpression_FlowStateAfter(IMoveExpressionNode node)
+        => node.FinalReferent.FlowStateAfter.Move(node.FinalReferent.ValueId, node.ValueId);
 }

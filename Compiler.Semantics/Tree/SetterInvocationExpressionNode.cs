@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -17,6 +18,7 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     public StandardName PropertyName { get; }
     private Child<IAmbiguousExpressionNode> value;
     public IAmbiguousExpressionNode Value => value.Value;
+    public IExpressionNode FinalValue => (IExpressionNode)value.FinalValue;
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     public ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
@@ -31,6 +33,10 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     public override DataType Type
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, ExpressionTypesAspect.SetterInvocationExpression_Type);
+    private ValueAttribute<FlowState> flowStateAfter;
+    public override FlowState FlowStateAfter
+        => flowStateAfter.TryGetValue(out var value) ? value
+            : flowStateAfter.GetValue(this, ExpressionTypesAspect.SetterInvocationExpression_FlowStateAfter);
 
     public SetterInvocationExpressionNode(
         IAssignmentExpressionSyntax syntax,

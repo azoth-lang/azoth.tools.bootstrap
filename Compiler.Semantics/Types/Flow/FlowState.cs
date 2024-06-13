@@ -321,6 +321,23 @@ public sealed class FlowState
         return builder.ToFlowState();
     }
 
+    public FlowState Move(ValueId valueId, ValueId intoValueId)
+    {
+        var oldValue = ResultValue.Create(valueId);
+        if (TrySetFor(oldValue) is not SharingSet oldSet)
+            return this;
+
+        var builder = ToBuilder();
+        foreach (var bindingValue in oldSet.OfType<BindingValue>())
+            builder.SetFlowCapability(bindingValue, capabilities[bindingValue].AfterMove());
+
+        var newValue = ResultValue.Create(intoValueId);
+        // Old binding values are now `id` and no longer need tracked
+        var removeValues = oldSet.OfType<BindingValue>().Append<IValue>(oldValue);
+        builder.UpdateSet(oldSet, oldSet.Replace(removeValues, newValue));
+        return builder.ToFlowState();
+    }
+
     private Builder ToBuilder()
         => new Builder(capabilities.ToBuilder(), sets.ToBuilder(), setFor.ToBuilder());
 
