@@ -316,4 +316,12 @@ public static class ExpressionTypesAspect
     public static DataType LoopExpression_Type(ILoopExpressionNode _)
         // TODO assign correct type to the expression
         => DataType.Void;
+
+    public static DataType ConversionExpression_Type(IConversionExpressionNode node)
+    {
+        var convertToType = node.ConvertToType.NamedType;
+        if (node.Operator == ConversionOperator.Optional)
+            convertToType = convertToType.MakeOptional();
+        return convertToType;
+    }
 }

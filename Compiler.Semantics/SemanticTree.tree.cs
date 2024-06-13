@@ -1414,6 +1414,7 @@ public partial interface IConversionExpressionNode : ISemanticNode, IExpressionN
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Referent { get; }
+    IExpressionNode FinalReferent { get; }
     ConversionOperator Operator { get; }
     ITypeNode ConvertToType { get; }
 }
