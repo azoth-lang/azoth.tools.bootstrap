@@ -318,6 +318,11 @@ public static class ExpressionTypesAspect
         // TODO assign correct type to the expression
         => DataType.Void;
 
+    public static FlowState LoopExpression_FlowStateAfter(ILoopExpressionNode node)
+        // Body is always executes at least once
+        // TODO loop flow state
+        => node.Block.FlowStateAfter;
+
     public static DataType ConversionExpression_Type(IConversionExpressionNode node)
     {
         var convertToType = node.ConvertToType.NamedType;
