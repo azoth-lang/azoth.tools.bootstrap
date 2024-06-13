@@ -1,5 +1,6 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
@@ -42,9 +43,14 @@ internal class SemanticTreeTypeValidator
         {
             _ = expression.ValueId;
             var expectedType = expressionSyntax.DataType.Result;
-            var type = expression.Type;
-            if (type != expectedType)
-                throw new InvalidOperationException($"Expected type {expectedType?.ToILString()}, but got {type.ToILString()}");
+            // Sometimes the new analysis can come up with types when the old one couldn't. So
+            // if the expected type is UnknownType, we don't care what the actual type is.
+            if (expectedType is not UnknownType)
+            {
+                var type = expression.Type;
+                if (type != expectedType)
+                    throw new InvalidOperationException($"Expected type `{expectedType?.ToILString()}`, but got `{type.ToILString()}`");
+            }
         }
     }
 }
