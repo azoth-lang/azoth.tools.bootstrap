@@ -114,6 +114,12 @@ public static class ExpressionTypesAspect
         return flowState.CombineArguments(argumentValueIds, node.ValueId);
     }
 
+    public static FunctionType FunctionReferenceInvocation_FunctionType(IFunctionReferenceInvocationNode node)
+        => (FunctionType)node.Expression.Type;
+
+    public static DataType FunctionReferenceInvocation_Type(IFunctionReferenceInvocationNode node)
+        => node.FunctionType.Return.Type;
+
     public static BoolConstValueType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node)
         => node.Value ? DataType.True : DataType.False;
 
@@ -373,4 +379,7 @@ public static class ExpressionTypesAspect
 
     public static FlowState FreezeExpression_FlowStateAfter(IFreezeExpressionNode node)
         => node.FinalReferent.FlowStateAfter.Freeze(node.FinalReferent.ValueId, node.ValueId);
+
+    public static DataType FunctionName_Type(IFunctionNameNode node)
+        => node.ReferencedDeclaration?.Type ?? DataType.Unknown;
 }

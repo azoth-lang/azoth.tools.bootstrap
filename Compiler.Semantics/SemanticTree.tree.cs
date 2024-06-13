@@ -1573,8 +1573,9 @@ public partial interface IFunctionReferenceInvocationNode : ISemanticNode, IExpr
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IExpressionNode Expression { get; }
-    FunctionAntetype FunctionAntetype { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    FunctionAntetype FunctionAntetype { get; }
+    FunctionType FunctionType { get; }
 }
 
 public partial interface IInitializerInvocationExpressionNode : ISemanticNode, IExpressionNode
