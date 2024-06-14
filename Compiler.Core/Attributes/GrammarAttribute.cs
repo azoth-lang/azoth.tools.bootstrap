@@ -1,0 +1,243 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using Azoth.Tools.Bootstrap.Framework;
+
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+
+/// <summary>
+/// Functions for working with a cached attribute in and attribute grammar.
+/// </summary>
+public static class GrammarAttribute
+{
+    /// <remarks><see cref="ThreadStaticAttribute"/> does not support static initializers. The
+    /// initializer will be run once and other threads will see the default value. Instead,
+    /// <see cref="LazyInitializer"/> is used to ensure it is initialized.</remarks>
+    [ThreadStatic]
+    private static AttributeGrammarThreadState? _threadStateStorage;
+
+    /// <summary>
+    /// Get the thread state for the current thread.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static AttributeGrammarThreadState ThreadState()
+        // Do not need to use LazyInitializer here because this is thread static
+        => _threadStateStorage ??= new();
+
+    /// <summary>
+    /// A flag value used to indicate that a circular attribute has not been set initialized.
+    /// </summary>
+    public static readonly object Unset = new();
+
+    /// <summary>
+    /// Safely check whether the attribute has been cached. If it has been, then it is safe to
+    /// simply read the attribute value from the backing field.
+    /// </summary>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsCached(in bool cached) => Volatile.Read(in cached);
+
+    #region GetValue overloads
+    /// <summary>
+    /// Read the value of a non-circular attribute that is <see cref="IEquatable{T}"/>.
+    /// </summary>
+    [DebuggerStepThrough]
+    public static T GetValue<TNode, T>(
+        ref bool cached,
+        TNode node,
+        Func<TNode, T> compute,
+        ref T value,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class
+        where T : class?, IEquatable<T>?
+        => GetValue(ref cached, node, compute, StrictEqualityComparer<T>.Instance, ref value, attributeName);
+
+    /// <summary>
+    /// Read the value of a non-circular attribute.
+    /// </summary>
+    private static T GetValue<TNode, T>(
+        ref bool cached,
+        TNode node,
+        Func<TNode, T> compute,
+        IEqualityComparer<T> comparer,
+        ref T value,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class
+        where T : class?
+    {
+        if (string.IsNullOrEmpty(attributeName))
+            throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
+
+        var threadState = ThreadState();
+        var attributeId = new AttributeId(node, attributeName);
+        if (threadState.InCircle)
+        {
+            if (threadState.ObservedInCycle(attributeId))
+                return value;
+
+            // Do not set the iteration until the value is computed and set so that a value from
+            // this cycle is used. Note: non-circular attributes don't have valid initial values.
+            var previous = value;
+            var next = compute(node); // may throw
+            if (!comparer.Equals(next, previous)) // may throw
+            {
+                var original = Interlocked.CompareExchange(ref value!, next, previous);
+                if (!ReferenceEquals(original, previous))
+                    next = Unsafe.As<T>(original);
+                else
+                    // Value updated for this cycle, so update the iteration
+                    threadState.UpdateIterationFor(attributeId);
+                previous = next;
+            }
+            else
+            {
+                // previous == next, so use old value to avoid duplicate objects referenced. Value
+                // is correct for this cycle, so update the iteration.
+                threadState.UpdateIterationFor(attributeId);
+            }
+
+            return previous!;
+        }
+
+#if DEBUG
+        using var _ = threadState.BeginComputing(attributeId);
+#endif
+        value = compute(node); // may throw
+        Volatile.Write(ref cached, true);
+        return value;
+    }
+    #endregion
+
+    #region GetCircularValue overloads
+    /// <summary>
+    /// Read the value of a circular attribute that already has an initial value and is
+    /// <see cref="IEquatable{T}"/>.
+    /// </summary>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T GetCircularValue<TNode, T>(
+        in bool cached,
+        TNode node,
+        Func<TNode, T> compute,
+        ref object? value,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class
+        where T : class?, IEquatable<T>?
+        => GetCircularValue(cached, node, compute, null!, StrictEqualityComparer<T>.Instance, ref value, attributeName);
+
+    /// <summary>
+    /// Read the value of a circular attribute that already has an initial value.
+    /// </summary>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T GetCircularValue<TNode, T>(
+        in bool cached,
+        TNode node,
+        Func<TNode, T> compute,
+        IEqualityComparer<T> comparer,
+        ref object? value,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class
+        where T : class?, IEquatable<T>?
+        => GetCircularValue(cached, node, compute, null!, comparer, ref value, attributeName);
+
+    /// <summary>
+    /// Read the value of a circular attribute that is <see cref="IEquatable{T}"/>.
+    /// </summary>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T GetCircularValue<TNode, T>(
+        in bool cached,
+        TNode node,
+        Func<TNode, T> compute,
+        Func<T> initializer,
+        ref object? value,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class
+        where T : class?, IEquatable<T>?
+        => GetCircularValue(cached, node, compute, initializer, StrictEqualityComparer<T>.Instance,
+            ref value, attributeName);
+
+    /// <summary>
+    /// Read the value of a circular attribute.
+    /// </summary>
+    [DebuggerStepThrough]
+    public static T GetCircularValue<TNode, T>(
+        bool cached,
+        TNode node,
+        Func<TNode, T> compute,
+        Func<T> initializer,
+        IEqualityComparer<T> comparer,
+        ref object? value,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class
+        where T : class?, IEquatable<T>?
+    {
+        if (string.IsNullOrEmpty(attributeName))
+            throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
+
+        // Since we must read `value`, go ahead and check the `cached` again in case it was set to true
+        if (Volatile.Read(in cached))
+            return Unsafe.As<T>(value)!;
+
+        var initial = value;
+        if (ReferenceEquals(value, Unset))
+        {
+            if (initializer is null)
+                throw new InvalidOperationException("Attribute not initialized and no initializer provided");
+            initial = initializer(); // may throw
+            var original = Interlocked.CompareExchange(ref value, initial, Unset);
+            if (original != Unset)
+                initial = original;
+        }
+
+        var previous = Unsafe.As<T>(initial);
+        var threadState = ThreadState();
+        var attributeId = new AttributeId(node, attributeName);
+        if (!threadState.InCircle)
+        {
+            // Using ensures circle is exited when done, making this exception safe.
+            using var _ = threadState.EnterCircle();
+            do
+            {
+                threadState.NextIteration();
+                // Set to current iteration before computing so a cycle will use the previous value
+                threadState.UpdateIterationFor(attributeId);
+                var next = compute(node); // may throw
+                if (comparer.Equals(previous, next)) // may throw
+                    // previous == next, so use old value to avoid duplicate objects referenced
+                    continue;
+
+                threadState.MarkChanged();
+                var original = Interlocked.CompareExchange(ref value, next, previous);
+                if (!ReferenceEquals(original, previous))
+                    next = Unsafe.As<T>(original);
+                previous = next;
+            } while (threadState.Changed);
+            Volatile.Write(ref cached, true);
+            return previous!;
+        }
+
+        if (!threadState.ObservedInCycle(attributeId))
+        {
+            // Set to current iteration before computing so a cycle will use the previous value
+            threadState.UpdateIterationFor(attributeId);
+            var next = compute(node); // may throw
+            if (comparer.Equals(previous, next)) // may throw
+                // previous == next, so use old value to avoid duplicate objects referenced
+                return previous!;
+
+            threadState.MarkChanged();
+            var original = Interlocked.CompareExchange(ref value, next, previous);
+            if (!ReferenceEquals(original, previous))
+                next = Unsafe.As<T>(original);
+            previous = next;
+        }
+        // else Reuse previous approximation
+
+        return previous!;
+    }
+    #endregion
+}
