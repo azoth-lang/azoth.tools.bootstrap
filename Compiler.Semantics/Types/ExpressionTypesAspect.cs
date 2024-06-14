@@ -14,6 +14,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -227,8 +228,8 @@ public static class ExpressionTypesAspect
 
     public static DataType FieldAccessExpression_Type(IFieldAccessExpressionNode node)
     {
-        // TODO handle pseudotype of self access
-        var contextType = node.Context.Type;
+        var contextType = node.Context is ISelfExpressionNode selfNode
+            ? selfNode.Pseudotype : node.Context.Type;
         var fieldType = node.ReferencedDeclaration.BindingType;
         // Access must be applied first, so it can account for independent generic parameters.
         var type = fieldType.AccessedVia(contextType);
@@ -248,6 +249,8 @@ public static class ExpressionTypesAspect
 
     public static DataType SelfExpression_Type(ISelfExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedParameter);
+    public static Pseudotype SelfExpression_Pseudotype(ISelfExpressionNode node)
+        => node.ReferencedSymbol?.Type ?? DataType.Unknown;
 
     public static FlowState NewObjectExpression_FlowStateAfter(INewObjectExpressionNode node)
     {

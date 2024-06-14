@@ -1,4 +1,3 @@
-using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -18,7 +17,6 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
 {
     public override ISelfExpressionSyntax Syntax { get; }
     public bool IsImplicit => Syntax.IsImplicit;
-    public Pseudotype Pseudotype => throw new NotImplementedException();
     private ValueAttribute<IExecutableDefinitionNode> containingDeclaration;
     public IExecutableDefinitionNode ContainingDeclaration
         => containingDeclaration.TryGetValue(out var value) ? value
@@ -44,6 +42,10 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
     public override DataType Type
         => type.TryGetValue(out var value) ? value
             : type.GetValue(this, ExpressionTypesAspect.SelfExpression_Type);
+    private ValueAttribute<Pseudotype> pseudotype;
+    public Pseudotype Pseudotype
+        => pseudotype.TryGetValue(out var value) ? value
+            : pseudotype.GetValue(this, ExpressionTypesAspect.SelfExpression_Pseudotype);
 
     public SelfExpressionNode(ISelfExpressionSyntax syntax)
     {
