@@ -243,7 +243,7 @@ VariableDeclarationStatement <: BodyStatement, NamedBinding = Syntax:`IVariableD
 ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax` Expression:AmbiguousExpression;
 
 // ---------- Patterns
-Pattern <: Code = Syntax:`IPatternSyntax`;
+Pattern <: Code = Syntax:`IPatternSyntax` FlowStateAfter:`FlowState`;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
 BindingPattern <: OptionalOrBindingPattern, NamedBinding = Syntax:`IBindingPatternSyntax`

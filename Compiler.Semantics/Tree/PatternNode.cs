@@ -2,23 +2,25 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class PatternNode : CodeNode, IPatternNode
 {
+
     public abstract override IPatternSyntax Syntax { get; }
-    public FlowState FlowStateAfter => throw new System.NotImplementedException();
+
+    public abstract FlowState FlowStateAfter { get; }
 
     private protected PatternNode() { }
 
-    public virtual LexicalScope GetContainingLexicalScope() => InheritedContainingLexicalScope();
-
     public abstract ConditionalLexicalScope GetFlowLexicalScope();
-
-    public FlowState FlowStateBefore() => throw new System.NotImplementedException();
 
     public new IPreviousValueId PreviousValueId() => base.PreviousValueId();
 
     public new IMaybeAntetype InheritedBindingAntetype() => base.InheritedBindingAntetype();
+
+    public new DataType InheritedBindingType() => base.InheritedBindingType();
+
 }

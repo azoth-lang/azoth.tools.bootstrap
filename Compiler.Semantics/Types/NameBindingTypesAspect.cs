@@ -40,4 +40,24 @@ internal static class NameBindingTypesAspect
 
     public static DataType ForeachExpression_BindingType(IForeachExpressionNode node)
         => node.DeclaredType?.NamedType ?? node.IteratedType;
+
+    public static DataType BindingPattern_BindingType(IBindingPatternNode node)
+        => node.InheritedBindingType();
+
+    public static FlowState BindingPattern_FlowStateAfter(IBindingPatternNode node)
+        => node.FlowStateBefore().Declare(node);
+
+    public static DataType PatternMatchExpression_InheritedBindingType_Pattern(IPatternMatchExpressionNode node)
+        => node.FinalReferent.Type.ToNonConstValueType();
+
+    public static DataType OptionalPattern_InheritedBindingType_Pattern(IOptionalPatternNode node)
+    {
+        var inheritedBindingType = node.InheritedBindingType();
+        if (inheritedBindingType is OptionalType optionalType)
+            return optionalType.Referent;
+        return inheritedBindingType;
+    }
+
+    public static DataType BindingContextPattern_InheritedBindingType_Pattern(IBindingContextPatternNode node)
+        => node.Type?.NamedType ?? node.InheritedBindingType();
 }

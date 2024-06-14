@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
@@ -130,6 +131,12 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected IMaybeAntetype InheritedBindingAntetype()
         => Parent.InheritedBindingAntetype(this, this);
+
+    internal override DataType InheritedBindingType(IChildNode child, IChildNode descendant)
+        => Parent.InheritedBindingType(this, descendant);
+
+    protected DataType InheritedBindingType()
+        => Parent.InheritedBindingType(this, this);
 
     internal override IPreviousValueId PreviousValueId(IChildNode before)
         => Previous().PreviousValueId(before);

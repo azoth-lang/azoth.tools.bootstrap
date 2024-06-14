@@ -87,10 +87,15 @@ public partial interface IVariableDeclarationStatementNode
 #region Patterns
 public partial interface IPatternNode
 {
-    LexicalScope GetContainingLexicalScope();
     ConditionalLexicalScope GetFlowLexicalScope();
     IPreviousValueId PreviousValueId();
     IMaybeAntetype InheritedBindingAntetype();
+    DataType InheritedBindingType();
+}
+
+public partial interface IBindingPatternNode
+{
+    FlowState FlowStateBefore();
 }
 #endregion
 

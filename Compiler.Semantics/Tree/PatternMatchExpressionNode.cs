@@ -3,6 +3,9 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -14,6 +17,8 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     public IExpressionNode FinalReferent => (IExpressionNode)referent.FinalValue;
     public IPatternNode Pattern { get; }
     public override IMaybeExpressionAntetype Antetype => IAntetype.Bool;
+    public override DataType Type => DataType.Bool;
+    public override FlowState FlowStateAfter => Pattern.FlowStateAfter;
 
     public PatternMatchExpressionNode(
         IPatternMatchExpressionSyntax syntax,
@@ -39,5 +44,19 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
         if (descendant == Pattern)
             return NameBindingAntetypesAspect.PatternMatchExpression_InheritedBindingAntetype_Pattern(this);
         return base.InheritedBindingAntetype(child, descendant);
+    }
+
+    internal override DataType InheritedBindingType(IChildNode child, IChildNode descendant)
+    {
+        if (descendant == Pattern)
+            return NameBindingTypesAspect.PatternMatchExpression_InheritedBindingType_Pattern(this);
+        return base.InheritedBindingType(child, descendant);
+    }
+
+    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    {
+        if (child == Pattern)
+            return FinalReferent.FlowStateAfter;
+        return base.InheritedFlowStateBefore(child, descendant);
     }
 }

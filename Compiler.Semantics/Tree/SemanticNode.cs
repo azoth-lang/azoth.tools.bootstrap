@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
@@ -64,10 +65,16 @@ internal abstract class SemanticNode : ISemanticNode
             Child.InheritFailedMessage(nameof(InheritedFacet), child, descendant));
 
     internal virtual FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
-        => throw new NotImplementedException(Child.InheritFailedMessage(nameof(InheritedFlowStateBefore), child, descendant));
+        => throw new NotImplementedException(
+            Child.InheritFailedMessage(nameof(InheritedFlowStateBefore), child, descendant));
 
     internal virtual IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
-        => throw new NotImplementedException(Child.InheritFailedMessage(nameof(InheritedBindingAntetype), child, descendant));
+        => throw new NotImplementedException(
+            Child.InheritFailedMessage(nameof(InheritedBindingAntetype), child, descendant));
+
+    internal virtual DataType InheritedBindingType(IChildNode child, IChildNode descendant)
+        => throw new NotImplementedException(
+            Child.InheritFailedMessage(nameof(InheritedBindingType), child, descendant));
 
     internal virtual IPreviousValueId PreviousValueId(IChildNode before)
         => throw Child.PreviousFailed(nameof(PreviousValueId), before);

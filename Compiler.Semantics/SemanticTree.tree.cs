@@ -1161,6 +1161,7 @@ public partial interface IPatternNode : ISemanticNode, ICodeNode
     new IPatternSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
+    FlowState FlowStateAfter { get; }
 }
 
 public partial interface IBindingContextPatternNode : IPatternNode

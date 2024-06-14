@@ -1,4 +1,3 @@
-using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -29,14 +28,19 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
             : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.BindingPattern_BindingAntetype);
-    public DataType BindingType => throw new NotImplementedException();
+    private ValueAttribute<DataType> bindingType;
+    public DataType BindingType
+        => bindingType.TryGetValue(out var value) ? value
+            : bindingType.GetValue(this, NameBindingTypesAspect.BindingPattern_BindingType);
+    private ValueAttribute<FlowState> flowStateAfter;
+    public override FlowState FlowStateAfter
+        => flowStateAfter.TryGetValue(out var value) ? value
+            : flowStateAfter.GetValue(this, NameBindingTypesAspect.BindingPattern_FlowStateAfter);
 
     public BindingPatternNode(IBindingPatternSyntax syntax)
     {
         Syntax = syntax;
     }
-
-    public override LexicalScope GetContainingLexicalScope() => ContainingLexicalScope;
 
     public override ConditionalLexicalScope GetFlowLexicalScope()
     {
@@ -46,4 +50,6 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     }
 
     internal override IPreviousValueId PreviousValueId(IChildNode before) => ValueId;
+
+    public FlowState FlowStateBefore() => InheritedFlowStateBefore();
 }
