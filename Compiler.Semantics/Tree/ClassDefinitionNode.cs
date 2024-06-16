@@ -15,10 +15,12 @@ internal sealed class ClassDefinitionNode : TypeDefinitionNode, IClassDefinition
     public bool IsAbstract => Syntax.AbstractModifier is not null;
     public IStandardTypeNameNode? BaseTypeName { get; }
 
-    private ValueAttribute<ObjectType> declaredType;
+    private ObjectType? declaredType;
+    private bool declaredTypeCached;
     public override ObjectType DeclaredType
-        => declaredType.TryGetValue(out var value) ? value
-            : declaredType.GetValue(this, TypeDeclarationsAspect.ClassDefinition_DeclaredType);
+        => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
+            : GrammarAttribute.Synthetic(ref declaredTypeCached, this,
+                TypeDeclarationsAspect.ClassDefinition_DeclaredType, ref declaredType);
 
     public IFixedList<IClassMemberDefinitionNode> SourceMembers { get; }
     private ValueAttribute<IFixedSet<IClassMemberDefinitionNode>> members;

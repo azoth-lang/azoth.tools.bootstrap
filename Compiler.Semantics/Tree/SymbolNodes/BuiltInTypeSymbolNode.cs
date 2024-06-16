@@ -17,7 +17,6 @@ internal abstract class BuiltInTypeSymbolNode : ChildSymbolNode, ITypeDeclaratio
     public abstract override TypeSymbol Symbol { get; }
     public IFixedSet<BareReferenceType> Supertypes
         => Symbol.GetDeclaredType()?.Supertypes ?? FixedSet.Empty<BareReferenceType>();
-    public bool SupertypesFormCycle => false;
     private ValueAttribute<IFixedSet<ITypeMemberDeclarationNode>> members;
     public IFixedSet<ITypeMemberDeclarationNode> Members
         => members.TryGetValue(out var value) ? value : members.GetValue(GetMembers);

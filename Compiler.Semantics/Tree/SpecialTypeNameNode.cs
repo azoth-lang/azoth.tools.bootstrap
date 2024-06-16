@@ -14,18 +14,22 @@ internal sealed class SpecialTypeNameNode : TypeNameNode, ISpecialTypeNameNode
 {
     public override ISpecialTypeNameSyntax Syntax { get; }
     public override SpecialTypeName Name => Syntax.Name;
-    private ValueAttribute<TypeSymbol> referencedSymbol;
+    private TypeSymbol? referencedSymbol;
+    private bool referencedSymbolCached;
     public override TypeSymbol ReferencedSymbol
-        => referencedSymbol.TryGetValue(out var value) ? value
-            : referencedSymbol.GetValue(this, SymbolAspect.SpecialTypeName_ReferencedSymbol);
+        => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol!
+            : GrammarAttribute.Synthetic(ref referencedSymbolCached, this,
+                SymbolAspect.SpecialTypeName_ReferencedSymbol, ref referencedSymbol);
     private ValueAttribute<IMaybeAntetype> antetype;
     public override IMaybeAntetype NamedAntetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, TypeExpressionsAntetypesAspect.SpecialTypeName_NamedAntetype);
-    private ValueAttribute<BareType?> bareType;
+    private BareType? namedBareType;
+    private bool namedBareTypeCached;
     public override BareType? NamedBareType
-    => bareType.TryGetValue(out var value) ? value
-        : bareType.GetValue(this, BareTypeAspect.SpecialTypeName_NamedBareType);
+        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType!
+            : GrammarAttribute.Synthetic(ref namedBareTypeCached, this,
+                BareTypeAspect.SpecialTypeName_NamedBareType, ref namedBareType);
 
     public SpecialTypeNameNode(ISpecialTypeNameSyntax syntax)
     {

@@ -15,10 +15,10 @@ internal static class SymbolAspect
 {
     public static PackageSymbol Package(IPackageNode node) => new(node.Name);
 
-    public static UserTypeSymbol TypeDeclaration(ITypeDefinitionNode node)
+    public static UserTypeSymbol TypeDeclaration_Symbol(ITypeDefinitionNode node)
         => new(node.ContainingSymbol, node.DeclaredType);
 
-    public static GenericParameterTypeSymbol GenericParameter(IGenericParameterNode node)
+    public static GenericParameterTypeSymbol GenericParameter_Symbol(IGenericParameterNode node)
         => new(node.ContainingSymbol, node.DeclaredType);
 
     public static TypeSymbol? StandardTypeName(IStandardTypeNameNode node)

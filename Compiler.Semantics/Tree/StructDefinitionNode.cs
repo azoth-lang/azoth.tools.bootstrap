@@ -11,10 +11,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class StructDefinitionNode : TypeDefinitionNode, IStructDefinitionNode
 {
     public override IStructDefinitionSyntax Syntax { get; }
-    private ValueAttribute<StructType> declaredType;
+    private StructType? declaredType;
+    private bool declaredTypeCached;
     public override StructType DeclaredType
-        => declaredType.TryGetValue(out var value) ? value
-            : declaredType.GetValue(this, TypeDeclarationsAspect.StructDefinition_DeclaredType);
+        => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
+            : GrammarAttribute.Synthetic(ref declaredTypeCached, this,
+                TypeDeclarationsAspect.StructDefinition_DeclaredType, ref declaredType);
     public override IFixedSet<IStructMemberDefinitionNode> Members { get; }
     private ValueAttribute<IFixedSet<IStructMemberDeclarationNode>> inclusiveMembers;
     public override IFixedSet<IStructMemberDeclarationNode> InclusiveMembers

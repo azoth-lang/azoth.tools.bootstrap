@@ -19,8 +19,10 @@ internal abstract class TypeNameNode : TypeNode, ITypeNameNode
             : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
     public abstract BareType? NamedBareType { get; }
     public abstract TypeSymbol? ReferencedSymbol { get; }
-    private ValueAttribute<DataType> type;
+    private DataType? namedType;
+    private bool namedTypeCached;
     public sealed override DataType NamedType
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.TypeName_NamedType);
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : GrammarAttribute.Synthetic(ref namedTypeCached, this,
+                TypeExpressionsAspect.TypeName_NamedType, ref namedType);
 }

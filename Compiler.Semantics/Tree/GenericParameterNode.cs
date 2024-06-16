@@ -20,7 +20,6 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     public ICapabilityConstraintNode Constraint { get; }
     public IdentifierName Name => Syntax.Name;
     public IFixedSet<BareReferenceType> Supertypes => FixedSet.Empty<BareReferenceType>();
-    public bool SupertypesFormCycle => false;
     private ValueAttribute<IPackageFacetDeclarationNode> facet;
     public IPackageFacetDeclarationNode Facet
         => facet.TryGetValue(out var value) ? value
@@ -47,10 +46,12 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)InheritedContainingDeclaration();
     public UserTypeSymbol ContainingSymbol => ContainingDeclaration.Symbol;
-    private ValueAttribute<GenericParameterTypeSymbol> symbol;
+    private GenericParameterTypeSymbol? symbol;
+    private bool symbolCached;
     public GenericParameterTypeSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAspect.GenericParameter);
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : GrammarAttribute.Synthetic(ref symbolCached, this,
+                SymbolAspect.GenericParameter_Symbol, ref symbol);
     public IFixedSet<ITypeMemberDefinitionNode> Members
         => FixedSet.Empty<ITypeMemberDefinitionNode>();
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;

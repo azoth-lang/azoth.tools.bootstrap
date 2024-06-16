@@ -14,7 +14,6 @@ internal sealed class GenericParameterSymbolNode : PackageFacetChildSymbolNode, 
     TypeName INamedDeclarationNode.Name => Name;
     public IFixedSet<BareReferenceType> Supertypes
         => Symbol.GetDeclaredType()?.Supertypes ?? FixedSet.Empty<BareReferenceType>();
-    public bool SupertypesFormCycle => false;
     public IFixedSet<ITypeMemberDeclarationNode> Members
         => FixedSet.Empty<ITypeMemberDeclarationNode>();
     public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers

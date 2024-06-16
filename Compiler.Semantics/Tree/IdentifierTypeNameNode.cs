@@ -29,11 +29,12 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
     public override IMaybeAntetype NamedAntetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, TypeExpressionsAntetypesAspect.IdentifierTypeName_NamedAntetype);
-    private ValueAttribute<BareType?> bareType;
+    private BareType? namedBareType;
+    private bool namedBareTypeCached;
     public override BareType? NamedBareType
-        => bareType.TryGetValue(out var value) ? value
-            : bareType.GetValue(this, BareTypeAspect.IdentifierTypeName_NamedBareType);
-
+        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType!
+            : GrammarAttribute.Synthetic(ref namedBareTypeCached, this,
+                BareTypeAspect.IdentifierTypeName_NamedBareType, ref namedBareType);
     public IdentifierTypeNameNode(IIdentifierTypeNameSyntax syntax)
     {
         Syntax = syntax;

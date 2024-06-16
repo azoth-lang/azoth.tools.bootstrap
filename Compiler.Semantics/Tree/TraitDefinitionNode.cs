@@ -11,11 +11,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class TraitDefinitionNode : TypeDefinitionNode, ITraitDefinitionNode
 {
     public override ITraitDefinitionSyntax Syntax { get; }
-    private ValueAttribute<ObjectType> declaredType;
+    private ObjectType? declaredType;
+    private bool declaredTypeCached;
     public override ObjectType DeclaredType
-        => declaredType.TryGetValue(out var value) ? value
-            : declaredType.GetValue(this, TypeDeclarationsAspect.TraitDefinition_DeclaredType);
-
+        => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
+            : GrammarAttribute.Synthetic(ref declaredTypeCached, this,
+                TypeDeclarationsAspect.TraitDefinition_DeclaredType, ref declaredType);
     public override IFixedSet<ITraitMemberDefinitionNode> Members { get; }
     private ValueAttribute<IFixedSet<ITraitMemberDeclarationNode>> inclusiveMembers;
     public override IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers

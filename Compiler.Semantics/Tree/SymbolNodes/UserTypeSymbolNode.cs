@@ -21,7 +21,6 @@ internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserT
     public override UserTypeSymbol Symbol { get; }
     public IFixedSet<BareReferenceType> Supertypes
         => Symbol.GetDeclaredType().Supertypes;
-    public bool SupertypesFormCycle => false;
     public abstract IFixedSet<ITypeMemberDeclarationNode> Members { get; }
     private MultiMapHashSet<StandardName, IInstanceMemberDeclarationNode>? instanceMembersByName;
     private MultiMapHashSet<StandardName, IAssociatedMemberDeclarationNode>? associatedMembersByName;

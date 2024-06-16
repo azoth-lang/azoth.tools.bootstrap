@@ -21,10 +21,12 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     public bool IsConst => Syntax.IsConst;
     public override StandardName Name => Syntax.Name;
     public abstract IDeclaredUserType DeclaredType { get; }
-    private ValueAttribute<UserTypeSymbol> symbol;
+    private UserTypeSymbol? symbol;
+    private bool symbolCached;
     public override UserTypeSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAspect.TypeDeclaration);
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : GrammarAttribute.Synthetic(ref symbolCached, this,
+                SymbolAspect.TypeDeclaration_Symbol, ref symbol);
     public IFixedList<IGenericParameterNode> GenericParameters { get; }
     private ValueAttribute<LexicalScope> supertypesLexicalScope;
     public LexicalScope SupertypesLexicalScope

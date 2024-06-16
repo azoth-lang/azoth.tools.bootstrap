@@ -31,10 +31,12 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
     public override IMaybeAntetype NamedAntetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, TypeExpressionsAntetypesAspect.GenericTypeName_NamedAntetype);
-    private ValueAttribute<BareType?> bareType;
+    private BareType? namedBareType;
+    private bool namedBareTypeCached;
     public override BareType? NamedBareType
-        => bareType.TryGetValue(out var value) ? value
-            : bareType.GetValue(this, BareTypeAspect.GenericTypeName_NamedBareType);
+        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType!
+            : GrammarAttribute.Synthetic(ref namedBareTypeCached, this,
+                BareTypeAspect.GenericTypeName_NamedBareType, ref namedBareType);
 
     public GenericTypeNameNode(IGenericTypeNameSyntax syntax, IEnumerable<ITypeNode> typeArguments)
     {
