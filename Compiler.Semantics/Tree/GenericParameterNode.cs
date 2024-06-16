@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -18,6 +19,8 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     public override IGenericParameterSyntax Syntax { get; }
     public ICapabilityConstraintNode Constraint { get; }
     public IdentifierName Name => Syntax.Name;
+    public IFixedSet<BareReferenceType> Supertypes => FixedSet.Empty<BareReferenceType>();
+    public bool SupertypesFormCycle => false;
     private ValueAttribute<IPackageFacetDeclarationNode> facet;
     public IPackageFacetDeclarationNode Facet
         => facet.TryGetValue(out var value) ? value

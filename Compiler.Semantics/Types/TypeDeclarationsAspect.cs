@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -82,7 +81,7 @@ internal static class TypeDeclarationsAspect
 
     private static Lazy<IFixedSet<BareReferenceType>> LazySupertypes(ITypeDefinitionNode node)
         // Use PublicationOnly so that initialization cycles are detected and thrown by the attributes
-        => new(() => node.SupertypesLegacy.Value, LazyThreadSafetyMode.PublicationOnly);
+        => new(() => node.Supertypes, LazyThreadSafetyMode.PublicationOnly);
 
     public static GenericParameter GenericParameter_Parameter(IGenericParameterNode node)
         => new GenericParameter(node.Constraint.Constraint, node.Name, node.Independence, node.Variance);
@@ -90,11 +89,11 @@ internal static class TypeDeclarationsAspect
     public static GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
         => node.ContainingDeclaredType.GenericParameterTypes.Single(t => t.Parameter == node.Parameter);
 
-    public static CompilerResult<IFixedSet<BareReferenceType>> TypeDeclaration_SupertypesLegacy(ITypeDefinitionNode node)
+    public static IFixedSet<BareReferenceType> TypeDefinition_Supertypes(ITypeDefinitionNode node)
     {
-        // Avoid creating the diagnostic list unless needed since typically there are no diagnostics
-        List<Diagnostic>? diagnostics = null;
-        return new(Build().ToFixedSet(), diagnostics?.ToFixedSet() ?? FixedSet.Empty<Diagnostic>());
+        var declaredType = node.DeclaredType;
+        // Exclude any cycles that exist in the supertypes by excluding this type
+        return Build().Where(t => !t.DeclaredType.Equals(declaredType)).ToFixedSet();
 
         IEnumerable<BareReferenceType> Build()
         {
@@ -109,35 +108,29 @@ internal static class TypeDeclarationsAspect
                     // A diagnostic will be generated elsewhere for this case
                     continue;
 
-                IFixedSet<BareReferenceType> inheritedTypes;
-                try
-                {
-                    inheritedTypes = bareSupertype.Supertypes;
-                }
-                catch (AttributeCycleException)
-                {
-                    AddDiagnostic(OtherSemanticError.CircularDefinitionInSupertype(node.File, supertypeName.Syntax));
-                    continue;
-                }
-
-                // Note: `yield return` must be done outside of the try block (C# language rule)
-                foreach (var inheritedType in inheritedTypes)
-                    yield return inheritedType;
+                // First, include the direct supertype
                 yield return bareSupertype;
-            }
-        }
 
-        void AddDiagnostic(Diagnostic diagnostic)
-        {
-            diagnostics ??= new List<Diagnostic>();
-            diagnostics.Add(diagnostic);
+                var referencedDeclaration = supertypeName.ReferencedDeclaration;
+                if (referencedDeclaration is null)
+                    // A diagnostic will be generated elsewhere for this case
+                    continue;
+
+                // Recurse directly on the supertypes property rather than using the supertypes of
+                // the bare type. That way the circular attribute can handle cycles.
+                foreach (var supertype in referencedDeclaration.Supertypes)
+                {
+                    // Since this is our supertype's supertype, we need to replace any type
+                    // parameters with those given to the supertype.
+                    yield return bareSupertype.ReplaceTypeParametersIn(supertype);
+                }
+            }
         }
     }
 
     public static void TypeDeclaration_ContributeDiagnostics(ITypeDefinitionNode node, Diagnostics diagnostics)
     {
-        // Record diagnostics created while computing supertypes
-        diagnostics.Add(node.SupertypesLegacy.Diagnostics);
+        CheckSupertypesForCycle(node, diagnostics);
 
         CheckTypeArgumentsAreConstructable(node, diagnostics);
 
@@ -148,6 +141,17 @@ internal static class TypeDeclarationsAspect
         CheckAllSupertypesAreOutputSafe(node, diagnostics);
         CheckSupertypesMaintainIndependence(node, diagnostics);
     }
+
+    private static void CheckSupertypesForCycle(ITypeDefinitionNode node, Diagnostics diagnostics)
+    {
+        var declaredType = node.DeclaredType;
+        foreach (var supertypeName in node.AllSupertypeNames)
+            if (supertypeName.InheritsFrom(declaredType))
+                diagnostics.Add(OtherSemanticError.CircularDefinitionInSupertype(node.File, supertypeName.Syntax));
+    }
+
+    private static bool InheritsFrom(this IStandardTypeNameNode node, IDeclaredUserType type)
+        => node.ReferencedDeclaration?.Supertypes.Any(t => t.DeclaredType.Equals(type)) ?? false;
 
     private static void CheckTypeArgumentsAreConstructable(ITypeDefinitionNode node, Diagnostics diagnostics)
     {

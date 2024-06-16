@@ -44,7 +44,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool ObservedInCycle(AttributeId attribute)
-        => attributeIterations.TryGetValue(attribute, out var i) && i != iteration;
+        => attributeIterations.TryGetValue(attribute, out var i) && i == iteration;
 
     public readonly struct CircleScope(AttributeGrammarThreadState state) : IDisposable
     {

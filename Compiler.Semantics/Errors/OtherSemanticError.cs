@@ -122,4 +122,10 @@ public static class OtherSemanticError
         return new(file, supertypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6019, $"Circular definition found when trying to evaluate supertype `{supertypeName}`.");
     }
+
+    public static Diagnostic CircularDefinitionOfSupertypes(CodeFile file, ITypeDefinitionSyntax typeDefinition)
+    {
+        return new(file, typeDefinition.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 6019,
+            $"Circular definition found in the supertypes of `{typeDefinition.Name}`.");
+    }
 }

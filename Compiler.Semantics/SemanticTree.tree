@@ -103,7 +103,7 @@ TypeDefinition <: PackageMemberDefinition, AssociatedMemberDefinition, UserTypeD
     = Syntax:`ITypeDefinitionSyntax` IsConst:`bool` Name:`StandardName`
     DeclaredType:`IDeclaredUserType` Symbol:`UserTypeSymbol`
     GenericParameters:GenericParameter* SupertypesLexicalScope:`LexicalScope`
-    SupertypeNames:StandardTypeName* SupertypesLegacy:`CompilerResult<IFixedSet<BareReferenceType>>`
+    SupertypeNames:StandardTypeName* Supertypes:{`BareReferenceType`}
     Members:{TypeMemberDefinition};
 ClassDefinition <: TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSyntax`
     Attributes:Attribute* IsAbstract:`bool` GenericParameters:GenericParameter*
@@ -497,7 +497,8 @@ AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionLikeDeclar
 
 // ---------- Can be Referenced by Type Name
 TypeDeclaration <: NamedDeclaration, SymbolDeclaration
-    = Symbol:`TypeSymbol` Members:{TypeMemberDeclaration} InclusiveMembers:{`ITypeMemberDeclarationNode`};
+    = Symbol:`TypeSymbol` Supertypes:{`BareReferenceType`}
+    Members:{TypeMemberDeclaration} InclusiveMembers:{`ITypeMemberDeclarationNode`};
 
 // -------------------------------------------------------------------------------------------------
 // Symbol Nodes

@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Framework;
 using DotNet.Collections.Generic;
 
@@ -18,6 +19,9 @@ internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserT
             : genericParameters.GetValue(GetGenericParameters);
 
     public override UserTypeSymbol Symbol { get; }
+    public IFixedSet<BareReferenceType> Supertypes
+        => Symbol.GetDeclaredType().Supertypes;
+    public bool SupertypesFormCycle => false;
     public abstract IFixedSet<ITypeMemberDeclarationNode> Members { get; }
     private MultiMapHashSet<StandardName, IInstanceMemberDeclarationNode>? instanceMembersByName;
     private MultiMapHashSet<StandardName, IAssociatedMemberDeclarationNode>? associatedMembersByName;

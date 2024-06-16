@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Framework;
 using DotNet.Collections.Generic;
 
@@ -14,6 +15,9 @@ internal abstract class BuiltInTypeSymbolNode : ChildSymbolNode, ITypeDeclaratio
     public abstract SpecialTypeName Name { get; }
     TypeName INamedDeclarationNode.Name => Name;
     public abstract override TypeSymbol Symbol { get; }
+    public IFixedSet<BareReferenceType> Supertypes
+        => Symbol.GetDeclaredType()?.Supertypes ?? FixedSet.Empty<BareReferenceType>();
+    public bool SupertypesFormCycle => false;
     private ValueAttribute<IFixedSet<ITypeMemberDeclarationNode>> members;
     public IFixedSet<ITypeMemberDeclarationNode> Members
         => members.TryGetValue(out var value) ? value : members.GetValue(GetMembers);

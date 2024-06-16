@@ -29,7 +29,7 @@ public static class GrammarAttribute
     /// <summary>
     /// A flag value used to indicate that a circular attribute has not been set initialized.
     /// </summary>
-    public static readonly object Unset = new();
+    public static readonly object Unset = UnsetAttribute.Instance;
 
     /// <summary>
     /// Safely check whether the attribute has been cached. If it has been, then it is safe to
@@ -207,6 +207,21 @@ public static class GrammarAttribute
     }
     #endregion
 
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool TryReadCircular<T>(in bool cached, in object? storage, out T value)
+        where T : class?
+    {
+        if (Volatile.Read(in cached))
+        {
+            value = Unsafe.As<T>(storage!);
+            return true;
+        }
+
+        value = null!;
+        return false;
+    }
+
     #region Circular overloads
     /// <summary>
     /// Read the value of a circular attribute that already has an initial value and is
@@ -215,30 +230,30 @@ public static class GrammarAttribute
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Circular<TNode, T>(
-        in bool cached,
+        ref bool cached,
         TNode node,
         Func<TNode, T> compute,
         ref object? value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?
-        => Circular(cached, node, compute, null!, StrictEqualityComparer<T>.Instance, ref value, attributeName);
+        => Circular(ref cached, node, compute, null!, StrictEqualityComparer<T>.Instance, ref value, attributeName);
 
     /// <summary>
     /// Read the value of a circular attribute that already has an initial value.
     /// </summary>
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Circular<TNode, T>(
-        in bool cached,
+    public static T Circular<TNode, T, TCompare>(
+        ref bool cached,
         TNode node,
         Func<TNode, T> compute,
-        IEqualityComparer<T> comparer,
+        IEqualityComparer<TCompare> comparer,
         ref object? value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
-        where T : class?
-        => Circular(cached, node, compute, null!, comparer, ref value, attributeName);
+        where T : class?, TCompare
+        => Circular(ref cached, node, compute, null!, comparer, ref value, attributeName);
 
     /// <summary>
     /// Read the value of a circular attribute that is <see cref="IEquatable{T}"/>.
@@ -246,30 +261,30 @@ public static class GrammarAttribute
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Circular<TNode, T>(
-        in bool cached,
+        ref bool cached,
         TNode node,
         Func<TNode, T> compute,
-        Func<T> initializer,
+        Func<TNode, T> initializer,
         ref object? value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?
-        => Circular(cached, node, compute, initializer, StrictEqualityComparer<T>.Instance, ref value, attributeName);
+        => Circular(ref cached, node, compute, initializer, StrictEqualityComparer<T>.Instance, ref value, attributeName);
 
     /// <summary>
     /// Read the value of a circular attribute.
     /// </summary>
     [DebuggerStepThrough]
-    public static T Circular<TNode, T>(
-        bool cached,
+    public static T Circular<TNode, T, TCompare>(
+        ref bool cached,
         TNode node,
         Func<TNode, T> compute,
-        Func<T> initializer,
-        IEqualityComparer<T> comparer,
+        Func<TNode, T> initializer,
+        IEqualityComparer<TCompare> comparer,
         ref object? value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
-        where T : class?
+        where T : class?, TCompare
     {
         if (string.IsNullOrEmpty(attributeName))
             throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
@@ -283,7 +298,7 @@ public static class GrammarAttribute
         {
             if (initializer is null)
                 throw new InvalidOperationException("Attribute not initialized and no initializer provided");
-            initial = initializer(); // may throw
+            initial = initializer(node); // may throw
             var original = Interlocked.CompareExchange(ref value, initial, Unset);
             if (original != Unset)
                 initial = original;

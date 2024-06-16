@@ -421,7 +421,6 @@ public partial interface ITypeDefinitionNode : ISemanticNode, IPackageMemberDefi
     IFixedList<IGenericParameterDeclarationNode> IUserTypeDeclarationNode.GenericParameters => GenericParameters;
     LexicalScope SupertypesLexicalScope { get; }
     IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
-    CompilerResult<IFixedSet<BareReferenceType>> SupertypesLegacy { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
 }
 
@@ -2339,6 +2338,7 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
 {
     new TypeSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    IFixedSet<BareReferenceType> Supertypes { get; }
     IFixedSet<ITypeMemberDeclarationNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
 }

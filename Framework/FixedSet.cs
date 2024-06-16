@@ -33,6 +33,10 @@ public static class FixedSet
     public static bool Contains<T>(this IFixedSet<T> set, T value)
         => ((Of)set).Contains(value);
 
+    public static IEqualityComparer<IFixedSet<T>> ItemComparer<T>()
+        where T : IEquatable<T>
+        => ItemEqualityComparer<T>.Instance;
+
     private abstract class Of
     {
         public abstract bool Contains(object? item);
@@ -43,7 +47,7 @@ public static class FixedSet
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     private sealed class Of<T> : Of, IFixedSet<T>
     {
-        public static readonly Of<T> Empty = new Of<T>(Enumerable.Empty<T>());
+        public static readonly Of<T> Empty = new Of<T>([]);
 
         private readonly IReadOnlySet<T> items;
 
@@ -95,5 +99,12 @@ public static class FixedSet
         public bool Overlaps(IEnumerable<T> other) => items.Overlaps(other);
 
         public bool SetEquals(IEnumerable<T> other) => items.SetEquals(other);
+    }
+
+    private static class ItemEqualityComparer<T>
+        where T : IEquatable<T>
+    {
+        public static readonly IEqualityComparer<IFixedSet<T>> Instance
+            = EqualityComparer<IFixedSet<T>>.Create((l, r) => ReferenceEquals(l, r) || (l?.ItemsEqual(r) ?? false));
     }
 }

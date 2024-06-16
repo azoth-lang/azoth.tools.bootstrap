@@ -31,10 +31,14 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         => supertypesLexicalScope.TryGetValue(out var value) ? value
             : supertypesLexicalScope.GetValue(this, LexicalScopingAspect.TypeDefinition_SupertypesLexicalScope);
     public IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
-    private ValueAttribute<CompilerResult<IFixedSet<BareReferenceType>>> supertypesLegacy;
-    public CompilerResult<IFixedSet<BareReferenceType>> SupertypesLegacy
-        => supertypesLegacy.TryGetValue(out var value) ? value
-            : supertypesLegacy.GetValue(this, TypeDeclarationsAspect.TypeDeclaration_SupertypesLegacy);
+    private object? supertypes = FixedSet.Empty<BareReferenceType>();
+    private bool supertypesCached;
+    public IFixedSet<BareReferenceType> Supertypes
+        => GrammarAttribute.TryReadCircular<IFixedSet<BareReferenceType>>(in supertypesCached, in supertypes, out var value)
+            ? value
+            : GrammarAttribute.Circular(ref supertypesCached, this,
+                TypeDeclarationsAspect.TypeDefinition_Supertypes,
+                FixedSet.ItemComparer<BareType>(), ref supertypes);
     public abstract IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     private MultiMapHashSet<StandardName, IAssociatedMemberDeclarationNode>? associatedMembersByName;
