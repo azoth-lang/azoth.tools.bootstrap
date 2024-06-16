@@ -15,7 +15,7 @@ internal class SemanticTreeValidator
         if (node is ITypeDefinitionNode typeDecl)
         {
             _ = typeDecl.DeclaredType;
-            _ = typeDecl.Supertypes;
+            _ = typeDecl.SupertypesLegacy;
         }
         if (node is ITypeNameNode typeName)
         {

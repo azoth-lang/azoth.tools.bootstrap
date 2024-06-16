@@ -82,7 +82,7 @@ internal static class TypeDeclarationsAspect
 
     private static Lazy<IFixedSet<BareReferenceType>> LazySupertypes(ITypeDefinitionNode node)
         // Use PublicationOnly so that initialization cycles are detected and thrown by the attributes
-        => new(() => node.Supertypes.Value, LazyThreadSafetyMode.PublicationOnly);
+        => new(() => node.SupertypesLegacy.Value, LazyThreadSafetyMode.PublicationOnly);
 
     public static GenericParameter GenericParameter_Parameter(IGenericParameterNode node)
         => new GenericParameter(node.Constraint.Constraint, node.Name, node.Independence, node.Variance);
@@ -90,7 +90,7 @@ internal static class TypeDeclarationsAspect
     public static GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
         => node.ContainingDeclaredType.GenericParameterTypes.Single(t => t.Parameter == node.Parameter);
 
-    public static CompilerResult<IFixedSet<BareReferenceType>> TypeDeclaration_Supertypes(ITypeDefinitionNode node)
+    public static CompilerResult<IFixedSet<BareReferenceType>> TypeDeclaration_SupertypesLegacy(ITypeDefinitionNode node)
     {
         // Avoid creating the diagnostic list unless needed since typically there are no diagnostics
         List<Diagnostic>? diagnostics = null;
@@ -137,7 +137,7 @@ internal static class TypeDeclarationsAspect
     public static void TypeDeclaration_ContributeDiagnostics(ITypeDefinitionNode node, Diagnostics diagnostics)
     {
         // Record diagnostics created while computing supertypes
-        diagnostics.Add(node.Supertypes.Diagnostics);
+        diagnostics.Add(node.SupertypesLegacy.Diagnostics);
 
         CheckTypeArgumentsAreConstructable(node, diagnostics);
 

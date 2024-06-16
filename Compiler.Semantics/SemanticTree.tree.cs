@@ -421,7 +421,7 @@ public partial interface ITypeDefinitionNode : ISemanticNode, IPackageMemberDefi
     IFixedList<IGenericParameterDeclarationNode> IUserTypeDeclarationNode.GenericParameters => GenericParameters;
     LexicalScope SupertypesLexicalScope { get; }
     IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
-    CompilerResult<IFixedSet<BareReferenceType>> Supertypes { get; }
+    CompilerResult<IFixedSet<BareReferenceType>> SupertypesLegacy { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
 }
 

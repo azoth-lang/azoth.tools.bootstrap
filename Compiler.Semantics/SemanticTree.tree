@@ -103,7 +103,7 @@ TypeDefinition <: PackageMemberDefinition, AssociatedMemberDefinition, UserTypeD
     = Syntax:`ITypeDefinitionSyntax` IsConst:`bool` Name:`StandardName`
     DeclaredType:`IDeclaredUserType` Symbol:`UserTypeSymbol`
     GenericParameters:GenericParameter* SupertypesLexicalScope:`LexicalScope`
-    SupertypeNames:StandardTypeName* Supertypes:`CompilerResult<IFixedSet<BareReferenceType>>`
+    SupertypeNames:StandardTypeName* SupertypesLegacy:`CompilerResult<IFixedSet<BareReferenceType>>`
     Members:{TypeMemberDefinition};
 ClassDefinition <: TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSyntax`
     Attributes:Attribute* IsAbstract:`bool` GenericParameters:GenericParameter*
