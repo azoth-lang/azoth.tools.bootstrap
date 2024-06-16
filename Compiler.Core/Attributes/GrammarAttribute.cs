@@ -39,6 +39,10 @@ public static class GrammarAttribute
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsCached(in bool cached) => Volatile.Read(in cached);
 
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsFinal(IChild? child) => child?.IsFinal ?? true;
+
     #region Synthetic overloads
     /// <summary>
     /// Read the value of a non-circular synthetic attribute that is <see cref="IEquatable{T}"/>.
@@ -330,6 +334,73 @@ public static class GrammarAttribute
         // else Reuse previous approximation
 
         return previous!;
+    }
+    #endregion
+
+    #region Child
+    /// <summary>
+    /// Read the value of a circular attribute.
+    /// </summary>
+    [DebuggerStepThrough]
+    public static TChild Child<TNode, TChild, TParent>(
+        TNode node,
+        ref TChild child,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class, TParent
+        where TChild : class?, IChild<TParent>?
+    {
+        if (string.IsNullOrEmpty(attributeName))
+            throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
+
+        var previous = child;
+
+        if (previous is null || previous.IsFinal)
+            return previous!;
+
+        var threadState = ThreadState();
+        var attributeId = new AttributeId(node, attributeName);
+        if (!threadState.InCircle)
+        {
+            // Using ensures circle is exited when done, making this exception safe.
+            using var _ = threadState.EnterCircle();
+            do
+            {
+                threadState.NextIteration();
+                // Set to current iteration before computing so a cycle will use the previous value
+                threadState.UpdateIterationFor(attributeId);
+                var next = (TChild?)previous.Rewrite(); // may throw
+                if (next is null)
+                    // No rewrite
+                    continue;
+
+                threadState.MarkChanged();
+                var original = Interlocked.CompareExchange(ref child, next, previous);
+                if (!ReferenceEquals(original, previous))
+                    next = original!; // original should never be null because you can't rewrite to null
+                previous = next;
+            } while (threadState.Changed);
+            previous.MarkFinal();
+            return previous;
+        }
+
+        if (!threadState.ObservedInCycle(attributeId))
+        {
+            // Set to current iteration before computing so a cycle will use the previous value
+            threadState.UpdateIterationFor(attributeId);
+            var next = (TChild?)previous.Rewrite(); // may throw
+            if (next is null)
+                // No rewrite
+                return previous;
+
+            threadState.MarkChanged();
+            var original = Interlocked.CompareExchange(ref child, next, previous);
+            if (!ReferenceEquals(original, previous))
+                next = original!; // original should never be null because you can't rewrite to null
+            previous = next;
+        }
+        // else Reuse previous approximation
+
+        return previous;
     }
     #endregion
 }

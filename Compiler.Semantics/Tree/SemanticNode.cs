@@ -15,6 +15,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class SemanticNode : ISemanticNode
 {
+    /// <summary>
+    /// Whether this node is final and will not be rewritten further.
+    /// </summary>
+    /// <remarks>Non-child nodes are inherently final</remarks>
+    public virtual bool IsFinal => true;
+
     public abstract ISyntax? Syntax { get; }
 
     internal SemanticNode LastDescendant()

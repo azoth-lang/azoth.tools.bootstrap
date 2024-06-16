@@ -19,6 +19,12 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected virtual bool MayHaveRewrite => false;
     bool IChild.MayHaveRewrite => MayHaveRewrite;
 
+    private bool isFinal;
+
+    /// <remarks>Child nodes start final if <see cref="MayHaveRewrite"/> is false and their parent
+    /// is final. Otherwise, they start non-final and must be marked final via the rewrite system.</remarks>
+    public override bool IsFinal => Volatile.Read(in isFinal);
+
     private SemanticNode? parent;
 
     protected SemanticNode Parent
@@ -30,8 +36,10 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected SemanticNode GetParent(IInheritanceContext ctx)
     {
-        // TODO condition this call on the node being non-final
-        ctx.MarkNonFinal();
+        // If this node isn't final, then the parent could be changed by a rewrite. In which case,
+        // attributes depending on the parent must not be cached.
+        if (!IsFinal)
+            ctx.MarkNonFinal();
         // Use volatile read to ensure order of operations as seen by other threads
         return Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
     }
@@ -40,19 +48,27 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     public IPackageDeclarationNode Package => Parent.InheritedPackage(this, this);
 
-    private protected ChildNode() { }
+    private protected ChildNode()
+    {
+    }
 
     void IChild<ISemanticNode>.SetParent(ISemanticNode newParent)
     {
         if (newParent is not SemanticNode newParentNode)
             throw new ArgumentException($"Parent must be a {nameof(SemanticNode)}.", nameof(newParent));
+
         // Use volatile write to ensure order of operations as seen by other threads
         Volatile.Write(ref parent, newParentNode);
+
+        if (newParentNode.IsFinal && !MayHaveRewrite)
+            Volatile.Write(ref isFinal, true);
     }
 
     protected virtual IChildNode? Rewrite() => throw Child.RewriteNotSupported(this);
 
     IChild? IChild.Rewrite() => Child.AttachRewritten(Parent, Rewrite());
+
+    void IChild.MarkFinal() => Volatile.Write(ref isFinal, true);
 
     /// <summary>
     /// The previous node to this one in a preorder traversal of the tree.
