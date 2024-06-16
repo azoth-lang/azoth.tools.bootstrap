@@ -4,14 +4,15 @@ using System.Runtime.CompilerServices;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
-internal sealed class AttributeGrammarThreadState
+internal sealed class AttributeGrammarThreadState : IInheritanceContext
 {
     public bool InCircle { get; private set; }
     public bool Changed { get; private set; }
     private ulong iteration;
     private readonly Dictionary<AttributeId, ulong> attributeIterations = new();
+    private bool isFinal;
 
-
+    #region Circular Attributes
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public CircleScope EnterCircle()
     {
@@ -50,7 +51,45 @@ internal sealed class AttributeGrammarThreadState
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose() => state.ExitCircle();
     }
+    #endregion
 
+    #region "Final" for Cache Control of Non-Circular Attributes
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void MarkNonFinal() => isFinal = false;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public NonCircularScope NonCircularContext()
+    {
+        var scope = new NonCircularScope(this, isFinal);
+        isFinal = true;
+        return scope;
+    }
+
+    public readonly struct NonCircularScope : IDisposable
+    {
+        private readonly bool wasFinal;
+        private readonly AttributeGrammarThreadState state;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public NonCircularScope(AttributeGrammarThreadState state, bool wasFinal)
+        {
+            this.state = state;
+            this.wasFinal = wasFinal;
+            state.isFinal = true;
+        }
+
+        public bool IsFinal
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => state.isFinal;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Dispose() => state.isFinal &= wasFinal;
+    }
+    #endregion
+
+    #region Cycle Detection for Non-Circular Attributes
 #if DEBUG
     private readonly HashSet<AttributeId> inProgressAttributes = new();
 
@@ -73,4 +112,5 @@ internal sealed class AttributeGrammarThreadState
         public void Dispose() => state.EndComputing(attribute);
     }
 #endif
+    #endregion
 }

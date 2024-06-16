@@ -17,10 +17,12 @@ internal sealed class AbstractMethodDefinitionNode : MethodDefinitionNode, IAbst
     public int Arity => Parameters.Count;
     public FunctionType MethodGroupType => Symbol.MethodGroupType;
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    private ValueAttribute<ObjectType> containingDeclaredType;
+    private ObjectType? containingDeclaredType;
+    private bool containingDeclaredTypeCached;
     public ObjectType ContainingDeclaredType
-        => containingDeclaredType.TryGetValue(out var value) ? value
-            : containingDeclaredType.GetValue(InheritedContainingDeclaredType);
+        => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
+            : GrammarAttribute.Inherited(ref containingDeclaredTypeCached, this,
+                InheritedContainingDeclaredType, ref containingDeclaredType);
 
     public AbstractMethodDefinitionNode(
         IAbstractMethodDefinitionSyntax syntax,
@@ -32,8 +34,10 @@ internal sealed class AbstractMethodDefinitionNode : MethodDefinitionNode, IAbst
         Syntax = syntax;
     }
 
-    protected override ObjectType InheritedContainingDeclaredType()
-        => (ObjectType)base.InheritedContainingDeclaredType();
+    /// <remarks>Overridden to more specific return type so it can be used as a method group in the
+    /// <see cref="ContainingDeclaredType"/> property.</remarks>
+    protected override ObjectType InheritedContainingDeclaredType(IInheritanceContext ctx)
+        => (ObjectType)base.InheritedContainingDeclaredType(ctx);
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {

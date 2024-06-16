@@ -40,7 +40,7 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedContainingLexicalScope), child, descendant));
 
-    internal virtual IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant)
+    internal virtual IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedContainingDeclaredType), child, descendant));
 

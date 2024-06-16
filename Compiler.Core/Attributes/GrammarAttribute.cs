@@ -39,30 +39,30 @@ public static class GrammarAttribute
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsCached(in bool cached) => Volatile.Read(in cached);
 
-    #region GetValue overloads
+    #region Synthetic overloads
     /// <summary>
-    /// Read the value of a non-circular attribute that is <see cref="IEquatable{T}"/>.
+    /// Read the value of a non-circular synthetic attribute that is <see cref="IEquatable{T}"/>.
     /// </summary>
     [DebuggerStepThrough]
-    public static T GetValue<TNode, T>(
+    public static T Synthetic<TNode, T>(
         ref bool cached,
         TNode node,
         Func<TNode, T> compute,
-        ref T value,
+        ref T? value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
-        where T : class?, IEquatable<T>?
-        => GetValue(ref cached, node, compute, StrictEqualityComparer<T>.Instance, ref value, attributeName);
+        where T : class?
+        => Synthetic(ref cached, node, compute, StrictEqualityComparer<T>.Instance, ref value, attributeName);
 
     /// <summary>
-    /// Read the value of a non-circular attribute.
+    /// Read the value of a non-circular synthetic attribute.
     /// </summary>
-    private static T GetValue<TNode, T>(
+    public static T Synthetic<TNode, T>(
         ref bool cached,
         TNode node,
         Func<TNode, T> compute,
         IEqualityComparer<T> comparer,
-        ref T value,
+        ref T? value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?
@@ -75,12 +75,23 @@ public static class GrammarAttribute
         if (threadState.InCircle)
         {
             if (threadState.ObservedInCycle(attributeId))
-                return value;
+                return value!;
 
             // Do not set the iteration until the value is computed and set so that a value from
             // this cycle is used. Note: non-circular attributes don't have valid initial values.
             var previous = value;
-            var next = compute(node); // may throw
+            T next;
+            // This context is used to detect whether the attribute depends on a circular or
+            // possibly non-final attribute value. If it does, then the value is not cached.
+            using (var context = threadState.NonCircularContext())
+            {
+                next = compute(node); // may throw
+                if (context.IsFinal)
+                {
+                    value = next;
+                    Volatile.Write(ref cached, true);
+                }
+            }
             if (!comparer.Equals(next, previous)) // may throw
             {
                 var original = Interlocked.CompareExchange(ref value!, next, previous);
@@ -110,29 +121,111 @@ public static class GrammarAttribute
     }
     #endregion
 
-    #region GetCircularValue overloads
+    #region Inherited overloads
+    /// <summary>
+    /// Read the value of a non-circular inherited attribute that is <see cref="IEquatable{T}"/>.
+    /// </summary>
+    [DebuggerStepThrough]
+    public static T Inherited<TNode, T>(
+        ref bool cached,
+        TNode node,
+        Func<IInheritanceContext, T> compute,
+        ref T? value,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class
+        where T : class?
+        => Inherited(ref cached, node, compute, StrictEqualityComparer<T>.Instance, ref value, attributeName);
+
+    /// <summary>
+    /// Read the value of a non-circular inherited attribute.
+    /// </summary>
+    public static T Inherited<TNode, T>(
+        ref bool cached,
+        TNode node,
+        Func<IInheritanceContext, T> compute,
+        IEqualityComparer<T> comparer,
+        ref T? value,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class
+        where T : class?
+    {
+        if (string.IsNullOrEmpty(attributeName))
+            throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
+
+        var threadState = ThreadState();
+        var attributeId = new AttributeId(node, attributeName);
+        if (threadState.InCircle)
+        {
+            if (threadState.ObservedInCycle(attributeId))
+                return value!;
+
+            // Do not set the iteration until the value is computed and set so that a value from
+            // this cycle is used. Note: non-circular attributes don't have valid initial values.
+            var previous = value;
+            T next;
+            // This context is used to detect whether the attribute depends on a circular or
+            // possibly non-final attribute value. If it does, then the value is not cached.
+            using (var context = threadState.NonCircularContext())
+            {
+                next = compute(threadState); // may throw
+                if (context.IsFinal)
+                {
+                    value = next;
+                    Volatile.Write(ref cached, true);
+                }
+            }
+            if (!comparer.Equals(next, previous)) // may throw
+            {
+                var original = Interlocked.CompareExchange(ref value!, next, previous);
+                if (!ReferenceEquals(original, previous))
+                    next = Unsafe.As<T>(original);
+                else
+                    // Value updated for this cycle, so update the iteration
+                    threadState.UpdateIterationFor(attributeId);
+                previous = next;
+            }
+            else
+            {
+                // previous == next, so use old value to avoid duplicate objects referenced. Value
+                // is correct for this cycle, so update the iteration.
+                threadState.UpdateIterationFor(attributeId);
+            }
+
+            return previous!;
+        }
+
+#if DEBUG
+        using var _ = threadState.BeginComputing(attributeId);
+#endif
+        value = compute(threadState); // may throw
+        Volatile.Write(ref cached, true);
+        return value;
+    }
+    #endregion
+
+    #region Circular overloads
     /// <summary>
     /// Read the value of a circular attribute that already has an initial value and is
     /// <see cref="IEquatable{T}"/>.
     /// </summary>
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T GetCircularValue<TNode, T>(
+    public static T Circular<TNode, T>(
         in bool cached,
         TNode node,
         Func<TNode, T> compute,
         ref object? value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
-        where T : class?, IEquatable<T>?
-        => GetCircularValue(cached, node, compute, null!, StrictEqualityComparer<T>.Instance, ref value, attributeName);
+        where T : class?
+        => Circular(cached, node, compute, null!, StrictEqualityComparer<T>.Instance, ref value, attributeName);
 
     /// <summary>
     /// Read the value of a circular attribute that already has an initial value.
     /// </summary>
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T GetCircularValue<TNode, T>(
+    public static T Circular<TNode, T>(
         in bool cached,
         TNode node,
         Func<TNode, T> compute,
@@ -140,15 +233,15 @@ public static class GrammarAttribute
         ref object? value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
-        where T : class?, IEquatable<T>?
-        => GetCircularValue(cached, node, compute, null!, comparer, ref value, attributeName);
+        where T : class?
+        => Circular(cached, node, compute, null!, comparer, ref value, attributeName);
 
     /// <summary>
     /// Read the value of a circular attribute that is <see cref="IEquatable{T}"/>.
     /// </summary>
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T GetCircularValue<TNode, T>(
+    public static T Circular<TNode, T>(
         in bool cached,
         TNode node,
         Func<TNode, T> compute,
@@ -156,15 +249,14 @@ public static class GrammarAttribute
         ref object? value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
-        where T : class?, IEquatable<T>?
-        => GetCircularValue(cached, node, compute, initializer, StrictEqualityComparer<T>.Instance,
-            ref value, attributeName);
+        where T : class?
+        => Circular(cached, node, compute, initializer, StrictEqualityComparer<T>.Instance, ref value, attributeName);
 
     /// <summary>
     /// Read the value of a circular attribute.
     /// </summary>
     [DebuggerStepThrough]
-    public static T GetCircularValue<TNode, T>(
+    public static T Circular<TNode, T>(
         bool cached,
         TNode node,
         Func<TNode, T> compute,
@@ -173,7 +265,7 @@ public static class GrammarAttribute
         ref object? value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
-        where T : class?, IEquatable<T>?
+        where T : class?
     {
         if (string.IsNullOrEmpty(attributeName))
             throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));

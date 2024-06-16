@@ -28,6 +28,14 @@ internal abstract class ChildNode : SemanticNode, IChildNode
         get => Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
     }
 
+    protected SemanticNode GetParent(IInheritanceContext ctx)
+    {
+        // TODO condition this call on the node being non-final
+        ctx.MarkNonFinal();
+        // Use volatile read to ensure order of operations as seen by other threads
+        return Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
+    }
+
     ISemanticNode IChildNode.Parent => Parent;
 
     public IPackageDeclarationNode Package => Parent.InheritedPackage(this, this);
@@ -87,11 +95,11 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected LexicalScope InheritedContainingLexicalScope() => Parent.InheritedContainingLexicalScope(this, this);
 
-    internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant)
-        => Parent.InheritedContainingDeclaredType(this, descendant);
+    internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => Parent.InheritedContainingDeclaredType(this, descendant, ctx);
 
-    protected virtual IDeclaredUserType InheritedContainingDeclaredType()
-        => Parent.InheritedContainingDeclaredType(this, this);
+    protected virtual IDeclaredUserType InheritedContainingDeclaredType(IInheritanceContext ctx)
+        => GetParent(ctx).InheritedContainingDeclaredType(this, this, ctx);
 
     internal override Pseudotype? InheritedSelfType(IChildNode child, IChildNode descendant)
         => Parent.InheritedSelfType(this, descendant);

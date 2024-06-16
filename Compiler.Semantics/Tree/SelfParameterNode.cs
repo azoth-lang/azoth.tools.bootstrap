@@ -19,10 +19,12 @@ internal abstract class SelfParameterNode : ParameterNode, ISelfParameterNode
     public ITypeDefinitionNode ContainingTypeDefinition
         => containingTypeDeclaration.TryGetValue(out var value) ? value
             : containingTypeDeclaration.GetValue(InheritedContainingTypeDefinition);
-    private ValueAttribute<IDeclaredUserType> containingDeclaredType;
+    private IDeclaredUserType? containingDeclaredType;
+    private bool containingDeclaredTypeCached;
     public IDeclaredUserType ContainingDeclaredType
-        => containingDeclaredType.TryGetValue(out var value) ? value
-            : containingDeclaredType.GetValue(InheritedContainingDeclaredType);
+        => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
+            : GrammarAttribute.Inherited(ref containingDeclaredTypeCached, this,
+                InheritedContainingDeclaredType, ref containingDeclaredType);
     private ValueAttribute<SelfParameterSymbol> symbol;
     public SelfParameterSymbol Symbol
         => symbol.TryGetValue(out var value) ? value

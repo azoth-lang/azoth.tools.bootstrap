@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 
 namespace Azoth.Tools.Bootstrap.Framework;
+
 internal class UnsupportedEqualityComparer<T> : IEqualityComparer<T>
 {
     public bool Equals(T? x, T? y)
