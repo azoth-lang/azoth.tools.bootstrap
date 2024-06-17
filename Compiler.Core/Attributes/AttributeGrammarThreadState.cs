@@ -36,6 +36,10 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
     {
         iteration += 1;
         Changed = false;
+#if DEBUG
+        if (iteration > 10_000)
+            throw new InvalidOperationException("Circular attribute iteration limit exceeded.");
+#endif
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

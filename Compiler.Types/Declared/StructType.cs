@@ -130,12 +130,12 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is ObjectType objectType
-            && ContainingPackage == objectType.ContainingPackage
-            && ContainingNamespace == objectType.ContainingNamespace
-            && IsDeclaredConst == objectType.IsDeclaredConst
-            && Name == objectType.Name
-            && GenericParameters.ItemsEqual(objectType.GenericParameters);
+        return other is StructType structType
+            && ContainingPackage == structType.ContainingPackage
+            && ContainingNamespace == structType.ContainingNamespace
+            && IsDeclaredConst == structType.IsDeclaredConst
+            && Name == structType.Name
+            && GenericParameters.ItemsEqual(structType.GenericParameters);
         // Supertypes and GenericParameterTypes are not considered because they are derived. Also,
         // that prevents infinite recursion.
     }
