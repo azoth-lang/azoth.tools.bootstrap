@@ -1141,7 +1141,7 @@ internal class SemanticsApplier
         // TODO apply all the time once the semantic tree is more complete
         if (node.Context is ITypeNameExpressionNode
             or INamespaceNameNode
-            or IUnknownMemberAccessExpressionNode)
+            or IExpressionNode)
             node.Syntax.Semantics.Fulfill(UnknownNameSyntax.Instance);
         Expression(node.Context);
     }
