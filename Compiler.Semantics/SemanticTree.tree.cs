@@ -119,7 +119,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IConstructorSymbolNode),
     typeof(IInitializerSymbolNode),
     typeof(IFieldSymbolNode))]
-public partial interface ISemanticNode
+public partial interface ISemanticNode : IParent
 {
     ISyntax? Syntax { get; }
 }

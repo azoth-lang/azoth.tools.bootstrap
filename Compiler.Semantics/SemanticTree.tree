@@ -23,7 +23,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-Semantic = Syntax:`ISyntax`?;
+Semantic <: `IParent` = Syntax:`ISyntax`?;
 // Parent and Package types quoted so that is is not treated as a child node
 Child <: `IChild<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPackageDeclarationNode`;
 

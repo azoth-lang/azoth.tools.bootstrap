@@ -1,13 +1,16 @@
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
+public interface IParent
+{
+    protected internal bool IsFinal { get; }
+}
+
 /// <summary>
 /// A child node in a syntax tree.
 /// </summary>
-public interface IChild
+public interface IChild : IParent
 {
     protected internal bool MayHaveRewrite { get; }
-
-    protected internal bool IsFinal { get; }
 
     /// <summary>
     /// Rewrite the child node.

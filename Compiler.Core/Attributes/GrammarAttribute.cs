@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Framework;
@@ -284,7 +285,7 @@ public static class GrammarAttribute
         ref object? value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
-        where T : class?, TCompare
+        where T : class?, TCompare?
     {
         if (string.IsNullOrEmpty(attributeName))
             throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
@@ -304,57 +305,82 @@ public static class GrammarAttribute
                 initial = original;
         }
 
-        var previous = Unsafe.As<T>(initial);
+        T current = Unsafe.As<T>(initial)!;
         var threadState = ThreadState();
         var attributeId = new AttributeId(node, attributeName);
         if (!threadState.InCircle)
         {
             // Using ensures circle is exited when done, making this exception safe.
             using var _ = threadState.EnterCircle();
+            bool isFinal;
             do
             {
                 threadState.NextIteration();
-                // Set to current iteration before computing so a cycle will use the previous value
-                threadState.UpdateIterationFor(attributeId);
-                var next = compute(node); // may throw
-                if (comparer.Equals(previous, next)) // may throw
-                    // previous == next, so use old value to avoid duplicate objects referenced
-                    continue;
-
-                threadState.MarkChanged();
-                var original = Interlocked.CompareExchange(ref value, next, previous);
-                if (!ReferenceEquals(original, previous))
-                    next = Unsafe.As<T>(original);
-                previous = next;
-            } while (threadState.Changed);
+                isFinal = ComputeCircular(in cached, node, compute, comparer, ref current, ref value, threadState, attributeId);
+            } while (threadState.Changed && !isFinal);
             Volatile.Write(ref cached, true);
-            return previous!;
+            return current;
         }
 
         if (!threadState.ObservedInCycle(attributeId))
         {
-            // Set to current iteration before computing so a cycle will use the previous value
-            threadState.UpdateIterationFor(attributeId);
-            var next = compute(node); // may throw
-            if (comparer.Equals(previous, next)) // may throw
+            var isFinal = ComputeCircular(in cached, node, compute, comparer, ref current, ref value, threadState, attributeId);
+            if (isFinal)
             {
-                // previous == next, so use old value to avoid duplicate objects referenced
-                // The value returned is not the final value, but the value for this cycle
-                threadState.MarkNonFinal();
-                return previous!;
+                Volatile.Write(ref cached, true);
+                return current;
             }
-
-            threadState.MarkChanged();
-            var original = Interlocked.CompareExchange(ref value, next, previous);
-            if (!ReferenceEquals(original, previous))
-                next = Unsafe.As<T>(original);
-            previous = next;
         }
-        // else Reuse previous approximation
+        // else reuse current approximation
 
         // The value returned is not the final value, but the value for this cycle
         threadState.MarkNonFinal();
-        return previous!;
+        return current;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool ComputeCircular<TNode, T, TCompare>(
+        in bool cached,
+        TNode node,
+        Func<TNode, T> compute,
+        IEqualityComparer<TCompare> comparer,
+        ref T current,
+        ref object? value,
+        AttributeGrammarThreadState threadState,
+        AttributeId attributeId)
+        where TNode : class
+        where T : class?, TCompare?
+    {
+        // Set to current iteration before computing so a cycle will use the previous value
+        threadState.UpdateIterationFor(attributeId);
+        T? next;
+        bool isFinal;
+        // This context is used to detect whether the attribute depends on a circular or
+        // possibly non-final attribute value. If it doesn't, then the value can be cached.
+        using (var ctx = threadState.DependencyContext())
+        {
+            next = compute(node); // may throw
+            isFinal = ctx.IsFinal;
+        }
+
+        if (comparer.Equals(current, next)) // may throw
+            // current == next, so use old value to avoid duplicate objects referenced
+            return isFinal;
+
+        threadState.MarkChanged();
+        var original = Interlocked.CompareExchange(ref value, next, current);
+        if (!ReferenceEquals(original, current))
+        {
+            // The value was changed by another thread, so use the new value. First though, check
+            // whether it is cached and therefore final.
+            isFinal = Volatile.Read(in cached);
+            if (isFinal)
+                // Read again if final to ensure the value is the one that is actually cached
+                original = value;
+            next = Unsafe.As<T>(original)!;
+        }
+        current = next;
+        return isFinal;
     }
     #endregion
 
@@ -367,16 +393,15 @@ public static class GrammarAttribute
         TNode node,
         ref TChild child,
         [CallerMemberName] string attributeName = "")
-        where TNode : class, TParent
+        where TNode : class, TParent, IParent
         where TChild : class?, IChild<TParent>?
     {
         if (string.IsNullOrEmpty(attributeName))
             throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
 
-        var previous = child;
-
-        if (previous is null || previous.IsFinal)
-            return previous!;
+        TChild current = child;
+        if (current is null || current.IsFinal)
+            return current!;
 
         var threadState = ThreadState();
         var attributeId = new AttributeId(node, attributeName);
@@ -384,50 +409,64 @@ public static class GrammarAttribute
         {
             // Using ensures circle is exited when done, making this exception safe.
             using var _ = threadState.EnterCircle();
+            bool isFinal;
             do
             {
                 threadState.NextIteration();
-                // Set to current iteration before computing so a cycle will use the previous value
-                threadState.UpdateIterationFor(attributeId);
-                var next = (TChild?)previous.Rewrite(); // may throw
-                if (next is null)
-                    // No rewrite
-                    continue;
-
-                threadState.MarkChanged();
-                var original = Interlocked.CompareExchange(ref child, next, previous);
-                if (!ReferenceEquals(original, previous))
-                    next = original!; // original should never be null because you can't rewrite to null
-                previous = next;
-            } while (threadState.Changed);
-            previous.MarkFinal();
-            return previous;
+                isFinal = ComputeChild<TChild, TParent>(ref child, ref current, threadState, attributeId);
+            } while (threadState.Changed && !isFinal);
+            current.MarkFinal();
+            return current;
         }
 
         if (!threadState.ObservedInCycle(attributeId))
         {
-            // Set to current iteration before computing so a cycle will use the previous value
-            threadState.UpdateIterationFor(attributeId);
-            var next = (TChild?)previous.Rewrite(); // may throw
-            if (next is null)
+            var isFinal = ComputeChild<TChild, TParent>(ref child, ref current, threadState, attributeId);
+            if (isFinal && node.IsFinal)
             {
-                // No rewrite
-                // The value returned is not the final value, but the value for this cycle
-                threadState.MarkNonFinal();
-                return previous;
+                current.MarkFinal();
+                return current;
             }
-
-            threadState.MarkChanged();
-            var original = Interlocked.CompareExchange(ref child, next, previous);
-            if (!ReferenceEquals(original, previous))
-                next = original!; // original should never be null because you can't rewrite to null
-            previous = next;
         }
-        // else Reuse previous approximation
+        // else reuse current approximation
 
         // The value returned is not the final value, but the value for this cycle
         threadState.MarkNonFinal();
-        return previous;
+        return current;
+    }
+
+    private static bool ComputeChild<TChild, TParent>(
+        ref TChild child,
+        [NotNull][DisallowNull] ref TChild previous,
+        AttributeGrammarThreadState threadState,
+        AttributeId attributeId)
+        where TChild : class?, IChild<TParent>?
+    {
+        // Set to current iteration before computing so a cycle will use the previous value
+        threadState.UpdateIterationFor(attributeId);
+
+        bool isFinal;
+        TChild? next; // may throw
+        using (var ctx = threadState.DependencyContext())
+        {
+            next = (TChild?)previous.Rewrite();
+            isFinal = ctx.IsFinal;
+        }
+
+        if (next is not null)
+        {
+            threadState.MarkChanged();
+            var original = Interlocked.CompareExchange(ref child, next, previous);
+            if (!ReferenceEquals(original, previous))
+            {
+                next = original!; // original should never be null because you can't rewrite to null
+                isFinal = next.IsFinal;
+            }
+            previous = next;
+        }
+        // else no rewrite
+
+        return isFinal;
     }
     #endregion
 }
