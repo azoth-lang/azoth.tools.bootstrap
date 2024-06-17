@@ -85,15 +85,27 @@ internal static class TypeDeclarationsAspect
 
     public static IFixedSet<BareReferenceType> TypeDefinition_Supertypes(ITypeDefinitionNode node)
     {
-        var declaredType = node.DeclaredType;
-        // Exclude any cycles that exist in the supertypes by excluding this type
-        return Build().Where(t => !t.DeclaredType.Equals(declaredType)).ToFixedSet();
+        // Note: Supertypes is a circular attribute that both declared types and symbols depend on.
+        // While there are many ways to write this that will give the correct answer, care should be
+        // taken to avoid causing unnecessary effective cycles. That way attributes can be cached
+        // and performance can be improved.
+
+        // Avoid loading the declared type unless necessary because it is a cycle and accessing it
+        // prevents caching.
+        IDeclaredUserType? declaredType = null;
+        return Build()
+               // Exclude any cycles that exist in the supertypes by excluding this type
+               .Where(t =>
+                   // Try to avoid loading the declared type by checking names first
+                   t.DeclaredType.Name != node.Name
+                   // But the real check is on the declared type
+                   || !t.DeclaredType.Equals(declaredType ??= node.DeclaredType))
+               // Everything has `Any` as a supertype (added after filter to avoid loading declared type)
+               .Append(BareType.Any)
+               .ToFixedSet();
 
         IEnumerable<BareReferenceType> Build()
         {
-            // Everything has `Any` as a supertype
-            yield return BareType.Any;
-
             // Handled by supertype because that is the only syntax we have to apply the compiler
             // errors to. (Could possibly use type arguments in the future.)
             foreach (var supertypeName in node.AllSupertypeNames)
