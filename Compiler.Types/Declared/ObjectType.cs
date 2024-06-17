@@ -17,7 +17,6 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
 {
     private static readonly IFixedSet<BareReferenceType> AnyTypeSet
         = AnyType.Instance.BareType.Yield().ToFixedSet<BareReferenceType>();
-    private static readonly Lazy<IFixedSet<BareReferenceType>> LazyAnyTypeSet = new(AnyTypeSet);
 
     public static ObjectType CreateClass(
         IdentifierName containingPackage,
@@ -26,7 +25,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isConst,
         string name)
         => new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true, name,
-            FixedList.Empty<GenericParameter>(), LazyAnyTypeSet);
+            FixedList.Empty<GenericParameter>(), AnyTypeSet);
 
     public static ObjectType CreateTrait(
         IdentifierName containingPackage,
@@ -34,7 +33,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isConst,
         string name)
         => new(containingPackage, containingNamespace, isAbstract: true, isConst, isClass: false, name,
-            FixedList.Empty<GenericParameter>(), LazyAnyTypeSet);
+            FixedList.Empty<GenericParameter>(), AnyTypeSet);
 
     public static ObjectType CreateClass(
         IdentifierName containingPackage,
@@ -43,7 +42,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isConst,
         string name,
         IFixedList<GenericParameter> genericParameters,
-        Lazy<IFixedSet<BareReferenceType>> supertypes)
+        IFixedSet<BareReferenceType> supertypes)
         => new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true,
             StandardName.Create(name, genericParameters.Count), genericParameters, supertypes);
 
@@ -54,7 +53,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isConst,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
-        Lazy<IFixedSet<BareReferenceType>> supertypes)
+        IFixedSet<BareReferenceType> supertypes)
     {
         Requires.That(nameof(genericParameters), name.GenericParameterCount == genericParameters.Count, "Count must match name count");
         return new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true, name,
@@ -67,7 +66,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isConst,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
-        Lazy<IFixedSet<BareReferenceType>> supertypes)
+        IFixedSet<BareReferenceType> supertypes)
     {
         Requires.That(nameof(genericParameters), name.GenericParameterCount == genericParameters.Count,
             "Count must match name count");
@@ -84,7 +83,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         params GenericParameter[] genericParameters)
     {
         return new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true,
-            StandardName.Create(name, genericParameters.Length), genericParameters.ToFixedList(), LazyAnyTypeSet);
+            StandardName.Create(name, genericParameters.Length), genericParameters.ToFixedList(), AnyTypeSet);
     }
 
     public static ObjectType CreateTrait(
@@ -95,7 +94,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         params GenericParameter[] genericParameters)
     {
         return new(containingPackage, containingNamespace, isAbstract: true, isConst, isClass: false,
-            StandardName.Create(name, genericParameters.Length), genericParameters.ToFixedList(), LazyAnyTypeSet);
+            StandardName.Create(name, genericParameters.Length), genericParameters.ToFixedList(), AnyTypeSet);
     }
 
     private ObjectType(
@@ -106,13 +105,13 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isClass,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
-        Lazy<IFixedSet<BareReferenceType>> supertypes)
+        IFixedSet<BareReferenceType> supertypes)
         : base(isConstType, isAbstract, isClass, genericParameters)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
         Name = name;
-        this.supertypes = supertypes;
+        Supertypes = supertypes;
         GenericParameterTypes = GenericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList();
     }
 
@@ -122,8 +121,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
 
     public override StandardName Name { get; }
 
-    private readonly Lazy<IFixedSet<BareReferenceType>> supertypes;
-    public override IFixedSet<BareReferenceType> Supertypes => supertypes.Value;
+    public override IFixedSet<BareReferenceType> Supertypes { get; }
     public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
 
     private IDeclaredAntetype? antetype;

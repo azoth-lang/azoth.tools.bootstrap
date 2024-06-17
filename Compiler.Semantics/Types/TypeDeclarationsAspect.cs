@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
@@ -22,7 +20,7 @@ internal static class TypeDeclarationsAspect
 
         return ObjectType.CreateClass(node.Package.Name, containingNamespaceName,
             node.IsAbstract, node.IsConst, node.Name,
-            GetGenericParameters(node), LazySupertypes(node));
+            GetGenericParameters(node), node.Supertypes);
     }
 
     public static void ClassDeclaration_ContributeDiagnostics(IClassDefinitionNode node, Diagnostics diagnostics)
@@ -55,7 +53,7 @@ internal static class TypeDeclarationsAspect
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
         return StructType.Create(node.Package.Name, containingNamespaceName,
             node.IsConst, node.Name,
-            GetGenericParameters(node), LazySupertypes(node));
+            GetGenericParameters(node), node.Supertypes);
     }
 
     public static ObjectType TraitDefinition_DeclaredType(ITraitDefinitionNode node)
@@ -64,7 +62,7 @@ internal static class TypeDeclarationsAspect
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
         return ObjectType.CreateTrait(node.Package.Name, containingNamespaceName,
             node.IsConst, node.Name,
-            GetGenericParameters(node), LazySupertypes(node));
+            GetGenericParameters(node), node.Supertypes);
     }
 
     private static NamespaceName GetContainingNamespaceName(ITypeMemberDefinitionNode node)
@@ -78,10 +76,6 @@ internal static class TypeDeclarationsAspect
 
     private static IFixedList<GenericParameter> GetGenericParameters(ITypeDefinitionNode node)
         => node.GenericParameters.Select(p => p.Parameter).ToFixedList();
-
-    private static Lazy<IFixedSet<BareReferenceType>> LazySupertypes(ITypeDefinitionNode node)
-        // Use PublicationOnly so that initialization cycles are detected and thrown by the attributes
-        => new(() => node.Supertypes, LazyThreadSafetyMode.PublicationOnly);
 
     public static GenericParameter GenericParameter_Parameter(IGenericParameterNode node)
         => new GenericParameter(node.Constraint.Constraint, node.Name, node.Independence, node.Variance);

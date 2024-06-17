@@ -25,7 +25,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         bool isConst,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
-        Lazy<IFixedSet<BareReferenceType>> supertypes)
+        IFixedSet<BareReferenceType> supertypes)
     {
         Requires.That(nameof(genericParameters), name.GenericParameterCount == genericParameters.Count,
             "Count must match name count");
@@ -39,13 +39,13 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         bool isConstType,
         StandardName name,
         IFixedList<GenericParameter> genericParameters,
-        Lazy<IFixedSet<BareReferenceType>> supertypes)
+        IFixedSet<BareReferenceType> supertypes)
         : base(isConstType, genericParameters)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
         Name = name;
-        this.supertypes = supertypes;
+        Supertypes = supertypes;
         GenericParameterTypes = genericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList();
     }
 
@@ -58,8 +58,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
 
     public override StandardName Name { get; }
 
-    private readonly Lazy<IFixedSet<BareReferenceType>> supertypes;
-    public override IFixedSet<BareReferenceType> Supertypes => supertypes.Value;
+    public override IFixedSet<BareReferenceType> Supertypes { get; }
     public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
 
     private IDeclaredAntetype? antetype;
