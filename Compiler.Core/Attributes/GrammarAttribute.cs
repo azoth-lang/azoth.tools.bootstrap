@@ -80,7 +80,11 @@ public static class GrammarAttribute
         if (threadState.InCircle)
         {
             if (threadState.ObservedInCycle(attributeId))
+            {
+                // Since the value wasn't cached, it must not be final
+                threadState.MarkNonFinal();
                 return value!;
+            }
 
             // Do not set the iteration until the value is computed and set so that a value from
             // this cycle is used. Note: non-circular attributes don't have valid initial values.
@@ -162,7 +166,11 @@ public static class GrammarAttribute
         if (threadState.InCircle)
         {
             if (threadState.ObservedInCycle(attributeId))
+            {
+                // Since the value wasn't cached, it must not be final
+                threadState.MarkNonFinal();
                 return value!;
+            }
 
             // Do not set the iteration until the value is computed and set so that a value from
             // this cycle is used. Note: non-circular attributes don't have valid initial values.
