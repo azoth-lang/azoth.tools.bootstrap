@@ -87,7 +87,7 @@ public static class GrammarAttribute
             T next;
             // This context is used to detect whether the attribute depends on a circular or
             // possibly non-final attribute value. If it does, then the value is not cached.
-            using (var context = threadState.NonCircularContext())
+            using (var context = threadState.DependencyContext())
             {
                 next = compute(node); // may throw
                 if (context.IsFinal)
@@ -169,7 +169,7 @@ public static class GrammarAttribute
             T next;
             // This context is used to detect whether the attribute depends on a circular or
             // possibly non-final attribute value. If it does, then the value is not cached.
-            using (var context = threadState.NonCircularContext())
+            using (var context = threadState.DependencyContext())
             {
                 next = compute(threadState); // may throw
                 if (context.IsFinal)
@@ -337,8 +337,12 @@ public static class GrammarAttribute
             threadState.UpdateIterationFor(attributeId);
             var next = compute(node); // may throw
             if (comparer.Equals(previous, next)) // may throw
+            {
                 // previous == next, so use old value to avoid duplicate objects referenced
+                // The value returned is not the final value, but the value for this cycle
+                threadState.MarkNonFinal();
                 return previous!;
+            }
 
             threadState.MarkChanged();
             var original = Interlocked.CompareExchange(ref value, next, previous);
@@ -348,6 +352,8 @@ public static class GrammarAttribute
         }
         // else Reuse previous approximation
 
+        // The value returned is not the final value, but the value for this cycle
+        threadState.MarkNonFinal();
         return previous!;
     }
     #endregion
@@ -404,8 +410,12 @@ public static class GrammarAttribute
             threadState.UpdateIterationFor(attributeId);
             var next = (TChild?)previous.Rewrite(); // may throw
             if (next is null)
+            {
                 // No rewrite
+                // The value returned is not the final value, but the value for this cycle
+                threadState.MarkNonFinal();
                 return previous;
+            }
 
             threadState.MarkChanged();
             var original = Interlocked.CompareExchange(ref child, next, previous);
@@ -415,6 +425,8 @@ public static class GrammarAttribute
         }
         // else Reuse previous approximation
 
+        // The value returned is not the final value, but the value for this cycle
+        threadState.MarkNonFinal();
         return previous;
     }
     #endregion

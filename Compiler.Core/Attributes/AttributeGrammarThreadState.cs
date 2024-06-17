@@ -53,25 +53,25 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
     }
     #endregion
 
-    #region "Final" for Cache Control of Non-Circular Attributes
+    #region "Final" for Cache Control of Non-Circular Attributes and Better Circular Attribute Caching
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void MarkNonFinal() => isFinal = false;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public NonCircularScope NonCircularContext()
+    public DependencyScope DependencyContext()
     {
-        var scope = new NonCircularScope(this, isFinal);
+        var scope = new DependencyScope(this, isFinal);
         isFinal = true;
         return scope;
     }
 
-    public readonly struct NonCircularScope : IDisposable
+    public readonly struct DependencyScope : IDisposable
     {
         private readonly bool wasFinal;
         private readonly AttributeGrammarThreadState state;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public NonCircularScope(AttributeGrammarThreadState state, bool wasFinal)
+        public DependencyScope(AttributeGrammarThreadState state, bool wasFinal)
         {
             this.state = state;
             this.wasFinal = wasFinal;
