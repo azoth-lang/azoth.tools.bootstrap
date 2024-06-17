@@ -12,8 +12,7 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
     public override bool IsAbstract { get; }
     public override IdentifierName Name { get; }
     StandardName IUserDeclaredAntetype.Name => Name;
-    private readonly Lazy<IFixedSet<NominalAntetype>> lazySupertypes;
-    public override IFixedSet<NominalAntetype> Supertypes => lazySupertypes.Value;
+    public override IFixedSet<NominalAntetype> Supertypes { get; }
     private readonly AntetypeReplacements antetypeReplacements;
     public bool HasReferenceSemantics { get; }
 
@@ -22,13 +21,13 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
         NamespaceName containingNamespace,
         bool isAbstract,
         IdentifierName name,
-        Lazy<IFixedSet<NominalAntetype>> lazySupertypes,
+        IFixedSet<NominalAntetype> supertypes,
         bool hasReferenceSemantics)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
         Name = name;
-        this.lazySupertypes = lazySupertypes;
+        Supertypes = supertypes;
         HasReferenceSemantics = hasReferenceSemantics;
         IsAbstract = isAbstract;
         antetypeReplacements = new(this, TypeArguments);

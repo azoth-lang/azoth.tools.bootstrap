@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -55,23 +54,20 @@ internal static class DeclaredUserTypeExtensions
             // Treat self as non-writeable because antetypes should permit anything that could possibly be allowed by the types
             .Select(p => new AntetypeGenericParameter(p.Name, p.Variance.ToVariance(true)));
         var hasReferenceSemantics = declaredType is ObjectType;
-        var lazySupertypes = declaredType.LazySupertypes();
+        var supertypes = declaredType.AntetypeSupertypes();
         return declaredType.Name switch
         {
             IdentifierName n
                 => new UserNonGenericNominalAntetype(declaredType.ContainingPackage,
-                    declaredType.ContainingNamespace, isAbstract, n, lazySupertypes, hasReferenceSemantics),
+                    declaredType.ContainingNamespace, isAbstract, n, supertypes, hasReferenceSemantics),
             GenericName n
                 => new UserDeclaredGenericAntetype(declaredType.ContainingPackage,
                     declaredType.ContainingNamespace, isAbstract, n, antetypeGenericParameters,
-                    lazySupertypes, hasReferenceSemantics),
+                    supertypes, hasReferenceSemantics),
             _ => throw ExhaustiveMatch.Failed(declaredType.Name)
         };
     }
 
-    private static Lazy<IFixedSet<NominalAntetype>> LazySupertypes(this IDeclaredUserType declaredType)
-        // Use PublicationOnly so that initialization cycles are detected and thrown by the attributes
-        => new(() => declaredType.Supertypes.Select(t => t.ToAntetype())
-                                                    .Cast<NominalAntetype>().ToFixedSet(),
-                       LazyThreadSafetyMode.PublicationOnly);
+    private static IFixedSet<NominalAntetype> AntetypeSupertypes(this IDeclaredUserType declaredType)
+        => declaredType.Supertypes.Select(t => t.ToAntetype()).Cast<NominalAntetype>().ToFixedSet();
 }

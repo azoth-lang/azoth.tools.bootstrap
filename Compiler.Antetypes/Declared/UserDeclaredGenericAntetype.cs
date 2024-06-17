@@ -15,8 +15,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
     public IFixedList<AntetypeGenericParameter> GenericParameters { get; }
     public bool AllowsVariance { get; }
     public IFixedList<GenericParameterAntetype> GenericParameterAntetypes { get; }
-    private readonly Lazy<IFixedSet<NominalAntetype>> lazySupertypes;
-    public IFixedSet<NominalAntetype> Supertypes => lazySupertypes.Value;
+    public IFixedSet<NominalAntetype> Supertypes { get; }
     public bool HasReferenceSemantics { get; }
 
     public UserDeclaredGenericAntetype(
@@ -25,7 +24,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
         bool isAbstract,
         GenericName name,
         IEnumerable<AntetypeGenericParameter> genericParameters,
-        Lazy<IFixedSet<NominalAntetype>> lazySupertypes,
+        IFixedSet<NominalAntetype> supertypes,
         bool hasReferenceSemantics)
     {
         ContainingPackage = containingPackage;
@@ -37,7 +36,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
         AllowsVariance = GenericParameters.Any(p => p.Variance != Variance.Invariant);
         HasReferenceSemantics = hasReferenceSemantics;
         IsAbstract = isAbstract;
-        this.lazySupertypes = lazySupertypes;
+        Supertypes = supertypes;
         GenericParameterAntetypes = GenericParameters.Select(p => new GenericParameterAntetype(this, p))
                                                      .ToFixedList();
     }
