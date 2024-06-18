@@ -20,10 +20,12 @@ internal sealed class StandardTypeNameExpressionNode : AmbiguousNameExpressionNo
     public IMaybeAntetype NamedAntetype
         => namedAntetype.TryGetValue(out var value) ? value
             : namedAntetype.GetValue(this, TypeExpressionsAntetypesAspect.TypeNameExpression_NamedAntetype);
-    private ValueAttribute<BareType?> namedBareType;
+    private BareType? namedBareType;
+    private bool namedBareTypeCached;
     public BareType? NamedBareType
-        => namedBareType.TryGetValue(out var value) ? value
-            : namedBareType.GetValue(this, BareTypeAspect.TypeNameExpression_NamedBareType);
+        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType!
+            : GrammarAttribute.Synthetic(ref namedBareTypeCached, this,
+                BareTypeAspect.TypeNameExpression_NamedBareType, ref namedBareType);
 
     public StandardTypeNameExpressionNode(
         IStandardNameExpressionSyntax syntax,
