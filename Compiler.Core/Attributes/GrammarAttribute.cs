@@ -422,11 +422,8 @@ public static class GrammarAttribute
         if (!threadState.ObservedInCycle(attributeId))
         {
             var isFinal = ComputeChild(node, ref child, ref current, threadState, attributeId);
-            if (isFinal && node.IsFinal)
-            {
-                current.MarkFinal();
+            if (isFinal)
                 return current;
-            }
         }
         // else reuse current approximation
 
@@ -446,30 +443,27 @@ public static class GrammarAttribute
         // Set to current iteration before computing so a cycle will use the previous value
         threadState.UpdateIterationFor(attributeId);
 
-        bool isFinal;
-        TChild? next; // may throw
-        using (var ctx = threadState.DependencyContext())
-        {
-            next = (TChild?)current.Rewrite();
-            isFinal = ctx.IsFinal;
-        }
+        // Rewrites do not use the dependency context because even if they don't depend on something
+        // that is not final, they may still get rewritten again.
+
+        var next = (TChild?)current.Rewrite(); // may throw
 
         if (next is not null)
         {
             threadState.MarkChanged();
             var original = Interlocked.CompareExchange(ref child, next, current);
             if (!ReferenceEquals(original, current))
-            {
                 next = original!; // original should never be null because you can't rewrite to null
-                isFinal = next.IsFinal;
-            }
             else
                 Attributes.Child.AttachRewritten(node, next);
             current = next;
         }
         // else no rewrite
 
-        return isFinal;
+        // If the child is already final (either another thread marked it final or it was marked
+        // final by attaching it to the parent since it can't be rewritten), then it is final. Even
+        // if Rewrite() returns null, the child may not be final if it depends on a non-cached attribute.
+        return next?.IsFinal ?? false;
     }
     #endregion
 }

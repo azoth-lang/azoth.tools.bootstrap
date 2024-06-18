@@ -70,6 +70,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected virtual IChildNode? Rewrite() => throw Child.RewriteNotSupported(this);
 
+    // TODO remove call to AttachRewritten once it is all handled by GrammarAttribute
     IChild? IChild.Rewrite() => Child.AttachRewritten(Parent, Rewrite());
 
     void IChild.MarkFinal() => Volatile.Write(ref isFinal, true);
