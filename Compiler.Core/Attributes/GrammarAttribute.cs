@@ -39,6 +39,14 @@ public static class GrammarAttribute
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsFinal(IChild? child) => child?.IsFinal ?? true;
 
+    /// <summary>
+    /// Get the inheritance context for the current thread.
+    /// </summary>
+    /// <remarks>This should only be used for nodes that directly expose a function that calls the
+    /// inherited member.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IInheritanceContext CurrentInheritanceContext() => ThreadState();
+
     #region Synthetic overloads
     /// <summary>
     /// Read the value of a non-circular synthetic attribute that is <see cref="IEquatable{T}"/>.

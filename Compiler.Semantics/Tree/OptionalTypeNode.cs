@@ -11,14 +11,16 @@ internal sealed class OptionalTypeNode : TypeNode, IOptionalTypeNode
 {
     public override IOptionalTypeSyntax Syntax { get; }
     public ITypeNode Referent { get; }
-    private ValueAttribute<IMaybeAntetype> antetype;
+    private ValueAttribute<IMaybeAntetype> namedAntetype;
     public override IMaybeAntetype NamedAntetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.OptionalType_NamedAntetype);
-    private ValueAttribute<DataType> type;
+        => namedAntetype.TryGetValue(out var value) ? value
+            : namedAntetype.GetValue(this, TypeExpressionsAntetypesAspect.OptionalType_NamedAntetype);
+    private DataType? namedType;
+    private bool namedTypeCached;
     public override DataType NamedType
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.OptionalType_NamedType);
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : GrammarAttribute.Synthetic(ref namedTypeCached, this,
+                TypeExpressionsAspect.OptionalType_NamedType, ref namedType);
 
     public OptionalTypeNode(IOptionalTypeSyntax syntax, ITypeNode referent)
     {

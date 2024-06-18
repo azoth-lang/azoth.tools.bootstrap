@@ -12,10 +12,12 @@ internal sealed class MethodSelfParameterNode : SelfParameterNode, IMethodSelfPa
     public override IMethodSelfParameterSyntax Syntax { get; }
     public override IdentifierName? Name => Syntax.Name;
     public ICapabilityConstraintNode Capability { get; }
-    private ValueAttribute<Pseudotype> bindingType;
+    private Pseudotype? bindingType;
+    private bool bindingTypeCached;
     public override Pseudotype BindingType
-        => bindingType.TryGetValue(out var value) ? value
-            : bindingType.GetValue(this, TypeMemberDeclarationsAspect.MethodSelfParameter_BindingType);
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : GrammarAttribute.Synthetic(ref bindingTypeCached, this,
+                TypeMemberDeclarationsAspect.MethodSelfParameter_BindingType, ref bindingType);
 
     public MethodSelfParameterNode(IMethodSelfParameterSyntax syntax, ICapabilityConstraintNode capability)
     {

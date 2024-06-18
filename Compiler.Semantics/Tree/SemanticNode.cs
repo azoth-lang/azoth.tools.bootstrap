@@ -50,7 +50,7 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedContainingDeclaredType), child, descendant));
 
-    internal virtual Pseudotype? InheritedSelfType(IChildNode child, IChildNode descendant)
+    internal virtual Pseudotype? InheritedSelfType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedSelfType), child, descendant));
 
@@ -70,7 +70,10 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedFacet), child, descendant));
 
-    internal virtual FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    internal virtual FlowState InheritedFlowStateBefore(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedFlowStateBefore), child, descendant));
 

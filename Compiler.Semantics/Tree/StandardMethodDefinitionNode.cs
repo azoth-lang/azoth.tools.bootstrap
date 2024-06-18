@@ -31,7 +31,7 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
         Body = Child.Attach(this, body);
     }
 
-    internal override Pseudotype InheritedSelfType(IChildNode child, IChildNode descendant)
+    internal override Pseudotype InheritedSelfType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => TypeExpressionsAspect.ConcreteMethodDeclaration_InheritedSelfType(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)

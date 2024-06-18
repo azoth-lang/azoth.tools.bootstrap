@@ -28,10 +28,8 @@ internal sealed class FunctionNameNode : AmbiguousNameExpressionNode, IFunctionN
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : GrammarAttribute.Synthetic(ref typeCached, this,
                 ExpressionTypesAspect.FunctionName_Type, ref type);
-    private ValueAttribute<FlowState> flowStateAfter;
     public override FlowState FlowStateAfter
-        => flowStateAfter.TryGetValue(out var value) ? value
-            : flowStateAfter.GetValue(InheritedFlowStateBefore);
+        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
     public FunctionNameNode(
         INameExpressionSyntax syntax,

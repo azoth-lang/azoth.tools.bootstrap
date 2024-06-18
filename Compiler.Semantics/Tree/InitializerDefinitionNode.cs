@@ -57,7 +57,10 @@ internal sealed class InitializerDefinitionNode : TypeMemberDefinitionNode, IIni
     internal override IPreviousValueId PreviousValueId(IChildNode before)
         => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
 
-    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    internal override FlowState InheritedFlowStateBefore(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
     {
         if (child == Body)
             return Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
@@ -71,6 +74,6 @@ internal sealed class InitializerDefinitionNode : TypeMemberDefinitionNode, IIni
         if (child == SelfParameter)
             return FlowStateBefore();
 
-        return base.InheritedFlowStateBefore(child, descendant);
+        return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

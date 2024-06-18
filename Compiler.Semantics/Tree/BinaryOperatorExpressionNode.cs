@@ -66,10 +66,13 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         throw new ArgumentException("Not a child of this node.", nameof(child));
     }
 
-    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    internal override FlowState InheritedFlowStateBefore(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
     {
         if (child == CurrentRightOperand)
             return FinalLeftOperand.FlowStateAfter;
-        return base.InheritedFlowStateBefore(child, descendant);
+        return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

@@ -70,7 +70,10 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     internal override IPreviousValueId PreviousValueId(IChildNode before)
         => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
 
-    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    internal override FlowState InheritedFlowStateBefore(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
     {
         if (child == Body)
             return Parameters.LastOrDefault()?.FlowStateAfter ?? FlowStateBefore();
@@ -80,6 +83,6 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
                 return FlowStateBefore();
             return Parameters[index - 1].FlowStateAfter;
         }
-        return base.InheritedFlowStateBefore(child, descendant);
+        return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

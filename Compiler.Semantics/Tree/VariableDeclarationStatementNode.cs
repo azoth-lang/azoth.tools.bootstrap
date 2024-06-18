@@ -44,16 +44,21 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
             : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.VariableDeclarationStatement_BindingAntetype);
-    private ValueAttribute<DataType> bindingType;
+    private DataType? bindingType;
+    private bool bindingTypeCached;
     public DataType BindingType
-        => bindingType.TryGetValue(out var value) ? value
-            : bindingType.GetValue(this, NameBindingTypesAspect.VariableDeclarationStatement_BindingType);
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : GrammarAttribute.Synthetic(ref bindingTypeCached, this,
+                NameBindingTypesAspect.VariableDeclarationStatement_BindingType, ref bindingType);
     public override IMaybeAntetype? ResultAntetype => null;
     public override DataType? ResultType => null;
-    private ValueAttribute<FlowState> flowStateAfter;
+    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
-        => flowStateAfter.TryGetValue(out var value) ? value
-            : flowStateAfter.GetValue(this, NameBindingTypesAspect.VariableDeclarationStatement_FlowStateAfter);
+        => GrammarAttribute.IsCached(in flowStateAfterCached)
+            ? flowStateAfter.UnsafeValue
+            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
+                NameBindingTypesAspect.VariableDeclarationStatement_FlowStateAfter, ref flowStateAfter);
 
     public VariableDeclarationStatementNode(
         IVariableDeclarationStatementSyntax syntax,
@@ -71,5 +76,6 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
 
     internal override IPreviousValueId PreviousValueId(IChildNode before) => ValueId;
 
-    public FlowState FlowStateBefore() => InheritedFlowStateBefore();
+    public FlowState FlowStateBefore()
+        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 }

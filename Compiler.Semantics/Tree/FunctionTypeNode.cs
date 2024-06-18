@@ -14,14 +14,16 @@ internal sealed class FunctionTypeNode : TypeNode, IFunctionTypeNode
     public override IFunctionTypeSyntax Syntax { get; }
     public IFixedList<IParameterTypeNode> Parameters { get; }
     public ITypeNode Return { get; }
-    private ValueAttribute<IMaybeAntetype> antetype;
+    private ValueAttribute<IMaybeAntetype> namedAntetype;
     public override IMaybeAntetype NamedAntetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.FunctionType_NamedAntetype);
-    private ValueAttribute<DataType> type;
+        => namedAntetype.TryGetValue(out var value) ? value
+            : namedAntetype.GetValue(this, TypeExpressionsAntetypesAspect.FunctionType_NamedAntetype);
+    private DataType? namedType;
+    private bool namedTypeCached;
     public override DataType NamedType
-    => type.TryGetValue(out var value) ? value
-        : type.GetValue(this, TypeExpressionsAspect.FunctionType_NamedType);
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : GrammarAttribute.Synthetic(ref namedTypeCached, this,
+                TypeExpressionsAspect.FunctionType_NamedType, ref namedType);
 
     public FunctionTypeNode(
         IFunctionTypeSyntax syntax,

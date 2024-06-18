@@ -41,7 +41,10 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
     internal override IPreviousValueId PreviousValueId(IChildNode before)
         => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
 
-    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    internal override FlowState InheritedFlowStateBefore(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
     {
         if (child == Body)
             return Parameters.LastOrDefault()?.FlowStateAfter
@@ -55,6 +58,6 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
         if (child == SelfParameter)
             return FlowStateBefore();
 
-        return base.InheritedFlowStateBefore(child, descendant);
+        return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

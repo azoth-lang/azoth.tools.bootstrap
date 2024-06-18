@@ -24,10 +24,12 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     public override IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
             : bindingAntetype.GetValue(this, TypeMemberDeclarationsAspect.NamedParameter_BindingAntetype);
-    private ValueAttribute<DataType> bindingType;
+    private DataType? bindingType;
+    private bool bindingTypeCached;
     public override DataType BindingType
-        => bindingType.TryGetValue(out var value) ? value
-            : bindingType.GetValue(this, TypeMemberDeclarationsAspect.NamedParameterNode_BindingType);
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : GrammarAttribute.Synthetic(ref bindingTypeCached, this,
+                TypeMemberDeclarationsAspect.NamedParameterNode_BindingType, ref bindingType);
     private ValueAttribute<ParameterType> parameterType;
     public ParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value

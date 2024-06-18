@@ -117,10 +117,11 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected virtual IDeclaredUserType InheritedContainingDeclaredType(IInheritanceContext ctx)
         => GetParent(ctx).InheritedContainingDeclaredType(this, this, ctx);
 
-    internal override Pseudotype? InheritedSelfType(IChildNode child, IChildNode descendant)
-        => Parent.InheritedSelfType(this, descendant);
+    internal override Pseudotype? InheritedSelfType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).InheritedSelfType(this, descendant, ctx);
 
-    protected Pseudotype? InheritedSelfType() => Parent.InheritedSelfType(this, this);
+    protected Pseudotype? InheritedSelfType(IInheritanceContext ctx)
+        => GetParent(ctx).InheritedSelfType(this, this, ctx);
 
     internal override ITypeDefinitionNode InheritedContainingTypeDefinition(IChildNode child, IChildNode descendant)
         => Parent.InheritedContainingTypeDefinition(this, descendant);
@@ -144,11 +145,11 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected ISymbolTree InheritedSymbolTree()
         => Parent.InheritedSymbolTree(this, this);
 
-    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
-        => Parent.InheritedFlowStateBefore(this, descendant);
+    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).InheritedFlowStateBefore(this, descendant, ctx);
 
-    protected FlowState InheritedFlowStateBefore()
-        => Parent.InheritedFlowStateBefore(this, this);
+    protected FlowState InheritedFlowStateBefore(IInheritanceContext ctx)
+        => GetParent(ctx).InheritedFlowStateBefore(this, this, ctx);
 
     internal override IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
         => Parent.InheritedBindingAntetype(this, descendant);

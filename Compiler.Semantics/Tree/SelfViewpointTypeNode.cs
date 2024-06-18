@@ -18,14 +18,17 @@ internal sealed class SelfViewpointTypeNode : TypeNode, ISelfViewpointTypeNode
     public override IMaybeAntetype NamedAntetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, TypeExpressionsAntetypesAspect.ViewpointType_NamedAntetype);
-    private ValueAttribute<DataType> type;
+    private DataType? namedType;
+    private bool namedTypeCached;
     public override DataType NamedType
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.SelfViewpointType_NamedType);
-    private ValueAttribute<Pseudotype?> selfType;
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : GrammarAttribute.Synthetic(ref namedTypeCached, this,
+                TypeExpressionsAspect.SelfViewpointType_NamedType, ref namedType);
+    private Pseudotype? namedSelfType;
+    private bool namedSelfTypeCached;
     public Pseudotype? NamedSelfType
-        => selfType.TryGetValue(out var value) ? value
-            : selfType.GetValue(InheritedSelfType);
+        => GrammarAttribute.IsCached(in namedSelfTypeCached) ? namedSelfType
+            : GrammarAttribute.Inherited(ref namedSelfTypeCached, this, InheritedSelfType, ref namedSelfType);
 
     public SelfViewpointTypeNode(ISelfViewpointTypeSyntax syntax, ITypeNode referent)
     {

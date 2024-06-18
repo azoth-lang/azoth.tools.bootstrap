@@ -27,10 +27,12 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
             : bindingAntetype.GetValue(this, DeclarationsAntetypesAspect.FieldDefinition_BindingAntetype);
-    private ValueAttribute<DataType> bindingType;
+    private DataType? bindingType;
+    private bool bindingTypeCached;
     public DataType BindingType
-        => bindingType.TryGetValue(out var value) ? value
-            : bindingType.GetValue(this, TypeMemberDeclarationsAspect.FieldDeclaration_BindingType);
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : GrammarAttribute.Synthetic(ref bindingTypeCached, this,
+                TypeMemberDeclarationsAspect.FieldDeclaration_BindingType, ref bindingType);
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     private ValueAttribute<FieldSymbol> symbol;
     public override FieldSymbol Symbol

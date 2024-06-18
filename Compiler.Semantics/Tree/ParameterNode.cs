@@ -23,7 +23,8 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
 
     private protected ParameterNode() { }
 
-    public FlowState FlowStateBefore() => InheritedFlowStateBefore();
+    public FlowState FlowStateBefore()
+        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
     public new IPreviousValueId PreviousValueId() => base.PreviousValueId();
 

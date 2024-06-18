@@ -93,13 +93,17 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
 
     public new PackageNameScope InheritedPackageNameScope() => base.InheritedPackageNameScope();
 
-    public FlowState FlowStateBefore() => InheritedFlowStateBefore();
+    public FlowState FlowStateBefore()
+        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    internal override FlowState InheritedFlowStateBefore(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
             && arguments.IndexOfCurrent(ambiguousExpression) is int index and > 0)
             return ((IExpressionNode)arguments.FinalAt(index - 1)).FlowStateAfter;
-        return base.InheritedFlowStateBefore(child, descendant);
+        return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

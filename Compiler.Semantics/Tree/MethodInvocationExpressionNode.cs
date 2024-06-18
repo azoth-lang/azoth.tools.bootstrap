@@ -60,7 +60,10 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         this.arguments = ChildList.Create(this, arguments);
     }
 
-    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    internal override FlowState InheritedFlowStateBefore(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
             && arguments.IndexOfCurrent(ambiguousExpression) is int index)
@@ -69,6 +72,6 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
                 return MethodGroup.FlowStateAfter;
             return ((IExpressionNode)arguments.FinalAt(index - 1)).FlowStateAfter;
         }
-        return base.InheritedFlowStateBefore(child, descendant);
+        return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

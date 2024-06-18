@@ -29,15 +29,17 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
         => bindingAntetype.TryGetValue(out var value) ? value
             : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.FieldParameter_BindingAntetype);
     // TODO this is strange because this isn't a binding
-    private ValueAttribute<DataType> bindingType;
+    private DataType? bindingType;
+    private bool bindingTypeCached;
     public override DataType BindingType
-        => bindingType.TryGetValue(out var value) ? value
-            : bindingType.GetValue(this, TypeMemberDeclarationsAspect.FieldParameter_BindingType);
-
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : GrammarAttribute.Synthetic(ref bindingTypeCached, this,
+                TypeMemberDeclarationsAspect.FieldParameter_BindingType, ref bindingType);
     private ValueAttribute<ParameterType> parameterType;
     public ParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value
             : parameterType.GetValue(this, TypeMemberDeclarationsAspect.FieldParameter_ParameterType);
+
     public override FlowState FlowStateAfter => FlowStateBefore();
 
     public FieldParameterNode(IFieldParameterSyntax syntax)

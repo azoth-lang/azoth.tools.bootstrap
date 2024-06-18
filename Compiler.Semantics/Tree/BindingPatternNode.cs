@@ -28,14 +28,18 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
             : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.BindingPattern_BindingAntetype);
-    private ValueAttribute<DataType> bindingType;
+    private DataType? bindingType;
+    private bool bindingTypeCached;
     public DataType BindingType
-        => bindingType.TryGetValue(out var value) ? value
-            : bindingType.GetValue(this, NameBindingTypesAspect.BindingPattern_BindingType);
-    private ValueAttribute<FlowState> flowStateAfter;
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : GrammarAttribute.Synthetic(ref bindingTypeCached, this,
+                NameBindingTypesAspect.BindingPattern_BindingType, ref bindingType);
+    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
-        => flowStateAfter.TryGetValue(out var value) ? value
-            : flowStateAfter.GetValue(this, NameBindingTypesAspect.BindingPattern_FlowStateAfter);
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
+                NameBindingTypesAspect.BindingPattern_FlowStateAfter, ref flowStateAfter);
 
     public BindingPatternNode(IBindingPatternSyntax syntax)
     {
@@ -51,5 +55,6 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
 
     internal override IPreviousValueId PreviousValueId(IChildNode before) => ValueId;
 
-    public FlowState FlowStateBefore() => InheritedFlowStateBefore();
+    public FlowState FlowStateBefore()
+        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 }

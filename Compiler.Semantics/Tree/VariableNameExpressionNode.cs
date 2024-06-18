@@ -38,5 +38,6 @@ internal sealed class VariableNameExpressionNode : AmbiguousNameExpressionNode, 
         ReferencedDeclaration = referencedDeclaration;
     }
 
-    public FlowState FlowStateBefore() => InheritedFlowStateBefore();
+    public FlowState FlowStateBefore()
+        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 }

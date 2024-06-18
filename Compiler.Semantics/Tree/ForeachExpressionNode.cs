@@ -41,10 +41,12 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public IMaybeExpressionAntetype IteratorAntetype
         => iteratorAntetype.TryGetValue(out var value) ? value
             : iteratorAntetype.GetValue(this, ForeachExpressionAntetypeAspect.ForeachExpression_IteratorAntetype);
-    private ValueAttribute<DataType> iteratorType;
+    private DataType? iteratorType;
+    private bool iteratorTypeCached;
     public DataType IteratorType
-        => iteratorType.TryGetValue(out var value) ? value
-            : iteratorType.GetValue(this, ForeachExpressionTypeAspect.ForeachExpression_IteratorType);
+        => GrammarAttribute.IsCached(in iteratorTypeCached) ? iteratorType!
+            : GrammarAttribute.Synthetic(ref iteratorTypeCached, this,
+                ForeachExpressionTypeAspect.ForeachExpression_IteratorType, ref iteratorType);
     private ValueAttribute<ITypeDeclarationNode?> referencedIteratorDeclaration;
     public ITypeDeclarationNode? ReferencedIteratorDeclaration
         => referencedIteratorDeclaration.TryGetValue(out var value) ? value
@@ -57,34 +59,44 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public IMaybeAntetype IteratedAntetype
         => iteratedAntetype.TryGetValue(out var value) ? value
             : iteratedAntetype.GetValue(this, ForeachExpressionAntetypeAspect.ForeachExpression_IteratedAntetype);
-    private ValueAttribute<DataType> iteratedType;
+    private DataType? iteratedType;
+    private bool iteratedTypeCached;
     public DataType IteratedType
-        => iteratedType.TryGetValue(out var value) ? value
-            : iteratedType.GetValue(this, ForeachExpressionTypeAspect.ForeachExpression_IteratedType);
+        => GrammarAttribute.IsCached(in iteratedTypeCached) ? iteratedType!
+            : GrammarAttribute.Synthetic(ref iteratedTypeCached, this,
+                ForeachExpressionTypeAspect.ForeachExpression_IteratedType, ref iteratedType);
     private ValueAttribute<IMaybeAntetype> bindingAntetype;
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
             : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.ForeachExpression_BindingAntetype);
-    private ValueAttribute<DataType> bindingType;
+    private DataType? bindingType;
+    private bool bindingTypeCached;
     public DataType BindingType
-        => bindingType.TryGetValue(out var value) ? value
-            : bindingType.GetValue(this, NameBindingTypesAspect.ForeachExpression_BindingType);
-    private ValueAttribute<FlowState> flowStateBeforeBlock;
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : GrammarAttribute.Synthetic(ref bindingTypeCached, this,
+                NameBindingTypesAspect.ForeachExpression_BindingType, ref bindingType);
+    private Circular<FlowState> flowStateBeforeBlock = new(FlowState.Empty);
+    private bool flowStateBeforeBlockCached;
     public FlowState FlowStateBeforeBlock
-        => flowStateBeforeBlock.TryGetValue(out var value) ? value
-            : flowStateBeforeBlock.GetValue(this, ForeachExpressionTypeAspect.ForeachExpression_FlowStateBeforeBlock);
+        => GrammarAttribute.IsCached(in flowStateBeforeBlockCached) ? flowStateBeforeBlock.UnsafeValue
+            : GrammarAttribute.Circular(ref flowStateBeforeBlockCached, this,
+                ForeachExpressionTypeAspect.ForeachExpression_FlowStateBeforeBlock, ref flowStateBeforeBlock);
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.ForeachExpression_Antetype);
-    private ValueAttribute<DataType> type;
+    private DataType? type;
+    private bool typeCached;
     public override DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, ForeachExpressionTypeAspect.ForeachExpression_Type);
-    private ValueAttribute<FlowState> flowStateAfter;
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : GrammarAttribute.Synthetic(ref typeCached, this,
+                ForeachExpressionTypeAspect.ForeachExpression_Type, ref type);
+    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
-        => flowStateAfter.TryGetValue(out var value) ? value
-            : flowStateAfter.GetValue(this, ForeachExpressionTypeAspect.ForeachExpression_FlowStateAfter);
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
+                ForeachExpressionTypeAspect.ForeachExpression_FlowStateAfter, ref flowStateAfter);
 
     public ForeachExpressionNode(
         IForeachExpressionSyntax syntax,
@@ -103,10 +115,13 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
 
     public new PackageNameScope InheritedPackageNameScope() => base.InheritedPackageNameScope();
 
-    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant)
+    internal override FlowState InheritedFlowStateBefore(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
     {
         if (child == Block)
             return FlowStateBeforeBlock;
-        return base.InheritedFlowStateBefore(child, descendant);
+        return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

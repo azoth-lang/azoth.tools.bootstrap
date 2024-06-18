@@ -17,10 +17,12 @@ internal sealed class CapabilityViewpointTypeNode : TypeNode, ICapabilityViewpoi
     public override IMaybeAntetype NamedAntetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, TypeExpressionsAntetypesAspect.ViewpointType_NamedAntetype);
-    private ValueAttribute<DataType> type;
+    private DataType? namedType;
+    private bool namedTypeCached;
     public override DataType NamedType
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeExpressionsAspect.CapabilityViewpointType_NamedType);
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : GrammarAttribute.Synthetic(ref namedTypeCached, this,
+                TypeExpressionsAspect.CapabilityViewpointType_NamedType, ref namedType);
 
     public CapabilityViewpointTypeNode(
         ICapabilityViewpointTypeSyntax syntax,

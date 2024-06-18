@@ -64,5 +64,6 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
         base.CollectDiagnostics(diagnostics);
     }
 
-    public FlowState FlowStateBefore() => InheritedFlowStateBefore();
+    public FlowState FlowStateBefore()
+        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 }
