@@ -62,6 +62,10 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
         if (newParentNode.IsFinal && !MayHaveRewrite)
             Volatile.Write(ref isFinal, true);
+
+        // TODO if we could recur and propagate the final state down the tree, that would be better.
+        // but we don't want to access the children and cause then to start rewriting. We would need
+        // a way of getting the current children without causing them to rewrite.
     }
 
     protected virtual IChildNode? Rewrite() => throw Child.RewriteNotSupported(this);

@@ -413,12 +413,9 @@ public static class GrammarAttribute
             {
                 threadState.NextIteration();
                 isFinal = ComputeChild(node, ref child, ref current, threadState, attributeId);
-            } while (threadState.Changed && !isFinal);
-#if DEBUG
-            //if (!node.IsFinal)
-            //    throw new InvalidOperationException("Cannot mark node final without a final parent");
-#endif
-            current.MarkFinal();
+            } while (threadState.Changed && !isFinal && current.MayHaveRewrite);
+            if (node.IsFinal)
+                current.MarkFinal();
             return current;
         }
 
@@ -427,10 +424,6 @@ public static class GrammarAttribute
             var isFinal = ComputeChild(node, ref child, ref current, threadState, attributeId);
             if (isFinal && node.IsFinal)
             {
-#if DEBUG
-                // TODO not sure if this check should be enforced here
-                if (!node.IsFinal) throw new InvalidOperationException("Cannot mark node final without a final parent");
-#endif
                 current.MarkFinal();
                 return current;
             }
