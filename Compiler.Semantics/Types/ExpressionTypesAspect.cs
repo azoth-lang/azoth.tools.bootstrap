@@ -61,14 +61,19 @@ public static class ExpressionTypesAspect
 
     public static DataType IdExpression_Type(IIdExpressionNode node)
     {
-        var referentType = node.FinalReferent.Type;
+        var referentType = node.IntermediateReferent?.Type ?? DataType.Unknown;
         if (referentType is CapabilityType capabilityType)
             return capabilityType.With(Capability.Identity);
         return DataType.Unknown;
     }
 
     public static FlowState IdExpression_FlowStateAfter(IIdExpressionNode node)
-        => node.FinalReferent.FlowStateAfter.Combine(node.FinalReferent.ValueId, null, node.ValueId);
+    {
+        var intermediateReferent = node.IntermediateReferent;
+        if (intermediateReferent is null)
+            return FlowState.Empty;
+        return intermediateReferent.FlowStateAfter.Combine(intermediateReferent.ValueId, null, node.ValueId);
+    }
 
     public static void IdExpression_ContributeDiagnostics(IIdExpressionNode node, Diagnostics diagnostics)
     {

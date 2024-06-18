@@ -285,7 +285,7 @@ BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax
     ContainingLexicalScope:`LexicalScope`;
 UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax` Fixity:`UnaryOperatorFixity`
     Operator:`UnaryOperator` Operand:AmbiguousExpression FinalOperand:`IExpressionNode`;
-IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression FinalReferent:`IExpressionNode`;
+IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression IntermediateReferent:`IExpressionNode`?;
 ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax`
     Referent:AmbiguousExpression FinalReferent:`IExpressionNode`
     Operator:`ConversionOperator` ConvertToType:Type;

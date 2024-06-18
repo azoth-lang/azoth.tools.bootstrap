@@ -12,23 +12,30 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
 {
     public override IIdExpressionSyntax Syntax { get; }
-    private Child<IAmbiguousExpressionNode> referent;
-    public IAmbiguousExpressionNode Referent => referent.Value;
-    public IExpressionNode FinalReferent => (IExpressionNode)referent.FinalValue;
-    public override IMaybeExpressionAntetype Antetype => FinalReferent.Antetype;
-    private ValueAttribute<DataType> type;
+    private IAmbiguousExpressionNode referent;
+    public IAmbiguousExpressionNode Referent
+        => GrammarAttribute.IsFinal(referent) ? referent
+            : GrammarAttribute.Child(this, ref referent);
+    public IExpressionNode? IntermediateReferent => Referent as IExpressionNode;
+    public override IMaybeExpressionAntetype Antetype
+        => IntermediateReferent?.Antetype ?? IAntetype.Unknown;
+    private DataType? type;
+    private bool typeCached;
     public override DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, ExpressionTypesAspect.IdExpression_Type);
-    private ValueAttribute<FlowState> flowStateAfter;
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : GrammarAttribute.Synthetic(ref typeCached, this,
+                ExpressionTypesAspect.IdExpression_Type, ref type);
+    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
-        => flowStateAfter.TryGetValue(out var value) ? value
-            : flowStateAfter.GetValue(this, ExpressionTypesAspect.IdExpression_FlowStateAfter);
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
+                ExpressionTypesAspect.IdExpression_FlowStateAfter, ref flowStateAfter);
 
     public IdExpressionNode(IIdExpressionSyntax syntax, IAmbiguousExpressionNode referent)
     {
         Syntax = syntax;
-        this.referent = Child.Create(this, referent);
+        this.referent = Child.AttachRewritable(this, referent);
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Referent.GetFlowLexicalScope();

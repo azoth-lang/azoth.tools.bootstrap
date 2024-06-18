@@ -28,11 +28,6 @@ public static class GrammarAttribute
         => _threadStateStorage ??= new();
 
     /// <summary>
-    /// A flag value used to indicate that a circular attribute has not been set initialized.
-    /// </summary>
-    public static readonly object Unset = UnsetAttribute.Instance;
-
-    /// <summary>
     /// Safely check whether the attribute has been cached. If it has been, then it is safe to
     /// simply read the attribute value from the backing field.
     /// </summary>
@@ -216,21 +211,6 @@ public static class GrammarAttribute
     }
     #endregion
 
-    [DebuggerStepThrough]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryReadCircular<T>(in bool cached, in object? storage, out T value)
-        where T : class?
-    {
-        if (Volatile.Read(in cached))
-        {
-            value = Unsafe.As<T>(storage!);
-            return true;
-        }
-
-        value = null!;
-        return false;
-    }
-
     #region Circular overloads
     /// <summary>
     /// Read the value of a circular attribute that already has an initial value and is
@@ -242,7 +222,7 @@ public static class GrammarAttribute
         ref bool cached,
         TNode node,
         Func<TNode, T> compute,
-        ref object? value,
+        ref Circular<T> value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?
@@ -258,7 +238,7 @@ public static class GrammarAttribute
         TNode node,
         Func<TNode, T> compute,
         IEqualityComparer<TCompare> comparer,
-        ref object? value,
+        ref Circular<T> value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?, TCompare
@@ -274,7 +254,7 @@ public static class GrammarAttribute
         TNode node,
         Func<TNode, T> compute,
         Func<TNode, T> initializer,
-        ref object? value,
+        ref Circular<T> value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?
@@ -290,7 +270,7 @@ public static class GrammarAttribute
         Func<TNode, T> compute,
         Func<TNode, T> initializer,
         IEqualityComparer<TCompare> comparer,
-        ref object? value,
+        ref Circular<T> value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?, TCompare?
@@ -300,20 +280,16 @@ public static class GrammarAttribute
 
         // Since we must read `value`, go ahead and check the `cached` again in case it was set to true
         if (Volatile.Read(in cached))
-            return Unsafe.As<T>(value)!;
+            return value.UnsafeValue;
 
-        var initial = value;
-        if (ReferenceEquals(value, Unset))
+        if (!value.IsInitialized)
         {
             if (initializer is null)
                 throw new InvalidOperationException("Attribute not initialized and no initializer provided");
-            initial = initializer(node); // may throw
-            var original = Interlocked.CompareExchange(ref value, initial, Unset);
-            if (original != Unset)
-                initial = original;
+            value.Initialize(initializer(node)); // initializer may throw
         }
 
-        T current = Unsafe.As<T>(initial)!;
+        T current = value.UnsafeValue;
         var threadState = ThreadState();
         var attributeId = new AttributeId(node, attributeName);
         if (!threadState.InCircle)
@@ -353,7 +329,7 @@ public static class GrammarAttribute
         Func<TNode, T> compute,
         IEqualityComparer<TCompare> comparer,
         ref T current,
-        ref object? value,
+        ref Circular<T> value,
         AttributeGrammarThreadState threadState,
         AttributeId attributeId)
         where TNode : class
@@ -376,7 +352,7 @@ public static class GrammarAttribute
             return isFinal;
 
         threadState.MarkChanged();
-        var original = Interlocked.CompareExchange(ref value, next, current);
+        var original = value.CompareExchange(next, current);
         if (!ReferenceEquals(original, current))
         {
             // The value was changed by another thread, so use the new value. First though, check
@@ -384,8 +360,8 @@ public static class GrammarAttribute
             isFinal = Volatile.Read(in cached);
             if (isFinal)
                 // Read again if final to ensure the value is the one that is actually cached
-                original = value;
-            next = Unsafe.As<T>(original)!;
+                original = value.UnsafeValue;
+            next = original;
         }
         current = next;
         return isFinal;
@@ -397,12 +373,12 @@ public static class GrammarAttribute
     /// Read the value of a circular attribute.
     /// </summary>
     [DebuggerStepThrough]
-    public static TChild Child<TNode, TChild, TParent>(
+    public static TChild Child<TNode, TChild>(
         TNode node,
         ref TChild child,
         [CallerMemberName] string attributeName = "")
-        where TNode : class, TParent, IParent
-        where TChild : class?, IChild<TParent>?
+        where TNode : class, IParent
+        where TChild : class?, IChild<TNode>?
     {
         if (string.IsNullOrEmpty(attributeName))
             throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
@@ -421,7 +397,7 @@ public static class GrammarAttribute
             do
             {
                 threadState.NextIteration();
-                isFinal = ComputeChild<TChild, TParent>(ref child, ref current, threadState, attributeId);
+                isFinal = ComputeChild(node, ref child, ref current, threadState, attributeId);
             } while (threadState.Changed && !isFinal);
             current.MarkFinal();
             return current;
@@ -429,7 +405,7 @@ public static class GrammarAttribute
 
         if (!threadState.ObservedInCycle(attributeId))
         {
-            var isFinal = ComputeChild<TChild, TParent>(ref child, ref current, threadState, attributeId);
+            var isFinal = ComputeChild(node, ref child, ref current, threadState, attributeId);
             if (isFinal && node.IsFinal)
             {
                 current.MarkFinal();
@@ -443,12 +419,13 @@ public static class GrammarAttribute
         return current;
     }
 
-    private static bool ComputeChild<TChild, TParent>(
+    private static bool ComputeChild<TNode, TChild>(
+        TNode node,
         ref TChild child,
-        [NotNull][DisallowNull] ref TChild previous,
+        [NotNull][DisallowNull] ref TChild current,
         AttributeGrammarThreadState threadState,
         AttributeId attributeId)
-        where TChild : class?, IChild<TParent>?
+        where TChild : class?, IChild<TNode>?
     {
         // Set to current iteration before computing so a cycle will use the previous value
         threadState.UpdateIterationFor(attributeId);
@@ -457,20 +434,22 @@ public static class GrammarAttribute
         TChild? next; // may throw
         using (var ctx = threadState.DependencyContext())
         {
-            next = (TChild?)previous.Rewrite();
+            next = (TChild?)current.Rewrite();
             isFinal = ctx.IsFinal;
         }
 
         if (next is not null)
         {
             threadState.MarkChanged();
-            var original = Interlocked.CompareExchange(ref child, next, previous);
-            if (!ReferenceEquals(original, previous))
+            var original = Interlocked.CompareExchange(ref child, next, current);
+            if (!ReferenceEquals(original, current))
             {
                 next = original!; // original should never be null because you can't rewrite to null
                 isFinal = next.IsFinal;
             }
-            previous = next;
+            else
+                Attributes.Child.AttachRewritten(node, next);
+            current = next;
         }
         // else no rewrite
 
