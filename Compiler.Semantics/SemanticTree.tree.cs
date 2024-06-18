@@ -1114,7 +1114,7 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
-    IExpressionNode FinalExpression { get; }
+    IExpressionNode? IntermediateExpression { get; }
 }
 
 [Closed(

@@ -28,14 +28,18 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.AssignmentExpression_Antetype);
-    private ValueAttribute<DataType> type;
+    private DataType? type;
+    private bool typeCached;
     public override DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, ExpressionTypesAspect.AssignmentExpression_Type);
-    private ValueAttribute<FlowState> flowStateAfter;
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : GrammarAttribute.Synthetic(ref typeCached, this,
+                ExpressionTypesAspect.AssignmentExpression_Type, ref type);
+    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
-        => flowStateAfter.TryGetValue(out var value) ? value
-            : flowStateAfter.GetValue(this, ExpressionTypesAspect.AssignmentExpression_FlowStateAfter);
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
+                ExpressionTypesAspect.AssignmentExpression_FlowStateAfter, ref flowStateAfter);
 
     public AssignmentExpressionNode(
         IAssignmentExpressionSyntax syntax,

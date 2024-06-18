@@ -231,8 +231,8 @@ SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:
 
 // ---------- Statements
 Statement <: Code = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`? ResultType:`DataType`? FlowStateAfter:`FlowState`;
-ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax` Expression:AmbiguousExpression
-    FinalExpression:`IExpressionNode`;
+ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax`
+    Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
 BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;
 VariableDeclarationStatement <: BodyStatement, NamedBinding = Syntax:`IVariableDeclarationStatementSyntax`
     IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type? Initializer:AmbiguousExpression?

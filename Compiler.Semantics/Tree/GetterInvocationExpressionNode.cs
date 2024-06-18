@@ -25,10 +25,12 @@ internal sealed class GetterInvocationExpressionNode : ExpressionNode, IGetterIn
     public ContextualizedOverload<IGetterMethodDeclarationNode>? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value
             : contextualizedOverload.GetValue(this, ExpressionTypesAspect.GetterInvocationExpression_ContextualizedOverload);
-    private ValueAttribute<DataType> type;
+    private DataType? type;
+    private bool typeCached;
     public override DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, ExpressionTypesAspect.GetterInvocationExpression_Type);
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : GrammarAttribute.Synthetic(ref typeCached, this,
+                ExpressionTypesAspect.GetterInvocationExpression_Type, ref type);
 
     public GetterInvocationExpressionNode(
         IMemberAccessExpressionSyntax syntax,

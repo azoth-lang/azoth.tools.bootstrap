@@ -59,7 +59,7 @@ internal static class ExpressionAntetypesAspect
         => node.LeftOperand.Antetype;
 
     public static IMaybeAntetype ResultStatement_Antetype(IResultStatementNode node)
-        => node.FinalExpression.Antetype.ToNonConstValueType();
+        => node.IntermediateExpression?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
 
     public static IMaybeExpressionAntetype BinaryOperatorExpression_Antetype(IBinaryOperatorExpressionNode node)
     {

@@ -16,10 +16,12 @@ internal sealed class IntegerLiteralExpressionNode : LiteralExpressionNode, IInt
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, TypeExpressionsAntetypesAspect.IntegerLiteralExpression_NamedAntetype);
-    private ValueAttribute<IntegerConstValueType> type;
+    private IntegerConstValueType? type;
+    private bool typeCached;
     public override IntegerConstValueType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, ExpressionTypesAspect.IntegerLiteralExpression_Type);
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : GrammarAttribute.Synthetic(ref typeCached, this,
+                ExpressionTypesAspect.IntegerLiteralExpression_Type, ref type);
 
     public IntegerLiteralExpressionNode(IIntegerLiteralExpressionSyntax syntax)
     {

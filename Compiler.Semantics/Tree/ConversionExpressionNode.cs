@@ -22,10 +22,12 @@ internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpr
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.ConversionExpression_Antetype);
-    private ValueAttribute<DataType> type;
+    private DataType? type;
+    private bool typeCached;
     public override DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, ExpressionTypesAspect.ConversionExpression_Type);
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : GrammarAttribute.Synthetic(ref typeCached, this,
+                ExpressionTypesAspect.ConversionExpression_Type, ref type);
     public override FlowState FlowStateAfter
         => FinalReferent.FlowStateAfter;
 

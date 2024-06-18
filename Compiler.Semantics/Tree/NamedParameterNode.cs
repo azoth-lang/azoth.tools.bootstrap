@@ -36,10 +36,12 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     public NamedVariableSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAspect.NamedParameter_Symbol);
-    private ValueAttribute<FlowState> flowStateAfter;
+    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
-        => flowStateAfter.TryGetValue(out var value) ? value
-            : flowStateAfter.GetValue(this, ExpressionTypesAspect.NamedParameter_FlowStateAfter);
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
+                ExpressionTypesAspect.NamedParameter_FlowStateAfter, ref flowStateAfter);
 
     public NamedParameterNode(INamedParameterSyntax syntax, ITypeNode type)
     {

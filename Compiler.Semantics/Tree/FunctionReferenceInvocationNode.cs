@@ -19,14 +19,18 @@ internal sealed class FunctionReferenceInvocationNode : ExpressionNode, IFunctio
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.FunctionReferenceInvocation_Antetype);
-    private ValueAttribute<FunctionType> functionType;
+    private FunctionType? functionType;
+    private bool functionTypeCached;
     public FunctionType FunctionType
-        => functionType.TryGetValue(out var value) ? value
-            : functionType.GetValue(this, ExpressionTypesAspect.FunctionReferenceInvocation_FunctionType);
-    private ValueAttribute<DataType> type;
+        => GrammarAttribute.IsCached(in functionTypeCached) ? functionType!
+            : GrammarAttribute.Synthetic(ref functionTypeCached, this,
+                ExpressionTypesAspect.FunctionReferenceInvocation_FunctionType, ref functionType);
+    private DataType? type;
+    private bool typeCached;
     public override DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, ExpressionTypesAspect.FunctionReferenceInvocation_Type);
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : GrammarAttribute.Synthetic(ref typeCached, this,
+                ExpressionTypesAspect.FunctionReferenceInvocation_Type, ref type);
 
     public FunctionReferenceInvocationNode(
         IInvocationExpressionSyntax syntax,

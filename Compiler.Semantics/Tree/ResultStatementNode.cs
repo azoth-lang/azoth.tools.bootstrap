@@ -12,26 +12,33 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
 {
     public override IResultStatementSyntax Syntax { get; }
-    private Child<IAmbiguousExpressionNode> expression;
-    public IAmbiguousExpressionNode Expression => expression.Value;
-    public IExpressionNode FinalExpression => (IExpressionNode)expression.FinalValue;
-    private ValueAttribute<IMaybeAntetype> antetype;
+    private IAmbiguousExpressionNode expression;
+    public IAmbiguousExpressionNode Expression
+        => GrammarAttribute.IsFinal(expression) ? expression
+            : GrammarAttribute.Child(this, ref expression);
+    public IExpressionNode? IntermediateExpression => Expression as IExpressionNode;
+    private IMaybeAntetype? antetype;
+    private bool antetypeCached;
     public IMaybeAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.ResultStatement_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : GrammarAttribute.Synthetic(ref antetypeCached, this,
+                ExpressionAntetypesAspect.ResultStatement_Antetype, ref antetype);
     public override IMaybeAntetype ResultAntetype => Antetype;
-    private ValueAttribute<DataType> type;
+    private DataType? type;
+    private bool typeCached;
     public DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, ExpressionTypesAspect.ResultStatement_Type);
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : GrammarAttribute.Synthetic(ref typeCached, this,
+                ExpressionTypesAspect.ResultStatement_Type, ref type);
     public override DataType ResultType => Type;
-    public override FlowState FlowStateAfter => ((IExpressionNode)Expression).FlowStateAfter;
-    public ValueId ValueId => FinalExpression.ValueId;
+    public override FlowState FlowStateAfter
+        => IntermediateExpression?.FlowStateAfter ?? FlowState.Empty;
+    public ValueId ValueId => IntermediateExpression?.ValueId ?? default;
 
     public ResultStatementNode(IResultStatementSyntax syntax, IAmbiguousExpressionNode expression)
     {
         Syntax = syntax;
-        this.expression = Child.Create(this, expression);
+        this.expression = Child.AttachRewritable(this, expression);
     }
 
     public override LexicalScope GetLexicalScope() => InheritedContainingLexicalScope();

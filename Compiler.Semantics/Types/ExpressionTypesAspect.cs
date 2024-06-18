@@ -344,7 +344,7 @@ public static class ExpressionTypesAspect
     }
 
     public static DataType ResultStatement_Type(IResultStatementNode node)
-        => node.FinalExpression.Type.ToNonConstValueType();
+        => node.IntermediateExpression?.Type.ToNonConstValueType() ?? DataType.Unknown;
 
     public static FlowState IfExpression_FlowStateAfter(IIfExpressionNode node)
     {

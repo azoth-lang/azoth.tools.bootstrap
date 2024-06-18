@@ -20,14 +20,19 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
     public override IMaybeAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.BlockExpression_Antetype);
-    private ValueAttribute<DataType> type;
+    private DataType? type;
+    private bool typeCached;
     public override DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, ExpressionTypesAspect.BlockExpression_Type);
-    private ValueAttribute<FlowState> flowStateAfter;
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : GrammarAttribute.Synthetic(ref typeCached, this,
+                ExpressionTypesAspect.BlockExpression_Type, ref type);
+    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
-        => flowStateAfter.TryGetValue(out var value) ? value
-            : flowStateAfter.GetValue(this, ExpressionTypesAspect.BlockExpression_FlowStateAfter);
+        => GrammarAttribute.IsCached(in flowStateAfterCached)
+            ? flowStateAfter.UnsafeValue
+            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
+                ExpressionTypesAspect.BlockExpression_FlowStateAfter, ref flowStateAfter);
 
     public BlockExpressionNode(IBlockExpressionSyntax syntax, IEnumerable<IStatementNode> statements)
     {

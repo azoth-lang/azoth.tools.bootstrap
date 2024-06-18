@@ -34,18 +34,24 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.SelfExpression_Antetype);
-    private ValueAttribute<FlowState> flowStateAfter;
+    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
-        => flowStateAfter.TryGetValue(out var value) ? value
-            : flowStateAfter.GetValue(this, ExpressionTypesAspect.SelfExpression_FlowStateAfter);
-    private ValueAttribute<DataType> type;
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
+                ExpressionTypesAspect.SelfExpression_FlowStateAfter, ref flowStateAfter);
+    private DataType? type;
+    private bool typeCached;
     public override DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, ExpressionTypesAspect.SelfExpression_Type);
-    private ValueAttribute<Pseudotype> pseudotype;
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : GrammarAttribute.Synthetic(ref typeCached, this,
+                ExpressionTypesAspect.SelfExpression_Type, ref type);
+    private Pseudotype? pseudotype;
+    private bool pseudotypeCached;
     public Pseudotype Pseudotype
-        => pseudotype.TryGetValue(out var value) ? value
-            : pseudotype.GetValue(this, ExpressionTypesAspect.SelfExpression_Pseudotype);
+        => GrammarAttribute.IsCached(in pseudotypeCached) ? pseudotype!
+            : GrammarAttribute.Synthetic(ref pseudotypeCached, this,
+                ExpressionTypesAspect.SelfExpression_Pseudotype, ref pseudotype);
 
     public SelfExpressionNode(ISelfExpressionSyntax syntax)
     {

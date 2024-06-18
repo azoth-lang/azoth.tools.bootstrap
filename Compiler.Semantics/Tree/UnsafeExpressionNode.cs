@@ -18,10 +18,12 @@ internal sealed class UnsafeExpressionNode : ExpressionNode, IUnsafeExpressionNo
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.UnsafeExpression_Antetype);
-    private ValueAttribute<DataType> type;
+    private DataType? type;
+    private bool typeCached;
     public override DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, ExpressionTypesAspect.UnsafeExpression_Type);
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : GrammarAttribute.Synthetic(ref typeCached, this,
+                ExpressionTypesAspect.UnsafeExpression_Type, ref type);
 
     public UnsafeExpressionNode(IUnsafeExpressionSyntax syntax, IAmbiguousExpressionNode expression)
     {

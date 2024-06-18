@@ -372,7 +372,7 @@ public static class GrammarAttribute
     /// <summary>
     /// Read the value of a circular attribute.
     /// </summary>
-    [DebuggerStepThrough]
+    //[DebuggerStepThrough]
     public static TChild Child<TNode, TChild>(
         TNode node,
         ref TChild child,
@@ -385,7 +385,14 @@ public static class GrammarAttribute
 
         TChild current = child;
         if (current is null || current.IsFinal)
-            return current!;
+            return current;
+
+        if (!current.MayHaveRewrite)
+        {
+            if (node.IsFinal)
+                current.MarkFinal();
+            return current;
+        }
 
         var threadState = ThreadState();
         var attributeId = new AttributeId(node, attributeName);
@@ -399,6 +406,10 @@ public static class GrammarAttribute
                 threadState.NextIteration();
                 isFinal = ComputeChild(node, ref child, ref current, threadState, attributeId);
             } while (threadState.Changed && !isFinal);
+#if DEBUG
+            //if (!node.IsFinal)
+            //    throw new InvalidOperationException("Cannot mark node final without a final parent");
+#endif
             current.MarkFinal();
             return current;
         }
@@ -408,6 +419,10 @@ public static class GrammarAttribute
             var isFinal = ComputeChild(node, ref child, ref current, threadState, attributeId);
             if (isFinal && node.IsFinal)
             {
+#if DEBUG
+                // TODO not sure if this check should be enforced here
+                if (!node.IsFinal) throw new InvalidOperationException("Cannot mark node final without a final parent");
+#endif
                 current.MarkFinal();
                 return current;
             }

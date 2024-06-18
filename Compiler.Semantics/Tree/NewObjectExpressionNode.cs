@@ -49,14 +49,18 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.NewObjectExpression_Antetype);
-    private ValueAttribute<FlowState> flowStateAfter;
+    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
-        => flowStateAfter.TryGetValue(out var value) ? value
-            : flowStateAfter.GetValue(this, ExpressionTypesAspect.NewObjectExpression_FlowStateAfter);
-    private ValueAttribute<DataType> type;
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
+                ExpressionTypesAspect.NewObjectExpression_FlowStateAfter, ref flowStateAfter);
+    private DataType? type;
+    private bool typeCached;
     public override DataType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, ExpressionTypesAspect.NewObjectExpression_Type);
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : GrammarAttribute.Synthetic(ref typeCached, this,
+                ExpressionTypesAspect.NewObjectExpression_Type, ref type);
 
     public NewObjectExpressionNode(
         INewObjectExpressionSyntax syntax,
