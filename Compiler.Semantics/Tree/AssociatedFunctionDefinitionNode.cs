@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -26,10 +27,12 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
     public override FunctionSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAspect.AssociatedFunctionDeclaration);
-    private ValueAttribute<FunctionType> type;
+    private FunctionType? type;
+    private bool typeCached;
     public FunctionType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeMemberDeclarationsAspect.AssociatedFunctionDeclaration_Type);
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : GrammarAttribute.Synthetic(ref typeCached, this,
+                TypeMemberDeclarationsAspect.AssociatedFunctionDeclaration_Type, ref type);
     public IBodyNode Body { get; }
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope
@@ -63,4 +66,18 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
 
     internal override IPreviousValueId PreviousValueId(IChildNode before)
         => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
+
+    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child == Body)
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? FlowStateBefore();
+        if (Parameters.IndexOf(child) is int index)
+        {
+            if (index == 0)
+                return FlowStateBefore();
+            return Parameters[index - 1].FlowStateAfter;
+        }
+
+        return base.InheritedFlowStateBefore(child, descendant, ctx);
+    }
 }

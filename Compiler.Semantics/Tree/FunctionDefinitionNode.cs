@@ -31,10 +31,12 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     public ITypeNode? Return { get; }
     public IBodyNode Body { get; }
-    private ValueAttribute<FunctionType> type;
+    private FunctionType? type;
+    private bool typeCached;
     public FunctionType Type
-        => type.TryGetValue(out var value) ? value
-            : type.GetValue(this, TypeMemberDeclarationsAspect.FunctionDeclaration_Type);
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : GrammarAttribute.Synthetic(ref typeCached, this,
+                TypeMemberDeclarationsAspect.FunctionDeclaration_Type, ref type);
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value
