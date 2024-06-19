@@ -119,6 +119,9 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
 
     public abstract override int GetHashCode();
 
+    public override bool Equals(Pseudotype? other)
+        => ReferenceEquals(this, other) || other is DataType dataType && Equals(dataType);
+
     public sealed override bool Equals(object? obj)
     {
         if (obj is null) return false;

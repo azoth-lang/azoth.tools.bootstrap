@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 /// Wraps up all the state that changes with the flow of the code to make it easy to attach to each
 /// node in the semantic tree.
 /// </summary>
-public sealed class FlowState
+public sealed class FlowState : IEquatable<FlowState>
 {
     public static readonly FlowState Empty = new FlowState();
 
@@ -459,4 +459,32 @@ public sealed class FlowState
                 setFor[value] = union;
         }
     }
+
+    #region Equality
+    public bool Equals(FlowState? other)
+    {
+        if (other is null)
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
+
+        // Check collection sizes first to avoid iterating over the collections
+        if (capabilities.Count != other.capabilities.Count
+            || sets.Count != other.sets.Count
+            // This checks that the total number of elements in the sets are the same
+            || setFor.Count != other.setFor.Count)
+            return false;
+
+        // setFor does not need to be compared because it is implied by the sets
+        return sets.SetEquals(other.sets)
+               // Already checked that the sizes are the same, so it suffices to check that all the
+               // entries in one are in the other.
+               && capabilities.All(p => other.capabilities.TryGetValue(p.Key, out var value) && p.Value.Equals(value));
+    }
+
+    public override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is FlowState other && Equals(other);
+
+    public override int GetHashCode() => HashCode.Combine(capabilities.Count, sets.Count, setFor.Count);
+    #endregion
 }
