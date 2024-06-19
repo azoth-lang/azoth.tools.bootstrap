@@ -97,13 +97,16 @@ internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<Shari
             return false;
         if (ReferenceEquals(this, other))
             return true;
-        return IsLent == other.IsLent && values.Equals(other.values);
+        return IsLent == other.IsLent && values.SetEquals(other.values);
     }
 
     public override bool Equals(object? obj)
        => ReferenceEquals(this, obj) || obj is SharingSet other && Equals(other);
 
-    public override int GetHashCode() => HashCode.Combine(IsLent, values);
+    public override int GetHashCode()
+        // Note GetHashCode isn't implemented for ImmutableHashSet, so we don't include the values.
+        // To do so, we'd need to sort them and the cache the hash code.
+        => HashCode.Combine(IsLent, values.Count);
     #endregion
 
     public override string ToString()
