@@ -14,6 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class VariableDeclarationStatementNode : StatementNode, IVariableDeclarationStatementNode
 {
+    private AttributeLock syncLock;
     public override IVariableDeclarationStatementSyntax Syntax { get; }
     bool IBindingNode.IsLentBinding => false;
     public bool IsMutableBinding => Syntax.IsMutableBinding;
@@ -36,10 +37,12 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAspect.VariableDeclarationStatement_Symbol);
     public int? DeclarationNumber => Syntax.DeclarationNumber.Result;
-    private ValueAttribute<ValueId> valueId;
+    private ValueId valueId;
+    private bool valueIdCached;
     public ValueId ValueId
-        => valueId.TryGetValue(out var value) ? value
-            : valueId.GetValue(this, ExpressionTypesAspect.VariableDeclarationStatement_ValueId);
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : GrammarAttribute.Synthetic(ref valueIdCached, this,
+                ExpressionTypesAspect.VariableDeclarationStatement_ValueId, ref valueId, ref syncLock);
     private ValueAttribute<IMaybeAntetype> bindingAntetype;
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
@@ -74,7 +77,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
 
     public override LexicalScope GetLexicalScope() => LexicalScope;
 
-    internal override IPreviousValueId PreviousValueId(IChildNode before) => ValueId;
+    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
 
     public FlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());

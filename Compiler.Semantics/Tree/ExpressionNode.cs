@@ -12,10 +12,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNode
 {
     public abstract override ITypedExpressionSyntax Syntax { get; }
-    private ValueAttribute<ValueId> valueId;
+    private ValueId valueId;
+    private bool valueIdCached;
     public ValueId ValueId
-        => valueId.TryGetValue(out var value) ? value
-            : valueId.GetValue((IExpressionNode)this, ExpressionTypesAspect.Expression_ValueId);
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : GrammarAttribute.Synthetic(ref valueIdCached, (IExpressionNode)this,
+                ExpressionTypesAspect.Expression_ValueId, ref valueId, ref SyncLock);
     // TODO make this abstract once all expressions have type implemented
     public virtual IMaybeExpressionAntetype Antetype
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(Antetype)} not implemented.");
@@ -28,7 +30,8 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
 
     private protected ExpressionNode() { }
 
-    public new IPreviousValueId PreviousValueId() => base.PreviousValueId();
+    public IPreviousValueId PreviousValueId()
+        => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override IPreviousValueId PreviousValueId(IChildNode before) => ValueId;
+    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
 }

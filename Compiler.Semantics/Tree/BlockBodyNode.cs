@@ -11,7 +11,6 @@ internal sealed class BlockBodyNode : CodeNode, IBlockBodyNode
 {
     public override IBlockBodySyntax Syntax { get; }
     public IFixedList<IBodyStatementNode> Statements { get; }
-    public ValueId? ValueId => null;
     public FlowState FlowStateAfter
         => throw new System.NotImplementedException();
 

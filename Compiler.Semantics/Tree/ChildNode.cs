@@ -78,14 +78,15 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     /// <summary>
     /// The previous node to this one in a preorder traversal of the tree.
     /// </summary>
-    protected virtual SemanticNode Previous()
+    protected virtual SemanticNode Previous(IInheritanceContext ctx)
     {
         SemanticNode? previous = null;
-        foreach (var child in Parent.Children().Cast<SemanticNode>())
+        var parent = GetParent(ctx);
+        foreach (var child in parent.Children().Cast<SemanticNode>())
         {
             if (child == this)
                 // If this is the first child, return the parent without descending
-                return previous?.LastDescendant() ?? Parent;
+                return previous?.LastDescendant() ?? parent;
             previous = child;
         }
 
@@ -168,9 +169,9 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected DataType InheritedBindingType()
         => Parent.InheritedBindingType(this, this);
 
-    internal override IPreviousValueId PreviousValueId(IChildNode before)
-        => Previous().PreviousValueId(before);
+    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
+        => Previous(ctx).PreviousValueId(before, ctx);
 
-    protected IPreviousValueId PreviousValueId()
-        => Previous().PreviousValueId(this);
+    protected IPreviousValueId PreviousValueId(IInheritanceContext ctx)
+        => Previous(ctx).PreviousValueId(this, ctx);
 }

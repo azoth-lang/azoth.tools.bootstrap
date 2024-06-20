@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -20,5 +21,6 @@ internal abstract class StatementNode : CodeNode, IStatementNode
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => GetLexicalScope();
 
-    public new IPreviousValueId PreviousValueId() => base.PreviousValueId();
+    public IPreviousValueId PreviousValueId()
+        => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 }

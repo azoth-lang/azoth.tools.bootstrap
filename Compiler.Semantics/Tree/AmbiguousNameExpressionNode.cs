@@ -31,8 +31,9 @@ internal abstract class AmbiguousNameExpressionNode : AmbiguousExpressionNode, I
 
     private protected AmbiguousNameExpressionNode() { }
 
-    public new IPreviousValueId PreviousValueId() => base.PreviousValueId();
+    public IPreviousValueId PreviousValueId()
+        => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override IPreviousValueId PreviousValueId(IChildNode before)
+    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => ValueId;
 }

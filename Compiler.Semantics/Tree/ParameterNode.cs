@@ -10,15 +10,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class ParameterNode : CodeNode, IParameterNode
 {
+    protected AttributeLock SyncLock;
     public abstract override IParameterSyntax Syntax { get; }
     public abstract IdentifierName? Name { get; }
     public bool Unused => Syntax.Unused;
     public abstract IMaybeAntetype BindingAntetype { get; }
     public abstract Pseudotype BindingType { get; }
-    private ValueAttribute<ValueId> valueId;
+    private ValueId valueId;
+    private bool valueIdCached;
     public ValueId ValueId
-        => valueId.TryGetValue(out var value) ? value
-            : valueId.GetValue(this, TypeMemberDeclarationsAspect.Parameter_ValueId);
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : GrammarAttribute.Synthetic(ref valueIdCached, this,
+                TypeMemberDeclarationsAspect.Parameter_ValueId, ref valueId, ref SyncLock);
     public abstract FlowState FlowStateAfter { get; }
 
     private protected ParameterNode() { }
@@ -26,7 +29,8 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
     public FlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
-    public new IPreviousValueId PreviousValueId() => base.PreviousValueId();
+    public IPreviousValueId PreviousValueId()
+        => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override IPreviousValueId PreviousValueId(IChildNode before) => ValueId;
+    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
 }

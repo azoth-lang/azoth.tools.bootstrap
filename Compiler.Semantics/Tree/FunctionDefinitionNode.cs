@@ -69,7 +69,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     public FlowState FlowStateBefore()
         => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore(this);
 
-    internal override IPreviousValueId PreviousValueId(IChildNode before)
+    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
 
     internal override FlowState InheritedFlowStateBefore(
