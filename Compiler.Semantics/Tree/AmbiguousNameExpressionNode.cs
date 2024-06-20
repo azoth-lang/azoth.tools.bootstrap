@@ -13,10 +13,12 @@ internal abstract class AmbiguousNameExpressionNode : AmbiguousExpressionNode, I
 {
     public abstract override INameExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    private ValueAttribute<ValueId> valueId;
+    private ValueId valueId;
+    private bool valueIdCached;
     public ValueId ValueId
-        => valueId.TryGetValue(out var value) ? value
-            : valueId.GetValue((IExpressionNode)this, ExpressionTypesAspect.Expression_ValueId);
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : GrammarAttribute.Synthetic(ref valueIdCached, (IExpressionNode)this,
+                ExpressionTypesAspect.Expression_ValueId, ref valueId, ref SyncLock);
     // TODO make this abstract once all expressions have type implemented (also, not all names should have types)
     public virtual IMaybeExpressionAntetype Antetype
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(Antetype)} not implemented.");
