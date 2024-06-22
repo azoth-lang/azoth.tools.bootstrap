@@ -17,8 +17,8 @@ internal abstract class AmbiguousNameExpressionNode : AmbiguousExpressionNode, I
     private bool valueIdCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : GrammarAttribute.Synthetic(ref valueIdCached, (IExpressionNode)this,
-                ExpressionTypesAspect.Expression_ValueId, ref valueId, ref SyncLock);
+            : ((IExpressionNode)this).Synthetic(ref valueIdCached, ref valueId, ref SyncLock,
+                ExpressionTypesAspect.Expression_ValueId);
     // TODO make this abstract once all expressions have type implemented (also, not all names should have types)
     public virtual IMaybeExpressionAntetype Antetype
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(Antetype)} not implemented.");

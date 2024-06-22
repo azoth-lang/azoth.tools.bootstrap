@@ -41,8 +41,8 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     private bool valueIdCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : GrammarAttribute.Synthetic(ref valueIdCached, this,
-                ExpressionTypesAspect.VariableDeclarationStatement_ValueId, ref valueId, ref syncLock);
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ExpressionTypesAspect.VariableDeclarationStatement_ValueId);
     private ValueAttribute<IMaybeAntetype> bindingAntetype;
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value

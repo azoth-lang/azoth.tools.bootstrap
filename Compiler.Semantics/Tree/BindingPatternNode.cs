@@ -25,8 +25,8 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     private bool valueIdCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : GrammarAttribute.Synthetic(ref valueIdCached, this,
-                ExpressionTypesAspect.BindingPattern_ValueId, ref valueId, ref syncLock);
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ExpressionTypesAspect.BindingPattern_ValueId);
     private ValueAttribute<IMaybeAntetype> bindingAntetype;
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value

@@ -20,8 +20,8 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
     private bool valueIdCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : GrammarAttribute.Synthetic(ref valueIdCached, this,
-                TypeMemberDeclarationsAspect.Parameter_ValueId, ref valueId, ref SyncLock);
+            : this.Synthetic(ref valueIdCached, ref valueId, ref SyncLock,
+                TypeMemberDeclarationsAspect.Parameter_ValueId);
     public abstract FlowState FlowStateAfter { get; }
 
     private protected ParameterNode() { }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Azoth.Tools.Bootstrap.Compiler.Core.Attributes.Operations;
 using Azoth.Tools.Bootstrap.Framework;
 using InlineMethod;
 
@@ -54,36 +55,18 @@ public static class GrammarAttribute
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IInheritanceContext CurrentInheritanceContext() => ThreadState();
 
-    #region Synthetic overloads
+    #region NonCircular overloads
     /// <summary>
-    /// Read the value of a non-circular synthetic attribute that is <see cref="IEquatable{T}"/> for
-    /// some supertype.
+    /// Read the value of a non-circular attribute.
     /// </summary>
-    [Inline] // Not always working
-    [DebuggerStepThrough]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Synthetic<TNode, T>(
+    public static T NonCircular<TNode, T, TOp>(
         this TNode node,
         ref bool cached,
         ref T? value,
-        Func<TNode, T> compute,
+        TOp operations,
         [CallerMemberName] string attributeName = "")
         where TNode : class, IParent
-        where T : class?
-        => node.Synthetic(ref cached, ref value, compute, StrictEqualityComparer<T>.Instance, attributeName);
-
-    /// <summary>
-    /// Read the value of a non-circular synthetic attribute.
-    /// </summary>
-    public static T Synthetic<TNode, T>(
-        this TNode node,
-        ref bool cached,
-        ref T? value,
-        Func<TNode, T> compute,
-        IEqualityComparer<T> comparer,
-        [CallerMemberName] string attributeName = "")
-        where TNode : class, IParent
-        where T : class?
+        where TOp : struct, IAttributeOperations<TNode, T>
     {
         if (string.IsNullOrEmpty(attributeName))
             throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
@@ -107,7 +90,7 @@ public static class GrammarAttribute
             // possibly non-final attribute value. If it does, then the value is not cached.
             using (var context = threadState.DependencyContext())
             {
-                next = compute(node); // may throw
+                next = operations.Compute(node, threadState); // may throw
                 if (context.IsFinal)
                 {
                     value = next;
@@ -115,11 +98,10 @@ public static class GrammarAttribute
                     return next;
                 }
             }
-            if (!comparer.Equals(next, previous)) // may throw
+            if (!operations.Equals(next, previous)) // may throw
             {
-                var original = Interlocked.CompareExchange(ref value!, next, previous);
-                if (!ReferenceEquals(original, previous))
-                    next = Unsafe.As<T>(original);
+                if (!operations.CompareExchange(ref value!, next, previous, out var original)) // may throw
+                    next = original;
                 else
                     // Value updated for this cycle, so update the iteration
                     threadState.UpdateIterationFor(attributeId);
@@ -138,42 +120,77 @@ public static class GrammarAttribute
 #if DEBUG
         using var _ = threadState.BeginComputing(attributeId);
 #endif
-        value = compute(node); // may throw
+        value = operations.Compute(node, threadState); // may throw
         Volatile.Write(ref cached, true);
         return value; // Now that the value is cached, it is fine to read it directly
     }
+    #endregion
 
+    #region Synthetic overloads
     /// <summary>
-    /// Read the value of a non-circular synthetic attribute that is <see cref="IEquatable{T}"/>.
+    /// Read the value of a non-circular synthetic attribute that is <see cref="IEquatable{T}"/> for
+    /// some supertype.
     /// </summary>
+    [Inline] // Not always working
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Synthetic<TNode, T>(
+        this TNode node,
         ref bool cached,
-        TNode node,
+        ref T? value,
         Func<TNode, T> compute,
-        ref T value,
-        ref AttributeLock syncLock,
         [CallerMemberName] string attributeName = "")
-        where TNode : class
-        where T : struct
-        => Synthetic(ref cached, node, compute, StrictEqualityComparer<T>.Instance, ref value, ref syncLock, attributeName);
+        where TNode : class, IParent
+        where T : class?
+        => node.NonCircular(ref cached, ref value, AttributeOperations.Synthetic(compute), attributeName);
+
+    /// <summary>
+    /// Read the value of a non-circular synthetic attribute.
+    /// </summary>
+    public static T Synthetic<TNode, T>(
+        this TNode node,
+        ref bool cached,
+        ref T? value,
+        Func<TNode, T> compute,
+        IEqualityComparer<T> comparer,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class, IParent
+        where T : class?
+        => node.NonCircular(ref cached, ref value, AttributeOperations.Synthetic(compute, comparer), attributeName);
 
     /// <summary>
     /// Read the value of a non-circular synthetic attribute that is <see cref="IEquatable{T}"/>.
     /// </summary>
+    [Inline] // Not always working
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T? Synthetic<TNode, T>(
+    public static T Synthetic<TNode, T>(
+        this TNode node,
         ref bool cached,
-        TNode node,
-        Func<TNode, T?> compute,
-        ref T? value,
+        ref T value,
         ref AttributeLock syncLock,
+        Func<TNode, T> compute,
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : struct
-        => Synthetic(ref cached, node, compute, StrictEqualityComparer<T?>.Instance, ref value, ref syncLock, attributeName);
+        => Synthetic(node, ref cached, ref value, ref syncLock, compute, StrictEqualityComparer<T>.Instance, attributeName);
+
+    /// <summary>
+    /// Read the value of a non-circular synthetic attribute that is <see cref="IEquatable{T}"/>.
+    /// </summary>
+    [Inline] // Not always working
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T? Synthetic<TNode, T>(
+        this TNode node,
+        ref bool cached,
+        ref T? value,
+        ref AttributeLock syncLock,
+        Func<TNode, T?> compute,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class
+        where T : struct
+        => Synthetic(node, ref cached, ref value, ref syncLock, compute, StrictEqualityComparer<T?>.Instance, attributeName);
 
     /// <summary>
     /// Read the value of a non-circular synthetic attribute.
@@ -182,12 +199,12 @@ public static class GrammarAttribute
     /// struct or nullable struct. So this method would allow anything, but we want them to use the
     /// other overload for reference types.</remarks>
     private static T Synthetic<TNode, T>(
-        ref bool cached,
         TNode node,
-        Func<TNode, T> compute,
-        IEqualityComparer<T> comparer,
+        ref bool cached,
         ref T value,
         ref AttributeLock syncLock,
+        Func<TNode, T> compute,
+        IEqualityComparer<T> comparer,
         [CallerMemberName] string attributeName = "")
         where TNode : class
     {
