@@ -19,8 +19,7 @@ internal sealed class OptionalTypeNode : TypeNode, IOptionalTypeNode
     private bool namedTypeCached;
     public override DataType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : GrammarAttribute.Synthetic(ref namedTypeCached, this,
-                TypeExpressionsAspect.OptionalType_NamedType, ref namedType);
+            : this.Synthetic(ref namedTypeCached, ref namedType, TypeExpressionsAspect.OptionalType_NamedType);
 
     public OptionalTypeNode(IOptionalTypeSyntax syntax, ITypeNode referent)
     {

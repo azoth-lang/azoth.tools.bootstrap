@@ -23,6 +23,8 @@ public static class GrammarAttribute
     /// <summary>
     /// Get the thread state for the current thread.
     /// </summary>
+    [Inline] // Not always working
+    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static AttributeGrammarThreadState ThreadState()
         // Do not need to use LazyInitializer here because this is thread static
@@ -32,10 +34,12 @@ public static class GrammarAttribute
     /// Safely check whether the attribute has been cached. If it has been, then it is safe to
     /// simply read the attribute value from the backing field.
     /// </summary>
+    [Inline] // Not always working
     [DebuggerStepThrough]
-    [Inline]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsCached(in bool cached) => Volatile.Read(in cached);
 
+    [Inline] // Not always working
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsFinal(IChild? child) => child?.IsFinal ?? true;
@@ -45,6 +49,8 @@ public static class GrammarAttribute
     /// </summary>
     /// <remarks>This should only be used for nodes that directly expose a function that calls the
     /// inherited member.</remarks>
+    [Inline] // Not always working
+    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IInheritanceContext CurrentInheritanceContext() => ThreadState();
 
@@ -53,29 +59,30 @@ public static class GrammarAttribute
     /// Read the value of a non-circular synthetic attribute that is <see cref="IEquatable{T}"/> for
     /// some supertype.
     /// </summary>
+    [Inline] // Not always working
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Synthetic<TNode, T>(
+        this TNode node,
         ref bool cached,
-        TNode node,
-        Func<TNode, T> compute,
         ref T? value,
+        Func<TNode, T> compute,
         [CallerMemberName] string attributeName = "")
-        where TNode : class
+        where TNode : class, IParent
         where T : class?
-        => Synthetic(ref cached, node, compute, StrictEqualityComparer<T>.Instance, ref value, attributeName);
+        => node.Synthetic(ref cached, ref value, compute, StrictEqualityComparer<T>.Instance, attributeName);
 
     /// <summary>
     /// Read the value of a non-circular synthetic attribute.
     /// </summary>
     public static T Synthetic<TNode, T>(
+        this TNode node,
         ref bool cached,
-        TNode node,
+        ref T? value,
         Func<TNode, T> compute,
         IEqualityComparer<T> comparer,
-        ref T? value,
         [CallerMemberName] string attributeName = "")
-        where TNode : class
+        where TNode : class, IParent
         where T : class?
     {
         if (string.IsNullOrEmpty(attributeName))

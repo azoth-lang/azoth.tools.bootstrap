@@ -28,8 +28,7 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     private bool bindingTypeCached;
     public override DataType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : GrammarAttribute.Synthetic(ref bindingTypeCached, this,
-                TypeMemberDeclarationsAspect.NamedParameterNode_BindingType, ref bindingType);
+            : this.Synthetic(ref bindingTypeCached, ref bindingType, TypeMemberDeclarationsAspect.NamedParameterNode_BindingType);
     private ValueAttribute<ParameterType> parameterType;
     public ParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value

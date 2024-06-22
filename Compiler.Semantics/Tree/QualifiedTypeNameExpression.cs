@@ -25,8 +25,7 @@ internal sealed class QualifiedTypeNameExpression : AmbiguousNameExpressionNode,
     private bool namedBareTypeCached;
     public BareType? NamedBareType
         => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType!
-            : GrammarAttribute.Synthetic(ref namedBareTypeCached, this,
-                BareTypeAspect.TypeNameExpression_NamedBareType, ref namedBareType);
+            : this.Synthetic(ref namedBareTypeCached, ref namedBareType, BareTypeAspect.TypeNameExpression_NamedBareType);
 
     public QualifiedTypeNameExpression(
         IMemberAccessExpressionSyntax syntax,

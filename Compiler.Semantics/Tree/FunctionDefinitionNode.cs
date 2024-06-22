@@ -35,8 +35,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     private bool typeCached;
     public FunctionType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                TypeMemberDeclarationsAspect.FunctionDeclaration_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, TypeMemberDeclarationsAspect.FunctionDeclaration_Type);
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value

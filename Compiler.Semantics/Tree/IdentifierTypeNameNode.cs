@@ -33,8 +33,7 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
     private bool namedBareTypeCached;
     public override BareType? NamedBareType
         => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType!
-            : GrammarAttribute.Synthetic(ref namedBareTypeCached, this,
-                BareTypeAspect.IdentifierTypeName_NamedBareType, ref namedBareType);
+            : this.Synthetic(ref namedBareTypeCached, ref namedBareType, BareTypeAspect.IdentifierTypeName_NamedBareType);
     public IdentifierTypeNameNode(IIdentifierTypeNameSyntax syntax)
     {
         Syntax = syntax;

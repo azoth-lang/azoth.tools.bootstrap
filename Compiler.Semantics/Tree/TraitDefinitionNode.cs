@@ -15,8 +15,7 @@ internal sealed class TraitDefinitionNode : TypeDefinitionNode, ITraitDefinition
     private bool declaredTypeCached;
     public override ObjectType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
-            : GrammarAttribute.Synthetic(ref declaredTypeCached, this,
-                TypeDeclarationsAspect.TraitDefinition_DeclaredType, ref declaredType);
+            : this.Synthetic(ref declaredTypeCached, ref declaredType, TypeDeclarationsAspect.TraitDefinition_DeclaredType);
     public override IFixedSet<ITraitMemberDefinitionNode> Members { get; }
     private ValueAttribute<IFixedSet<ITraitMemberDeclarationNode>> inclusiveMembers;
     public override IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers

@@ -22,8 +22,7 @@ internal sealed class SelfViewpointTypeNode : TypeNode, ISelfViewpointTypeNode
     private bool namedTypeCached;
     public override DataType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : GrammarAttribute.Synthetic(ref namedTypeCached, this,
-                TypeExpressionsAspect.SelfViewpointType_NamedType, ref namedType);
+            : this.Synthetic(ref namedTypeCached, ref namedType, TypeExpressionsAspect.SelfViewpointType_NamedType);
     private Pseudotype? namedSelfType;
     private bool namedSelfTypeCached;
     public Pseudotype? NamedSelfType

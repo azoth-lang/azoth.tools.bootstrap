@@ -20,8 +20,7 @@ internal sealed class LoopExpressionNode : ExpressionNode, ILoopExpressionNode
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                ExpressionTypesAspect.LoopExpression_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.LoopExpression_Type);
     private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter

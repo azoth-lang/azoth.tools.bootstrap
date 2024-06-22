@@ -19,8 +19,7 @@ internal sealed class ClassDefinitionNode : TypeDefinitionNode, IClassDefinition
     private bool declaredTypeCached;
     public override ObjectType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
-            : GrammarAttribute.Synthetic(ref declaredTypeCached, this,
-                TypeDeclarationsAspect.ClassDefinition_DeclaredType, ref declaredType);
+            : this.Synthetic(ref declaredTypeCached, ref declaredType, TypeDeclarationsAspect.ClassDefinition_DeclaredType);
 
     public IFixedList<IClassMemberDefinitionNode> SourceMembers { get; }
     private ValueAttribute<IFixedSet<IClassMemberDefinitionNode>> members;

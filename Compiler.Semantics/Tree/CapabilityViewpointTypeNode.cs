@@ -21,8 +21,7 @@ internal sealed class CapabilityViewpointTypeNode : TypeNode, ICapabilityViewpoi
     private bool namedTypeCached;
     public override DataType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : GrammarAttribute.Synthetic(ref namedTypeCached, this,
-                TypeExpressionsAspect.CapabilityViewpointType_NamedType, ref namedType);
+            : this.Synthetic(ref namedTypeCached, ref namedType, TypeExpressionsAspect.CapabilityViewpointType_NamedType);
 
     public CapabilityViewpointTypeNode(
         ICapabilityViewpointTypeSyntax syntax,

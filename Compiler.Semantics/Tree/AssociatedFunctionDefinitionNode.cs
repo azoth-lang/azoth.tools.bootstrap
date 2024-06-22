@@ -31,8 +31,7 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
     private bool typeCached;
     public FunctionType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                TypeMemberDeclarationsAspect.AssociatedFunctionDeclaration_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, TypeMemberDeclarationsAspect.AssociatedFunctionDeclaration_Type);
     public IBodyNode Body { get; }
     private ValueAttribute<LexicalScope> lexicalScope;
     public override LexicalScope LexicalScope

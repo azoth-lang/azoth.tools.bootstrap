@@ -16,6 +16,9 @@
     <WarningsAsErrors />
   </PropertyGroup>
   <ItemGroup>
+    <None Include="FodyWeavers.xsd" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="DotNet.MultiMap" Version="2.2.1" />
     <PackageReference Include="ExhaustiveMatching.Analyzer" Version="0.5.0" />
     <PackageReference Include="Fody" Version="6.8.1">

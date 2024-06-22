@@ -41,8 +41,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                ExpressionTypesAspect.MethodInvocationExpression_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.MethodInvocationExpression_Type);
     private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter

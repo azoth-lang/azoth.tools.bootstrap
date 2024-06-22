@@ -25,8 +25,7 @@ internal sealed class StringLiteralExpressionNode : LiteralExpressionNode, IStri
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                ExpressionTypesAspect.StringLiteralExpression_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.StringLiteralExpression_Type);
 
     public StringLiteralExpressionNode(IStringLiteralExpressionSyntax syntax)
     {

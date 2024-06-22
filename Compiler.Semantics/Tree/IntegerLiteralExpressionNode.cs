@@ -20,8 +20,7 @@ internal sealed class IntegerLiteralExpressionNode : LiteralExpressionNode, IInt
     private bool typeCached;
     public override IntegerConstValueType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                ExpressionTypesAspect.IntegerLiteralExpression_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.IntegerLiteralExpression_Type);
 
     public IntegerLiteralExpressionNode(IIntegerLiteralExpressionSyntax syntax)
     {

@@ -22,8 +22,7 @@ internal sealed class UnsafeExpressionNode : ExpressionNode, IUnsafeExpressionNo
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                ExpressionTypesAspect.UnsafeExpression_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.UnsafeExpression_Type);
 
     public UnsafeExpressionNode(IUnsafeExpressionSyntax syntax, IAmbiguousExpressionNode expression)
     {

@@ -38,8 +38,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                ExpressionTypesAspect.FunctionInvocationExpression_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.FunctionInvocationExpression_Type);
     private ValueAttribute<ContextualizedOverload<IFunctionLikeDeclarationNode>?> contextualizedOverload;
     public ContextualizedOverload<IFunctionLikeDeclarationNode>? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value

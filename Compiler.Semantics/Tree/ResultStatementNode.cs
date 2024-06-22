@@ -21,15 +21,13 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
     private bool antetypeCached;
     public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
-            : GrammarAttribute.Synthetic(ref antetypeCached, this,
-                ExpressionAntetypesAspect.ResultStatement_Antetype, ref antetype);
+            : this.Synthetic(ref antetypeCached, ref antetype, ExpressionAntetypesAspect.ResultStatement_Antetype);
     public override IMaybeAntetype ResultAntetype => Antetype;
     private DataType? type;
     private bool typeCached;
     public DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                ExpressionTypesAspect.ResultStatement_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.ResultStatement_Type);
     public override DataType ResultType => Type;
     public override FlowState FlowStateAfter
         => IntermediateExpression?.FlowStateAfter ?? FlowState.Empty;

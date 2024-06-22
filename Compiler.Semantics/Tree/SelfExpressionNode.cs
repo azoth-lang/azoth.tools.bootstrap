@@ -44,14 +44,12 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                ExpressionTypesAspect.SelfExpression_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.SelfExpression_Type);
     private Pseudotype? pseudotype;
     private bool pseudotypeCached;
     public Pseudotype Pseudotype
         => GrammarAttribute.IsCached(in pseudotypeCached) ? pseudotype!
-            : GrammarAttribute.Synthetic(ref pseudotypeCached, this,
-                ExpressionTypesAspect.SelfExpression_Pseudotype, ref pseudotype);
+            : this.Synthetic(ref pseudotypeCached, ref pseudotype, ExpressionTypesAspect.SelfExpression_Pseudotype);
 
     public SelfExpressionNode(ISelfExpressionSyntax syntax)
     {

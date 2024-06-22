@@ -33,8 +33,7 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
     private bool bindingTypeCached;
     public override DataType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : GrammarAttribute.Synthetic(ref bindingTypeCached, this,
-                TypeMemberDeclarationsAspect.FieldParameter_BindingType, ref bindingType);
+            : this.Synthetic(ref bindingTypeCached, ref bindingType, TypeMemberDeclarationsAspect.FieldParameter_BindingType);
     private ValueAttribute<ParameterType> parameterType;
     public ParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value

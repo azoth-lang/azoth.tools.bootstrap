@@ -21,8 +21,7 @@ internal sealed class CapabilityTypeNode : TypeNode, ICapabilityTypeNode
     private bool namedTypeCached;
     public override DataType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : GrammarAttribute.Synthetic(ref namedTypeCached, this,
-                TypeExpressionsAspect.CapabilityType_NamedType, ref namedType);
+            : this.Synthetic(ref namedTypeCached, ref namedType, TypeExpressionsAspect.CapabilityType_NamedType);
 
     public CapabilityTypeNode(ICapabilityTypeSyntax syntax, ICapabilityNode capability, ITypeNode referent)
     {

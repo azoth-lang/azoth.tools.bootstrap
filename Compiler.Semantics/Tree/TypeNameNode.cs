@@ -23,6 +23,5 @@ internal abstract class TypeNameNode : TypeNode, ITypeNameNode
     private bool namedTypeCached;
     public sealed override DataType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : GrammarAttribute.Synthetic(ref namedTypeCached, this,
-                TypeExpressionsAspect.TypeName_NamedType, ref namedType);
+            : this.Synthetic(ref namedTypeCached, ref namedType, TypeExpressionsAspect.TypeName_NamedType);
 }

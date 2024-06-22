@@ -23,14 +23,12 @@ internal sealed class FunctionReferenceInvocationNode : ExpressionNode, IFunctio
     private bool functionTypeCached;
     public FunctionType FunctionType
         => GrammarAttribute.IsCached(in functionTypeCached) ? functionType!
-            : GrammarAttribute.Synthetic(ref functionTypeCached, this,
-                ExpressionTypesAspect.FunctionReferenceInvocation_FunctionType, ref functionType);
+            : this.Synthetic(ref functionTypeCached, ref functionType, ExpressionTypesAspect.FunctionReferenceInvocation_FunctionType);
     private DataType? type;
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                ExpressionTypesAspect.FunctionReferenceInvocation_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.FunctionReferenceInvocation_Type);
 
     public FunctionReferenceInvocationNode(
         IInvocationExpressionSyntax syntax,

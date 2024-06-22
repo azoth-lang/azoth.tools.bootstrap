@@ -18,8 +18,7 @@ internal sealed class SpecialTypeNameNode : TypeNameNode, ISpecialTypeNameNode
     private bool referencedSymbolCached;
     public override TypeSymbol ReferencedSymbol
         => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol!
-            : GrammarAttribute.Synthetic(ref referencedSymbolCached, this,
-                SymbolAspect.SpecialTypeName_ReferencedSymbol, ref referencedSymbol);
+            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol, SymbolAspect.SpecialTypeName_ReferencedSymbol);
     private ValueAttribute<IMaybeAntetype> antetype;
     public override IMaybeAntetype NamedAntetype
         => antetype.TryGetValue(out var value) ? value
@@ -28,8 +27,7 @@ internal sealed class SpecialTypeNameNode : TypeNameNode, ISpecialTypeNameNode
     private bool namedBareTypeCached;
     public override BareType? NamedBareType
         => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType!
-            : GrammarAttribute.Synthetic(ref namedBareTypeCached, this,
-                BareTypeAspect.SpecialTypeName_NamedBareType, ref namedBareType);
+            : this.Synthetic(ref namedBareTypeCached, ref namedBareType, BareTypeAspect.SpecialTypeName_NamedBareType);
 
     public SpecialTypeNameNode(ISpecialTypeNameSyntax syntax)
     {

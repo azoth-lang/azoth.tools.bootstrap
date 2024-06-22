@@ -29,8 +29,7 @@ internal sealed class GetterInvocationExpressionNode : ExpressionNode, IGetterIn
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                ExpressionTypesAspect.GetterInvocationExpression_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.GetterInvocationExpression_Type);
 
     public GetterInvocationExpressionNode(
         IMemberAccessExpressionSyntax syntax,

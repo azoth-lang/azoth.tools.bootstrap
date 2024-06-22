@@ -25,8 +25,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     private bool symbolCached;
     public override UserTypeSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : GrammarAttribute.Synthetic(ref symbolCached, this,
-                SymbolAspect.TypeDeclaration_Symbol, ref symbol);
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.TypeDeclaration_Symbol);
     public IFixedList<IGenericParameterNode> GenericParameters { get; }
     private ValueAttribute<LexicalScope> supertypesLexicalScope;
     public LexicalScope SupertypesLexicalScope

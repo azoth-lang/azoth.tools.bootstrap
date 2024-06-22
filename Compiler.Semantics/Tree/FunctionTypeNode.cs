@@ -22,8 +22,7 @@ internal sealed class FunctionTypeNode : TypeNode, IFunctionTypeNode
     private bool namedTypeCached;
     public override DataType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : GrammarAttribute.Synthetic(ref namedTypeCached, this,
-                TypeExpressionsAspect.FunctionType_NamedType, ref namedType);
+            : this.Synthetic(ref namedTypeCached, ref namedType, TypeExpressionsAspect.FunctionType_NamedType);
 
     public FunctionTypeNode(
         IFunctionTypeSyntax syntax,

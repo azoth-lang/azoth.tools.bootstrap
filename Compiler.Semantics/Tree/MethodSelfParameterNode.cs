@@ -16,8 +16,7 @@ internal sealed class MethodSelfParameterNode : SelfParameterNode, IMethodSelfPa
     private bool bindingTypeCached;
     public override Pseudotype BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : GrammarAttribute.Synthetic(ref bindingTypeCached, this,
-                TypeMemberDeclarationsAspect.MethodSelfParameter_BindingType, ref bindingType);
+            : this.Synthetic(ref bindingTypeCached, ref bindingType, TypeMemberDeclarationsAspect.MethodSelfParameter_BindingType);
 
     public MethodSelfParameterNode(IMethodSelfParameterSyntax syntax, ICapabilityConstraintNode capability)
     {

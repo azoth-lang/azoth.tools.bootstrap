@@ -23,8 +23,7 @@ internal sealed class FreezeExpressionNode : ExpressionNode, IFreezeExpressionNo
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                ExpressionTypesAspect.FreezeExpression_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.FreezeExpression_Type);
     private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter

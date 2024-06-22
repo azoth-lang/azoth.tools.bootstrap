@@ -35,8 +35,7 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
     private bool namedBareTypeCached;
     public override BareType? NamedBareType
         => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType!
-            : GrammarAttribute.Synthetic(ref namedBareTypeCached, this,
-                BareTypeAspect.GenericTypeName_NamedBareType, ref namedBareType);
+            : this.Synthetic(ref namedBareTypeCached, ref namedBareType, BareTypeAspect.GenericTypeName_NamedBareType);
 
     public GenericTypeNameNode(IGenericTypeNameSyntax syntax, IEnumerable<ITypeNode> typeArguments)
     {

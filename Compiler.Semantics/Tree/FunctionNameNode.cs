@@ -26,8 +26,7 @@ internal sealed class FunctionNameNode : AmbiguousNameExpressionNode, IFunctionN
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                ExpressionTypesAspect.FunctionName_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.FunctionName_Type);
     public override FlowState FlowStateAfter
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 

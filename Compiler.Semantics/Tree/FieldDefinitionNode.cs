@@ -31,8 +31,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     private bool bindingTypeCached;
     public DataType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : GrammarAttribute.Synthetic(ref bindingTypeCached, this,
-                TypeMemberDeclarationsAspect.FieldDeclaration_BindingType, ref bindingType);
+            : this.Synthetic(ref bindingTypeCached, ref bindingType, TypeMemberDeclarationsAspect.FieldDeclaration_BindingType);
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     private ValueAttribute<FieldSymbol> symbol;
     public override FieldSymbol Symbol

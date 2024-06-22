@@ -45,8 +45,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     private bool iteratorTypeCached;
     public DataType IteratorType
         => GrammarAttribute.IsCached(in iteratorTypeCached) ? iteratorType!
-            : GrammarAttribute.Synthetic(ref iteratorTypeCached, this,
-                ForeachExpressionTypeAspect.ForeachExpression_IteratorType, ref iteratorType);
+            : this.Synthetic(ref iteratorTypeCached, ref iteratorType, ForeachExpressionTypeAspect.ForeachExpression_IteratorType);
     private ValueAttribute<ITypeDeclarationNode?> referencedIteratorDeclaration;
     public ITypeDeclarationNode? ReferencedIteratorDeclaration
         => referencedIteratorDeclaration.TryGetValue(out var value) ? value
@@ -63,8 +62,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     private bool iteratedTypeCached;
     public DataType IteratedType
         => GrammarAttribute.IsCached(in iteratedTypeCached) ? iteratedType!
-            : GrammarAttribute.Synthetic(ref iteratedTypeCached, this,
-                ForeachExpressionTypeAspect.ForeachExpression_IteratedType, ref iteratedType);
+            : this.Synthetic(ref iteratedTypeCached, ref iteratedType, ForeachExpressionTypeAspect.ForeachExpression_IteratedType);
     private ValueAttribute<IMaybeAntetype> bindingAntetype;
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
@@ -73,8 +71,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     private bool bindingTypeCached;
     public DataType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : GrammarAttribute.Synthetic(ref bindingTypeCached, this,
-                NameBindingTypesAspect.ForeachExpression_BindingType, ref bindingType);
+            : this.Synthetic(ref bindingTypeCached, ref bindingType, NameBindingTypesAspect.ForeachExpression_BindingType);
     private Circular<FlowState> flowStateBeforeBlock = new(FlowState.Empty);
     private bool flowStateBeforeBlockCached;
     public FlowState FlowStateBeforeBlock
@@ -89,8 +86,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                ForeachExpressionTypeAspect.ForeachExpression_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, ForeachExpressionTypeAspect.ForeachExpression_Type);
     private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter

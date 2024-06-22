@@ -35,8 +35,7 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     private bool bindingTypeCached;
     public DataType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : GrammarAttribute.Synthetic(ref bindingTypeCached, this,
-                NameBindingTypesAspect.BindingPattern_BindingType, ref bindingType);
+            : this.Synthetic(ref bindingTypeCached, ref bindingType, NameBindingTypesAspect.BindingPattern_BindingType);
     private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter

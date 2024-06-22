@@ -51,8 +51,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     private bool bindingTypeCached;
     public DataType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : GrammarAttribute.Synthetic(ref bindingTypeCached, this,
-                NameBindingTypesAspect.VariableDeclarationStatement_BindingType, ref bindingType);
+            : this.Synthetic(ref bindingTypeCached, ref bindingType, NameBindingTypesAspect.VariableDeclarationStatement_BindingType);
     public override IMaybeAntetype? ResultAntetype => null;
     public override DataType? ResultType => null;
     private Circular<FlowState> flowStateAfter = new(FlowState.Empty);

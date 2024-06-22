@@ -26,8 +26,7 @@ internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpr
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : GrammarAttribute.Synthetic(ref typeCached, this,
-                ExpressionTypesAspect.ConversionExpression_Type, ref type);
+            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.ConversionExpression_Type);
     public override FlowState FlowStateAfter
         => FinalReferent.FlowStateAfter;
 
