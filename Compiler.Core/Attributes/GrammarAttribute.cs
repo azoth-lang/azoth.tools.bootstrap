@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes.Operations;
@@ -468,6 +467,7 @@ public static class GrammarAttribute
         {
             if (node.IsFinal)
                 current.MarkFinal();
+            // TODO shouldn't `else` mark non-final?
             return current;
         }
 
@@ -482,9 +482,9 @@ public static class GrammarAttribute
             {
                 threadState.NextIteration();
                 isFinal = ComputeChild(node, ref child, ref current, threadState, attributeId);
-            } while (threadState.Changed && !isFinal && current.MayHaveRewrite);
+            } while (threadState.Changed && !isFinal && (current?.MayHaveRewrite ?? false));
             if (node.IsFinal)
-                current.MarkFinal();
+                current?.MarkFinal();
             return current;
         }
 
@@ -504,7 +504,7 @@ public static class GrammarAttribute
     private static bool ComputeChild<TNode, TChild>(
         TNode node,
         ref TChild child,
-        [NotNull][DisallowNull] ref TChild current,
+        ref TChild current,
         AttributeGrammarThreadState threadState,
         AttributeId attributeId)
         where TChild : class?, IChild<TNode>?
@@ -515,19 +515,19 @@ public static class GrammarAttribute
         // Rewrites do not use the dependency context because even if they don't depend on something
         // that is not final, they may still get rewritten again.
 
-        var next = (TChild?)current.Rewrite(); // may throw
+        var next = (TChild)current!.Rewrite()!; // may throw
 
-        if (next is not null)
-        {
-            threadState.MarkChanged();
-            var original = Interlocked.CompareExchange(ref child, next, current);
-            if (!ReferenceEquals(original, current))
-                next = original!; // original should never be null because you can't rewrite to null
-            else
-                Attributes.Child.AttachRewritten(node, next);
-            current = next;
-        }
-        // else no rewrite
+        if (ReferenceEquals(current, next)) // may throw
+            // current == next, so use old value to avoid duplicate objects referenced
+            return next?.IsFinal ?? false;
+
+        threadState.MarkChanged();
+        var original = Interlocked.CompareExchange(ref child, next, current);
+        if (!ReferenceEquals(original, current))
+            next = original!; // original should never be null because you can't rewrite to null
+        else
+            Attributes.Child.AttachRewritten(node, next);
+        current = next;
 
         // If the child is already final (either another thread marked it final or it was marked
         // final by attaching it to the parent since it can't be rewritten), then it is final. Even

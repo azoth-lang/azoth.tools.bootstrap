@@ -31,6 +31,6 @@ internal sealed class FunctionGroupNameNode : AmbiguousNameExpressionNode, IFunc
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 
-    protected override IAmbiguousExpressionNode? Rewrite()
-        => BindingAmbiguousNamesAspect.FunctionGroupName_Rewrite(this);
+    protected override IChildNode? Rewrite()
+        => BindingAmbiguousNamesAspect.FunctionGroupName_Rewrite(this) ?? base.Rewrite();
 }

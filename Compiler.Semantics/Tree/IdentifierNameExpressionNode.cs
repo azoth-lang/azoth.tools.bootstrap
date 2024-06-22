@@ -26,6 +26,6 @@ internal sealed class IdentifierNameExpressionNode : AmbiguousNameExpressionNode
         Syntax = syntax;
     }
 
-    protected override IAmbiguousExpressionNode Rewrite()
-        => BindingAmbiguousNamesAspect.IdentifierName_Rewrite(this);
+    protected override IChildNode? Rewrite()
+        => BindingAmbiguousNamesAspect.IdentifierName_Rewrite(this) ?? base.Rewrite();
 }

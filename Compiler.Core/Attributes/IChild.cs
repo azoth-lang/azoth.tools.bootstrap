@@ -22,7 +22,7 @@ public interface IChild : IParent
     /// <summary>
     /// Rewrite the child node.
     /// </summary>
-    /// <returns>The node to replace this node with or <see langword="null"/> if this node is
+    /// <returns>The node to replace this node with or <see langword="this"/> if this node is
     /// final. Returned type must inherit from the type used with <see cref="Child{T}"/>.</returns>
     protected internal IChild? Rewrite();
 

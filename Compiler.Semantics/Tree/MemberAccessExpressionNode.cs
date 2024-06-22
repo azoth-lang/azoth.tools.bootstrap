@@ -28,12 +28,13 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
-    protected override IAmbiguousNameExpressionNode? Rewrite()
+    protected override IChildNode? Rewrite()
         => BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_FunctionOrMethodGroupNameContext(this)
         ?? BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_NamespaceNameContext(this)
         ?? BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_TypeNameExpressionContext(this)
         ?? BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_ExpressionContext(this)
-        ?? BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_UnknownNameExpressionContext(this);
+        ?? BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_UnknownNameExpressionContext(this)
+        ?? base.Rewrite();
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Context.GetFlowLexicalScope();
 

@@ -53,6 +53,6 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     public override ConditionalLexicalScope GetFlowLexicalScope()
         => LexicalScopingAspect.AssignmentExpression_GetFlowLexicalScope(this);
 
-    protected override IExpressionNode? Rewrite()
-        => BindingAmbiguousNamesAspect.AssignmentExpression_Rewrite_PropertyNameLeftOperand(this);
+    protected override IChildNode? Rewrite()
+        => BindingAmbiguousNamesAspect.AssignmentExpression_Rewrite_PropertyNameLeftOperand(this) ?? base.Rewrite();
 }

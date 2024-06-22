@@ -43,11 +43,12 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
         return base.InheritedContainingLexicalScope(child, descendant);
     }
 
-    protected override IAmbiguousExpressionNode? Rewrite()
+    protected override IChildNode? Rewrite()
         => OverloadResolutionAspect.InvocationExpression_Rewrite_FunctionGroupNameExpression(this)
-           ?? OverloadResolutionAspect.InvocationExpression_Rewrite_MethodGroupNameExpression(this)
-           ?? OverloadResolutionAspect.InvocationExpression_Rewrite_InitializerGroupNameExpression(this)
-           ?? OverloadResolutionAspect.InvocationExpression_Rewrite_TypeNameExpression(this)
-           ?? OverloadResolutionAspect.InvocationExpression_Rewrite_FunctionReferenceExpression(this)
-           ?? OverloadResolutionAspect.InvocationExpression_Rewrite_ToUnknown(this);
+        ?? OverloadResolutionAspect.InvocationExpression_Rewrite_MethodGroupNameExpression(this)
+        ?? OverloadResolutionAspect.InvocationExpression_Rewrite_InitializerGroupNameExpression(this)
+        ?? OverloadResolutionAspect.InvocationExpression_Rewrite_TypeNameExpression(this)
+        ?? OverloadResolutionAspect.InvocationExpression_Rewrite_FunctionReferenceExpression(this)
+        ?? OverloadResolutionAspect.InvocationExpression_Rewrite_ToUnknown(this)
+        ?? base.Rewrite();
 }

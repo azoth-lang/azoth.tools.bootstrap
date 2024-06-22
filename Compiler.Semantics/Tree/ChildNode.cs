@@ -68,7 +68,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
         // a way of getting the current children without causing them to rewrite.
     }
 
-    protected virtual IChildNode? Rewrite() => throw Child.RewriteNotSupported(this);
+    protected virtual IChildNode? Rewrite() => MayHaveRewrite ? this : throw Child.RewriteNotSupported(this);
 
     // TODO remove call to AttachRewritten once it is all handled by GrammarAttribute
     IChild? IChild.Rewrite() => Child.AttachRewritten(Parent, Rewrite());
