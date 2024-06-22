@@ -14,7 +14,7 @@ public struct AttributeLock
     /// and the attribute name when comparing.</remarks>
     private nuint version;
 
-    public T Read<T>(ref T location)
+    public T Read<T>(in T location)
     {
         var waiter = new SpinWait();
         // Enter the lock
@@ -62,7 +62,7 @@ public struct AttributeLock
     /// Do an atomic compare and exchange using the lock to protect reads and writes while avoiding
     /// holding the lock while calling the external comparer.
     /// </summary>
-    internal bool CompareExchange<T>(ref T location, T value, T comparand, IEqualityComparer<T> comparer, out T previous)
+    public bool CompareExchange<T>(ref T location, T value, T comparand, IEqualityComparer<T> comparer, out T previous)
     {
         var waiter = new SpinWait();
         nuint previousVersion, currentVersion;

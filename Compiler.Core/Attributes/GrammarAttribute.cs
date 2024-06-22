@@ -7,6 +7,7 @@ using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes.Operations;
 using Azoth.Tools.Bootstrap.Framework;
 using InlineMethod;
+using Void = Azoth.Tools.Bootstrap.Framework.Void;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
@@ -20,6 +21,8 @@ public static class GrammarAttribute
     /// <see cref="LazyInitializer"/> is used to ensure it is initialized.</remarks>
     [ThreadStatic]
     private static AttributeGrammarThreadState? _threadStateStorage;
+
+    private static Void _noLock;
 
     /// <summary>
     /// Get the thread state for the current thread.
@@ -59,14 +62,18 @@ public static class GrammarAttribute
     /// <summary>
     /// Read the value of a non-circular attribute.
     /// </summary>
-    public static T NonCircular<TNode, T, TOp>(
+    public static T NonCircular<TNode, T, TFunc, TOp, TLock>(
         this TNode node,
         ref bool cached,
         ref T? value,
-        TOp operations,
+        TFunc func,
+        IEqualityComparer<T> comparer,
+        ref TLock syncLock,
         [CallerMemberName] string attributeName = "")
         where TNode : class, IParent
-        where TOp : struct, IAttributeOperations<TNode, T>
+        where TFunc : struct, IAttributeFunction<TNode, T>
+        where TOp : IAttributeOperations<T, TLock>
+        where TLock : struct
     {
         if (string.IsNullOrEmpty(attributeName))
             throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
@@ -90,7 +97,7 @@ public static class GrammarAttribute
             // possibly non-final attribute value. If it does, then the value is not cached.
             using (var context = threadState.DependencyContext())
             {
-                next = operations.Compute(node, threadState); // may throw
+                next = func.Compute(node, threadState); // may throw
                 if (context.IsFinal)
                 {
                     value = next;
@@ -98,10 +105,10 @@ public static class GrammarAttribute
                     return next;
                 }
             }
-            if (!operations.Equals(next, previous)) // may throw
+            if (!comparer.Equals(next, previous)) // may throw
             {
-                if (!operations.CompareExchange(ref value!, next, previous, out var original)) // may throw
-                    next = original;
+                if (!TOp.CompareExchange(ref value, next, previous, comparer, ref syncLock, out var original)) // may throw
+                    next = original!;
                 else
                     // Value updated for this cycle, so update the iteration
                     threadState.UpdateIterationFor(attributeId);
@@ -120,10 +127,26 @@ public static class GrammarAttribute
 #if DEBUG
         using var _ = threadState.BeginComputing(attributeId);
 #endif
-        value = operations.Compute(node, threadState); // may throw
+        value = func.Compute(node, threadState); // may throw
         Volatile.Write(ref cached, true);
         return value; // Now that the value is cached, it is fine to read it directly
     }
+
+    [Inline] // Not always working
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static T NonCircular<TNode, T, TFunc>(
+        this TNode node,
+        ref bool cached,
+        ref T? value,
+        TFunc func,
+        IEqualityComparer<T> comparer,
+        string attributeName)
+        where TNode : class, IParent
+        where TFunc : struct, IAttributeFunction<TNode, T>
+        where T : class?
+        => node.NonCircular<TNode, T, TFunc, ReferenceOperations<T>, Void>(ref cached, ref value,
+            func, comparer, ref _noLock, attributeName);
     #endregion
 
     #region Synthetic overloads
@@ -135,18 +158,22 @@ public static class GrammarAttribute
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Synthetic<TNode, T>(
-        this TNode node,
-        ref bool cached,
-        ref T? value,
-        Func<TNode, T> compute,
-        [CallerMemberName] string attributeName = "")
-        where TNode : class, IParent
-        where T : class?
-        => node.NonCircular(ref cached, ref value, AttributeOperations.Synthetic(compute), attributeName);
+            this TNode node,
+            ref bool cached,
+            ref T? value,
+            Func<TNode, T> compute,
+            [CallerMemberName] string attributeName = "")
+            where TNode : class, IParent
+            where T : class?
+            => node.NonCircular(ref cached, ref value, AttributeFunction.Create(compute),
+                StrictEqualityComparer<T>.Instance, attributeName);
 
     /// <summary>
     /// Read the value of a non-circular synthetic attribute.
     /// </summary>
+    [Inline] // Not always working
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Synthetic<TNode, T>(
         this TNode node,
         ref bool cached,
@@ -156,7 +183,7 @@ public static class GrammarAttribute
         [CallerMemberName] string attributeName = "")
         where TNode : class, IParent
         where T : class?
-        => node.NonCircular(ref cached, ref value, AttributeOperations.Synthetic(compute, comparer), attributeName);
+        => node.NonCircular(ref cached, ref value, AttributeFunction.Create(compute), comparer, attributeName);
 
     /// <summary>
     /// Read the value of a non-circular synthetic attribute that is <see cref="IEquatable{T}"/>.
@@ -220,12 +247,12 @@ public static class GrammarAttribute
             {
                 // Since the value wasn't cached, it must not be final
                 threadState.MarkNonFinal();
-                return syncLock.Read(ref value);
+                return syncLock.Read(in value);
             }
 
             // Do not set the iteration until the value is computed and set so that a value from
             // this cycle is used. Note: non-circular attributes don't have valid initial values.
-            var previous = syncLock.Read(ref value);
+            var previous = syncLock.Read(in value);
             // This context is used to detect whether the attribute depends on a circular or
             // possibly non-final attribute value. If it does, then the value is not cached.
             using (var context = threadState.DependencyContext())
@@ -240,7 +267,7 @@ public static class GrammarAttribute
             if (!comparer.Equals(next, previous)) // may throw
             {
                 if (!syncLock.CompareExchange(ref value!, next, previous, comparer, out var original)) // may throw
-                    next = original;
+                    next = original!;
                 else
                     // Value updated for this cycle, so update the iteration
                     threadState.UpdateIterationFor(attributeId);
