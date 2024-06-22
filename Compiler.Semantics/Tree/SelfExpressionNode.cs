@@ -38,8 +38,8 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.SelfExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.SelfExpression_FlowStateAfter);
     private DataType? type;
     private bool typeCached;
     public override DataType Type

@@ -40,8 +40,8 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                NameBindingTypesAspect.BindingPattern_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                NameBindingTypesAspect.BindingPattern_FlowStateAfter);
 
     public BindingPatternNode(IBindingPatternSyntax syntax)
     {

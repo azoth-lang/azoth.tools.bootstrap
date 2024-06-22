@@ -36,9 +36,8 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     private bool supertypesCached;
     public IFixedSet<BareReferenceType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
-            : GrammarAttribute.Circular(ref supertypesCached, this,
-                TypeDeclarationsAspect.TypeDefinition_Supertypes,
-                FixedSet.ItemComparer<BareType>(), ref supertypes);
+            : this.Circular(ref supertypesCached, ref supertypes,
+                TypeDeclarationsAspect.TypeDefinition_Supertypes, FixedSet.ItemComparer<BareType>());
     public abstract IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     private MultiMapHashSet<StandardName, IAssociatedMemberDeclarationNode>? associatedMembersByName;

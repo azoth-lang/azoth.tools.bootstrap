@@ -28,8 +28,8 @@ internal sealed class FreezeExpressionNode : ExpressionNode, IFreezeExpressionNo
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.FreezeExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.FreezeExpression_FlowStateAfter);
 
     public FreezeExpressionNode(IFreezeExpressionSyntax syntax, ISimpleNameNode referent)
     {

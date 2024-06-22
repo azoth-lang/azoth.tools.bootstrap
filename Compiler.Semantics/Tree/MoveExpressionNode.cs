@@ -28,8 +28,8 @@ internal sealed class MoveExpressionNode : ExpressionNode, IMoveExpressionNode
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.MoveExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.MoveExpression_FlowStateAfter);
 
     public MoveExpressionNode(IMoveExpressionSyntax syntax, ISimpleNameNode referent)
     {

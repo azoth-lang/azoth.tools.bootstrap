@@ -40,8 +40,8 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.BinaryOperatorExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.BinaryOperatorExpression_FlowStateAfter);
 
     public BinaryOperatorExpressionNode(
         IBinaryOperatorExpressionSyntax syntax,

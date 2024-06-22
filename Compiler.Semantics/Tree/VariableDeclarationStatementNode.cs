@@ -59,8 +59,8 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached)
             ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                NameBindingTypesAspect.VariableDeclarationStatement_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                NameBindingTypesAspect.VariableDeclarationStatement_FlowStateAfter);
 
     public VariableDeclarationStatementNode(
         IVariableDeclarationStatementSyntax syntax,

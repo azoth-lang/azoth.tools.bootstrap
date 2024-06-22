@@ -28,8 +28,8 @@ internal sealed class VariableNameExpressionNode : AmbiguousNameExpressionNode, 
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached)
             ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.VariableNameExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.VariableNameExpression_FlowStateAfter);
 
     public VariableNameExpressionNode(IIdentifierNameExpressionSyntax syntax, INamedBindingNode referencedDeclaration)
     {

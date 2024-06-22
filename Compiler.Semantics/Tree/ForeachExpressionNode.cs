@@ -76,8 +76,8 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     private bool flowStateBeforeBlockCached;
     public FlowState FlowStateBeforeBlock
         => GrammarAttribute.IsCached(in flowStateBeforeBlockCached) ? flowStateBeforeBlock.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateBeforeBlockCached, this,
-                ForeachExpressionTypeAspect.ForeachExpression_FlowStateBeforeBlock, ref flowStateBeforeBlock);
+            : this.Circular(ref flowStateBeforeBlockCached, ref flowStateBeforeBlock,
+                ForeachExpressionTypeAspect.ForeachExpression_FlowStateBeforeBlock);
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
@@ -91,8 +91,8 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ForeachExpressionTypeAspect.ForeachExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ForeachExpressionTypeAspect.ForeachExpression_FlowStateAfter);
 
     public ForeachExpressionNode(
         IForeachExpressionSyntax syntax,

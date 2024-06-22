@@ -30,8 +30,8 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.WhileExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.WhileExpression_FlowStateAfter);
 
     public WhileExpressionNode(
         IWhileExpressionSyntax syntax,

@@ -41,8 +41,8 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.NamedParameter_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.NamedParameter_FlowStateAfter);
 
     public NamedParameterNode(INamedParameterSyntax syntax, ITypeNode type)
     {

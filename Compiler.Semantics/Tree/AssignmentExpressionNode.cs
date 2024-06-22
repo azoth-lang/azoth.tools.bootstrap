@@ -37,8 +37,8 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.AssignmentExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.AssignmentExpression_FlowStateAfter);
 
     public AssignmentExpressionNode(
         IAssignmentExpressionSyntax syntax,

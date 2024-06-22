@@ -295,14 +295,14 @@ public static class GrammarAttribute
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Circular<TNode, T>(
+        this TNode node,
         ref bool cached,
-        TNode node,
-        Func<TNode, T> compute,
         ref Circular<T> value,
+        Func<TNode, T> compute,
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?
-        => Circular(ref cached, node, compute, null!, StrictEqualityComparer<T>.Instance, ref value, attributeName);
+        => node.Circular(ref cached, ref value, compute, null!, StrictEqualityComparer<T>.Instance, attributeName);
 
     /// <summary>
     /// Read the value of a circular attribute that already has an initial value.
@@ -310,15 +310,15 @@ public static class GrammarAttribute
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Circular<TNode, T, TCompare>(
+        this TNode node,
         ref bool cached,
-        TNode node,
+        ref Circular<T> value,
         Func<TNode, T> compute,
         IEqualityComparer<TCompare> comparer,
-        ref Circular<T> value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?, TCompare
-        => Circular(ref cached, node, compute, null!, comparer, ref value, attributeName);
+        => node.Circular(ref cached, ref value, compute, null!, comparer, attributeName);
 
     /// <summary>
     /// Read the value of a circular attribute that is <see cref="IEquatable{T}"/>.
@@ -326,27 +326,27 @@ public static class GrammarAttribute
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Circular<TNode, T>(
+        this TNode node,
         ref bool cached,
-        TNode node,
+        ref Circular<T> value,
         Func<TNode, T> compute,
         Func<TNode, T> initializer,
-        ref Circular<T> value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?
-        => Circular(ref cached, node, compute, initializer, StrictEqualityComparer<T>.Instance, ref value, attributeName);
+        => node.Circular(ref cached, ref value, compute, initializer, StrictEqualityComparer<T>.Instance, attributeName);
 
     /// <summary>
     /// Read the value of a circular attribute.
     /// </summary>
     [DebuggerStepThrough]
     public static T Circular<TNode, T, TCompare>(
+        this TNode node,
         ref bool cached,
-        TNode node,
+        ref Circular<T> value,
         Func<TNode, T> compute,
         Func<TNode, T> initializer,
         IEqualityComparer<TCompare> comparer,
-        ref Circular<T> value,
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?, TCompare?

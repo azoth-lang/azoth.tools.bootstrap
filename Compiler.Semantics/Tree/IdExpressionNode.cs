@@ -28,8 +28,8 @@ internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.IdExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.IdExpression_FlowStateAfter);
 
     public IdExpressionNode(IIdExpressionSyntax syntax, IAmbiguousExpressionNode referent)
     {

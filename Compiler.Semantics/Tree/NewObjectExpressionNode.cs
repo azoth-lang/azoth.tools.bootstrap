@@ -53,8 +53,8 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.NewObjectExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.NewObjectExpression_FlowStateAfter);
     private DataType? type;
     private bool typeCached;
     public override DataType Type

@@ -25,8 +25,8 @@ internal sealed class LoopExpressionNode : ExpressionNode, ILoopExpressionNode
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.LoopExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.LoopExpression_FlowStateAfter);
 
     public LoopExpressionNode(ILoopExpressionSyntax syntax, IBlockExpressionNode block)
     {

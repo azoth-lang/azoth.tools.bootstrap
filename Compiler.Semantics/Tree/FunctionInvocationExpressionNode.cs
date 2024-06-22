@@ -47,8 +47,8 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.FunctionInvocationExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.FunctionInvocationExpression_FlowStateAfter);
 
     public FunctionInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,

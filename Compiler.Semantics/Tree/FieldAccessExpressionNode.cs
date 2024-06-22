@@ -29,8 +29,8 @@ internal sealed class FieldAccessExpressionNode : ExpressionNode, IFieldAccessEx
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.FieldAccessExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.FieldAccessExpression_FlowStateAfter);
 
     public FieldAccessExpressionNode(
         IMemberAccessExpressionSyntax syntax,

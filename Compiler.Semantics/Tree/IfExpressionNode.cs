@@ -30,8 +30,8 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.IfExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.IfExpression_FlowStateAfter);
 
     public IfExpressionNode(
         IIfExpressionSyntax syntax,

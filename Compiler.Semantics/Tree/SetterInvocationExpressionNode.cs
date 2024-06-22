@@ -39,8 +39,8 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached)
             ? flowStateAfter.UnsafeValue
-            : GrammarAttribute.Circular(ref flowStateAfterCached, this,
-                ExpressionTypesAspect.SetterInvocationExpression_FlowStateAfter, ref flowStateAfter);
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.SetterInvocationExpression_FlowStateAfter);
 
     public SetterInvocationExpressionNode(
         IAssignmentExpressionSyntax syntax,
