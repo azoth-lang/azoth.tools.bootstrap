@@ -23,8 +23,8 @@ internal abstract class SelfParameterNode : ParameterNode, ISelfParameterNode
     private bool containingDeclaredTypeCached;
     public IDeclaredUserType ContainingDeclaredType
         => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
-            : GrammarAttribute.Inherited(ref containingDeclaredTypeCached, this,
-                InheritedContainingDeclaredType, ref containingDeclaredType);
+            : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
+                InheritedContainingDeclaredType);
     private ValueAttribute<SelfParameterSymbol> symbol;
     public SelfParameterSymbol Symbol
         => symbol.TryGetValue(out var value) ? value

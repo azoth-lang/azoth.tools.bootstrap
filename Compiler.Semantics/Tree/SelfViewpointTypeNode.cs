@@ -27,7 +27,7 @@ internal sealed class SelfViewpointTypeNode : TypeNode, ISelfViewpointTypeNode
     private bool namedSelfTypeCached;
     public Pseudotype? NamedSelfType
         => GrammarAttribute.IsCached(in namedSelfTypeCached) ? namedSelfType
-            : GrammarAttribute.Inherited(ref namedSelfTypeCached, this, InheritedSelfType, ref namedSelfType);
+            : this.Inherited(ref namedSelfTypeCached, ref namedSelfType, InheritedSelfType);
 
     public SelfViewpointTypeNode(ISelfViewpointTypeSyntax syntax, ITypeNode referent)
     {

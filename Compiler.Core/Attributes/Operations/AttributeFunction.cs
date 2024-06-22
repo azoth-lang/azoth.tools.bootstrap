@@ -16,6 +16,6 @@ public static class AttributeFunction
     [Inline] // Not always working
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static InheritedAttributeFunction<TNode, T> Create<TNode, T>(Func<TNode, IInheritanceContext, T> compute)
+    public static InheritedAttributeFunction<TNode, T> Create<TNode, T>(Func<IInheritanceContext, T> compute)
         => new(compute);
 }

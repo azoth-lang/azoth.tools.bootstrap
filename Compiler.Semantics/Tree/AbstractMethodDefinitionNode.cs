@@ -21,8 +21,8 @@ internal sealed class AbstractMethodDefinitionNode : MethodDefinitionNode, IAbst
     private bool containingDeclaredTypeCached;
     public ObjectType ContainingDeclaredType
         => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
-            : GrammarAttribute.Inherited(ref containingDeclaredTypeCached, this,
-                InheritedContainingDeclaredType, ref containingDeclaredType);
+            : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
+                InheritedContainingDeclaredType);
 
     public AbstractMethodDefinitionNode(
         IAbstractMethodDefinitionSyntax syntax,

@@ -187,15 +187,15 @@ public static class GrammarAttribute
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Synthetic<TNode, T>(
-            this TNode node,
-            ref bool cached,
-            ref T? value,
-            Func<TNode, T> compute,
-            [CallerMemberName] string attributeName = "")
-            where TNode : class, IParent
-            where T : class?
-            => node.NonCircular(ref cached, ref value, AttributeFunction.Create(compute),
-                StrictEqualityComparer<T>.Instance, attributeName);
+        this TNode node,
+        ref bool cached,
+        ref T? value,
+        Func<TNode, T> compute,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class, IParent
+        where T : class?
+        => node.NonCircular(ref cached, ref value, AttributeFunction.Create(compute),
+            StrictEqualityComparer<T>.Instance, attributeName);
 
     /// <summary>
     /// Read the value of a non-circular synthetic attribute.
@@ -255,86 +255,37 @@ public static class GrammarAttribute
     /// <summary>
     /// Read the value of a non-circular inherited attribute that is <see cref="IEquatable{T}"/>.
     /// </summary>
+    [Inline]
     [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Inherited<TNode, T>(
+        this TNode node,
         ref bool cached,
-        TNode node,
-        Func<IInheritanceContext, T> compute,
         ref T? value,
+        Func<IInheritanceContext, T> compute,
         [CallerMemberName] string attributeName = "")
-        where TNode : class
+        where TNode : class, IParent
         where T : class?
-        => Inherited(ref cached, node, compute, StrictEqualityComparer<T>.Instance, ref value, attributeName);
+        => node.NonCircular(ref cached, ref value, AttributeFunction.Create<TNode, T>(compute),
+            StrictEqualityComparer<T>.Instance, attributeName);
 
     /// <summary>
     /// Read the value of a non-circular inherited attribute.
     /// </summary>
+    [Inline]
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Inherited<TNode, T>(
+        this TNode node,
         ref bool cached,
-        TNode node,
+        ref T? value,
         Func<IInheritanceContext, T> compute,
         IEqualityComparer<T> comparer,
-        ref T? value,
         [CallerMemberName] string attributeName = "")
-        where TNode : class
+        where TNode : class, IParent
         where T : class?
-    {
-        if (string.IsNullOrEmpty(attributeName))
-            throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
-
-        var threadState = ThreadState();
-        var attributeId = new AttributeId(node, attributeName);
-        if (threadState.InCircle)
-        {
-            if (threadState.ObservedInCycle(attributeId))
-            {
-                // Since the value wasn't cached, it must not be final
-                threadState.MarkNonFinal();
-                return value!;
-            }
-
-            // Do not set the iteration until the value is computed and set so that a value from
-            // this cycle is used. Note: non-circular attributes don't have valid initial values.
-            var previous = value;
-            T next;
-            // This context is used to detect whether the attribute depends on a circular or
-            // possibly non-final attribute value. If it does, then the value is not cached.
-            using (var context = threadState.DependencyContext())
-            {
-                next = compute(threadState); // may throw
-                if (context.IsFinal)
-                {
-                    value = next;
-                    Volatile.Write(ref cached, true);
-                }
-            }
-            if (!comparer.Equals(next, previous)) // may throw
-            {
-                var original = Interlocked.CompareExchange(ref value!, next, previous);
-                if (!ReferenceEquals(original, previous))
-                    next = Unsafe.As<T>(original);
-                else
-                    // Value updated for this cycle, so update the iteration
-                    threadState.UpdateIterationFor(attributeId);
-                previous = next;
-            }
-            else
-            {
-                // previous == next, so use old value to avoid duplicate objects referenced. Value
-                // is correct for this cycle, so update the iteration.
-                threadState.UpdateIterationFor(attributeId);
-            }
-
-            return previous!;
-        }
-
-#if DEBUG
-        using var _ = threadState.BeginComputing(attributeId);
-#endif
-        value = compute(threadState); // may throw
-        Volatile.Write(ref cached, true);
-        return value;
-    }
+        => node.NonCircular(ref cached, ref value, AttributeFunction.Create<TNode, T>(compute),
+            comparer, attributeName);
     #endregion
 
     #region Circular overloads

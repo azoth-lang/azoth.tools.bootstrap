@@ -30,19 +30,16 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     public GenericParameter Parameter
         => parameter.TryGetValue(out var value) ? value
             : parameter.GetValue(this, TypeDeclarationsAspect.GenericParameter_Parameter);
-
     private IDeclaredUserType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
     public IDeclaredUserType ContainingDeclaredType
         => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
-            : GrammarAttribute.Inherited(ref containingDeclaredTypeCached, this,
-                InheritedContainingDeclaredType, ref containingDeclaredType);
-
+            : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
+                InheritedContainingDeclaredType);
     private ValueAttribute<GenericParameterType> declaredType;
     public GenericParameterType DeclaredType
         => declaredType.TryGetValue(out var value) ? value
             : declaredType.GetValue(this, TypeDeclarationsAspect.GenericParameter_DeclaredType);
-
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)InheritedContainingDeclaration();
     public UserTypeSymbol ContainingSymbol => ContainingDeclaration.Symbol;
