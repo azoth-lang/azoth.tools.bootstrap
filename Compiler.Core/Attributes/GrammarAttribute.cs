@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Framework;
+using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
@@ -32,7 +33,7 @@ public static class GrammarAttribute
     /// simply read the attribute value from the backing field.
     /// </summary>
     [DebuggerStepThrough]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Inline]
     public static bool IsCached(in bool cached) => Volatile.Read(in cached);
 
     [DebuggerStepThrough]
