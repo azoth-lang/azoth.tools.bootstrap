@@ -13,17 +13,18 @@ public sealed class ReferenceOperations<T> : IAttributeOperations<T, Void>
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Read(in T location, ref Void _) => location;
+    public static T? Read(in T? location, ref Void _) => location;
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void WriteFinal(ref T location, T value, ref Void _, ref bool cached)
+    public static T WriteFinal(ref T? location, T value, ref Void _, ref bool cached)
     {
         // Check cached again since it could have been set while computing the value
         if (cached)
-            return;
+            return location!;
         location = value;
         Volatile.Write(ref cached, true);
+        return value;
     }
 
     [DebuggerStepThrough]

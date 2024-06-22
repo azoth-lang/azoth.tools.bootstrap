@@ -80,30 +80,26 @@ public static class GrammarAttribute
 
         var threadState = ThreadState();
         var attributeId = new AttributeId(node, attributeName);
+        T next;
         if (threadState.InCircle)
         {
             if (threadState.ObservedInCycle(attributeId))
             {
                 // Since the value wasn't cached, it must not be final
                 threadState.MarkNonFinal();
-                return value!;
+                return TOp.Read(in value!, ref syncLock);
             }
 
             // Do not set the iteration until the value is computed and set so that a value from
             // this cycle is used. Note: non-circular attributes don't have valid initial values.
-            var previous = value;
-            T next;
+            var previous = TOp.Read(in value, ref syncLock);
             // This context is used to detect whether the attribute depends on a circular or
             // possibly non-final attribute value. If it does, then the value is not cached.
             using (var context = threadState.DependencyContext())
             {
                 next = func.Compute(node, threadState); // may throw
                 if (context.IsFinal)
-                {
-                    value = next;
-                    Volatile.Write(ref cached, true);
-                    return next;
-                }
+                    return TOp.WriteFinal(ref value, next, ref syncLock, ref cached);
             }
             if (!comparer.Equals(next, previous)) // may throw
             {
@@ -127,12 +123,11 @@ public static class GrammarAttribute
 #if DEBUG
         using var _ = threadState.BeginComputing(attributeId);
 #endif
-        value = func.Compute(node, threadState); // may throw
-        Volatile.Write(ref cached, true);
-        return value; // Now that the value is cached, it is fine to read it directly
+        next = func.Compute(node, threadState); // may throw
+        return TOp.WriteFinal(ref value, next, ref syncLock, ref cached);
     }
 
-    [Inline] // Not always working
+    [Inline]
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static T NonCircular<TNode, T, TFunc>(
@@ -147,6 +142,40 @@ public static class GrammarAttribute
         where T : class?
         => node.NonCircular<TNode, T, TFunc, ReferenceOperations<T>, Void>(ref cached, ref value,
             func, comparer, ref _noLock, attributeName);
+
+    [Inline]
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static T NonCircular<TNode, T, TFunc>(
+        this TNode node,
+        ref bool cached,
+        ref T value,
+        TFunc func,
+        IEqualityComparer<T> comparer,
+        ref AttributeLock syncLock,
+        string attributeName)
+        where TNode : class, IParent
+        where TFunc : struct, IAttributeFunction<TNode, T>
+        where T : struct
+        => node.NonCircular<TNode, T, TFunc, ValueOperations<T>, AttributeLock>(ref cached, ref value,
+            func, comparer, ref syncLock, attributeName);
+
+    [Inline]
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static T? NonCircular<TNode, T, TFunc>(
+        this TNode node,
+        ref bool cached,
+        ref T? value,
+        TFunc func,
+        IEqualityComparer<T?> comparer,
+        ref AttributeLock syncLock,
+        string attributeName)
+        where TNode : class, IParent
+        where TFunc : struct, IAttributeFunction<TNode, T?>
+        where T : struct
+        => node.NonCircular<TNode, T?, TFunc, ValueOperations<T?>, AttributeLock>(ref cached, ref value,
+            func, comparer, ref syncLock, attributeName);
     #endregion
 
     #region Synthetic overloads
@@ -198,9 +227,10 @@ public static class GrammarAttribute
         ref AttributeLock syncLock,
         Func<TNode, T> compute,
         [CallerMemberName] string attributeName = "")
-        where TNode : class
+        where TNode : class, IParent
         where T : struct
-        => Synthetic(node, ref cached, ref value, ref syncLock, compute, StrictEqualityComparer<T>.Instance, attributeName);
+        => node.NonCircular(ref cached, ref value, AttributeFunction.Create(compute),
+            StrictEqualityComparer<T>.Instance, ref syncLock, attributeName);
 
     /// <summary>
     /// Read the value of a non-circular synthetic attribute that is <see cref="IEquatable{T}"/>.
@@ -215,81 +245,10 @@ public static class GrammarAttribute
         ref AttributeLock syncLock,
         Func<TNode, T?> compute,
         [CallerMemberName] string attributeName = "")
-        where TNode : class
+        where TNode : class, IParent
         where T : struct
-        => Synthetic(node, ref cached, ref value, ref syncLock, compute, StrictEqualityComparer<T?>.Instance, attributeName);
-
-    /// <summary>
-    /// Read the value of a non-circular synthetic attribute.
-    /// </summary>
-    /// <remarks>Private implementation is used because there is not a constraint that allows either
-    /// struct or nullable struct. So this method would allow anything, but we want them to use the
-    /// other overload for reference types.</remarks>
-    private static T Synthetic<TNode, T>(
-        TNode node,
-        ref bool cached,
-        ref T value,
-        ref AttributeLock syncLock,
-        Func<TNode, T> compute,
-        IEqualityComparer<T> comparer,
-        [CallerMemberName] string attributeName = "")
-        where TNode : class
-    {
-        if (string.IsNullOrEmpty(attributeName))
-            throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
-
-        var threadState = ThreadState();
-        var attributeId = new AttributeId(node, attributeName);
-        T next;
-        if (threadState.InCircle)
-        {
-            if (threadState.ObservedInCycle(attributeId))
-            {
-                // Since the value wasn't cached, it must not be final
-                threadState.MarkNonFinal();
-                return syncLock.Read(in value);
-            }
-
-            // Do not set the iteration until the value is computed and set so that a value from
-            // this cycle is used. Note: non-circular attributes don't have valid initial values.
-            var previous = syncLock.Read(in value);
-            // This context is used to detect whether the attribute depends on a circular or
-            // possibly non-final attribute value. If it does, then the value is not cached.
-            using (var context = threadState.DependencyContext())
-            {
-                next = compute(node); // may throw
-                if (context.IsFinal)
-                {
-                    syncLock.WriteFinal(ref value, next, ref cached);
-                    return value; // Now that the value is cached, it is fine to read it directly
-                }
-            }
-            if (!comparer.Equals(next, previous)) // may throw
-            {
-                if (!syncLock.CompareExchange(ref value!, next, previous, comparer, out var original)) // may throw
-                    next = original!;
-                else
-                    // Value updated for this cycle, so update the iteration
-                    threadState.UpdateIterationFor(attributeId);
-                previous = next;
-            }
-            else
-            {
-                // previous == next, so use old value to avoid duplicate objects referenced. Value
-                // is correct for this cycle, so update the iteration.
-                threadState.UpdateIterationFor(attributeId);
-            }
-
-            return previous;
-        }
-
-#if DEBUG
-        using var _ = threadState.BeginComputing(attributeId);
-#endif
-        next = compute(node); // may throw
-        syncLock.WriteFinal(ref value, next, ref cached);
-        return value; // Now that the value is cached, it is fine to read it directly
-    }
+        => node.NonCircular(ref cached, ref value, AttributeFunction.Create(compute),
+            StrictEqualityComparer<T?>.Instance, ref syncLock, attributeName);
     #endregion
 
     #region Inherited overloads
